@@ -8,6 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import type {CrInputElement, CrTextareaElement} from 'chrome://settings/lazy_load.js';
 import {CountryDetailManagerImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createAddressEntry, createEmptyAddressEntry, makeGuid, STUB_USER_ACCOUNT_INFO} from './autofill_fake_data.js';
 import {CountryDetailManagerTestImpl, createAddressDialog, expectEvent} from './autofill_section_test_utils.js';
@@ -78,7 +79,9 @@ suite('AutofillSectionAddressValidationTests', () => {
     assertFalse(firstRequired.invalid, 'no error on empty element initially');
     // Imitate typing and clearing in the input.
     firstRequired.value = 'value';
+    await microtasksFinished();
     firstRequired.value = '';
+    await microtasksFinished();
     assertTrue(firstRequired.invalid, 'indicate empty element after updates');
 
 

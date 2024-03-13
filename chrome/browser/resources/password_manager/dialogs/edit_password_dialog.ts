@@ -91,7 +91,11 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
 
       username_: String,
       password_: String,
-      note_: String,
+
+      note_: {
+        type: String,
+        value: '',
+      },
 
       conflictingUsernames_: {
         type: Object,

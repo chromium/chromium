@@ -29,7 +29,6 @@ build_webui("build") {
       "cr_link_row/cr_link_row.ts",
       "cr_loading_gradient/cr_loading_gradient.ts",
       "cr_lottie/cr_lottie.ts",
-      "cr_textarea/cr_textarea.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
       "cr_radio_button/cr_card_radio_button.ts",
@@ -99,6 +98,8 @@ build_webui("build") {
       "cr_menu_selector/cr_menu_selector.ts",
       "cr_tabs/cr_tabs.ts",
       "cr_tabs/cr_tabs.html.ts",
+      "cr_textarea/cr_textarea.ts",
+      "cr_textarea/cr_textarea.html.ts",
     ]
 
     css_files = [
@@ -139,6 +140,7 @@ build_webui("build") {
       "cr_search_field/cr_search_field.css",
       "cr_slider/cr_slider.css",
       "cr_tabs/cr_tabs.css",
+      "cr_textarea/cr_textarea.css",
       "cr_toast/cr_toast.css",
       "cr_toast/cr_toast_manager.css",
       "cr_toggle/cr_toggle.css",
