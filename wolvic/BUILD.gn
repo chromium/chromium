@@ -313,6 +313,7 @@ dist_aar("content_aar") {
     "org/chromium/net/*.class",
     "org/chromium/service_manager/mojom/*.class",
     "org/chromium/services/*.class",
+    "org/chromium/ui/touch_selection/*.class",
     "org/chromium/url/*.class",
     "org/chromium/wolvic/*.class",
     "org/jni_zero/GEN_JNI.class",

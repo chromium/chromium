@@ -248,6 +248,61 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         View getReadbackView();
     }
 
+    private Delegate mDelegate;
+
+    @Override
+    public void setDelegate(Delegate delegate) { mDelegate = delegate; }
+
+    @Override
+    public DelegateEventHandler getDelegateEventHandler() {
+        return new DelegateEventHandler() {
+            @Override
+            public void onExecute(@ActionType int event, Object... args) {
+                if (mWebContents == null) return;
+                switch (event) {
+                    case ActionType.HIDE:
+                        // nothing
+                        break;
+                    case ActionType.CUT:
+                        mWebContents.cut();
+                        break;
+                    case ActionType.COPY:
+                        mWebContents.copy();
+                        break;
+                    case ActionType.DELETE:
+                        mWebContents.replace("");
+                        break;
+                    case ActionType.PASTE:
+                        mWebContents.paste();
+                        break;
+                    case ActionType.PASTE_AS_PLAIN_TEXT:
+                        mWebContents.pasteAsPlainText();
+                        break;
+                    case ActionType.SELECT_ALL:
+                        mWebContents.selectAll();
+                        break;
+                    case ActionType.UNSELECT:
+                        mWebContents.collapseSelection();
+                        break;
+                    case ActionType.COLLAPSE_TO_START:
+                    case ActionType.COLLAPSE_TO_END:
+                        // no implement
+                        break;
+                    case ActionType.SHOW_CONTEXT_MENU:
+                        if (args == null || args.length != 2 || !(args[0] instanceof Integer) ||
+                            !(args[1] instanceof Integer)) {
+                            return;
+                        }
+                        showContextMenuAtTouchHandle((Integer) args[0], (Integer)args[1]);
+                        break;
+                    case ActionType.DISMISS_TEXT_HANDLERS:
+                        dismissTextHandles();
+                        break;
+                }
+            }
+        };
+    }
+
     /** Sets to use the readback view from {@link WindowAndroid}. */
     public static void setShouldGetReadbackViewFromWindowAndroid() {
         sShouldGetReadbackViewFromWindowAndroid = true;
@@ -533,6 +588,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             boolean shouldSuggest,
             @MenuSourceType int sourceType,
             RenderFrameHost renderFrameHost) {
+        if (mDelegate != null) {
+            mDelegate.showSelectionMenu(
+                    left, top, right, bottom, handleHeight, isEditable, isPasswordType,
+                    selectionText, selectionStartOffset, canSelectAll, canRichlyEdit);
+            return;
+        }
+
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.ShowSelectionMenuSourceType",
                 sourceType,
@@ -1592,6 +1654,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @CalledByNative
     public void restoreSelectionPopupsIfNecessary() {
+        if (mDelegate != null) {
+            mDelegate.restoreSelectionPopupsIfNecessary();
+            return;
+        }
+
         if (hasSelection()
                 && !isActionModeValid()
                 && getMenuType() == SelectionMenuType.ACTION_MODE) {
@@ -1611,6 +1678,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @CalledByNative
     void onSelectionEvent(
             @SelectionEventType int eventType, int left, int top, int right, int bottom) {
+        if (mDelegate != null) {
+            mDelegate.onSelectionEvent(eventType, left, top, right, bottom);
+            return;
+        }
+
         if (DEBUG) {
             Log.i(
                     TAG,
@@ -1789,6 +1861,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     @VisibleForTesting
     @CalledByNative
     /* package */ void onSelectionChanged(String text) {
+        if (mDelegate != null) {
+            mDelegate.onSelectionChanged(text);
+            return;
+        }
+
         final boolean unSelected = TextUtils.isEmpty(text) && hasSelection();
         if (unSelected || mIsProcessingSelectAll) {
             if (mSmartSelectionEventProcessor != null) {
@@ -1880,6 +1957,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @CalledByNative
     public void hidePopupsAndPreserveSelection() {
+        if (mDelegate != null) {
+            mDelegate.hidePopupsAndPreserveSelection();
+            return;
+        }
+
         destroyActionModeAndKeepSelection();
         getPopupController().hideAllPopups();
     }
@@ -2014,6 +2096,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @CalledByNative
     private void nativeSelectionPopupControllerDestroyed() {
+        if (mDelegate != null) {
+            mDelegate.nativeSelectionPopupControllerDestroyed();
+        }
+
         mNativeSelectionPopupController = 0;
     }
 
