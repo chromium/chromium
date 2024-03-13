@@ -35,12 +35,18 @@ blink_modules_sources("ml") {
     "webnn/ml_activation.h",
     "webnn/ml_buffer.cc",
     "webnn/ml_buffer.h",
+    "webnn/ml_buffer_mojo.cc",
+    "webnn/ml_buffer_mojo.h",
     "webnn/ml_error_mojo.cc",
     "webnn/ml_error_mojo.h",
     "webnn/ml_graph.cc",
     "webnn/ml_graph.h",
     "webnn/ml_graph_builder.cc",
     "webnn/ml_graph_builder.h",
+    "webnn/ml_graph_mojo.cc",
+    "webnn/ml_graph_mojo.h",
+    "webnn/ml_graph_type_converter.cc",
+    "webnn/ml_graph_type_converter.h",
     "webnn/ml_graph_utils.cc",
     "webnn/ml_graph_utils.h",
     "webnn/ml_operand.cc",
@@ -79,21 +85,6 @@ blink_modules_sources("ml") {
       "//third_party/tflite:tflite_public_headers",
     ]
   }
-
-  if (!is_chromeos) {
-    sources += [
-      # Platform independent sources which packages the model information
-      # into a neutral struct types, it will be built and executed with hardware
-      # accelerated OS machine learning API in WebNN Service which run out of
-      # renderer process.
-      "webnn/ml_buffer_mojo.cc",
-      "webnn/ml_buffer_mojo.h",
-      "webnn/ml_graph_mojo.cc",
-      "webnn/ml_graph_mojo.h",
-      "webnn/ml_graph_type_converter.cc",
-      "webnn/ml_graph_type_converter.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -107,6 +98,7 @@ source_set("unit_tests") {
     "webnn/ml_graph_builder_test.h",
     "webnn/ml_graph_builder_utils.cc",
     "webnn/ml_graph_builder_utils.h",
+    "webnn/ml_graph_mojo_test.cc",
     "webnn/ml_graph_test_base.cc",
     "webnn/ml_graph_test_base.h",
   ]
@@ -114,6 +106,7 @@ source_set("unit_tests") {
   deps = [
     ":buildflags",
     "//components/ml/mojom:mojom_blink",
+    "//components/ml/webnn",
     "//components/ml/webnn:features",
     "//services/webnn/public/mojom:mojom_blink",
     "//testing/gtest",
@@ -141,11 +134,6 @@ source_set("unit_tests") {
       "webnn/ml_graph_test_model_loader.h",
     ]
     deps += [ "//third_party/tflite" ]
-  }
-
-  if (!is_chromeos) {
-    sources += [ "webnn/ml_graph_mojo_test.cc" ]
-    deps += [ "//components/ml/webnn" ]
   }
 }
 

@@ -21,7 +21,6 @@ namespace blink {
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS)
 webnn::mojom::blink::PowerPreference ConvertBlinkPowerPreferenceToMojo(
     const V8MLPowerPreference& power_preference_blink) {
   switch (power_preference_blink.AsEnum()) {
@@ -33,7 +32,6 @@ webnn::mojom::blink::PowerPreference ConvertBlinkPowerPreferenceToMojo(
       return webnn::mojom::blink::PowerPreference::kHighPerformance;
   }
 }
-#endif
 
 }  // namespace
 
@@ -47,7 +45,6 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver* resolver,
       options->powerPreference(), options->modelFormat(), options->numThreads(),
       ml);
 
-#if !BUILDFLAG(IS_CHROMEOS)
   if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
     auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
         ConvertBlinkPowerPreferenceToMojo(options->powerPreference()));
@@ -57,7 +54,6 @@ void MLContext::ValidateAndCreate(ScriptPromiseResolver* resolver,
                       std::move(scoped_trace), WrapPersistent(resolver)));
     return;
   }
-#endif
 
   resolver->Resolve(context);
 }
@@ -223,12 +219,10 @@ MLBuffer* MLContext::createBuffer(ScriptState* script_state,
     return nullptr;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
   if (device_type_ == V8MLDeviceType::Enum::kGpu) {
     return MLBufferMojo::Create(std::move(scoped_trace), script_state, this,
                                 descriptor, exception_state);
   }
-#endif
 
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                     "Not implemented");

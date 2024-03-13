@@ -10,6 +10,7 @@
 #include "base/numerics/checked_math.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_batch_normalization_options.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
@@ -51,11 +53,6 @@
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_model_loader.h"
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_mojo.h"
 #endif
 
 namespace blink {
@@ -2038,8 +2035,6 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
 #endif
 
 #if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
-  // TODO(https://crbug.com/1513481): Support GPU devices with the TFLite
-  // backend.
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
     MLGraphModelLoader::ValidateAndBuild(std::move(scoped_trace), ml_context_,
                                          named_outputs, resolver);
@@ -2047,13 +2042,11 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
   }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
     MLGraphMojo::ValidateAndBuild(std::move(scoped_trace), ml_context_,
                                   named_outputs, resolver);
     return promise;
   }
-#endif
 
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, "Not implemented"));
