@@ -50,7 +50,11 @@ class PLATFORM_EXPORT CalculationExpressionNode
     return !operator==(other);
   }
 
+  bool HasAuto() const { return has_auto_; }
   bool HasContentOrIntrinsicSize() const { return has_content_or_intrinsic_; }
+  bool HasAutoOrContentOrIntrinsicSize() const {
+    return has_auto_ || has_content_or_intrinsic_;
+  }
   // HasPercent returns whether this node's value expression should be
   // treated as having a percent.  Note that this means that percentages
   // inside of the calculation part of a calc-size() do not make the
@@ -81,6 +85,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool Equals(const CalculationExpressionNode& other) const = 0;
 
   bool has_content_or_intrinsic_ = false;
+  bool has_auto_ = false;
   bool has_percent_ = false;
 };
 
@@ -166,7 +171,7 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
   enum class Keyword : uint8_t {
     kSize,
     kAny,
-    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    kAuto,
 
     // The keywords below should match those accepted by
     // css_parsing_utils::ValidWidthOrHeightKeyword.

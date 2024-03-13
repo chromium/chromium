@@ -1031,7 +1031,7 @@ CalculationExpressionSizingKeywordNode::Keyword CSSValueIDToSizingKeyword(
 
     KEYWORD_CASE(kAny)
     KEYWORD_CASE(kSize)
-    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    KEYWORD_CASE(kAuto)
     KEYWORD_CASE(kMinContent)
     KEYWORD_CASE(kWebkitMinContent)
     KEYWORD_CASE(kMaxContent)
@@ -1059,7 +1059,7 @@ CSSValueID SizingKeywordToCSSValueID(
 
     KEYWORD_CASE(kAny)
     KEYWORD_CASE(kSize)
-    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    KEYWORD_CASE(kAuto)
     KEYWORD_CASE(kMinContent)
     KEYWORD_CASE(kWebkitMinContent)
     KEYWORD_CASE(kMaxContent)
@@ -2802,6 +2802,8 @@ class CSSMathExpressionNodeParser {
     bool basis_is_any = id == CSSValueID::kAny;
     if (id != CSSValueID::kInvalid &&
         (id == CSSValueID::kAny ||
+         (id == CSSValueID::kAuto &&
+          parsing_flags_.Has(Flag::AllowAutoInCalcSize)) ||
          css_parsing_utils::ValidWidthOrHeightKeyword(id, context_))) {
       // TODO(https://crbug.com/313072): Also allow 'auto' for some properties
       // (not max-*, though, since they don't take 'auto').

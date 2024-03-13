@@ -144,8 +144,16 @@ scoped_refptr<const CalculationValue> CalculationValue::Zoom(
   return CreateSimplified(data_.expression->Zoom(factor), GetValueRange());
 }
 
+bool CalculationValue::HasAuto() const {
+  return IsExpression() && data_.expression->HasAuto();
+}
+
 bool CalculationValue::HasContentOrIntrinsicSize() const {
   return IsExpression() && data_.expression->HasContentOrIntrinsicSize();
+}
+
+bool CalculationValue::HasAutoOrContentOrIntrinsicSize() const {
+  return IsExpression() && data_.expression->HasAutoOrContentOrIntrinsicSize();
 }
 
 bool CalculationValue::HasPercent() const {

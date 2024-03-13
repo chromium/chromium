@@ -271,12 +271,9 @@ class PLATFORM_EXPORT Length {
   // For the block axis, intrinsic sizes such as `min-content` behave the same
   // as `auto`. https://www.w3.org/TR/css-sizing-3/#valdef-width-min-content
   // This includes content-based sizes in calc-size().
+  bool HasAuto() const;
   bool HasContentOrIntrinsic() const;
-  bool HasAutoOrContentOrIntrinsic() const {
-    // TODO(https://crbug.com/313072): Add support for 'auto' in 'calc-size()'
-    // here.
-    return GetType() == kAuto || HasContentOrIntrinsic();
-  }
+  bool HasAutoOrContentOrIntrinsic() const;
   bool HasPercent() const;
 
   bool IsSpecified() const {

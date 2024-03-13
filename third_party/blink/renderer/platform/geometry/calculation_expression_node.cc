@@ -50,9 +50,11 @@ CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
     Keyword keyword)
     : keyword_(keyword) {
   if (keyword != Keyword::kSize && keyword != Keyword::kAny) {
-    // TODO(https://crbug.com/313072): When we implement 'auto' it probably
-    // needs to be tracked separately here.
-    has_content_or_intrinsic_ = true;
+    if (keyword == Keyword::kAuto) {
+      has_auto_ = true;
+    } else {
+      has_content_or_intrinsic_ = true;
+    }
   }
 #if DCHECK_IS_ON()
   result_type_ = ResultType::kPixelsAndPercent;
@@ -69,7 +71,9 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
       return *input.size_keyword_basis;
     case Keyword::kAny:
       return 0.0f;
-    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    case Keyword::kAuto:
+      intrinsic_type = Length::Type::kAuto;
+      break;
     case Keyword::kMinContent:
     case Keyword::kWebkitMinContent:
       intrinsic_type = Length::Type::kMinContent;
@@ -374,11 +378,15 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
     DCHECK_EQ(children_.size(), 2u);
     const auto& basis = children_[0];
     has_content_or_intrinsic_ = basis->HasContentOrIntrinsicSize();
+    has_auto_ = basis->HasAuto();
     has_percent_ = basis->HasPercent();
   } else {
     for (const auto& child : children_) {
       if (child->HasContentOrIntrinsicSize()) {
         has_content_or_intrinsic_ = true;
+      }
+      if (child->HasAuto()) {
+        has_auto_ = true;
       }
       if (child->HasPercent()) {
         has_percent_ = true;

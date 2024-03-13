@@ -203,6 +203,13 @@ float Length::NonNanCalculatedValue(float max_value,
   return result;
 }
 
+bool Length::HasAuto() const {
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasAuto();
+  }
+  return GetType() == kAuto;
+}
+
 bool Length::HasContentOrIntrinsic() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasContentOrIntrinsicSize();
@@ -210,6 +217,13 @@ bool Length::HasContentOrIntrinsic() const {
   return GetType() == kMinContent || GetType() == kMaxContent ||
          GetType() == kFitContent || GetType() == kMinIntrinsic ||
          GetType() == kContent;
+}
+
+bool Length::HasAutoOrContentOrIntrinsic() const {
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasAutoOrContentOrIntrinsicSize();
+  }
+  return GetType() == kAuto || HasContentOrIntrinsic();
 }
 
 bool Length::HasPercent() const {

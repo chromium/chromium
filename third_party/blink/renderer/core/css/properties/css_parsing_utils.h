@@ -60,7 +60,7 @@ enum class TrackListType {
   kGridTemplateSubgrid
 };
 enum class UnitlessQuirk { kAllow, kForbid };
-enum class AllowCalcSize { kAllow, kForbid };
+enum class AllowCalcSize { kAllowWithAuto, kAllowWithoutAuto, kForbid };
 enum class AllowedColorKeywords { kAllowSystemColor, kNoSystemColor };
 enum class EmptyPathStringHandling { kFailure, kTreatAsNone };
 

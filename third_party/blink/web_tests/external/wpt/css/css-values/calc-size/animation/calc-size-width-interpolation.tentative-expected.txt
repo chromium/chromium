@@ -1,60 +1,48 @@
 This is a testharness.js-based test.
-Found 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (-0.25) should be [150px]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "150px " but got "400px "
 [FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (0) should be [200px]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (0.25) should be [calc-size(auto, size * 1.25)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (0.5) should be [calc-size(auto, size * 1.5)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (0.75) should be [calc-size(auto, size * 1.75)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (1) should be [calc-size(auto, size * 2)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (1.25) should be [calc-size(auto, size * 2.25)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "200px " but got "400px "
+[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (0.25) should be [250px]
+  assert_equals: expected "250px " but got "400px "
+[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (0.5) should be [300px]
+  assert_equals: expected "300px " but got "400px "
+[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (0.75) should be [350px]
+  assert_equals: expected "350px " but got "400px "
+[FAIL] CSS Transitions: property <width> from neutral to [calc-size(auto, size * 2)] at (1.25) should be [450px]
+  assert_equals: expected "450px " but got "400px "
 [FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (-0.25) should be [150px]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "150px " but got "400px "
 [FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (0) should be [200px]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (0.25) should be [calc-size(auto, size * 1.25)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (0.5) should be [calc-size(auto, size * 1.5)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (0.75) should be [calc-size(auto, size * 1.75)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (1) should be [calc-size(auto, size * 2)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (1.25) should be [calc-size(auto, size * 2.25)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "200px " but got "400px "
+[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (0.25) should be [250px]
+  assert_equals: expected "250px " but got "400px "
+[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (0.5) should be [300px]
+  assert_equals: expected "300px " but got "400px "
+[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (0.75) should be [350px]
+  assert_equals: expected "350px " but got "400px "
+[FAIL] CSS Transitions with transition: all: property <width> from neutral to [calc-size(auto, size * 2)] at (1.25) should be [450px]
+  assert_equals: expected "450px " but got "400px "
 [FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (-0.25) should be [150px]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0) should be [200px]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.25) should be [calc-size(auto, size * 1.25)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.5) should be [calc-size(auto, size * 1.5)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.75) should be [calc-size(auto, size * 1.75)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (1) should be [calc-size(auto, size * 2)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (1.25) should be [calc-size(auto, size * 2.25)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "150px " but got "200px "
+[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.25) should be [250px]
+  assert_equals: expected "250px " but got "200px "
+[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.5) should be [300px]
+  assert_equals: expected "300px " but got "400px "
+[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.75) should be [350px]
+  assert_equals: expected "350px " but got "400px "
+[FAIL] CSS Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (1.25) should be [450px]
+  assert_equals: expected "450px " but got "400px "
 [FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (-0.25) should be [150px]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0) should be [200px]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.25) should be [calc-size(auto, size * 1.25)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.5) should be [calc-size(auto, size * 1.5)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.75) should be [calc-size(auto, size * 1.75)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (1) should be [calc-size(auto, size * 2)]
-  assert_true: 'to' value should be supported expected true got false
-[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (1.25) should be [calc-size(auto, size * 2.25)]
-  assert_true: 'to' value should be supported expected true got false
+  assert_equals: expected "150px " but got "200px "
+[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.25) should be [250px]
+  assert_equals: expected "250px " but got "200px "
+[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.5) should be [300px]
+  assert_equals: expected "300px " but got "400px "
+[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (0.75) should be [350px]
+  assert_equals: expected "350px " but got "400px "
+[FAIL] Web Animations: property <width> from neutral to [calc-size(auto, size * 2)] at (1.25) should be [450px]
+  assert_equals: expected "450px " but got "400px "
 Harness: the test ran to completion.
 

@@ -1295,8 +1295,15 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     return ConsumePercent(range, context, value_range);
   }
   Flags parsing_flags({AllowPercent});
-  if (allow_calc_size == AllowCalcSize::kAllow) {
-    parsing_flags.Put(AllowCalcSize);
+  switch (allow_calc_size) {
+    case AllowCalcSize::kAllowWithAuto:
+      parsing_flags.Put(AllowAutoInCalcSize);
+      [[fallthrough]];
+    case AllowCalcSize::kAllowWithoutAuto:
+      parsing_flags.Put(AllowCalcSize);
+      [[fallthrough]];
+    case AllowCalcSize::kForbid:
+      break;
   }
   MathFunctionParser math_parser(range, context, value_range, parsing_flags,
                                  allowed_anchor_queries);
@@ -6354,7 +6361,7 @@ CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange& range,
   return ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize),
-      AllowCalcSize::kAllow);
+      AllowCalcSize::kAllowWithoutAuto);
 }
 
 CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
@@ -6367,7 +6374,7 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
   return ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
       static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize),
-      AllowCalcSize::kAllow);
+      AllowCalcSize::kAllowWithAuto);
 }
 
 CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange& range,
