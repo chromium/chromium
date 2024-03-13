@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_section.h"
+
 #include <optional>
 
 #include "ash/constants/ash_features.h"
