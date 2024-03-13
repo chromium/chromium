@@ -4850,8 +4850,10 @@ const char kLinkPreviewDescription[] =
     "When enabled, Link Preview feature gets to be available to preview a "
     "linked page in a dedicated small window before navigating to the linked "
     "page. The feature can be triggered from a context menu item, or users' "
-    "actions. For now, Alt + Click is used for the shortcut, but we will "
-    "introduce more options for usability study.";
+    "actions. We are evaluating multiple actions in our experiment to "
+    "understand what's to be the best for users from the viewpoint of "
+    "security, privacy, and usability. The feature might be unstable and "
+    "unusable on some platforms, e.g. macOS or touch devices.";
 
 const char kMemorySaverMultistateModeAvailableName[] =
     "Enable the multi-state option for Memory Saver Mode.";
