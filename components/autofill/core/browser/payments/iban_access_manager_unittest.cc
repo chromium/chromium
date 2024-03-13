@@ -40,16 +40,7 @@ class IbanAccessManagerTest : public testing::Test {
     autofill_client_.set_test_payments_network_interface(
         std::make_unique<MockTestPaymentsNetworkInterface>());
     personal_data().SetSyncingForTest(true);
-    personal_data().Init(/*profile_database=*/nullptr,
-                         /*account_database=*/nullptr,
-                         /*pref_service=*/autofill_client_.GetPrefs(),
-                         /*local_state=*/autofill_client_.GetPrefs(),
-                         /*identity_manager=*/nullptr,
-                         /*history_service=*/nullptr,
-                         /*sync_service=*/nullptr,
-                         /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr,
-                         /*shared_storage_handler=*/nullptr);
+    personal_data().SetPrefService(autofill_client_.GetPrefs());
     iban_access_manager_ =
         std::make_unique<IbanAccessManager>(&autofill_client_);
   }

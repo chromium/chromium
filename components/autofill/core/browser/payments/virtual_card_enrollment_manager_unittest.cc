@@ -52,16 +52,8 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
   void SetUp() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
     autofill_client_->SetPrefs(test::PrefServiceForTesting());
-    personal_data_manager().Init(
-        /*profile_database=*/nullptr,
-        /*account_database=*/nullptr,
-        /*pref_service=*/autofill_client_->GetPrefs(),
-        /*local_state=*/autofill_client_->GetPrefs(),
-        /*identity_manager=*/nullptr,
-        /*history_service=*/nullptr,
-        /*sync_service=*/&sync_service_,
-        /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
+    personal_data_manager().SetPrefService(autofill_client_->GetPrefs());
+    personal_data_manager().SetSyncServiceForTest(&sync_service_);
     autofill_client_->set_test_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(
             autofill_client_->GetURLLoaderFactory(),

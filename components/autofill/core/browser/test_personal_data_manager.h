@@ -39,7 +39,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   using PersonalDataManager::GetProfileSaveStrikeDatabase;
   using PersonalDataManager::GetProfileUpdateStrikeDatabase;
-  using PersonalDataManager::SetPrefService;
 
   TestAddressDataManager& test_address_data_manager() {
     AddressDataManager& manager = address_data_manager();
@@ -78,6 +77,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsPaymentCvcStorageEnabled() override;
 
   // Unique to TestPersonalDataManager:
+  void SetPrefService(PrefService* pref_service);
 
   // Clears `web_profiles_` and `account_profiles_`.
   void ClearProfiles();

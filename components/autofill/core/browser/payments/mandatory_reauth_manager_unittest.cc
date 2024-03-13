@@ -42,17 +42,8 @@ class MandatoryReauthManagerTest : public testing::Test {
         std::move(mock_device_authenticator));
     mandatory_reauth_manager_ =
         std::make_unique<MandatoryReauthManager>(autofill_client_.get());
-    autofill_client_->GetPersonalDataManager()->Init(
-        /*profile_database=*/nullptr,
-        /*account_database=*/nullptr,
-        /*pref_service=*/autofill_client_->GetPrefs(),
-        /*local_state=*/autofill_client_->GetPrefs(),
-        /*identity_manager=*/nullptr,
-        /*history_service=*/nullptr,
-        /*sync_service=*/nullptr,
-        /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr,
-        /*shared_storage_manager=*/nullptr);
+    autofill_client_->GetPersonalDataManager()->SetPrefService(
+        autofill_client_->GetPrefs());
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");

@@ -43,50 +43,6 @@ class CvcStorageMetricsTest : public AutofillMetricsBaseTest,
   FormData form_;
 };
 
-TEST_F(CvcStorageMetricsTest, LogCvcStorageIsEnabledAtStartup) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-
-  personal_data().SetIsPaymentCvcStorageEnabled(true);
-  personal_data().SetSyncServiceForTest(nullptr);  // Undo work in base suite.
-  personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
-                       /*account_database=*/nullptr,
-                       /*pref_service=*/autofill_client_->GetPrefs(),
-                       /*local_state=*/autofill_client_->GetPrefs(),
-                       /*identity_manager=*/nullptr,
-                       /*history_service=*/nullptr,
-                       /*sync_service=*/nullptr,
-                       /*strike_database=*/nullptr,
-                       /*image_fetcher=*/nullptr,
-                       /*shared_storage_handler=*/nullptr);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentMethods.CvcStorageIsEnabled.Startup", true, 1);
-}
-
-TEST_F(CvcStorageMetricsTest, LogCvcStorageIsDisabledAtStartup) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList features(
-      features::kAutofillEnableCvcStorageAndFilling);
-
-  personal_data().SetIsPaymentCvcStorageEnabled(false);
-  personal_data().SetSyncServiceForTest(nullptr);  // Undo work in base suite.
-  personal_data().Init(scoped_refptr<AutofillWebDataService>(nullptr),
-                       /*account_database=*/nullptr,
-                       /*pref_service=*/autofill_client_->GetPrefs(),
-                       /*local_state=*/autofill_client_->GetPrefs(),
-                       /*identity_manager=*/nullptr,
-                       /*history_service=*/nullptr,
-                       /*sync_service=*/nullptr,
-                       /*strike_database=*/nullptr,
-                       /*image_fetcher=*/nullptr,
-                       /*shared_storage_handler=*/nullptr);
-
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.PaymentMethods.CvcStorageIsEnabled.Startup", false, 1);
-}
-
 // Test CVC suggestion shown metrics are correctly logged.
 TEST_F(CvcStorageMetricsTest, LogShownMetrics) {
   base::HistogramTester histogram_tester;

@@ -45,16 +45,6 @@ class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     ASSERT_TRUE(data_install_dir_.CreateUniqueTempDir());
-    personal_data_manager_.Init(/*profile_database=*/database_,
-                                /*account_database=*/nullptr,
-                                /*pref_service=*/autofill_client_.GetPrefs(),
-                                /*local_state=*/autofill_client_.GetPrefs(),
-                                /*identity_manager=*/nullptr,
-                                /*history_service=*/nullptr,
-                                /*sync_service=*/nullptr,
-                                /*strike_database=*/nullptr,
-                                /*image_fetcher=*/nullptr,
-                                /*shared_storage_handler=*/nullptr);
     alternative_state_name_map_updater_ =
         std::make_unique<AlternativeStateNameMapUpdater>(
             autofill_client_.GetPrefs(), &personal_data_manager_);
@@ -70,7 +60,6 @@ class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
-  scoped_refptr<AutofillWebDataService> database_;
   std::unique_ptr<AlternativeStateNameMapUpdater>
       alternative_state_name_map_updater_;
   base::ScopedTempDir data_install_dir_;

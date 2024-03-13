@@ -143,6 +143,7 @@ class PersonalDataManager : public KeyedService,
   // (sync disabled by CLI) or outlives this object, it may not have started yet
   // but its preferences can already be queried. |image_fetcher| is to fetch the
   // customized images for autofill data.
+  // TODO(b/40100455): Merge with the constructor?
   void Init(
       scoped_refptr<AutofillWebDataService> profile_database,
       scoped_refptr<AutofillWebDataService> account_database,
@@ -337,7 +338,7 @@ class PersonalDataManager : public KeyedService,
   // the real database.
   void AddOfferDataForTest(std::unique_ptr<AutofillOfferData> offer_data);
 
-  // TODO(1426498): rewrite tests that rely on this method to use Init instead.
+  // TODO(b/40100455): Consider moving this to the TestPDM or a TestAPI.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
   // Returns the credit card with the specified |guid|, or nullptr if there is
@@ -738,10 +739,6 @@ class PersonalDataManager : public KeyedService,
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
   virtual bool ShouldSuggestServerPaymentMethods() const;
-
-  // Sets which PrefService to use and observe. |pref_service| is not owned by
-  // this class and must outlive |this|.
-  void SetPrefService(PrefService* pref_service);
 
   // Responsible for all address-related logic of the PDM.
   // Non-null after `Init()`.

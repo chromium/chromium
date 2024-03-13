@@ -137,22 +137,21 @@ void PersonalDataManager::Init(
     StrikeDatabaseBase* strike_database,
     AutofillImageFetcherBase* image_fetcher,
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler) {
-  // TODO(b/322170538): Some tests use the TestPDM, but still call Init(),
-  // effectively overwriting the test data manager with a real one.
-  if (!address_data_manager_) {
-    address_data_manager_ = std::make_unique<AddressDataManager>(
-        profile_database, pref_service,
-        base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
-                            base::Unretained(this)),
-        app_locale_);
-  }
-  if (!payments_data_manager_) {
-    payments_data_manager_ = std::make_unique<PaymentsDataManager>(
-        profile_database, account_database, image_fetcher,
-        std::move(shared_storage_handler), pref_service, app_locale_, this);
-  }
+  // The TestPDM already initializes the (address|payments)_data_manager in it's
+  // constructor with dedicated test instances. In general, `Init()` should not
+  // be called on a TestPDM, since the TestPDM's purpose is to fake the PDM's
+  // dependencies, rather than inject them through `Init()`.
+  DCHECK(!address_data_manager_) << "Don't call Init() on a TestPDM";
+  address_data_manager_ = std::make_unique<AddressDataManager>(
+      profile_database, pref_service,
+      base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
+                          base::Unretained(this)),
+      app_locale_);
+  payments_data_manager_ = std::make_unique<PaymentsDataManager>(
+      profile_database, account_database, image_fetcher,
+      std::move(shared_storage_handler), pref_service, app_locale_, this);
 
-  SetPrefService(pref_service);
+  pref_service_ = pref_service;
 
   alternative_state_name_map_updater_ =
       std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
@@ -736,12 +735,6 @@ bool PersonalDataManager::ShouldSuggestServerPaymentMethods() const {
 
   // Server payment methods should be suggested if the sync service is active.
   return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
-}
-
-void PersonalDataManager::SetPrefService(PrefService* pref_service) {
-  pref_service_ = pref_service;
-  address_data_manager_->SetPrefService(pref_service);
-  payments_data_manager_->SetPrefService(pref_service);
 }
 
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()

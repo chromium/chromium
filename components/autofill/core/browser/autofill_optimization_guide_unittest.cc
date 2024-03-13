@@ -81,16 +81,8 @@ class AutofillOptimizationGuideTest : public testing::Test {
     test_api(card).set_network_for_virtual_card(kVisaCard);
     card.set_virtual_card_enrollment_type(
         CreditCard::VirtualCardEnrollmentType::kNetwork);
-    personal_data_manager_->Init(
-        /*profile_database=*/nullptr,
-        /*account_database=*/nullptr,
-        /*pref_service=*/pref_service_.get(),
-        /*local_state=*/pref_service_.get(),
-        /*identity_manager=*/nullptr,
-        /*history_service=*/nullptr,
-        /*sync_service=*/&sync_service_,
-        /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
+    personal_data_manager_->SetPrefService(pref_service_.get());
+    personal_data_manager_->SetSyncServiceForTest(&sync_service_);
     personal_data_manager_->AddServerCreditCard(card);
   }
 

@@ -208,15 +208,8 @@ class CreditCardSaveManagerTest : public testing::Test {
     autofill_client_.set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     personal_data().set_auto_accept_address_imports_for_testing(true);
-    personal_data().Init(/*profile_database=*/database_,
-                         /*account_database=*/nullptr,
-                         /*pref_service=*/autofill_client_.GetPrefs(),
-                         /*local_state=*/autofill_client_.GetPrefs(),
-                         /*identity_manager=*/nullptr,
-                         /*history_service=*/nullptr, &sync_service_,
-                         /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr,
-                         /*shared_storage_handler=*/nullptr);
+    personal_data().SetPrefService(autofill_client_.GetPrefs());
+    personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>();
     autofill_client_.set_test_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(
@@ -440,7 +433,6 @@ class CreditCardSaveManagerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
-  scoped_refptr<AutofillWebDataService> database_;
   syncer::TestSyncService sync_service_;
   MockAutofillClient autofill_client_{
       std::make_unique<MockPersonalDataManager>(),

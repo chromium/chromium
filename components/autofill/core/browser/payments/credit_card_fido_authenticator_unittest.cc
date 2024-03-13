@@ -97,16 +97,6 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
   CreditCardFidoAuthenticatorTest() {}
 
   void SetUp() override {
-    personal_data_manager().Init(/*profile_database=*/database_,
-                                 /*account_database=*/nullptr,
-                                 /*pref_service=*/autofill_client_.GetPrefs(),
-                                 /*local_state=*/autofill_client_.GetPrefs(),
-                                 /*identity_manager=*/nullptr,
-                                 /*history_service=*/nullptr,
-                                 /*sync_service=*/nullptr,
-                                 /*strike_database=*/nullptr,
-                                 /*image_fetcher=*/nullptr,
-                                 /*shared_storage_handler=*/nullptr);
     personal_data_manager().SetPrefService(autofill_client_.GetPrefs());
 
     autofill_driver_.SetAuthenticator(new TestInternalAuthenticator());
@@ -227,7 +217,6 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   TestAutofillClient autofill_client_;
   TestAutofillDriver autofill_driver_;
-  scoped_refptr<AutofillWebDataService> database_;
   TestAuthenticationRequester requester_;
   std::unique_ptr<CreditCardFidoAuthenticator> fido_authenticator_;
 };

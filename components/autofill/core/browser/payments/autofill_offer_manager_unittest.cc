@@ -59,16 +59,8 @@ class AutofillOfferManagerTest : public testing::Test {
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data_manager_.Init(/*profile_database=*/database_,
-                                /*account_database=*/nullptr,
-                                /*pref_service=*/autofill_client_.GetPrefs(),
-                                /*local_state=*/autofill_client_.GetPrefs(),
-                                /*identity_manager=*/nullptr,
-                                /*history_service=*/nullptr,
-                                /*sync_service=*/&sync_service_,
-                                /*strike_database=*/nullptr,
-                                /*image_fetcher=*/nullptr,
-                                /*shared_storage_handler=*/nullptr);
+    personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
+    personal_data_manager_.SetSyncServiceForTest(&sync_service_);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
     auto mock_shopping_service_delegate =
         std::make_unique<MockShoppingServiceDelegate>();
@@ -154,7 +146,6 @@ class AutofillOfferManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestAutofillClient autofill_client_;
   syncer::TestSyncService sync_service_;
-  scoped_refptr<AutofillWebDataService> database_;
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;

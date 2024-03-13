@@ -194,16 +194,8 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
  public:
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data().Init(/*profile_database=*/database_,
-                         /*account_database=*/nullptr,
-                         /*pref_service=*/autofill_client_.GetPrefs(),
-                         /*local_state=*/autofill_client_.GetPrefs(),
-                         /*identity_manager=*/nullptr,
-                         /*history_service=*/nullptr,
-                         /*sync_service=*/&sync_service_,
-                         /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr,
-                         /*shared_storage_handler=*/nullptr);
+    personal_data().SetPrefService(autofill_client_.GetPrefs());
+    personal_data().SetSyncServiceForTest(&sync_service_);
     suggestion_generator_ =
         std::make_unique<AutofillSuggestionGenerator>(autofill_client_);
     autofill_client_.set_autofill_offer_manager(
@@ -291,7 +283,6 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
   TestAutofillClient autofill_client_;
   syncer::TestSyncService sync_service_;
   std::unique_ptr<AutofillSuggestionGenerator> suggestion_generator_;
-  scoped_refptr<AutofillWebDataService> database_;
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
   // Tracks whether SetUpIbanImageResources() has been called, so that the

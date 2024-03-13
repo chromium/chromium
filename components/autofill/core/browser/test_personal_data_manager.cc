@@ -155,6 +155,12 @@ bool TestPersonalDataManager::IsPaymentCvcStorageEnabled() {
   return PersonalDataManager::IsPaymentCvcStorageEnabled();
 }
 
+void TestPersonalDataManager::SetPrefService(PrefService* pref_service) {
+  pref_service_ = pref_service;
+  test_address_data_manager().SetPrefService(pref_service);
+  test_payments_data_manager().SetPrefService(pref_service);
+}
+
 void TestPersonalDataManager::ClearProfiles() {
   test_address_data_manager().ClearProfiles();
 }
