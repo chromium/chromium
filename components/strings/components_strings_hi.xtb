@@ -204,6 +204,7 @@
 <translation id="1355301061807280185">नौकरियां</translation>
 <translation id="1357195169723583938">हाल ही में डिवाइस किसने और कब इस्तेमाल किया है</translation>
 <translation id="1358187717814494928">शीट बनाएं</translation>
+<translation id="1358223345833465883">Chromium में आपका सर्च इंजन</translation>
 <translation id="1359836962251219822">किचन और डाइनिंग</translation>
 <translation id="1360955481084547712">निजी रूप से ब्राउज़ करने के लिए एक नई गुप्त विंडो खोलें</translation>
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> में पेजों का अनुवाद करने की सुविधा न दें</translation>
@@ -277,6 +278,7 @@
     <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">नीतियां भेजें:</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
+<translation id="1500286806237135498">कैमरे (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">अपने Google खाते में मौजूद कार्ड दिखाएं</translation>
 <translation id="1504042622576912555">फ़्लूट</translation>
 <translation id="1507202001669085618">&lt;p&gt;अगर आप ऐसे वाई-फ़ाई पोर्टल का इस्तेमाल कर रहे हैं, जिसमें ऑनलाइन होने से पहले साइन इन ज़रूरी है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
@@ -311,6 +313,7 @@
       &lt;p&gt;कृपया तारीख और समय को &lt;strong&gt;सेटिंग&lt;/strong&gt; ऐप्लिकेशन के &lt;strong&gt;सामान्‍य&lt;/strong&gt; सेक्शन से एडजस्‍ट करें.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">एडमिन, <ph name="DATE" /> को <ph name="TIME" /> बजे आपके डिवाइस को रीस्टार्ट करेगा</translation>
 <translation id="1562805467275776390">ऑटो रेसिंग</translation>
+<translation id="1563137369682381456">सदस्यता खत्म होने की तारीख</translation>
 <translation id="1563755205047885671">ऐक्शन और प्लैटफ़ॉर्म गेम</translation>
 <translation id="1564634006476980707">इस खोज यूआरएल के लिए एचटीटीपीएस स्कीम इस्तेमाल करने का सुझाव दिया जाता है: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">नेटवर्क से जुड़ी जानकारी जैसे कि पते, इंटरफ़ेस का कॉन्फ़िगरेशन, और कनेक्शन की क्वालिटी</translation>
@@ -856,6 +859,7 @@
 <translation id="2606760465469169465">अपने-आप पुष्टि होने की अनुमति</translation>
 <translation id="2608019759319359258">किसी विषय को ब्लॉक करने पर, उसका इस्तेमाल आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए नहीं किया जाएगा</translation>
 <translation id="2610561535971892504">क्लिक टू कॉपी</translation>
+<translation id="2612676031748830579">कार्ड नंबर</translation>
 <translation id="2612993535136743634">आपके डिवाइस और Google खाते में सेव किए गए सभी सुरक्षा कोड मिटा दिए जाएंगे</translation>
 <translation id="2616412942031748191">सर्च इंजन ऑप्टिमाइज़ेशन और मार्केटिंग</translation>
 <translation id="2618206371527040026">अकैडमिक कॉन्फ़्रेंस और पब्लिकेशन</translation>
@@ -917,6 +921,7 @@
 <translation id="2728127805433021124">सर्वर का प्रमाणपत्र कमज़ोर एल्गोरिद्म का उपयोग करके हस्ताक्षरित किया गया है.</translation>
 <translation id="272937284275742856">आपके पेमेंट के तरीके की जानकारी की पुष्टि सुरक्षित तरीके से की जा रही है...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />नेटवर्क कनेक्टिविटी चलाकर देखें<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">Chromium में अपने सर्च इंजन के बारे में ज़्यादा जानें</translation>
 <translation id="2731382536835015353">44 x 68 इंच</translation>
 <translation id="2734319753272419592">Google को अपने कार्ट का ऐक्सेस दें, ताकि वह आपके हिसाब से छूट का पता लगा सके. उपलब्ध होने पर, आपके कार्ट पर छूट अपने-आप दिखेंगी.</translation>
 <translation id="273785062888389088">एचवीएसी और क्लाइमेट कंट्रोल</translation>
@@ -2222,6 +2227,7 @@
 <translation id="5316812925700871227">घड़ी की विपरीत दिशा में घुमाएं</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5319366980180850702">साहित्य की महान कृतियां</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />आपका डिफ़ॉल्ट सर्च इंजन आपको वेब पर खोज करने और Chromium की सुविधाएं इस्तेमाल करने की अनुमति देता है<ph name="END_BOLD" />. जैसे, पता बार से और वेब पेजों पर मौजूद इमेज की मदद से खोज करने की सुविधा. अगर आपके सर्च इंजन पर कोई सुविधा उपलब्ध नहीं है, तो हो सकता है कि वह सुविधा उस पर काम न करती हो.</translation>
 <translation id="5323043727018853753">एम्बेड किया गया कॉन्टेंट ऐक्सेस करने की अनुमति है</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="NUM_MATCHES" /> में से <ph name="MATCH_POSITION" /></translation>
 <translation id="5329858041417644019">आपका ब्राउज़र प्रबंधित नहीं है</translation>
@@ -2616,6 +2622,7 @@
 <translation id="6106989379647458772">हो सकता है कि <ph name="PAGE" /> पर मौजूद वेबपेज अस्थायी रूप से काम नहीं कर रहा हो या उसे स्थायी रूप से किसी नए वेब पते पर ले जाया गया हो.</translation>
 <translation id="6107012941649240045">इसको जारी</translation>
 <translation id="6107924765192360631">लिखने के सुझाव पाने के लिए, कुछ शब्दों से या पहले ड्राफ़्ट के साथ शुरुआत करें.</translation>
+<translation id="6108702513636120202">Chromium में आपका सर्च इंजन</translation>
 <translation id="6108849843016142864">रेपटाइल और एम्फ़ीबियंस</translation>
 <translation id="610911394827799129">आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर दूसरी तरह के ब्राउज़िंग इतिहास हो सकते हैं</translation>
 <translation id="6116338172782435947">क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखें</translation>
@@ -3517,7 +3524,6 @@
 <translation id="7781829728241885113">बीता कल</translation>
 <translation id="7785790577395078482">यह टैबलेट</translation>
 <translation id="7786368602962652765">एक ज़रूरी फ़ील्ड खाली है. सेव करने से पहले इस फ़ील्ड को भरें.</translation>
-<translation id="7786432318297177736">ये सर्च इंजन बिना किसी खास क्रम में दिखाए जाते हैं. सेटिंग में जाकर, डिफ़ॉल्ट सर्च इंजन को किसी भी समय बदला जा सकता है.</translation>
 <translation id="7791011319128895129">अप्रकाशित</translation>
 <translation id="7791196057686275387">बेल</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
@@ -3790,6 +3796,7 @@
 <translation id="8316555157357957253">अभी इस सुविधा का इस्तेमाल किया जा रहा है</translation>
 <translation id="8319269383395457801">रेज़िडेंशियल सेल</translation>
 <translation id="831997045666694187">शाम</translation>
+<translation id="8321448084834652864">Chromium की सेटिंग में जाकर, सर्च इंजन को किसी भी समय बदला जा सकता है.</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
 <translation id="8322402665880479974">बेड और हेडबोर्ड</translation>
 <translation id="832567874344484841">नाश्ते के विकल्प</translation>
@@ -4146,6 +4153,7 @@
 <translation id="9042827002460091668">अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें</translation>
 <translation id="9044359186343685026">टच आईडी का इस्तेमाल करें</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">माइक्रोफ़ोन (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">इन कार्रवाइयों के लिए, <ph name="POLICY_NAME" /> नीति को <ph name="POLICY_VALUE" /> पर सेट करना ज़रूरी है: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 इंच</translation>
 <translation id="9049981332609050619">आपने <ph name="DOMAIN" /> पर पहुंचने की कोशिश की लेकिन सर्वर ने एक अमान्‍य प्रमाणपत्र पेश किया.</translation>
@@ -4259,6 +4267,7 @@
 <translation id="961663415146723894">नीचे की ओर बाइंड</translation>
 <translation id="961930410699694996">इस बार जगह की जानकारी ऐक्सेस करने की अनुमति दी गई</translation>
 <translation id="962484866189421427">यह सामग्री ऐसे धोखा देने वाले ऐप्लिकेशन इंस्टॉल कर सकती है जो कुछ और होने का दावा करते हैं या ऐसा डेटा इकट्ठा करते हैं जिसका इस्तेमाल आप पर नज़र रखने के लिए किया जा सके. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">आपके देश/इलाके के कानून के आधार पर, Chromium आपसे अपना डिफ़ॉल्ट सर्च इंजन चुनने के लिए कहता है. ये सर्च इंजन आपके देश/इलाके में लोकप्रिय हैं और इन्हें किसी भी क्रम में दिखाया जा सकता है.</translation>
 <translation id="963837307749850257">सभी उपयोगकर्ता</translation>
 <translation id="964050462028070434">पासवर्ड और पासकी मैनेज करें…</translation>
 <translation id="969892804517981540">आधिकारिक बिल्ड</translation>

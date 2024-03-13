@@ -2206,6 +2206,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> 파일은 안전하게 다운로드할 수 없습니다.</translation>
 <translation id="2620245777360407679">현재 핫스팟에 연결된 기기</translation>
 <translation id="2620436844016719705">시스템</translation>
+<translation id="2620900772667816510">블루투스 초해상도</translation>
 <translation id="262154978979441594">Google 어시스턴트 음성 모델 학습시키기</translation>
 <translation id="26224892172169984">모든 사이트에서 프로토콜 처리 허용 안함</translation>
 <translation id="262373406453641243">콜맥</translation>
@@ -2832,7 +2833,6 @@
 <translation id="3094521107841754472">가격이 <ph name="PREVIOUS_PRICE" />에서 <ph name="CURRENT_PRICE" />(으)로 변경되었습니다.</translation>
 <translation id="3095871294753148861">북마크, 비밀번호 등의 브라우저 데이터가 기본 계정과 동기화되어 있습니다.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1개의 잠재적으로 위험한 확장 프로그램이 사용 중지되었습니다. 삭제할 수도 있습니다.}other{{NUM_EXTENSIONS}개의 잠재적으로 위험한 확장 프로그램이 사용 중지되었습니다. 삭제할 수도 있습니다.}}</translation>
-<translation id="3101057112460908988">메모리 사용량 표시</translation>
 <translation id="3101126716313987672">조명 밝기 줄이기</translation>
 <translation id="3101709781009526431">날짜 및 시간</translation>
 <translation id="310297983047869047">이전 슬라이드</translation>
@@ -3101,7 +3101,6 @@
 <translation id="3321776060736518525">출처: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">보너스 기기 사용 시간이 추가되었습니다</translation>
 <translation id="3325804108816646710">사용 가능한 프로필 찾는 중...</translation>
-<translation id="3325910708063135066">Mac 시스템 환경설정에서 카메라와 마이크가 사용 중지되었습니다</translation>
 <translation id="3325930488268995856">Microsoft OneDrive 연결됨</translation>
 <translation id="3325995804968971809">스타일</translation>
 <translation id="3327050066667856415">Chromebook은 안전하게 설계되었습니다. 기기는 멀웨어로부터 자동으로 보호되고 있으며 소프트웨어가 추가로 필요하지 않습니다.</translation>
@@ -5525,7 +5524,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5213891612754844763">프록시 설정 표시</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' 북마크가 생성되었습니다.</translation>
 <translation id="5215502535566372932">국가 선택</translation>
-<translation id="5215665166431745539">이미지 표시</translation>
 <translation id="5220011581825921581">검색 + 위쪽 화살표</translation>
 <translation id="5222403284441421673">안전하지 않은 다운로드가 차단됨</translation>
 <translation id="5222676887888702881">로그아웃</translation>
@@ -5699,7 +5697,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5365881113273618889">선택한 폴더에 민감한 파일이 포함되어 있습니다. 이 폴더에 '<ph name="APP_NAME" />' 영구 쓰기 액세스 권한을 부여하시겠습니까?</translation>
 <translation id="536638840841140142">없음</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" />의 '<ph name="NETWORK_NAME" />' 저장됨</translation>
-<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> 비밀번호 생성</translation>
 <translation id="5368441245151140827">이 확장 프로그램은 사이트 정보를 읽고 변경하거나 백그라운드에서 실행될 수 없습니다.</translation>
 <translation id="5368720394188453070">휴대전화가 잠겨있습니다. 이용하려면 기기를 잠금 해제하세요.</translation>
 <translation id="536882527576164740">{0,plural, =1{시크릿 모드}other{시크릿 모드(창 #개)}}</translation>
@@ -5718,7 +5715,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5380424552031517043"><ph name="PERMISSION" /> 권한 삭제됨</translation>
 <translation id="5380526436444479273">잠시 기다렸다가 다시 시도해 보세요.</translation>
 <translation id="5382591305415226340">지원되는 링크 관리</translation>
-<translation id="5383377866517186886">Mac 시스템 환경설정에서 카메라가 사용 중지되었습니다</translation>
 <translation id="5383740867328871413">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5385628342687007304">비밀번호는 이 기기에만 저장됩니다. 다른 기기에서도 이 비밀번호를 사용하려면 Google 계정에 저장하세요.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> 수정</translation>
@@ -7197,7 +7193,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />(으)로 전송 중</translation>
 <translation id="6544134392255015460">키보드 백라이트 전환 버튼</translation>
 <translation id="6545665334409411530">반복 속도</translation>
-<translation id="6545867563032584178">Mac 시스템 환경설정에서 마이크가 사용 중지되었습니다</translation>
 <translation id="6546856949879953071">자세한 업그레이드 정보는 파일 &gt; 내 파일 &gt; <ph name="LOG_FILE" />에 저장된 로그에서 확인하세요.</translation>
 <translation id="6547354035488017500">최소 512MB의 저장 공간을 확보하지 않으면 기기가 응답하지 않을 것입니다. 저장 공간을 확보하려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 위치 서비스는 기기 위치를 파악하는 데 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.<ph name="END_PARAGRAPH1" />
@@ -10060,7 +10055,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8729133765463465108">카메라를 사용하여 QR 코드 스캔</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8731029916209785242">권한(<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="873125854638499125">위치 정확도 개선</translation>
 <translation id="8731268612289859741">보안 코드</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" />의 권한 요청: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">포트 번호</translation>
@@ -10492,7 +10486,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9045160989383249058">읽기 목록을 새 측면 패널로 이동했습니다. 여기에서 사용해 보세요.</translation>
 <translation id="9045430190527754450">사용자가 접속하려는 페이지의 웹 주소를 Google에 전송</translation>
 <translation id="9048745018038487540">모든 글꼴 선택</translation>
-<translation id="9050135202879860719">비밀번호를 사용하여 <ph name="DEVICE_TYPE" />에 로그인합니다.</translation>
 <translation id="9050666287014529139">암호</translation>
 <translation id="9052404922357793350">차단 계속</translation>
 <translation id="90528604757378587">백그라운드 활동 및 부드러운 스크롤과 같은 일부 시각 효과가 제한될 수 있습니다.</translation>

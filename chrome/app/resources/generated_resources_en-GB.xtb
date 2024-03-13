@@ -2204,6 +2204,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> can't be downloaded securely.</translation>
 <translation id="2620245777360407679">Devices currently connected to hotspot</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="262154978979441594">Train Google Assistant voice model</translation>
 <translation id="26224892172169984">Do not allow any site to handle protocols</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2830,7 +2831,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3094521107841754472">Price has changed from <ph name="PREVIOUS_PRICE" /> to <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Bookmarks, passwords and other browser data are synced with the primary account.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentially harmful extension is off. You can also remove it.}other{{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}}</translation>
-<translation id="3101057112460908988">Show memory usage</translation>
 <translation id="3101126716313987672">Dim light</translation>
 <translation id="3101709781009526431">Date and time</translation>
 <translation id="310297983047869047">Previous slide</translation>
@@ -3099,7 +3099,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3321776060736518525">From <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! You got more screen time</translation>
 <translation id="3325804108816646710">Looking for available profiles…</translation>
-<translation id="3325910708063135066">Camera and microphone are turned off in Mac System Preferences</translation>
 <translation id="3325930488268995856">Microsoft OneDrive connected</translation>
 <translation id="3325995804968971809">Style</translation>
 <translation id="3327050066667856415">Chromebooks are designed for security. Your device is protected from malware automatically – no extra software required.</translation>
@@ -5525,7 +5524,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5213891612754844763">Show proxy settings</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' bookmark created.</translation>
 <translation id="5215502535566372932">Select country</translation>
-<translation id="5215665166431745539">Show images</translation>
 <translation id="5220011581825921581">search + up arrow</translation>
 <translation id="5222403284441421673">Insecure download blocked</translation>
 <translation id="5222676887888702881">Sign out</translation>
@@ -5699,7 +5697,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5365881113273618889">The folder that you selected contains sensitive files. Are you sure that you want to grant '<ph name="APP_NAME" />' permanent write access to this folder?</translation>
 <translation id="536638840841140142">None</translation>
 <translation id="5368246151595623328">'<ph name="NETWORK_NAME" />' saved from <ph name="DEVICE_NAME" /></translation>
-<translation id="5368255566854433132">Create <ph name="DEVICE_TYPE" /> password</translation>
 <translation id="5368441245151140827">This extension cannot read and change site information or run in the background</translation>
 <translation id="5368720394188453070">Your phone is locked. Unlock it to enter.</translation>
 <translation id="536882527576164740">{0,plural, =1{Incognito}other{Incognito (#)}}</translation>
@@ -5718,7 +5715,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5380424552031517043">Removed <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">Wait a few minutes and try again</translation>
 <translation id="5382591305415226340">Manage supported links</translation>
-<translation id="5383377866517186886">Camera is turned off in Mac System Preferences</translation>
 <translation id="5383740867328871413">Unnamed group – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5385628342687007304">This password is saved only to this device. To use it on your other devices, save it in your Google Account.</translation>
 <translation id="5387116558048951800">Edit <ph name="CREDENTIAL_TYPE" /></translation>
@@ -7197,7 +7193,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">Keyboard backlight toggle</translation>
 <translation id="6545665334409411530">Repeat rate</translation>
-<translation id="6545867563032584178">Microphone is turned off in Mac System Preferences</translation>
 <translation id="6546856949879953071">For detailed upgrade information, the logs have been saved in Files &gt; My files &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Free up at least 512 MB of space or your device will become unresponsive. To free up space, delete files from device storage.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate your device's location.<ph name="END_PARAGRAPH1" />
@@ -10060,7 +10055,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8729133765463465108">Use camera to scan QR code</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731029916209785242">Permissions (<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="873125854638499125">Improve location accuracy</translation>
 <translation id="8731268612289859741">Security code</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> wants to: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Port number</translation>
@@ -10492,7 +10486,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9045160989383249058">Your reading list has moved to the new side panel. Try it here.</translation>
 <translation id="9045430190527754450">Sends the web address of the page that you're trying to reach to Google</translation>
 <translation id="9048745018038487540">Select all fonts</translation>
-<translation id="9050135202879860719">Use a password to sign in to your <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Passphrase</translation>
 <translation id="9052404922357793350">Continue blocking</translation>
 <translation id="90528604757378587">Background activity and some visual effects, like smooth scrolling, may be limited.</translation>

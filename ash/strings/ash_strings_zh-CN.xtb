@@ -35,6 +35,7 @@
 <translation id="1111021433905331574">您可在“设置”&gt;“<ph name="APP_TITLE" />”部分中更改键盘背光的颜色</translation>
 <translation id="1117719261843403176">开启/关闭移动流量。<ph name="STATE" />。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
+<translation id="1129383337808748948">刷新“<ph name="CONTENT_TITLE" />”</translation>
 <translation id="1142002900084379065">近期照片</translation>
 <translation id="114221662579355151">这将允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
@@ -1056,7 +1057,6 @@
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="5208059991603368177">开启</translation>
 <translation id="5216991270656129561">保持关闭状态，直到<ph name="TIME" /></translation>
-<translation id="5218064144558110424">标为未完成</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5229343007215035173">开启/关闭隐私保护屏幕</translation>
 <translation id="5230516054153933099">窗口</translation>
@@ -1824,6 +1824,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，应用</translation>
 <translation id="8255234195843591763">重置以接收更新</translation>
+<translation id="8257510091797044096">设置设备</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
 <translation id="8270450402312105425">{0,plural, =1{请在 1 小时内将设备回滚到上一个版本}other{请在 # 小时内将设备回滚到上一个版本}}</translation>

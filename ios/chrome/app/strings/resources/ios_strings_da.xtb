@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Email sendt.</translation>
 <translation id="1582732959743469162">Denne handling stopper den aktuelle download.</translation>
 <translation id="158591023028013564">{count,plural, =1{Siden blev føjet til din læseliste}one{{count} side blev føjet til din læseliste}other{{count} sider blev føjet til din læseliste}}</translation>
+<translation id="1587629076612412684">Tilpas Google-tjenester</translation>
 <translation id="1594034544529347967">Starter</translation>
 <translation id="160275202205869636">Når denne indstilling er aktiveret, kan du bruge og gemme data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed.</translation>
 <translation id="1605405588277479165">Fra (anbefales ikke)</translation>
@@ -1607,6 +1608,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9106655997975673326">Fra "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Tjekker, om der er kompromitterede adgangskoder</translation>
 <translation id="9109699888944026290">{count,plural, =1{Ny adgangskode til dette website}one{Ny adgangskode til dette website}other{Nye adgangskoder til dette website}}</translation>
+<translation id="9110489518258031250">Administrer, hvordan din synkroniserede browserhistorik kan bruges til at tilpasse andre Google-tjenester personligt</translation>
 <translation id="9120217828624527905">Skift til oversættelse af hele siden</translation>
 <translation id="9124387962554796433">Google kan bruge din historik til at personligt tilpasse Søgning og andre Google-tjenester.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>

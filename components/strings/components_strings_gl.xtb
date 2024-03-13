@@ -311,6 +311,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
       &lt;p&gt;Axusta a data e a hora na sección &lt;strong&gt;Xeral&lt;/strong&gt; da aplicación &lt;strong&gt;Configuración&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">O teu administrador reiniciará o dispositivo o <ph name="DATE" /> a esta hora: <ph name="TIME" /></translation>
 <translation id="1562805467275776390">Automobilismo</translation>
+<translation id="1563137369682381456">Data de caducidade</translation>
 <translation id="1563755205047885671">Xogos de acción e plataformas</translation>
 <translation id="1564634006476980707">Esquema HTTPS recomendado para o URL de busca: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Información das redes como enderezos, configuración de interfaces e calidade das conexións</translation>
@@ -855,6 +856,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2608019759319359258">Se se bloquea un tema, non se usará para personalizar anuncios</translation>
 <translation id="2610561535971892504">Fai clic para copiar a información</translation>
+<translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="2612993535136743634">Eliminaranse os códigos de seguranza que teñas gardados no dispositivo e na Conta de Google</translation>
 <translation id="2616412942031748191">Márketing e optimización de motores de busca</translation>
 <translation id="2618206371527040026">Publicacións e conferencias académicas</translation>
@@ -2660,6 +2662,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6195371403461054755">Xeoloxía</translation>
 <translation id="6195418151868446719">Electrónica de consumo</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
+<translation id="6197467523841310553">Fai clic co botón dereito para completar os formularios en liña coa información gardada e non ter que escribir tanto</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Separador con pestanas enteiras</translation>
 <translation id="6203231073485539293">Comproba a túa conexión a Internet</translation>
@@ -3516,7 +3519,6 @@ Detalles adicionais:
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7785790577395078482">esta tableta</translation>
 <translation id="7786368602962652765">Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.</translation>
-<translation id="7786432318297177736">Estes buscadores móstranse en orde aleatoria. Podes cambiar o buscador predeterminado en calquera momento na configuración.</translation>
 <translation id="7791011319128895129">Sen publicar</translation>
 <translation id="7791196057686275387">Bala</translation>
 <translation id="7791543448312431591">Engadir</translation>

@@ -311,6 +311,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
       &lt;p&gt;Ajusta la fecha y la hora desde la sección &lt;strong&gt;General&lt;/strong&gt; de la app de &lt;strong&gt;Configuración&lt;/strong&gt; .&lt;/p&gt;</translation>
 <translation id="1559839503761818503">El administrador reiniciará el dispositivo el <ph name="DATE" /> a las <ph name="TIME" /></translation>
 <translation id="1562805467275776390">Carreras de autos</translation>
+<translation id="1563137369682381456">Fecha de vencimiento</translation>
 <translation id="1563755205047885671">Juegos de acción y plataformas</translation>
 <translation id="1564634006476980707">Esquema HTTPS recomendado para la URL de búsqueda: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">La información de la red, como las direcciones, la configuración de las interfaces y la calidad de la conexión</translation>
@@ -855,6 +856,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2608019759319359258">Si se bloquea un tema, no se utilizará para personalizar los anuncios</translation>
 <translation id="2610561535971892504">Haz clic para copiar.</translation>
+<translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="2612993535136743634">Se borrarán todos los códigos de seguridad guardados en tu dispositivo y en tu Cuenta de Google</translation>
 <translation id="2616412942031748191">Marketing y optimización para motores de búsqueda</translation>
 <translation id="2618206371527040026">Conferencias y publicaciones académicas</translation>
@@ -2661,6 +2663,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6195371403461054755">Geología</translation>
 <translation id="6195418151868446719">Electrónica de consumo</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
+<translation id="6197467523841310553">Haz clic con el botón derecho para completar la información guardada en cualquier formulario en línea sin necesidad de escribir</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
 <translation id="6198480336395236519">Tiras de corte completo</translation>
 <translation id="6203231073485539293">Comprueba tu conexión a Internet.</translation>
@@ -3517,7 +3520,6 @@ Detalles adicionales:
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7785790577395078482">esta tablet</translation>
 <translation id="7786368602962652765">Un campo obligatorio está vacío. Llénalo antes de guardar.</translation>
-<translation id="7786432318297177736">Estos motores de búsqueda se muestran en orden aleatorio. Puedes cambiar tu opción predeterminada cuando quieras en la configuración.</translation>
 <translation id="7791011319128895129">No publicada</translation>
 <translation id="7791196057686275387">Embalaje</translation>
 <translation id="7791543448312431591">Agregar</translation>

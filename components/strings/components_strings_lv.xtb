@@ -311,6 +311,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
       &lt;p&gt;Lūdzu, koriģējiet datumu un laiku lietotnes &lt;strong&gt;Iestatījumi&lt;/strong&gt; sadaļā &lt;strong&gt;Vispārīgi&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Jūsu administrators restartēs jūsu ierīci plkst. <ph name="TIME" /> šādā datumā: <ph name="DATE" />.</translation>
 <translation id="1562805467275776390">Autosacīkstes</translation>
+<translation id="1563137369682381456">Termiņa beigu datums</translation>
 <translation id="1563755205047885671">Asa sižeta un platformu spēles</translation>
 <translation id="1564634006476980707">Meklēšanas vietrādim URL ieteicamā HTTPS shēma: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Tīklošanas informācija, piemēram, adreses, saskarnes konfigurācija, savienojuma kvalitāte</translation>
@@ -855,6 +856,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2606760465469169465">Automātiska verifikācija</translation>
 <translation id="2608019759319359258">Ja tēma ir bloķēta, tā netiek izmantota reklāmu personalizēšanai.</translation>
 <translation id="2610561535971892504">Noklikšķināt, lai kopētu</translation>
+<translation id="2612676031748830579">Kartes numurs</translation>
 <translation id="2612993535136743634">Tiks dzēsti visi drošības kodi, kas ir saglabāti jūsu ierīcē un Google kontā</translation>
 <translation id="2616412942031748191">Meklētājprogrammu optimizācija un mārketings</translation>
 <translation id="2618206371527040026">Akadēmiskas konferences un publikācijas</translation>
@@ -2659,6 +2661,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6195371403461054755">Ģeoloģija</translation>
 <translation id="6195418151868446719">Patēriņa elektronika</translation>
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
+<translation id="6197467523841310553">Noklikšķinot ar peles labo pogu, aizpildīt saglabāto informāciju jebkurā tiešsaistes veidlapā, lai nebūtu tik daudz jāraksta</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Pilna garuma izciļņi</translation>
 <translation id="6203231073485539293">Interneta savienojuma pārbaude</translation>
@@ -3515,7 +3518,6 @@ Papildu informācija:
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7785790577395078482">šo planšetdatoru</translation>
 <translation id="7786368602962652765">Obligātais lauks ir tukšs. Pirms saglabāšanas aizpildiet to.</translation>
-<translation id="7786432318297177736">Šīs meklētājprogrammas tiek rādītas nejauši izvēlētā secībā. Jebkurā brīdī iestatījumos varat mainīt noklusējuma meklētājprogrammu.</translation>
 <translation id="7791011319128895129">Nav izlaista</translation>
 <translation id="7791196057686275387">Iepakojums</translation>
 <translation id="7791543448312431591">Pievienot</translation>

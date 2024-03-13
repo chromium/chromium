@@ -2191,6 +2191,7 @@
 <translation id="2620215283731032047">Невозможно скачать безопасно файл "<ph name="FILE_NAME" />".</translation>
 <translation id="2620245777360407679">Устройства, подключенные к точке доступа</translation>
 <translation id="2620436844016719705">Система</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="262154978979441594">Записать образец голоса для Ассистента</translation>
 <translation id="26224892172169984">Запретить обработку протоколов на всех сайтах</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2817,7 +2818,6 @@
 <translation id="3094521107841754472">Цена изменилась: было <ph name="PREVIOUS_PRICE" />, стало <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Закладки, пароли и другие данные о работе в браузере синхронизируются с основным аккаунтом.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Отключено 1 потенциально опасное расширение. Вы можете удалить его.}one{Отключено {NUM_EXTENSIONS} потенциально опасное расширение. Вы можете удалить их.}few{Отключено {NUM_EXTENSIONS} потенциально опасных расширения. Вы можете удалить их.}many{Отключено {NUM_EXTENSIONS} потенциально опасных расширений. Вы можете удалить их.}other{Отключено {NUM_EXTENSIONS} потенциально опасного расширения. Вы можете удалить их.}}</translation>
-<translation id="3101057112460908988">Показывать использование памяти</translation>
 <translation id="3101126716313987672">Тусклое освещение</translation>
 <translation id="3101709781009526431">Дата и время</translation>
 <translation id="310297983047869047">Предыдущий слайд</translation>
@@ -3086,7 +3086,6 @@
 <translation id="3321776060736518525">Источник: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Время использования устройства продлено</translation>
 <translation id="3325804108816646710">Поиск доступных профилей…</translation>
-<translation id="3325910708063135066">Камера и микрофон отключены в системных настройках macOS</translation>
 <translation id="3325930488268995856">Хранилище Microsoft OneDrive подключено</translation>
 <translation id="3325995804968971809">Стиль</translation>
 <translation id="3327050066667856415">Создавая Chromebook, мы уделили большое внимание безопасности. Вам не нужно устанавливать дополнительные программы для защиты от вредоносного ПО.</translation>
@@ -5511,7 +5510,6 @@
 <translation id="5213891612754844763">Показать настройки прокси-сервера</translation>
 <translation id="5214639857958972833">Закладка "<ph name="BOOKMARK_TITLE" />" создана.</translation>
 <translation id="5215502535566372932">Выберите страну</translation>
-<translation id="5215665166431745539">Показывать значок предварительного просмотра</translation>
 <translation id="5220011581825921581">Поиск + Стрелка вверх</translation>
 <translation id="5222403284441421673">Незащищенное скачивание заблокировано</translation>
 <translation id="5222676887888702881">Выйти</translation>
@@ -5685,7 +5683,6 @@
 <translation id="5365881113273618889">Выбранная папка содержит конфиденциальные файлы. Предоставить приложению "<ph name="APP_NAME" />" постоянный доступ для записи данных?</translation>
 <translation id="536638840841140142">Нет</translation>
 <translation id="5368246151595623328">Сеть "<ph name="NETWORK_NAME" />" сохранена с устройства "<ph name="DEVICE_NAME" />"</translation>
-<translation id="5368255566854433132">Создать пароль для устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368441245151140827">Это расширение не может читать и изменять информацию сайта или работать в фоновом режиме</translation>
 <translation id="5368720394188453070">Для входа разблокируйте телефон.</translation>
 <translation id="536882527576164740">{0,plural, =1{Окно в режиме инкогнито}one{# окно в режиме инкогнито}few{# окна в режиме инкогнито}many{# окон в режиме инкогнито}other{# окна в режиме инкогнито}}</translation>
@@ -5704,7 +5701,6 @@
 <translation id="5380424552031517043">Отозвано разрешение: <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">Подождите несколько минут и повторите попытку.</translation>
 <translation id="5382591305415226340">Управление поддерживаемыми ссылками</translation>
-<translation id="5383377866517186886">Камера отключена в системных настройках macOS</translation>
 <translation id="5383740867328871413">Группа без названия: <ph name="GROUP_CONTENTS" />, <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5385628342687007304">Пароль сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, добавьте его в аккаунт Google.</translation>
 <translation id="5387116558048951800">Изменить <ph name="CREDENTIAL_TYPE" /></translation>
@@ -7183,7 +7179,6 @@
 <translation id="6542521951477560771">Трансляция на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6544134392255015460">Включить или отключить подсветку клавиатуры</translation>
 <translation id="6545665334409411530">Скорость повтора</translation>
-<translation id="6545867563032584178">Микрофон отключен в системных настройках macOS</translation>
 <translation id="6546856949879953071">Дополнительные сведения об обновлении можно посмотреть в журнале (Файлы &gt; Мои файлы &gt; <ph name="LOG_FILE" />).</translation>
 <translation id="6547354035488017500">Чтобы устройство работало, требуется как минимум 512 МБ свободного пространства. Рекомендуем удалить файлы, хранящиеся на устройстве.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Для определения местоположения устройства мы используем различные источники, например сети Wi-Fi, мобильные сети и датчики.<ph name="END_PARAGRAPH1" />
@@ -10051,7 +10046,6 @@
 <translation id="8729133765463465108">Использовать камеру для сканирования QR-кода</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Разрешения (<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="873125854638499125">Определять местоположение точнее</translation>
 <translation id="8731268612289859741">Защитный код</translation>
 <translation id="8731629443331803108">Сайт <ph name="SITE_NAME" /> запрашивает следующее разрешение: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Номер порта</translation>
@@ -10486,7 +10480,6 @@
 <translation id="9045160989383249058">Список для чтения перемещен на новую боковую панель. Посмотрите его.</translation>
 <translation id="9045430190527754450">Отправлять в Google адреса веб-страниц, которые вы пытаетесь открыть</translation>
 <translation id="9048745018038487540">Выбрать все шрифты</translation>
-<translation id="9050135202879860719">Использовать пароль устройства <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">Кодовая фраза</translation>
 <translation id="9052404922357793350">Продолжать блокировать</translation>
 <translation id="90528604757378587">Может быть ограничена работа фоновых процессов и некоторых визуальных эффектов, например плавной прокрутки.</translation>

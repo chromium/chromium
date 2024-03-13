@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">הדואר נשלח.</translation>
 <translation id="1582732959743469162">הפעולה תפסיק את ההורדה הנוכחית.</translation>
 <translation id="158591023028013564">{count,plural, =1{הדף נוסף לרשימת הקריאה}one{{count} דפים נוספו לרשימת הקריאה}two{{count} דפים נוספו לרשימת הקריאה}other{{count} דפים נוספו לרשימת הקריאה}}</translation>
+<translation id="1587629076612412684">‏התאמה אישית של שירותי Google</translation>
 <translation id="1594034544529347967">מתחיל</translation>
 <translation id="160275202205869636">‏כשההגדרה מופעלת, נעשה שימוש בנתונים והם נשמרים בחשבון Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה.</translation>
 <translation id="1605405588277479165">כבויה – לא מומלץ</translation>
@@ -1607,6 +1608,7 @@
 <translation id="9106655997975673326">מהמכשיר '<ph name="SOURCE_DEVICE" />'</translation>
 <translation id="9107664647686727385">בדיקה לאיתור סיסמאות שנחשפו</translation>
 <translation id="9109699888944026290">{count,plural, =1{סיסמה חדשה לאתר הזה}one{סיסמאות חדשות לאתר הזה}two{סיסמאות חדשות לאתר הזה}other{סיסמאות חדשות לאתר הזה}}</translation>
+<translation id="9110489518258031250">‏אפשר לקבוע איך היסטוריית הגלישה המסונכרנת תשמש להתאמה אישית של שירותי Google אחרים</translation>
 <translation id="9120217828624527905">צריך לעבור לתרגום דף מלא</translation>
 <translation id="9124387962554796433">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך כדי להתאים אישית את החיפוש ושירותי Google נוספים.</translation>
 <translation id="9137526406337347448">‏שירותי Google</translation>

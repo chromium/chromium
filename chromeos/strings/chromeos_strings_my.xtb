@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">ထီး</translation>
 <translation id="1459693405370120464">မိုးလေဝသ</translation>
 <translation id="1468664791493211953">အထူးဈေးနှုန်း</translation>
+<translation id="1472675084647422956">ပိုပြပါ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် သင်၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်ပါသည်။</translation>
 <translation id="1478594628797167447">စကင်ဖတ်စနစ်</translation>
 <translation id="1483493594462132177">ပို့ရန်</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> အရောင်များဖြင့် <ph name="OFFICE_STYLE" /> ရုံးခန်း</translation>
+<translation id="3493187369049186498">ဒေတာကို သင့် Chromebook ဖြင့် တိုင်းတာသည်။ ၎င်းသည် ဝန်ဆောင်မှုပေးသူ၏ ဒေတာနှင့် ကွဲပြားမှုရှိနိုင်သည်။</translation>
 <translation id="3502426834823382181">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />စွမ်းဆောင်ရည် မှတ်တမ်းဒေတာ<ph name="END_LINK1" /> ပို့ရန်</translation>
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">သင့်ဘက်ထရီကို အားအပြည့်သွင်းထားသည့် အကြိမ်အရေအတွက်</translation>
 <translation id="3877066159641251281">ဘာသာပြန်ဆိုချက်ကို နားထောင်ရန်</translation>
 <translation id="3885327323343477505">စကရင်နားချိန်ပုံ ပြောင်းရန်</translation>
+<translation id="3889914174935857450">ရက်စွဲ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="391412459402535266">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် လက်ပ်တော့မုဒ်သို့ ပြောင်းပါ။</translation>
 <translation id="3916998944874125962">ဖန်သားပြင်ဓာတ်ပုံ ရိုက်ရန်</translation>
 <translation id="3923184630988645767">ဒေတာသုံးစွဲမှု</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">စကင်ဖတ်စက်များ မရနိုင်ပါ</translation>
 <translation id="6232017090690406397">ဘက်ထရီ</translation>
+<translation id="6234024205316847054">အကြမ်းဖော်ပြချက် ပြပါ</translation>
 <translation id="6235460611964961764">ဒေတာသုံးစွဲမှု ကိုယ်တိုင်ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="6243280677745499710">လောလောဆယ် သတ်မှတ်ထားသည်</translation>
 <translation id="6250316632541035980">ဝက်ပေါင်ခြောက်နှင့် ကြက်ဥ</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> အထူးပိုစတာပုံ ရွေးရန်</translation>
 <translation id="7108668606237948702">ရိုက်ထည့်</translation>
 <translation id="7119389851461848805">ပါဝါ</translation>
+<translation id="7129287270910503851">သင့်ဒေတာသုံးစွဲမှုကို လစဉ် ဤရက်တွင် ပြင်ဆင်သတ်မှတ်ပါမည်</translation>
 <translation id="7130438335435247835">APN အချိတ်အဆက် (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ဆာဗာအမည်}other{ဆာဗာများအမည်}}</translation>
 <translation id="7135814714616751706">ဖြတ်လမ်းလင့်ခ်များ ရှာရန်</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">APN အသေးစိတ်</translation>
 <translation id="8522687886059337719">ယခု သင်သည် <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />နောက်ခံပုံ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> အသစ်များနှင့် <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />စခရင်နားချိန်ပုံ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> တို့ကို သုံးနိုင်ပြီ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google AI က ပံ့ပိုးထားသည်</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="8576249514688522074">စတင်မထားပါ</translation>

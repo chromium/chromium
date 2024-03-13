@@ -204,6 +204,7 @@
 <translation id="1355301061807280185">အလုပ်များ</translation>
 <translation id="1357195169723583938">ဤစက်ပစ္စည်းကို လတ်တလော အသုံးပြုထားသူများနှင့် အသုံးပြုသည့် အချိန်</translation>
 <translation id="1358187717814494928">စာမျက်နှာ ပြုလုပ်ရန်</translation>
+<translation id="1358223345833465883">Chromium ရှိ သင်၏ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="1359836962251219822">မီးဖိုဆောင်နှင့် စားသောက်ခန်း</translation>
 <translation id="1360955481084547712">သီးသန့်ဖွင့်ကြည့်ရန် ရုပ်ဖျက်ဝင်းဒိုး အသစ်တစ်ခုဖွင့်ပါ</translation>
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> စာမျက်နှာများကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
@@ -277,6 +278,7 @@
     <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">မူဝါဒများ ထည့်သွင်းရန်-</translation>
 <translation id="1495677929897281669">တဘ်သို့ ပြန်သွားရန်</translation>
+<translation id="1500286806237135498">ကင်မရာ (<ph name="CAMERAS_COUNT" />) ခု</translation>
 <translation id="1501859676467574491">သင့် Google အကောင့်မှ ကတ်များကို ပြရန်</translation>
 <translation id="1504042622576912555">ပလွေ</translation>
 <translation id="1507202001669085618">&lt;p&gt;အွန်လိုင်း မရရှိမီ လက်မှတ်ထိုးဝင်ရသည့် Wi-Fi ပေါ်တယ်ကို အသုံးပြုသည့်အခါ ဤအမှားကို တွေ့ရပါမည်။&lt;/p&gt;
@@ -311,6 +313,7 @@
       &lt;p&gt;ကျေးဇူးပြုပြီး ရက်စွဲ နှင့် အချိန်ကို &lt;strong&gt;ဆက်တင်များ&lt;/strong&gt; အက်ပ်၏ &lt;strong&gt;အထွေထွေ&lt;/strong&gt; ကဏ္ဍထဲတွင် ညှိပါ။&lt;/p&gt;</translation>
 <translation id="1559839503761818503">သင့်စီမံခန့်ခွဲသူက စက်ကို <ph name="DATE" />၊ <ph name="TIME" /> တွင် ပြန်စပါမည်</translation>
 <translation id="1562805467275776390">ကားပြိုင်ပွဲ</translation>
+<translation id="1563137369682381456">သက်တမ်းကုန်ဆုံးရက်</translation>
 <translation id="1563755205047885671">ဇာတ်ကြမ်း၊ ခုန်ပျံကျော်လွှားဂိမ်း</translation>
 <translation id="1564634006476980707">ရှာဖွေမှု URL အတွက် HTTPS အစီအစဉ်ကို အကြံပြုထားသည်- <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">ဝဘ်လိပ်စာများ၊ အင်တာဖေ့စ် စီစဉ်သတ်မှတ်ချက်နှင့် ချိတ်ဆက်မှု အရည်အသွေးကဲ့သို့ ကွန်ရက်အချက်အလက်များ</translation>
@@ -860,6 +863,7 @@
 <translation id="2606760465469169465">အော်တို အတည်ပြုခြင်း</translation>
 <translation id="2608019759319359258">အကြောင်းအရာတစ်ခုကို ပိတ်ထားပါက ၎င်းကို ကြော်ငြာများ ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် သုံးမည်မဟုတ်ပါ</translation>
 <translation id="2610561535971892504">မိတ္တူကူးရန် နှိပ်ပါ</translation>
+<translation id="2612676031748830579">ကဒ်နံပါတ်</translation>
 <translation id="2612993535136743634">သင့်စက်ပေါ်နှင့် Google Account တွင် သိမ်းထားသော လုံခြုံရေးကုဒ်အားလုံးကို ဖျက်ပါမည်</translation>
 <translation id="2616412942031748191">ရှာဖွေရေး အင်ဂျင် အကောင်းဆုံးပြင်ခြင်းနှင့် ဈေးကွက်ရှာဖွေခြင်း</translation>
 <translation id="2618206371527040026">ပညာရပ်ဆိုင်ရာ အစည်းအဝေး၊ ထုတ်ဝေမှု</translation>
@@ -921,6 +925,7 @@
 <translation id="2728127805433021124">ဆာဗာ၏ လက်မှတ်ကို အားနည်းသည့် လက်မှတ် အယ်လ်ဂိုရီသမ်ကို သုံးပြီး ထိုးထားသည်။</translation>
 <translation id="272937284275742856">ငွေပေးချေမှု အချက်အလက်များကို လုံခြုံစွာ စိစစ်နေသည်...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />ချိတ်ဆက်မှုဆိုင်ရာ ပြဿနာရှာဖွေမှု ပြုလုပ်ပါ<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">Chromium ရှိ သင်၏ရှာဖွေရေး အင်ဂျင်အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="2731382536835015353">၄၄ x ၆၈ လက်မ</translation>
 <translation id="2734319753272419592">ပုဂ္ဂိုလ်ရေးသီးသန့် လျှော့ဈေးများကို ရှာဖွေရန် Google ကို သင့်ဈေးခြင်းတောင်း သုံးခွင့်ပြုနိုင်သည်။ ရနိုင်သည့်အခါ လျှော့ဈေးကို သင့်ဈေးခြင်းတောင်းတွင် အလိုအလျောက်ပြမည်။</translation>
 <translation id="273785062888389088">HVAC နှင့် အပူချိန်ထိန်းချုပ်ခြင်း</translation>
@@ -2223,6 +2228,7 @@
 <translation id="5316812925700871227">လက်ဝဲရစ် လှည့်ရန်</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5319366980180850702">ဂန္ထဝင် စာပေ</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />သင်၏မူရင်းရှာဖွေရေး အင်ဂျင်သည် ဝဘ်တွင်ရှာဖွေခွင့်ပေးပြီး Chromium တူးလ်များကို ပံ့ပိုးသည်<ph name="END_BOLD" />။ အင်တာနက်စာမျက်နှာများရှိ ပုံများ၊ လိပ်စာဘားတို့မှ ရှာဖွေခြင်းကဲ့သို့ တူးလ်များဖြစ်သည်။ တူးလ်တစ်ခုကို သင်၏ရှာဖွေရေး အင်ဂျင်က ပံ့ပိုးခြင်းမရှိပါက မရနိုင်ပါ။</translation>
 <translation id="5323043727018853753">မြှုပ်သွင်းထားသော အကြောင်းအရာ ခွင့်ပြုထားသည်</translation>
 <translation id="5323105697514565458"><ph name="NUM_MATCHES" /> အနက်မှ <ph name="FRIENDLY_MATCH_TEXT" />၊ <ph name="MATCH_POSITION" /></translation>
 <translation id="5329858041417644019">သင်၏ ဘရောင်ဇာကို စီမံခန့်ခွဲမထားပါ</translation>
@@ -2617,6 +2623,7 @@
 <translation id="6106989379647458772"><ph name="PAGE" /> ပေါ်က ဝဘ်စာမျက်နှာမှာ ယာယီ ဒေါင်းနေတာ ဖြစ်နိုင်သည် သို့မဟုတ် ၎င်းသည် ဝဘ် လိပ်စာ သစ်ဆီသို့ ထာဝရ ရွှေ့ပြောင်းသွားတာ ဖြစ်နိုင်သည်။</translation>
 <translation id="6107012941649240045">...အား ထုတ်ပေးခဲ့သည်</translation>
 <translation id="6107924765192360631">ရေးသားမှုအကြံပြုချက်များ ရယူရန် စာလုံးအနည်းငယ် (သို့) ပထမဆုံးမူကြမ်းဖြင့်သာ စတင်ပါ။</translation>
+<translation id="6108702513636120202">Chromium ရှိ သင်၏ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="6108849843016142864">တွားသွားသတ္တဝါ၊ ကုန်းနေရေနေသတ္တဝါ</translation>
 <translation id="610911394827799129">သင်၏ Google အကောင့်က ဖွင့်ကြည့်ထားသော မှတ်တမ်းသည် <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> တွင် အခြားပုံစံများဖြင့် ရှိနေနိုင်ပါသည်</translation>
 <translation id="6116338172782435947">ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည့် စာသားနှင့် ပုံများအား ကြည့်ရန်</translation>
@@ -3518,7 +3525,6 @@
 <translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7785790577395078482">ဤတက်ဘလက်</translation>
 <translation id="7786368602962652765">လိုအပ်သောအကွက် အလွတ်ဖြစ်နေသည်။ မသိမ်းမီ ၎င်းကို ဖြည့်ပါ။</translation>
-<translation id="7786432318297177736">ဤရှာဖွေရေး အင်ဂျင်များကို ကျပန်းပြထားပါသည်။ ဆက်တင်များတွင် သင်၏မူရင်းကို အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="7791011319128895129">မထွက်သေးပါ</translation>
 <translation id="7791196057686275387">စည်းရန်</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
@@ -3792,6 +3798,7 @@
 <translation id="8316555157357957253">ယခု သုံးနေသည်</translation>
 <translation id="8319269383395457801">လူနေရပ်ကွက်တွင်းအိမ် အရောင်း</translation>
 <translation id="831997045666694187">ညနေ</translation>
+<translation id="8321448084834652864">သင်၏ရှာဖွေရေး အင်ဂျင်ကို Chromium ၏ ဆက်တင်များတွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="8321476692217554900">အကြောင်းကြားချက်များ</translation>
 <translation id="8322402665880479974">အိပ်ရာနှင့် အုံးတား</translation>
 <translation id="832567874344484841">မနက်စာ</translation>
@@ -4147,6 +4154,7 @@
 <translation id="9042827002460091668">အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="9044359186343685026">'တို့ထိ ID' အသုံးပြုရန်</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">မိုက်ခရိုဖုန်း (<ph name="MICS_COUNT" />) ခု</translation>
 <translation id="9048035366624198823"><ph name="POLICY_VALUE" /> အဖြစ် သတ်မှတ်ရန် ဤလုပ်ဆောင်ချက်များက <ph name="POLICY_NAME" /> မူဝါဒလိုအပ်သည်- <ph name="ACTION_LIST" />။</translation>
 <translation id="9048662076076074925">၂၄ x ၃၆ လက်မ</translation>
 <translation id="9049981332609050619">သင်သည် <ph name="DOMAIN" />ကို လက်လှမ်းမှီရန် ကြိုးစားခဲ့သည်၊ သို့သော် ဆာဗာက မမှန်သည့် လက်မှတ်ကို တင်ပြခဲ့သည်။</translation>
@@ -4260,6 +4268,7 @@
 <translation id="961663415146723894">အောက်ခြေတွင် တွဲချုပ်ရန်</translation>
 <translation id="961930410699694996">ဤတစ်ကြိမ်အတွက် တည်နေရာ ခွင့်ပြုထားသည်</translation>
 <translation id="962484866189421427">ဤအကြောင်းအရာသည် အယောင်ဆောင်သော သို့မဟုတ် သင့်ကိုခြေရာခံရာတွင် အသုံးပြုနိုင်သော ဒေတာများကို စုစည်းသော လိမ်လည်လှည့်ဖျားသည့် အက်ပ်များကို ထည့်သွင်းနိုင်သည်။ <ph name="BEGIN_LINK" />မည်သို့ဖြစ်စေ ပြပါ<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">သင့်ဒေသဆိုင်ရာ ဥပဒေအရ မူရင်းရှာဖွေရေး အင်ဂျင်ကိုရွေးရန် Chromium က တောင်းဆိုပါသည်။ ဤရှာဖွေရေး အင်ဂျင်များသည် သင့်ဒေသတွင် လူကြိုက်များပြီး ၎င်းတို့ကို ကျပန်းပြထားပါသည်။</translation>
 <translation id="963837307749850257">အသုံးပြုသူအားလုံး</translation>
 <translation id="964050462028070434">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ စီမံရန်…</translation>
 <translation id="969892804517981540">တရားဝင် တည်ဆောက်မှု</translation>

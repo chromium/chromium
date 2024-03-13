@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">paraplu's</translation>
 <translation id="1459693405370120464">Weer</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
+<translation id="1472675084647422956">Meer bekijken</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Verzenden</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">definitie</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
 <translation id="3492882532495507361">Een <ph name="OFFICE_STYLE" /> kantoor met <ph name="OFFICE_COLOR" /> tinten</translation>
+<translation id="3493187369049186498">Het datagebruik wordt gemeten door je Chromebook. Dit kan afwijken van de gegevens van je provider.</translation>
 <translation id="3502426834823382181">alle apps bekijken</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Gegevens over prestatietracering<ph name="END_LINK1" /> sturen</translation>
 <translation id="3517001332549868749">Chrome OS-update</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
 <translation id="3877066159641251281">Vertaling beluisteren</translation>
 <translation id="3885327323343477505">Screensaver wijzigen</translation>
+<translation id="3889914174935857450">Resetdatum</translation>
 <translation id="391412459402535266">Kan apparaat niet testen. Schakel over naar de laptopmodus om te testen.</translation>
 <translation id="3916998944874125962">screenshot maken</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Geen scanners beschikbaar</translation>
 <translation id="6232017090690406397">Batterij</translation>
+<translation id="6234024205316847054">Contouren weergeven</translation>
 <translation id="6235460611964961764">Datagebruik handmatig resetten</translation>
 <translation id="6243280677745499710">Momenteel ingesteld</translation>
 <translation id="6250316632541035980">eieren met spek</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">Kies exclusieve <ph name="PRODUCT_NAME" />-kunst</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7119389851461848805">aan/uit</translation>
+<translation id="7129287270910503851">Je datagebruik wordt elke maand op deze dag gereset</translation>
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7135814714616751706">Sneltoetsen zoeken</translation>
@@ -1242,6 +1247,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="8508640263392900755">APN-gegevens</translation>
 <translation id="8522687886059337719">Je hebt nu toegang tot nieuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />achtergronden<ph name="END_LINK_WALLPAPER_SUBPAGE" /> en <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensavers<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Mogelijk gemaakt door AI van Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>

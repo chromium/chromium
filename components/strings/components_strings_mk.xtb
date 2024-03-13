@@ -204,6 +204,7 @@
 <translation id="1355301061807280185">Работни места</translation>
 <translation id="1357195169723583938">Кој го користел уредот неодамна и кога</translation>
 <translation id="1358187717814494928">Создај табела</translation>
+<translation id="1358223345833465883">Вашиот пребарувач во Chromium</translation>
 <translation id="1359836962251219822">Кујна и трпезарија</translation>
 <translation id="1360955481084547712">Отворете нов прозорец во режим „Инкогнито“ за приватно прелистување</translation>
 <translation id="1363819917331173092">Не нуди превод на страници на <ph name="SOURCE_LANGUAGE" /></translation>
@@ -277,6 +278,7 @@
     <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Туркање на правилата:</translation>
 <translation id="1495677929897281669">Назад на картичката</translation>
+<translation id="1500286806237135498">Камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Прикажувај картички од сметката на Google</translation>
 <translation id="1504042622576912555">Жлеб</translation>
 <translation id="1507202001669085618">&lt;p&gt;Грешкава ќе ја видите ако користите Wi-Fi портал каде што мора да се најавите пред да може да отидете онлајн.&lt;/p&gt;
@@ -311,6 +313,7 @@
           &lt;p&gt;Приспособете ги датумот и времето во делот &lt;strong&gt;Општо&lt;/strong&gt; на апликацијата &lt;strong&gt;Поставки&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Вашиот администратор ќе го рестартира вашиот уред во <ph name="TIME" /> на <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Трки со автомобили</translation>
+<translation id="1563137369682381456">Датум на истекување</translation>
 <translation id="1563755205047885671">Акциони и игри со платформи</translation>
 <translation id="1564634006476980707">HTTPS-шема препорачана за URL-адреса за пребарување: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Мрежните податоци, како што се адресите, конфигурацијата на интерфејсот и квалитетот на врската</translation>
@@ -855,6 +858,7 @@
 <translation id="2606760465469169465">Автоматска потврда</translation>
 <translation id="2608019759319359258">Кога ќе се блокира некоја тема, нема да се користи за персонализирање реклами</translation>
 <translation id="2610561535971892504">Кликнете за копирање</translation>
+<translation id="2612676031748830579">Број на картичка</translation>
 <translation id="2612993535136743634">Ќе се избришат сите безбедносни кодови што се зачувани на уредот и сметката на Google</translation>
 <translation id="2616412942031748191">Оптимизација и маркетинг на пребарувачи</translation>
 <translation id="2618206371527040026">Академски конференции и публикации</translation>
@@ -916,6 +920,7 @@
 <translation id="2728127805433021124">Сертификатот на серверот е потпишан со слаб алгоритам за потпишување.</translation>
 <translation id="272937284275742856">Безбедно се потврдуваат вашите детали за плаќање…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />да извршите дијагностика на поврзливоста<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">Дознајте повеќе за вашиот пребарувач во Chromium</translation>
 <translation id="2731382536835015353">44 x 68 инчи</translation>
 <translation id="2734319753272419592">Дозволете Google да ги користи вашите кошнички за да пребарува персонализирани попусти. Кога се достапни, попустите автоматски ќе се прикажуваат во кошничките.</translation>
 <translation id="273785062888389088">HVAC и контрола на климата</translation>
@@ -2222,6 +2227,7 @@
 <translation id="5316812925700871227">Ротирај налево</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5319366980180850702">Книжевни класици</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />Вашиот стандарден пребарувач ви овозможува да пребарувате на интернет и ги обезбедува функциите на Chromium<ph name="END_BOLD" /> како пребарување од лентата за адреси и од слики на веб-страници. Конкретна функција може да биде недостапна ако не ја поддржува вашиот пребарувач.</translation>
 <translation id="5323043727018853753">Дозволени се вметнати содржини</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> од <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Прелистувачот не е управуван</translation>
@@ -2616,6 +2622,7 @@
 <translation id="6106989379647458772">Веб-страницата на <ph name="PAGE" /> можеби привремено не работи или можеби трајно е преместена на нова веб-адреса.</translation>
 <translation id="6107012941649240045">Издадено на</translation>
 <translation id="6107924765192360631">За да добивате предлози за пишување, само започнете со неколку збора или првичен нацрт.</translation>
+<translation id="6108702513636120202">Вашиот пребарувач во Chromium</translation>
 <translation id="6108849843016142864">Влечуги и водоземци</translation>
 <translation id="610911394827799129">Вашата сметка на Google можеби има други видови историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">гледа текст и слики копирани на привремената меморија</translation>
@@ -2660,6 +2667,7 @@
 <translation id="6195371403461054755">Геологија</translation>
 <translation id="6195418151868446719">Електронски уреди</translation>
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
+<translation id="6197467523841310553">Кликнете со десното копче за да ги пополните вашите зачувани податоци во кој било онлајн формулар со помалку пишување</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Целосно исечени јазичиња</translation>
 <translation id="6203231073485539293">Проверете го поврзувањето на интернет</translation>
@@ -3516,7 +3524,6 @@
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7785790577395078482">овој таблет</translation>
 <translation id="7786368602962652765">Задолжително поле е празно. Пополнете го пред да зачувате.</translation>
-<translation id="7786432318297177736">Овие пребарувачи се прикажани во редослед по случаен избор. Вашиот стандарден пребарувач може да го изберете во поставките во секое време.</translation>
 <translation id="7791011319128895129">Необјавено</translation>
 <translation id="7791196057686275387">Бала</translation>
 <translation id="7791543448312431591">Додај</translation>
@@ -3789,6 +3796,7 @@
 <translation id="8316555157357957253">Се користи сега</translation>
 <translation id="8319269383395457801">Продажба на живеалишта</translation>
 <translation id="831997045666694187">Приквечер</translation>
+<translation id="8321448084834652864">Вашиот пребарувач може да го промените во поставките за Chromium.</translation>
 <translation id="8321476692217554900">известувања</translation>
 <translation id="8322402665880479974">Кревети и креветски плочи</translation>
 <translation id="832567874344484841">Јадења за појадок</translation>
@@ -4144,6 +4152,7 @@
 <translation id="9042827002460091668">Проверете ја интернет-врската и обидете се повторно</translation>
 <translation id="9044359186343685026">Користи Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Правилото <ph name="POLICY_NAME" /> за дејствава треба да се постави на <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 инчи</translation>
 <translation id="9049981332609050619">Се обидовте да го добиете <ph name="DOMAIN" />, но серверот даде неважечки сертификат.</translation>
@@ -4257,6 +4266,7 @@
 <translation id="961663415146723894">Врзување долу</translation>
 <translation id="961930410699694996">Локацијата е дозволена овој пат</translation>
 <translation id="962484866189421427">Содржиниве може да се обидат да инсталираат лажни апликации што се преправаат дека се нешто друго или да собираат податоци што може да ги користат за да ве следат. <ph name="BEGIN_LINK" />Сепак прикажи<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">Согласно со конкретен закон во вашиот регион, Chromium бара да го изберете вашиот стандарден пребарувач. Овие пребарувачи се популарни во вашиот регион, а се прикажани по случаен редослед.</translation>
 <translation id="963837307749850257">Сите корисници</translation>
 <translation id="964050462028070434">Управувајте со лозинките и криптографските клучеви…</translation>
 <translation id="969892804517981540">Официјална верзија</translation>

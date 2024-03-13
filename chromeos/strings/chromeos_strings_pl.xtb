@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">parasole</translation>
 <translation id="1459693405370120464">Pogoda</translation>
 <translation id="1468664791493211953">Okazje</translation>
+<translation id="1472675084647422956">Pokaż więcej</translation>
 <translation id="1476467821656042872">Tym urządzeniem zarządza <ph name="MANAGER" />. Może też monitorować Twoją aktywność.</translation>
 <translation id="1478594628797167447">Skanery</translation>
 <translation id="1483493594462132177">Wyślij</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">definicja</translation>
 <translation id="3488065109653206955">Częściowo aktywowane</translation>
 <translation id="3492882532495507361">Biuro w stylu <ph name="OFFICE_STYLE" /> w odcieniach <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">Pomiary danych wykonuje Chromebook. Mogą się one różnić od danych dostawcy.</translation>
 <translation id="3502426834823382181">zobacz wszystkie aplikacje</translation>
 <translation id="3510890413042482857">Wyślij <ph name="BEGIN_LINK1" />dane śledzenia wydajności<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualizacja Chrome OS</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
 <translation id="3877066159641251281">Odsłuchaj tłumaczenie</translation>
 <translation id="3885327323343477505">Zmień wygaszacz ekranu</translation>
+<translation id="3889914174935857450">Resetuj datę</translation>
 <translation id="391412459402535266">Nie udało się przetestować urządzenia. Aby uruchomić test, włącz tryb laptopa.</translation>
 <translation id="3916998944874125962">zapisz zrzut ekranu</translation>
 <translation id="3923184630988645767">Transmisja danych</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Brak dostępnych skanerów</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6234024205316847054">Pokaż kontury</translation>
 <translation id="6235460611964961764">Ręcznie resetuj użycie danych</translation>
 <translation id="6243280677745499710">Obecnie ustawiona</translation>
 <translation id="6250316632541035980">bekon i jajka</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">Wybierz wyjątkowe obrazy na urządzenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">wpisz</translation>
 <translation id="7119389851461848805">zasilanie</translation>
+<translation id="7129287270910503851">Użycie danych będzie resetowane co miesiąc tego dnia</translation>
 <translation id="7130438335435247835">Nazwa punktu dostępu (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7135814714616751706">Szukaj skrótów</translation>
@@ -1240,6 +1245,7 @@
 <translation id="8508640263392900755">Dane APN</translation>
 <translation id="8522687886059337719">Teraz masz dostęp do nowych <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapet<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />wygaszacza ekranu<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Z wykorzystaniem AI od Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>
 <translation id="8576249514688522074">Nie zainicjowano</translation>

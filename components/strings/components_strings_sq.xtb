@@ -311,6 +311,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
           &lt;p&gt;Rregullo datën dhe orën nga seksioni &lt;strong&gt;Të përgjithshme&lt;/strong&gt; i aplikacionit &lt;strong&gt;Cilësimet&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administratori yt do ta rinisë pajisjen në orën <ph name="TIME" /> më <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Gara me makina</translation>
+<translation id="1563137369682381456">Data e skadimit</translation>
 <translation id="1563755205047885671">Lojëra aksioni dhe në platformë</translation>
 <translation id="1564634006476980707">Skema HTTPS rekomandohet për URL-në e kërkimit: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Informacioni i rrjetit, si p.sh. adresat, konfigurimi i ndërfaqes dhe cilësia e lidhjes</translation>
@@ -855,6 +856,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2606760465469169465">Verifiko automatikisht</translation>
 <translation id="2608019759319359258">Kur një temë është e bllokuar, ajo nuk do të përdoret për personalizimin e reklamave</translation>
 <translation id="2610561535971892504">Kliko për të kopjuar</translation>
+<translation id="2612676031748830579">Numri i kartës</translation>
 <translation id="2612993535136743634">Të gjitha kodet e sigurisë të ruajtura në pajisjen tënde dhe në "Llogarinë e Google" do të fshihen</translation>
 <translation id="2616412942031748191">Marketingu dhe optimizimi i motorëve të kërkimit</translation>
 <translation id="2618206371527040026">Konferenca dhe botime akademike</translation>
@@ -2659,6 +2661,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6195371403461054755">Gjeologjia</translation>
 <translation id="6195418151868446719">Pajisje elektronike për konsumatorët</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
+<translation id="6197467523841310553">Kliko me butonin djathtas për të plotësuar informacionet e tua të ruajtura në çdo formular online duke shkruar më pak</translation>
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Skeda me prerje të plotë</translation>
 <translation id="6203231073485539293">Kontrollo lidhjen e internetit.</translation>
@@ -3515,7 +3518,6 @@ Detaje shtesë:
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7785790577395078482">këtë tablet</translation>
 <translation id="7786368602962652765">Një fushë e detyrueshme është bosh. Plotësoje para se ta ruash.</translation>
-<translation id="7786432318297177736">Këta motorë kërkimi shfaqen në renditje të rastësishme. Mund ta ndërrosh parazgjedhjen në çdo kohë te cilësimet.</translation>
 <translation id="7791011319128895129">E papublikuar</translation>
 <translation id="7791196057686275387">Lidhja në stivë</translation>
 <translation id="7791543448312431591">Shtoje</translation>

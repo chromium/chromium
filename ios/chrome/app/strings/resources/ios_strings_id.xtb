@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">Email terkirim.</translation>
 <translation id="1582732959743469162">Ini akan menghentikan semua progres download Anda saat ini.</translation>
 <translation id="158591023028013564">{count,plural, =1{Halaman ditambahkan ke daftar bacaan Anda}other{{count} Halaman ditambahkan ke daftar bacaan Anda}}</translation>
+<translation id="1587629076612412684">Personalisasi Layanan Google</translation>
 <translation id="1594034544529347967">Mulai</translation>
 <translation id="160275202205869636">Jika diaktifkan, data akan digunakan dan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini.</translation>
 <translation id="1605405588277479165">Nonaktif - Tidak direkomendasikan</translation>
@@ -1607,6 +1608,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9106655997975673326">Dari "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Periksa sandi yang telah dibobol</translation>
 <translation id="9109699888944026290">{count,plural, =1{Sandi Baru Untuk Situs Ini}other{Sandi Baru Untuk Situs Ini}}</translation>
+<translation id="9110489518258031250">Mengontrol cara penggunaan histori penjelajahan yang disinkronkan untuk mempersonalisasi layanan Google lainnya</translation>
 <translation id="9120217828624527905">Beralih ke Terjemahan Halaman Penuh</translation>
 <translation id="9124387962554796433">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya.</translation>
 <translation id="9137526406337347448">Layanan Google</translation>

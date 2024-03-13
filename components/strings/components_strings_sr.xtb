@@ -204,6 +204,7 @@
 <translation id="1355301061807280185">Послови</translation>
 <translation id="1357195169723583938">Ко је недавно користио уређај и када</translation>
 <translation id="1358187717814494928">Направите табелу</translation>
+<translation id="1358223345833465883">Ваш претраживач у Chromium-у</translation>
 <translation id="1359836962251219822">Кухиње и трпезарије</translation>
 <translation id="1360955481084547712">Отворите нови прозор без архивирања да бисте прегледали приватно</translation>
 <translation id="1363819917331173092">Не нуди превод страница на језику <ph name="SOURCE_LANGUAGE" /></translation>
@@ -277,6 +278,7 @@
     <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Слање смерница:</translation>
 <translation id="1495677929897281669">Назад на картицу</translation>
+<translation id="1500286806237135498">Камере (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Приказуј картице са мог Google налога</translation>
 <translation id="1504042622576912555">Флаута</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ова грешка се приказује ако користите WiFi портал на коме морате да се пријавите да бисте се повезали на интернет.&lt;/p&gt;
@@ -311,6 +313,7 @@
       &lt;p&gt;Прилагодите датум и време у одељку &lt;strong&gt;Опште&lt;/strong&gt; у апликацији &lt;strong&gt;Подешавања&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администратор ће рестартовати уређај у <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Ауто-трке</translation>
+<translation id="1563137369682381456">Датум истека</translation>
 <translation id="1563755205047885671">Акционе и платформске игре</translation>
 <translation id="1564634006476980707">HTTPS шема препоручена за URL претраге: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Информације о мрежама попут адреса, конфигурације интерфејса и квалитета везе</translation>
@@ -855,6 +858,7 @@
 <translation id="2606760465469169465">Аутоматска верификација</translation>
 <translation id="2608019759319359258">Када блокирате тему, она се неће користити за персонализацију огласа</translation>
 <translation id="2610561535971892504">Кликните да бисте копирали</translation>
+<translation id="2612676031748830579">Број картице</translation>
 <translation id="2612993535136743634">Сви безбедносни кодови сачувани на уређају и Google налогу ће бити избрисани</translation>
 <translation id="2616412942031748191">Оптимизација за претраживаче и маркетинг</translation>
 <translation id="2618206371527040026">Академске конференције и публикације</translation>
@@ -916,6 +920,7 @@
 <translation id="2728127805433021124">Сертификат сервера је потписан слабим алгоритмом.</translation>
 <translation id="272937284275742856">Безбедно се верификују информације о плаћању…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />да покренете дијагностику везе<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">Сазнајте више о претраживачу у Chromium-у</translation>
 <translation id="2731382536835015353">44×68 in</translation>
 <translation id="2734319753272419592">Дозволите да Google користи ваше корпе да би тражио персонализоване попусте. Када су доступни, попусти се аутоматски приказују у корпама.</translation>
 <translation id="273785062888389088">Системи за грејање, вентилацију и климатизацију</translation>
@@ -2222,6 +2227,7 @@
 <translation id="5316812925700871227">Окрените у смеру супротном од казаљке на сату</translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5319366980180850702">Књижевни класици</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />Подразумевани претраживач вам омогућава да претражујете веб и омогућава Chromium функције<ph name="END_BOLD" /> попут претраживања из траке за адресу и слика на веб-страницама. Функција можда није доступна ако је претраживач не подржава.</translation>
 <translation id="5323043727018853753">Уграђен садржај је дозвољен</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" />. од <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Прегледачем нико не управља</translation>
@@ -2616,6 +2622,7 @@
 <translation id="6106989379647458772">Веб-страница на адреси <ph name="PAGE" /> можда привремено не функционише или је трајно премештена на нову веб-адресу.</translation>
 <translation id="6107012941649240045">Издато за</translation>
 <translation id="6107924765192360631">Почните са неколико речи или првом радном верзијом да бисте добили предлоге за писање.</translation>
+<translation id="6108702513636120202">Ваш претраживач у Chromium-у</translation>
 <translation id="6108849843016142864">Гмизавци и водоземци</translation>
 <translation id="610911394827799129">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">да види текст и слике који су копирани у привремену меморију</translation>
@@ -3516,7 +3523,6 @@
 <translation id="7781829728241885113">Јуче</translation>
 <translation id="7785790577395078482">овог таблета</translation>
 <translation id="7786368602962652765">Обавезно поље је празно. Попуните га пре чувања.</translation>
-<translation id="7786432318297177736">Ови претраживачи се приказују насумичним редоследом. Увек можете да промените подразумевану вредност у подешавањима.</translation>
 <translation id="7791011319128895129">Необјављено</translation>
 <translation id="7791196057686275387">Балирање</translation>
 <translation id="7791543448312431591">Додај</translation>
@@ -3789,6 +3795,7 @@
 <translation id="8316555157357957253">Тренутно користите</translation>
 <translation id="8319269383395457801">Продаја некретнина за становање</translation>
 <translation id="831997045666694187">Увече</translation>
+<translation id="8321448084834652864">Можете да промените претраживач у сваком тренутку у подешавањима Chromium-а.</translation>
 <translation id="8321476692217554900">обавештења</translation>
 <translation id="8322402665880479974">Кревети и узглавља</translation>
 <translation id="832567874344484841">Намирнице за доручак</translation>
@@ -4145,6 +4152,7 @@
 <translation id="9042827002460091668">Проверите интернет везу и пробајте поново</translation>
 <translation id="9044359186343685026">Користи Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Ове радње захтевају да смернице <ph name="POLICY_NAME" /> буду подешене на <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24×36 in</translation>
 <translation id="9049981332609050619">Покушали сте да дођете до домена <ph name="DOMAIN" />, али сервер је послао неважећи сертификат.</translation>
@@ -4258,6 +4266,7 @@
 <translation id="961663415146723894">Повез на дну</translation>
 <translation id="961930410699694996">Локација је дозвољена овај пут</translation>
 <translation id="962484866189421427">Овај садржај можда покушава да инсталира обмањујуће апликације које се претварају да су нешто друго или да прикупљају податке који могу да се користе за праћење. <ph name="BEGIN_LINK" />Прикажи<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">На основу закона у вашем региону Chromium тражи да одаберете подразумевани претраживач. Ови претраживачи су популарни у вашем региону и приказују се насумичним редоследом.</translation>
 <translation id="963837307749850257">Сви корисници</translation>
 <translation id="964050462028070434">Управљајте лозинкама и приступним кодовима…</translation>
 <translation id="969892804517981540">Званична верзија</translation>

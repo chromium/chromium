@@ -204,6 +204,7 @@
 <translation id="1355301061807280185">Вакансії</translation>
 <translation id="1357195169723583938">Хто й коли нещодавно користувався пристроєм</translation>
 <translation id="1358187717814494928">Створити таблицю</translation>
+<translation id="1358223345833465883">Ваша пошукова система в Chromium</translation>
 <translation id="1359836962251219822">Кухня і їдальня</translation>
 <translation id="1360955481084547712">Відкрити нове вікно в режимі анонімного перегляду</translation>
 <translation id="1363819917331173092">Не пропонувати перекладати сторінки такою мовою: <ph name="SOURCE_LANGUAGE" /></translation>
@@ -277,6 +278,7 @@
     <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Сповіщення про правила:</translation>
 <translation id="1495677929897281669">Назад на вкладку</translation>
+<translation id="1500286806237135498">Камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Показує картки з облікового запису Google</translation>
 <translation id="1504042622576912555">Гофрований картон</translation>
 <translation id="1507202001669085618">&lt;p&gt;Це повідомлення про помилку з’являється, якщо ви користуєтеся порталом Wi-Fi, на який потрібно ввійти, перш ніж підключитися до мережі.&lt;/p&gt;
@@ -311,6 +313,7 @@
       &lt;p&gt;Налаштуйте дату й час у розділі &lt;strong&gt;Загальні&lt;/strong&gt; додатка &lt;strong&gt;Налаштування&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Адміністратор перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" /></translation>
 <translation id="1562805467275776390">Автоперегони</translation>
+<translation id="1563137369682381456">Дата закінчення строку дії</translation>
 <translation id="1563755205047885671">Платформери й екшени</translation>
 <translation id="1564634006476980707">Рекомендована схема HTTPS для пошуку URL-адрес: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Інформація про мережу, наприклад адреси, конфігурацію інтерфейсу та якість з’єднання</translation>
@@ -855,6 +858,7 @@
 <translation id="2606760465469169465">Автоматичне підтвердження</translation>
 <translation id="2608019759319359258">Якщо тему заблоковано, вона не використовуватиметься для персоналізації реклами</translation>
 <translation id="2610561535971892504">Натиснути, щоб скопіювати</translation>
+<translation id="2612676031748830579">Номер картки</translation>
 <translation id="2612993535136743634">Усі коди безпеки, збережені на вашому пристрої і в обліковому записі Google, буде видалено</translation>
 <translation id="2616412942031748191">Пошукова оптимізація і маркетинг</translation>
 <translation id="2618206371527040026">Наукові конференції і публікації</translation>
@@ -916,6 +920,7 @@
 <translation id="2728127805433021124">Сертифікат сервера підписано з використанням слабкого алгоритму підпису.</translation>
 <translation id="272937284275742856">Безпечне підтвердження відомостей про спосіб оплати…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />провести діагностику з’єднання<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">Докладніше про пошукову систему в Chromium</translation>
 <translation id="2731382536835015353">44 x 68 дюйм.</translation>
 <translation id="2734319753272419592">Надайте Google доступ до своїх кошиків, щоб наші системи могли знаходити для вас персоналізовані знижки й автоматично показувати їх у кошиках.</translation>
 <translation id="273785062888389088">ОВК й клімат-контроль</translation>
@@ -2222,6 +2227,7 @@
 <translation id="5316812925700871227">Обернути проти годинникової стрілки</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5319366980180850702">Літературна класика</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />Пошукова система за умовчанням дає змогу здійснювати пошук в Інтернеті й підтримує такі функції Chromium,<ph name="END_BOLD" /> як пошук з адресного рядка й за зображеннями на вебсторінках. Функція може бути недоступна, якщо ваша пошукова система її не підтримує.</translation>
 <translation id="5323043727018853753">Вставлений контент дозволено</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Веб-переглядачем не керує адміністратор</translation>
@@ -2616,6 +2622,7 @@
 <translation id="6106989379647458772">Можливо, веб-сторінка <ph name="PAGE" /> тимчасово недоступна або її назавжди переміщено на нову веб-адресу.</translation>
 <translation id="6107012941649240045">Кому видано</translation>
 <translation id="6107924765192360631">Просто почніть із кількох слів або створіть першу чернетку, щоб отримувати пропозиції щодо виправлення орфографічних помилок.</translation>
+<translation id="6108702513636120202">Ваша пошукова система в Chromium</translation>
 <translation id="6108849843016142864">Плазуни й земноводні</translation>
 <translation id="610911394827799129">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Переглядати тексти й зображення в буфері обміну</translation>
@@ -2660,6 +2667,7 @@
 <translation id="6195371403461054755">Геологія</translation>
 <translation id="6195418151868446719">Побутова електроніка</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
+<translation id="6197467523841310553">Натисніть правою кнопкою миші, щоб легко ввести збережену інформацію в будь-якій онлайн-формі</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
 <translation id="6198480336395236519">Вирізані роздільники</translation>
 <translation id="6203231073485539293">Перевірте з’єднання з Інтернетом</translation>
@@ -3516,7 +3524,6 @@
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7785790577395078482">цього планшета</translation>
 <translation id="7786368602962652765">Обов’язкове поле порожнє. Заповніть його, перш ніж зберегти.</translation>
-<translation id="7786432318297177736">Ці пошукові системи відображаються в довільному порядку. Ви можете будь-коли змінити пошукову систему за умовчанням у налаштуваннях.</translation>
 <translation id="7791011319128895129">Не випущено</translation>
 <translation id="7791196057686275387">Скріпити</translation>
 <translation id="7791543448312431591">Додати</translation>
@@ -3789,6 +3796,7 @@
 <translation id="8316555157357957253">Використовується зараз</translation>
 <translation id="8319269383395457801">Продаж житла</translation>
 <translation id="831997045666694187">Увечері</translation>
+<translation id="8321448084834652864">Ви можете будь-коли змінити пошукову систему в налаштуваннях Chromium.</translation>
 <translation id="8321476692217554900">сповіщення</translation>
 <translation id="8322402665880479974">Ліжка й узголів’я</translation>
 <translation id="832567874344484841">Їжа для сніданку</translation>
@@ -4145,6 +4153,7 @@
 <translation id="9042827002460091668">Перевірте інтернет-з’єднання й повторіть спробу</translation>
 <translation id="9044359186343685026">Використовувати Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">Мікрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Для цих дій потрібно, щоб правило <ph name="POLICY_NAME" /> мало значення <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 дюйм.</translation>
 <translation id="9049981332609050619">Ви пробували зв’язатися з доменом <ph name="DOMAIN" />, але сервер надав недійсний сертифікат.</translation>
@@ -4258,6 +4267,7 @@
 <translation id="961663415146723894">Зшити внизу</translation>
 <translation id="961930410699694996">Надано разовий доступ до місцезнаходження</translation>
 <translation id="962484866189421427">Ця сторінка може намагатися встановлювати оманливі додатки, які видають себе за інший вміст, або збирати дані для відстеження ваших дій. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">Відповідно до законодавства у вашому регіоні, Chromium просить вас вибрати пошукову систему за умовчанням. Ці пошукові системи популярні у вашому регіоні й відображаються в довільному порядку.</translation>
 <translation id="963837307749850257">Усі користувачі</translation>
 <translation id="964050462028070434">Керувати паролями та ключами доступу…</translation>
 <translation id="969892804517981540">Офіційне складання</translation>

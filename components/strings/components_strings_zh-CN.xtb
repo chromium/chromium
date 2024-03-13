@@ -311,6 +311,7 @@
       &lt;p&gt;请在&lt;strong&gt;设置&lt;/strong&gt;应用的&lt;strong&gt;通用&lt;/strong&gt;部分调整日期和时间。&lt;/p&gt;</translation>
 <translation id="1559839503761818503">您的管理员将于 <ph name="DATE" /><ph name="TIME" /> 重启您的设备</translation>
 <translation id="1562805467275776390">赛车</translation>
+<translation id="1563137369682381456">失效日期</translation>
 <translation id="1563755205047885671">动作游戏与平台游戏</translation>
 <translation id="1564634006476980707">对于搜索网址，建议采用 HTTPS 架构：<ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">网络信息，例如地址、接口配置和连接质量</translation>
@@ -855,6 +856,7 @@
 <translation id="2606760465469169465">自动验证</translation>
 <translation id="2608019759319359258">主题被屏蔽后，将不会用于展示个性化广告</translation>
 <translation id="2610561535971892504">点击复制</translation>
+<translation id="2612676031748830579">卡号</translation>
 <translation id="2612993535136743634">您的设备和 Google 账号中保存的所有安全码都将被删除</translation>
 <translation id="2616412942031748191">搜索引擎优化与营销</translation>
 <translation id="2618206371527040026">学术会议与出版物</translation>
@@ -2655,6 +2657,7 @@
 <translation id="6195371403461054755">地质学</translation>
 <translation id="6195418151868446719">消费类电子产品</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
+<translation id="6197467523841310553">右键点击即可在任何在线表单中填写您已保存的信息，减少输入操作</translation>
 <translation id="6197648101609735209">89 x 89 毫米</translation>
 <translation id="6198480336395236519">全剪切标签</translation>
 <translation id="6203231073485539293">请检查您的互联网连接是否正常</translation>
@@ -3511,7 +3514,6 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7785790577395078482">这台平板电脑</translation>
 <translation id="7786368602962652765">有一个必填字段是空的。请先填写该字段，然后再保存。</translation>
-<translation id="7786432318297177736">这些搜索引擎按随机顺序显示。您可以随时在“设置”中更改默认搜索引擎。</translation>
 <translation id="7791011319128895129">未发布</translation>
 <translation id="7791196057686275387">捆绑式装订</translation>
 <translation id="7791543448312431591">添加</translation>

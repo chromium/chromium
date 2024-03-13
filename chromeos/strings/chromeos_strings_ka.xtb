@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">ქოლგები</translation>
 <translation id="1459693405370120464">ამინდი</translation>
 <translation id="1468664791493211953">შეთავაზებები</translation>
+<translation id="1472675084647422956">მეტის ჩვენება</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და შეუძლია თქვენი აქტივობის მონიტორინგი.</translation>
 <translation id="1478594628797167447">სკანერი</translation>
 <translation id="1483493594462132177">გაგზავნა</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">განსაზღვრება</translation>
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> ოფისი <ph name="OFFICE_COLOR" /> ტონებით</translation>
+<translation id="3493187369049186498">მონაცემთა მოხმარებას ითვლის თქვენი Chromebook. მისი გამოთვლები, შესაძლოა, განსხვავდებოდეს თქვენი პროვაიდერის მონაცემებისგან.</translation>
 <translation id="3502426834823382181">ყველა აპის ნახვა</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ეფექტურობის ტრასირების მონაცემების<ph name="END_LINK1" /> გაგზავნა</translation>
 <translation id="3517001332549868749">ChromeOS განახლება</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
 <translation id="3877066159641251281">თარგმანის მოსმენა</translation>
 <translation id="3885327323343477505">ეკრანმზოგის შეცვლა</translation>
+<translation id="3889914174935857450">გადაყენების თარიღი</translation>
 <translation id="391412459402535266">მოწყობილობის შემოწმება ვერ ხერხდება. შესამოწმებლად გადადით ლეპტოპის რეჟიმზე.</translation>
 <translation id="3916998944874125962">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3923184630988645767">მონაცემთა მოხმარება</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">სკანერები მიუწვდომელია</translation>
 <translation id="6232017090690406397">ბატარეა</translation>
+<translation id="6234024205316847054">კონტურების ჩვენება</translation>
 <translation id="6235460611964961764">მონაცემთა მოხმარების ხელით გადაყენება</translation>
 <translation id="6243280677745499710">ამჟამად დაყენებული</translation>
 <translation id="6250316632541035980">ბეკონი და კვერცხი</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">ექსკლუზიურად <ph name="PRODUCT_NAME" />-ზე ხელმისაწვდომი ნამუშევრების არჩევა</translation>
 <translation id="7108668606237948702">შეყვანა</translation>
 <translation id="7119389851461848805">ენერგია</translation>
+<translation id="7129287270910503851">მონაცემთა მოხმარების მთვლელი განულდება ყოველი თვის ამ დღეს</translation>
 <translation id="7130438335435247835">წვდომის წერტილი (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{სახელთა სერვერი}other{სახელთა სერვერები}}</translation>
 <translation id="7135814714616751706">მალსახმობების ძიება</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">APN-ის დეტალები</translation>
 <translation id="8522687886059337719">ამიერიდან წვდომა გაქვთ ახალ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ფონებსა<ph name="END_LINK_WALLPAPER_SUBPAGE" /> და <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ეკრანმზოგზე<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">უზრუნველყოფილია Google-ის ხელოვნური ინტელექტის მიერ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">შესაძლოა, ეს ვარიანტი თქვენს ოპერატორს სჭირდებოდეს, თავის ქსელთან დაკავშირების საშუალება რომ მოგცეთ. დეტალური ინფორმაციისთვის მიმართეთ ოპერატორს.</translation>
 <translation id="8576249514688522074">არაინიცირებული</translation>

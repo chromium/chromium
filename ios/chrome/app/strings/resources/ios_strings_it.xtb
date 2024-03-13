@@ -518,6 +518,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3631443864840848029">Assicurati di salvare la tua password corrente per questo sito.</translation>
 <translation id="3638472932233958418">Precarica pagine web</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} password è salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google {email}.}other{{count} password sono salvate solo su questo dispositivo. Per usarle su altri dispositivi, salvale nel tuo Account Google {email}.}}</translation>
+<translation id="3659297405161482746">Nessun metodo di pagamento trovato</translation>
 <translation id="3661160521073045932">Profilo di configurazione disponibile</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3680970647557344817">Nascondi Modifica preferito</translation>
@@ -824,7 +825,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="519530786644929958">Download non riuscito. Impossibile riprovare.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Vuoi consentire a "<ph name="SITE_NAME" />" di usare <ph name="PERMISSION" />?</translation>
-<translation id="5219295696240154694">Contribuisci a migliorare la sicurezza sul Web per tutti</translation>
+<translation id="5219295696240154694">Contribuisci a migliorare la sicurezza sul web per tutti</translation>
 <translation id="5220945116117011963">Crea eventi nel calendario dalle date</translation>
 <translation id="5221339005270097309">Controllo delle password…</translation>
 <translation id="5226568866393490213">Ignora avviso</translation>
@@ -1014,6 +1015,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6196207969502475924">Ricerca vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Chiudi {COUNT} scheda}other{Chiudi {COUNT} schede}}</translation>
 <translation id="6210079381482819663">Le schede che non vengono utilizzate per almeno <ph name="THRESHOLD" /> giorni vengono spostate qui. Puoi modificare questa preferenza in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
+<translation id="6213281885682386884">Nessun indirizzo trovato</translation>
 <translation id="6213567400989743524">Avvisi ignorati</translation>
 <translation id="6219550825416862075">Ti diamo il bentornato</translation>
 <translation id="6219688215832490856">Non tradurre mai</translation>

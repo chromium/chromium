@@ -476,6 +476,7 @@ Se impostato su ChiediInUnaScheda, quando l'autenticazione dell'utente scade, ap
 <translation id="1396119629372155901">Funzionalità ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes disattivata</translation>
 <translation id="1397855852561539316">URL di suggerimento del provider di ricerca predefinito</translation>
 <translation id="1402227992519954892">Attiva i report sulle informazioni relative alle app del dispositivo</translation>
+<translation id="1405444733221330570">Attiva Orca</translation>
 <translation id="141279920573530952">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere a tutte le porte seriali disponibili.
 
       Se gli URL non sono validi, il criterio viene ignorato. Viene considerata soltanto l'origine (schema, host e porta) dell'URL.
@@ -1834,6 +1835,13 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se non viene configurato, viene applicato il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tuttavia, a partire dalla versione M85, i pattern con caratteri jolly "*" e "[*.]" nell'host non sono più supportati per questo criterio.</translation>
+<translation id="2421713016375433338">L'URL di un'immagine che verrà utilizzata come badge aziendale per il profilo. L'URL deve indirizzare a un'immagine.
+
+Questo badge verrà mostrato nel menu del profilo sotto l'immagine del profilo e l'immagine verrà ridimensionata per adattarsi a uno spazio pari a 16 x 16 riservato al badge.
+
+Se il criterio non viene configurato, verrà mostrata un'icona predefinita a forma di edificio.
+
+Se si verifica un errore durante il tentativo di ottenere e mostrare l'immagine, verrà visualizzata un'icona predefinita a forma di edificio.</translation>
 <translation id="2421779938235645781">Il colore della retroilluminazione della tastiera corrisponde allo sfondo corrente</translation>
 <translation id="2423255396068675416">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono eseguire <ph name="PRODUCT_CROSTINI_NAME" />, finché <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sono impostati su Attivato. Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_CROSTINI_NAME" /> viene disattivato per l'utente. Impostando il criterio su Disattivato, questo viene applicato all'avvio di nuovi container <ph name="PRODUCT_CROSTINI_NAME" />, non a quelli già in esecuzione.</translation>
 <translation id="242521047682347997">Non consentire agli utenti di sincronizzare i messaggi SMS tra il telefono e Chromebook</translation>
@@ -2274,6 +2282,7 @@ Se il criterio viene disattivato o se non viene configurato, gli utenti possono 
       Quando questo criterio non è impostato o è impostato su vero, il visualizzatore PDF può aggiungere annotazioni nei PDF.
 
       Quando questo criterio è impostato su falso, il visualizzatore PDF non può aggiungere annotazioni sui PDF.</translation>
+<translation id="2769199041812510302">URL logo aziendale</translation>
 <translation id="2769952903507981510">Configura il nome di dominio richiesto per gli host di accesso remoto</translation>
 <translation id="2770376586681635746">Consente di stabilire se gli utenti possono o meno aggiungere account Kerberos.
 
@@ -3356,6 +3365,20 @@ Se il criterio non viene configurato, i dati di telemetria dei siti web non verr
 <translation id="3652670852519271837">Consenti ai siti di richiedere all'utente l'accesso di lettura di file e directory tramite l'API file system</translation>
 <translation id="3653237928288822292">Icona del provider di ricerca predefinito</translation>
 <translation id="3654906736796256792">Consenti l'esecuzione della sandbox dell'audio</translation>
+<translation id="3655252664209966774">L'estensione di utilizzo della chiave X.509 dichiara come può essere utilizzata la chiave in un certificato. Queste istruzioni assicurano che i certificati non vengano utilizzati in un contesto imprevisto, che protegge da una classe di attacchi multiprotocollo su HTTPS e su altri protocolli. Affinché questo comando funzioni, i client HTTPS devono verificare che i certificati del server corrispondano ai parametri TLS della connessione.
+
+A partire dalla versione 124 di <ph name="PRODUCT_NAME" />, questo controllo è sempre attivato.
+
+La versione 123 e le versioni precedenti di <ph name="PRODUCT_NAME" /> hanno il seguente comportamento:
+
+Se il criterio viene attivato, <ph name="PRODUCT_NAME" /> eseguirà questo controllo.
+In questo modo è possibile evitare attacchi in cui un utente malintenzionato manipola il browser per interpretare una chiave in modo non intenzionale dal proprietario del certificato.
+
+Se questo criterio viene impostato su Disabled, <ph name="PRODUCT_NAME" /> ignorerà questo controllo nelle connessioni HTTPS che negoziano TLS 1.2 e utilizzano un certificato RSA che si collega a un trust anchor locale. Esempi di trust anchor locali includono i certificati radice installati dall'utente o forniti dai criteri. In tutti gli altri casi, il controllo viene eseguito indipendentemente dall'impostazione di questo criterio.
+
+Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> si comporterà come se il criterio fosse attivato.
+
+Le connessioni che non superano il controllo non andranno a buon fine e restituiranno l'errore ERR_SSL_KEY_USAGE_INCOMPATIBLE. I siti che non superano il controllo e restituiscono questo errore hanno probabilmente un certificato configurato in modo errato. Le moderne suite di crittografia ECDHE_RSA impiegano l'opzione di utilizzo della chiave "digitalSignature", mentre le suite di crittografia con decrittografia RSA precedenti impiegano l'opzione di utilizzo della chiave "keyEncipherment". In caso di dubbi, gli amministratori devono includere entrambi i certificati RSA destinati a HTTPS.</translation>
 <translation id="3655710915351748191">Non visualizzare l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> o nella pagina Nuova scheda</translation>
 <translation id="3655885297177292093">L'API Event.path sarà nello stato predefinito: disponibile prima della versione M109 e non disponibile nelle versioni M109-114.</translation>
 <translation id="3659542706175323490">Se il criterio viene impostato su Attivato, l'avvio tramite CA rimane abilitato, se supportato dal dispositivo. L'avvio tramite CA consente al sistema di riavviarsi dallo stato Off o Ibernazione quando il dispositivo viene collegato alla corrente.
@@ -4698,6 +4721,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Se questo criterio non viene impostato, inizialmente l'audio in formato mono è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4757563299858487173">Disattiva le funzionalità</translation>
+<translation id="4758335997982239449">Attiva la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="4767059955897420757">Se il criterio non viene configurato o se viene attivato, all'utente potrebbe essere mostrata la promozione dell'estensione fornitore di credenziali.
 Se viene disattivato, all'utente non viene mostrata la promozione dell'estensione fornitore di credenziali.</translation>
 <translation id="4768446404233019970">Attiva le suite di crittografia 3DES in TLS</translation>
@@ -4930,6 +4954,7 @@ La disattivazione della decodifica video con accelerazione hardware non è consi
 <translation id="499654521603185442">Report sulla telemetria dei siti web</translation>
 <translation id="4997074784107449343">L'opzione Stampa come immagine non viene impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando disponibile.</translation>
 <translation id="500149597848135831">Attiva tutte le varianti</translation>
+<translation id="5006222080181284191">Controlla l'attivazione della funzionalità "Aiutami a scrivere" di ChromeOS</translation>
 <translation id="5017157692744444035">Questo criterio consente di stabilire se segnalare o meno le informazioni che possono essere utilizzate per identificare le macchine, come il nome della macchina e gli indirizzi di rete.
 
 Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, verrà ignorato.
@@ -4987,6 +5012,13 @@ Questo criterio viene applicato soltanto se la macchina viene registrata con <ph
 <translation id="5073609397321802133">Se il criterio viene impostato su false, gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda. L'eventuale sfondo personalizzato esistente viene rimosso definitivamente anche se il criterio viene impostato su true in un secondo momento.
 
       Se il criterio viene impostato su true o non viene impostato, gli utenti possono personalizzare lo sfondo della pagina Nuova scheda.</translation>
+<translation id="5073788301065423829">Questo criterio attiva o disattiva la funzionalità "Aiutami a scrivere" per ChromeOS.
+
+Se viene attivato, la funzionalità "Aiutami a scrivere" verrà attivata.
+
+Se viene disattivato, la funzionalità "Aiutami a scrivere" verrà disattivata.
+
+Se non viene configurato, la funzionalità "Aiutami a scrivere" verrà attivata sui dispositivi non gestiti e verrà disattivata per i dispositivi gestiti dall'azienda.</translation>
 <translation id="5076953589932162038">Impostazioni First-Party Sets</translation>
 <translation id="5078623750797048009">Attiva annotazioni PDF</translation>
 <translation id="5080300140183363718">Impostazioni di migrazione dei dati di separazione dei profili</translation>
@@ -5681,6 +5713,9 @@ Se il criterio non viene configurato o se viene impostato un elenco vuoto, all'u
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Attiva i report sullo stato di archiviazione del dispositivo</translation>
 <translation id="5608114828230655271">Comportamento predefinito del dispositivo</translation>
+<translation id="561001683838346956">Questo criterio è stato rimosso nella versione 124 di <ph name="PRODUCT_NAME" />. A partire da quella versione, gli hash non sicuri sono sempre non consentiti. Nelle versioni precedenti, questo criterio controllava se il browser consentiva hash non sicuri precedenti durante la procedura di TLS handshake.
+
+      Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> segue la procedura di implementazione predefinita per non consentire gli hash non sicuri. Se il criterio viene attivato, <ph name="PRODUCT_NAME" /> consente l'uso di hash non sicuri da parte di un server durante la negoziazione di un TLS handshake. Se viene disattivato, <ph name="PRODUCT_NAME" /> non consente l'uso di hash non sicuri da parte di un server durante la negoziazione di un TLS handshake.</translation>
 <translation id="5611869109049836323">Forza l'applicazione di vincoli nei trust anchor aggiunti localmente</translation>
 <translation id="5614865701790130558">Registra eventi per le installazioni di estensioni basate sul criterio</translation>
 <translation id="561493980641967737">Se il criterio viene attivato, la raccolta di dati anonimizzati con chiave URL, che invia a Google gli URL delle pagine visitate dagli utenti per migliorare le ricerche e la navigazione, è sempre attiva.
@@ -5856,6 +5891,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
 
       Nota: il fattore di regolazione minimo deve essere 100%.</translation>
 <translation id="5740636973289452345">Attiva la generazione di report sulle informazioni relative a estensioni e plug-in</translation>
+<translation id="5741110260062082926">Disattiva Orca</translation>
 <translation id="5746149754419996562">Consente la presenza di widget Glanceables su <ph name="PRODUCT_OS_NAME" />. In particolare, i widget accessibili tramite il chip di data nella barra delle app.
 Se questo criterio viene attivato, i Glanceables sono attivati su <ph name="PRODUCT_OS_NAME" />.
 Se questo criterio viene disattivato o se non viene configurato, i Glanceables non sono attivi su <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -6025,6 +6061,7 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
       Se il criterio non viene configurato, <ph name="PRODUCT_NAME" /> può decidere quale approccio usare.</translation>
 <translation id="5888645257599699215">Segnala lo stato dell'audio dei dispositivi</translation>
 <translation id="5890063326284543943">Controlla l'utilizzo dell'API Serial</translation>
+<translation id="5893223274510346852">Disattiva la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5893303508158298667">Se il criterio <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> è impostato su Attivato e il criterio <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> viene impostato su Attivato o non viene configurato, viene consentito l'utilizzo di client remoti per usare relay server per collegarsi al computer quando non è disponibile una connessione diretta, ad esempio a causa di limitazioni del firewall.
 
       Se il criterio viene impostato su Disattivato, non viene disattivato l'accesso remoto, ma sono consentite soltanto connessioni dalla stessa rete (non da NAT Traversal o relay).</translation>
@@ -6405,6 +6442,7 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
       Ciò espone gli utenti a rischi di sicurezza correlati all'esecuzione del sottosistema audio senza limitazione tramite sandbox.
       Se questo criterio non viene impostato, verrà usata la configurazione predefinita per la sandbox dell'audio, che potrebbe differire in base alla piattaforma.
       Lo scopo di questo criterio è fornire alle imprese la flessibilità di disattivare la sandbox dell'audio qualora interferisca con le configurazioni software di sicurezza utilizzate.</translation>
+<translation id="624808913905048408">Consenti agli utenti di attivare o disattivare l'impostazione Protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> sul proprio dispositivo.</translation>
 <translation id="624818583115864448">porta 554 (può essere sbloccata fino al 15/10/2021)</translation>
 <translation id="6249912382559535329">Consente di attivare la funzione di accessibilità della tastiera virtuale nella schermata di accesso.
 
@@ -8088,6 +8126,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
       Se il criterio non viene configurato, viene applicato l'intervallo predefinito di 3 minuti.</translation>
 <translation id="7469554574977894907">Attiva suggerimenti di ricerca</translation>
 <translation id="747275827471712187">Ripristina il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per i cookie su questi siti</translation>
+<translation id="7476030153540156377">Scegli se attivare o meno la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="7476158778585368567">Consente di segnalare i processi di stampa di un dispositivo.
 
       Se il criterio viene impostato su falso o se non viene configurato, le informazioni non vengono segnalate.
@@ -8479,6 +8518,13 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
 <translation id="7781452670568828399">Modifica la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
+<translation id="7785199109546027763">Un criterio per controllare se la funzionalità di protezione IP di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
+
+Se il criterio viene disattivato, la funzionalità di protezione IP verrà disattivata e gli utenti non potranno attivarla tramite le impostazioni della UI.
+Se il criterio viene attivato, la funzionalità di protezione IP verrà attivata e gli utenti non potranno disattivarla tramite le impostazioni della UI.
+Se il criterio non viene configurato, gli utenti potranno attivare o disattivare la funzionalità di protezione IP sul proprio dispositivo tramite le impostazioni della UI.
+
+Nota: il comportamento della funzionalità di protezione IP per gli utenti aziendali potrebbe variare nel tempo se il criterio viene attivato o se non viene configurato e la funzionalità viene attivata tramite le impostazioni della UI.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
 <translation id="7790221177424764797">Questo criterio consente di stabilire se caricare o meno le regole del criterio SiteList di <ph name="IE_PRODUCT_NAME" />.
 

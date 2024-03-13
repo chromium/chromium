@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">우산</translation>
 <translation id="1459693405370120464">날씨</translation>
 <translation id="1468664791493211953">혜택</translation>
+<translation id="1472675084647422956">자세히 보기</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />에서 이 기기를 관리하며 내 활동을 모니터링할 수도 있습니다.</translation>
 <translation id="1478594628797167447">스캐너</translation>
 <translation id="1483493594462132177">보내기</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">정의</translation>
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> 톤의 <ph name="OFFICE_STYLE" /> 느낌의 사무실</translation>
+<translation id="3493187369049186498">데이터는 Chromebook에서 측정됩니다. 이는 제공업체 데이터와 다를 수 있습니다.</translation>
 <translation id="3502426834823382181">모든 앱 보기</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />성능 추적 데이터<ph name="END_LINK1" /> 전송</translation>
 <translation id="3517001332549868749">Chrome OS 업데이트</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3877066159641251281">번역 듣기</translation>
 <translation id="3885327323343477505">화면 보호기 변경</translation>
+<translation id="3889914174935857450">날짜 재설정</translation>
 <translation id="391412459402535266">기기를 테스트할 수 없습니다. 테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="3916998944874125962">스크린샷을 찍습니다</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">사용 가능한 스캐너 없음</translation>
 <translation id="6232017090690406397">배터리</translation>
+<translation id="6234024205316847054">윤곽선 표시</translation>
 <translation id="6235460611964961764">데이터 사용량 수동 재설정</translation>
 <translation id="6243280677745499710">현재 설정</translation>
 <translation id="6250316632541035980">베이컨과 달걀</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> 전용 포스터 선택</translation>
 <translation id="7108668606237948702">입력</translation>
 <translation id="7119389851461848805">전원</translation>
+<translation id="7129287270910503851">매월 이 날짜에 데이터 사용량이 초기화됩니다</translation>
 <translation id="7130438335435247835">액세스포인트 네임(APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{네임서버}other{네임서버}}</translation>
 <translation id="7135814714616751706">바로가기 검색</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">APN 세부정보</translation>
 <translation id="8522687886059337719">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" /> 및 <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />화면 보호기<ph name="END_LINK_SCREENSAVER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google AI 기반</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>

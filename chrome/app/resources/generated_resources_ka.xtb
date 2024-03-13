@@ -2189,6 +2189,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" />-ის უსაფრთხოდ ჩამოტვირთვა ვერ მოხერხდება.</translation>
 <translation id="2620245777360407679">უსადენო ქსელთან ამჟამად დაკავშირებული მოწყობილობები</translation>
 <translation id="2620436844016719705">სისტემა</translation>
+<translation id="2620900772667816510">Bluetooth-ის სუპერგარჩევადობა</translation>
 <translation id="262154978979441594">Google ასისენტის ხმის მოდელის მომზადება</translation>
 <translation id="26224892172169984">საიტების მიერ პროტოკოლების დამუშავების აკრძალვა</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2815,7 +2816,6 @@
 <translation id="3094521107841754472">ფასი შეიცვალა <ph name="PREVIOUS_PRICE" />-დან <ph name="CURRENT_PRICE" />-ზე.</translation>
 <translation id="3095871294753148861">სანიშნეები, პაროლები და ბრაუზერის სხვა მონაცემები სინქრონიზებულია ძირითად ანგარიშთან.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 პოტენციურად საზიანო გაფართოება გამორთულია. შეგიძლიათ მისი ამოშლაც.}other{{NUM_EXTENSIONS} პოტენციურად საზიანო გაფართოება გამორთულია. შეგიძლიათ მათი ამოშლაც.}}</translation>
-<translation id="3101057112460908988">მეხსიერების გამოყენების ჩვენება</translation>
 <translation id="3101126716313987672">მკრთალი განათება</translation>
 <translation id="3101709781009526431">თარიღი და დრო</translation>
 <translation id="310297983047869047">წინა სლაიდი</translation>
@@ -3084,7 +3084,6 @@
 <translation id="3321776060736518525"><ph name="APP_URL" />-დან</translation>
 <translation id="3323521181261657960">გილოცავთ! ეკრანთან მეტ დროს გაატარებთ</translation>
 <translation id="3325804108816646710">იძებნება ხელმისაწვდომი პროფილები...</translation>
-<translation id="3325910708063135066">კამერა და მიკროფონი გამორთულია Mac-ის სისტემის პარამეტრებში</translation>
 <translation id="3325930488268995856">Microsoft OneDrive დაკავშირებულია</translation>
 <translation id="3325995804968971809">სტილი</translation>
 <translation id="3327050066667856415">Chromebook-ები უსაფრთხოების მოთხოვნების გათვალისწინებით არის შექმნილი. თქვენი მოწყობილობა ავტომატურად არის დაცული მავნე პროგრამებისგან. ამიტომაც დამატებითი პროგრამული უზრუნველყოფა საჭირო არ არის.</translation>
@@ -5509,7 +5508,6 @@
 <translation id="5213891612754844763">პროქსი-სერვერის პარამეტრების ჩვენება</translation>
 <translation id="5214639857958972833">სანიშნე „<ph name="BOOKMARK_TITLE" />“ შეიქმნა.</translation>
 <translation id="5215502535566372932">აირჩიეთ ქვეყანა</translation>
-<translation id="5215665166431745539">სურათების ჩვენება</translation>
 <translation id="5220011581825921581">search + ზემოთ მიმართული ისარი</translation>
 <translation id="5222403284441421673">არაუსაფრთხო ჩამოტვირთვა დაბლოკილია</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
@@ -5683,7 +5681,6 @@
 <translation id="5365881113273618889">თქვენ მიერ არჩეული საქაღალდე შეიცავს კონფიდენციალურ ფაილებს. ნამდვილად გსურთ, მიანიჭოთ „<ph name="APP_NAME" />“-ს ამ საქაღალდეში ჩაწერის მუდმივი ნებართვა?</translation>
 <translation id="536638840841140142">არცერთი</translation>
 <translation id="5368246151595623328">„<ph name="NETWORK_NAME" />“ შენახულია <ph name="DEVICE_NAME" />-დან</translation>
-<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> პაროლის შექმნა</translation>
 <translation id="5368441245151140827">ამ გაფართოებას არ შეუძლია საიტების ინფორმაციის წაკითხვა და შეცვლა ან ფონურ რეჟიმში მუშაობა</translation>
 <translation id="5368720394188453070">ტელეფონი დაბლოკილია. განბლოკვისათვის შეიყვანეთ.</translation>
 <translation id="536882527576164740">{0,plural, =1{ინკოგნიტო}other{ინკოგნიტო (#)}}</translation>
@@ -5702,7 +5699,6 @@
 <translation id="5380424552031517043">გაუქმდა <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">დაელოდეთ რამდენიმე წუთი და ცადეთ ხელახლა</translation>
 <translation id="5382591305415226340">მხარდაჭერილი ბმულების მართვა</translation>
-<translation id="5383377866517186886">კამერა გამორთულია Mac-ის სისტემის პარამეტრებში</translation>
 <translation id="5383740867328871413">უსახელო ჯგუფი — <ph name="GROUP_CONTENTS" /> — <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5385628342687007304">ეს პაროლი შენახულია მხოლოდ ამ მოწყობილობაზე. თქვენს სხვა მოწყობილობებზე მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" />-ის რედაქტირება</translation>
@@ -7181,7 +7177,6 @@
 <translation id="6542521951477560771">მიმდინარეობს ტრანსლირება <ph name="RECEIVER_NAME" />-ში</translation>
 <translation id="6544134392255015460">კლავიატურის შენათების გადართვა</translation>
 <translation id="6545665334409411530">გამეორების სიხშირე</translation>
-<translation id="6545867563032584178">მიკროფონი გამორთულია Mac-ის სისტემის პარამეტრებში</translation>
 <translation id="6546856949879953071">ვერსიის განახლების შესახებ დამატებითი ინფორმაცია ხელმისაწვდომია ჟურნალებში, რომლებიც შენახულია აქ: ფაილები &gt; ჩემი ფაილები &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">გამოათავისუფლეთ მინიმუმ 512 მბაიტი მეხსიერება. წინააღმდეგ შემთხვევაში, თქვენი მოწყობილობა რეაგირებას ვეღარ მოახდენს. მეხსიერების გამოთავისუფლება მოწყობილობიდან ფაილების წაშლით შეგიძლიათ.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />თქვენი მოწყობილობის მიახლოებითი მდებარეობის დასადგენად Google-ის მდებარეობის სერვისი იყენებს ისეთ წყაროებს, როგორიცაა Wi‑Fi, მობილური ქსელები და სენსორები.<ph name="END_PARAGRAPH1" />
@@ -10041,7 +10036,6 @@
 <translation id="8729133765463465108">QR კოდის სკანირება კამერით</translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8731029916209785242">ნებართვები (<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="873125854638499125">მდებარეობის სიზუსტის გაუმჯობესება</translation>
 <translation id="8731268612289859741">უსაფრთხოების კოდი</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" />-ს სურს: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">პორტის ნომერი</translation>
@@ -10473,7 +10467,6 @@
 <translation id="9045160989383249058">თქვენმა საკითხავმა სიამ გადაინაცვლა ახალ გვერდით პანელზე. ცადეთ ის აქ.</translation>
 <translation id="9045430190527754450">Google-ს უგზავნის იმ გვერდის ვებ-მისამართს, რომელთან დაკავშირებასაც ცდილობთ</translation>
 <translation id="9048745018038487540">ყველა შრიფტის არჩევა</translation>
-<translation id="9050135202879860719">თქვენს <ph name="DEVICE_TYPE" />-ში შესასვლელად გამოიყენეთ პაროლი</translation>
 <translation id="9050666287014529139">საიდუმლო ფრაზა</translation>
 <translation id="9052404922357793350">დაბლოკვის გაგრძელება</translation>
 <translation id="90528604757378587">ფონური აქტივობა და ზოგიერთი ვიზუალური ეფექტი, როგორიცაა ლივლივა გადაადგილება, შესაძლოა, შეზღუდული იყოს.</translation>

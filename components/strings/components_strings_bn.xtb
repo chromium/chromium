@@ -311,6 +311,7 @@
 &lt;p&gt;দয়া করে &lt;strong&gt;সেটিংস&lt;/strong&gt; অ্যাপ্লিকেশানের &lt;strong&gt;সাধারণ&lt;/strong&gt; বিভাগ থেকে তারিখ এবং সময় সংশোধন করুন৷&lt;/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" />-এ <ph name="TIME" />-এ আপনার অ্যাডমিনিস্ট্রেটর আপনার ডিভাইস রিস্টার্ট করবে</translation>
 <translation id="1562805467275776390">অটো রেসিং</translation>
+<translation id="1563137369682381456">মেয়াদ শেষ হওয়ার তারিখ</translation>
 <translation id="1563755205047885671">অ্যাকশন এবং প্ল্যাটফর্ম গেম</translation>
 <translation id="1564634006476980707">সার্চ URL-এর জন্য HTTPS স্কিম সাজেস্ট করা হয়েছে: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">নেটওয়ার্কিং তথ্য যেমন ঠিকানা, ইন্টারফেস কনফিগারেশন এবং কানেকশন কোয়ালিটি</translation>
@@ -856,6 +857,7 @@
 <translation id="2606760465469169465">অটোমেটিক যাচাই</translation>
 <translation id="2608019759319359258">কোনও বিষয় ব্লক করা হলে, পছন্দমতো বিজ্ঞাপন দেখানোর জন্য তা ব্যবহার করা হবে না</translation>
 <translation id="2610561535971892504">কপি করতে ক্লিক করুন</translation>
+<translation id="2612676031748830579">কার্ড নম্বর</translation>
 <translation id="2612993535136743634">আপনার ডিভাইস ও Google অ্যাকাউন্টে সেভ করা সব নিরাপত্তা কোড মুছে যাবে</translation>
 <translation id="2616412942031748191">সার্চ ইঞ্জিন অপ্টিমাইজেশান ও মার্কেটিং</translation>
 <translation id="2618206371527040026">শিক্ষামূলক সম্মেলন এবং প্রকাশনা</translation>
@@ -3517,7 +3519,6 @@
 <translation id="7781829728241885113">গতকাল</translation>
 <translation id="7785790577395078482">এই ট্যাবলেট</translation>
 <translation id="7786368602962652765">ফাঁকা রাখা যাবে না এমন ফিল্ড খালি আছে। সেভ করার আগে এটি পূরণ করুন।</translation>
-<translation id="7786432318297177736">এইসব সার্চ ইঞ্জিন র‍্যান্ডম অর্ডারে দেখানো হয়। আপনি সেটিংস থেকে নিজের ডিফল্ট সার্চ ইঞ্জিন যেকোনও সময়ে পরিবর্তন করতে পারবেন।</translation>
 <translation id="7791011319128895129">এখনও প্রকাশ করা হয়নি</translation>
 <translation id="7791196057686275387">বেল</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>

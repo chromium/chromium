@@ -311,6 +311,7 @@
       &lt;p&gt;Змяніце дату і час у раздзеле &lt;strong&gt;Агульныя&lt;/strong&gt; праграмы &lt;strong&gt;Налады&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Адміністратар перазапусціць прыладу ў <ph name="TIME" /> <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Аўтагонкі</translation>
+<translation id="1563137369682381456">Тэрмін заканчэння дзеяння</translation>
 <translation id="1563755205047885671">Экшн-гульні і платформеры</translation>
 <translation id="1564634006476980707">Схема HTTPS, рэкамендаваная для URL-адраса пошуку: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Сеткавыя даныя, такая як адрасы, налады інтэрфейсу і якасць падключэння</translation>
@@ -856,6 +857,7 @@
 <translation id="2606760465469169465">Аўтаматычная праверка</translation>
 <translation id="2608019759319359258">Калі тэма заблакіравана, яна не выкарыстоўваецца для персаналізацыі рэкламы</translation>
 <translation id="2610561535971892504">Капіруецца адным націсканнем</translation>
+<translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="2612993535136743634">Усе коды бяспекі, захаваныя на вашай прыладзе і ва Уліковым запісе Google, будуць выдалены</translation>
 <translation id="2616412942031748191">Пошукавая аптымізацыя і маркетынг</translation>
 <translation id="2618206371527040026">Навуковыя канферэнцыі і публікацыі</translation>
@@ -2660,6 +2662,7 @@
 <translation id="6195371403461054755">Геалогія</translation>
 <translation id="6195418151868446719">Бытавая электронная тэхніка</translation>
 <translation id="6196640612572343990">Блакіраваць староннія файлы cookie</translation>
+<translation id="6197467523841310553">Каб увесці захаваную інфармацыю ў любую анлайн-форму і сэканоміць час на набор даных, націсніце правай кнопкай мышы</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
 <translation id="6198480336395236519">Матэрыялы з раздзяляльнікамі па ўсёй даўжыні</translation>
 <translation id="6203231073485539293">Праверце падключэнне да інтэрнэту</translation>
@@ -3517,7 +3520,6 @@
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7785790577395078482">гэты планшэт</translation>
 <translation id="7786368602962652765">Абавязковае поле пустое. Каб захаваць даныя, вам трэба запоўніць яго.</translation>
-<translation id="7786432318297177736">Гэтыя пошукавыя сістэмы размешчаны ў выпадковым парадку. Вы можаце змяніць стандартную пошукавую сістэму ў любы час у наладах.</translation>
 <translation id="7791011319128895129">Не апублікавана</translation>
 <translation id="7791196057686275387">Стос</translation>
 <translation id="7791543448312431591">Дадаць</translation>

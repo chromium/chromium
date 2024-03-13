@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">кол чатырлар</translation>
 <translation id="1459693405370120464">Аба ырайы</translation>
 <translation id="1468664791493211953">Сунуштар</translation>
+<translation id="1472675084647422956">Дагы көрсөтүү</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> бул түзмөктү башкарат жана аракеттериңизди да көзөмөлдөшү мүмкүн.</translation>
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1483493594462132177">Жөнтүү</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> түстөр менен <ph name="OFFICE_STYLE" /> кеңсе</translation>
+<translation id="3493187369049186498">Дайын-даректерди Chromebook эсептеп турат. Бул провайдердин маалыматынан айырмаланышы мүмкүн.</translation>
 <translation id="3502426834823382181">бардык колдонмолорду көрүү</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Жаздырылган майнаптуулук маалыматын<ph name="END_LINK1" /> жөнөтүү</translation>
 <translation id="3517001332549868749">ChromeOS жаңыртуусу</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
 <translation id="3877066159641251281">Котормону угуу</translation>
 <translation id="3885327323343477505">Көшөгөнү өзгөртүү</translation>
+<translation id="3889914174935857450">Дайын-даректерди баштапкы абалга келтирүү</translation>
 <translation id="391412459402535266">Түзмөктү сыноого болбойт. Сынап көрүү үчүн ноутбук режимине которулуңуз.</translation>
 <translation id="3916998944874125962">скриншот тартып алуу</translation>
 <translation id="3923184630988645767">Маалыматтардын өткөрүлүшү</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Жеткиликтүү сканерлер жок</translation>
 <translation id="6232017090690406397">Батарея</translation>
+<translation id="6234024205316847054">Тышкы сызыктарды көрсөтүү</translation>
 <translation id="6235460611964961764">Трафиктин колдонулушу жөнүндө маалыматты кол менен баштапкы абалга келтирүү</translation>
 <translation id="6243280677745499710">Учурда тушкагаз катары орнотулган</translation>
 <translation id="6250316632541035980">бекон жана жумуртка</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> өзгөчө сүрөттөрүн тандаңыз</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">кубат</translation>
+<translation id="7129287270910503851">Дайын-даректердин өткөрүлүшү ай сайын ушул күнү баштапкы абалга келтирилет</translation>
 <translation id="7130438335435247835">Байланыш түйүнүнүн аталышы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
 <translation id="7135814714616751706">Ыкчам баскычтарды издөө</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">APN тууралуу маалымат</translation>
 <translation id="8522687886059337719">Эми жаңы <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тушкагаздарды<ph name="END_LINK_WALLPAPER_SUBPAGE" /> жана <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />көшөгөнү<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> колдоно аласыз</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google сунуштаган ЖИ технологиялары</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Тармакка туташуу үчүн байланыш оператору бул параметрди талап кылышы мүмкүн. Кеңири маалымат үчүн байланыш операторуңузга кайрылыңыз</translation>
 <translation id="8576249514688522074">Аныкталбаган</translation>

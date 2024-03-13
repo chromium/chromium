@@ -2189,6 +2189,7 @@
 <translation id="2620215283731032047">無法安全下載「<ph name="FILE_NAME" />」。</translation>
 <translation id="2620245777360407679">目前已連上無線基地台的裝置</translation>
 <translation id="2620436844016719705">系統</translation>
+<translation id="2620900772667816510">高解析度藍牙</translation>
 <translation id="262154978979441594">訓練 Google 助理的語音模型</translation>
 <translation id="26224892172169984">禁止任何網站處理通訊協定</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2251,6 +2252,7 @@
 <translation id="2669241540496514785">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
+<translation id="2670350619068134931">經過簡化的動畫</translation>
 <translation id="2670403088701171361">禁止網站查看剪貼簿中的文字或圖片</translation>
 <translation id="2671451824761031126">現在可以使用你的書籤和設定了</translation>
 <translation id="2672142220933875349">crx 檔案損毀，無法解除封裝。</translation>
@@ -2814,7 +2816,6 @@
 <translation id="3094521107841754472">價格已從 <ph name="PREVIOUS_PRICE" /> 變更為 <ph name="CURRENT_PRICE" />。</translation>
 <translation id="3095871294753148861">書籤、密碼和其他瀏覽器資料已與主要帳戶同步。</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{已關閉 1 個可能有害的擴充功能，你也可以移除這項擴充功能。}other{已關閉 {NUM_EXTENSIONS} 個可能有害的擴充功能，你也可以移除這些擴充功能。}}</translation>
-<translation id="3101057112460908988">顯示記憶體用量</translation>
 <translation id="3101126716313987672">光線昏暗</translation>
 <translation id="3101709781009526431">日期與時間</translation>
 <translation id="310297983047869047">上一張投影片</translation>
@@ -3083,7 +3084,6 @@
 <translation id="3321776060736518525">來源：<ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">恭喜！你的螢幕時間增加了</translation>
 <translation id="3325804108816646710">正在尋找可用的設定檔…</translation>
-<translation id="3325910708063135066">已關閉 Mac 系統偏好設定中的攝影機和麥克風</translation>
 <translation id="3325930488268995856">已連線至 Microsoft OneDrive</translation>
 <translation id="3325995804968971809">風格</translation>
 <translation id="3327050066667856415">Chromebook 的設計可確保安全性。你的裝置會自動防範惡意軟體，無須安裝額外軟體。</translation>
@@ -4256,6 +4256,7 @@
 <translation id="4231141543165771749">關閉遊戲控制項</translation>
 <translation id="4231231258999726714">正在設定 Steam for Chromebook</translation>
 <translation id="4232375817808480934">設定 Kerberos</translation>
+<translation id="4232484478444192782">Android 手機能為你處理大小事，目前正在轉移你的 Wi-Fi 和密碼。</translation>
 <translation id="4233739489690259993">你的 Chromebook 不會再收到安全性和軟體更新。請改用新款裝置，以取得最新的安全性和新功能。適用優惠條款。</translation>
 <translation id="4235965441080806197">取消登入</translation>
 <translation id="4235976607074422892">捲動速度</translation>
@@ -5506,7 +5507,6 @@
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
 <translation id="5214639857958972833">已建立「<ph name="BOOKMARK_TITLE" />」書籤。</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
-<translation id="5215665166431745539">顯示圖片</translation>
 <translation id="5220011581825921581">搜尋鍵 + 向上鍵</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載內容</translation>
 <translation id="5222676887888702881">登出</translation>
@@ -5680,7 +5680,6 @@
 <translation id="5365881113273618889">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的寫入權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="536638840841140142">無</translation>
 <translation id="5368246151595623328">透過 <ph name="DEVICE_NAME" /> 儲存「<ph name="NETWORK_NAME" />」</translation>
-<translation id="5368255566854433132">設定 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="5368441245151140827">這項擴充功能無法讀取及變更網站資訊，也無法在背景執行</translation>
 <translation id="5368720394188453070">你的手機已鎖定，必須解鎖才能繼續操作。</translation>
 <translation id="536882527576164740">{0,plural, =1{無痕視窗}other{無痕視窗 (#)}}</translation>
@@ -5699,7 +5698,6 @@
 <translation id="5380424552031517043">已移除<ph name="PERMISSION" />的權限</translation>
 <translation id="5380526436444479273">請稍候片刻，然後再試一次</translation>
 <translation id="5382591305415226340">管理支援的連結</translation>
-<translation id="5383377866517186886">已關閉 Mac 系統偏好設定中的攝影機</translation>
 <translation id="5383740867328871413">未命名的群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5385628342687007304">這個密碼只會儲存到這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶。</translation>
 <translation id="5387116558048951800">編輯<ph name="CREDENTIAL_TYPE" /></translation>
@@ -6131,6 +6129,7 @@
 <translation id="5713033452812927234">正在開啟舊裝置中的視窗</translation>
 <translation id="5713158217420111469">已連線至「<ph name="DEVICE" />」</translation>
 <translation id="5713960379473463904">空白鍵輸入樣式</translation>
+<translation id="5714100381896040477">限制畫面上的動作</translation>
 <translation id="5715711091495208045">外掛程式代理元件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5718049162805123412">建議你立即變更密碼</translation>
 <translation id="5719854774000914513">網站可以要求連線至 HID 裝置</translation>
@@ -7173,7 +7172,6 @@
 <translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">切換鍵盤背光</translation>
 <translation id="6545665334409411530">重複頻率</translation>
-<translation id="6545867563032584178">已關閉 Mac 系統偏好設定中的麥克風</translation>
 <translation id="6546856949879953071">如要瞭解有關升級的詳細資訊，請前往「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /> 查看相關的記錄檔</translation>
 <translation id="6547354035488017500">請釋出至少 512 MB 的空間，否則裝置會無回應。如要釋出空間，請刪除裝置儲存空間內的檔案。</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會使用 Wi‑Fi、行動網路和感應器等來源，推測出這部裝置的所在位置。<ph name="END_PARAGRAPH1" />
@@ -7338,6 +7336,7 @@
 <translation id="6675665718701918026">已連上指標裝置</translation>
 <translation id="6675985668044425385">如果網站無法正常運作，可以透過網址列中的追蹤保護功能選項，為該網站啟用第三方 Cookie。</translation>
 <translation id="6676212663108450937">訓練聲音時，建議你使用耳罩式耳機</translation>
+<translation id="667752334740867460">正在接收 Wi-Fi 資訊...</translation>
 <translation id="6678717876183468697">查詢網址</translation>
 <translation id="6680442031740878064">可用空間：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">語速</translation>
@@ -10035,7 +10034,6 @@
 <translation id="8729133765463465108">使用相機掃描 QR 圖碼</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731029916209785242">權限 (<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="873125854638499125">提高定位精確度</translation>
 <translation id="8731268612289859741">安全碼</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> 要求<ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">連接埠號碼</translation>
@@ -10467,7 +10465,6 @@
 <translation id="9045160989383249058">你的閱讀清單已移至新的側邊面板。按這裡即可體驗。</translation>
 <translation id="9045430190527754450">將你嘗試瀏覽的網頁網址傳送給 Google</translation>
 <translation id="9048745018038487540">選取所有字型</translation>
-<translation id="9050135202879860719">使用密碼登入 <ph name="DEVICE_TYPE" /></translation>
 <translation id="9050666287014529139">通關密語</translation>
 <translation id="9052404922357793350">繼續封鎖</translation>
 <translation id="90528604757378587">背景活動和某些視覺效果 (例如平滑捲動) 可能會受到限制。</translation>

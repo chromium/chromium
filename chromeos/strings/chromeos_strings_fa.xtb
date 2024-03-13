@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">چتر</translation>
 <translation id="1459693405370120464">آب‌وهوا</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
+<translation id="1472675084647422956">نمایش بیشتر</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و ممکن است بتواند بر فعالیتتان نظارت داشته باشد.</translation>
 <translation id="1478594628797167447">اسکنر</translation>
 <translation id="1483493594462132177">ارسال</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">معنی</translation>
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3492882532495507361">دفتر کار <ph name="OFFICE_STYLE" /> با رنگ‌های <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">‏دستگاه Chromebook شما میزان مصرف داده را اندازه‌گیری می‌کند. مقدار آن ممکن است با اندازه‌گیری رساننده خدمات متفاوت باشد.</translation>
 <translation id="3502426834823382181">مشاهده همه برنامه‌ها</translation>
 <translation id="3510890413042482857">ارسال <ph name="BEGIN_LINK1" />داده‌های ردیابی عملکرد<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏به‌روزرسانی ChromeOS</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">تعداد دفعاتی که باتری‌تان یک دوره شارژ کامل را گذرانده است</translation>
 <translation id="3877066159641251281">گوش دادن به ترجمه</translation>
 <translation id="3885327323343477505">تغییر محافظ صفحه‌نمایش</translation>
+<translation id="3889914174935857450">بازنشانی تاریخ</translation>
 <translation id="391412459402535266">نمی‌توان دستگاه را آزمایش کرد. برای آزمایش کردن، به حالت رایانه کیفی بروید.</translation>
 <translation id="3916998944874125962">گرفتن نماگرفت</translation>
 <translation id="3923184630988645767">مصرف داده</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">اسکنری دردسترس نیست</translation>
 <translation id="6232017090690406397">باتری</translation>
+<translation id="6234024205316847054">نمایش رئوس مطالب</translation>
 <translation id="6235460611964961764">بازنشانی دستی مصرف داده</translation>
 <translation id="6243280677745499710">درحال حاضر تنظیم‌ شده است</translation>
 <translation id="6250316632541035980">گوشت و تخم‌مرغ</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">انتخاب کار هنری انحصاری <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7119389851461848805">روشن/خاموش</translation>
+<translation id="7129287270910503851">مصرف داده شما هر ماه در این روز بازنشانی می‌شود</translation>
 <translation id="7130438335435247835">‏نام نقطه دسترسی (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{سرور نام}one{سرور نام}other{سرورهای نام}}</translation>
 <translation id="7135814714616751706">جستجوی میان‌برها</translation>
@@ -1167,7 +1172,7 @@
 <translation id="8075838845814659848">شارژ باقی‌مانده</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8079860070590459552">دشت گل</translation>
-<translation id="8081553043098820199">‏APN نامعتبر می‌تواند باعث غیرفعال شدن اتصال همراه شود. فقط APN ارائه‌شده ازسوی شرکت مخابرات سیار یا سرپرستتان را تنظیم کنید.</translation>
+<translation id="8081553043098820199">‏APN نامعتبر می‌تواند باعث غیرفعال شدن اتصال همراه شود. فقط APN ارائه‌شده ازسوی شرکت ارائه‌دهنده تلفن همراه یا سرپرستتان را تنظیم کنید.</translation>
 <translation id="8082366717211101304">‏نمی‌توان ساناد را از برنامه‌های Android حل‌وفصل کرد</translation>
 <translation id="8082644724189923105">منطقه صفحه‌کلید</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">‏جزئیات APN</translation>
 <translation id="8522687886059337719">اکنون به <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />کاغذدیواری‌ها<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />محافظ صفحه<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جدید دسترسی دارید</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">‏با بهره‌گیری از هوش مصنوعی Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ممکن است شرکت مخابراتی‌تان برای اتصال به شبکه خود به این گزینه نیاز داشته باشد. برای اطلاع از جزئیات با شرکت مخابراتی تماس بگیرید.</translation>
 <translation id="8576249514688522074">راه‌اندازی‌نشده</translation>

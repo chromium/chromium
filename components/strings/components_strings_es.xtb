@@ -311,6 +311,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
       &lt;p&gt;Ajusta la fecha y la hora en la sección &lt;strong&gt;General&lt;/strong&gt; de la aplicación &lt;strong&gt;Configuración&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Tu administrador reiniciará tu dispositivo a las <ph name="TIME" /> el <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Carreras de coches</translation>
+<translation id="1563137369682381456">Fecha de caducidad</translation>
 <translation id="1563755205047885671">Juegos de plataformas y acción</translation>
 <translation id="1564634006476980707">Esquema HTTPS recomendado para la URL de búsqueda: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Información de redes como las direcciones, la configuración de la interfaz y la calidad de la conexión</translation>
@@ -855,6 +856,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2608019759319359258">Cuando se bloquea un tema, no se usa para personalizar anuncios</translation>
 <translation id="2610561535971892504">Haz clic para copiar</translation>
+<translation id="2612676031748830579">Número de la tarjeta</translation>
 <translation id="2612993535136743634">Se eliminarán todos los códigos de seguridad guardados en tu dispositivo y en tu cuenta de Google</translation>
 <translation id="2616412942031748191">Marketing y optimización en buscadores</translation>
 <translation id="2618206371527040026">Conferencias y publicaciones académicas</translation>
@@ -3517,7 +3519,6 @@ Más información:
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7785790577395078482">esta tablet</translation>
 <translation id="7786368602962652765">Un campo obligatorio está vacío. Rellénalo antes de guardar.</translation>
-<translation id="7786432318297177736">Los buscadores que aparecen en la lista se muestran en orden aleatorio. Puedes cambiar tu buscador predeterminado cuando quieras en la configuración.</translation>
 <translation id="7791011319128895129">Sin publicar</translation>
 <translation id="7791196057686275387">Envolver</translation>
 <translation id="7791543448312431591">Añadir</translation>

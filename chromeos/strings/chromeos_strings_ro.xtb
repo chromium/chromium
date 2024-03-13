@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">umbrele</translation>
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1468664791493211953">Oferte</translation>
+<translation id="1472675084647422956">Afișați mai multe</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
 <translation id="1478594628797167447">Scaner</translation>
 <translation id="1483493594462132177">Trimite</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3488065109653206955">Activat parțial</translation>
 <translation id="3492882532495507361">Un birou <ph name="OFFICE_STYLE" /> în tonuri de <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">Datele sunt măsurate de Chromebook. Acestea pot fi diferite de datele furnizorului.</translation>
 <translation id="3502426834823382181">vezi toate aplicațiile</translation>
 <translation id="3510890413042482857">Trimite <ph name="BEGIN_LINK1" />datele privind urmărirea performanței<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualizare SO Chrome</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
 <translation id="3877066159641251281">Ascultă traducerea</translation>
 <translation id="3885327323343477505">Schimbă screensaverul</translation>
+<translation id="3889914174935857450">Resetează data</translation>
 <translation id="391412459402535266">Nu se poate testa dispozitivul. Treci la modul laptop pentru a testa.</translation>
 <translation id="3916998944874125962">fă o captură de ecran</translation>
 <translation id="3923184630988645767">Utilizarea datelor</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Niciun scaner disponibil</translation>
 <translation id="6232017090690406397">Baterie</translation>
+<translation id="6234024205316847054">Afișează contururile</translation>
 <translation id="6235460611964961764">Resetează manual utilizarea datelor</translation>
 <translation id="6243280677745499710">Setată în prezent</translation>
 <translation id="6250316632541035980">șuncă și ouă</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">Alege grafica exclusivă pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">pornire</translation>
+<translation id="7129287270910503851">Utilizarea datelor se va reseta în fiecare lună în această zi</translation>
 <translation id="7130438335435247835">Numele punctului de acces (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server de nume}few{Servere de nume}other{Servere de nume}}</translation>
 <translation id="7135814714616751706">Caută comenzi rapide</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">Detalii APN</translation>
 <translation id="8522687886059337719">Acum ai acces la noi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagini de fundal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> și <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensavere<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Dezvoltat de Google AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatorul poate solicita această opțiune ca să te conectezi la rețeaua respectivă. Contactează operatorul pentru detalii.</translation>
 <translation id="8576249514688522074">Neinițializată</translation>

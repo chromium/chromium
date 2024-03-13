@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">кишобрани</translation>
 <translation id="1459693405370120464">Време</translation>
 <translation id="1468664791493211953">Понуде</translation>
+<translation id="1472675084647422956">Прикажи више</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управља овим уређајем и може да прати ваше активности.</translation>
 <translation id="1478594628797167447">Скенер</translation>
 <translation id="1483493594462132177">Пошаљи</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3488065109653206955">Делимично активирано</translation>
 <translation id="3492882532495507361">Канцеларија <ph name="OFFICE_STYLE" /> са <ph name="OFFICE_COLOR" /> нијансама</translation>
+<translation id="3493187369049186498">Податке мери Chromebook. То може да се разликује од података добављача.</translation>
 <translation id="3502426834823382181">прикажи све апликације</translation>
 <translation id="3510890413042482857">Шаљи <ph name="BEGIN_LINK1" />податке о праћењу учинка<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">Број пута када се батерија напунила до краја</translation>
 <translation id="3877066159641251281">Слушајте превод</translation>
 <translation id="3885327323343477505">Промените чувар екрана</translation>
+<translation id="3889914174935857450">Ресетуј датум</translation>
 <translation id="391412459402535266">Тестирање уређаја није успело. Пређите на режим лаптопа да бисте га тестирали.</translation>
 <translation id="3916998944874125962">снимите екран</translation>
 <translation id="3923184630988645767">Потрошња података</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Нису доступни скенери</translation>
 <translation id="6232017090690406397">Батерија</translation>
+<translation id="6234024205316847054">Прикажи контуре</translation>
 <translation id="6235460611964961764">Ручно ресетуј потрошњу података</translation>
 <translation id="6243280677745499710">Тренутно подешена</translation>
 <translation id="6250316632541035980">сланина и јаја</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">Одаберите ексклузивне илустрације за <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">напајање</translation>
+<translation id="7129287270910503851">Потрошња података ће се ресетовати сваког месеца овог дана</translation>
 <translation id="7130438335435247835">Назив приступне тачке (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер имена}one{Сервери имена}few{Сервери имена}other{Сервери имена}}</translation>
 <translation id="7135814714616751706">Претражите пречице</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">Детаљи назива приступне тачке</translation>
 <translation id="8522687886059337719">Сада имате приступ новим <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />позадинама<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />чувару екрана<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Омогућава Google AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Мобилни оператер може да затражи ову опцију ради повезивања на мрежу. Обратите се мобилном оператеру за детаље.</translation>
 <translation id="8576249514688522074">Није покренуто</translation>

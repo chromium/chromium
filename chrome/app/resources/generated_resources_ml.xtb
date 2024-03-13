@@ -2188,6 +2188,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> സുരക്ഷിതമായി ഡൗൺലോഡ് ചെയ്യാനാവില്ല.</translation>
 <translation id="2620245777360407679">നിലവിൽ ഹോട്ട്‌സ്പോട്ടിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾ</translation>
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
+<translation id="2620900772667816510">Bluetooth സൂപ്പർ റെസല്യൂഷൻ</translation>
 <translation id="262154978979441594">Google Assistant ശബ്‌ദ മോഡലിനെ പരിശീലിപ്പിക്കുക</translation>
 <translation id="26224892172169984">പ്രോട്ടോകോളുകള്‍ കൈകാര്യം ചെയ്യാന്‍ ഒരു സൈറ്റിനേയും അനുവദിക്കരുത്</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2814,7 +2815,6 @@
 <translation id="3094521107841754472">വില <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="CURRENT_PRICE" /> ആയി മാറി.</translation>
 <translation id="3095871294753148861">ബുക്ക്‌മാര്‍‌ക്കുകളും പാസ്‌വേഡുകളും മറ്റ് ബ്രൗസർ ഡാറ്റയും പ്രാഥമിക അക്കൗണ്ടുമായി സമന്വയിപ്പിക്കുന്നു.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{ദോഷകരമാകാൻ സാധ്യതയുള്ള ഒരു വിപുലീകരണം ഓഫാണ്. നിങ്ങൾക്ക് ഇത് നീക്കം ചെയ്യാനും കഴിയും.}other{ദോഷകരമാകാൻ സാധ്യതയുള്ള {NUM_EXTENSIONS} വിപുലീകരണങ്ങൾ ഓഫാണ്. നിങ്ങൾക്ക് ഇവ നീക്കം ചെയ്യാനും കഴിയും.}}</translation>
-<translation id="3101057112460908988">മെമ്മറി ഉപയോഗം കാണിക്കുക</translation>
 <translation id="3101126716313987672">മങ്ങിയ വെളിച്ചം</translation>
 <translation id="3101709781009526431">തീയതിയും സമയവും</translation>
 <translation id="310297983047869047">മുമ്പത്തെ സ്ലൈഡ്</translation>
@@ -3083,7 +3083,6 @@
 <translation id="3321776060736518525"><ph name="APP_URL" /> മുതൽ</translation>
 <translation id="3323521181261657960">ബോണസ്! നിങ്ങൾക്ക് കൂടുതൽ സ്‌ക്രീൻ സമയം ലഭിച്ചിരിക്കുന്നു</translation>
 <translation id="3325804108816646710">ലഭ്യമായ പ്രൊഫൈലുകൾ തിരയുന്നു...</translation>
-<translation id="3325910708063135066">Mac സിസ്‌റ്റം മുൻഗണനകളിൽ ക്യാമറയും മൈക്രോഫോണും ഓഫാക്കി</translation>
 <translation id="3325930488268995856">Microsoft OneDrive കണക്റ്റ് ചെയ്തു</translation>
 <translation id="3325995804968971809">സ്റ്റൈൽ</translation>
 <translation id="3327050066667856415">Chromebooks സുരക്ഷയ്‌ക്കായി രൂപകൽപ്പന ചെയ്‌തിരിക്കുന്നു. നിങ്ങളുടെ ഉപകരണം മാൽവെയറിൽ നിന്ന് സ്വയമേവ പരിരക്ഷിക്കപ്പെട്ടിരിക്കുന്നു – അധിക സോഫ്‌റ്റ്‌വെയർ ആവശ്യമില്ല.</translation>
@@ -5507,7 +5506,6 @@
 <translation id="5213891612754844763">പ്രോക്‌സി ക്രമീകരണങ്ങൾ കാണിക്കുക</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' ബുക്ക്‌മാർക്ക് സൃഷ്‌ടിച്ചു.</translation>
 <translation id="5215502535566372932">രാജ്യം തിരഞ്ഞെടുക്കുക</translation>
-<translation id="5215665166431745539">ചിത്രങ്ങൾ കാണിക്കുക</translation>
 <translation id="5220011581825921581">തിരയൽ + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="5222403284441421673">സുരക്ഷിതമല്ലാത്ത ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -5681,7 +5679,6 @@
 <translation id="5365881113273618889">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഫോൾഡറിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഫയലുകൾ അടങ്ങിയിരിക്കുന്നു. ഈ ഫോൾഡറിലേക്ക് "<ph name="APP_NAME" />" എന്നതിന് റൈറ്റ് ചെയ്യാനുള്ള ശാശ്വതമായ ആക്‌സസ് അനുവദിക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="536638840841140142">ഒന്നുമില്ല</translation>
 <translation id="5368246151595623328"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് '<ph name="NETWORK_NAME" />' സംരക്ഷിച്ചു</translation>
-<translation id="5368255566854433132"><ph name="DEVICE_TYPE" /> പാസ്‌വേഡ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="5368441245151140827">ഈ വിപുലീകരണത്തിന് സൈറ്റ് വിവരങ്ങൾ വായിക്കാനോ മാറ്റാനോ പശ്ചാത്തലത്തിൽ റൺ ചെയ്യാനോ കഴിയില്ല</translation>
 <translation id="5368720394188453070">നിങ്ങളുടെ ഫോൺ ലോക്കായിരിക്കുമ്പോൾ. പ്രവേശിക്കുന്നതിന് അത് അൺലോക്ക് ചെയ്യുക.</translation>
 <translation id="536882527576164740">{0,plural, =1{അദൃശ്യ മോഡ്}other{അദൃശ്യ മോഡ് (#)}}</translation>
@@ -5700,7 +5697,6 @@
 <translation id="5380424552031517043"><ph name="PERMISSION" /> നീക്കം ചെയ്‌തു</translation>
 <translation id="5380526436444479273">അൽപ്പസമയം കാത്തിരുന്ന ശേഷം വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="5382591305415226340">പിന്തുണയ്‌ക്കുന്ന ലിങ്കുകൾ മാനേജുചെയ്യുക</translation>
-<translation id="5383377866517186886">Mac സിസ്‌റ്റം മുൻഗണനകളിൽ ക്യാമറ ഓഫാക്കി</translation>
 <translation id="5383740867328871413">പേരില്ലാത്ത ഗ്രൂപ്പ് - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5385628342687007304">ഈ പാസ്‍വേഡ് ഈ ഉപകരണത്തിൽ മാത്രമാണ് സംരക്ഷിച്ചിരിക്കുന്നത്. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കാൻ, നിങ്ങളുടെ Google Account-ൽ അത് സംരക്ഷിക്കുക.</translation>
 <translation id="5387116558048951800"><ph name="CREDENTIAL_TYPE" /> എഡിറ്റ് ചെയ്യുക</translation>
@@ -7180,7 +7176,6 @@
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ഉപകരണത്തിലേക്ക് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
 <translation id="6544134392255015460">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് ടോഗിൾ ചെയ്യൽ</translation>
 <translation id="6545665334409411530">ആവർത്തന നിരക്ക്</translation>
-<translation id="6545867563032584178">Mac സിസ്‌റ്റം മുൻഗണനകളിൽ മൈക്രോഫോൺ ഓഫാക്കി</translation>
 <translation id="6546856949879953071">അപ്ഗ്രേഡിനെ കുറിച്ചുള്ള വിശദമായ വിവരങ്ങൾക്ക് ഫയലുകൾ &gt; എന്റെ ഫയലുകൾ &gt; <ph name="LOG_FILE" /> എന്നതിൽ ലോഗുകൾ സംരക്ഷിച്ചിരിക്കുന്നു</translation>
 <translation id="6547354035488017500">512 MB ഇടമെങ്കിലും സൃഷ്‌ടിച്ചില്ലെങ്കിൽ നിങ്ങളുടെ ഉപകരണം പ്രതികരിക്കില്ല. ഇടം സൃഷ്‌ടിക്കാൻ, ഉപകരണ സ്‌റ്റോറേജിൽ നിന്ന് ഫയലുകൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google-ന്റെ ലൊക്കേഷൻ സേവനം നിങ്ങളുടെ ഉപകരണത്തിന്റെ ലൊക്കേഷൻ നിർണ്ണയിക്കാൻ വൈഫൈയോ മൊബൈൽ നെറ്റ്‌വർക്കുകളോ സെൻസറുകളോ പോലുള്ള ഉറവിടങ്ങൾ ഉപയോഗിക്കുന്നു.<ph name="END_PARAGRAPH1" />
@@ -10042,7 +10037,6 @@
 <translation id="8729133765463465108">QR കോഡ് സ്‌കാൻ ചെയ്യാൻ ക്യാമറ ഉപയോഗിക്കുക</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8731029916209785242">അനുമതികൾ (<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="873125854638499125">ലൊക്കേഷൻ കൃത്യത മെച്ചപ്പെടുത്തുക</translation>
 <translation id="8731268612289859741">സുരക്ഷാ കോഡ്</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> ഇത് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">പോർട്ട് നമ്പർ</translation>
@@ -10473,7 +10467,6 @@
 <translation id="9045160989383249058">നിങ്ങളുടെ വായിക്കാനുള്ളവയുടെ ലിസ്റ്റ് പുതിയ സൈഡ് പാനലിലേക്ക് നീക്കി. ഇത് ഇവിടെ പരീക്ഷിക്കൂ.</translation>
 <translation id="9045430190527754450">നിങ്ങൾ എത്തിച്ചേരാൻ ശ്രമിക്കുന്ന പേജിന്റെ വെബ് വിലാസം Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="9048745018038487540">എല്ലാ ഫോണ്ടുകളും തിരഞ്ഞെടുക്കുക</translation>
-<translation id="9050135202879860719">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ പാസ്‍വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="9050666287014529139">പാസ്ഫ്രെയ്‍സ്</translation>
 <translation id="9052404922357793350">ബ്ലോക്ക് ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="90528604757378587">പശ്ചാത്തല ആക്റ്റിവിറ്റിയും സുഗമമായ സ്ക്രോളിംഗ് പോലുള്ള ചില വിഷ്വൽ ഇഫക്റ്റുകളും പരിമിതപ്പെടാം.</translation>

@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">kišobrani</translation>
 <translation id="1459693405370120464">Vrijeme</translation>
 <translation id="1468664791493211953">Ponude</translation>
+<translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1476467821656042872">Uređajem upravlja <ph name="MANAGER" /> i taj upravitelj možda može nadzirati vašu aktivnost.</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1483493594462132177">Pošalji</translation>
@@ -279,7 +280,7 @@
 <translation id="2512979179176933762">prikaz prozora</translation>
 <translation id="2513396635448525189">Slika za prijavu</translation>
 <translation id="2517472476991765520">Traži</translation>
-<translation id="2520213071283358374">Upotrijebi ovaj APN</translation>
+<translation id="2520213071283358374">Koristi ovaj APN</translation>
 <translation id="2521835766824839541">prethodna pjesma</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="253029298928638905">Ponovno pokretanje…</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3488065109653206955">Djelomično aktivirano</translation>
 <translation id="3492882532495507361">Ured (<ph name="OFFICE_STYLE" />) s nijansama boje <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">Podatke mjeri Chromebook. Mogu se razlikovati od podataka davatelja usluga.</translation>
 <translation id="3502426834823382181">prikaži sve aplikacije</translation>
 <translation id="3510890413042482857">Šalji <ph name="BEGIN_LINK1" />podatke o praćenju izvedbe<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje OS-a Chrome</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">Koliko se puta vaša baterija potpuno napunila</translation>
 <translation id="3877066159641251281">Poslušajte prijevod</translation>
 <translation id="3885327323343477505">Promijeni čuvar zaslona</translation>
+<translation id="3889914174935857450">Poništi datum</translation>
 <translation id="391412459402535266">Testiranje uređaja nije uspjelo. Prijeđite na način prijenosnog računala da biste testirali.</translation>
 <translation id="3916998944874125962">snimanje zaslona</translation>
 <translation id="3923184630988645767">Potrošnja podatkovnog prometa</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nema dostupnih skenera</translation>
 <translation id="6232017090690406397">Baterija</translation>
+<translation id="6234024205316847054">Prikaži obrise</translation>
 <translation id="6235460611964961764">Ručno poništi potrošnju podatkovnog prometa</translation>
 <translation id="6243280677745499710">Trenutačno postavljeno</translation>
 <translation id="6250316632541035980">slanina i jaja</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">Odaberite ekskluzivna umjetnička djela za <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">uključivanje/isključivanje</translation>
+<translation id="7129287270910503851">Vaša potrošnja podatkovnog prometa poništavat će se svakog mjeseca na ovaj dan</translation>
 <translation id="7130438335435247835">Pristupna točka (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Poslužitelj naziva}one{Poslužitelji naziva}few{Poslužitelji naziva}other{Poslužitelji naziva}}</translation>
 <translation id="7135814714616751706">Pretražite prečace</translation>
@@ -1167,7 +1172,7 @@
 <translation id="8075838845814659848">Preostala razina napunjenosti</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8079860070590459552">cvjetnog polja</translation>
-<translation id="8081553043098820199">Nevažeći APN-ovi mogu dovesti do onemogućivanja mobilne veze. Postavite samo APN-ove koje ste dobili od davatelja mobilnih usluga ili administratora.</translation>
+<translation id="8081553043098820199">Nevažeći APN-ovi mogu dovesti do onemogućivanja mobilne veze. Postavite samo APN-ove koje ste dobili od mobilnog operatera ili administratora.</translation>
 <translation id="8082366717211101304">Razrješavanje DNS-a iz Android aplikacija nije uspjelo</translation>
 <translation id="8082644724189923105">zona tipkovnice</translation>
 <translation id="808894953321890993">Promjena zaporke</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">Pojedinosti o APN-u</translation>
 <translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru zaslona<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Omogućuje Googleov AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Vaš mobilni operater može zahtijevati tu opciju radi povezivanja s njegovom mrežom. Više informacija zatražite od svojeg operatera.</translation>
 <translation id="8576249514688522074">Pokretanje je zaustavljeno</translation>

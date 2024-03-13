@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">soyabonlar</translation>
 <translation id="1459693405370120464">Ob-havo</translation>
 <translation id="1468664791493211953">Takliflar</translation>
+<translation id="1472675084647422956">Yana</translation>
 <translation id="1476467821656042872">Bu qurilma <ph name="MANAGER" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Yuborish</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">ta’rif</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tusdagi <ph name="OFFICE_STYLE" /> ofis</translation>
+<translation id="3493187369049186498">Trafik sarfi Chromebook tomonidan hisoblanadi. Bu hisob provayder trafigi bilan farq qilishi mumkin.</translation>
 <translation id="3502426834823382181">barcha ilovalarni koʻrish</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Unumdorlik kuzatuvi maʼlumotlarini<ph name="END_LINK1" /> joʻnatish</translation>
 <translation id="3517001332549868749">ChromeOS yangilanishi</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
 <translation id="3877066159641251281">Tarjimani tinglash</translation>
 <translation id="3885327323343477505">Ekran lavhasini oʻzgartirish</translation>
+<translation id="3889914174935857450">Sanani tiklash</translation>
 <translation id="391412459402535266">Qurilmani sinash imkonsiz. Sinash uchun laptop rejimiga oʻting</translation>
 <translation id="3916998944874125962">skrinshot olish</translation>
 <translation id="3923184630988645767">Trafik sarfi</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Hech qanday skaner mavjud emas</translation>
 <translation id="6232017090690406397">Batareya</translation>
+<translation id="6234024205316847054">Konturlarni chiqarish</translation>
 <translation id="6235460611964961764">Trafik sarfini oddiy usulda asliga qaytarish</translation>
 <translation id="6243280677745499710">Hozirda tanlangan</translation>
 <translation id="6250316632541035980">choʻchqa goʻshti va tuxumlar</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ekskluziv tasvirlarini tanlang</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">quvvat tugmasi</translation>
+<translation id="7129287270910503851">Trafik sarfi har oyning shu kunida nolga qaytariladi</translation>
 <translation id="7130438335435247835">Ulanish nuqtasi nomi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nom serveri}other{Nom serverlari}}</translation>
 <translation id="7135814714616751706">Tezkor tugmalar qidiruvi</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">APN tafsiloti</translation>
 <translation id="8522687886059337719">Endi yangi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fon rasmlari<ph name="END_LINK_WALLPAPER_SUBPAGE" /> va <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran lavhasini<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ishlatish mumkin</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google AI asosida ishlaydi.</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>

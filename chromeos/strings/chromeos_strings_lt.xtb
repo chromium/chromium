@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">skėčiai</translation>
 <translation id="1459693405370120464">Oras</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
+<translation id="1472675084647422956">Rodyti daugiau</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
 <translation id="1483493594462132177">Siųsti</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">apibrėžimas</translation>
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> biuras su <ph name="OFFICE_COLOR" /> tonais</translation>
+<translation id="3493187369049186498">Duomenys matuojami „Chromebook“ įrenginiu. Dėl to gali skirtis nuo teikėjo duomenų.</translation>
 <translation id="3502426834823382181">žr. visas programas</translation>
 <translation id="3510890413042482857">Siųsti <ph name="BEGIN_LINK1" />našumo stebėjimo duomenis<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">Kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
 <translation id="3877066159641251281">Klausyti vertimo</translation>
 <translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
+<translation id="3889914174935857450">Nustatyti datą iš naujo</translation>
 <translation id="391412459402535266">Nepavyko išbandyti įrenginio. Perjunkite į nešiojamojo kompiuterio režimą, kad išbandytumėte.</translation>
 <translation id="3916998944874125962">padaryti ekrano kopiją</translation>
 <translation id="3923184630988645767">Duomenų naudojimas</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Skaitytuvai nepasiekiami</translation>
 <translation id="6232017090690406397">Akumuliatorius</translation>
+<translation id="6234024205316847054">Rodyti kontūrus</translation>
 <translation id="6235460611964961764">Neautomatiškai iš naujo nustatyti duomenų naudojimą</translation>
 <translation id="6243280677745499710">Šiuo metu nustatytas</translation>
 <translation id="6250316632541035980">šoninė ir kiaušiniai</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">Pasirinkite „<ph name="PRODUCT_NAME" />“ išskirtinius meno kūrinius</translation>
 <translation id="7108668606237948702">įvesti</translation>
 <translation id="7119389851461848805">maitinimas</translation>
+<translation id="7129287270910503851">Duomenų naudojimas bus nustatomas iš naujo kiekvieną mėnesį šią dieną</translation>
 <translation id="7130438335435247835">Prieigos taško pavadinimas (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7135814714616751706">Ieškoti sparčiųjų klavišų</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">Išsami APN informacija</translation>
 <translation id="8522687886059337719">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ir <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrano užsklandą<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Pagrįsta „Google“ AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatoriui gali būti reikalinga ši parinktis, kad būtų galima prisijungti prie tinklo. Jei reikia išsamios informacijos, susisiekite su operatoriumi.</translation>
 <translation id="8576249514688522074">Neinicijuota</translation>

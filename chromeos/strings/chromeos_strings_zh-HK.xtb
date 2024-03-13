@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">傘</translation>
 <translation id="1459693405370120464">天氣</translation>
 <translation id="1468664791493211953">優惠</translation>
+<translation id="1472675084647422956">顯示更多</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 會管理此裝置，並可能監察您的活動。</translation>
 <translation id="1478594628797167447">掃瞄器</translation>
 <translation id="1483493594462132177">傳送</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">定義</translation>
 <translation id="3488065109653206955">部分已啟用</translation>
 <translation id="3492882532495507361">帶有<ph name="OFFICE_COLOR" />色調的<ph name="OFFICE_STYLE" />辦公室</translation>
+<translation id="3493187369049186498">數據用量由 Chromebook 計算。這可能會與流動網絡供應商的數據用量不同。</translation>
 <translation id="3502426834823382181">睇所有應用程式</translation>
 <translation id="3510890413042482857">傳送<ph name="BEGIN_LINK1" />效能追蹤資料<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS 更新</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">電池經過完整充電循環的次數</translation>
 <translation id="3877066159641251281">聆聽翻譯內容</translation>
 <translation id="3885327323343477505">改螢幕保護程式</translation>
+<translation id="3889914174935857450">重設日期</translation>
 <translation id="391412459402535266">無法測試裝置。請切換至手提電腦模式以進行測試。</translation>
 <translation id="3916998944874125962">截圖</translation>
 <translation id="3923184630988645767">數據用量</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">沒有可用的掃瞄器</translation>
 <translation id="6232017090690406397">電池</translation>
+<translation id="6234024205316847054">顯示大綱</translation>
 <translation id="6235460611964961764">手動重設數據用量</translation>
 <translation id="6243280677745499710">目前設定的桌布</translation>
 <translation id="6250316632541035980">煙肉雞蛋</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">選擇 <ph name="PRODUCT_NAME" /> 獨家藝術圖片</translation>
 <translation id="7108668606237948702">Enter 鍵</translation>
 <translation id="7119389851461848805">電源</translation>
+<translation id="7129287270910503851">數據用量會在每個月的這一天重設</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名伺服器}other{域名伺服器}}</translation>
 <translation id="7135814714616751706">搜尋捷徑</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">APN 詳情</translation>
 <translation id="8522687886059337719">您現可使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />螢幕保護程式<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">採用 Google AI 技術</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>
 <translation id="8576249514688522074">未初始化</translation>

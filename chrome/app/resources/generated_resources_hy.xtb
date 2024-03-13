@@ -2189,6 +2189,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> ֆայլը հնարավոր չէ ներբեռնել անվտանգ եղանակով։</translation>
 <translation id="2620245777360407679">Թեժ կետին միացված սարքեր</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
+<translation id="2620900772667816510">Bluetooth Super Resolution</translation>
 <translation id="262154978979441594">Ձայնագրել ձայնի մոդել Google Օգնականի համար</translation>
 <translation id="26224892172169984">Թույլ չտալ որևէ կայքի մշակել հաղորդակարգերը</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2815,7 +2816,6 @@
 <translation id="3094521107841754472">Գինը <ph name="PREVIOUS_PRICE" />-ից դարձել է <ph name="CURRENT_PRICE" />։</translation>
 <translation id="3095871294753148861">Էջանիշները, գաղտնաբառերն ու դիտարկիչի մյուս տվյալները համաժամացված են հիմնական հաշվի հետ։</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Անջատվել է 1 վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել այն։}one{Անջատվել է {NUM_EXTENSIONS} վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել դրանք։}other{Անջատվել է {NUM_EXTENSIONS} վտանգավոր ընդլայնում։ Դուք կարող եք նաև հեռացնել դրանք։}}</translation>
-<translation id="3101057112460908988">Ցույց տալ օգտագործված հիշողությունը</translation>
 <translation id="3101126716313987672">Թույլ լուսավորություն</translation>
 <translation id="3101709781009526431">Ամսաթիվ և ժամ</translation>
 <translation id="310297983047869047">Նախորդ սլայդը</translation>
@@ -3082,7 +3082,6 @@
 <translation id="3321776060736518525">Աղբյուրը՝ <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Սարքի օգտագործման ժամանակն ավելացվել է</translation>
 <translation id="3325804108816646710">Հասանելի պրոֆիլների որոնում…</translation>
-<translation id="3325910708063135066">Տեսախցիկն ու խոսափողը անջատված են Mac-ի համակարգի կարգավորումներում</translation>
 <translation id="3325930488268995856">Microsoft OneDrive-ը միացված է</translation>
 <translation id="3325995804968971809">Ոճ</translation>
 <translation id="3327050066667856415">Chromebook սարքերում անվտանգությունը բարձր մակարդակի վրա է։ Ձեր սարքն ավտոմատ պաշտպանվում է վնասագրերից։ Ոչ մի լրացուցիչ ծրագիր հարկավոր չէ։</translation>
@@ -5508,7 +5507,6 @@
 <translation id="5213891612754844763">Ցուցադրել պրոքսի սերվերի կարգավորումները</translation>
 <translation id="5214639857958972833">«<ph name="BOOKMARK_TITLE" />» էջանիշը ստեղծված է։</translation>
 <translation id="5215502535566372932">Ընտրեք երկիրը</translation>
-<translation id="5215665166431745539">Ցույց տալ պատկերները</translation>
 <translation id="5220011581825921581">որոնում + վերև սլաք</translation>
 <translation id="5222403284441421673">Վտանգավոր ներբեռնումն արգելափակված է</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
@@ -5682,7 +5680,6 @@
 <translation id="5365881113273618889">Ձեր ընտրած պանակը պարունակում է վտանգավոր ֆայլեր: Ուզո՞ւմ եք <ph name="APP_NAME" /> հավելվածին այս պանակ մշտական մուտքի իրավունք տալ:</translation>
 <translation id="536638840841140142">Առանց լուսանցքի</translation>
 <translation id="5368246151595623328">«<ph name="NETWORK_NAME" />» ցանցը պահվեց <ph name="DEVICE_NAME" /> սարքից</translation>
-<translation id="5368255566854433132">Ստեղծել գաղտնաբառ <ph name="DEVICE_TYPE" />-ի համար</translation>
 <translation id="5368441245151140827">Այս ընդլայնումը չի կարող կարդալ և փոխել կայքերի մասին տեղեկությունները կամ աշխատել ֆոնային ռեժիմում</translation>
 <translation id="5368720394188453070">Ձեր հեռախոսը կողպված է: Մտնելու համար ապակողպեք այն:</translation>
 <translation id="536882527576164740">{0,plural, =1{Ինկոգնիտո}one{Ինկոգնիտո (#)}other{Ինկոգնիտո (#)}}</translation>
@@ -5701,7 +5698,6 @@
 <translation id="5380424552031517043">«<ph name="PERMISSION" />» թույլտվությունը հեռացվել է</translation>
 <translation id="5380526436444479273">Սպասեք մի քանի րոպե և նորից փորձեք</translation>
 <translation id="5382591305415226340">Կառավարել աջակցվող հղումները</translation>
-<translation id="5383377866517186886">Տեսախցիկն անջատված է Mac-ի համակարգի կարգավորումներում</translation>
 <translation id="5383740867328871413">Անանուն խումբ – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5385628342687007304">Այս գաղտնաբառը պահվում է միայն այս սարքում։ Գաղտնաբառը ձեր մյուս սարքերում օգտագործելու համար պահեք այն ձեր Google հաշվում։</translation>
 <translation id="5387116558048951800">Փոփոխել <ph name="CREDENTIAL_TYPE" />ը</translation>
@@ -7177,7 +7173,6 @@
 <translation id="6542521951477560771">Հեռարձակում «<ph name="RECEIVER_NAME" />» սարքին</translation>
 <translation id="6544134392255015460">ստեղնաշարի հետնալույսի փոխանջատիչ</translation>
 <translation id="6545665334409411530">Կրկնման արագությունը</translation>
-<translation id="6545867563032584178">Խոսափողն անջատված է Mac-ի համակարգի կարգավորումներում</translation>
 <translation id="6546856949879953071">Նորացման մասին լրացուցիչ տեղեկություններ կարող եք գտնել մատյանում (Ֆայլեր &gt; Իմ ֆայլերը &gt; <ph name="LOG_FILE" />)</translation>
 <translation id="6547354035488017500">Որպեսզի սարքն աշխատի, անհրաժեշտ է առնվազն 512 ՄԲ տարածք: Խորհուրդ ենք տալիս սարքի հիշողությունից ֆայլեր ջնջել և տարածք ազատել:</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google-ի տեղորոշման ծառայությունն օգտագործում է Wi-Fi, բջջային ցանցեր և տվիչներ՝ ձեր սարքի տեղադրությունը որոշելու համար։<ph name="END_PARAGRAPH1" />
@@ -8775,7 +8770,7 @@
 <translation id="7776156998370251340"><ph name="ORIGIN" /> կայքը կկարողանա դիտել <ph name="FOLDERNAME" /> պանակի ֆայլերը, մինչև չփակեք այս կայքի բոլոր ներդիրները</translation>
 <translation id="777637629667389858">Երբ դուք մուտք եք գործած հաշիվ, գործառույթը պաշտպանում է ձեզ Google-ի ծառայություններում։</translation>
 <translation id="7776701556330691704">Ձայներ չեն գտնվել</translation>
-<translation id="7776950606649732730">Նորից փորձեք, երբ ֆայլի համաժամացումն ավարտվի</translation>
+<translation id="7776950606649732730">Նորից փորձեք, երբ ֆայլի համաժամացումն ավարտվի։</translation>
 <translation id="7777624210360383048"><ph name="EXTENSION_NAME" /> ընդլայնման <ph name="SHORTCUT" /> դյուրանցումը</translation>
 <translation id="7779840061887151693">էկրան</translation>
 <translation id="7781335840981796660">Օգտատիրոջ բոլոր հաշիվները և տեղային տվյալները կջնջվեն:</translation>
@@ -10039,7 +10034,6 @@
 <translation id="8729133765463465108">Սկանավորել QR կոդը տեսախցիկի միջոցով</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8731029916209785242">Թույլտվություններ (<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="873125854638499125">Բարելավել տեղորոշման ճշգրտությունը</translation>
 <translation id="8731268612289859741">Անվտանգության կոդ</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> կայքն ուզում է <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Միացքի համարը</translation>
@@ -10472,7 +10466,6 @@
 <translation id="9045160989383249058">Ձեր ընթերցանության ցուցակը տեղափոխվել է նոր կողային վահանակ։ Փորձեք այն այստեղ։</translation>
 <translation id="9045430190527754450">Google-ին է ուղարկում է այն էջի վեբ հասցեն, որը փորձում եք բացել</translation>
 <translation id="9048745018038487540">Նշել բոլոր տառատեսակները</translation>
-<translation id="9050135202879860719">Օգտագործեք գաղտնաբառ՝ ձեր <ph name="DEVICE_TYPE" /> մուտք գործելու համար</translation>
 <translation id="9050666287014529139">Անցաբառ</translation>
 <translation id="9052404922357793350">Շարունակել արգելափակումը</translation>
 <translation id="90528604757378587">Աշխատանքը ֆոնային ռեժիմում և որոշ վիզուալ էֆեկտներ, օրինակ՝ սահուն ոլորումը, կարող են սահմանափակվել։</translation>

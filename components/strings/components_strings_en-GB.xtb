@@ -204,6 +204,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1355301061807280185">Jobs</translation>
 <translation id="1357195169723583938">Who has used the device recently and when</translation>
 <translation id="1358187717814494928">Create sheet</translation>
+<translation id="1358223345833465883">Your search engine in Chromium</translation>
 <translation id="1359836962251219822">Kitchen and Dining</translation>
 <translation id="1360955481084547712">Open a new incognito window to browse privately</translation>
 <translation id="1363819917331173092">Don‘t offer to translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
@@ -277,6 +278,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Policies push:</translation>
 <translation id="1495677929897281669">Back to tab</translation>
+<translation id="1500286806237135498">Cameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Show cards from your Google Account</translation>
 <translation id="1504042622576912555">Flute</translation>
 <translation id="1507202001669085618">&lt;p&gt;You'll see this error if you're using a Wi-Fi portal where you have to sign in before you can get online.&lt;/p&gt;
@@ -311,6 +313,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       &lt;p&gt;Please adjust the date and time from the &lt;strong&gt;General&lt;/strong&gt; section of the &lt;strong&gt;Settings&lt;/strong&gt; app.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Your administrator will restart your device at <ph name="TIME" /> on <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Car racing</translation>
+<translation id="1563137369682381456">Expiry date</translation>
 <translation id="1563755205047885671">Action and platform games</translation>
 <translation id="1564634006476980707">HTTPS scheme recommended for search URL: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Networking information, such as addresses, interface configuration and connection quality</translation>
@@ -855,6 +858,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2606760465469169465">Auto-verify</translation>
 <translation id="2608019759319359258">When a topic is blocked, it won't be used to personalise ads</translation>
 <translation id="2610561535971892504">Click to copy</translation>
+<translation id="2612676031748830579">Card number</translation>
 <translation id="2612993535136743634">All security codes saved on your device and in Google Account will be deleted</translation>
 <translation id="2616412942031748191">Search Engine Optimisation and Marketing</translation>
 <translation id="2618206371527040026">Academic conferences and publications</translation>
@@ -916,6 +920,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2728127805433021124">Server's certificate is signed using a weak signature algorithm.</translation>
 <translation id="272937284275742856">Securely verifying your payment details…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Running Connectivity Diagnostics<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">Learn more about your search engine in Chromium</translation>
 <translation id="2731382536835015353">44 in x 68 in</translation>
 <translation id="2734319753272419592">Let Google use your baskets to search for personalised discounts. When available, discounts will automatically show up on your baskets.</translation>
 <translation id="273785062888389088">HVAC and Climate Control</translation>
@@ -2222,6 +2227,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5316812925700871227">Rotate Anti-clockwise</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319366980180850702">Literary Classics</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />Your default search engine lets you search the web and powers Chromium features<ph name="END_BOLD" /> like searching from the address bar and from images on web pages. A feature might not be available if your search engine doesn't support it.</translation>
 <translation id="5323043727018853753">Embedded content allowed</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> of <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Your browser is not managed</translation>
@@ -2616,6 +2622,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6106989379647458772">The web page at <ph name="PAGE" /> might be temporarily down or it may have moved permanently to a new web address.</translation>
 <translation id="6107012941649240045">Issued To</translation>
 <translation id="6107924765192360631">Just start with a few words or a first draft to get writing suggestions.</translation>
+<translation id="6108702513636120202">Your search engine in Chromium</translation>
 <translation id="6108849843016142864">Reptiles and amphibians</translation>
 <translation id="610911394827799129">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">See text and images copied to the clipboard</translation>
@@ -3517,7 +3524,6 @@ Additional details:
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7785790577395078482">this tablet</translation>
 <translation id="7786368602962652765">A required field is empty. Fill it before saving.</translation>
-<translation id="7786432318297177736">These search engines are shown in random order. You can change your default at any time in settings.</translation>
 <translation id="7791011319128895129">Unreleased</translation>
 <translation id="7791196057686275387">Bale</translation>
 <translation id="7791543448312431591">Add</translation>
@@ -3790,6 +3796,7 @@ Additional details:
 <translation id="8316555157357957253">Using now</translation>
 <translation id="8319269383395457801">Residential Sales</translation>
 <translation id="831997045666694187">Evening</translation>
+<translation id="8321448084834652864">You can change your search engine at any time in Chromium's settings.</translation>
 <translation id="8321476692217554900">notifications</translation>
 <translation id="8322402665880479974">Beds and Headboards</translation>
 <translation id="832567874344484841">Breakfast Foods</translation>
@@ -4145,6 +4152,7 @@ Additional details:
 <translation id="9042827002460091668">Please check your Internet connection and try again</translation>
 <translation id="9044359186343685026">Use Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">Microphones (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">These actions require the <ph name="POLICY_NAME" /> policy to be set to <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 in x 36 in</translation>
 <translation id="9049981332609050619">You attempted to reach <ph name="DOMAIN" />, but the server presented an invalid certificate.</translation>
@@ -4258,6 +4266,7 @@ Additional details:
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="961930410699694996">Location allowed this time</translation>
 <translation id="962484866189421427">This content might try to install deceptive apps that pretend to be something else or collect data that may be used to track you. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">Based on a law in your region, Chromium asks you to choose your default search engine. These search engines are popular in your region and are shown in random order.</translation>
 <translation id="963837307749850257">All users</translation>
 <translation id="964050462028070434">Manage passwords and passkeys…</translation>
 <translation id="969892804517981540">Official Build</translation>

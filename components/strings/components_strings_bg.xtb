@@ -204,6 +204,7 @@
 <translation id="1355301061807280185">Работни места</translation>
 <translation id="1357195169723583938">Кой е използвал устройството наскоро и кога</translation>
 <translation id="1358187717814494928">Създаване на таблица</translation>
+<translation id="1358223345833465883">Вашата търсеща машина в Chromium</translation>
 <translation id="1359836962251219822">Кухня и трапезария</translation>
 <translation id="1360955481084547712">Отворете нов прозорец в режим „инкогнито“, за да сърфирате частно</translation>
 <translation id="1363819917331173092">Да не се предлага превод на страниците от <ph name="SOURCE_LANGUAGE" /></translation>
@@ -277,6 +278,7 @@
     <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Разпространение на правилата:</translation>
 <translation id="1495677929897281669">Назад към раздела</translation>
+<translation id="1500286806237135498">Камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Показване на картите от профила ви в Google</translation>
 <translation id="1504042622576912555">Вълнообразна текстура</translation>
 <translation id="1507202001669085618">&lt;p&gt;Ще виждате това съобщение за грешка, ако използвате портал за Wi-Fi, където трябва да влезете в профил, преди да можете да преминете онлайн.&lt;/p&gt;
@@ -311,6 +313,7 @@
 &lt;p&gt;Моля, коригирайте датата и часа от секцията &lt;strong&gt;General&lt;/strong&gt; на приложението &lt;strong&gt;Settings&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Администраторът ще рестартира устройството ви в <ph name="TIME" /> на <ph name="DATE" /></translation>
 <translation id="1562805467275776390">Автосъстезания</translation>
+<translation id="1563137369682381456">Срок на валидност</translation>
 <translation id="1563755205047885671">Екшън и платформени игри</translation>
 <translation id="1564634006476980707">Препоръчителна схема на HTTPS за URL адреса за търсене: <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Информация за мрежите, като например адреси, конфигурация на интерфейса и качество на връзката</translation>
@@ -855,6 +858,7 @@
 <translation id="2606760465469169465">Автоматично потвърждаване</translation>
 <translation id="2608019759319359258">Когато дадена тема бъде блокирана, тя няма да се използва за персонализиране на рекламите</translation>
 <translation id="2610561535971892504">Кликнете, за да копирате</translation>
+<translation id="2612676031748830579">Номер на картата</translation>
 <translation id="2612993535136743634">Всички кодове за сигурност, запазени на устройството ви и в профила ви в Google, ще бъдат изтрити</translation>
 <translation id="2616412942031748191">Оптимизиране за търсещи машини и маркетинг чрез търсещи машини</translation>
 <translation id="2618206371527040026">Академични конференции и публикации</translation>
@@ -916,6 +920,7 @@
 <translation id="2728127805433021124">Сертификатът на сървъра е подписан със слаб алгоритъм.</translation>
 <translation id="272937284275742856">Подробностите за начина на плащане се потвърждават по сигурен начин...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Стартирайте диагностика на свързаността<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">Научете повече за търсещата си машина в Chromium</translation>
 <translation id="2731382536835015353">44 x 68 инча</translation>
 <translation id="2734319753272419592">Позволете на Google да използва кошниците ви, за да търси персонализирани отстъпки. Когато са налице, отстъпките автоматично ще се показват в кошниците ви.</translation>
 <translation id="273785062888389088">Системи за отопление, вентилация и климатизация</translation>
@@ -2222,6 +2227,7 @@
 <translation id="5316812925700871227">Завъртане обратно на часовниковата стрелка</translation>
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5319366980180850702">Литературна класика</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />Основната търсеща машина ви дава възможност да търсите в мрежата и да се възползвате от функции на Chromium<ph name="END_BOLD" />, като например търсене от адресната лента и от изображенията в уеб страниците. Някои функции може да не са налице, ако не се поддържат от търсещата ви машина.</translation>
 <translation id="5323043727018853753">Вграденото съдържание е разрешено</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> от <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Браузърът ви не се управлява</translation>
@@ -2616,6 +2622,7 @@
 <translation id="6106989379647458772">Уеб страницата на адрес <ph name="PAGE" /> може временно да не е налице или да е била преместена на нов уеб адрес.</translation>
 <translation id="6107012941649240045">Издаден на</translation>
 <translation id="6107924765192360631">За да получите предложения за писане, трябва само да започнете с няколко думи или първоначална чернова.</translation>
+<translation id="6108702513636120202">Вашата търсеща машина в Chromium</translation>
 <translation id="6108849843016142864">Влечуги и земноводни</translation>
 <translation id="610911394827799129">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Да преглежда текста и изображенията, копирани в буферната памет</translation>
@@ -2660,6 +2667,7 @@
 <translation id="6195371403461054755">Геология</translation>
 <translation id="6195418151868446719">Потребителска електроника</translation>
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
+<translation id="6197467523841310553">Кликнете с десния бутон, така че да попълните запазената си информация във всеки онлайн формуляр с по-малко писане</translation>
 <translation id="6197648101609735209">89 x 89 мм</translation>
 <translation id="6198480336395236519">Показалци по цялата дължина</translation>
 <translation id="6203231073485539293">Проверете връзката си с интернет</translation>
@@ -3516,7 +3524,6 @@
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7785790577395078482">този таблет</translation>
 <translation id="7786368602962652765">Едно от задължителните полета е празно. Попълнете го, преди да запазите.</translation>
-<translation id="7786432318297177736">Тези търсещи машини се показват в произволен ред. Можете да промените основната си по всяко време от настройките.</translation>
 <translation id="7791011319128895129">Непубликувано</translation>
 <translation id="7791196057686275387">Пакетиране</translation>
 <translation id="7791543448312431591">Добавяне</translation>
@@ -3789,6 +3796,7 @@
 <translation id="8316555157357957253">Използва се в момента</translation>
 <translation id="8319269383395457801">Жилищни продажби</translation>
 <translation id="831997045666694187">Вечерта</translation>
+<translation id="8321448084834652864">Можете да промените търсещата машина по всяко време от настройките на Chromium.</translation>
 <translation id="8321476692217554900">известия</translation>
 <translation id="8322402665880479974">Легла и табли за легло</translation>
 <translation id="832567874344484841">Храни за закуска</translation>
@@ -4144,6 +4152,7 @@
 <translation id="9042827002460091668">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="9044359186343685026">Използване на Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Тези действия изискват за правилото <ph name="POLICY_NAME" /> да бъде зададено <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 инча</translation>
 <translation id="9049981332609050619">Опитахте да отворите <ph name="DOMAIN" />, но сървърът предостави невалиден сертификат.</translation>
@@ -4257,6 +4266,7 @@
 <translation id="961663415146723894">Подвързване на долната част</translation>
 <translation id="961930410699694996">Достъпът до местоположението е разрешен този път</translation>
 <translation id="962484866189421427">Въпросното съдържание може да се опита да инсталира измамни приложения, които се представят за нещо друго или събират данни, които може да се използват за проследяването ви. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">Въз основа на законодателството в региона ви Chromium иска да изберете основна търсеща машина. Тези търсещи машини са популярни в региона ви и се показват в произволен ред.</translation>
 <translation id="963837307749850257">Всички потребители</translation>
 <translation id="964050462028070434">Управление на паролите и кодовете за достъп…</translation>
 <translation id="969892804517981540">Официално издание</translation>

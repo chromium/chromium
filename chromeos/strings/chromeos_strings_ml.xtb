@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">കുടകൾ</translation>
 <translation id="1459693405370120464">കാലാവസ്ഥ</translation>
 <translation id="1468664791493211953">ഓഫറുകൾ</translation>
+<translation id="1472675084647422956">കൂടുതൽ‍ കാണിക്കുക</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, ഒപ്പം നിങ്ങളുടെ ആക്‌റ്റിവിറ്റികൾ നിരീക്ഷിക്കാനുമായേക്കും.</translation>
 <translation id="1478594628797167447">സ്‌കാനർ</translation>
 <translation id="1483493594462132177">അയയ്‌ക്കുക</translation>
@@ -407,6 +408,7 @@
 <translation id="3486220673238053218">നിർവചനം</translation>
 <translation id="3488065109653206955">ഭാഗികമായി പ്രവര്‍ത്തനക്ഷമമാക്കി</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ടോണോടുകൂടിയ <ph name="OFFICE_STYLE" /> ഓഫീസ്</translation>
+<translation id="3493187369049186498">നിങ്ങളുടെ Chromebook ഉപയോഗിച്ചാണ് ഡാറ്റ അളക്കുന്നത്. ഇത് ദാതാവിന്റെ ഡാറ്റയിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
 <translation id="3502426834823382181">എല്ലാ ആപ്പുകളും കാണുക</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />പ്രകടന അടയാള ഡാറ്റ<ph name="END_LINK1" /> അയയ്‌ക്കുക</translation>
 <translation id="3517001332549868749">ChromeOS അപ്ഡേറ്റ്</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">നിങ്ങളുടെ ബാറ്ററി പൂർണ്ണമായി ചാർജ് ചെയ്തതിന്റെ എണ്ണം</translation>
 <translation id="3877066159641251281">വിവർത്തനം ശ്രവിക്കുക</translation>
 <translation id="3885327323343477505">സ്ക്രീൻ സേവർ മാറ്റുക</translation>
+<translation id="3889914174935857450">തീയതി റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="391412459402535266">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലാപ്‌ടോപ്പ് മോഡിലേക്ക് മാറുക.</translation>
 <translation id="3916998944874125962">സ്ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="3923184630988645767">ഡാറ്റ ഉപയോഗം</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">സ്‌കാനറുകളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="6232017090690406397">ബാറ്ററി</translation>
+<translation id="6234024205316847054">ഔട്ട്ലൈനുകൾ കാണിക്കുക</translation>
 <translation id="6235460611964961764">ഡാറ്റാ ഉപയോഗം നേരിട്ട് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6243280677745499710">നിലവിൽ സജ്ജീകരിച്ചിരിക്കുന്നത്</translation>
 <translation id="6250316632541035980">ബേക്കണും മുട്ടയും</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> എക്‌സ്‌ക്ലൂസീവ് ആർട്ട്‌വർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7108668606237948702">നല്‍കുക</translation>
 <translation id="7119389851461848805">പവർ</translation>
+<translation id="7129287270910503851">എല്ലാ മാസവും ഈ ദിവസം നിങ്ങളുടെ ഡാറ്റാ ഉപയോഗം റീസെറ്റ് ചെയ്യും</translation>
 <translation id="7130438335435247835">ആക്സസ്സ് പോയിന്റിന്റെ പേര് (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{നെയിം സെർവർ}other{നെയിം സെർവറുകൾ}}</translation>
 <translation id="7135814714616751706">Search കുറുക്കുവഴികൾ</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">APN വിശദാംശങ്ങൾ</translation>
 <translation id="8522687886059337719">നിങ്ങൾക്ക് ഇപ്പോൾ പുതിയ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />വാൾപേപ്പറുകളിലേക്കും<ph name="END_LINK_WALLPAPER_SUBPAGE" /> <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />സ്ക്രീൻ സേവറിലേക്കും<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> ആക്‌സസ് ഉണ്ട്</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്നത്</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">നിങ്ങളുടെ സേവനദാതാവിന് അവരുടെ നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഈ ഓപ്‌ഷൻ ആവശ്യമായി വന്നേക്കാം. വിശദാംശങ്ങൾക്ക് നിങ്ങളുടെ സേവനദാതാവുമായി ബന്ധപ്പെടുക.</translation>
 <translation id="8576249514688522074">പ്രവർത്തനമാരംഭിച്ചിട്ടില്ല</translation>

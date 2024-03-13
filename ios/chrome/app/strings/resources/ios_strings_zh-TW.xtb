@@ -118,6 +118,7 @@
 <translation id="1580783302095112590">已傳送郵件。</translation>
 <translation id="1582732959743469162">目前所有下載進度都會因此停止。</translation>
 <translation id="158591023028013564">{count,plural, =1{已將網頁新增至閱讀清單}other{已將 {count} 個網頁新增至閱讀清單}}</translation>
+<translation id="1587629076612412684">享有個人化的 Google 服務</translation>
 <translation id="1594034544529347967">開始時間</translation>
 <translation id="160275202205869636">開啟時，可在 Google 帳戶中使用及儲存資料。關閉後，資料只會儲存到這部裝置。</translation>
 <translation id="1605405588277479165">關閉 - 不建議</translation>
@@ -1607,6 +1608,7 @@
 <translation id="9106655997975673326">來源：<ph name="SOURCE_DEVICE" /></translation>
 <translation id="9107664647686727385">檢查是否有遭外洩的密碼</translation>
 <translation id="9109699888944026290">{count,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
+<translation id="9110489518258031250">控管其他 Google 服務如何運用已同步的瀏覽記錄提供個人化體驗</translation>
 <translation id="9120217828624527905">切換成整頁翻譯</translation>
 <translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>

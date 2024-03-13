@@ -475,6 +475,7 @@ Als je dit beleid instelt op PromptInTab, wordt na het verlopen van de verificat
 <translation id="1396119629372155901">De functie ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes staat uit</translation>
 <translation id="1397855852561539316">Voorgestelde URL voor standaardzoekprovider</translation>
 <translation id="1402227992519954892">Rapportage van app-informatie van apparaat aanzetten</translation>
+<translation id="1405444733221330570">Orca aanzetten</translation>
 <translation id="141279920573530952">Als je dit beleid instelt, kun je een lijst met sites maken die automatisch toestemming krijgen voor toegang tot alle beschikbare seriële poorten.
 
       De URL's moeten geldig zijn, anders wordt het beleid genegeerd. Er wordt alleen gekeken naar de oorsprong (schema, host en poort) van de URL.
@@ -3319,6 +3320,20 @@ Als je het beleid niet instelt, worden er geen telemetriegegevens van websites g
 <translation id="3652670852519271837">Sites toestaan om gebruikers schrijftoegang te vragen tot bestanden en directory's via de File System API</translation>
 <translation id="3653237928288822292">Icoon voor standaardzoekprovider</translation>
 <translation id="3654906736796256792">Toestaan dat de audiosandbox wordt uitgevoerd</translation>
+<translation id="3655252664209966774">De X.509-sleutelgebruiksextensie definieert hoe de sleutel in een certificaat kan worden gebruikt. Zulke instructies zorgen ervoor dat certificaten niet worden gebruikt in een onbedoelde context, wat bescherming biedt tegen een klasse van cross-protocol-aanvallen op HTTPS en andere protocollen. Hiervoor moeten HTTPS-clients nagaan of de servercertificaten overeenkomen met de TLS-parameters van de verbinding.
+
+Vanaf <ph name="PRODUCT_NAME" /> 124 staat deze check altijd aan.
+
+<ph name="PRODUCT_NAME" /> 123 en eerder tonen het volgende gedrag:
+
+Als je dit beleid toepast, voert <ph name="PRODUCT_NAME" /> deze check uit.
+Zo wordt voorkomen dat aanvallers de browser manipuleren om een sleutel te interpreteren op een manier die de eigenaar van het certificaat niet bedoelde.
+
+Als je dit beleid niet toepast, slaat <ph name="PRODUCT_NAME" /> deze controle over voor HTTPS-verbindingen die zowel via TLS 1.2 onderhandelen als een RSA-certificaat gebruiken dat is gekoppeld aan een lokaal vertrouwensanker. Voorbeelden van lokale vertrouwensankers zijn door het beleid geleverde of door de gebruiker geïnstalleerde rootcertificaten. In alle andere gevallen wordt de controle onafhankelijk van de instelling van dit beleid uitgevoerd.
+
+Als het beleid niet is ingesteld, gedraagt <ph name="PRODUCT_NAME" /> zich alsof het beleid wordt toegepast.
+
+Verbindingen die niet door deze controle komen, krijgen de fout ERR_SSL_KEY_USAGE_INCOMPATIBLE. Sites met deze fout hebben waarschijnlijk een verkeerd ingesteld certificaat. Moderne ECDHE_RSA cipher suites gebruiken de sleutelgebruiksoptie 'digitalSignature', terwijl verouderde cipher suites voor RSA-ontsleuteling de sleutelgebruiksoptie 'keyEncipherment' gebruiken. Als beheerders niet zeker weten welke wordt gebruikt, moeten ze beide opnemen in RSA-certificaten die zijn bedoeld voor HTTPS.</translation>
 <translation id="3655710915351748191">Het Chrome Web Store-icoon niet tonen in de <ph name="PRODUCT_OS_NAME" />-launcher en op de pagina Nieuw tabblad</translation>
 <translation id="3655885297177292093">Event.path API heeft de standaardstatus: beschikbaar vóór M109 en niet beschikbaar in M109 t/m 114.</translation>
 <translation id="3659542706175323490">Als je het beleid toepast, blijft opstarten bij netstroom aan als het apparaat dit ondersteunt. Dankzij opstarten bij netstroom kan het systeem automatisch opstarten als het is uitgezet of in de slaapstand staat en het systeem is aangesloten op netstroom.
@@ -4639,6 +4654,7 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 
           Als dit beleid niet is ingesteld, staat de functie voor monogeluid in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="4757563299858487173">De functies uitzetten</translation>
+<translation id="4758335997982239449">Zet de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan.</translation>
 <translation id="4767059955897420757">Als je het beleid toepast of niet instelt, kan de promotie voor de extensie voor inloggegevensproviders aan de gebruiker worden getoond.
 Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggegevensproviders niet getoond aan de gebruiker.</translation>
 <translation id="4768446404233019970">3DES cipher suites aanzetten in TLS</translation>
@@ -4866,6 +4882,7 @@ We raden je af videodecodering met hardwareversnelling uit te zetten. Dit leidt 
 <translation id="499654521603185442">Rapportage van websitetelemetrie</translation>
 <translation id="4997074784107449343">Als de optie Afdrukken als afbeelding beschikbaar is, wordt deze standaard niet ingesteld voor afdrukvoorbeelden van pdf-documenten.</translation>
 <translation id="500149597848135831">Alle varianten aanzetten</translation>
+<translation id="5006222080181284191">Bepalen of de ChromeOS-functie Help me met schrijven kan worden aangezet</translation>
 <translation id="5017157692744444035">Met dit beleid wordt bepaald of er informatie moet worden gerapporteerd die kan worden gebruikt om machines te identificeren, zoals machinenaam en netwerkadressen.
 
 Als je het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet instelt of niet toepast, wordt dit beleid genegeerd.
@@ -4923,6 +4940,13 @@ Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLO
 <translation id="5073609397321802133">Als het beleid is ingesteld op 'False', kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' niet aanpassen. Eventuele bestaande aangepaste achtergronden worden definitief verwijderd, zelfs als het beleid later weer wordt ingesteld op 'True'.
 
       Als het beleid wordt ingesteld op 'True' of niet wordt ingesteld, kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' aanpassen.</translation>
+<translation id="5073788301065423829">Met dit beleid kun je Help me met schrijven aan- of uitzetten voor ChromeOS.
+
+Als je dit beleid toepast, staat Help me met schrijven aan.
+
+Als je dit beleid niet toepast, staat Help me met schrijven uit.
+
+Als je dit beleid niet instelt, staat Help me met schrijven aan op niet-beheerde apparaten en uit op zakelijke beheerde apparaten.</translation>
 <translation id="5076953589932162038">Instellingen voor First-Party Sets</translation>
 <translation id="5078623750797048009">Pdf-annotaties aanzetten</translation>
 <translation id="5080300140183363718">Instellingen voor gegevensmigratie voor profielscheiding</translation>
@@ -5614,6 +5638,9 @@ Als je het beleid niet instelt of instelt op een lege lijst, worden bevestigings
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5607021831414604820">Rapportage van opslagstatus van apparaat aanzetten</translation>
 <translation id="5608114828230655271">Standaard apparaatgedrag</translation>
+<translation id="561001683838346956">Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> 124. Vanaf deze versie zijn onveilige hashes nooit toegestaan. In eerdere versies bepaalde dit beleid of de browser verouderde onveilige hashes toestond tijdens het TLS-handshakeproces.
+
+      Als je dit beleid niet instelde, volgde <ph name="PRODUCT_NAME" /> het standaard uitrolproces om onveilige hashes te verbieden. Als je het beleid toepaste, stond <ph name="PRODUCT_NAME" /> toe dat onveilige hashes door een server werden gebruikt tijdens de onderhandeling over een TLS-handshake. Als je het beleid niet toepaste, stond <ph name="PRODUCT_NAME" /> niet toe dat onveilige hashes door een server werden gebruikt tijdens de onderhandeling over een TLS-handshake.</translation>
 <translation id="5611869109049836323">Beperkingen afdwingen in lokaal toegevoegde vertrouwensankers</translation>
 <translation id="5614865701790130558">Gebeurtenissen voor op beleid gebaseerde installaties van extensies registreren</translation>
 <translation id="561493980641967737">Als je het beleid toepast, is de geanonimiseerde gegevensverzameling met URL-sleutel altijd actief. Hiermee worden de URL's van pagina's die de gebruiker bezoekt naar Google gestuurd om zoekopdrachten en browsen te verbeteren.
@@ -5788,6 +5815,7 @@ Als je het beleid niet toepast, wordt <ph name="PRODUCT_NAME" /> uitgezet.</tran
 
       Opmerking: De schaalfactor moet 100% of meer zijn.</translation>
 <translation id="5740636973289452345">Rapportage van extensie- en plug-ingegevens aanzetten</translation>
+<translation id="5741110260062082926">Orca uitzetten</translation>
 <translation id="5746149754419996562">Hiermee wordt de aanwezigheid van Glanceables-widgets in <ph name="PRODUCT_OS_NAME" /> aangezet. Dit geldt met name voor de widgets die toegankelijk zijn via de datumchip op de plank.
 Als je dit beleid toepast, staan Glanceables aan in <ph name="PRODUCT_OS_NAME" />.
 Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -5953,6 +5981,7 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
       Als je het beleid niet instelt, kan <ph name="PRODUCT_NAME" /> bepalen welke aanpak wordt gebruikt.</translation>
 <translation id="5888645257599699215">Audiostatus van apparaat rapporteren</translation>
 <translation id="5890063326284543943">Gebruik van de Serial API beheren</translation>
+<translation id="5893223274510346852">Zet de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> uit.</translation>
 <translation id="5893303508158298667">Als je <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" /> hebt toegepast en <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> toepast of niet instelt, kunnen externe clients relayservers gebruiken om verbinding met dit apparaat te maken als er geen rechtstreekse verbinding beschikbaar is (bijvoorbeeld vanwege firewallbeperkingen).
 
       Als je het beleid niet toepast, wordt externe toegang niet uitgezet, maar zijn alleen verbindingen vanuit hetzelfde netwerk toegestaan (geen NAT-traversal of -relay).</translation>
@@ -6324,6 +6353,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       Hierdoor staan gebruikers bloot aan beveiligingsrisico's doordat het subsysteem voor audio niet in een sandbox wordt uitgevoerd.
       Als dit beleid niet wordt ingesteld, wordt de standaardconfiguratie voor de audiosandbox gebruikt, die per platform kan verschillen.
       Dit beleid is bedoeld om bedrijven de flexibiliteit te bieden om de audiosandbox uit te zetten als ze instellingen voor beveiligingssoftware gebruiken die de sandbox kunnen verstoren.</translation>
+<translation id="624808913905048408">Sta gebruikers toe om de instelling IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> aan of uit te zetten op hun apparaat.</translation>
 <translation id="624818583115864448">poort 554 (blokkering kan worden opgeheven tot 15-10-2021)</translation>
 <translation id="6249912382559535329">De toegankelijkheidsfunctie voor het virtuele toetsenbord op het inlogscherm aanzetten.
 
@@ -7960,6 +7990,7 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
       Als er geen interval is ingesteld, wordt het standaardinterval van 3 minuten toegepast.</translation>
 <translation id="7469554574977894907">Zoeksuggesties aanzetten</translation>
 <translation id="747275827471712187">Het verouderde gedrag van <ph name="ATTRIBUTE_SAMESITE_NAME" /> voor cookies op deze sites terugzetten</translation>
+<translation id="7476030153540156377">Kies of de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.</translation>
 <translation id="7476158778585368567">De afdruktaken van een apparaat rapporteren.
 
       Als je het beleid instelt op False of niet instelt, worden de gegevens niet gerapporteerd.
@@ -8352,6 +8383,13 @@ Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de 
 <translation id="7777535871204167559">Externe opslagapparaten behandelen als alleen-lezen</translation>
 <translation id="7781452670568828399">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie wijzigen.</translation>
 <translation id="7784062550705119230">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID overeenkomt met de waarden in dit beleid, zijn beschikbaar voor gebruikers. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
+<translation id="7785199109546027763">Beleid om te bepalen of de functie IP-beveiliging van <ph name="PRIVACY_SANDBOX_NAME" /> moet worden aangezet.
+
+Als je het beleid niet toepast, wordt de functie IP-beveiliging uitgezet en kunnen gebruikers de functie niet aanzetten via de UI-instellingen.
+Als je het beleid toepast, wordt de functie IP-beveiliging aangezet en kunnen gebruikers de functie niet uitzetten via de UI-instellingen.
+Als het beleid niet is ingesteld, kunnen gebruikers de functie IP-beveiliging op hun apparaat aan- of uitzetten via de UI-instellingen.
+
+Opmerking: Het gedrag van de functie IP-beveiliging voor zakelijke gebruikers kan in de loop van de tijd variëren als je het beleid toepast of als het beleid niet is ingesteld en de functie wordt aangezet via de UI-instellingen.</translation>
 <translation id="7788511847830146438">Per profiel</translation>
 <translation id="7790221177424764797">Met dit beleid wordt bepaald of de regels van het SiteList-beleid van <ph name="IE_PRODUCT_NAME" /> moeten worden geladen.
 

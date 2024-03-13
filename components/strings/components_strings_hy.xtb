@@ -315,6 +315,7 @@
       &lt;p&gt;Ուղղեք ամսաթիվը և ժամը &lt;strong&gt;Կարգավորումներ&lt;/strong&gt; հավելվածի &lt;strong&gt;Ընդհանուր&lt;/strong&gt; բաժնում:&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Ձեր ադմինիստրատորը կվերագործարկի սարքը <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1562805467275776390">Ավտոմրցարշավ</translation>
+<translation id="1563137369682381456">Սպառման ամսաթիվը</translation>
 <translation id="1563755205047885671">Էքշն խաղեր և պլատֆորմերներ</translation>
 <translation id="1564634006476980707">Խորհուրդ տրվող HTTPS սխեմա որոնման URL-ի համար՝ <ph name="SEARCH_URL" /></translation>
 <translation id="156703335097561114">Ցանցային տեղեկությունները, օրինակ՝ հասցեները, միջերեսի կարգավորումները և կապի որակը</translation>
@@ -859,6 +860,7 @@
 <translation id="2606760465469169465">Ավտոմատ ստուգում</translation>
 <translation id="2608019759319359258">Երբ որևէ թեմա արգելափակված է, այն չի օգտագործվի գովազդն անհատականացնելու համար</translation>
 <translation id="2610561535971892504">Սեղմել՝ պատճենելու համար</translation>
+<translation id="2612676031748830579">Քարտի համարը</translation>
 <translation id="2612993535136743634">Անվտանգության բոլոր կոդերը, որոնք պահված են ձեր սարքում և Google հաշվում, կջնջվեն</translation>
 <translation id="2616412942031748191">Վեբկայքերի որոնողական օպտիմալացում և մարքեթինգ</translation>
 <translation id="2618206371527040026">Գիտական կոնֆերանսներ և հրապարակումներ</translation>
@@ -3528,7 +3530,6 @@
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7785790577395078482">այս պլանշետը</translation>
 <translation id="7786368602962652765">Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։</translation>
-<translation id="7786432318297177736">Այս որոնողական համակարգերը ցուցադրվում են պատահական հերթականությամբ։ Դուք ցանկացած ժամանակ կարող եք փոխել ձեր ընտրությունը կարգավորումներում։</translation>
 <translation id="7791011319128895129">Չթողարկված</translation>
 <translation id="7791196057686275387">Սեղմում</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>

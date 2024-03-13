@@ -86,6 +86,7 @@
 <translation id="1452939186874918380">ร่ม</translation>
 <translation id="1459693405370120464">สภาพอากาศ</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
+<translation id="1472675084647422956">แสดงเพิ่มเติม</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
 <translation id="1478594628797167447">เครื่องสแกน</translation>
 <translation id="1483493594462132177">ส่ง</translation>
@@ -348,7 +349,7 @@
 <translation id="3091839911843451378">ไม่สำเร็จ - หยุดทำงาน</translation>
 <translation id="3102119246920354026">แคช</translation>
 <translation id="3122464029669770682">CPU</translation>
-<translation id="3122614491980756867">สระว่ายน้ำ</translation>
+<translation id="3122614491980756867">สระน้ำ</translation>
 <translation id="3124039320086536031">อุปกรณ์เชื่อมต่ออยู่</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{นำหน้าออกไหม}=1{นำหน้าที่ {PAGE_NUMBER} ออกไหม}other{นำหน้าที่ {PAGE_NUMBER} ออกไหม}}</translation>
 <translation id="3140130301071865159">หิมะ</translation>
@@ -407,12 +408,13 @@
 <translation id="3486220673238053218">คำจำกัดความ</translation>
 <translation id="3488065109653206955">เปิดการใช้งานบางส่วน</translation>
 <translation id="3492882532495507361">สำนักงาน <ph name="OFFICE_STYLE" /> ที่มีโทนสี <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">ข้อมูลนี้วัดโดย Chromebook ของคุณ ซึ่งอาจแตกต่างกับข้อมูลจากผู้ให้บริการ</translation>
 <translation id="3502426834823382181">ดูแอปทั้งหมด</translation>
 <translation id="3510890413042482857">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลการติดตามประสิทธิภาพ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">การอัปเดต Chrome OS</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="3532980081107202182">เหลือเวลาอีกประมาณ <ph name="MIN_REMAINING" /> นาที</translation>
-<translation id="3533790840489634638">สระว่ายน้ำ</translation>
+<translation id="3533790840489634638">สระน้ำ</translation>
 <translation id="3547264467365135390">สูตร</translation>
 <translation id="3557205324756024651">ข้อมูลประจำตัวในเครื่อง (ไม่บังคับ)</translation>
 <translation id="3565064564551103223">IP ที่อนุญาต</translation>
@@ -466,6 +468,7 @@
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
 <translation id="3877066159641251281">ฟังคำแปล</translation>
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
+<translation id="3889914174935857450">วันที่รีเซ็ต</translation>
 <translation id="391412459402535266">ทดสอบอุปกรณ์ไม่ได้ เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="3916998944874125962">จับภาพหน้าจอ</translation>
 <translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
@@ -522,7 +525,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">คุณต้องมีพื้นที่เหลืออย่างน้อย 500 MB จึงจะทดสอบหน่วยความจำได้ ไปที่การตั้งค่า &gt; การจัดการพื้นที่เก็บข้อมูลเพื่อเพิ่มพื้นที่</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
-<translation id="4251839292699800785">ห้องทำงานที่มีสไตล์</translation>
+<translation id="4251839292699800785">สำนักงานที่มีสไตล์</translation>
 <translation id="4258281355379922695">เวลาในตอบสนองของ HTTP</translation>
 <translation id="4266143281602681663">ไหมพรม</translation>
 <translation id="4271957103967917607">ดูแบบเต็มหน้าจอ</translation>
@@ -854,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ไม่มีเครื่องสแกนที่ใช้ได้</translation>
 <translation id="6232017090690406397">แบตเตอรี่</translation>
+<translation id="6234024205316847054">แสดงโครงร่าง</translation>
 <translation id="6235460611964961764">รีเซ็ตปริมาณการใช้อินเทอร์เน็ตด้วยตนเอง</translation>
 <translation id="6243280677745499710">วอลเปเปอร์ปัจจุบัน</translation>
 <translation id="6250316632541035980">เบคอนและไข่</translation>
@@ -1004,6 +1008,7 @@
 <translation id="7107255225945990211">เลือกงานศิลปะพิเศษเฉพาะคุณจาก <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7119389851461848805">เปิด/ปิด</translation>
+<translation id="7129287270910503851">ปริมาณการใช้อินเทอร์เน็ตจะรีเซ็ตในวันนี้ของทุกเดือน</translation>
 <translation id="7130438335435247835">จุดเข้าใช้งาน (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7135814714616751706">ค้นหาทางลัด</translation>
@@ -1242,6 +1247,7 @@
 <translation id="8508640263392900755">รายละเอียด APN</translation>
 <translation id="8522687886059337719">ตอนนี้คุณเข้าถึง<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />วอลเปเปอร์<ph name="END_LINK_WALLPAPER_SUBPAGE" />และ<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ภาพพักหน้าจอ<ph name="END_LINK_SCREENSAVER_SUBPAGE" />ใหม่ได้แล้ว</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">ทำงานด้วย AI ของ Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ผู้ให้บริการอาจกำหนดให้ใช้ตัวเลือกนี้เพื่อให้เชื่อมต่อเครือข่ายของตนได้ โปรดติดต่อสอบถามรายละเอียดจากผู้ให้บริการ</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>

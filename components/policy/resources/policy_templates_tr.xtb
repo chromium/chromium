@@ -7734,6 +7734,7 @@ Bu politika devre dışı bırakılırsa şifreler hiçbir zaman hatırlanmaz ve
           Bu politika ayarlanmadan bırakılırsa ilk başta farenin sol düğmesi birincil anahtar olur, ancak kullanıcı bunu istediği zaman değiştirebilir.</translation>
 <translation id="7136237405361383549">Alan deneme yapılandırmasına göre varsayılan oluşturucuyu kullan.</translation>
 <translation id="7138762292550697459">JavaScript setTimeout() fonksiyonunun minimum zaman aşımını kontrol et.</translation>
+<translation id="7138792262152376158">PrefixedVideoFullscreen API için düzenli desteği sonlandırma zaman çizelgelerini takip eder</translation>
 <translation id="714219487865269980">Klavye odağını vurgulamayı etkinleştir</translation>
 <translation id="7144022711746703451">
       WebDriver artık mevcut tüm politikalarla uyumlu olduğundan gerekliliğini yitiren bu politika, M80 sürümünde kaldırılmıştır.
@@ -7901,6 +7902,7 @@ bir SPKI (SubjectPublicKeyInfo) içeren sertifikalara güvenilmez.</translation>
 <translation id="7269263983506766969">Ses işlemi için varsayılan önceliği kullan</translation>
 <translation id="7270001383428188269">Bu istemci sertifikasının tanımlayıcısı.</translation>
 <translation id="7271085005502526897">İlk çalıştırmada ana sayfayı varsayılan tarayıcıdan içe aktar</translation>
+<translation id="7272043145652398361">Önekli video tam ekran API'lerini devre dışı bırakır</translation>
 <translation id="7272892848025145170">Kerberos işlevinin etkinleştirilip etkinleştirilmediğini kontrol eder. Kerberos, web uygulamaları ve dosya paylaşımlarıyla kimlik doğrulamak için kullanılabilecek bir kimlik doğrulama protokolüdür.
 
 Politika etkinleştirilirse Kerberos işlevi etkinleştirilir. Kerberos hesapları, "Kerberos hesaplarını yapılandır" politikası aracılığıyla veya Kerberos ayarları sayfasındaki Kerberos Hesapları ayarı aracılığıyla eklenebilir.
@@ -8108,6 +8110,7 @@ bırakılırsa sesli okuma etkinleştirilir.</translation>
 <translation id="7459633275230216698">Dosya seçimi iletişim kutularına izin ver</translation>
 <translation id="7462256705280836453"><ph name="PRIVACY_SANDBOX_NAME" /> site tarafından önerilen reklam ayarının devre dışı bırakılıp bırakılamayacağını seç.</translation>
 <translation id="7463055558720530430">Kullanıcıların Kerberos şifrelerini hatırlamasına izin ver</translation>
+<translation id="7463934096276667908">Önekli video tam ekran API'lerini etkinleştirir</translation>
 <translation id="7464058117970792805">Yazdırma önizlemeyi etkinleştir</translation>
 <translation id="7464991223784276288">Eşleşen URL'lerden çerezleri geçerli oturumla sınırlama</translation>
 <translation id="7468182772656807573">Politikanın ayarlanması, izleme amaçlı ağ paketlerinin ne sıklıkla gönderileceğini (milisaniye olarak) belirler. Sıklık 30 saniye ile 24 saat arasında değişir. Bu aralığın dışındaki değerler aralık içine kaydırılır.
@@ -8444,6 +8447,7 @@ Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından s
 <translation id="7734212505800048991">
           İzin verilenler listesi dışındaki bağlamlardan kaynaklanan getDisplayMedia çağrıları
           reddedilir.</translation>
+<translation id="7734846328530412287">Desteği sonlandırılan önekli video tam ekran API'sinin kullanılabilirliğini yönet</translation>
 <translation id="7736218466096907954">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" />, yeni indirme baloncuğu kullanıcı arayüzünü gösterir.
 
       Politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, eski indirme rafı kullanıcı arayüzünü göstermeye devam eder.
@@ -9187,6 +9191,15 @@ Eski teknolojiler hakkında daha fazla bilgiyi https://chromestatus.com/features
 <translation id="8331479227794770304">Yapışkan tuşları etkinleştir</translation>
 <translation id="8332822245414537447">RSA anahtarı kullanma kontrolünü devre dışı bırak</translation>
 <translation id="8334685561819743286">Kullanıcılar yazarken fiziksel klavyede otomatik düzeltme özelliğini devre dışı bırak</translation>
+<translation id="8336819406993366823">Politika, <ph name="ENABLED_VALUE_NAME" /> değerine ayarlanırsa önekli videoya özgü tam ekran API'lerinin (ör. Video.webkitEnterFullscreen()) JavaScript'ten kullanılmasına izin verilir.
+
+Politikanın <ph name="DISABLED_VALUE_NAME" /> değerine ayarlanması yalnızca standart tam ekran API'lerini (ör. Element.requestFullscreen()) bırakarak önekli videoya özgü tam ekran API'lerinin JavaScript'te kullanılmasını engeller.
+
+Politikanın <ph name="RUNTIME_ENABLED_VALUE_NAME" /> değerine ayarlanması, PrefixedFullscreenVideo çalışma zamanı etkin özellik bayrağının, önekli videoya özgü tam ekran API'lerinin web siteleri tarafından kullanılabilir olup olmadığını belirlemesine izin verir.
+
+Politika ayarlanmazsa davranış varsayılan olarak <ph name="RUNTIME_ENABLED_VALUE_NAME" /> değerine ayarlanır.
+
+Not: Bu politika, webkit önekli tam ekran API'lerinden geçişe yardımcı olacak geçici bir çözümdür. M130 sürümünde veya daha sonraki birkaç sürümde geçici olarak kaldırılacaktır.</translation>
 <translation id="8337114537412769126"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> açıksa <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> protokolünün ayarlanması, POST ile öneri araması yaparken parametreleri belirtir. Virgülle ayrılmış ad-değer çiftlerini içerir. Değer, <ph name="SEARCH_TERM_MARKER" /> gibi bir şablon parametresi ise gerçek arama terimleri verisiyle değiştirilir.
 
       <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> politikası ayarlanmadan bırakılırsa öneri araması istekleri GET yöntemi kullanılarak gönderilir.</translation>

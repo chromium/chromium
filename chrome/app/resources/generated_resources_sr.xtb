@@ -2187,6 +2187,7 @@
 <translation id="2620215283731032047">Безбедно преузимање датотеке <ph name="FILE_NAME" /> није успело.</translation>
 <translation id="2620245777360407679">Уређаји који су тренутно повезани на хотспот</translation>
 <translation id="2620436844016719705">Систем</translation>
+<translation id="2620900772667816510">Bluetooth супер резолуција</translation>
 <translation id="262154978979441594">Обучавајте гласовни модел Google помоћника</translation>
 <translation id="26224892172169984">Не дозволи ниједном сајту да рукује протоколима</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2813,7 +2814,6 @@
 <translation id="3094521107841754472">Цена је промењена из <ph name="PREVIOUS_PRICE" /> у <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Обележивачи, лозинке и други подаци прегледања се синхронизују са примарним налогом.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 потенцијално штетан додатак је искључен. Можете и да га уклоните.}one{{NUM_EXTENSIONS} потенцијално штетан додатак је искључен. Можете и да га уклоните.}few{{NUM_EXTENSIONS} потенцијално штетна додатка су искључена. Можете и да их уклоните.}other{{NUM_EXTENSIONS} потенцијално штетних додатака је искључено. Можете и да их уклоните.}}</translation>
-<translation id="3101057112460908988">Прикажи коришћење меморије</translation>
 <translation id="3101126716313987672">Пригушите светло</translation>
 <translation id="3101709781009526431">Датум и време</translation>
 <translation id="310297983047869047">Претходни слајд</translation>
@@ -3082,7 +3082,6 @@
 <translation id="3321776060736518525">Од <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Бонус! Добијаш додатно време испред екрана</translation>
 <translation id="3325804108816646710">Траже се доступни профили...</translation>
-<translation id="3325910708063135066">Камера и микрофон су искључени у подешавањима Mac система</translation>
 <translation id="3325930488268995856">Microsoft OneDrive је повезан</translation>
 <translation id="3325995804968971809">Стил</translation>
 <translation id="3327050066667856415">Chromebook-ови су осмишљени за безбедност. Уређај је аутоматски заштићен од малвера – није потребан никакав додатан софтвер.</translation>
@@ -5507,7 +5506,6 @@
 <translation id="5213891612754844763">Прикажи подешавања проксија</translation>
 <translation id="5214639857958972833">Направљен је обележивач <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215502535566372932">Изаберите земљу</translation>
-<translation id="5215665166431745539">Прикажи слике</translation>
 <translation id="5220011581825921581">тастер за претрагу + стрелица нагоре</translation>
 <translation id="5222403284441421673">Небезбедно преузимање је блокирано</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
@@ -5681,7 +5679,6 @@
 <translation id="5365881113273618889">Фолдер који сте изабрали садржи осетљиве датотеке. Желите ли стварно да одобрите апликацији „<ph name="APP_NAME" />“ сталан приступ за уписивање за овај фолдер?</translation>
 <translation id="536638840841140142">Нема</translation>
 <translation id="5368246151595623328"><ph name="NETWORK_NAME" /> – сачувано са: <ph name="DEVICE_NAME" /></translation>
-<translation id="5368255566854433132">Направи лозинку за <ph name="DEVICE_TYPE" /></translation>
 <translation id="5368441245151140827">Овај додатак не може да чита и мења информације о сајтовима нити да се покреће у позадини</translation>
 <translation id="5368720394188453070">Телефон је закључан. Откључајте га да бисте приступили.</translation>
 <translation id="536882527576164740">{0,plural, =1{Без архивирања}one{Без архивирања (#)}few{Без архивирања (#)}other{Без архивирања (#)}}</translation>
@@ -5700,7 +5697,6 @@
 <translation id="5380424552031517043">Уклоњен је филтер <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">Сачекајте пар минута и пробајте поново</translation>
 <translation id="5382591305415226340">Управљај подржаним линковима</translation>
-<translation id="5383377866517186886">Камера је искључена у подешавањима Mac система</translation>
 <translation id="5383740867328871413">Група без назива – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="5385628342687007304">Ова лозинка је сачувана само на овом уређају. Да бисте је користили на другим уређајима, сачувајте је на Google налогу.</translation>
 <translation id="5387116558048951800">Измените акредитив <ph name="CREDENTIAL_TYPE" /></translation>
@@ -7179,7 +7175,6 @@
 <translation id="6542521951477560771">Пребацује се на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6544134392255015460">укључивање/искључивање позадинског осветљења тастатуре</translation>
 <translation id="6545665334409411530">Брзина понављања</translation>
-<translation id="6545867563032584178">Микрофон је искључен у подешавањима Mac система</translation>
 <translation id="6546856949879953071">Детаљне информације о надоградњи потражите у евиденцији сачуваној у одељку Фајлови &gt; Моји фајлови &gt; <ph name="LOG_FILE" /></translation>
 <translation id="6547354035488017500">Ослободите бар 512 MB простора или ће уређај престати да се одазива. Да бисте ослободили простор, избришите датотеке из меморијског простора уређаја.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Google услуга локације користи изворе као што су WiFi мреже, мобилне мреже и сензори да би одредила приближну локацију уређаја.<ph name="END_PARAGRAPH1" />
@@ -8355,7 +8350,7 @@
 <translation id="7465778193084373987">URL за опозив Netscape сертификата</translation>
 <translation id="7466431077154602932">Компактан приказ</translation>
 <translation id="746861123368584540">Додатак је учитан</translation>
-<translation id="7470131554696493512">Спречите Thunderbolt или USB4 додатну опрему да приступа меморији и да је дели са њом (RAM)</translation>
+<translation id="7470131554696493512">Спречите Thunderbolt или USB4 додатну опрему да приступа меморији (RAM) и да је дели</translation>
 <translation id="7470424110735398630">Дозвољено им је да виде привремену меморију</translation>
 <translation id="747114903913869239">Грешка: Није могуће дешифровати додатак</translation>
 <translation id="7471520329163184433">Спорије</translation>
@@ -9426,7 +9421,7 @@
 <translation id="8260864402787962391">Миш</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не наводи овај додатак и он је можда додат без вашег знања.</translation>
 <translation id="8261506727792406068">Избриши</translation>
-<translation id="8261625296061301062">Софтвер за скенирање је инсталиран</translation>
+<translation id="8261625296061301062">Софтвер за скенер је инсталиран</translation>
 <translation id="8262971894813353037">Омогућава нови дизајн радне површине за WebUI. Морате да омогућите и Chrome освежавање за 2023.</translation>
 <translation id="8263336784344783289">Дајте назив овој групи</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> је онемогућио курсор.</translation>
@@ -10046,7 +10041,6 @@
 <translation id="8729133765463465108">Скенирај QR кôд помоћу камере</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731029916209785242">Дозволе (<ph name="FORMATTED_ORIGIN" />)</translation>
-<translation id="873125854638499125">Побољшајте прецизност локације</translation>
 <translation id="8731268612289859741">Безбедносни кôд</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> жели да: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Број порта</translation>
@@ -10480,7 +10474,6 @@
 <translation id="9045160989383249058">Листа за читање је премештена у нову бочну табелу. Испробајте овде.</translation>
 <translation id="9045430190527754450">Шаље Google-у веб-адресу странице којој покушавате да приступите</translation>
 <translation id="9048745018038487540">Изабери све фонтове</translation>
-<translation id="9050135202879860719">Пријавите се на <ph name="DEVICE_TYPE" /> помоћу лозинке</translation>
 <translation id="9050666287014529139">Приступна фраза</translation>
 <translation id="9052404922357793350">Настави са блокирањем</translation>
 <translation id="90528604757378587">Активност у позадини и неки визуелни ефекти, на пример, глатко скроловање, могу да буду ограничени.</translation>

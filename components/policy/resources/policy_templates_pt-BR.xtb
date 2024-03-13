@@ -3415,6 +3415,40 @@ Se ela não for definida, nenhum dado de telemetria do site será informado.</tr
 <translation id="3652670852519271837">Permitir que sites peçam ao usuário para conceder permissão de acesso de leitura de arquivos e diretórios com a API File System</translation>
 <translation id="3653237928288822292">Ícone do provedor de pesquisa padrão</translation>
 <translation id="3654906736796256792">Permite a execução do sandbox de áudio.</translation>
+<translation id="3655252664209966774">A extensão de uso da chave X.509 declara como a chave em um certificado pode ser
+usada. Essas instruções garantem que os certificados não sejam usados em um contexto
+não intencional, o que protege contra uma classe de ataques entre protocolos HTTPS e
+outros. Para que isso funcione, os clientes HTTPS precisam verificar se os certificados
+do servidor correspondem aos parâmetros TLS da conexão.
+
+A partir do <ph name="PRODUCT_NAME" /> 124, essa
+verificação estará sempre ativada.
+
+O <ph name="PRODUCT_NAME" /> 123 e versões anteriores têm
+este comportamento:
+
+Se esta política for definida como ativada,
+o <ph name="PRODUCT_NAME" /> vai realizar essa verificação.
+Isso ajuda a evitar ataques em que um invasor manipula o navegador para
+interpretar uma chave de maneiras que o proprietário do certificado não pretendia.
+
+Se a política for desativada, o
+<ph name="PRODUCT_NAME" /> vai ignorar essa verificação em
+conexões HTTPS que negociam TLS 1.2 e usam um certificado RSA vinculado
+a uma âncora de confiança local. Exemplos de âncoras de confiança locais incluem
+certificados raiz fornecidos pela política ou instalados pelo usuário. Em todos os outros casos, a
+verificação é realizada independente da configuração dessa política.
+
+Se a política não for configurada, o
+<ph name="PRODUCT_NAME" /> vai se comportar como se
+ela estivesse ativada.
+
+As conexões que falharem nessa verificação vão mostrar o erro
+ERR_SSL_KEY_USAGE_INCOMPATIBLE. Os sites que falham com esse erro provavelmente têm um
+certificado configurado incorretamente. Os pacotes de criptografia ECDHE_RSA modernos utilizam a
+opção de uso de chave "digitalSignature", enquanto os de descriptografia RSA legados
+utilizam a opção de uso de chave "keyEncipherment". Se você não tiver certeza, os administradores precisarão
+incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
 <translation id="3655710915351748191">Não mostrar o ícone da Chrome Web Store no acesso rápido do <ph name="PRODUCT_OS_NAME" /> ou na página "Nova guia"</translation>
 <translation id="3655885297177292093">A API Event.path vai estar no status padrão: disponível antes da versão M109 e indisponível da versão M109 à M114.</translation>
 <translation id="3659542706175323490">Se a política for definida como "Ativada", a inicialização em CA ficará ativada, se compatível com o dispositivo. A inicialização em CA oferece uma oportunidade ao sistema de reiniciar do estado "Desligado" ou "Suspenso" após a conexão do cabo de energia.
@@ -5805,6 +5839,9 @@ Se a política for deixada sem definição ou definida como uma lista vazia, cai
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Ativar relatórios de status do armazenamento do dispositivo</translation>
 <translation id="5608114828230655271">Comportamento padrão do dispositivo</translation>
+<translation id="561001683838346956">Esta política foi removida na versão 124 do <ph name="PRODUCT_NAME" />. A partir dessa versão, hashes não seguros são sempre proibidos. Nas versões anteriores, essa política controlava se o navegador permitia hashes legados não seguros durante o processo de handshake de TLS.
+
+      Se a política não fosse configurada, o <ph name="PRODUCT_NAME" /> seguiria o processo de lançamento padrão para proibir hashes não seguros. Se ela fosse ativada, o <ph name="PRODUCT_NAME" /> permitiria que hashes não seguros fossem usados por um servidor ao negociar um handshake de TLS. Se ela fosse desativada, o <ph name="PRODUCT_NAME" /> não permitiria o uso de hashes não seguros por um servidor ao negociar um handshake de TLS.</translation>
 <translation id="5611869109049836323">Aplicar restrições a âncoras de confiança adicionadas localmente</translation>
 <translation id="5614865701790130558">Registros de eventos para instalações de extensão com base em políticas</translation>
 <translation id="561493980641967737">Se a política for definida como "Ativada", a coleta de dados anônimos inseridos no URL (que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e navegação) vai ficar sempre ativa.
