@@ -1216,9 +1216,6 @@ extern const char kUserEducationExperienceVersion2Name[];
 extern const char kUserEducationExperienceVersion2Description[];
 #endif
 
-extern const char kInsecureDownloadWarningsName[];
-extern const char kInsecureDownloadWarningsDescription[];
-
 extern const char kInstallIsolatedWebAppFromUrl[];
 extern const char kInstallIsolatedWebAppFromUrlDescription[];
 

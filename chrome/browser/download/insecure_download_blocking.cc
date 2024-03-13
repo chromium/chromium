@@ -463,11 +463,10 @@ InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
     return InsecureDownloadStatus::SAFE;
   }
 
-  // When enabled, show a visible (bypassable) warning on insecure downloads.
+  // Show a visible (bypassable) warning on insecure downloads.
   // Since mixed download blocking is more severe, exclude mixed downloads from
   // this early-return to let the mixed download logic below apply.
-  if (base::FeatureList::IsEnabled(features::kInsecureDownloadWarnings) &&
-      data.is_insecure_download_ && !data.is_mixed_content_) {
+  if (data.is_insecure_download_ && !data.is_mixed_content_) {
     // Except when using HFM, don't warn on files that are likely to be safe.
     if (!IsHttpsFirstModeEnabled(profile) &&
         ContainsExtension(kSafeExtensions, data.extension_)) {

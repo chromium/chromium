@@ -2173,12 +2173,6 @@ const char kUserEducationExperienceVersion2Description[] =
     "such as startup grace period, more sophisticated rate limiting, etc.";
 #endif
 
-const char kInsecureDownloadWarningsName[] = "Warn on insecure downloads";
-const char kInsecureDownloadWarningsDescription[] =
-    "Enables insecure download warnings. Requires users to bypass a warning "
-    "when they attempt to download a file over insecure transports (e.g. HTTP) "
-    "either directly or via an insecure redirect.";
-
 const char kInstallIsolatedWebAppFromUrl[] =
     "Install Isolated Web App from Proxy URL";
 const char kInstallIsolatedWebAppFromUrlDescription[] =

@@ -1061,7 +1061,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       download::DownloadItem::InsecureDownloadStatus::SAFE);
 }
 
-// Verify that downloads initiated by a non-unique hostname aren't blocked, but
+// Verify that downloads initiated by a non-unique hostname are blocked and
 // we record that the download was from a non-unique source.
 TEST_F(ChromeDownloadManagerDelegateTest,
        BlockedAsActiveContent_NonUniqueInitiator) {
@@ -1069,16 +1069,11 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   const GURL kFinalUrl("https://example.org/xyz.foo");
   const auto kInitiator = Origin::Create(GURL("http://10.0.0.1"));
 
-  base::test::ScopedFeatureList feature_list;
   base::HistogramTester histograms;
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
                                              kRedirectUrl);
-
-  // If insecure download warnings are enabled, they block this download so
-  // disable it to avoid that.
-  feature_list.InitAndDisableFeature(features::kInsecureDownloadWarnings);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // DownloadTargetDeterminer looks for plugin handlers if there's an
@@ -1090,7 +1085,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       DetermineDownloadTarget(download_item.get());
   EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE,
             target_info.interrupt_reason);
-  EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::SAFE,
+  EXPECT_EQ(download::DownloadItem::InsecureDownloadStatus::BLOCK,
             target_info.insecure_download_status);
   histograms.ExpectUniqueSample(
       kInsecureDownloadHistogramName,
@@ -1613,9 +1608,6 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
   // is tested in another test.
   pref_service()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kInsecureDownloadWarnings);
-
   for (const auto& test_case : kTestCases) {
     std::unique_ptr<download::MockDownloadItem> download_item =
         PrepareDownloadItemForInsecureBlocking(test_case.download_url,
@@ -1643,9 +1635,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
   pref_service()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
 
   base::HistogramTester histograms;
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kInsecureDownloadWarnings);
 
   std::unique_ptr<download::MockDownloadItem> download_item =
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
@@ -1689,8 +1678,6 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       .WillByDefault(ReturnRefOfCopy(kSecureOrigin.GetURL()));
   ON_CALL(*download_item, GetDownloadSource())
       .WillByDefault(Return(download::DownloadSource::CONTEXT_MENU));
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kInsecureDownloadWarnings);
 
   download::DownloadTargetInfo target_info =
       DetermineDownloadTarget(download_item.get());
