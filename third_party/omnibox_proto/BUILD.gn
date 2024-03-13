@@ -10,6 +10,7 @@ if (is_android) {
 
 _proto_files = [
   "action_info.proto",
+  "answer_data.proto",
   "chrome_searchbox_stats.proto",
   "entity_info.proto",
   "groups.proto",
