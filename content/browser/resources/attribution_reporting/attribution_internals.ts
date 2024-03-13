@@ -242,8 +242,7 @@ function newSource(mojo: WebUISource): Source {
     priority: mojo.priority,
     filterData: JSON.stringify(mojo.filterData.filterValues, null, ' '),
     aggregationKeys: JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' '),
-    // TODO(crbug.com/1442785): Workaround for undefined/null issue.
-    debugKey: typeof mojo.debugKey === 'bigint' ? mojo.debugKey : undefined,
+    debugKey: mojo.debugKey ?? undefined,
     dedupKeys: mojo.dedupKeys.sort(compareDefault),
     aggregatableBudgetConsumed: mojo.aggregatableBudgetConsumed,
     aggregatableDedupKeys: mojo.aggregatableDedupKeys.sort(compareDefault),
@@ -310,10 +309,7 @@ class Registration {
     this.contextOrigin = originToText(mojo.contextOrigin);
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.registrationJson = mojo.registrationJson;
-    // TODO(crbug.com/1442785): Workaround for undefined/null issue.
-    this.clearedDebugKey = typeof mojo.clearedDebugKey === 'bigint' ?
-        mojo.clearedDebugKey :
-        undefined;
+    this.clearedDebugKey = mojo.clearedDebugKey ?? undefined;
   }
 }
 
