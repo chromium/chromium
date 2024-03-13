@@ -3371,9 +3371,13 @@ void NavigationRequest::OnRequestRedirected(
   commit_params_->redirect_response.push_back(response_head_.Clone());
   commit_params_->redirect_infos.push_back(redirect_info);
 
+  // TODO(rakina): This should use `GetTentativeOriginAtRequestTime()` instead
+  // of the url from `common_params_`.
   const bool is_same_origin_redirect =
       url::Origin::Create(common_params_->url)
           .IsSameOriginWith(redirect_info.new_url);
+
+  did_encounter_cross_origin_redirect_ |= !is_same_origin_redirect;
 
   // Only same-origin navigations without cross-origin redirects can
   // expose response details (status-code / mime-type).
@@ -10441,6 +10445,10 @@ blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
   CHECK(ShouldDispatchPageSwapEvent());
 
   did_fire_page_swap_ = true;
+
+  if (did_encounter_cross_origin_redirect_) {
+    return nullptr;
+  }
 
   // The `pageswap` event is fired on the old Document to provide information
   // about the new Document. The information shared must be restricted to

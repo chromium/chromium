@@ -1,15 +1,11 @@
-<!DOCTYPE HTML>
-<title>Tests pageswap for cross-origin navigations</title>
-<link rel="author" title="Khushal Sagar"  href="mailto:khushalsagar@chromium.org">
+<!DOCTYPE html>
+<title>pageswap navigationactivation for push navigations with a  same-origin final url with cross-origin redirects</title>
 <link rel="help" href="https://html.spec.whatwg.org/">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script>
-const expectedUrl = get_host_info().HTTPS_REMOTE_ORIGIN + "/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-cross-origin.sub.html?new";
-
 const params = new URLSearchParams(location.search);
 // The page the popup navigates to.
 const is_new_page = params.has('new');
@@ -22,7 +18,7 @@ const channel = new BroadcastChannel("testchannel");
 
 if (is_test_page) {
   const expectedUrl = location.href + "?new";
-  const expectedEvents = ["pageswap", "pagehide"];
+  const expectedEvents = ["pageswap", "pagehide", "pagereveal", "activation"];
 
   promise_test(async t => {
     let popup;
@@ -41,25 +37,33 @@ if (is_test_page) {
           }
       }));
     });
-  }, `pageswap on navigation from script`);
+  }, `pageswap on navigation with same-origin redirect`);
 } else if (is_popup_page) {
   onload = () => {
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      location.href = expectedUrl;
+      let newUrl = get_host_info().HTTPS_REMOTE_ORIGIN + "/common/redirect.py?location=" + location.href.split('?')[0] + "?new";
+      location.href = newUrl
     }));
 
     onpageswap = (e) => {
       window.opener.events.push("pageswap");
-      if (e.activation != null)
-        window.opener.events.push("activation");
       if (e.viewTransition != null)
         window.opener.events.push("transition");
+      if (e.activation != null)
+        window.opener.events.push("activation");
     };
 
     onpagehide = () => {
       window.opener.events.push("pagehide");
-      channel.postMessage("nav");
     };
   };
+} else {
+  assert_true(is_new_page);
+  onpageshow = () => {
+    window.opener.events.push("pagereveal");
+    if (navigation.activation.from != null)
+      window.opener.events.push("activation");
+    channel.postMessage("nav");
+  }
 }
 </script>

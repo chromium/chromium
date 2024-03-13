@@ -38,18 +38,18 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     return nullptr;
   }
 
+  if (navigation_request.did_encounter_cross_origin_redirect()) {
+    return nullptr;
+  }
+
   const url::Origin& current_request_origin = rfh->GetLastCommittedOrigin();
   const url::Origin& new_request_origin =
       navigation_request.is_running_potential_prerender_activation_checks()
           ? navigation_request.GetTentativeOriginAtRequestTime()
           : *navigation_request.GetOriginToCommit();
-  // Only support same origin.
-  // TODO(khushalsagar): We need to be able to deal with redirects.
-  // https://github.com/WICG/view-transitions/issues/200
   if (current_request_origin != new_request_origin) {
     return nullptr;
   }
-  CHECK(!current_request_origin.opaque());
 
   // Per-spec, reloads are excluded from the `auto` value which sets the
   // boolean opt in. If a value specific to reloads is added, we'll need a

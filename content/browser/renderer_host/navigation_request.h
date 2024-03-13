@@ -1334,6 +1334,18 @@ class CONTENT_EXPORT NavigationRequest
   // event on the old Document and the event has not been dispatched already.
   bool ShouldDispatchPageSwapEvent() const;
 
+  // Returns true if there have been any cross-origin redirects in the
+  // navigation's lifetime. A redirect is cross-origin if the redirect url is
+  // cross-origin with "previous URL" of the navigation. previous URL here is
+  // either the initial URL (which the navigation started with) or the URL from
+  // the last redirect.
+  //
+  // Note: This will be false if the initial url is cross-origin and there are
+  // no redirects.
+  bool did_encounter_cross_origin_redirect() const {
+    return did_encounter_cross_origin_redirect_;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -2865,6 +2877,10 @@ class CONTENT_EXPORT NavigationRequest
   // This tracks whether the pageswap event has been fired for this
   // navigation.
   bool did_fire_page_swap_ = false;
+
+  // Set if there has been any cross-origin redirects in the lifetime of this
+  // request.
+  bool did_encounter_cross_origin_redirect_ = false;
 
   // A scoped reference on the ViewTransition resources generated for this
   // navigation. This is set after we received the cached results from the old
