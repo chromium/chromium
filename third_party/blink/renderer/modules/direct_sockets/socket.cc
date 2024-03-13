@@ -44,8 +44,9 @@ CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
 
 }  // namespace
 
-ScriptPromise Socket::closed(ScriptState* script_state) const {
-  return ScriptPromise(script_state, closed_.Get(script_state->GetIsolate()));
+ScriptPromiseTyped<IDLUndefined> Socket::closed(
+    ScriptState* script_state) const {
+  return closed_->Promise(script_state->World());
 }
 
 Socket::Socket(ScriptState* script_state)
@@ -57,10 +58,8 @@ Socket::Socket(ScriptState* script_state)
           GetExecutionContext()->GetScheduler()->RegisterFeature(
               SchedulingPolicy::Feature::kOutstandingNetworkRequestDirectSocket,
               {SchedulingPolicy::DisableBackForwardCache()})),
-      closed_resolver_(
-          MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      closed_(script_state->GetIsolate(),
-              closed_resolver_->Promise().V8Promise()) {
+      closed_(MakeGarbageCollected<ScriptPromiseProperty<IDLUndefined, IDLAny>>(
+          GetExecutionContext())) {
   UpdateStateIfNeeded();
 
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
@@ -72,7 +71,7 @@ Socket::Socket(ScriptState* script_state)
   // |closed| promise is just one of the ways to learn that the socket state has
   // changed. Therefore it's not necessary to force developers to handle
   // rejections.
-  closed_resolver_->Promise().MarkAsHandled();
+  closed_->MarkAsHandled();
 }
 
 Socket::~Socket() = default;
@@ -117,10 +116,7 @@ DOMException* Socket::CreateDOMExceptionFromNetErrorCode(int32_t net_error) {
 void Socket::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(service_);
-
-  visitor->Trace(closed_resolver_);
   visitor->Trace(closed_);
-
   ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
 

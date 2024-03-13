@@ -211,11 +211,13 @@ ScriptPromiseTyped<UDPSocketOpenInfo> UDPSocket::opened(
   return opened_->Promise(script_state->World());
 }
 
-ScriptPromise UDPSocket::close(ScriptState*, ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> UDPSocket::close(
+    ScriptState*,
+    ExceptionState& exception_state) {
   if (GetState() == State::kOpening) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Socket is not properly initialized.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   auto* script_state = GetScriptState();
@@ -227,7 +229,7 @@ ScriptPromise UDPSocket::close(ScriptState*, ExceptionState& exception_state) {
       writable_stream_wrapper_->Locked()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Close called on locked streams.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   auto* reason = MakeGarbageCollected<DOMException>(
@@ -355,9 +357,11 @@ void UDPSocket::FailOpenWith(int32_t error) {
   base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -error);
   ReleaseResources();
 
+  ScriptState::Scope scope(GetScriptState());
   auto* exception = CreateDOMExceptionFromNetErrorCode(error);
   opened_->Reject(exception);
-  GetClosedPromiseResolver()->Reject(exception);
+  GetClosedProperty().Reject(ScriptValue(GetScriptState()->GetIsolate(),
+                                         exception->ToV8(GetScriptState())));
 }
 
 mojo::PendingReceiver<network::mojom::blink::RestrictedUDPSocket>
@@ -418,10 +422,10 @@ void UDPSocket::OnBothStreamsClosed(std::vector<ScriptValue> args) {
   // If neither stream was errored, resolves |closed|.
   if (auto it = base::ranges::find_if_not(args, &ScriptValue::IsEmpty);
       it != args.end()) {
-    GetClosedPromiseResolver()->Reject(*it);
+    GetClosedProperty().Reject(*it);
     SetState(State::kAborted);
   } else {
-    GetClosedPromiseResolver()->Resolve();
+    GetClosedProperty().ResolveWithUndefined();
     SetState(State::kClosed);
   }
   ReleaseResources();

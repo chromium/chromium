@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_DOCUMENT_VIDEO_PICTURE_IN_PICTURE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PICTURE_IN_PICTURE_DOCUMENT_VIDEO_PICTURE_IN_PICTURE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class Document;
 class ExceptionState;
-class ScriptPromise;
 class ScriptState;
 
 class DocumentVideoPictureInPicture {
@@ -20,9 +20,9 @@ class DocumentVideoPictureInPicture {
  public:
   static bool pictureInPictureEnabled(Document&);
 
-  static ScriptPromise exitPictureInPicture(ScriptState*,
-                                            Document&,
-                                            ExceptionState&);
+  static ScriptPromiseTyped<IDLUndefined> exitPictureInPicture(ScriptState*,
+                                                               Document&,
+                                                               ExceptionState&);
 };
 
 }  // namespace blink

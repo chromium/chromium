@@ -95,12 +95,13 @@ ScriptPromiseTyped<TCPServerSocketOpenInfo> TCPServerSocket::opened(
   return opened_->Promise(script_state->World());
 }
 
-ScriptPromise TCPServerSocket::close(ScriptState* script_state,
-                                     ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> TCPServerSocket::close(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (GetState() == State::kOpening) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Socket is not properly initialized.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (GetState() != State::kOpen) {
@@ -110,7 +111,7 @@ ScriptPromise TCPServerSocket::close(ScriptState* script_state,
   if (readable_stream_wrapper_->Locked()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Close called on locked streams.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   auto* reason = MakeGarbageCollected<DOMException>(
@@ -172,9 +173,11 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     base::UmaHistogramSparse("DirectSockets.TCPServerNetworkFailures", -result);
     ReleaseResources();
 
+    ScriptState::Scope scope(GetScriptState());
     auto* exception = CreateDOMExceptionFromNetErrorCode(result);
     opened_->Reject(exception);
-    GetClosedPromiseResolver()->Reject(exception);
+    GetClosedProperty().Reject(ScriptValue(GetScriptState()->GetIsolate(),
+                                           exception->ToV8(GetScriptState())));
 
     SetState(State::kAborted);
   }
@@ -204,10 +207,10 @@ void TCPServerSocket::OnReadableStreamClosed(ScriptValue exception) {
   DCHECK_EQ(GetState(), State::kOpen);
 
   if (!exception.IsEmpty()) {
-    GetClosedPromiseResolver()->Reject(exception);
+    GetClosedProperty().Reject(exception);
     SetState(State::kAborted);
   } else {
-    GetClosedPromiseResolver()->Resolve();
+    GetClosedProperty().ResolveWithUndefined();
     SetState(State::kClosed);
   }
   ReleaseResources();

@@ -15,7 +15,7 @@
   constructor(DOMString remoteAddress, unsigned short remotePort, optional TCPSocketOptions options = {});
 
   [CallWith=ScriptState] readonly attribute Promise<TCPSocketOpenInfo> opened;
-  [CallWith=ScriptState] readonly attribute Promise<void> closed;
+  [CallWith=ScriptState] readonly attribute Promise<undefined> closed;
 
   [CallWith=ScriptState, RaisesException, Measure]
   Promise<void> close();

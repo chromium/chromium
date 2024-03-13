@@ -267,7 +267,7 @@ void PictureInPictureControllerImpl::OnEnteredPictureInPicture(
 
 void PictureInPictureControllerImpl::ExitPictureInPicture(
     HTMLVideoElement* element,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   if (!EnsureService())
     return;
 
@@ -281,7 +281,7 @@ void PictureInPictureControllerImpl::ExitPictureInPicture(
 }
 
 void PictureInPictureControllerImpl::OnExitedPictureInPicture(
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   DCHECK(GetSupplementable());
 
   // Bail out if document is not active.
