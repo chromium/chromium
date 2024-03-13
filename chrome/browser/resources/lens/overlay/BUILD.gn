@@ -17,6 +17,7 @@ build_webui("build_overlay") {
   web_component_files = [
     "app.ts",
     "side_panel_app.ts",
+    "selection_overlay.ts",
   ]
 
   non_web_component_files = [ "browser_proxy.ts" ]

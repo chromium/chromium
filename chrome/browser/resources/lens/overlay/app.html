@@ -2,30 +2,48 @@
   .app-container {
     width: 100%;
     height: 100%;
-    /**
-     * TODO(b/328814687): Background image tiles when window is resized. Fix
-     * after panel functionality is fixed.
-     */
-    background-image: url("screenshot.jpeg");
+    /* Make it evident what is the live page peeking through vs screenshot. */
+    background-color: rgba(60, 60, 60, 0.5);
+  }
+
+  .action-button {
+    position: absolute;
+    left: 0;
+  }
+
+  .close {
+    top: 25px;
+  }
+
+  .side-panel {
+    top: 60px;
+  }
+
+  lens-selection-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   /* Temporary red scrim to make it evident the overlay is opened. */
   .scrim {
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 0, 0, 0.25);
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 0, 0, 0.15);
+    pointer-events: none;
   }
 </style>
 <div class="app-container">
-  <div class='scrim'>
-    Lens Overlay
-    <cr-button class="action-button" on-click="onCloseButtonClick_">
-      $i18n{close}
-    </cr-button>
-    <cr-button class="action-button" on-click="onSidePanelButtonClick_">
-      <!-- This is a temporary button that will be removed in the future, so
-           i18n is not required. -->
-      Open side panel
-    </cr-button>
-  </div>
+  <lens-selection-overlay></lens-selection-overlay>
+  <cr-button class="action-button close" on-click="onCloseButtonClick_">
+    $i18n{close}
+  </cr-button>
+  <cr-button class="action-button side-panel"
+      on-click="onSidePanelButtonClick_">
+    <!-- This is a temporary button that will be removed in the future, so
+         i18n is not required. -->
+    Open side panels
+  </cr-button>
+  <div class="scrim"></div>
 </div>

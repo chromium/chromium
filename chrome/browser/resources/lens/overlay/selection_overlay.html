@@ -1,0 +1,24 @@
+<style>
+  .selection-overlay {
+    display: grid;
+  }
+
+  /* Force all child elements to share the same grid cell so they overlap. */
+  .selection-overlay > * {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .background-image {
+    pointer-events: none;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+</style>
+<div class='selection-overlay'>
+  <img class='background-image' src='screenshot.jpeg'></img>
+  <div class='selection-elements'>
+    <!-- Other elements that need to be bounded to the image go here -->
+    Lens Overlay
+  </div>
+</div>
