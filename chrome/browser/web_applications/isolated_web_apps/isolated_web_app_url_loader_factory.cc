@@ -284,6 +284,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
         web_package::CreateHeaderString(response->head());
     auto response_head =
         web_package::CreateResourceResponseFromHeaderString(header_string);
+    response_head->content_length = response->head()->payload_length;
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     MojoCreateDataPipeOptions options;
@@ -303,7 +304,7 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
       return;
     }
     header_length_ = header_string.size();
-    body_length_ = response->head()->payload_length;
+    body_length_ = response_head->content_length;
     loader_client_->OnReceiveResponse(std::move(response_head),
                                       std::move(consumer_handle), std::nullopt);
 

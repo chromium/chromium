@@ -949,6 +949,7 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
               Eq(body_length + header_length));
   EXPECT_THAT(CompletionStatus().encoded_body_length, Eq(body_length));
   EXPECT_THAT(CompletionStatus().decoded_body_length, Eq(body_length));
+  EXPECT_THAT(ResponseInfo()->content_length, Eq(body_length));
 }
 
 TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
