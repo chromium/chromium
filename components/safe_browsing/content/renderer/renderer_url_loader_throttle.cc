@@ -111,54 +111,13 @@ void RendererURLLoaderThrottle::WillStartRequest(
     return;
   }
 
-  // TODO(crbug.com/1486144): Remove request_destinations_to_skip together with
-  // kSafeBrowsingSkipSubresources.
-  static const base::NoDestructor<
-      std::unordered_set<network::mojom::RequestDestination>>
-      request_destinations_to_skip{{network::mojom::RequestDestination::kStyle,
-                                    network::mojom::RequestDestination::kImage,
-                                    network::mojom::RequestDestination::kFont}};
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources) ||
-      (base::Contains(*request_destinations_to_skip, request->destination))) {
-    VLOG(2) << __func__ << " : Skipping: " << request->url << " : "
-            << request->destination;
-    DCHECK_NE(request->destination,
-              network::mojom::RequestDestination::kDocument);
-    LogTotalDelay3Metrics(base::TimeDelta());
-    base::UmaHistogramEnumeration(
-        "SafeBrowsing.RendererThrottle.RequestDestination.Skipped",
-        request->destination);
-    return;
-  }
-
+  VLOG(2) << __func__ << " : Skipping: " << request->url << " : "
+          << request->destination;
+  CHECK_NE(request->destination, network::mojom::RequestDestination::kDocument);
+  LogTotalDelay3Metrics(base::TimeDelta());
   base::UmaHistogramEnumeration(
-      "SafeBrowsing.RendererThrottle.RequestDestination.Checked",
+      "SafeBrowsing.RendererThrottle.RequestDestination.Skipped",
       request->destination);
-
-  if (safe_browsing_pending_remote_.is_valid()) {
-    // Bind the pipe created in DetachFromCurrentSequence to the current
-    // sequence.
-    safe_browsing_remote_.Bind(std::move(safe_browsing_pending_remote_));
-    safe_browsing_ = safe_browsing_remote_.get();
-  }
-
-  original_url_ = request->url;
-  pending_checks_++;
-  start_request_time_ = base::TimeTicks::Now();
-  is_start_request_called_ = true;
-  // Use a weak pointer to self because |safe_browsing_| may not be owned by
-  // this object.
-  safe_browsing_->CreateCheckerAndCheck(
-      frame_token_, url_checker_.BindNewPipeAndPassReceiver(), request->url,
-      request->method, request->headers, request->load_flags,
-      request->destination, request->has_user_gesture,
-      request->originated_from_service_worker,
-      base::BindOnce(&RendererURLLoaderThrottle::OnCheckUrlResult,
-                     weak_factory_.GetWeakPtr()));
-  safe_browsing_ = nullptr;
-
-  url_checker_.set_disconnect_handler(base::BindOnce(
-      &RendererURLLoaderThrottle::OnMojoDisconnect, base::Unretained(this)));
 }
 
 void RendererURLLoaderThrottle::WillRedirectRequest(

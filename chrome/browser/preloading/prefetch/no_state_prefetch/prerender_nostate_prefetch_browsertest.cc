@@ -52,7 +52,6 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1518,49 +1517,6 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServerRedirect) {
   PrefetchFromURL(src_server()->GetURL(
                       CreateServerRedirect("/prerender/prerender_page.html")),
                   FINAL_STATUS_SAFE_BROWSING, 0);
-}
-
-// If a subresource is unsafe, the corresponding request is cancelled.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       PrerenderSafeBrowsingSubresource) {
-  // If |kSafeBrowsingSkipSubresources| is enabled, skip this test.
-  // See https://crbug.com/1487858
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingSkipSubresources)) {
-    return;
-  }
-
-  GURL url = src_server()->GetURL(kPrefetchScript);
-  GetFakeSafeBrowsingDatabaseManager()->AddDangerousUrl(
-      url, safe_browsing::SB_THREAT_TYPE_URL_MALWARE);
-
-  constexpr char kPrefetchCanceledHistogram[] =
-      "SB2Test.RequestDestination.UnsafePrefetchCanceled";
-
-  base::RunLoop run_loop;
-  bool prefetch_canceled_histogram_added = false;
-  auto histogram_observer =
-      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-          kPrefetchCanceledHistogram,
-          base::BindRepeating(
-              [](base::RepeatingClosure quit_closure, bool* called,
-                 const char* histogram_name, uint64_t name_hash,
-                 base::HistogramBase::Sample sample) {
-                *called = true;
-                quit_closure.Run();
-              },
-              run_loop.QuitClosure(), &prefetch_canceled_histogram_added));
-
-  std::unique_ptr<TestPrerender> prerender =
-      PrefetchFromFile(kPrefetchPage, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-
-  // The frame resource was loaded.
-  WaitForRequestCount(src_server()->GetURL(kPrefetchPage), 1);
-
-  // There should be a histogram sample recorded for SafeBrowsing canceling an
-  // unsafe prefetch, which corresponded to the subresource.
-  run_loop.Run();
-  EXPECT_TRUE(prefetch_canceled_histogram_added);
 }
 
 // Checks that prefetching a page does not add it to browsing history.

@@ -261,32 +261,4 @@ TEST_F(SBRendererUrlLoaderThrottleTest,
       "SafeBrowsing.RendererThrottle.TotalDelay2.FromCache", 0);
 }
 
-class SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest
-    : public SBRendererUrlLoaderThrottleTest {
- public:
-  SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{kSafeBrowsingSkipSubresources});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest,
-       DefersHttpsScriptUrl) {
-  safe_browsing_.EnableDelayCallback();
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
-  EXPECT_TRUE(defer);
-}
-
 }  // namespace safe_browsing

@@ -177,8 +177,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
     return;
   }
 
-  if (request->destination != network::mojom::RequestDestination::kDocument &&
-      base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+  if (request->destination != network::mojom::RequestDestination::kDocument) {
     VLOG(2) << __func__ << " : Skipping: " << request->url << " : "
             << request->destination;
     base::UmaHistogramEnumeration(
@@ -204,9 +203,6 @@ void BrowserURLLoaderThrottle::WillStartRequest(
           : true;
 
   if (async_check_tracker_ && navigation_id_.has_value() &&
-      // Once |kSafeBrowsingSkipSubresources| is deprecated, the |kDocument|
-      // check is no longer needed.
-      request->destination == network::mojom::RequestDestination::kDocument &&
       !(request->load_flags & net::LOAD_PREFETCH)) {
     CHECK(can_check_db);
     CHECK(url_real_time_lookup_enabled_ ||

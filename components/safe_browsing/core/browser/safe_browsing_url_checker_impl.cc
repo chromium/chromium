@@ -321,11 +321,6 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
       url_checker_delegate_->MaybeDestroyNoStatePrefetchContents(
           web_contents_getter_);
     }
-    // Record the result of canceled unsafe prefetch. This is used as a signal
-    // for testing.
-    LOCAL_HISTOGRAM_ENUMERATION(
-        "SB2Test.RequestDestination.UnsafePrefetchCanceled",
-        request_destination_);
 
     BlockAndProcessUrlsAndMaybeDeleteSelf(
         /*showed_interstitial=*/false,

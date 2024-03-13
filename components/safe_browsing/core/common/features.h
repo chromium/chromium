@@ -181,10 +181,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation);
 // Controls whether cookies are removed when the access token is present.
 BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
 
-// Controls whether to skip Safe Browsing checks on all subresource URLs in
-// renderer and browser URL loader throttles.
-BASE_DECLARE_FEATURE(kSafeBrowsingSkipSubresources);
-
 // Controls whether to skip Safe Browsing checks for WebSockets and Web API
 // handshakes.
 BASE_DECLARE_FEATURE(kSafeBrowsingSkipSubresources2);

@@ -105,6 +105,8 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
 
   void OnMojoDisconnect();
 
+  // TODO(crbug.com/324108312): Remove `safe_browsing_`, `frame_token_`,
+  // `safe_browsing_pending_remote_`, `safe_browsing_remote_` that are unused.
   raw_ptr<mojom::SafeBrowsing, DanglingUntriaged> safe_browsing_;
   const std::optional<blink::LocalFrameToken> frame_token_;
 

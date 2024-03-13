@@ -282,9 +282,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
  protected:
   SBBrowserUrlLoaderThrottleTestBase()
       : web_contents_(
-            web_contents_factory_.CreateWebContents(&browser_context_)) {
-    feature_list_.InitAndEnableFeature(kSafeBrowsingSkipSubresources);
-  }
+            web_contents_factory_.CreateWebContents(&browser_context_)) {}
 
   scoped_refptr<UrlCheckerDelegate> GetUrlCheckerDelegate() {
     return url_checker_delegate_;
@@ -1202,97 +1200,6 @@ TEST_F(SBBrowserUrlLoaderThrottleAsyncCheckTest,
   throttle_.reset();
   VerifyHistograms(/*is_async_check_faster=*/std::nullopt,
                    /*is_async_check_transferred=*/std::nullopt);
-}
-
-class SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest
-    : public SBBrowserUrlLoaderThrottleTest {
- public:
-  SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest() {
-    feature_list_.InitAndDisableFeature(kSafeBrowsingSkipSubresources);
-  }
-
- protected:
-  void AddSyncCallbackInfo(bool should_proceed, bool should_delay_callback) {
-    sync_url_checker_->AddCallbackInfo(
-        should_proceed,
-        /*should_show_interstitial=*/!should_proceed,
-        /*should_delay_callback=*/should_delay_callback);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(AsyncCheckEnabled,
-                         SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
-                         testing::Bool());
-
-TEST_P(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
-       VerifyDefer_DoesNotDeferOnSafeDocumentUrl) {
-  SetUpTest();
-  AddCallbackInfo(/*should_proceed=*/true,
-                  /*should_show_interstitial=*/false,
-                  /*should_delay_callback=*/false);
-
-  bool defer = CallWillStartRequest();
-  EXPECT_FALSE(defer);
-  EXPECT_EQ(throttle_delegate_->GetErrorCode(), 0);
-
-  defer = CallWillProcessResponse();
-  EXPECT_FALSE(defer);
-}
-
-TEST_P(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
-       VerifyDefer_DefersOnUnsafeDocumentUrl) {
-  SetUpTest();
-  AddCallbackInfo(/*should_proceed=*/false,
-                  /*should_show_interstitial=*/true,
-                  /*should_delay_callback=*/false);
-
-  bool defer = CallWillStartRequest();
-  // Safe Browsing and URL loader are performed in parallel. Safe Browsing
-  // doesn't defer the start of the request.
-  EXPECT_FALSE(defer);
-  EXPECT_EQ(throttle_delegate_->GetErrorCode(), net::ERR_BLOCKED_BY_CLIENT);
-  EXPECT_EQ(throttle_delegate_->GetCustomReason(), "SafeBrowsing");
-
-  defer = CallWillProcessResponse();
-  EXPECT_TRUE(defer);
-}
-
-TEST_P(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
-       VerifyDefer_DefersOnUnsafeIframeUrl) {
-  SetUpTest();
-  AddCallbackInfo(/*should_proceed=*/false,
-                  /*should_show_interstitial=*/true,
-                  /*should_delay_callback=*/false);
-
-  bool defer = CallWillStartRequest(
-      {.destination = network::mojom::RequestDestination::kIframe});
-  // Safe Browsing and URL loader are performed in parallel. Safe Browsing
-  // doesn't defer the start of the request.
-  EXPECT_FALSE(defer);
-  EXPECT_EQ(throttle_delegate_->GetErrorCode(), net::ERR_BLOCKED_BY_CLIENT);
-  EXPECT_EQ(throttle_delegate_->GetCustomReason(), "SafeBrowsing");
-
-  defer = CallWillProcessResponse();
-  EXPECT_TRUE(defer);
-}
-
-TEST_P(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
-       VerifyAsyncChecksNotEligible_IframeUrl) {
-  SetUpTest();
-  AddSyncCallbackInfo(/*should_proceed=*/true,
-                      /*should_delay_callback=*/true);
-  // Do not call |AddAsyncCallbackInfo| so that if the async callback is
-  // called (incorrectly), the test will fail.
-
-  CallWillStartRequest(
-      {.destination = network::mojom::RequestDestination::kIframe});
-  CallWillProcessResponse();
-
-  sync_url_checker_->RestartDelayedCallback(/*index=*/0);
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(throttle_delegate_->IsResumed());
 }
 
 }  // namespace safe_browsing
