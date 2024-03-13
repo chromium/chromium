@@ -270,45 +270,29 @@ TEST_F(AudioRendererMixerManagerTest, CreateInput) {
       kFrameToken, base::UnguessableToken(), kDefaultDeviceId,
       AudioLatency::Type::kPlayback, params, &callback);
   EXPECT_EQ(0u, mixer_count());
-  ASSERT_EQ(mock_sink_, nullptr);  // Sink is consumed by CreateInputHelper.
-
-  // Despite being from another frame, this input uses the default device, so
-  // should share the previously created mixer.
   media::FakeAudioRenderCallback another_callback(1, kSampleRate);
+
+  EXPECT_FALSE(!!mock_sink_);
+  mock_sink_ = CreateNormalSink();
+  EXPECT_CALL(*mock_sink_, Start()).Times(1);
   auto another_input = CreateInputHelper(
       kAnotherFrameToken, base::UnguessableToken(), kDefaultDeviceId,
       AudioLatency::Type::kPlayback, params, &another_callback);
   EXPECT_EQ(0u, mixer_count());
-
-  // Since this input uses a non-default device id it should not share the
-  // previous mixer.
-  media::FakeAudioRenderCallback another_callback2(1, kSampleRate);
-  mock_sink_ = CreateNormalSink(kAnotherDeviceId);
-  EXPECT_CALL(*mock_sink_, Start()).Times(1);
-  auto another_input2 = CreateInputHelper(
-      kAnotherFrameToken, base::UnguessableToken(), kAnotherDeviceId,
-      AudioLatency::Type::kPlayback, params, &another_callback2);
-  EXPECT_EQ(0u, mixer_count());
-  ASSERT_EQ(mock_sink_, nullptr);  // Sink is consumed by CreateInputHelper.
 
   // Implicitly test that AudioRendererMixerInput was provided with the expected
   // callbacks needed to acquire an AudioRendererMixer and return it.
   input->Start();
   EXPECT_EQ(1u, mixer_count());
   another_input->Start();
-  EXPECT_EQ(1u, mixer_count());
-  another_input2->Start();
   EXPECT_EQ(2u, mixer_count());
 
   // Destroying the inputs should destroy the mixers.
   input->Stop();
   input = nullptr;
-  EXPECT_EQ(2u, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   another_input->Stop();
   another_input = nullptr;
-  EXPECT_EQ(1u, mixer_count());
-  another_input2->Stop();
-  another_input2 = nullptr;
   EXPECT_EQ(0u, mixer_count());
 }
 
