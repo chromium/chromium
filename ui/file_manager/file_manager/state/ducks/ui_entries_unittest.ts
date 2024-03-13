@@ -88,7 +88,7 @@ export async function testAddUiEntryForMyFiles(done: () => void) {
   const myFilesEntry = fileData.entry as VolumeEntry;
   const myFilesVolume = convertVolumeInfoAndMetadataToVolume(
       volumeInfo, createFakeVolumeMetadata(volumeInfo));
-  initialState.allEntries[fileData.entry.toURL()] = fileData;
+  initialState.allEntries[fileData.key] = fileData;
   initialState.volumes[volumeInfo.volumeId] = myFilesVolume;
   // Add children to the MyFiles entry.
   const childEntry = new GuestOsPlaceholder(
@@ -147,7 +147,7 @@ export async function testAddDuplicateUiEntryForMyFiles(done: () => void) {
   const myFilesEntry = fileData.entry as VolumeEntry;
   const myFilesVolume = convertVolumeInfoAndMetadataToVolume(
       volumeInfo, createFakeVolumeMetadata(volumeInfo));
-  initialState.allEntries[fileData.entry.toURL()] = fileData;
+  initialState.allEntries[fileData.key] = fileData;
   initialState.volumes[volumeInfo.volumeId] = myFilesVolume;
   myFilesEntry.addEntry(uiEntry);
   fileData.children.push(uiEntry.toURL());
@@ -183,7 +183,7 @@ export async function testAddDuplicateUiEntryForMyFilesWhenVolumeExists(
   const myFilesEntry = fileData.entry as VolumeEntry;
   const myFilesVolume = convertVolumeInfoAndMetadataToVolume(
       volumeInfo, createFakeVolumeMetadata(volumeInfo));
-  initialState.allEntries[fileData.entry.toURL()] = fileData;
+  initialState.allEntries[fileData.key] = fileData;
   initialState.volumes[volumeInfo.volumeId] = myFilesVolume;
   const playFilesVolumeInfo =
       MockVolumeManager.createMockVolumeInfo(VolumeType.ANDROID_FILES, label);
@@ -277,7 +277,7 @@ export async function testRemoveUiEntryFromMyFiles(done: () => void) {
   const myFilesEntry = fileData.entry as VolumeEntry;
   const myFilesVolume = convertVolumeInfoAndMetadataToVolume(
       volumeInfo, createFakeVolumeMetadata(volumeInfo));
-  initialState.allEntries[fileData.entry.toURL()] = fileData;
+  initialState.allEntries[fileData.key] = fileData;
   initialState.volumes[volumeInfo.volumeId] = myFilesVolume;
   myFilesEntry.addEntry(uiEntry);
   fileData.children.push(uiEntry.toURL());

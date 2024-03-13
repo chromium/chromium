@@ -346,7 +346,7 @@ function addVolumeReducer(currentState: State, payload: {
               )
           .forEach(v => {
             const fileData = getFileData(currentState, v.rootKey!);
-            if (!fileData) {
+            if (!fileData || !fileData?.entry) {
               return;
             }
             // Volume with `prefixKey` has already been processed, however,

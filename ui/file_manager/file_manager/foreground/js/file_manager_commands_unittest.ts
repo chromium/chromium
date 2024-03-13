@@ -456,7 +456,6 @@ async function createAndAddNonInteractiveDownloadsVolume():
   // Dispatch an action to add MyFiles volume.
   const store = setupStore();
   const {fileData, volumeInfo} = createMyFilesDataWithVolumeEntry();
-  const myFilesVolumeEntry = fileData.entry;
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
   const volume =
       convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata);
@@ -468,7 +467,7 @@ async function createAndAddNonInteractiveDownloadsVolume():
   // Expect the newly added volume is in the store.
   const wantNewVol = {
     allEntries: {
-      [myFilesVolumeEntry.toURL()]: fileData,
+      [fileData.key]: fileData,
     },
     volumes: {
       [volume.volumeId]: volume,

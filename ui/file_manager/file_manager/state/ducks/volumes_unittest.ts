@@ -98,7 +98,7 @@ export async function testAddMyFilesVolume(done: () => void) {
       [linuxFilesVolumeInfo.volumeId]: {
         ...linuxFilesVolume,
         // Updated to MyFiles volume key.
-        prefixKey: fileData.entry.toURL(),
+        prefixKey: fileData.key,
       },
       [volumeInfo.volumeId]:
           convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata),
@@ -215,7 +215,7 @@ export async function testAddDriveVolume(done: () => void) {
       // My Drive.
       [driveVolumeEntry.toURL()]: convertEntryToFileData(driveVolumeEntry),
       // My Files entry list.
-      [myFilesFileData.entry.toURL()]: myFilesFileData,
+      [myFilesFileData.key]: myFilesFileData,
       // Fake Drive root entry list.
       [driveRootEntryListKey]: {
         ...convertEntryToFileData(driveFakeRootEntryList),
@@ -246,7 +246,7 @@ export async function testAddDriveVolume(done: () => void) {
       },
     },
     uiEntries: [
-      myFilesFileData.entry.toURL(),
+      myFilesFileData.key,
       driveRootEntryListKey,
       fakeSharedWithMeEntry.toURL(),
       fakeOfflineEntry.toURL(),
@@ -303,7 +303,7 @@ async function addVolumeForSinglePartitionRemovable(done: () => void) {
                                }),
       },
       // My Files entry list.
-      [myFilesFileData.entry.toURL()]: myFilesFileData,
+      [myFilesFileData.key]: myFilesFileData,
       // Parent wrapper entry.
       ...(hasParentWrapper ? {
         [parentEntry.toURL()]: {
@@ -417,7 +417,7 @@ async function addVolumeForMultipleUsbPartitionsGrouping(done: () => void) {
         isEjectable: false,
       },
       // My Files entry list.
-      [myFilesFileData.entry.toURL()]: myFilesFileData,
+      [myFilesFileData.key]: myFilesFileData,
       // Parent wrapper entry.
       [parentEntry.toURL()]: {
         ...convertEntryToFileData(parentEntry),
@@ -561,7 +561,7 @@ export async function testAddArchiveVolume(done: () => void) {
   const want: Partial<State> = {
     allEntries: {
       // My Files entry list.
-      [myFilesFileData.entry.toURL()]: myFilesFileData,
+      [myFilesFileData.key]: myFilesFileData,
       // Archive.
       [volumeEntry.toURL()]: {
         ...convertEntryToFileData(volumeEntry),

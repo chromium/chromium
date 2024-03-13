@@ -237,7 +237,7 @@ export function testGetMyFilesWithVolumeEntry() {
   const volumeMetadata = createFakeVolumeMetadata(volumeInfo);
   const volume =
       convertVolumeInfoAndMetadataToVolume(volumeInfo, volumeMetadata);
-  currentState.allEntries[fileData.entry.toURL()] = fileData;
+  currentState.allEntries[fileData.key] = fileData;
   currentState.volumes[volumeInfo.volumeId] = volume;
   const {myFilesEntry, myFilesVolume} = getMyFiles(currentState);
   // Expect MyFiles volume entry and volume returned.
@@ -903,7 +903,7 @@ export async function testUpdateFileData(done: () => void) {
   const initialState = getEmptyState();
   // Add MyFiles entry to the store.
   const {fileData} = createMyFilesDataWithVolumeEntry();
-  const myFilesEntryKey = fileData.entry.toURL();
+  const myFilesEntryKey = fileData.key;
   initialState.allEntries[myFilesEntryKey] = fileData;
 
   const store = setupStore(initialState);

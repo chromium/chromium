@@ -367,7 +367,7 @@ export async function*
   yield;
   try {
     const resultingTasks = await getFileTasks(
-        filesData.map(fd => fd.entry),
+        filesData.map(fd => fd.entry!),
         filesData.map(fd => fd.metadata.sourceUrl || ''));
     if (!resultingTasks || !resultingTasks.tasks) {
       return;
@@ -403,7 +403,7 @@ export async function*
 
 /** Generates key based on each FileKey (entry.toURL()). */
 function getSelectionKey(filesData: FileData[]): string {
-  return filesData.map(f => f?.entry.toURL()).join('|');
+  return filesData.map(f => f.key).join('|');
 }
 
 export const fetchFileTasks =

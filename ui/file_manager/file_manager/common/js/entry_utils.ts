@@ -927,8 +927,9 @@ export function isGuestOs(type: VolumeType) {
  * native Entry type.
  */
 export function shouldSupportDriveSpecificIcons(fileData: FileData): boolean {
-  return (isEntryInsideMyDrive(fileData) && !isVolumeEntry(fileData.entry)) ||
-      (isEntryInsideComputers(fileData) &&
+  return (isEntryInsideMyDrive(fileData) && !!fileData.entry &&
+          !isVolumeEntry(fileData.entry)) ||
+      (isEntryInsideComputers(fileData) && !!fileData.entry &&
        !isGrandRootEntryInDrive(fileData.entry));
 }
 

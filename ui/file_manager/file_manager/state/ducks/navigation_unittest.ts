@@ -115,18 +115,15 @@ export async function testNavigationRoots(done: () => void) {
   // Put 2 shortcut entries in the store.
   const shortcutEntryFileData1 =
       createShortcutEntryFileData('drive', 'shortcut1', 'Shortcut 1');
-  initialState.allEntries[shortcutEntryFileData1.entry.toURL()] =
-      shortcutEntryFileData1;
-  initialState.folderShortcuts.push(shortcutEntryFileData1.entry.toURL());
+  initialState.allEntries[shortcutEntryFileData1.key] = shortcutEntryFileData1;
+  initialState.folderShortcuts.push(shortcutEntryFileData1.key);
   const shortcutEntryFileData2 =
       createShortcutEntryFileData('drive', 'shortcut2', 'Shortcut 2');
-  initialState.allEntries[shortcutEntryFileData2.entry.toURL()] =
-      shortcutEntryFileData2;
-  initialState.folderShortcuts.push(shortcutEntryFileData2.entry.toURL());
+  initialState.allEntries[shortcutEntryFileData2.key] = shortcutEntryFileData2;
+  initialState.folderShortcuts.push(shortcutEntryFileData2.key);
   // Put MyFiles entry in the store.
   const myFilesVolume = createMyFilesEntryFileData();
-  initialState.allEntries[myFilesVolume.fileData.entry.toURL()] =
-      myFilesVolume.fileData;
+  initialState.allEntries[myFilesVolume.fileData.key] = myFilesVolume.fileData;
   initialState.volumes[myFilesVolume.volume.volumeId] = myFilesVolume.volume;
   // Put drive entry in the store.
   const driveRootEntryFileData = createDriveRootEntryListFileData();
@@ -144,7 +141,7 @@ export async function testNavigationRoots(done: () => void) {
   // Create different volumes.
   const providerVolume1 =
       createVolumeFileData(VolumeType.PROVIDED, 'provided:prov1');
-  initialState.allEntries[providerVolume1.fileData.entry.toURL()] =
+  initialState.allEntries[providerVolume1.fileData.key] =
       providerVolume1.fileData;
   initialState.volumes[providerVolume1.volume.volumeId] =
       providerVolume1.volume;
@@ -153,51 +150,45 @@ export async function testNavigationRoots(done: () => void) {
   // test the behavior of two physically separate external devices.
   const hogeVolume = createVolumeFileData(
       VolumeType.REMOVABLE, 'removable:hoge', 'Hoge', 'device/path/1');
-  initialState.allEntries[hogeVolume.fileData.entry.toURL()] =
-      hogeVolume.fileData;
+  initialState.allEntries[hogeVolume.fileData.key] = hogeVolume.fileData;
   initialState.volumes[hogeVolume.volume.volumeId] = hogeVolume.volume;
 
   const fugaVolume = createVolumeFileData(
       VolumeType.REMOVABLE, 'removable:fuga', 'Fuga', 'device/path/2');
-  initialState.allEntries[fugaVolume.fileData.entry.toURL()] =
-      fugaVolume.fileData;
+  initialState.allEntries[fugaVolume.fileData.key] = fugaVolume.fileData;
   initialState.volumes[fugaVolume.volume.volumeId] = fugaVolume.volume;
 
   const archiveVolume =
       createVolumeFileData(VolumeType.ARCHIVE, 'archive:a-rar');
-  initialState.allEntries[archiveVolume.fileData.entry.toURL()] =
-      archiveVolume.fileData;
+  initialState.allEntries[archiveVolume.fileData.key] = archiveVolume.fileData;
   initialState.volumes[archiveVolume.volume.volumeId] = archiveVolume.volume;
 
   const mtpVolume = createVolumeFileData(VolumeType.MTP, 'mtp:a-phone');
-  initialState.allEntries[mtpVolume.fileData.entry.toURL()] =
-      mtpVolume.fileData;
+  initialState.allEntries[mtpVolume.fileData.key] = mtpVolume.fileData;
   initialState.volumes[mtpVolume.volume.volumeId] = mtpVolume.volume;
 
   const providerVolume2 =
       createVolumeFileData(VolumeType.PROVIDED, 'provided:prov2');
-  initialState.allEntries[providerVolume2.fileData.entry.toURL()] =
+  initialState.allEntries[providerVolume2.fileData.key] =
       providerVolume2.fileData;
   initialState.volumes[providerVolume2.volume.volumeId] =
       providerVolume2.volume;
 
   const androidFilesVolume =
       createVolumeFileData(VolumeType.ANDROID_FILES, 'android_files:droid');
-  androidFilesVolume.volume.prefixKey = myFilesVolume.fileData.entry.toURL();
-  initialState.allEntries[androidFilesVolume.fileData.entry.toURL()] =
+  androidFilesVolume.volume.prefixKey = myFilesVolume.fileData.key;
+  initialState.allEntries[androidFilesVolume.fileData.key] =
       androidFilesVolume.fileData;
   initialState.volumes[androidFilesVolume.volume.volumeId] =
       androidFilesVolume.volume;
 
   const smbVolume = createVolumeFileData(VolumeType.SMB, 'smb:file-share');
-  initialState.allEntries[smbVolume.fileData.entry.toURL()] =
-      smbVolume.fileData;
+  initialState.allEntries[smbVolume.fileData.key] = smbVolume.fileData;
   initialState.volumes[smbVolume.volume.volumeId] = smbVolume.volume;
 
   const odfsVolume = createVolumeFileData(
       VolumeType.PROVIDED, 'provided:odfs', '', '', ODFS_EXTENSION_ID);
-  initialState.allEntries[odfsVolume.fileData.entry.toURL()] =
-      odfsVolume.fileData;
+  initialState.allEntries[odfsVolume.fileData.key] = odfsVolume.fileData;
   initialState.volumes[odfsVolume.volume.volumeId] = odfsVolume.volume;
 
   const store = setupStore(initialState);
@@ -233,42 +224,42 @@ export async function testNavigationRoots(done: () => void) {
   const want: State['navigation']['roots'] = [
     // recent.
     {
-      key: recentEntryFileData.entry.toURL(),
+      key: recentEntryFileData.key,
       section: NavigationSection.TOP,
       separator: false,
       type: NavigationType.RECENT,
     },
     // shortcut1.
     {
-      key: shortcutEntryFileData1.entry.toURL(),
+      key: shortcutEntryFileData1.key,
       section: NavigationSection.TOP,
       separator: false,
       type: NavigationType.SHORTCUT,
     },
     // shortcut2.
     {
-      key: shortcutEntryFileData2.entry.toURL(),
+      key: shortcutEntryFileData2.key,
       section: NavigationSection.TOP,
       separator: false,
       type: NavigationType.SHORTCUT,
     },
     // My Files.
     {
-      key: myFilesVolume.fileData.entry.toURL(),
+      key: myFilesVolume.fileData.key,
       section: NavigationSection.MY_FILES,
       separator: true,
       type: NavigationType.VOLUME,
     },
     // Drive.
     {
-      key: driveRootEntryFileData.entry.toURL(),
+      key: driveRootEntryFileData.key,
       section: NavigationSection.GOOGLE_DRIVE,
       separator: true,
       type: NavigationType.DRIVE,
     },
     // ODFS
     {
-      key: odfsVolume.fileData.entry.toURL(),
+      key: odfsVolume.fileData.key,
       section: NavigationSection.ODFS,
       separator: true,
       type: NavigationType.VOLUME,
@@ -276,21 +267,21 @@ export async function testNavigationRoots(done: () => void) {
     // Other FSP, and SMB are grouped together.
     // smb:file-share.
     {
-      key: smbVolume.fileData.entry.toURL(),
+      key: smbVolume.fileData.key,
       section: NavigationSection.CLOUD,
       separator: true,
       type: NavigationType.VOLUME,
     },
     // provided:prov1.
     {
-      key: providerVolume1.fileData.entry.toURL(),
+      key: providerVolume1.fileData.key,
       section: NavigationSection.CLOUD,
       separator: false,
       type: NavigationType.VOLUME,
     },
     // provided:prov2.
     {
-      key: providerVolume2.fileData.entry.toURL(),
+      key: providerVolume2.fileData.key,
       section: NavigationSection.CLOUD,
       separator: false,
       type: NavigationType.VOLUME,
@@ -298,28 +289,28 @@ export async function testNavigationRoots(done: () => void) {
     // MTP/Archive/Removable are grouped together.
     // removable:hoge.
     {
-      key: hogeVolume.fileData.entry.toURL(),
+      key: hogeVolume.fileData.key,
       section: NavigationSection.REMOVABLE,
       separator: true,
       type: NavigationType.VOLUME,
     },
     // removable:fuga.
     {
-      key: fugaVolume.fileData.entry.toURL(),
+      key: fugaVolume.fileData.key,
       section: NavigationSection.REMOVABLE,
       separator: false,
       type: NavigationType.VOLUME,
     },
     // archive:a-rar.
     {
-      key: archiveVolume.fileData.entry.toURL(),
+      key: archiveVolume.fileData.key,
       section: NavigationSection.REMOVABLE,
       separator: false,
       type: NavigationType.VOLUME,
     },
     // mtp:a-phone.
     {
-      key: mtpVolume.fileData.entry.toURL(),
+      key: mtpVolume.fileData.key,
       section: NavigationSection.REMOVABLE,
       separator: false,
       type: NavigationType.VOLUME,
@@ -340,7 +331,7 @@ export async function testNavigationRoots(done: () => void) {
     },
     // Trash.
     {
-      key: trashEntryFileData.entry.toURL(),
+      key: trashEntryFileData.key,
       section: NavigationSection.TRASH,
       separator: true,
       type: NavigationType.TRASH,
@@ -359,13 +350,11 @@ export async function testNavigationRootsWithoutRecents(done: () => void) {
   // Put shortcut entry in the store.
   const shortcutEntryFileData =
       createShortcutEntryFileData('drive', 'shortcut', 'Shortcut');
-  initialState.allEntries[shortcutEntryFileData.entry.toURL()] =
-      shortcutEntryFileData;
-  initialState.folderShortcuts.push(shortcutEntryFileData.entry.toURL());
+  initialState.allEntries[shortcutEntryFileData.key] = shortcutEntryFileData;
+  initialState.folderShortcuts.push(shortcutEntryFileData.key);
   // Put MyFiles entry in the store.
   const myFilesVolume = createMyFilesEntryFileData();
-  initialState.allEntries[myFilesVolume.fileData.entry.toURL()] =
-      myFilesVolume.fileData;
+  initialState.allEntries[myFilesVolume.fileData.key] = myFilesVolume.fileData;
   initialState.volumes[myFilesVolume.volume.volumeId] = myFilesVolume.volume;
 
   const store = setupStore(initialState);
@@ -377,14 +366,14 @@ export async function testNavigationRootsWithoutRecents(done: () => void) {
   const want: State['navigation']['roots'] = [
     // shortcut.
     {
-      key: shortcutEntryFileData.entry.toURL(),
+      key: shortcutEntryFileData.key,
       section: NavigationSection.TOP,
       separator: false,
       type: NavigationType.SHORTCUT,
     },
     // My Files volume.
     {
-      key: myFilesVolume.fileData.entry.toURL(),
+      key: myFilesVolume.fileData.key,
       section: NavigationSection.MY_FILES,
       separator: true,
       type: NavigationType.VOLUME,
@@ -417,7 +406,7 @@ export async function testNavigationRootsWithFakeMyFiles(done: () => void) {
   const want: State['navigation']['roots'] = [
     // recent.
     {
-      key: recentEntryFileData.entry.toURL(),
+      key: recentEntryFileData.key,
       section: NavigationSection.TOP,
       separator: false,
       type: NavigationType.RECENT,
@@ -445,8 +434,7 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   initialState.allEntries[recentRootKey] = recentEntryFileData;
   // Put MyFiles entry in the store.
   const myFilesVolume = createMyFilesEntryFileData();
-  initialState.allEntries[myFilesVolume.fileData.entry.toURL()] =
-      myFilesVolume.fileData;
+  initialState.allEntries[myFilesVolume.fileData.key] = myFilesVolume.fileData;
   initialState.volumes[myFilesVolume.volume.volumeId] = myFilesVolume.volume;
   // Put drive entry in the store.
   const driveRootEntryFileData = createDriveRootEntryListFileData();
@@ -456,23 +444,21 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   // Put removable volume 'hoge' in the store.
   const hogeVolume = createVolumeFileData(
       VolumeType.REMOVABLE, 'removable:hoge', 'Hoge', 'device/path/1');
-  initialState.allEntries[hogeVolume.fileData.entry.toURL()] =
-      hogeVolume.fileData;
+  initialState.allEntries[hogeVolume.fileData.key] = hogeVolume.fileData;
   initialState.volumes[hogeVolume.volume.volumeId] = hogeVolume.volume;
 
   // Create a shortcut for the 'hoge' volume in the store.
   const hogeShortcutEntryFileData = createShortcutEntryFileData(
       hogeVolume.volume.volumeId, 'shortcut-hoge', 'Hoge shortcut');
-  initialState.allEntries[hogeShortcutEntryFileData.entry.toURL()] =
+  initialState.allEntries[hogeShortcutEntryFileData.key] =
       hogeShortcutEntryFileData;
-  initialState.folderShortcuts.push(hogeShortcutEntryFileData.entry.toURL());
+  initialState.folderShortcuts.push(hogeShortcutEntryFileData.key);
 
   // Put removable volume 'fuga' in the store. Not a partition, so set a
   // different device path to 'hoge'.
   const fugaVolume = createVolumeFileData(
       VolumeType.REMOVABLE, 'removable:fuga', 'Fuga', 'device/path/2');
-  initialState.allEntries[fugaVolume.fileData.entry.toURL()] =
-      fugaVolume.fileData;
+  initialState.allEntries[fugaVolume.fileData.key] = fugaVolume.fileData;
   initialState.volumes[fugaVolume.volume.volumeId] = fugaVolume.volume;
 
   const store = setupStore(initialState);
@@ -484,42 +470,42 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   const want: State['navigation']['roots'] = [
     // recent.
     {
-      key: recentEntryFileData.entry.toURL(),
+      key: recentEntryFileData.key,
       section: NavigationSection.TOP,
       separator: false,
       type: NavigationType.RECENT,
     },
     // hoge shortcut.
     {
-      key: hogeShortcutEntryFileData.entry.toURL(),
+      key: hogeShortcutEntryFileData.key,
       section: NavigationSection.TOP,
       separator: false,
       type: NavigationType.SHORTCUT,
     },
     // My Files.
     {
-      key: myFilesVolume.fileData.entry.toURL(),
+      key: myFilesVolume.fileData.key,
       section: NavigationSection.MY_FILES,
       separator: true,
       type: NavigationType.VOLUME,
     },
     // Drive.
     {
-      key: driveRootEntryFileData.entry.toURL(),
+      key: driveRootEntryFileData.key,
       section: NavigationSection.GOOGLE_DRIVE,
       separator: true,
       type: NavigationType.DRIVE,
     },
     // hoge volume.
     {
-      key: hogeVolume.fileData.entry.toURL(),
+      key: hogeVolume.fileData.key,
       section: NavigationSection.REMOVABLE,
       separator: true,
       type: NavigationType.VOLUME,
     },
     // fuga volume.
     {
-      key: fugaVolume.fileData.entry.toURL(),
+      key: fugaVolume.fileData.key,
       section: NavigationSection.REMOVABLE,
       separator: false,
       type: NavigationType.VOLUME,
@@ -547,20 +533,20 @@ export async function testMultipleUsbPartitionsGrouping(done: () => void) {
   const partitionVolume1 = createVolumeFileData(
       VolumeType.REMOVABLE, 'removable:partition1', 'partition1', devicePath);
   partitionVolume1.volume.prefixKey = parentEntry.toURL();
-  initialState.allEntries[partitionVolume1.fileData.entry.toURL()] =
+  initialState.allEntries[partitionVolume1.fileData.key] =
       partitionVolume1.fileData;
   initialState.volumes[partitionVolume1.volume.volumeId] =
       partitionVolume1.volume;
   const partitionVolume2 = createVolumeFileData(
       VolumeType.REMOVABLE, 'removable:partition2', 'partition2', devicePath);
-  initialState.allEntries[partitionVolume2.fileData.entry.toURL()] =
+  initialState.allEntries[partitionVolume2.fileData.key] =
       partitionVolume2.fileData;
   initialState.volumes[partitionVolume2.volume.volumeId] =
       partitionVolume2.volume;
   partitionVolume2.volume.prefixKey = parentEntry.toURL();
   const partitionVolume3 = createVolumeFileData(
       VolumeType.REMOVABLE, 'removable:partition3', 'partition3', devicePath);
-  initialState.allEntries[partitionVolume3.fileData.entry.toURL()] =
+  initialState.allEntries[partitionVolume3.fileData.key] =
       partitionVolume3.fileData;
   initialState.volumes[partitionVolume3.volume.volumeId] =
       partitionVolume3.volume;
@@ -602,7 +588,7 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
   const initialState = getEmptyState();
   // Put volume1 in the store.
   const volume1 = createVolumeFileData(VolumeType.REMOVABLE, 'removable1');
-  initialState.allEntries[volume1.fileData.entry.toURL()] = volume1.fileData;
+  initialState.allEntries[volume1.fileData.key] = volume1.fileData;
   initialState.volumes[volume1.volume.volumeId] = volume1.volume;
   // Put volume2 in the store.
   const volumeInfo2 = MockVolumeManager.createMockVolumeInfo(
@@ -633,7 +619,7 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
     },
     // volume1.
     {
-      key: volume1.fileData.entry.toURL(),
+      key: volume1.fileData.key,
       section: NavigationSection.REMOVABLE,
       separator: true,
       type: NavigationType.VOLUME,

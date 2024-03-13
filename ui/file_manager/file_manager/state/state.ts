@@ -37,7 +37,7 @@ export interface FileData {
   /** `key` is the file URL. */
   key: FileKey;
   fullPath: string;
-  entry: Entry|FilesAppEntry;
+  entry?: Entry|FilesAppEntry;
 
   /**
    * `icon` can be either a string or a IconSet which is an object including

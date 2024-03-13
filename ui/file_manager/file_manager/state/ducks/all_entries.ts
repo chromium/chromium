@@ -562,6 +562,7 @@ export async function*
   const childEntriesToReadDeeper: Array<Entry|FilesAppEntry> = [];
   const entry = fileData.entry;
   if (fileKey === driveRootEntryListKey) {
+    assert(entry);
     if (!isDriveRootEntryList(entry)) {
       console.warn(
           `ERROR: ${fileKey} didn't return a EntryList from the Store`);
@@ -779,7 +780,7 @@ async function*
       childEntry.isDirectory && fileFilter.filter(childEntry);
   // The entry has UIChildren but has no FileData.children, we know it can be
   // expanded.
-  if (supportsUiChildren(fileData)) {
+  if (supportsUiChildren(fileData) && fileData.entry) {
     const entry = fileData.entry;
     assert(isEntrySupportUiChildren(entry));
     const uiChildrenDirectories =
