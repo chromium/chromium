@@ -39,6 +39,7 @@ source_set("grid_mediator") {
     ":grid_ui",
     ":grid_utils",
     ":grid_view_controller_mutator",
+    ":selected_grid_items",
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
@@ -102,6 +103,25 @@ source_set("grid_item_identifier") {
   ]
 }
 
+source_set("selected_grid_items") {
+  sources = [
+    "selected_grid_items.h",
+    "selected_grid_items.mm",
+  ]
+
+  deps = [
+    ":grid_item_identifier",
+    "//base",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
+    "//ios/web/public",
+  ]
+}
 source_set("grid_utils") {
   sources = [
     "grid_utils.h",
@@ -145,7 +165,6 @@ source_set("grid_ui") {
     "grid_header.mm",
     "grid_layout.h",
     "grid_layout.mm",
-    "grid_shareable_items_provider.h",
     "grid_theme.h",
     "group_grid_cell.h",
     "group_grid_cell.mm",

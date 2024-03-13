@@ -875,8 +875,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Make sure that the long pressed cell is selected before initiating a drag
   // from it.
-  web::WebStateID pressedItemID = itemIdentifier.tabSwitcherItem.identifier;
-  [self.mutator addToSelectionItemID:pressedItemID];
+  [self.mutator addToSelectionItemID:itemIdentifier];
   return [self.dragDropHandler allSelectedDragItems];
 }
 
@@ -1459,7 +1458,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridItemIdentifier* lookupItemIdentifier = [GridItemIdentifier
       tabIdentifier:[[TabSwitcherItem alloc] initWithIdentifier:removedItemID]];
   self.selectedItemID = selectedItemID;
-  [self.mutator removeFromSelectionItemID:removedItemID];
+  [self.mutator removeFromSelectionItemID:lookupItemIdentifier];
 
   [snapshot deleteItemsWithIdentifiers:@[ lookupItemIdentifier ]];
 }
@@ -1679,7 +1678,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
   if (self.mode == TabGridModeSelection) {
-    if ([self.gridProvider isItemSelected:item.identifier]) {
+    if ([self.gridProvider
+            isItemSelected:[GridItemIdentifier tabIdentifier:item]]) {
       cell.state = GridCellStateEditingSelected;
     } else {
       cell.state = GridCellStateEditingUnselected;
@@ -1731,7 +1731,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GridCellAccessibilityIdentifier(index);
   if (self.mode == TabGridModeSelection) {
-    if ([self.gridProvider isItemSelected:item.identifier]) {
+    if ([self.gridProvider
+            isItemSelected:[GridItemIdentifier tabIdentifier:item]]) {
       cell.state = GridCellStateEditingSelected;
     } else {
       cell.state = GridCellStateEditingUnselected;
@@ -1799,7 +1800,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   CHECK_EQ(GridItemType::Tab, itemIdentifier.type);
 
   web::WebStateID itemID = itemIdentifier.tabSwitcherItem.identifier;
-  [self.mutator userTappedOnItemID:itemID];
+  [self.mutator userTappedOnItemID:itemIdentifier];
   if (_mode == TabGridModeSelection) {
     // Reconfigure the item.
     GridSnapshot* snapshot = self.diffableDataSource.snapshot;

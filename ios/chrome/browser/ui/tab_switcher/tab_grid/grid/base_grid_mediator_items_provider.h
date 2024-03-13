@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_MEDIATOR_ITEMS_PROVIDER_H_
 
+@class GridItemIdentifier;
+
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -13,7 +15,7 @@ class WebStateID;
 @protocol BaseGridMediatorItemProvider
 
 // Returns YES if `itemID` is selected in selection mode.
-- (BOOL)isItemSelected:(web::WebStateID)itemID;
+- (BOOL)isItemSelected:(GridItemIdentifier*)itemID;
 
 @end
 

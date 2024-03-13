@@ -456,15 +456,15 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 #pragma mark - GridViewControllerMutator
 
-- (void)userTappedOnItemID:(web::WebStateID)itemID {
+- (void)userTappedOnItemID:(GridItemIdentifier*)itemID {
   // No-op
 }
 
-- (void)addToSelectionItemID:(web::WebStateID)itemID {
+- (void)addToSelectionItemID:(GridItemIdentifier*)itemID {
   NOTREACHED_NORETURN();
 }
 
-- (void)removeFromSelectionItemID:(web::WebStateID)itemID {
+- (void)removeFromSelectionItemID:(GridItemIdentifier*)itemID {
   // No-op
 }
 
