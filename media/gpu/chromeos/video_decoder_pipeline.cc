@@ -1025,8 +1025,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
 #if BUILDFLAG(USE_V4L2_CODEC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (use_protected) {
     for (const auto& candidate : candidates) {
-      if (candidate.fourcc == Fourcc(Fourcc::MM21)) {
-        LOG(WARNING) << "Forcing MM21 format for V4L2 protected content";
+      if (candidate.fourcc == Fourcc(Fourcc::MM21) ||
+          candidate.fourcc == Fourcc(Fourcc::MT2T)) {
+        LOG(WARNING) << "Forcing MM21/MT2T format for V4L2 protected content";
         viable_candidate = candidate;
       }
     }
