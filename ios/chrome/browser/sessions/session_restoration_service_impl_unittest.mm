@@ -1403,3 +1403,66 @@ TEST_F(SessionRestorationServiceImplTest, AttachBackup) {
   service()->Disconnect(&backup);
   service()->Disconnect(&browser);
 }
+
+// Tests that saving moving a realized WebState between Browser before its
+// metadata could be captured in the original Browser does not results in a
+// crash. This reproduces the condition for https://crbug.com/329219388 bug.
+TEST_F(SessionRestorationServiceImplTest, MoveWebStateWithoutMetadata) {
+  TestBrowser browser0 = TestBrowser(browser_state());
+  TestBrowser browser1 = TestBrowser(browser_state());
+
+  service()->SetSessionID(&browser0, kIdentifier0);
+  service()->SetSessionID(&browser1, kIdentifier1);
+
+  // Create a realized WebState, insert it in `browser0`, then immediately
+  // move it to `browser1` without saving the session between the insertion
+  // and the move. This means that no metadata will be captured for the
+  // WebState, which should not lead to a crash.
+  std::unique_ptr<web::WebState> web_state =
+      web::WebState::Create(web::WebState::CreateParams(browser_state()));
+
+  // Perform a navigation and wait for it to commit. The reason for the
+  // wait is to avoid having a race-condition in the test while ensuring
+  // the state has a non-empty navigation history and won't be skipped
+  // during the serialization.
+  {
+    base::RunLoop run_loop;
+    ScopedTestWebStateObserver web_state_observer(run_loop.QuitClosure());
+    web_state_observer.Observe(web_state.get());
+
+    // The view of the WebState needs to be created before the navigation
+    // is really executed.
+    std::ignore = web_state->GetView();
+    web_state->GetNavigationManager()->LoadURLWithParams(
+        web::NavigationManager::WebLoadParams(GURL(kURLs[0])));
+
+    run_loop.Run();
+  }
+
+  browser0.GetWebStateList()->InsertWebState(
+      std::move(web_state), WebStateList::InsertionParams::Automatic());
+  ASSERT_EQ(browser0.GetWebStateList()->count(), 1);
+
+  browser1.GetWebStateList()->InsertWebState(
+      browser0.GetWebStateList()->DetachWebStateAt(0),
+      WebStateList::InsertionParams::Automatic());
+
+  // This step should not crash.
+  WaitForSessionSaveComplete();
+
+  const FilePathSet& expectation0 = ExpectedStorageFilesForBrowser(
+      SessionPathFromIdentifier(kIdentifier0), &browser0,
+      /*expect_session_metadata_storage=*/true);
+
+  const FilePathSet& expectation1 = ExpectedStorageFilesForBrowser(
+      SessionPathFromIdentifier(kIdentifier1), &browser1,
+      /*expect_session_metadata_storage=*/true);
+
+  // Both sessions should be saved, and only `browser1` should have data for
+  // the WebState (since it was moved from `browser0` before its state could
+  // be saved).
+  EXPECT_EQ(ModifiedFiles(), expectation0 + expectation1);
+
+  service()->Disconnect(&browser1);
+  service()->Disconnect(&browser0);
+}
