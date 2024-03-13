@@ -45,8 +45,8 @@ suite('cr-icon-button', function() {
 
   // This test documents previously undefined behavior of cr-icon-button when a
   // 'tabindex' attribute is set by the parent, which seems to be actually
-  // relied upon by cr-icon-button client code. The behavior below should be
-  // improved or reconciled/merged with 'customTabIndex'.
+  // relied upon by cr-icon-button client code. The behavior below should
+  // possibly be improved to preserve the original tabindex upon re-enabling.
   test('external tabindex', async () => {
     document.body.innerHTML =
         getTrustedHTML`<cr-icon-button tabindex="10"></cr-icon-button>`;
@@ -158,28 +158,6 @@ suite('cr-icon-button', function() {
     await flushTasks();
     assertEquals(4, clickCount);
     button.removeEventListener('click', clickHandler);
-  });
-
-  test('when tabindex is -1, it stays -1', async () => {
-    document.body.innerHTML =
-        getTrustedHTML`<cr-icon-button custom-tab-index="-1"></cr-icon-button>`;
-    await flushTasks();
-    button = document.body.querySelector('cr-icon-button')!;
-    assertEquals('-1', button.getAttribute('tabindex'));
-    button.disabled = true;
-    assertEquals('-1', button.getAttribute('tabindex'));
-    button.disabled = false;
-    assertEquals('-1', button.getAttribute('tabindex'));
-  });
-
-  test('tabindex update', async () => {
-    button = document.createElement('cr-icon-button')!;
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(button);
-    assertEquals('0', button.getAttribute('tabindex'));
-    button.customTabIndex = 1;
-    await button.updateComplete;
-    assertEquals('1', button.getAttribute('tabindex'));
   });
 
   test('multiple iron icons', async () => {

@@ -48,8 +48,8 @@ suite('cr-button', function() {
 
   // This test documents previously undefined behavior of cr-button when a
   // 'tabindex' attribute is set by the parent, which seems to be actually
-  // relied upon by cr-button client code. The behavior below should be
-  // improved or reconciled/merged with 'customTabIndex'.
+  // relied upon by cr-button client code. The behavior below should possibly be
+  // improved to preserve the original tabindex upon re-enabling.
   test('external tabindex', async () => {
     document.body.innerHTML =
         getTrustedHTML`<cr-button tabindex="10"></cr-button>`;
@@ -96,29 +96,6 @@ suite('cr-button', function() {
     checkClicks(4);
 
     button.removeEventListener('click', clickHandler);
-  });
-
-  test('customTabIndex restored after disabling/re-enabling', async () => {
-    document.body.innerHTML =
-        getTrustedHTML`<cr-button custom-tab-index="10"></cr-button>`;
-    button = document.body.querySelector('cr-button')!;
-    assertEquals('10', button.getAttribute('tabindex'));
-    button.disabled = true;
-    await microtasksFinished();
-    assertEquals('-1', button.getAttribute('tabindex'));
-    button.disabled = false;
-    await microtasksFinished();
-    assertEquals('10', button.getAttribute('tabindex'));
-  });
-
-  test('customTabIndex updates tabindex', async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    button = document.createElement('cr-button');
-    document.body.appendChild(button);
-    assertEquals('0', button.getAttribute('tabindex'));
-    button.customTabIndex = 1;
-    await microtasksFinished();
-    assertEquals('1', button.getAttribute('tabindex'));
   });
 
   test('hidden', () => {

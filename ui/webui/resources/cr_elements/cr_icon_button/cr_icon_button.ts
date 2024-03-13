@@ -82,13 +82,6 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
         reflect: true,
       },
 
-      /**
-       * Use this property in order to configure the "tabindex" attribute.
-       */
-      customTabIndex: {
-        type: Number,
-      },
-
       ironIcon: {
         type: String,
         reflect: true,
@@ -102,7 +95,6 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
   }
 
   disabled: boolean = false;
-  customTabIndex?: number;
   ironIcon?: string;
   private multipleIcons_: boolean = false;
 
@@ -155,10 +147,6 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
       this.disabledChanged_(this.disabled, changedProperties.get('disabled'));
     }
 
-    if (changedProperties.has('customTabIndex')) {
-      this.applyTabIndex_();
-    }
-
     if (changedProperties.has('ironIcon')) {
       this.onIronIconChanged_();
     }
@@ -171,18 +159,7 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     if (this.disabled) {
       this.blur();
     }
-    this.applyTabIndex_();
-  }
-
-  /**
-   * Updates the tabindex HTML attribute to the actual value.
-   */
-  private applyTabIndex_() {
-    let value = this.customTabIndex;
-    if (value === undefined) {
-      value = this.disabled ? -1 : 0;
-    }
-    this.setAttribute('tabindex', value.toString());
+    this.setAttribute('tabindex', String(this.disabled ? -1 : 0));
   }
 
   private onBlur_() {

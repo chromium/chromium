@@ -46,14 +46,6 @@ export class CrButtonElement extends CrButtonElementBase {
         reflect: true,
       },
 
-      /**
-       * Use this property in order to configure the "tabindex" attribute when
-       * the button is not disabled. When disabled "-1" will be used regardless.
-       */
-      customTabIndex: {
-        type: Number,
-      },
-
       hasPrefixIcon_: {
         type: Boolean,
         reflect: true,
@@ -67,7 +59,6 @@ export class CrButtonElement extends CrButtonElementBase {
   }
 
   disabled: boolean = false;
-  customTabIndex?: number;
   private hasPrefixIcon_: boolean = false;
   private hasSuffixIcon_: boolean = false;
 
@@ -112,10 +103,6 @@ export class CrButtonElement extends CrButtonElementBase {
       this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
       this.disabledChanged_(this.disabled, changedProperties.get('disabled'));
     }
-
-    if (changedProperties.has('customTabIndex')) {
-      this.applyTabIndex_();
-    }
   }
 
   override disconnectedCallback() {
@@ -142,17 +129,7 @@ export class CrButtonElement extends CrButtonElementBase {
     if (this.disabled) {
       this.blur();
     }
-    this.applyTabIndex_();
-  }
-
-  /**
-   * Updates the tabindex HTML attribute to the actual value.
-   */
-  private applyTabIndex_() {
-    const enabledValue =
-        this.customTabIndex !== undefined ? this.customTabIndex : 0;
-    const value = this.disabled ? -1 : enabledValue;
-    this.setAttribute('tabindex', value.toString());
+    this.setAttribute('tabindex', String(this.disabled ? -1 : 0));
   }
 
   private onBlur_() {
