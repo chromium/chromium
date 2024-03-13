@@ -19,9 +19,14 @@ import java.util.List;
 public class TabResumptionModuleMediator {
 
     @interface ModuleState {
+        // Module is at initial state, awaiting results.
         int INIT = 0;
-        int SHOWN = 1;
-        int GONE = 2;
+        // Module not shown due to empty suggestions, but can still show.
+        int TENTATIVE_GONE = 1;
+        // Module shows suggestion, but may still hide.
+        int SHOWN = 2;
+        // Module is hidden and stays that way.
+        int GONE = 3;
     }
 
     private static final int MAX_TILES_NUMBER = 2;
@@ -66,6 +71,29 @@ public class TabResumptionModuleMediator {
      * available then hides the module.
      */
     void loadModule() {
+        // In each module instance, loadModule() can get called a few times:
+        // * Initial call: `mDataProvider` returns quickly with stale or even empty (e.g., at
+        //   startup before data is loaded) suggestions, but can also trigger a data load request
+        //   that leads to Update calls.
+        //   * Use: Provides tentative suggestions, allowing Magic Stack to show earlier.
+        //   * Possible results: {nothing, something}.
+        // * Update calls: Returning data load request or user action can cause `mDataProvider` to
+        //   trigger module refresh, brings control flow back here (after noticeable delay). The
+        //   resulting suggestions would be fresher than Initial call's.
+        //   * Use: Provides up-to-date suggestions.
+        //   * Possible results: {(never called), nothing, something}.
+        //
+        // Meanwhile, Magic Stack expects the following ModuleDelegate callbacks:
+        // * onDataReady(): To show module, and unblock Magic Stack wait.
+        // * onDataFetchFailed(): To hide module, and unblock Magic Stack wait.
+        // * removeModule(): To hide module after onDataReady() is already called.
+        // * (Once removeModule() is called, there's no way to re-show module).
+        // onDataReady() and onDataFetchFailed() are mutually exclusive; removeModule() can only
+        // be called once, and only if onDataReady() is called.
+        //
+        // A state machine manages how different Initial / Update call cases trigger the above.
+
+        // ModuleState.GONE is a terminal state: Don't bother fetching.
         if (mModuleState == ModuleState.GONE) return;
 
         mDataProvider.fetchSuggestions(
@@ -75,18 +103,27 @@ public class TabResumptionModuleMediator {
                                     ? ModuleState.SHOWN
                                     : ModuleState.GONE;
 
+                    // State machine transition, which can result in `mModuleDelegate` calls
                     if (mModuleState == ModuleState.INIT) {
-                        // On initial load, send load status to Magic Stack to help it decide
-                        // whether to show or to hide the module.
+                        // Initial call.
                         if (nextModuleState == ModuleState.SHOWN) {
                             mModuleDelegate.onDataReady(getModuleType(), mModel);
-                        } else {
+                        } else { // No data: Don't give up yet; still have retry opportunity.
+                            nextModuleState = ModuleState.TENTATIVE_GONE;
+                        }
+                    } else if (mModuleState == ModuleState.TENTATIVE_GONE) {
+                        // Update call after Initial call has suggested nothing.
+                        if (nextModuleState == ModuleState.SHOWN) {
+                            mModuleDelegate.onDataReady(getModuleType(), mModel);
+                        } else { // Now sure there's no data, so hide.
                             mModuleDelegate.onDataFetchFailed(getModuleType());
                         }
-                    } else if (mModuleState == ModuleState.SHOWN
-                            && nextModuleState == ModuleState.GONE) {
-                        // Transition from SHOWN to GONE is permanent.
-                        mModuleDelegate.removeModule(getModuleType());
+                    } else if (mModuleState == ModuleState.SHOWN) {
+                        // Update call after Initial call has suggested something.
+                        if (nextModuleState == ModuleState.GONE) {
+                            // Transition from SHOWN to GONE.
+                            mModuleDelegate.removeModule(getModuleType());
+                        }
                     }
 
                     if (nextModuleState == ModuleState.SHOWN) {

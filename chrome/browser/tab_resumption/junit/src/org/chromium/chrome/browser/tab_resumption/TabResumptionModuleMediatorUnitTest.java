@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -36,6 +39,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -138,12 +142,12 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                         /* sourceName= */ "Desktop",
                         /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
                         /* title= */ "Google Dog",
-                        /* timestamp= */ makeTimestamp(12, 0, 0),
-                        /* id= */ 90);
+                        /* timestamp= */ makeTimestamp(16, 0, 0),
+                        /* id= */ 45);
         // Invalid due to empty title.
         SuggestionEntry entryInvalid =
                 new SuggestionEntry(
-                        "Desktop", JUnitTestGURLs.RED_2, "", makeTimestamp(16, 0, 0), 123);
+                        "Desktop", JUnitTestGURLs.RED_2, "", makeTimestamp(17, 0, 0), 123);
 
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
         suggestions.add(entryInvalid);
@@ -203,5 +207,131 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertEquals(2, bundle.entries.size());
         Assert.assertEquals(entryNewest, bundle.entries.get(0));
         Assert.assertEquals(entryNewer, bundle.entries.get(1));
+    }
+
+    @Test
+    @SmallTest
+    public void testInitialNothingUpdateNothing() {
+        List<SuggestionEntry> initialSuggestions = new ArrayList<SuggestionEntry>();
+        List<SuggestionEntry> updateSuggestions1 = new ArrayList<SuggestionEntry>();
+
+        // Initial call --> nothing: Don't show, wait some more.
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(0).onResult(initialSuggestions);
+        checkModuleState(false, 0, 0, 0);
+
+        // If no Update call: Wait until Magic Stack timeout.
+
+        // Update call --> nothing: Call onDataFetchFailed(), gone indefinitely.
+        mMediator.loadModule();
+        verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(1).onResult(updateSuggestions1);
+        checkModuleState(false, 0, 1, 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testInitialNothingUpdateSomething() {
+        List<SuggestionEntry> initialSuggestions = new ArrayList<SuggestionEntry>();
+        List<SuggestionEntry> updateSuggestions1 = Arrays.asList(makeValidEntry());
+
+        // Initial call --> nothing: Don't show, wait some more.
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(0).onResult(initialSuggestions);
+        checkModuleState(false, 0, 0, 0);
+
+        // If no Update call: Wait until Magic Stack timeout.
+
+        // Update call --> something: Call onDataReady() and show.
+        mMediator.loadModule();
+        verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(1).onResult(updateSuggestions1);
+        checkModuleState(true, 1, 0, 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testInitialSomethingUpdateNothing() {
+        List<SuggestionEntry> initialSuggestions = Arrays.asList(makeValidEntry());
+        List<SuggestionEntry> updateSuggestions1 = new ArrayList<SuggestionEntry>();
+
+        // Initial call --> something: Call onDataReady() and show (tentative).
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(0).onResult(initialSuggestions);
+        checkModuleState(true, 1, 0, 0);
+
+        // If no Update call: Data is new enough, show indefinitely.
+
+        // Update call --> nothing: Call removeModule(), gone indefinitely.
+        mMediator.loadModule();
+        verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(1).onResult(updateSuggestions1);
+        checkModuleState(false, 1, 0, 1);
+
+        // Reached terminal state: Subsequent loadModule() calls do nothing.
+        mMediator.loadModule();
+        verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+    }
+
+    @Test
+    @SmallTest
+    public void testInitialSomethingUpdateSomething() {
+        List<SuggestionEntry> initialSuggestions = Arrays.asList(makeValidEntry());
+        List<SuggestionEntry> updateSuggestions1 = Arrays.asList(makeValidEntry());
+        List<SuggestionEntry> updateSuggestions2 = Arrays.asList(makeValidEntry());
+        List<SuggestionEntry> updateSuggestions3 = new ArrayList<SuggestionEntry>();
+
+        // Initial call --> something: Call onDataReady() and show (tentative).
+        mMediator.loadModule();
+        verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(0).onResult(initialSuggestions);
+        checkModuleState(true, 1, 0, 0);
+
+        // If no Update call: Data is new enough, show indefinitely.
+
+        // Update call --> something: Show.
+        mMediator.loadModule();
+        verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(1).onResult(updateSuggestions1);
+        checkModuleState(true, 1, 0, 0);
+
+        // Rare case of more Update call --> something: Show.
+        mMediator.loadModule();
+        verify(mDataProvider, times(3)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(2).onResult(updateSuggestions2);
+        checkModuleState(true, 1, 0, 0);
+
+        // Rare case of more Update call --> nothing: Call removeModule(), gone indefinitely.
+        mMediator.loadModule();
+        verify(mDataProvider, times(4)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+        mFetchSuggestionCallbackCaptor.getAllValues().get(3).onResult(updateSuggestions3);
+        checkModuleState(false, 1, 0, 1);
+
+        // Reached terminal state: Subsequent loadModule() calls do nothing.
+        mMediator.loadModule();
+        verify(mDataProvider, times(4)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
+    }
+
+    private SuggestionEntry makeValidEntry() {
+        return new SuggestionEntry(
+                /* sourceName= */ "Desktop",
+                /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
+                /* title= */ "Google Dog",
+                /* timestamp= */ makeTimestamp(16, 0, 0),
+                /* id= */ 45);
+    }
+
+    private void checkModuleState(
+            boolean isVisible,
+            int expectOnDataReadyCalls,
+            int expectOnDataFetchFailedCalls,
+            int expectRemoveModuleCalls) {
+        Assert.assertEquals(isVisible, mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
+        verify(mModuleDelegate, times(expectOnDataReadyCalls)).onDataReady(anyInt(), any());
+        verify(mModuleDelegate, times(expectOnDataFetchFailedCalls)).onDataFetchFailed(anyInt());
+        verify(mModuleDelegate, times(expectRemoveModuleCalls)).removeModule(anyInt());
     }
 }
