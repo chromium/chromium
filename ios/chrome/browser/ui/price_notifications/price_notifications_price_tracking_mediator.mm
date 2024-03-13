@@ -53,8 +53,6 @@ using PriceNotificationItems =
 @interface PriceNotificationsPriceTrackingMediator () {
   // The service responsible for fetching a product's image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
-  // Only used if ReplaceSyncPromosWithSignInPromos is not enabled.
-  raw_ptr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
 }
 // The service responsible for interacting with commerce's price data
 // infrastructure.
@@ -77,7 +75,6 @@ using PriceNotificationItems =
 
 - (instancetype)
     initWithShoppingService:(commerce::ShoppingService*)service
-              bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                imageFetcher:
                    (std::unique_ptr<image_fetcher::ImageDataFetcher>)fetcher
                    webState:(web::WebState*)webState
@@ -85,12 +82,10 @@ using PriceNotificationItems =
   self = [super init];
   if (self) {
     DCHECK(service);
-    DCHECK(bookmarkModel);
     DCHECK(fetcher);
     DCHECK(webState);
     DCHECK(pushNotificationService);
     _shoppingService = service;
-    _localOrSyncableBookmarkModel = bookmarkModel;
     _imageFetcher = std::move(fetcher);
     _webState = webState;
     _pushNotificationService = pushNotificationService;
@@ -111,12 +106,7 @@ using PriceNotificationItems =
 #pragma mark - Accessors
 
 - (bookmarks::BookmarkModel*)bookmarkModel {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    return self.shoppingService->GetBookmarkModelUsedForSync();
-  } else {
-    return _localOrSyncableBookmarkModel;
-  }
+  return self.shoppingService->GetBookmarkModelUsedForSync();
 }
 
 #pragma mark - PriceNotificationsMutator

@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 
+#import "base/feature_list.h"
 #import "base/task/thread_pool.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/power_bookmarks/core/power_bookmark_service.h"
+#import "components/sync/base/features.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -29,7 +32,12 @@ PowerBookmarkServiceFactory::PowerBookmarkServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PowerBookmarkService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
+  if (base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    DependsOn(ios::BookmarkModelFactory::GetInstance());
+  } else {
+    DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
+  }
 }
 
 PowerBookmarkServiceFactory::~PowerBookmarkServiceFactory() = default;
@@ -39,10 +47,20 @@ PowerBookmarkServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* state) const {
   ChromeBrowserState* chrome_state =
       ChromeBrowserState::FromBrowserState(state);
+
+  // TODO(crbug.com/326185948): The flag-disabled case below looks wrong. It is
+  // more likely that PowerBookmarkService intends to integrate with account
+  // bookmarks only.
+  bookmarks::BookmarkModel* bookmark_model =
+      base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)
+          ? ios::BookmarkModelFactory::
+                GetModelForBrowserStateIfUnificationEnabledOrDie(chrome_state)
+          : ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
+                ->GetDedicatedUnderlyingModelForBrowserState(chrome_state);
+
   return std::make_unique<power_bookmarks::PowerBookmarkService>(
-      ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
-          ->GetDedicatedUnderlyingModelForBrowserState(chrome_state),
-      state->GetStatePath().AppendASCII("power_bookmarks"),
+      bookmark_model, state->GetStatePath().AppendASCII("power_bookmarks"),
       web::GetUIThreadTaskRunner({}),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,

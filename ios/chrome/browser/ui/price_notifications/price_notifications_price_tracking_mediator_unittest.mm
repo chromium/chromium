@@ -168,8 +168,6 @@ class PriceNotificationsPriceTrackingMediatorTest
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     mediator_ = [[PriceNotificationsPriceTrackingMediator alloc]
         initWithShoppingService:(commerce::ShoppingService*)shopping_service_
-                  bookmarkModel:(bookmarks::BookmarkModel*)
-                                    local_or_syncable_bookmark_model_
                    imageFetcher:std::move(image_fetcher_)
                        webState:(web::WebState*)web_state_.get()
         pushNotificationService:(PushNotificationService*)
