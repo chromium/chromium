@@ -118,8 +118,8 @@ void WindowCycleItemView::Layout(PassKey) {
   }
 
   if (!layer_tree_synchronizer_) {
-    layer_tree_synchronizer_ =
-        std::make_unique<ScopedLayerTreeSynchronizer>(layer());
+    layer_tree_synchronizer_ = std::make_unique<ScopedLayerTreeSynchronizer>(
+        layer(), /*restore_tree=*/false);
   }
 
   const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();

@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/point.h"
@@ -371,12 +372,20 @@ gfx::RRectF ApplyTransform(const gfx::RRectF& bounds,
 
 }  // namespace
 
-ScopedLayerTreeSynchronizer::ScopedLayerTreeSynchronizer(ui::Layer* root_layer)
-    : root_layer_(root_layer) {
+///////////////////////////////////////////////////////////////////////////////
+// ScopedLayerTreeSynchronizer:
+
+ScopedLayerTreeSynchronizer::ScopedLayerTreeSynchronizer(ui::Layer* root_layer,
+                                                         bool restore_tree)
+    : root_layer_(root_layer), restore_tree_(restore_tree) {
   CHECK(root_layer);
 }
 
-ScopedLayerTreeSynchronizer::~ScopedLayerTreeSynchronizer() = default;
+ScopedLayerTreeSynchronizer::~ScopedLayerTreeSynchronizer() {
+  if (restore_tree_) {
+    Restore();
+  }
+}
 
 void ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(
     ui::Layer* layer,
@@ -444,6 +453,15 @@ void ScopedLayerTreeSynchronizer::SynchronizeLayerTreeRoundedCorners(
                     : radii.lower_left());
 
       if (radii != layer->rounded_corner_radii()) {
+        // If `original_layers_radii_` has an entry, it means the layer
+        // radii has been changed in a prior call to
+        // `SynchronizeLayerTreeRoundedCorners()`
+        if (restore_tree_ && !original_layers_radii_.contains(layer)) {
+          original_layers_radii_.insert({layer,
+                                         {layer->rounded_corner_radii(),
+                                          layer->is_fast_rounded_corner()}});
+        }
+
         layer->SetRoundedCornerRadius(radii);
         layer->SetIsFastRoundedCorner(/*enable=*/!radii.IsEmpty());
       }
@@ -452,6 +470,47 @@ void ScopedLayerTreeSynchronizer::SynchronizeLayerTreeRoundedCorners(
 
   for (ui::Layer* child : layer->children()) {
     SynchronizeLayerTreeRoundedCorners(child, reference_bounds);
+  }
+}
+
+void ScopedLayerTreeSynchronizer::Restore() {
+  if (original_layers_radii_.empty()) {
+    return;
+  }
+
+  RestoreLayerTree(root_layer_);
+  original_layers_radii_.clear();
+}
+
+void ScopedLayerTreeSynchronizer::RestoreLayerTree(ui::Layer* layer) {
+  if (original_layers_radii_.contains(layer)) {
+    const auto& info = original_layers_radii_.at(layer);
+    layer->SetRoundedCornerRadius(info.first);
+    layer->SetIsFastRoundedCorner(/*enable=*/info.second);
+  }
+
+  for (ui::Layer* child : layer->children()) {
+    RestoreLayerTree(child);
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// ScopedWindowTreeSynchronizer:
+
+ScopedWindowTreeSynchronizer::ScopedWindowTreeSynchronizer(
+    aura::Window* root_window,
+    bool restore_tree)
+    : ScopedLayerTreeSynchronizer(root_window->layer(), restore_tree) {}
+
+ScopedWindowTreeSynchronizer::~ScopedWindowTreeSynchronizer() {}
+
+void ScopedWindowTreeSynchronizer::SynchronizeRoundedCorners(
+    aura::Window* window,
+    const gfx::RRectF& reference_bounds,
+    TransientTreeIgnorePredicate ignore_predicate) {
+  for (auto* window_iter : GetTransientTreeIterator(window, ignore_predicate)) {
+    ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(window_iter->layer(),
+                                                           reference_bounds);
   }
 }
 

@@ -82,8 +82,8 @@ TEST_P(UpdatingScopedLayerTreeSynchronizerTest, OverlappingCorners) {
   child_layer->SetRoundedCornerRadius(child_layer_radii());
   child_layer->SetIsFastRoundedCorner(true);
 
-  auto layer_tree_synchronizer =
-      std::make_unique<ScopedLayerTreeSynchronizer>(root.get());
+  auto layer_tree_synchronizer = std::make_unique<ScopedLayerTreeSynchronizer>(
+      root.get(), /*restore_tree=*/false);
 
   ASSERT_EQ(child_layer->rounded_corner_radii(), child_layer_radii());
 
@@ -197,9 +197,22 @@ INSTANTIATE_TEST_SUITE_P(
                        gfx::RoundedCornersF(5),
                        gfx::RoundedCornersF(5, 20, 20, 5))));
 
-using ScopedLayerTreeSynchronizerTest = testing::Test;
+class ScopedLayerTreeSynchronizerTest : public testing::TestWithParam<bool> {
+ public:
+  ScopedLayerTreeSynchronizerTest() = default;
 
-TEST_F(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
+  ScopedLayerTreeSynchronizerTest(const ScopedLayerTreeSynchronizerTest&) =
+      delete;
+  ScopedLayerTreeSynchronizerTest& operator=(
+      const ScopedLayerTreeSynchronizerTest&) = delete;
+
+  ~ScopedLayerTreeSynchronizerTest() override = default;
+
+ protected:
+  bool restore_layer_tree() const { return GetParam(); }
+};
+
+TEST_P(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
   // Layer Tree:
   // +root         (has rounded corners)
   // +--layer1     (has intersecting rounded corners with root)
@@ -249,8 +262,8 @@ TEST_F(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
   layer_3->SetRoundedCornerRadius(kLayer3Radii);
   layer_3->SetIsFastRoundedCorner(true);
 
-  auto layer_tree_synchronizer =
-      std::make_unique<ScopedLayerTreeSynchronizer>(root.get());
+  auto layer_tree_synchronizer = std::make_unique<ScopedLayerTreeSynchronizer>(
+      root.get(), restore_layer_tree());
   layer_tree_synchronizer->SynchronizeRoundedCorners(
       root.get(), gfx::RRectF(gfx::RectF(kRootBounds), kRootLayerRadii));
 
@@ -263,6 +276,10 @@ TEST_F(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
   EXPECT_EQ(layer_2->rounded_corner_radii(), kUpdatedLayer2Radii);
   EXPECT_EQ(layer_3->rounded_corner_radii(), kLayer3Radii);
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         ScopedLayerTreeSynchronizerTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace ash

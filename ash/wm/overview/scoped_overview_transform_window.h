@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/raster_scale/raster_scale_layer_observer.h"
+#include "ash/wm/scoped_layer_tree_synchronizer.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -135,7 +136,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
   // change. Must be called before PositionWindows in OverviewGrid.
   void UpdateWindowDimensionsType();
 
-  // Updates the rounded corners on |window_|.
+  // Updates the rounded corners on `window_` and its transient hierarchy (if
+  // needed).
   void UpdateRoundedCorners(bool show);
 
   // aura::client::TransientWindowClientObserver:
@@ -217,6 +219,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
+
+  std::unique_ptr<ScopedWindowTreeSynchronizer> window_tree_synchronizer_;
 
   // While the transform window exists, apply dynamic raster scale to the
   // underlying window.
