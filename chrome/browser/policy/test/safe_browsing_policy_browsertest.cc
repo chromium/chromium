@@ -184,8 +184,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
       prefs->FindPreference(prefs::kPasswordProtectionLoginURLs)->IsManaged());
   std::vector<GURL> login_urls;
   safe_browsing::GetPasswordProtectionLoginURLsPref(*prefs, &login_urls);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS prepopulates chrome:// URLs.
+  EXPECT_FALSE(login_urls.empty());
+#else
   EXPECT_TRUE(login_urls.empty());
-
+#endif
   // Add 2 login URLs to this enterprise policy .
   PolicyMap policies;
   base::Value::List login_url_values;
@@ -198,11 +202,18 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kPasswordProtectionLoginURLs)->IsManaged());
   safe_browsing::GetPasswordProtectionLoginURLsPref(*prefs, &login_urls);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(3u, login_urls.size());
+  EXPECT_EQ(GURL("chrome://os-settings"), login_urls[0]);
+  EXPECT_EQ(GURL("https://login.mydomain.com"), login_urls[1]);
+  EXPECT_EQ(GURL("https://mydomian.com/login.html"), login_urls[2]);
+#else
   EXPECT_EQ(2u, login_urls.size());
   EXPECT_EQ(GURL("https://login.mydomain.com"), login_urls[0]);
   EXPECT_EQ(GURL("https://mydomian.com/login.html"), login_urls[1]);
+#endif
 
-  // Verify non-http/https schemes, or invalid URLs will be skipped.
+  // Verify unsupported schemes, or invalid URLs will be skipped.
   login_url_values.clear();
   login_url_values.Append("invalid");
   login_url_values.Append("ftp://login.mydomain.com");
@@ -214,7 +225,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest, PasswordProtectionLoginURLs) {
       prefs->FindPreference(prefs::kPasswordProtectionLoginURLs)->IsManaged());
   login_urls.clear();
   safe_browsing::GetPasswordProtectionLoginURLsPref(*prefs, &login_urls);
+#if BUILDFLAG(IS_CHROMEOS)
+  // Prepopulated URL should be present.
+  EXPECT_FALSE(login_urls.empty());
+#else
   EXPECT_TRUE(login_urls.empty());
+#endif
 }
 
 // Test that when password protection change password URL is set by policy,
