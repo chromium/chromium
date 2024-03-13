@@ -90,7 +90,8 @@ std::unique_ptr<ScreenControls> DesktopSessionProxy::CreateScreenControls() {
   return std::make_unique<IpcScreenControls>(this);
 }
 
-std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer() {
+std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer(
+    webrtc::ScreenId id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   // Cursor compositing is done by the desktop process if necessary so just
@@ -102,6 +103,10 @@ std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer() {
   if (desktop_session_control_) {
     video_capturer->SetDesktopSessionControl(desktop_session_control_.get());
   }
+
+  // `id` can be ignored for single-stream mode - it will always be
+  // kFullDesktopScreenId, which is what the Desktop process will use by
+  // default.
   return video_capturer;
 }
 

@@ -51,7 +51,8 @@ class DesktopEnvironment {
   virtual std::unique_ptr<AudioCapturer> CreateAudioCapturer() = 0;
   virtual std::unique_ptr<InputInjector> CreateInputInjector() = 0;
   virtual std::unique_ptr<ScreenControls> CreateScreenControls() = 0;
-  virtual std::unique_ptr<DesktopCapturer> CreateVideoCapturer() = 0;
+  virtual std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
+      webrtc::ScreenId id) = 0;
 
   // Returns a DisplayInfoMonitor that is owned by this object. Returns
   // nullptr if the implementation does not support monitoring of displays

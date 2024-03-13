@@ -585,7 +585,8 @@ void ClientSession::CreateMediaStreams() {
   DCHECK(video_streams_.empty());
 
   auto video_stream = connection_->StartVideoStream(
-      kStreamName, desktop_environment_->CreateVideoCapturer());
+      kStreamName,
+      desktop_environment_->CreateVideoCapturer(webrtc::kFullDesktopScreenId));
 
   // Create an AudioStream to pump audio from the capturer to the client.
   std::unique_ptr<protocol::AudioSource> audio_capturer =
@@ -631,7 +632,8 @@ void ClientSession::CreatePerMonitorVideoStreams() {
     HOST_LOG << "Creating video stream: " << stream_name;
 
     auto video_stream = connection_->StartVideoStream(
-        stream_name, desktop_environment_->CreateVideoCapturer());
+        stream_name, desktop_environment_->CreateVideoCapturer(id));
+    // This call is needed by WebrtcVideoStream for per-frame stats reporting.
     video_stream->SelectSource(id);
 
     // SetObserver(this) is not called on the new video-stream, because

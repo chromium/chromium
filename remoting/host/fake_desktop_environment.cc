@@ -96,7 +96,8 @@ std::unique_ptr<ScreenControls> FakeDesktopEnvironment::CreateScreenControls() {
   return std::make_unique<FakeScreenControls>();
 }
 
-std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer() {
+std::unique_ptr<DesktopCapturer> FakeDesktopEnvironment::CreateVideoCapturer(
+    webrtc::ScreenId id) {
   auto fake_capturer = std::make_unique<protocol::FakeDesktopCapturer>();
   if (!frame_generator_.is_null()) {
     fake_capturer->set_frame_generator(frame_generator_);

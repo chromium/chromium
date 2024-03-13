@@ -188,8 +188,8 @@ BasicDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
   return std::make_unique<RemoteWebAuthnExtensionNotifier>();
 }
 
-std::unique_ptr<DesktopCapturer>
-BasicDesktopEnvironment::CreateVideoCapturer() {
+std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
+    webrtc::ScreenId id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner;
@@ -235,11 +235,15 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
 #if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
   if (options_.enable_curtaining()) {
+    desktop_capturer->SelectSource(id);
     return desktop_capturer;
   }
 #endif
-  return std::make_unique<DesktopAndCursorConditionalComposer>(
-      std::move(desktop_capturer));
+  auto composing_capturer =
+      std::make_unique<DesktopAndCursorConditionalComposer>(
+          std::move(desktop_capturer));
+  composing_capturer->SelectSource(id);
+  return composing_capturer;
 }
 
 BasicDesktopEnvironment::BasicDesktopEnvironment(

@@ -60,7 +60,8 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<AudioCapturer> CreateAudioCapturer() override;
   std::unique_ptr<InputInjector> CreateInputInjector() override;
   std::unique_ptr<ScreenControls> CreateScreenControls() override;
-  std::unique_ptr<DesktopCapturer> CreateVideoCapturer() override;
+  std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
+      webrtc::ScreenId id) override;
   DesktopDisplayInfoMonitor* GetDisplayInfoMonitor() override;
   std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor()
       override;

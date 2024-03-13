@@ -275,7 +275,8 @@ void DesktopSessionAgent::Start(
 
   // Start the video capturer and mouse cursor monitor.
   video_capturer_ = std::make_unique<MojoVideoCapturer>(
-      desktop_environment_->CreateVideoCapturer(), caller_task_runner_);
+      desktop_environment_->CreateVideoCapturer(webrtc::kFullDesktopScreenId),
+      caller_task_runner_);
   video_capturer_->set_event_handler(desktop_session_event_handler_.get());
   video_capturer_->Start();
   mouse_cursor_monitor_ = desktop_environment_->CreateMouseCursorMonitor();

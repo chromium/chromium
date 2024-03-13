@@ -70,7 +70,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               (override));
   MOCK_METHOD(std::unique_ptr<DesktopCapturer>,
               CreateVideoCapturer,
-              (),
+              (webrtc::ScreenId),
               (override));
   MOCK_METHOD(DesktopDisplayInfoMonitor*,
               GetDisplayInfoMonitor,

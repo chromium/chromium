@@ -37,6 +37,7 @@
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/errors.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace base {
@@ -103,7 +104,7 @@ class DesktopSessionProxy
   std::unique_ptr<AudioCapturer> CreateAudioCapturer();
   std::unique_ptr<InputInjector> CreateInputInjector();
   std::unique_ptr<ScreenControls> CreateScreenControls();
-  std::unique_ptr<DesktopCapturer> CreateVideoCapturer();
+  std::unique_ptr<DesktopCapturer> CreateVideoCapturer(webrtc::ScreenId id);
   std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor();
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);

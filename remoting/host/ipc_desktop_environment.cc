@@ -91,8 +91,9 @@ IpcDesktopEnvironment::CreateActiveDisplayMonitor(
   return nullptr;
 }
 
-std::unique_ptr<DesktopCapturer> IpcDesktopEnvironment::CreateVideoCapturer() {
-  return desktop_session_proxy_->CreateVideoCapturer();
+std::unique_ptr<DesktopCapturer> IpcDesktopEnvironment::CreateVideoCapturer(
+    webrtc::ScreenId id) {
+  return desktop_session_proxy_->CreateVideoCapturer(id);
 }
 
 std::unique_ptr<FileOperations> IpcDesktopEnvironment::CreateFileOperations() {
