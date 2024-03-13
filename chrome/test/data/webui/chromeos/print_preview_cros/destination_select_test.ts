@@ -4,6 +4,7 @@
 
 import 'chrome://os-print/js/destination_select.js';
 
+import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
 import {DestinationSelectElement} from 'chrome://os-print/js/destination_select.js';
 import {DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -62,6 +63,9 @@ suite('DestinationSelect', () => {
     assertTrue(
         isChildVisible(element, loadingSelector),
         `Loading UX should be visible`);
+    assertFalse(
+        isChildVisible(element, DestinationDropdownElement.is),
+        `${DestinationDropdownElement.is} should not be visible`);
   });
 
   // Verify expected elements display while `controller.shouldShowLoading` is
@@ -78,5 +82,8 @@ suite('DestinationSelect', () => {
     assertFalse(
         isChildVisible(element, loadingSelector),
         `Loading UX should not be visible`);
+    assertTrue(
+        isChildVisible(element, DestinationDropdownElement.is),
+        `${DestinationDropdownElement.is} should be visible`);
   });
 });
