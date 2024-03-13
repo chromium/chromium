@@ -158,7 +158,13 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
   // or std::map).
   bool operator<(const SchemeHostPort& other) const;
 
- private:
+  // Whether to discard host and port information for a specific scheme.
+  //
+  // Note that this hack is required to avoid breaking existing Android WebView
+  // behaviors. Currently, Android WebView doesn't use host and port information
+  // for non-special URLs. See https://crbug.com/40063064 for details.
+  static bool ShouldDiscardHostAndPort(const std::string_view scheme);
+
   std::string SerializeInternal(url::Parsed* parsed) const;
 
   std::string scheme_;

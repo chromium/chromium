@@ -22,6 +22,7 @@
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_constants.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 namespace url {
@@ -77,13 +78,21 @@ bool IsValidInput(const std::string_view& scheme,
   if (!is_standard) {
     // To be consistent with ShouldTreatAsOpaqueOrigin in Blink, local
     // non-standard schemes are currently allowed to be tuple origins.
-    // Nonstandard schemes don't have hostnames, so their tuple is just
-    // ("protocol", "", 0).
     //
     // TODO: Migrate "content:" and "externalfile:" to be standard schemes, and
     // remove this local scheme exception.
-    if (base::Contains(GetLocalSchemes(), scheme) && host.empty() && port == 0)
-      return true;
+    if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+      // If the flag is enabled, a host can be empty for non-special URLs.
+      // Therefore, we don't check a host nor port.
+      if (base::Contains(GetLocalSchemes(), scheme)) {
+        return true;
+      }
+    } else {
+      if (base::Contains(GetLocalSchemes(), scheme) && host.empty() &&
+          port == 0) {
+        return true;
+      }
+    }
 
     // Otherwise, allow non-standard schemes only if the Android WebView
     // workaround is enabled.
@@ -147,6 +156,11 @@ SchemeHostPort::SchemeHostPort(std::string scheme,
                                std::string host,
                                uint16_t port,
                                ConstructPolicy policy) {
+  if (ShouldDiscardHostAndPort(scheme)) {
+    host = "";
+    port = 0;
+  }
+
   if (!IsValidInput(scheme, host, port, policy)) {
     DCHECK(!IsValid());
     return;
@@ -181,6 +195,11 @@ SchemeHostPort::SchemeHostPort(const GURL& url) {
   } else {
     DCHECK_GE(port, 0);
     DCHECK_LE(port, 65535);
+  }
+
+  if (ShouldDiscardHostAndPort(scheme)) {
+    host = "";
+    port = 0;
   }
 
   if (!IsValidInput(scheme, host, port, ALREADY_CANONICALIZED))
@@ -222,11 +241,21 @@ GURL SchemeHostPort::GetURL() const {
     return GURL(serialized);
 
   // If the serialized string is passed to GURL for parsing, it will append an
-  // empty path "/". Add that here. Note: per RFC 6454 we cannot do this for
-  // normal Origin serialization.
+  // empty path "/" for standard URLs. Add that here. Note: per RFC 6454 we
+  // cannot do this for normal Origin serialization.
   DCHECK(!parsed.path.is_valid());
-  parsed.path = Component(serialized.length(), 1);
-  serialized.append("/");
+  if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+    // Append "/" only if the URL is standard. If the flag is enabled,
+    // non-special URLs can have an empty path and GURL doesn't append "/" to
+    // that.
+    if (IsStandardScheme(scheme_)) {
+      parsed.path = Component(serialized.length(), 1);
+      serialized.append("/");
+    }
+  } else {
+    parsed.path = Component(serialized.length(), 1);
+    serialized.append("/");
+  }
   return GURL(std::move(serialized), parsed, true);
 }
 
@@ -274,6 +303,11 @@ std::string SchemeHostPort::SerializeInternal(url::Parsed* parsed) const {
   }
 
   return result;
+}
+
+bool SchemeHostPort::ShouldDiscardHostAndPort(const std::string_view scheme) {
+  return IsAndroidWebViewHackEnabledScheme(scheme) &&
+         IsUsingStandardCompliantNonSpecialSchemeURLParsing();
 }
 
 std::ostream& operator<<(std::ostream& out,

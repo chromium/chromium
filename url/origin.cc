@@ -27,6 +27,7 @@
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 namespace url {
@@ -245,8 +246,14 @@ bool Origin::CanBeDerivedFrom(const GURL& url) const {
   if (!tuple_.IsValid())
     return true;
 
-  // However, when there is precursor present, the schemes must match.
-  return url.scheme() == tuple_.scheme();
+  // However, when there is precursor present, that must match.
+  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+    return SchemeHostPort(url) == tuple_;
+  } else {
+    // Match only the scheme because host and port are unavailable for
+    // non-special URLs when the flag is disabled.
+    return url.scheme() == tuple_.scheme();
+  }
 }
 
 bool Origin::DomainIs(std::string_view canonical_domain) const {

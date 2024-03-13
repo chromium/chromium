@@ -401,6 +401,9 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // For calling GetNonceForSerialization().
   friend class BlobURLOpaqueOriginNonceMap;
 
+  template <typename T, typename... Args>
+  friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
+
   // Creates a new opaque SecurityOrigin using the supplied |precursor| origin
   // and |nonce|.
   static scoped_refptr<SecurityOrigin> CreateOpaque(
@@ -420,7 +423,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   SecurityOrigin(NewUniqueOpaque, const SecurityOrigin* precursor_origin);
 
   // Create a tuple SecurityOrigin, with parameters via KURL
-  explicit SecurityOrigin(const KURL& url);
+  static scoped_refptr<SecurityOrigin> CreateInternal(const KURL& url);
 
   // Constructs a non-opaque tuple origin, analogously to
   // url::Origin::Origin(url::SchemeHostPort).

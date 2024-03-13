@@ -6,17 +6,30 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/origin_abstract_tests.h"
+#include "url/url_features.h"
 #include "url/url_util.h"
 
 namespace url {
 
-class OriginTest : public ::testing::Test {
+class OriginTest : public ::testing::TestWithParam<bool> {
  public:
+  OriginTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    if (use_standard_compliant_non_special_scheme_url_parsing_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          kStandardCompliantNonSpecialSchemeURLParsing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          kStandardCompliantNonSpecialSchemeURLParsing);
+    }
+  }
+
   void SetUp() override {
     // Add two schemes which are local but nonstandard.
     AddLocalScheme("local-but-nonstandard");
@@ -96,11 +109,44 @@ class OriginTest : public ::testing::Test {
     return Origin::Deserialize(value);
   }
 
+ protected:
+  struct SerializationTestCase {
+    std::string_view url;
+    std::string_view expected;
+    std::optional<std::string_view> expected_log;
+  };
+
+  void TestSerialization(const SerializationTestCase& test_case) const {
+    SCOPED_TRACE(test_case.url);
+    GURL url(test_case.url);
+    EXPECT_TRUE(url.is_valid());
+    Origin origin = Origin::Create(url);
+    std::string serialized = origin.Serialize();
+
+    ExpectParsedUrlsEqual(GURL(serialized), origin.GetURL());
+
+    EXPECT_EQ(test_case.expected, serialized);
+
+    // The '<<' operator sometimes produces additional information.
+    std::stringstream out;
+    out << origin;
+    if (test_case.expected_log) {
+      EXPECT_EQ(test_case.expected_log, out.str());
+    } else {
+      EXPECT_EQ(test_case.expected, out.str());
+    }
+  }
+
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedSchemeRegistryForTests scoped_registry_;
 };
 
-TEST_F(OriginTest, OpaqueOriginComparison) {
+INSTANTIATE_TEST_SUITE_P(All, OriginTest, ::testing::Bool());
+
+TEST_P(OriginTest, OpaqueOriginComparison) {
   // A default-constructed Origin should should be cross origin to everything
   // but itself.
   url::Origin opaque_a, opaque_b;
@@ -178,7 +224,7 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
             url::Origin::Resolve(GURL("about:blank?hello#whee"), opaque_b));
 }
 
-TEST_F(OriginTest, ConstructFromTuple) {
+TEST_P(OriginTest, ConstructFromTuple) {
   struct TestCases {
     const char* const scheme;
     const char* const host;
@@ -203,12 +249,9 @@ TEST_F(OriginTest, ConstructFromTuple) {
   }
 }
 
-TEST_F(OriginTest, Serialization) {
-  struct TestCases {
-    const char* const url;
-    const char* const expected;
-    const char* const expected_log;
-  } cases[] = {
+TEST_P(OriginTest, Serialization) {
+  // Common test cases
+  SerializationTestCase common_cases[] = {
       {"http://192.168.9.1/", "http://192.168.9.1"},
       {"http://[2001:db8::1]/", "http://[2001:db8::1]"},
       {"http://☃.net/", "http://xn--n3h.net"},
@@ -220,29 +263,57 @@ TEST_F(OriginTest, Serialization) {
       {"file://example.com/etc/passwd", "file://",
        "file:// [internally: file://example.com]"},
       {"data:,", "null", "null [internally: (nonce TBD) anonymous]"},
+      {"git:", "null", "null [internally: (nonce TBD) anonymous]"},
+      {"git:/", "null", "null [internally: (nonce TBD) anonymous]"},
+      {"git://host/path", "null", "null [internally: (nonce TBD) anonymous]"},
+      {"local-and-standard://host/path", "local-and-standard://host"},
+      // A port is omitted if the scheme doesn't have the default port.
+      // See SchemeHostPort::SerializeInternal for details.
+      {"local-and-standard://host:123/path", "local-and-standard://host"},
+      {"standard-but-noaccess://host/path", "null",
+       "null [internally: (nonce TBD) anonymous]"},
   };
+  for (const auto& test_case : common_cases) {
+    TestSerialization(test_case);
+  }
 
-  for (const auto& test_case : cases) {
-    SCOPED_TRACE(test_case.url);
-    GURL url(test_case.url);
-    EXPECT_TRUE(url.is_valid());
-    Origin origin = Origin::Create(url);
-    std::string serialized = origin.Serialize();
-    ExpectParsedUrlsEqual(GURL(serialized), origin.GetURL());
-
-    EXPECT_EQ(test_case.expected, serialized);
-
-    // The '<<' operator sometimes produces additional information.
-    std::stringstream out;
-    out << origin;
-    if (test_case.expected_log)
-      EXPECT_EQ(test_case.expected_log, out.str());
-    else
-      EXPECT_EQ(test_case.expected, out.str());
+  // Flag-dependent test cases
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    SerializationTestCase cases[] = {
+        {"local-but-nonstandard://host/path", "local-but-nonstandard://host"},
+        {"local-but-nonstandard://host:123/path",
+         "local-but-nonstandard://host"},
+    };
+    for (const auto& test_case : cases) {
+      TestSerialization(test_case);
+    }
+  } else {
+    SerializationTestCase cases[] = {
+        {"local-but-nonstandard://host/path", "local-but-nonstandard://"},
+        {"local-but-nonstandard://host:123/path", "local-but-nonstandard://"},
+    };
+    for (const auto& test_case : cases) {
+      TestSerialization(test_case);
+    }
   }
 }
 
-TEST_F(OriginTest, Comparison) {
+TEST_P(OriginTest, SerializationWithAndroidWebViewHackEnabled) {
+  EnableNonStandardSchemesForAndroidWebView();
+
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    SerializationTestCase cases[] = {
+        {"nonstandard://host/path", "nonstandard://"},
+        {"nonstandard://host:123/path", "nonstandard://"},
+    };
+    for (const auto& test_case : cases) {
+      TestSerialization(test_case);
+    }
+  } else {
+  }
+}
+
+TEST_P(OriginTest, Comparison) {
   // These URLs are arranged in increasing order:
   const char* const urls[] = {
       "data:uniqueness", "http://a:80",  "http://b:80",
@@ -268,7 +339,7 @@ TEST_F(OriginTest, Comparison) {
   }
 }
 
-TEST_F(OriginTest, UnsafelyCreate) {
+TEST_P(OriginTest, UnsafelyCreate) {
   struct TestCase {
     const char* scheme;
     const char* host;
@@ -314,7 +385,7 @@ TEST_F(OriginTest, UnsafelyCreate) {
   }
 }
 
-TEST_F(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
+TEST_P(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
   url::AddStandardScheme("host-only", url::SCHEME_WITH_HOST);
   url::AddStandardScheme("host-port-only", url::SCHEME_WITH_HOST_AND_PORT);
   struct TestCases {
@@ -368,7 +439,7 @@ TEST_F(OriginTest, UnsafelyCreateUniqueOnInvalidInput) {
             url::SchemeHostPort());
 }
 
-TEST_F(OriginTest, UnsafelyCreateUniqueViaEmbeddedNulls) {
+TEST_P(OriginTest, UnsafelyCreateUniqueViaEmbeddedNulls) {
   struct TestCases {
     std::string_view scheme;
     std::string_view host;
@@ -392,7 +463,7 @@ TEST_F(OriginTest, UnsafelyCreateUniqueViaEmbeddedNulls) {
   }
 }
 
-TEST_F(OriginTest, DomainIs) {
+TEST_P(OriginTest, DomainIs) {
   const struct {
     const char* url;
     const char* lower_ascii_domain;
@@ -451,13 +522,13 @@ TEST_F(OriginTest, DomainIs) {
   EXPECT_FALSE(Origin().DomainIs("com"));
 }
 
-TEST_F(OriginTest, DebugAlias) {
+TEST_P(OriginTest, DebugAlias) {
   Origin origin1 = Origin::Create(GURL("https://foo.com/bar"));
   DEBUG_ALIAS_FOR_ORIGIN(origin1_debug_alias, origin1);
   EXPECT_STREQ("https://foo.com", origin1_debug_alias);
 }
 
-TEST_F(OriginTest, CanBeDerivedFrom) {
+TEST_P(OriginTest, CanBeDerivedFrom) {
   AddStandardScheme("new-standard", SchemeType::SCHEME_WITH_HOST);
   Origin opaque_unique_origin = Origin();
 
@@ -493,11 +564,13 @@ TEST_F(OriginTest, CanBeDerivedFrom) {
 
   // Call origin.CanBeDerivedFrom(url) for each of the following test cases
   // and ensure that it returns |expected_value|
-  const struct {
+  struct TestCase {
     const char* url;
     raw_ptr<Origin> origin;
     bool expected_value;
-  } kTestCases[] = {
+  };
+
+  const TestCase common_test_cases[] = {
       {"https://a.com", &regular_origin, true},
       // Web URL can commit in an opaque origin with precursor information.
       // Example: iframe sandbox navigated to a.com.
@@ -611,7 +684,22 @@ TEST_F(OriginTest, CanBeDerivedFrom) {
        &local_non_standard_opaque_precursor_origin, true},
   };
 
-  for (const auto& test_case : kTestCases) {
+  for (const auto& test_case : common_test_cases) {
+    SCOPED_TRACE(testing::Message() << "(origin, url): (" << *test_case.origin
+                                    << ", " << test_case.url << ")");
+    EXPECT_EQ(test_case.expected_value,
+              test_case.origin->CanBeDerivedFrom(GURL(test_case.url)));
+  }
+
+  // Flag-dependent tests
+  const TestCase flag_dependent_test_cases[] = {
+      {"local-but-nonstandard://b.com", &local_non_standard_origin,
+       !use_standard_compliant_non_special_scheme_url_parsing_},
+      {"local-but-nonstandard://b.com",
+       &local_non_standard_opaque_precursor_origin,
+       !use_standard_compliant_non_special_scheme_url_parsing_},
+  };
+  for (const auto& test_case : flag_dependent_test_cases) {
     SCOPED_TRACE(testing::Message() << "(origin, url): (" << *test_case.origin
                                     << ", " << test_case.url << ")");
     EXPECT_EQ(test_case.expected_value,
@@ -619,7 +707,7 @@ TEST_F(OriginTest, CanBeDerivedFrom) {
   }
 }
 
-TEST_F(OriginTest, GetDebugString) {
+TEST_P(OriginTest, GetDebugString) {
   Origin http_origin = Origin::Create(GURL("http://192.168.9.1"));
   EXPECT_STREQ(http_origin.GetDebugString().c_str(), "http://192.168.9.1");
 
@@ -657,7 +745,7 @@ TEST_F(OriginTest, GetDebugString) {
                "file:// [internally: file://example.com]");
 }
 
-TEST_F(OriginTest, Deserialize) {
+TEST_P(OriginTest, Deserialize) {
   std::vector<GURL> valid_urls = {
       GURL("https://a.com"),         GURL("http://a"),
       GURL("http://a:80"),           GURL("file://a.com/etc/passwd"),
@@ -678,7 +766,7 @@ TEST_F(OriginTest, Deserialize) {
   }
 }
 
-TEST_F(OriginTest, DeserializeInvalid) {
+TEST_P(OriginTest, DeserializeInvalid) {
   EXPECT_EQ(std::nullopt, Deserialize(std::string()));
   EXPECT_EQ(std::nullopt, Deserialize("deadbeef"));
   EXPECT_EQ(std::nullopt, Deserialize("0123456789"));
@@ -686,7 +774,7 @@ TEST_F(OriginTest, DeserializeInvalid) {
   EXPECT_EQ(std::nullopt, Deserialize("https://192.168.1.1"));
 }
 
-TEST_F(OriginTest, SerializeTBDNonce) {
+TEST_P(OriginTest, SerializeTBDNonce) {
   std::vector<GURL> invalid_urls = {
       GURL("data:uniqueness"),       GURL("data:,"),
       GURL("data:text/html,Hello!"), GURL("javascript:alert(1)"),
@@ -732,7 +820,7 @@ TEST_F(OriginTest, SerializeTBDNonce) {
   }
 }
 
-TEST_F(OriginTest, DeserializeValidNonce) {
+TEST_P(OriginTest, DeserializeValidNonce) {
   Origin opaque;
   GetNonce(opaque);
 
@@ -746,7 +834,7 @@ TEST_F(OriginTest, DeserializeValidNonce) {
   EXPECT_EQ(opaque.GetDebugString(), deserialized.value().GetDebugString());
 }
 
-TEST_F(OriginTest, IsSameOriginWith) {
+TEST_P(OriginTest, IsSameOriginWith) {
   url::Origin opaque_origin;
   GURL foo_url = GURL("https://foo.com/path");
   url::Origin foo_origin = url::Origin::Create(foo_url);
@@ -767,6 +855,53 @@ TEST_F(OriginTest, IsSameOriginWith) {
   EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL("about:blank")));
   EXPECT_FALSE(foo_origin.IsSameOriginWith(GURL()));  // Invalid GURL.
   EXPECT_TRUE(foo_origin.IsSameOriginWith(GURL("blob:https://foo.com/guid")));
+}
+
+TEST_P(OriginTest, IsSameOriginLocalNonStandardScheme) {
+  GURL a_url = GURL("local-but-nonstandard://a.com/");
+  GURL b_url = GURL("local-but-nonstandard://b.com/");
+  url::Origin a_origin = url::Origin::Create(a_url);
+  url::Origin b_origin = url::Origin::Create(b_url);
+
+  EXPECT_TRUE(a_origin.IsSameOriginWith(a_origin));
+  EXPECT_TRUE(a_origin.IsSameOriginWith(a_url));
+
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    // If the flag is enabled, host and port are also checked.
+    EXPECT_FALSE(a_origin.IsSameOriginWith(b_origin));
+    EXPECT_FALSE(a_origin.IsSameOriginWith(b_url));
+  } else {
+    EXPECT_TRUE(a_origin.IsSameOriginWith(b_origin));
+    EXPECT_TRUE(a_origin.IsSameOriginWith(b_url));
+  }
+}
+
+TEST_P(OriginTest, OriginWithAndroidWebViewHackEnabled) {
+  EnableNonStandardSchemesForAndroidWebView();
+
+  GURL a_url = GURL("nonstandard://a.com/");
+  GURL b_url = GURL("nonstandard://b.com/");
+  url::Origin a_origin = url::Origin::Create(a_url);
+  url::Origin b_origin = url::Origin::Create(b_url);
+
+  EXPECT_TRUE(a_origin.IsSameOriginWith(a_origin));
+  EXPECT_TRUE(a_origin.IsSameOriginWith(a_url));
+
+  // When AndroidWebViewHack is enabled, only a scheme part is checked. Thus,
+  // "nonstandard://a.com/" and "nonstandard://b.com/" are considered as the
+  // same origin. This is not ideal, given that a host and a port are available
+  // when kStandardCompliantNonSpecialSchemeURLParsing flag is enabled, but we
+  // can't check a host nor a port to avoid breaking existing WebView code.
+  // See https://crbug.com/40063064 for details.
+  EXPECT_TRUE(a_origin.IsSameOriginWith(b_origin));
+  EXPECT_TRUE(a_origin.IsSameOriginWith(b_url));
+  EXPECT_TRUE(a_origin.CanBeDerivedFrom(b_url));
+
+  GURL another_scheme_url = GURL("another-nonstandard://a.com/");
+  url::Origin another_scheme_origin = url::Origin::Create(another_scheme_url);
+  EXPECT_FALSE(a_origin.IsSameOriginWith(another_scheme_origin));
+  EXPECT_FALSE(a_origin.IsSameOriginWith(another_scheme_url));
+  EXPECT_FALSE(a_origin.CanBeDerivedFrom(another_scheme_url));
 }
 
 INSTANTIATE_TYPED_TEST_SUITE_P(UrlOrigin,

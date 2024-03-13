@@ -706,6 +706,11 @@ bool IsStandard(const char* spec, const Component& scheme) {
   return DoIsStandard(spec, scheme, &unused_scheme_type);
 }
 
+bool IsStandardScheme(std::string_view scheme) {
+  return IsStandard(scheme.data(),
+                    Component(0, base::checked_cast<int>(scheme.size())));
+}
+
 bool GetStandardSchemeType(const char* spec,
                            const Component& scheme,
                            SchemeType* type) {
@@ -951,6 +956,11 @@ bool HasInvalidURLEscapeSequences(std::string_view input) {
     }
   }
   return false;
+}
+
+bool IsAndroidWebViewHackEnabledScheme(std::string_view scheme) {
+  return AllowNonStandardSchemesForAndroidWebView() &&
+         !IsStandardScheme(scheme);
 }
 
 }  // namespace url

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "url/scheme_host_port.h"
 #include "url/url_canon.h"
 #include "url/url_canon_ip.h"
 #include "url/url_util.h"
@@ -137,16 +138,21 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
   return false;
 }
 
-SecurityOrigin::SecurityOrigin(const KURL& url)
-    : SecurityOrigin(
-          EnsureNonNull(url.Protocol()),
-          EnsureNonNull(url.Host()),
-          // This mimics the logic in url::SchemeHostPort(const GURL&). In
-          // particular, it ensures a URL with a port of 0 will translate into
-          // an origin with an effective port of 0.
-          (url.HasPort() || !url.IsValid() || !url.IsStandard())
-              ? url.Port()
-              : DefaultPortForProtocol(url.Protocol())) {}
+scoped_refptr<SecurityOrigin> SecurityOrigin::CreateInternal(const KURL& url) {
+  if (url::SchemeHostPort::ShouldDiscardHostAndPort(url.Protocol().Ascii())) {
+    return base::MakeRefCounted<SecurityOrigin>(url.Protocol(), g_empty_string,
+                                                0);
+  }
+
+  // This mimics the logic in url::SchemeHostPort(const GURL&). In
+  // particular, it ensures a URL with a port of 0 will translate into
+  // an origin with an effective port of 0.
+  uint16_t port = (url.HasPort() || !url.IsValid() || !url.IsStandard())
+                      ? url.Port()
+                      : DefaultPortForProtocol(url.Protocol());
+  return base::MakeRefCounted<SecurityOrigin>(EnsureNonNull(url.Protocol()),
+                                              EnsureNonNull(url.Host()), port);
+}
 
 SecurityOrigin::SecurityOrigin(const String& protocol,
                                const String& host,
@@ -227,9 +233,9 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateWithReferenceOrigin(
   }
 
   if (ShouldUseInnerURL(url))
-    return base::AdoptRef(new SecurityOrigin(ExtractInnerURL(url)));
+    return CreateInternal(ExtractInnerURL(url));
 
-  return base::AdoptRef(new SecurityOrigin(url));
+  return CreateInternal(url);
 }
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::Create(const KURL& url) {

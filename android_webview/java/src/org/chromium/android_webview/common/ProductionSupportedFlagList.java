@@ -924,6 +924,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.AUTOFILL_INCLUDE_SHADOW_DOM_IN_UNASSOCIATED_LISTED_ELEMENTS,
                 "Include elements from shadow DOM in unassociated listed elements"),
         Flag.baseFeature("ShadowDomSupport", "Improve shadow DOM support in password manager"),
+        Flag.baseFeature("StandardCompliantNonSpecialSchemeURLParsing"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
