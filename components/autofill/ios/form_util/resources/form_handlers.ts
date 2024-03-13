@@ -187,18 +187,33 @@ function formSubmitted(form: HTMLFormElement): void {
  * Schedules `msg` to be sent after `delay`. Until `msg` is sent, further calls
  * to this function are ignored.
  */
-function sendFormMutationMessageAfterDelay(msg: object, delay: number): void {
-  // No more than 2 messages can be scheduled at the same time; for throttling.
-  if (numberOfPendingMessages === 2) {
+
+/**
+ * Schedules `messages` to be sent back-to-back after `delay` and with a `delay`
+ * between them.
+ *
+ * For throttling purpose, won't schedule messages if there are already pending
+ * messages scheduled to be sent.
+ *
+ * @param messages Messages to schedule for sending to the browser.
+ * @param delay Scheduling delay.
+ * @returns
+ */
+function sendFormMutationMessagesAfterDelay(
+    messages: object[], delay: number): void {
+  // Don't schedule these new `messages` if there are already ones scheduled to
+  // be sent. This is for throttling.
+  if (numberOfPendingMessages > 0) {
     return;
   }
 
-
-  ++numberOfPendingMessages;
-  setTimeout(function() {
-    sendWebKitMessage('FormHandlersMessage', msg);
-    --numberOfPendingMessages;
-  }, delay);
+  messages.forEach((msg, i) => {
+    ++numberOfPendingMessages;
+    setTimeout(function() {
+      sendWebKitMessage('FormHandlersMessage', msg);
+      --numberOfPendingMessages;
+    }, delay * (1 + i));
+  });
 }
 
 /**
@@ -326,18 +341,27 @@ function trackFormMutations(delay: number): void {
   if (!delay) return;
 
   formMutationObserver = new MutationObserver(function(mutations) {
-    // Number of messages scheduled when processing the batched mutations.
-    let numberOfScheduledMessages = 0;
+    // Message for the first added form found in the mutations, if there is.
+    let addedFormMessage: object|null = null;
+    // Message for the first removed form found in the mutations, if there is.
+    let removedFormMessage: object|null = null;
 
     for (const mutation of mutations) {
+      if (addedFormMessage && removedFormMessage) {
+        // No need to process mutations anymore as all the slots in the current
+        // batch of messages to send are filled.
+        break;
+      }
+
       // Only process mutations to the tree of nodes.
       if (mutation.type !== 'childList') {
         continue;
       }
 
       // Handle added nodes.
-      if (findAllFormElementsInNodes(mutation.addedNodes).length > 0) {
-        const msg = {
+      if (!addedFormMessage &&
+          findAllFormElementsInNodes(mutation.addedNodes).length > 0) {
+        addedFormMessage = {
           'command': 'form.activity',
           'frameID': gCrWeb.message.getFrameId(),
           'formName': '',
@@ -349,9 +373,6 @@ function trackFormMutations(delay: number): void {
           'value': '',
           'hasUserGesture': false,
         };
-        sendFormMutationMessageAfterDelay(
-            msg, (numberOfScheduledMessages + 1) * delay);
-        ++numberOfScheduledMessages;
       }
 
       // Handle removed nodes by starting from the specific removal cases down
@@ -359,46 +380,40 @@ function trackFormMutations(delay: number): void {
 
       const removedFormElements =
           findAllFormElementsInNodes(mutation.removedNodes);
+
+      if (removedFormElements.length === 0) {
+        continue;
+      }
+
       const pwdFormGone = findPasswordForm(removedFormElements);
-      if (pwdFormGone) {
+      if (!removedFormMessage && pwdFormGone) {
         // Handle the removed password form case.
         const uniqueFormId = gCrWeb.fill.getUniqueID(pwdFormGone);
-        const msg = {
+        removedFormMessage = {
           'command': 'pwdform.removal',
           'frameID': gCrWeb.message.getFrameId(),
           'formName': gCrWeb.form.getFormIdentifier(pwdFormGone),
           'uniqueFormID': uniqueFormId,
           'uniqueFieldID': '',
         };
-        sendFormMutationMessageAfterDelay(
-            msg, (numberOfScheduledMessages + 1) * delay);
-        ++numberOfScheduledMessages;
-      }
-
-      if (numberOfScheduledMessages > 0) {
-        // No need to go further if there were already messages sent for added
-        // or removed forms.
-        continue;
       }
 
       const removedFormlessPasswordFieldsIds =
           findFormlessPasswordFieldsIds(removedFormElements);
-      if (removedFormlessPasswordFieldsIds.length > 0) {
+      if (!removedFormMessage && removedFormlessPasswordFieldsIds.length > 0) {
         // Handle the removed formless password field case.
-        const msg = {
+        removedFormMessage = {
           'command': 'pwdform.removal',
           'frameID': gCrWeb.message.getFrameId(),
           'formName': '',
           'uniqueFormID': '',
           'uniqueFieldID': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
         };
-        return sendFormMutationMessageAfterDelay(msg, delay);
       }
-
-      if (removedFormElements.length > 0) {
+      if (!addedFormMessage) {
         // Handle the removed form control element case as a form changed
         // mutation that is treated the same way as adding a new form.
-        const msg = {
+        addedFormMessage = {
           'command': 'form.activity',
           'frameID': gCrWeb.message.getFrameId(),
           'formName': '',
@@ -410,8 +425,12 @@ function trackFormMutations(delay: number): void {
           'value': '',
           'hasUserGesture': false,
         };
-        return sendFormMutationMessageAfterDelay(msg, delay);
       }
+    }
+    const messagesToSend: object[] =
+        [removedFormMessage, addedFormMessage].filter(v => !!v).map(v => v!);
+    if (messagesToSend.length > 0) {
+      sendFormMutationMessagesAfterDelay(messagesToSend, delay);
     }
   });
   formMutationObserver.observe(document, {childList: true, subtree: true});

@@ -125,6 +125,162 @@ TEST_F(AutofillFormHandlersJavascriptTest,
   EXPECT_TRUE(body[@"uniqueFieldID"]);
 }
 
+// Tests that removing a form control element and adding a new one in the same
+// mutations batch is notified with a message for each mutation, sent
+// back-to-back.
+TEST_F(AutofillFormHandlersJavascriptTest,
+       NotifyRemovedAndAddedFormControllerElements) {
+  // Basic HTML page in which we add a HTML form.
+  NSString* const html = @"<html><body><form id=\"form1\">"
+                          "<input type=\"password\"></form></body></html>";
+  ASSERT_TRUE(LoadHtml(html));
+
+  // Start tracking form mutations with a delay of 50 miliseconds to push the
+  // mutation message.
+  web::test::ExecuteJavaScript(web_view(),
+                               @"__gCrWeb.formHandlers.trackFormMutations(50)");
+
+  // Make a script to create a new form and replace the old form with it.
+  NSString* const replaceFormJS =
+      @"const new_form = document.createElement('form'); "
+       "new_form.id = 'form2'; "
+       "const old_form = document.forms[0]; "
+       "old_form.parentNode.replaceChild(new_form, old_form);";
+
+  // Replace the form to trigger an added and a removed form mutation event
+  // batched together.
+  web::test::ExecuteJavaScript(web_view(), replaceFormJS);
+
+  // Wait until the notification is pushed and received.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+    return handler().lastReceivedMessage != nil;
+  }));
+
+  // Verify the response has all required keys. The removed form message is
+  // always the first posted.
+  NSDictionary* body = handler().lastReceivedMessage.body;
+  ASSERT_TRUE(body);
+  ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
+  EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
+  EXPECT_TRUE(body[@"frameID"]);
+  EXPECT_TRUE(body[@"formName"]);
+  EXPECT_TRUE(body[@"uniqueFormID"]);
+  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+
+  // Reset last received message to wait for the new one.
+  handler().lastReceivedMessage = nil;
+
+  // Wait until the notification is pushed and received.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+    return handler().lastReceivedMessage != nil;
+  }));
+
+  // Verify the message for the added form has all required keys for.
+  body = handler().lastReceivedMessage.body;
+  ASSERT_TRUE(body);
+  ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
+  EXPECT_NSEQ(@"form.activity", body[@"command"]);
+  EXPECT_TRUE(body[@"frameID"]);
+  EXPECT_NSEQ(@"", body[@"formName"]);
+  EXPECT_NSEQ(@"", body[@"uniqueFormID"]);
+  EXPECT_NSEQ(@"", body[@"fieldIdentifier"]);
+  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  EXPECT_NSEQ(@"", body[@"fieldType"]);
+  EXPECT_NSEQ(@"form_changed", body[@"type"]);
+  EXPECT_NSEQ(@"", body[@"value"]);
+  EXPECT_NSEQ(@NO, body[@"hasUserGesture"]);
+}
+
+// Tests that once the mutation messages slots are full for a given batch of
+// mutations, other mutations are dropped for throttling.
+TEST_F(AutofillFormHandlersJavascriptTest,
+       NotifyRemovedAndAddedFormControllerElements_Throttle) {
+  // Basic HTML page with 2 forms.
+  NSString* const html = @"<html><body><form id=\"form1\">"
+                          "<input type=\"password\"></form>"
+                          "<form><input type=\"password\"></form>"
+                          "</body></html>";
+  ASSERT_TRUE(LoadHtml(html));
+
+  constexpr int kPostMessageDelayMS = 50;
+
+  NSString* const trackFormMutationsJS = [NSString
+      stringWithFormat:@"__gCrWeb.formHandlers.trackFormMutations(%d)",
+                       kPostMessageDelayMS];
+
+  // Start tracking form mutations with a delay of `kPostMessageDelayMS`
+  // miliseconds to push the mutation message.
+  web::test::ExecuteJavaScript(web_view(), trackFormMutationsJS);
+
+  // Make a script to add two forms and remove two, two of which will be
+  // throttled.
+  NSString* const addAndRemoveFormJS =
+      @"const new_form = document.createElement('form'); "
+       "const old_form1 = document.forms[0]; "
+       "const old_form2 = document.forms[1]; "
+       "const parentNode = old_form1.parentNode; "
+       "parentNode.appendChild(document.createElement('form')) && "
+       "parentNode.appendChild(document.createElement('form')) && "
+       "old_form1.remove() && "
+       "old_form2.remove();";
+
+  web::test::ExecuteJavaScript(web_view(), addAndRemoveFormJS);
+
+  // Wait until the notification is pushed and received.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+    return handler().lastReceivedMessage != nil;
+  }));
+
+  // Verify the response has all required keys. The removed form message is
+  // always the first posted.
+  NSDictionary* body = handler().lastReceivedMessage.body;
+  ASSERT_TRUE(body);
+  ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
+  EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
+  EXPECT_TRUE(body[@"frameID"]);
+  EXPECT_TRUE(body[@"formName"]);
+  EXPECT_TRUE(body[@"uniqueFormID"]);
+  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+
+  // Reset last received message to wait for the new one.
+  handler().lastReceivedMessage = nil;
+
+  // Wait until the notification is pushed and received.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+    return handler().lastReceivedMessage != nil;
+  }));
+
+  // Verify the message for the added form has all required keys for.
+  body = handler().lastReceivedMessage.body;
+  ASSERT_TRUE(body);
+  ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
+  EXPECT_NSEQ(@"form.activity", body[@"command"]);
+  EXPECT_TRUE(body[@"frameID"]);
+  EXPECT_NSEQ(@"", body[@"formName"]);
+  EXPECT_NSEQ(@"", body[@"uniqueFormID"]);
+  EXPECT_NSEQ(@"", body[@"fieldIdentifier"]);
+  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  EXPECT_NSEQ(@"", body[@"fieldType"]);
+  EXPECT_NSEQ(@"form_changed", body[@"type"]);
+  EXPECT_NSEQ(@"", body[@"value"]);
+  EXPECT_NSEQ(@NO, body[@"hasUserGesture"]);
+
+  // Wait until the notification is pushed and received.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+    return handler().lastReceivedMessage != nil;
+  }));
+
+  handler().lastReceivedMessage = nil;
+
+  // Verify that there are no more posted messages as the last added and removed
+  // form mutations should have been dropped because of throttling. Wait for
+  // twice the delay to be sure.
+  EXPECT_FALSE(WaitUntilConditionOrTimeout(
+      base::Milliseconds(kPostMessageDelayMS * 2), ^bool() {
+        return handler().lastReceivedMessage != nil;
+      }));
+}
+
 class AutofillFormHandlersJavascriptTestAllHTMLControls
     : public AutofillFormHandlersJavascriptTest,
       public testing::WithParamInterface<std::string> {};
