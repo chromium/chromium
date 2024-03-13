@@ -58,8 +58,6 @@ class PineTest : public AshTestBase {
     OverviewSession* overview_session =
         OverviewController::Get()->overview_session();
     ASSERT_TRUE(overview_session);
-    EXPECT_EQ(OverviewEnterExitType::kPine,
-              overview_session->enter_exit_overview_type());
 
     // Check that the pine widget exists.
     OverviewGrid* grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
@@ -112,17 +110,12 @@ class PineTest : public AshTestBase {
 
 base::Time PineTest::fake_time_;
 
-TEST_F(PineTest, Show) {
+TEST_F(PineTest, StartOverviewPineSession) {
   Shell::Get()
       ->pine_controller()
       ->MaybeStartPineOverviewSessionDevAccelerator();
   WaitForOverviewEntered();
-
-  OverviewSession* overview_session =
-      OverviewController::Get()->overview_session();
-  ASSERT_TRUE(overview_session);
-  EXPECT_EQ(OverviewEnterExitType::kPine,
-            overview_session->enter_exit_overview_type());
+  StartPineOverviewSession(MakeTestAppIds(1));
 }
 
 TEST_F(PineTest, NoOverflow) {
@@ -338,6 +331,55 @@ TEST_F(PineTest, OnboardingMetrics) {
       /*restore_on=*/true);
   LeftClickOn(GetOnboardingDialog()->GetAcceptButtonForTesting());
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
+}
+
+// Tests that if we exit overview without clicking the restore or cancel
+// buttons, the pine widget gets shown when entering overview next.
+TEST_F(PineTest, ToggleOverviewToExit) {
+  Shell::Get()
+      ->pine_controller()
+      ->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
+
+  OverviewGrid* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  EXPECT_TRUE(OverviewGridTestApi(overview_grid).pine_widget());
+
+  // Exit overview by without clicking the restore or cancel buttons.
+  ToggleOverview();
+  ASSERT_FALSE(OverviewController::Get()->overview_session());
+
+  ToggleOverview();
+  overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  EXPECT_TRUE(OverviewGridTestApi(overview_grid).pine_widget());
+}
+
+TEST_F(PineTest, ClickRestoreToExit) {
+  Shell::Get()
+      ->pine_controller()
+      ->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
+
+  OverviewGrid* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
+  ASSERT_TRUE(pine_widget);
+
+  // Exit overview by clicking the restore or cancel buttons.
+  const PillButton* restore_button =
+      PineContentsViewTestApi(
+          views::AsViewClass<PineContentsView>(pine_widget->GetContentsView()))
+          .restore_button();
+  LeftClickOn(restore_button);
+  ASSERT_FALSE(OverviewController::Get()->overview_session());
+
+  ToggleOverview();
+  overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  EXPECT_FALSE(OverviewGridTestApi(overview_grid).pine_widget());
 }
 
 }  // namespace ash

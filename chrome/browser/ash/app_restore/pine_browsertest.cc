@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -421,6 +422,52 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, TabInfo) {
   EXPECT_EQ(GURL(url::kAboutBlankURL), apps_infos[0].tab_urls[0]);
   EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_urls[1]);
   EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_urls[2]);
+}
+
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_ReenterOverviewPineSession) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  CreateBrowser(ProfileManager::GetActiveUserProfile());
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Test that if we exit overview and reenter without opening a new window, we
+// see the pine dialog again.
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, ReenterOverviewPineSession) {
+  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+
+  // Verify we have entered overview with the pine dialog.
+  WaitForOverviewEnterAnimation();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(GetPineDialogRestoreButton());
+  EXPECT_TRUE(Shell::Get()->pine_controller()->pine_contents_data());
+
+  // Exit overview without clicking restore or cancel.
+  ToggleOverview();
+  WaitForOverviewExitAnimation();
+  EXPECT_TRUE(Shell::Get()->pine_controller()->pine_contents_data());
+
+  // Reenter overview. Test that the dialog is still visible.
+  ToggleOverview();
+  WaitForOverviewEnterAnimation();
+  EXPECT_TRUE(GetPineDialogRestoreButton());
+
+  // Open a new window using the accelerator. This should delete the pine dialog
+  // data and the next overview enter will not show the dialog.
+  ToggleOverview();
+  WaitForOverviewExitAnimation();
+  BrowsersWaiter waiter(/*expected_count=*/1);
+  ASSERT_TRUE(Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kNewWindow, {}));
+  waiter.Wait();
+  EXPECT_FALSE(Shell::Get()->pine_controller()->pine_contents_data());
+
+  // Reentering overview this time should not show the dialog.
+  ToggleOverview();
+  WaitForOverviewEnterAnimation();
+  EXPECT_FALSE(GetPineDialogRestoreButton());
 }
 
 }  // namespace ash::full_restore

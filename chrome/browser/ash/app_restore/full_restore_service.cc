@@ -318,10 +318,15 @@ void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   // shutdown process.
   crashed_lock_.reset();
 
-  if (notification_ != nullptr && !is_shut_down_) {
+  accelerator_controller_observer_.Reset();
+
+  if (notification_ && !is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
-    accelerator_controller_observer_.Reset();
+  }
+
+  if (features::IsForestFeatureEnabled()) {
+    delegate_->MaybeEndPineOverviewSession();
   }
 
   if (allow_save) {
@@ -486,6 +491,11 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
     crashed_lock_ = exit_type_service->CreateCrashedLock();
   }
 
+  if (auto* accelerator_controller = AcceleratorController::Get()) {
+    CHECK(!accelerator_controller_observer_.IsObserving());
+    accelerator_controller_observer_.Observe(accelerator_controller);
+  }
+
   if (Shell::HasInstance()) {
     Shell::Get()
         ->post_login_glanceables_metrics_reporter()
@@ -525,12 +535,6 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
     // Set to true as we might want to show the post reboot notification.
     show_notification = true;
     return;
-  }
-
-  auto* accelerator_controller = AcceleratorController::Get();
-  if (accelerator_controller) {
-    DCHECK(!accelerator_controller_observer_.IsObserving());
-    accelerator_controller_observer_.Observe(accelerator_controller);
   }
 
   message_center::RichNotificationData notification_data;
@@ -678,7 +682,7 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
 
   // Retrieve app id's from `restore_data`. There can be multiple entries with
   // the same app id, these denote different windows.
-  // TODO(http://b/327440097): Order these by activation index.
+  // TODO(http://b/329152636): Order these by activation index.
   for (const auto& [app_id, launch_list] :
        restore_data->app_id_to_launch_list()) {
     for (const std::pair<const int,
@@ -720,7 +724,7 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
         continue;
       }
 
-      // TODO(http://b/327440097): The active tab index
+      // TODO(http://b/329152636): The active tab index
       // (`SessionWindow::selected_tab_index`) should be included in
       // the list of urls and be the first one. For now use the first tab's
       // title.

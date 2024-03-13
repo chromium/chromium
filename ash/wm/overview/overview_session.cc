@@ -38,6 +38,7 @@
 #include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
@@ -1567,7 +1568,9 @@ void OverviewSession::OnSplitViewStateChanged(
 
   // Entering or exiting splitview is unexpected behavior in a pine overview
   // session.
-  CHECK_NE(OverviewEnterExitType::kPine, enter_exit_overview_type_);
+  if (features::IsForestFeatureEnabled()) {
+    CHECK(!Shell::Get()->pine_controller()->pine_contents_data());
+  }
 
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/false,
                                   /*is_continuous_enter=*/false);

@@ -72,6 +72,7 @@
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
+#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
@@ -526,6 +527,12 @@ bool ShouldShowBirchBar(aura::Window* root_window) {
          !SplitViewController::Get(root_window)->InSplitViewMode();
 }
 
+bool ShouldShowPineDialog(aura::Window* root_window) {
+  return root_window == Shell::GetPrimaryRootWindow() &&
+         features::IsForestFeatureEnabled() &&
+         !!Shell::Get()->pine_controller()->pine_contents_data();
+}
+
 }  // namespace
 
 OverviewGrid::OverviewGrid(
@@ -664,15 +671,20 @@ void OverviewGrid::PrepareForOverview() {
         std::make_unique<ScopedOverviewWallpaperClipper>(this);
   }
 
-  if (root_window_ == Shell::GetPrimaryRootWindow() &&
-      overview_session_->enter_exit_overview_type() ==
-          OverviewEnterExitType::kPine) {
+  if (ShouldShowPineDialog(root_window_)) {
     pine_widget_ = PineContentsView::Create(root_window_);
     pine_widget_->ShowInactive();
-    pine_widget_->SetOpacity(0.f);
-    FadeInWidgetToOverview(pine_widget_.get(),
-                           OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
-                           /*observe=*/true);
+
+    // If the enter type is immediate, `ShowInactive()` is sufficient as
+    // `pine_widget_` has no default animation. Otherwise, set the opacity to
+    // 0.f and perform a fade in animation.
+    if (overview_session_->enter_exit_overview_type() !=
+        OverviewEnterExitType::kImmediateEnter) {
+      pine_widget_->SetOpacity(0.f);
+      FadeInWidgetToOverview(pine_widget_.get(),
+                             OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
+                             /*observe=*/true);
+    }
   }
 
   for (const auto& item : item_list_) {
@@ -2191,8 +2203,7 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
   }
 
   if (!no_items || IsShowingSavedDeskLibrary() ||
-      overview_session_->enter_exit_overview_type() ==
-          OverviewEnterExitType::kPine) {
+      ShouldShowPineDialog(root_window_)) {
     no_windows_widget_.reset();
     faster_splitview_widget_.reset();
     return;

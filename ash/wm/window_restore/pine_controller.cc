@@ -24,6 +24,7 @@
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/display_util.h"
 #include "components/prefs/pref_service.h"
@@ -179,6 +180,12 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
 void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
   auto data = std::make_unique<PineContentsData>();
   data->last_session_crashed = false;
+  std::pair<base::OnceClosure, base::OnceClosure> split =
+      base::SplitOnceCallback(
+          base::BindOnce(&PineController::MaybeEndPineOverviewSession,
+                         weak_ptr_factory_.GetWeakPtr()));
+  data->restore_callback = std::move(split.first);
+  data->cancel_callback = std::move(split.second);
 
   // Chrome.
   data->apps_infos.emplace_back(
@@ -240,7 +247,7 @@ void PineController::MaybeStartPineOverviewSession(
 void PineController::MaybeEndPineOverviewSession() {
   pine_contents_data_.reset();
   OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
-                                         OverviewEnterExitType::kPine);
+                                         OverviewEnterExitType::kNormal);
 }
 
 void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
@@ -313,7 +320,7 @@ void PineController::StartPineOverviewSession() {
   }
   // TODO(sammiequon): Add a new start action for this type of overview session.
   OverviewController::Get()->StartOverview(OverviewStartAction::kAccelerator,
-                                           OverviewEnterExitType::kPine);
+                                           OverviewEnterExitType::kNormal);
 }
 
 void PineController::OnOnboardingAcceptPressed(bool restore_on) {

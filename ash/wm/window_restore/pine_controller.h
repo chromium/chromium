@@ -56,9 +56,6 @@ class ASH_EXPORT PineController : public OverviewObserver {
   // `pine_contents_data_`.
   void MaybeEndPineOverviewSession();
 
-  // TODO(sammiequon): Entering overview normally should show the pine dialog if
-  // `pine_contents_data_` is not null.
-
   // OverviewObserver:
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
