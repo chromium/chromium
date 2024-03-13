@@ -283,7 +283,7 @@ export class DirectoryTreeContainer {
       // lose some status (e.g. focus/rename), check if we need to restore
       // them or not.
       if (exists) {
-        if (isFocused) {
+        if (isFocused && !fileData?.disabled) {
           this.restoreFocus_(navigationRootItem, /* isExisting= */ true);
         }
         if (isRenaming) {
@@ -293,7 +293,7 @@ export class DirectoryTreeContainer {
       }
       // For newly rendered items, check if they are the next item to
       // focus.
-      if (this.fileKeyToFocus_ === navigationRoot.key) {
+      if (this.fileKeyToFocus_ === navigationRoot.key && !fileData?.disabled) {
         // Item with file key to focus is rendered for the first time (e.g.
         // right after rename finishes), focus on it.
         this.fileKeyToFocus_ = null;
@@ -427,7 +427,7 @@ export class DirectoryTreeContainer {
         // lose some status (e.g. focus/rename), check if we need to restore
         // them or not.
         if (exists) {
-          if (isFocused) {
+          if (isFocused && !childFileData?.disabled) {
             this.restoreFocus_(navigationItem, /* isExisting= */ true);
           }
           if (isRenaming) {
@@ -437,7 +437,7 @@ export class DirectoryTreeContainer {
         }
         // For newly rendered items, check if they are the next item to
         // rename/focus.
-        if (this.fileKeyToFocus_ === childKey) {
+        if (this.fileKeyToFocus_ === childKey && !childFileData?.disabled) {
           // Item with file key to focus is rendered for the first time (e.g.
           // right after rename finishes), focus on it.
           this.fileKeyToFocus_ = null;
