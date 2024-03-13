@@ -503,8 +503,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Advanced Section
   [model addSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if (base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
-      IsPriceNotificationsEnabled()) {
+  if ([self shouldShowNotificationsSettings]) {
     _notificationsItem = [self notificationsItem];
     [self updateNotificationsDetailText];
     [model addItem:_notificationsItem
@@ -1396,8 +1395,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           [[AutofillProfileTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeNotifications:
-      DCHECK(IsPriceNotificationsEnabled() ||
-             IsContentPushNotificationsEnabled());
+      CHECK([self shouldShowNotificationsSettings]);
       [self showNotifications];
       break;
     case SettingsItemTypeVoiceSearch:
@@ -2064,6 +2062,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                                browser:_browser];
   _downloadsSettingsCoordinator.delegate = self;
   [_downloadsSettingsCoordinator start];
+}
+
+// Returns YES if the Notifications settings should show.
+- (BOOL)shouldShowNotificationsSettings {
+  return base::FeatureList::IsEnabled(kNotificationSettingsMenuItem) &&
+         (IsPriceNotificationsEnabled() ||
+          IsContentPushNotificationsEnabled() ||
+          IsIOSTipsNotificationsEnabled());
 }
 
 #pragma mark - Sign in
