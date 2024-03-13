@@ -283,7 +283,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             new SpanApplier.SpanInfo("<link>", "</link>", feedbackSpan)));
         }
         updateCookieSwitch();
-        updateStorageSubtitle();
     }
 
     public void setCookiesCount(int allowedCookies, int blockedCookies) {
@@ -306,7 +305,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mDataUsed |= allowedSites != 0;
         updateCookieDeleteButton();
         updateCookieSwitch();
-        updateStorageSubtitle();
     }
 
     public void setStorageUsage(long storageUsage) {
@@ -394,17 +392,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 mCookieSwitch.setSummary(
                         getQuantityString(R.plurals.page_info_sites_allowed, mAllowedSites));
             }
-        }
-    }
-
-    private void updateStorageSubtitle() {
-        if (!mTrackingProtectionUI) return;
-        if (!mCookieSwitch.isChecked()) {
-            mCookieInUse.setSummary(
-                    getQuantityString(R.plurals.page_info_sites_blocked, mBlockedSites));
-        } else {
-            mCookieInUse.setSummary(
-                    getQuantityString(R.plurals.page_info_sites_allowed, mAllowedSites));
         }
     }
 
