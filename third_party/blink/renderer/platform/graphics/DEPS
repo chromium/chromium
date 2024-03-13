@@ -29,6 +29,8 @@ include_rules = [
     "+gpu/command_buffer/common/shared_image_trace_utils.h",
     "+gpu/command_buffer/common/shared_image_usage.h",
     "+gpu/ipc/client/client_shared_image_interface.h",
+    "+gpu/ipc/client/gpu_channel_host.h",
+    "+gpu/ipc/client/gpu_channel_observer.h",
     "+gpu/ipc/common/mailbox.mojom-blink.h",
     "+media/base/limits.h",
     "+media/base/media_switches.h",

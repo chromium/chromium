@@ -20,6 +20,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
+#include "gpu/ipc/client/gpu_channel_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -43,6 +44,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
     : public WebVideoFrameSubmitter,
       public viz::ContextLostObserver,
       public viz::SharedBitmapReporter,
+      public gpu::GpuChannelLostObserver,
       public viz::mojom::blink::CompositorFrameSinkClient {
  public:
   VideoFrameSubmitter(WebContextProviderCallback,
@@ -70,6 +72,9 @@ class PLATFORM_EXPORT VideoFrameSubmitter
 
   // viz::ContextLostObserver implementation.
   void OnContextLost() override;
+
+  // gpu::GpuChannelLostObserver implementation.
+  void OnGpuChannelLost() override;
 
   // cc::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
@@ -229,6 +234,8 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // frames should be ignored by the video tracker even if they are reported as
   // presented.
   base::flat_set<uint32_t> ignorable_submitted_frames_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   THREAD_CHECKER(thread_checker_);
 
