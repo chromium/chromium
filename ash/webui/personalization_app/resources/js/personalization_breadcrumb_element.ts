@@ -26,6 +26,7 @@ import {setThumbnailResponseStatusCodeAction} from 'chrome://resources/ash/commo
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {getSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {getTransitionEnabled, setTransitionsEnabled} from 'chrome://resources/ash/common/sea_pen/transition.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
@@ -346,8 +347,16 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     // template; otherwise, error state will remain in sea-pen-images element if
     // it happens in the last query search.
     getSeaPenStore().dispatch(setThumbnailResponseStatusCodeAction(null));
-    PersonalizationRouterElement.instance().goToRoute(
-        Paths.SEA_PEN_RESULTS, {seaPenTemplateId: templateId});
+    const transitionsEnabled = getTransitionEnabled();
+    // disables the page transition when switching templates from the drop down.
+    // Then resets it back to the original value after routing is done to not
+    // interfere with other page transitions.
+    setTransitionsEnabled(false);
+    PersonalizationRouterElement.instance()
+        .goToRoute(Paths.SEA_PEN_RESULTS, {seaPenTemplateId: templateId})
+        ?.finally(() => {
+          setTransitionsEnabled(transitionsEnabled);
+        });
     this.closeOptionMenu_();
   }
 

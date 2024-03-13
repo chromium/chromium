@@ -6,6 +6,10 @@ import {isSeaPenEnabled} from './load_time_booleans.js';
 
 let transitionsEnabled = isSeaPenEnabled();
 
+export function getTransitionEnabled() {
+  return transitionsEnabled;
+}
+
 export function setTransitionsEnabled(enabled: boolean) {
   transitionsEnabled = enabled;
 }

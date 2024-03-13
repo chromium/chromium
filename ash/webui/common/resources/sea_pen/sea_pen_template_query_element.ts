@@ -21,7 +21,7 @@ import {SeaPenQuery, SeaPenThumbnail, SeaPenUserVisibleQuery} from './sea_pen.mo
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen_generated.mojom-webui.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
-import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
+import {SeaPenPaths} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
 import {ChipToken, getDefaultOptions, getTemplateTokens, isNonEmptyArray, logGenerateSeaPenWallpaper, TemplateToken} from './sea_pen_utils.js';
@@ -241,8 +241,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
     searchSeaPenThumbnails(
         this.getTemplateRequest_(), getSeaPenProvider(), this.getStore());
     logGenerateSeaPenWallpaper(this.getSeaPenTemplateId_());
-    SeaPenRouterElement.instance().goToRoute(
-        SeaPenPaths.RESULTS, {seaPenTemplateId: this.templateId!.toString()});
   }
 
   private updateSearchButton_(
