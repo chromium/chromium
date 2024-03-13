@@ -490,20 +490,24 @@ static constexpr uint32_t kMaxStringAttributeLength = 10000;
 // Length of War and Peace (http://www.gutenberg.org/files/2600/2600-0.txt).
 static constexpr uint32_t kMaxStaticTextLength = 3227574;
 
+std::string TruncateString(const String& str,
+                           uint32_t max_len = kMaxStringAttributeLength) {
+  auto str_utf8 = str.Utf8(kStrictUTF8Conversion);
+  if (str_utf8.size() > max_len) {
+    std::string truncated;
+    base::TruncateUTF8ToByteSize(str_utf8, max_len, &truncated);
+    return truncated;
+  }
+  return str_utf8;
+}
+
 void TruncateAndAddStringAttribute(
     ui::AXNodeData* dst,
     ax::mojom::blink::StringAttribute attribute,
     const String& value,
     uint32_t max_len = kMaxStringAttributeLength) {
-  if (value.empty())
-    return;
-  std::string value_utf8 = value.Utf8(kStrictUTF8Conversion);
-  if (value_utf8.size() > max_len) {
-    std::string truncated;
-    base::TruncateUTF8ToByteSize(value_utf8, max_len, &truncated);
-    dst->AddStringAttribute(attribute, truncated);
-  } else {
-    dst->AddStringAttribute(attribute, value_utf8);
+  if (!value.empty()) {
+    dst->AddStringAttribute(attribute, TruncateString(value, max_len));
   }
 }
 
@@ -1312,14 +1316,13 @@ void SerializeAriaNotificationAttributes(const AriaNotification& notification,
                                          ui::AXNodeData* node_data) {
   DCHECK(node_data);
 
-  TruncateAndAddStringAttribute(
-      node_data,
-      ax::mojom::blink::StringAttribute::kAriaNotificationAnnouncement,
-      notification.Announcement());
+  node_data->AddStringListAttribute(
+      ax::mojom::blink::StringListAttribute::kAriaNotificationAnnouncements,
+      {TruncateString(notification.Announcement())});
 
-  TruncateAndAddStringAttribute(
-      node_data, ax::mojom::blink::StringAttribute::kAriaNotificationId,
-      notification.NotificationId());
+  node_data->AddStringListAttribute(
+      ax::mojom::blink::StringListAttribute::kAriaNotificationIds,
+      {TruncateString(notification.NotificationId())});
 
   node_data->AddIntAttribute(
       ax::mojom::blink::IntAttribute::kAriaNotificationInterrupt,

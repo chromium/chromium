@@ -1269,9 +1269,9 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "ariaBrailleLabel";
     case ax::mojom::StringAttribute::kAriaBrailleRoleDescription:
       return "ariaBrailleRoleDescription";
-    case ax::mojom::StringAttribute::kAriaNotificationAnnouncement:
+    case ax::mojom::StringAttribute::kAriaNotificationAnnouncementDeprecated:
       return "ariaNotificationAnnouncement";
-    case ax::mojom::StringAttribute::kAriaNotificationId:
+    case ax::mojom::StringAttribute::kAriaNotificationIdDeprecated:
       return "ariaNotificationId";
     case ax::mojom::StringAttribute::kCheckedStateDescription:
       return "checkedStateDescription";
@@ -1352,10 +1352,10 @@ ax::mojom::StringAttribute StringToStringAttribute(
     return ax::mojom::StringAttribute::kAriaBrailleLabel;
   } else if (string_attribute == "kAriaBrailleRoleDescription") {
     return ax::mojom::StringAttribute::kAriaBrailleRoleDescription;
-  } else if (string_attribute == "kAriaNotificationAnnouncement") {
-    return ax::mojom::StringAttribute::kAriaNotificationAnnouncement;
-  } else if (string_attribute == "kAriaNotificationId") {
-    return ax::mojom::StringAttribute::kAriaNotificationId;
+  } else if (string_attribute == "kAriaNotificationAnnouncementDeprecated") {
+    return ax::mojom::StringAttribute::kAriaNotificationAnnouncementDeprecated;
+  } else if (string_attribute == "kAriaNotificationIdDeprecated") {
+    return ax::mojom::StringAttribute::kAriaNotificationIdDeprecated;
   } else if (string_attribute == "kCheckedStateDescription") {
     return ax::mojom::StringAttribute::kCheckedStateDescription;
   } else if (string_attribute == "kChildTreeId") {
@@ -1894,6 +1894,10 @@ const char* ToString(ax::mojom::StringListAttribute string_list_attribute) {
   switch (string_list_attribute) {
     case ax::mojom::StringListAttribute::kNone:
       return "none";
+    case ax::mojom::StringListAttribute::kAriaNotificationAnnouncements:
+      return "ariaNotificationAnnouncements";
+    case ax::mojom::StringListAttribute::kAriaNotificationIds:
+      return "ariaNotificationIds";
     case ax::mojom::StringListAttribute::kCustomActionDescriptions:
       return "customActionDescriptions";
   }

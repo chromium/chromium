@@ -1714,10 +1714,10 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::StringAttribute::kAriaBrailleRoleDescription:
         result += " aria_braille_role_description=" + value;
         break;
-      case ax::mojom::StringAttribute::kAriaNotificationAnnouncement:
+      case ax::mojom::StringAttribute::kAriaNotificationAnnouncementDeprecated:
         result += " aria_notification_announcement=" + value;
         break;
-      case ax::mojom::StringAttribute::kAriaNotificationId:
+      case ax::mojom::StringAttribute::kAriaNotificationIdDeprecated:
         result += " aria_notification_id=" + value;
         break;
       case ax::mojom::StringAttribute::kCheckedStateDescription:
@@ -2052,9 +2052,16 @@ std::string AXNodeData::ToString(bool verbose) const {
        stringlist_attributes) {
     const std::vector<std::string>& values = stringlist_attribute.second;
     switch (stringlist_attribute.first) {
+      case ax::mojom::StringListAttribute::kAriaNotificationAnnouncements:
+        result +=
+            " aria_notification_announcements=" + base::JoinString(values, ",");
+        break;
+      case ax::mojom::StringListAttribute::kAriaNotificationIds:
+        result += " aria_notification_ids=" + base::JoinString(values, ",");
+        break;
       case ax::mojom::StringListAttribute::kCustomActionDescriptions:
         result +=
-            " custom_action_descriptions: " + base::JoinString(values, ",");
+            " custom_action_descriptions=" + base::JoinString(values, ",");
         break;
       case ax::mojom::StringListAttribute::kNone:
         break;
