@@ -107,9 +107,6 @@ class EncryptedReportingClientTest : public ::testing::Test {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         url_loader_factory_.GetSafeWeakWrapper());
 
-    cloud_policy_client_.SetDMToken(kDmToken);
-    cloud_policy_client_.client_id_ = kClientId;
-
     context_.SetByDottedPath("browser.userAgent", "agent-test-value");
   }
 
@@ -152,7 +149,6 @@ class EncryptedReportingClientTest : public ::testing::Test {
 
   std::unique_ptr<policy::DeviceManagementService> device_management_service_;
   network::TestURLLoaderFactory url_loader_factory_;
-  policy::MockCloudPolicyClient cloud_policy_client_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -162,6 +158,8 @@ class EncryptedReportingClientTest : public ::testing::Test {
 TEST_F(EncryptedReportingClientTest, Default) {
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
 
   {
     AddRecordToPayload();
@@ -171,8 +169,7 @@ TEST_F(EncryptedReportingClientTest, Default) {
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-        response_event.cb());
+        std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
     ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
@@ -214,8 +211,7 @@ TEST_F(EncryptedReportingClientTest, Default) {
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-        response_event.cb());
+        std::move(scoped_reservation), response_event.cb());
 
     // Sequence ID decreased, upload is rejected.
     const auto actual_response = response_event.result();
@@ -231,6 +227,8 @@ TEST_F(EncryptedReportingClientTest, Default) {
 TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   auto encrypted_reporting_client =
       EncryptedReportingClient::Create(std::make_unique<FakeDelegate>(nullptr));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
 
   AddRecordToPayload();
   ScopedReservation scoped_reservation(RecordsSize(payload_records_),
@@ -239,8 +237,7 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   encrypted_reporting_client->UploadReport(
       need_encryption_key_, config_file_version_, payload_records_,
-      std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-      response_event.cb());
+      std::move(scoped_reservation), response_event.cb());
   const auto actual_response = response_event.result();
   EXPECT_THAT(
       actual_response,
@@ -257,6 +254,8 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
 TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
 
   {
     AddRecordToPayload();
@@ -266,8 +265,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-        response_event.cb());
+        std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
     ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
@@ -306,8 +304,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-        response_event.cb());
+        std::move(scoped_reservation), response_event.cb());
     const auto actual_response = response_event.result();
     EXPECT_THAT(actual_response,
                 Property(&StatusOr<UploadResponseParser>::error,
@@ -326,6 +323,8 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
   // the request headers.
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), "", "");
+
   AddRecordToPayload();
   ScopedReservation scoped_reservation(RecordsSize(payload_records_),
                                        memory_resource_);
@@ -333,8 +332,7 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   encrypted_reporting_client->UploadReport(
       need_encryption_key_, config_file_version_, payload_records_,
-      std::move(scoped_reservation), context_.Clone(), nullptr,
-      base::DoNothing());
+      std::move(scoped_reservation), base::DoNothing());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
@@ -350,6 +348,8 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
 
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
 
   base::TimeDelta expected_delay_after = base::Seconds(10);
   for (size_t i = 0; i < kTotalRetries; ++i) {
@@ -383,8 +383,7 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-        response_event.cb());
+        std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
     ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
@@ -410,6 +409,8 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
 
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
 
   base::TimeDelta expected_delay_after = base::Seconds(10);
   for (size_t i = 0; i < kTotalRetries; ++i) {
@@ -443,8 +444,7 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-        response_event.cb());
+        std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
     ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
@@ -470,6 +470,8 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
 
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
 
   for (size_t i = 0; i < kTotalRetries; ++i) {
     AddRecordToPayload(Priority::SECURITY);
@@ -485,8 +487,7 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-        response_event.cb());
+        std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
     ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
@@ -512,6 +513,8 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
 
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
 
   for (size_t i = 0; i < kTotalRetries; ++i) {
     AddRecordToPayload();
@@ -542,8 +545,7 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
     test::TestEvent<StatusOr<UploadResponseParser>> response_event;
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
-        std::move(scoped_reservation), context_.Clone(), &cloud_policy_client_,
-        response_event.cb());
+        std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
     ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));

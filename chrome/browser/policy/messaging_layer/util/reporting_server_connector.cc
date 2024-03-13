@@ -61,6 +61,19 @@ using ::policy::CloudPolicyClient;
 using ::policy::CloudPolicyCore;
 
 namespace reporting {
+namespace {
+
+// Returns `true` if device info should be included in the upload, `false`
+// otherwise.
+bool DeviceInfoRequiredForUpload() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return !base::FeatureList::IsEnabled(kEnableReportingFromUnmanagedDevices) ||
+         // Check if this is a managed device.
+         policy::ManagementServiceFactory::GetForPlatform()
+             ->HasManagementAuthority(
+                 policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+}
+}  // namespace
 
 // TODO(b/281905099): remove after rolling out reporting managed user events
 // from unmanaged devices
@@ -79,16 +92,18 @@ ReportingServerConnector::ReportingServerConnector()
 }
 
 ReportingServerConnector::~ReportingServerConnector() {
-  // Notify and remove observers.
-  for (auto ob : observers_) {
-    ob->OnDisconnected();
+  if (client_) {
+    // Notify observers.
+    for (auto ob : observers_) {
+      ob->OnDisconnected();
+    }
+    client_ = nullptr;
   }
   observers_.clear();
 
   if (core_) {
     core_->RemoveObserver(this);
     core_ = nullptr;
-    client_ = nullptr;
   }
 }
 
@@ -135,31 +150,6 @@ void ReportingServerConnector::OnCoreDestruction(CloudPolicyCore* core) {
 }
 
 // static
-// Returns true if device info should be including in the upload. Returns false
-// otherwise.
-bool DeviceInfoRequiredForUpload() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return !base::FeatureList::IsEnabled(kEnableReportingFromUnmanagedDevices) ||
-         // Check if this is a managed device.
-         policy::ManagementServiceFactory::GetForPlatform()
-             ->HasManagementAuthority(
-                 policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
-}
-
-void ReportingServerConnector::UploadEncryptedReportInternal(
-    bool need_encryption_key,
-    int config_file_version,
-    std::vector<EncryptedRecord> records,
-    ScopedReservation scoped_reservation,
-    std::optional<base::Value::Dict> context,
-    ResponseCallback callback) {
-  encrypted_reporting_client_->UploadReport(
-      need_encryption_key, config_file_version, std::move(records),
-      std::move(scoped_reservation), std::move(context), client_,
-      std::move(callback));
-}
-
-// static
 void ReportingServerConnector::UploadEncryptedReport(
     bool need_encryption_key,
     int config_file_version,
@@ -177,36 +167,57 @@ void ReportingServerConnector::UploadEncryptedReport(
                        std::move(callback)));
     return;
   }
-
   // Now we are on UI task runner.
-  ReportingServerConnector* const connector = GetInstance();
+  GetInstance()->UploadEncryptedReportInternal(
+      need_encryption_key, config_file_version, std::move(records),
+      std::move(scoped_reservation), std::move(callback));
+}
+
+void ReportingServerConnector::UploadEncryptedReportInternal(
+    bool need_encryption_key,
+    int config_file_version,
+    std::vector<EncryptedRecord> records,
+    ScopedReservation scoped_reservation,
+    ResponseCallback callback) {
+  DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
 
   // Add context elements needed by reporting server.
   base::Value::Dict context;
+  std::string dm_token;
+  std::string client_id;
   context.Set(json_keys::kBrowser,
               base::Value::Dict().Set(json_keys::kUserAgent,
                                       embedder_support::GetUserAgent()));
   if (DeviceInfoRequiredForUpload()) {
-    // Initialize the cloud policy client
-    auto client_status = connector->EnsureUsableClient();
+    // Initialize the cloud policy client.
+    auto client_status = EnsureUsableClient();
     if (!client_status.ok()) {
       std::move(callback).Run(base::unexpected(std::move(client_status)));
       return;
     }
-    if (connector->client_->dm_token().empty()) {
+    dm_token = client_->dm_token();
+    client_id = client_->client_id();
+    if (dm_token.empty()) {
       std::move(callback).Run(base::unexpected(
           Status(error::UNAVAILABLE, "Device DM token not set")));
       return;
     }
     context.Set(json_keys::kDevice,
-                base::Value::Dict().Set(json_keys::kDmToken,
-                                        connector->client_->dm_token()));
+                base::Value::Dict().Set(json_keys::kDmToken, dm_token));
   }
 
-  // Forward the `UploadEncryptedReport` to `connector`.
-  connector->UploadEncryptedReportInternal(
+  // Add context elements needed by reporting server.
+  context.Set(json_keys::kBrowser,
+              base::Value::Dict().Set(json_keys::kUserAgent,
+                                      embedder_support::GetUserAgent()));
+
+  encrypted_reporting_client_->PresetUploads(
+      std::move(context), std::move(dm_token), std::move(client_id));
+
+  // Forward the `UploadEncryptedReport` to `client`.
+  encrypted_reporting_client_->UploadReport(
       need_encryption_key, config_file_version, std::move(records),
-      std::move(scoped_reservation), std::move(context),
+      std::move(scoped_reservation),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           [](ResponseCallback callback, StatusOr<UploadResponseParser> result) {
             DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
