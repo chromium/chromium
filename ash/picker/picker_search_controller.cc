@@ -85,7 +85,9 @@ void PickerSearchController::StartSearch(
   // do.
   if (!category.has_value() || (category == PickerCategory::kBrowsingHistory ||
                                 category == PickerCategory::kBookmarks ||
-                                category == PickerCategory::kOpenTabs)) {
+                                category == PickerCategory::kOpenTabs ||
+                                category == PickerCategory::kLocalFiles ||
+                                category == PickerCategory::kDriveFiles)) {
     cros_search_start_ = base::TimeTicks::Now();
     client_->StartCrosSearch(
         query, category,

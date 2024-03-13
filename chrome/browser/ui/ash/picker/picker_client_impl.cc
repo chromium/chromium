@@ -86,6 +86,17 @@ int GetAllAutocompleteProviderTypes() {
          GetAutocompleteProviderTypes(ash::PickerCategory::kOpenTabs);
 }
 
+std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
+    Profile* profile) {
+  return std::make_unique<app_list::DriveSearchProvider>(profile);
+}
+
+std::unique_ptr<app_list::SearchProvider> CreateFileSearchProvider(
+    Profile* profile) {
+  return std::make_unique<app_list::FileSearchProvider>(
+      profile, base::FileEnumerator::FileType::FILES);
+}
+
 }  // namespace
 
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
@@ -188,13 +199,15 @@ void PickerClientImpl::StartCrosSearch(
       break;
     case ash::PickerCategory::kBookmarks:
     case ash::PickerCategory::kBrowsingHistory:
-    case ash::PickerCategory::kOpenTabs: {
+    case ash::PickerCategory::kOpenTabs:
+    case ash::PickerCategory::kDriveFiles:
+    case ash::PickerCategory::kLocalFiles: {
       if (filtered_search_engine_ == nullptr ||
           current_filter_category_ != category) {
         filtered_search_engine_ =
             std::make_unique<app_list::SearchEngine>(profile_);
         filtered_search_engine_->AddProvider(
-            CreateOmniboxProvider(GetAutocompleteProviderTypes(*category)));
+            CreateSearchProviderForCategory(*category));
         current_filter_category_ = category;
       }
 
@@ -203,10 +216,6 @@ void PickerClientImpl::StartCrosSearch(
           base::BindRepeating(&PickerClientImpl::OnCrosSearchResultsUpdated,
                               weak_factory_.GetWeakPtr(), std::move(callback)));
     } break;
-    case ash::PickerCategory::kDriveFiles:
-    case ash::PickerCategory::kLocalFiles:
-      // TODO: b/326839834 - Search only Drive or Local files.
-      break;
   }
 }
 
@@ -301,10 +310,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   search_engine_ = std::make_unique<app_list::SearchEngine>(profile_);
   search_engine_->AddProvider(
       CreateOmniboxProvider(GetAllAutocompleteProviderTypes()));
-  search_engine_->AddProvider(std::make_unique<app_list::FileSearchProvider>(
-      profile_, base::FileEnumerator::FileType::FILES));
-  search_engine_->AddProvider(
-      std::make_unique<app_list::DriveSearchProvider>(profile_));
+  search_engine_->AddProvider(CreateFileSearchProvider(profile_));
+  search_engine_->AddProvider(CreateDriveSearchProvider(profile_));
 }
 
 std::unique_ptr<app_list::SearchProvider>
@@ -318,6 +325,28 @@ PickerClientImpl::CreateOmniboxProvider(int provider_types) {
   } else {
     return std::make_unique<app_list::OmniboxProvider>(
         profile_, &app_list_controller_delegate_, provider_types);
+  }
+}
+
+std::unique_ptr<app_list::SearchProvider>
+PickerClientImpl::CreateSearchProviderForCategory(
+    ash::PickerCategory category) {
+  switch (category) {
+    case ash::PickerCategory::kEmojis:
+    case ash::PickerCategory::kSymbols:
+    case ash::PickerCategory::kEmoticons:
+    case ash::PickerCategory::kGifs:
+      DLOG(FATAL) << "Unexpected category for autocomplete: "
+                  << static_cast<int>(category);
+      return nullptr;
+    case ash::PickerCategory::kBookmarks:
+    case ash::PickerCategory::kBrowsingHistory:
+    case ash::PickerCategory::kOpenTabs:
+      return CreateOmniboxProvider(GetAutocompleteProviderTypes(category));
+    case ash::PickerCategory::kLocalFiles:
+      return CreateFileSearchProvider(profile_);
+    case ash::PickerCategory::kDriveFiles:
+      return CreateDriveSearchProvider(profile_);
   }
 }
 

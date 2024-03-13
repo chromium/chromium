@@ -113,6 +113,8 @@ class PickerClientImpl
 
   std::unique_ptr<app_list::SearchProvider> CreateOmniboxProvider(
       int provider_types);
+  std::unique_ptr<app_list::SearchProvider> CreateSearchProviderForCategory(
+      ash::PickerCategory category);
 
   raw_ptr<ash::PickerController> controller_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
