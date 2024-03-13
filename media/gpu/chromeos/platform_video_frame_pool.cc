@@ -10,6 +10,8 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -58,7 +60,13 @@ CroStatus::Or<scoped_refptr<FrameResource>> DefaultCreateFrame(
   frame->metadata().allow_overlay = true;
   frame->metadata().protected_video = use_protected;
   frame->metadata().hw_protected = use_protected;
-  frame->metadata().needs_detiling = needs_detiling;
+
+#if defined(ARCH_CPU_ARM_FAMILY)
+  if (base::FeatureList::IsEnabled(media::kEnableProtectedVulkanDetiling)) {
+    frame->metadata().needs_detiling = needs_detiling;
+  }
+#endif
+
   return frame;
 }
 

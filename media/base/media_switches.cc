@@ -1326,6 +1326,14 @@ BASE_FEATURE(kPreferGLImageProcessor,
 BASE_FEATURE(kPreferSoftwareMT21,
              "PreferSoftwareMT21",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enable populating the |needs_detiling| field in |VideoFrameMetadata|. This in
+// turn triggers Skia to use the |VulkanImageProcessor| for detiling protected
+// content.
+// Owner: greenjustin@google.com
+// Expiry: When Vulkan detiling is thoroughly tested and verified to work.
+BASE_FEATURE(kEnableProtectedVulkanDetiling,
+             "EnableProtectedVulkanDetiling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 // ChromeOS has one of two VideoDecoder implementations active based on

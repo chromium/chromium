@@ -7704,6 +7704,10 @@ const char kPreferSoftwareMT21Name[] = "Prefer software MT21 conversion";
 const char kPreferSoftwareMT21Description[] =
     "Prefer using the software MT21 conversion instead of the MDP hardware "
     "conversion on MT8173 devices.";
+const char kEnableProtectedVulkanDetilingName[] =
+    "Enable Protected Vulkan Detiling";
+const char kEnableProtectedVulkanDetilingDescription[] =
+    "Use a Vulkan shader for protected Vulkan detiling.";
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 

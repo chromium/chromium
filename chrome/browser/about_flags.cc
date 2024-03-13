@@ -7464,6 +7464,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"prefer-software-mt21", flag_descriptions::kPreferSoftwareMT21Name,
      flag_descriptions::kPreferSoftwareMT21Description, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kPreferSoftwareMT21)},
+    {"enable-protected-vulkan-detiling",
+     flag_descriptions::kEnableProtectedVulkanDetilingName,
+     flag_descriptions::kEnableProtectedVulkanDetilingDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kEnableProtectedVulkanDetiling)},
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
