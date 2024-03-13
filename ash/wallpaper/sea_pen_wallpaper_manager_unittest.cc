@@ -444,5 +444,97 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataOtherAccount) {
   }
 }
 
+TEST_F(SeaPenWallpaperManagerTest, DeleteNonExistentImage) {
+  // File does not exist yet. Deleting it should fail.
+  base::test::TestFuture<bool> delete_sea_pen_image_future;
+  sea_pen_wallpaper_manager()->DeleteSeaPenImage(
+      kAccountId1, 111u, delete_sea_pen_image_future.GetCallback());
+  EXPECT_FALSE(delete_sea_pen_image_future.Get());
+}
+
+TEST_F(SeaPenWallpaperManagerTest, DeleteImageRemovesFromDisk) {
+  constexpr uint32_t image_id = 1234u;
+
+  {
+    // Save a test image.
+    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+        kAccountId1, {CreateJpgBytes(), image_id},
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+        save_image_future.GetCallback());
+
+    ASSERT_TRUE(save_image_future.Wait());
+    ASSERT_TRUE(
+        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
+            kAccountId1, image_id)));
+  }
+
+  {
+    // Delete the test image.
+    base::test::TestFuture<bool> delete_image_future;
+    sea_pen_wallpaper_manager()->DeleteSeaPenImage(
+        kAccountId1, image_id, delete_image_future.GetCallback());
+
+    EXPECT_TRUE(delete_image_future.Get());
+    EXPECT_FALSE(
+        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
+            kAccountId1, image_id)));
+  }
+}
+
+TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
+  constexpr uint32_t image_id = 999u;
+  const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
+      "other_user@test.com", "other_user@test.com");
+
+  // Save a test image with the same id for both users.
+  for (const auto& account_id : {kAccountId1, other_account_id}) {
+    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+        account_id, {CreateJpgBytes(), image_id},
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+        save_image_future.GetCallback());
+
+    ASSERT_TRUE(save_image_future.Wait());
+    ASSERT_TRUE(
+        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
+            kAccountId1, image_id)));
+  }
+
+  {
+    // Delete the image for first account id.
+    base::test::TestFuture<bool> delete_image_future;
+    sea_pen_wallpaper_manager()->DeleteSeaPenImage(
+        kAccountId1, image_id, delete_image_future.GetCallback());
+
+    EXPECT_TRUE(delete_image_future.Get());
+    EXPECT_FALSE(
+        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
+            kAccountId1, image_id)));
+  }
+
+  // Image still exists for other account id.
+  ASSERT_TRUE(
+      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
+          other_account_id, image_id)));
+
+  {
+    // Try delete the image for first account id again, should fail.
+    base::test::TestFuture<bool> delete_image_future;
+    sea_pen_wallpaper_manager()->DeleteSeaPenImage(
+        kAccountId1, image_id, delete_image_future.GetCallback());
+
+    EXPECT_FALSE(delete_image_future.Get());
+    EXPECT_FALSE(
+        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
+            kAccountId1, image_id)));
+  }
+
+  // Image still exists for other account id.
+  ASSERT_TRUE(
+      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
+          other_account_id, image_id)));
+}
+
 }  // namespace
 }  // namespace ash

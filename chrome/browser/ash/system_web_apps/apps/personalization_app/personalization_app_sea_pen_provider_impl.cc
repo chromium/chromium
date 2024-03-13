@@ -75,11 +75,11 @@ void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(
     return;
   }
 
-  auto* wallpaper_controller = ash::WallpaperController::Get();
-  DCHECK(wallpaper_controller);
+  auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
+  DCHECK(sea_pen_wallpaper_manager);
 
-  wallpaper_controller->DeleteRecentSeaPenImage(GetAccountId(profile_), id,
-                                                std::move(callback));
+  sea_pen_wallpaper_manager->DeleteSeaPenImage(GetAccountId(profile_), id,
+                                               std::move(callback));
 }
 
 void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDoneInternal(

@@ -13,6 +13,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -239,13 +240,6 @@ void TestWallpaperController::SetSeaPenWallpaperFromFile(
   wallpaper_info_->type = ash::WallpaperType::kSeaPen;
   wallpaper_info_->location = base::NumberToString(id);
   std::move(callback).Run(/*success=*/true);
-}
-
-void TestWallpaperController::DeleteRecentSeaPenImage(
-    const AccountId& account_id,
-    const uint32_t id,
-    DeleteRecentSeaPenImageCallback callback) {
-  std::move(callback).Run(/*success=*/false);
 }
 
 void TestWallpaperController::ConfirmPreviewWallpaper() {

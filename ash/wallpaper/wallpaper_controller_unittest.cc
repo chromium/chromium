@@ -2505,44 +2505,6 @@ TEST_P(WallpaperControllerTest, SetDefaultWallpaperCallbackTiming) {
   EXPECT_EQ(1, observer.wallpaper_changed_count());
 }
 
-TEST_P(WallpaperControllerTest, DeleteRecentSeaPenImage) {
-  {
-    // File does not exist yet. Deleting it should fail.
-    base::test::TestFuture<bool> delete_sea_pen_image_future;
-    controller_->DeleteRecentSeaPenImage(
-        kAccountId1, 111u, delete_sea_pen_image_future.GetCallback());
-    EXPECT_FALSE(delete_sea_pen_image_future.Get());
-  }
-
-  // Drop a folder
-  base::FilePath account_id_1_sea_pen_dir =
-      online_wallpaper_dir_.GetPath().Append("sea_pen").Append(
-          kAccountId1.GetAccountIdKey());
-  ASSERT_TRUE(base::CreateDirectory(account_id_1_sea_pen_dir));
-  base::FilePath account_id_1_sea_pen_file =
-      account_id_1_sea_pen_dir.Append("111").AddExtension(".jpg");
-  ASSERT_TRUE(base::WriteFile(account_id_1_sea_pen_file, "test data"));
-
-  {
-    // File exists but for `kAccountId1`. Deleting for `kAccountId2` should
-    // fail.
-    base::test::TestFuture<bool> delete_sea_pen_image_future;
-    controller_->DeleteRecentSeaPenImage(
-        kAccountId2, 111u, delete_sea_pen_image_future.GetCallback());
-    EXPECT_FALSE(delete_sea_pen_image_future.Get());
-    ASSERT_TRUE(base::PathExists(account_id_1_sea_pen_file));
-  }
-
-  {
-    // File exists and should be deleted by `kAccountId1`.
-    base::test::TestFuture<bool> delete_sea_pen_image_future;
-    controller_->DeleteRecentSeaPenImage(
-        kAccountId1, 111u, delete_sea_pen_image_future.GetCallback());
-    EXPECT_TRUE(delete_sea_pen_image_future.Get());
-    EXPECT_FALSE(base::PathExists(account_id_1_sea_pen_file));
-  }
-}
-
 TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   SimulateUserLogin("kiosk", user_manager::UserType::kKioskApp);

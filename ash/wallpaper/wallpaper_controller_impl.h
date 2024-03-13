@@ -307,10 +307,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetSeaPenWallpaperFromFile(const AccountId& account_id,
                                   uint32_t id,
                                   SetWallpaperCallback callback) override;
-  void DeleteRecentSeaPenImage(
-      const AccountId& account_id,
-      uint32_t id,
-      DeleteRecentSeaPenImageCallback callback) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
   void UpdateCurrentWallpaperLayout(const AccountId& account_id,

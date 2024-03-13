@@ -15,7 +15,7 @@
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
-#include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -42,9 +42,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // A callback for confirming if Set*Wallpaper operations completed
   // successfully.
   using SetWallpaperCallback = base::OnceCallback<void(bool success)>;
-
-  using DeleteRecentSeaPenImageCallback =
-      base::OnceCallback<void(bool success)>;
 
   using DailyGooglePhotosIdCache = base::HashingLRUCacheSet<uint32_t>;
 
@@ -248,12 +245,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void SetSeaPenWallpaperFromFile(const AccountId& account_id,
                                           uint32_t id,
                                           SetWallpaperCallback callback) = 0;
-
-  // Removes the selected Sea Pen image from Sea Pen directory.
-  virtual void DeleteRecentSeaPenImage(
-      const AccountId& account_id,
-      uint32_t id,
-      DeleteRecentSeaPenImageCallback callback) = 0;
 
   // Confirms the wallpaper being previewed to be set as the actual user
   // wallpaper. Must be called in preview mode.
