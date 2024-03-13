@@ -16,7 +16,6 @@ import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.m
 // Routines interface exposed by the cros_healthd daemon.
 //
 // NextMinVersion: 3, NextIndex: 2
-[Stable]
 interface CrosHealthdRoutinesService {
   // Requests that a routine using the RoutineControl API is created on the
   // platform. This function creates a different routine based on the
@@ -131,7 +130,6 @@ struct FanRoutineArgument {};
 // Please check the Error Handling section of CrosHealthdRoutinesService.
 //
 // NextMinVersion: 2, NextIndex: 2
-[Stable]
 interface RoutineControl {
   // Gets the current state of the routine. Note that if the routine fails to
   // initialize, the RoutineControl will disconnect before the callback is
@@ -149,7 +147,6 @@ interface RoutineControl {
 // Implemented by clients who desire routine update notifications.
 //
 // NextMinVersion: 2, NextIndex: 1
-[Stable]
 interface RoutineObserver {
   // Called when the routine state has changed. This is also called as soon
   // as a routine is initialized (right after calling `CreateRoutine`).
@@ -161,7 +158,6 @@ interface RoutineObserver {
 // Used to pass information regarding routine state.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct RoutineState {
   // The percentage of the completion of the routine. 0 to 100.
   uint8 percentage@0;
@@ -172,7 +168,6 @@ struct RoutineState {
 // Possible routine states.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable]
 union RoutineStateUnion {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -224,7 +219,6 @@ struct RoutineStateWaiting {
 // Information about a finished routine.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct RoutineStateFinished {
   // Whether the routine has passed or not.
   bool has_passed@0;
@@ -235,7 +229,7 @@ struct RoutineStateFinished {
 // Details about a finished routine.
 //
 // NextMinVersion: 4, NextIndex: 4
-[Stable, Extensible]
+[Extensible]
 union RoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -330,7 +324,6 @@ enum MemtesterTestItemEnum {
 // Details regarding volume button routine.
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct VolumeButtonRoutineDetail {};
 
 // Whether the given hardware probed matches the hardware description recorded.
