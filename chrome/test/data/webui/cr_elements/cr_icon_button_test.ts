@@ -11,7 +11,7 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {downAndUp, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // clang-format on
@@ -32,13 +32,40 @@ suite('cr-icon-button', function() {
   });
 
   test('enabled/disabled', async () => {
+    assertFalse(button.disabled);
+    assertFalse(button.hasAttribute('disabled'));
     assertEquals('0', button.getAttribute('tabindex'));
     assertEquals('false', button.getAttribute('aria-disabled'));
     button.disabled = true;
     await button.updateComplete;
-
+    assertTrue(button.hasAttribute('disabled'));
     assertEquals('-1', button.getAttribute('tabindex'));
     assertEquals('true', button.getAttribute('aria-disabled'));
+  });
+
+  // This test documents previously undefined behavior of cr-icon-button when a
+  // 'tabindex' attribute is set by the parent, which seems to be actually
+  // relied upon by cr-icon-button client code. The behavior below should be
+  // improved or reconciled/merged with 'customTabIndex'.
+  test('external tabindex', async () => {
+    document.body.innerHTML =
+        getTrustedHTML`<cr-icon-button tabindex="10"></cr-icon-button>`;
+    button = document.body.querySelector('cr-icon-button')!;
+
+    // Check that initial tabindex value is preserved post-initialization.
+    assertFalse(button.disabled);
+    assertEquals('10', button.getAttribute('tabindex'));
+
+    // Check that tabindex updates when disabled.
+    button.disabled = true;
+    await microtasksFinished();
+    assertEquals('-1', button.getAttribute('tabindex'));
+
+    // Check that tabindex resets to 0 and not the initial value after
+    // re-enabling.
+    button.disabled = false;
+    await microtasksFinished();
+    assertEquals('0', button.getAttribute('tabindex'));
   });
 
   test('iron-icon created, reused, removed based on |ironIcon|', async () => {

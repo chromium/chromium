@@ -152,19 +152,26 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
 
     if (changedProperties.has('disabled')) {
       this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-      if (this.disabled) {
-        this.blur();
-      }
+      this.disabledChanged_(this.disabled, changedProperties.get('disabled'));
     }
 
-    if (changedProperties.has('disabled') ||
-        changedProperties.has('customTabIndex')) {
+    if (changedProperties.has('customTabIndex')) {
       this.applyTabIndex_();
     }
 
     if (changedProperties.has('ironIcon')) {
       this.onIronIconChanged_();
     }
+  }
+
+  private disabledChanged_(newValue: boolean, oldValue: boolean|undefined) {
+    if (!newValue && oldValue === undefined) {
+      return;
+    }
+    if (this.disabled) {
+      this.blur();
+    }
+    this.applyTabIndex_();
   }
 
   /**
