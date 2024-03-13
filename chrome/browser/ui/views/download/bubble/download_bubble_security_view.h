@@ -56,6 +56,7 @@ class DownloadBubbleSecurityView
     // provided.
     virtual void ProcessDeepScanPress(
         const offline_items_collection::ContentId& id,
+        DownloadItemWarningData::DeepScanTrigger trigger,
         base::optional_ref<const std::string> password) = 0;
 
     // Processes the local decryption prompt being accepted/ignored.

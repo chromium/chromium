@@ -1480,7 +1480,10 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         is_pending_scanning = true;
         danger_type = download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING;
         safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
-            item, /*password=*/std::nullopt);
+            item,
+            DownloadItemWarningData::DeepScanTrigger::
+                TRIGGER_IMMEDIATE_DEEP_SCAN,
+            /*password=*/std::nullopt);
         break;
     }
     DCHECK_NE(danger_type,

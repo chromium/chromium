@@ -50,6 +50,8 @@
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/download_item_utils.h"
 
+using DeepScanTrigger = DownloadItemWarningData::DeepScanTrigger;
+
 namespace safe_browsing {
 
 namespace {
@@ -255,14 +257,18 @@ EventResult GetEventResult(DownloadCheckResult download_result,
   return EventResult::UNKNOWN;
 }
 
-std::string GetTriggerName(DeepScanningRequest::DeepScanTrigger trigger) {
+std::string GetTriggerName(DeepScanTrigger trigger) {
   switch (trigger) {
-    case DeepScanningRequest::DeepScanTrigger::TRIGGER_UNKNOWN:
+    case DeepScanTrigger::TRIGGER_UNKNOWN:
       return "Unknown";
-    case DeepScanningRequest::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT:
+    case DeepScanTrigger::TRIGGER_CONSUMER_PROMPT:
       return "ConsumerPrompt";
-    case DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY:
+    case DeepScanTrigger::TRIGGER_POLICY:
       return "Policy";
+    case DeepScanTrigger::TRIGGER_ENCRYPTED_CONSUMER_PROMPT:
+      return "EncryptedConsumerPrompt";
+    case DeepScanTrigger::TRIGGER_IMMEDIATE_DEEP_SCAN:
+      return "ImmediateDeepScan";
   }
 }
 
@@ -298,7 +304,7 @@ void PromptForPassword(download::DownloadItem* item) {
 }
 
 void LogDeepScanResult(DownloadCheckResult download_result,
-                       DeepScanningRequest::DeepScanTrigger trigger,
+                       DeepScanTrigger trigger,
                        bool is_encrypted_archive) {
   base::UmaHistogramEnumeration(
       "SBClientDownload.MalwareDeepScanResult2." + GetTriggerName(trigger),
@@ -430,6 +436,7 @@ void DeepScanningRequest::Start() {
     return;
   }
 
+  DownloadItemWarningData::SetDeepScanTrigger(item_, trigger_);
   callback_.Run(DownloadCheckResult::ASYNC_SCANNING);
   if (save_package_files_.empty()) {
     StartSingleFileScan();
@@ -513,7 +520,7 @@ void DeepScanningRequest::StartSavePackageScan() {
 void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
                                           Profile* profile,
                                           const base::FilePath& path) {
-  if (trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
+  if (IsEnterpriseTriggered()) {
     if (analysis_settings_.cloud_or_local_settings.is_cloud_analysis()) {
       request->set_device_token(
           analysis_settings_.cloud_or_local_settings.dm_token());
@@ -549,7 +556,7 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
 void DeepScanningRequest::PrepareClientDownloadRequest(
     const base::FilePath& current_path,
     std::unique_ptr<FileAnalysisRequest> request) {
-  if (trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
+  if (IsEnterpriseTriggered()) {
     download_request_maker_ = DownloadRequestMaker::CreateFromDownloadItem(
         new BinaryFeatureExtractor(), item_);
     download_request_maker_->Start(base::BindOnce(
@@ -612,10 +619,12 @@ void DeepScanningRequest::OnScanComplete(
       /*total_size=*/item_->GetTotalBytes(), /*result=*/result,
       /*response=*/response);
 
-  if (trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT) {
+  if (IsConsumerTriggered()) {
     OnConsumerScanComplete(current_path, result, response);
-  } else {
+  } else if (IsEnterpriseTriggered()) {
     OnEnterpriseScanComplete(current_path, result, response);
+  } else {
+    NOTREACHED();
   }
 }
 
@@ -630,7 +639,7 @@ void DeepScanningRequest::OnConsumerScanComplete(
        HasDecryptionFailedResult(response));
   bool is_success =
       result == BinaryUploadService::Result::SUCCESS && !is_invalid_password;
-  CHECK_EQ(trigger_, DeepScanTrigger::TRIGGER_CONSUMER_PROMPT);
+  CHECK(IsConsumerTriggered());
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (is_success) {
     request_tokens_.push_back(response.request_token());
@@ -664,7 +673,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     const base::FilePath& current_path,
     BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  CHECK_EQ(trigger_, DeepScanTrigger::TRIGGER_POLICY);
+  CHECK(IsEnterpriseTriggered());
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (result == BinaryUploadService::Result::SUCCESS) {
     request_tokens_.push_back(response.request_token());
@@ -685,7 +694,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
       content::DownloadItemUtils::GetBrowserContext(item_));
   DCHECK(file_metadata_.count(current_path));
   file_metadata_.at(current_path).scan_response = std::move(response);
-  if (profile && trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
+  if (profile) {
     const auto& file_metadata = file_metadata_.at(current_path);
     report_callbacks_.AddUnsafe(base::BindOnce(
         &MaybeReportDeepScanningVerdict, profile, item_->GetURL(),
@@ -758,7 +767,7 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
   EventResult event_result = EventResult::UNKNOWN;
 
   if (!report_callbacks_.empty()) {
-    DCHECK_EQ(trigger_, DeepScanTrigger::TRIGGER_POLICY);
+    DCHECK(IsEnterpriseTriggered());
 
     if (ReportOnlyScan()) {
       // The event result in report-only will always match whatever danger type
@@ -785,7 +794,7 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
   // should be called with whatever SB result was known prior to deep scanning.
   if ((result == DownloadCheckResult::UNKNOWN ||
        result == DownloadCheckResult::DEEP_SCANNED_FAILED) &&
-      trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
+      IsEnterpriseTriggered()) {
     result = pre_scan_download_check_result_;
   }
 
@@ -804,7 +813,7 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
 }
 
 bool DeepScanningRequest::ReportOnlyScan() {
-  if (trigger_ == DeepScanTrigger::TRIGGER_CONSUMER_PROMPT) {
+  if (IsConsumerTriggered()) {
     return false;
   }
 
@@ -832,6 +841,30 @@ void DeepScanningRequest::AcknowledgeRequest(EventResult event_result) {
         enterprise_connectors::ContentAnalysisAcknowledgement::SUCCESS);
     ack->set_final_action(final_action);
     binary_upload_service->MaybeAcknowledge(std::move(ack));
+  }
+}
+
+bool DeepScanningRequest::IsConsumerTriggered() const {
+  switch (trigger_) {
+    case DeepScanTrigger::TRIGGER_UNKNOWN:
+    case DeepScanTrigger::TRIGGER_POLICY:
+      return false;
+    case DeepScanTrigger::TRIGGER_CONSUMER_PROMPT:
+    case DeepScanTrigger::TRIGGER_ENCRYPTED_CONSUMER_PROMPT:
+    case DeepScanTrigger::TRIGGER_IMMEDIATE_DEEP_SCAN:
+      return true;
+  }
+}
+
+bool DeepScanningRequest::IsEnterpriseTriggered() const {
+  switch (trigger_) {
+    case DeepScanTrigger::TRIGGER_UNKNOWN:
+    case DeepScanTrigger::TRIGGER_CONSUMER_PROMPT:
+    case DeepScanTrigger::TRIGGER_ENCRYPTED_CONSUMER_PROMPT:
+    case DeepScanTrigger::TRIGGER_IMMEDIATE_DEEP_SCAN:
+      return false;
+    case DeepScanTrigger::TRIGGER_POLICY:
+      return true;
   }
 }
 

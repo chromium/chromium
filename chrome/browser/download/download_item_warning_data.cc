@@ -15,6 +15,7 @@ using WarningAction = DownloadItemWarningData::WarningAction;
 using WarningActionEvent = DownloadItemWarningData::WarningActionEvent;
 using ClientSafeBrowsingReportRequest =
     safe_browsing::ClientSafeBrowsingReportRequest;
+using DeepScanTrigger = DownloadItemWarningData::DeepScanTrigger;
 
 namespace {
 constexpr int kWarningActionEventMaxLength = 20;
@@ -295,6 +296,24 @@ void DownloadItemWarningData::SetIsFullyExtractedArchive(
   }
 
   GetOrCreate(download)->fully_extracted_archive_ = extracted;
+}
+
+// static
+DeepScanTrigger DownloadItemWarningData::DownloadDeepScanTrigger(
+    const download::DownloadItem* download) {
+  return GetWithDefault(download, &DownloadItemWarningData::deep_scan_trigger_,
+                        DeepScanTrigger::TRIGGER_UNKNOWN);
+}
+
+// static
+void DownloadItemWarningData::SetDeepScanTrigger(
+    download::DownloadItem* download,
+    DeepScanTrigger trigger) {
+  if (!download) {
+    return;
+  }
+
+  GetOrCreate(download)->deep_scan_trigger_ = trigger;
 }
 
 DownloadItemWarningData::DownloadItemWarningData() = default;

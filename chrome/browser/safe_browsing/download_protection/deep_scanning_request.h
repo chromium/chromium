@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -36,23 +37,6 @@ class DownloadRequestMaker;
 // deep scanning and reporting the result.
 class DeepScanningRequest : public download::DownloadItem::Observer {
  public:
-  // Enum representing the trigger of the scan request.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class DeepScanTrigger {
-    // The trigger is unknown.
-    TRIGGER_UNKNOWN = 0,
-
-    // The trigger is the prompt in the download shelf, shown for Advanced
-    // Protection or Enhanced Protection users.
-    TRIGGER_CONSUMER_PROMPT = 1,
-
-    // The trigger is the enterprise policy.
-    TRIGGER_POLICY = 2,
-
-    kMaxValue = TRIGGER_POLICY,
-  };
-
   // Enum representing the type of constructor that initiated scanning.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -84,7 +68,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // will be provided through `callback`. Take a references to the owning
   // `download_service`.
   DeepScanningRequest(download::DownloadItem* item,
-                      DeepScanTrigger trigger,
+                      DownloadItemWarningData::DeepScanTrigger trigger,
                       DownloadCheckResult pre_scan_download_check_result,
                       CheckDownloadRepeatingCallback callback,
                       DownloadProtectionService* download_service,
@@ -192,12 +176,15 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // Acknowledge the request's handling to the service provider.
   void AcknowledgeRequest(EventResult event_result);
 
+  bool IsEnterpriseTriggered() const;
+  bool IsConsumerTriggered() const;
+
   // The download item to scan. This is unowned, and could become nullptr if the
   // download is destroyed.
   raw_ptr<download::DownloadItem> item_;
 
   // The reason for deep scanning.
-  DeepScanTrigger trigger_;
+  DownloadItemWarningData::DeepScanTrigger trigger_;
 
   // The callback to provide the scan result to.
   CheckDownloadRepeatingCallback callback_;

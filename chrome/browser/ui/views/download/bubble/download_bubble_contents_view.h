@@ -82,6 +82,7 @@ class DownloadBubbleContentsView : public views::View,
       DownloadItemWarningData::WarningAction action) override;
   void ProcessDeepScanPress(
       const ContentId& id,
+      DownloadItemWarningData::DeepScanTrigger trigger,
       base::optional_ref<const std::string> password) override;
   void ProcessLocalDecryptionPress(
       const offline_items_collection::ContentId& id,

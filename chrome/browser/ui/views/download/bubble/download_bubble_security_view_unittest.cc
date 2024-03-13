@@ -116,6 +116,7 @@ class MockDownloadBubbleSecurityViewDelegate
   }
 
   void ProcessDeepScanPress(const ContentId&,
+                            DownloadItemWarningData::DeepScanTrigger trigger,
                             base::optional_ref<const std::string>) override {}
   void ProcessLocalDecryptionPress(
       const offline_items_collection::ContentId& id,

@@ -481,6 +481,11 @@ chromium-metrics-reviews@google.com.
     <variant name="ConsumerPrompt"
         summary="Advanced Protection or Enhanced Protection user selected
                  'Scan'"/>
+    <variant name="EncryptedConsumerPrompt"
+        summary="Enhanced Protection user selected 'Scan' on an encrypted
+                 archive"/>
+    <variant name="ImmediateDeepScan"
+        summary="Enhanced Protection user began deep scanning automatically"/>
     <variant name="Policy" summary="Triggered by enterprise policy"/>
     <variant name="Unknown" summary="Unknown trigger"/>
   </token>

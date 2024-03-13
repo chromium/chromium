@@ -890,7 +890,9 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       break;
     case DownloadCommands::DEEP_SCAN: {
       safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
-          download_, /*password=*/std::nullopt);
+          download_,
+          DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT,
+          /*password=*/std::nullopt);
       break;
     }
     case DownloadCommands::CANCEL_DEEP_SCAN: {

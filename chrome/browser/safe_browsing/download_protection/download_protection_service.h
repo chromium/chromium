@@ -226,7 +226,7 @@ class DownloadProtectionService {
   void UploadForDeepScanning(
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback,
-      DeepScanningRequest::DeepScanTrigger trigger,
+      DownloadItemWarningData::DeepScanTrigger trigger,
       DownloadCheckResult download_check_result,
       enterprise_connectors::AnalysisSettings analysis_settings,
       base::optional_ref<const std::string> password);
@@ -234,6 +234,7 @@ class DownloadProtectionService {
   // Helper functions for encrypted archive scans.
   static void UploadForConsumerDeepScanning(
       download::DownloadItem* item,
+      DownloadItemWarningData::DeepScanTrigger trigger,
       base::optional_ref<const std::string> password);
   static void CheckDownloadWithLocalDecryption(
       download::DownloadItem* item,

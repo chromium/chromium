@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
@@ -847,7 +848,12 @@ bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
     return false;
   }
 
-  delegate_->ProcessDeepScanPress(content_id(), password);
+  DownloadItemWarningData::DeepScanTrigger trigger =
+      delegate_->IsEncryptedArchive(content_id())
+          ? DownloadItemWarningData::DeepScanTrigger::
+                TRIGGER_ENCRYPTED_CONSUMER_PROMPT
+          : DownloadItemWarningData::DeepScanTrigger::TRIGGER_CONSUMER_PROMPT;
+  delegate_->ProcessDeepScanPress(content_id(), trigger, password);
   bubble_delegate_->SizeToContents();
   return false;
 }

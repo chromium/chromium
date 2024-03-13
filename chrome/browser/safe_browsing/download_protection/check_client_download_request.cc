@@ -311,12 +311,13 @@ void CheckClientDownloadRequest::UploadBinary(
       reason == REASON_DOWNLOAD_DANGEROUS_ACCOUNT_COMPROMISE) {
     service()->UploadForDeepScanning(
         item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
-        DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY, result,
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY, result,
         std::move(settings), /*password=*/std::nullopt);
   } else {
     service()->UploadForDeepScanning(
-        item_, callback_, DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-        result, std::move(settings), /*password=*/std::nullopt);
+        item_, callback_,
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY, result,
+        std::move(settings), /*password=*/std::nullopt);
   }
 }
 

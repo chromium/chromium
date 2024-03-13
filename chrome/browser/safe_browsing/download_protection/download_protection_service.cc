@@ -257,7 +257,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
         base::BindRepeating(
             &DownloadProtectionService::MaybeCheckMetadataAfterDeepScanning,
             weak_ptr_factory_.GetWeakPtr(), item, std::move(callback)),
-        DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
         DownloadCheckResult::UNKNOWN, std::move(settings.value()),
         /*password=*/std::nullopt);
     return true;
@@ -273,11 +273,11 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
     DCHECK(!safe_browsing_enabled);
     // Since this branch implies that Safe Browsing is disabled, the pre-deep
     // scanning DownloadCheckResult is considered UNKNOWN.
-    UploadForDeepScanning(item, std::move(callback),
-                          DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
-                          DownloadCheckResult::UNKNOWN,
-                          std::move(settings.value()),
-                          /*password=*/std::nullopt);
+    UploadForDeepScanning(
+        item, std::move(callback),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::UNKNOWN, std::move(settings.value()),
+        /*password=*/std::nullopt);
     return true;
   }
 
@@ -787,7 +787,7 @@ bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
 void DownloadProtectionService::UploadForDeepScanning(
     download::DownloadItem* item,
     CheckDownloadRepeatingCallback callback,
-    DeepScanningRequest::DeepScanTrigger trigger,
+    DownloadItemWarningData::DeepScanTrigger trigger,
     DownloadCheckResult download_check_result,
     enterprise_connectors::AnalysisSettings analysis_settings,
     base::optional_ref<const std::string> password) {
@@ -814,6 +814,7 @@ void DownloadProtectionService::UploadForDeepScanning(
 // static
 void DownloadProtectionService::UploadForConsumerDeepScanning(
     download::DownloadItem* item,
+    DownloadItemWarningData::DeepScanTrigger trigger,
     base::optional_ref<const std::string> password) {
   if (!item) {
     return;
@@ -849,9 +850,7 @@ void DownloadProtectionService::UploadForConsumerDeepScanning(
       base::BindRepeating(
           &ChromeDownloadManagerDelegate::CheckClientDownloadDone,
           delegate->GetWeakPtr(), item->GetId()),
-      safe_browsing::DeepScanningRequest::DeepScanTrigger::
-          TRIGGER_CONSUMER_PROMPT,
-      safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings),
+      trigger, safe_browsing::DownloadCheckResult::UNKNOWN, std::move(settings),
       password);
 }
 

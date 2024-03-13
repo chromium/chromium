@@ -109,6 +109,31 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
                        bool is_terminal_action);
   };
 
+  // Enum representing the trigger of the scan request.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class DeepScanTrigger {
+    // The trigger is unknown.
+    TRIGGER_UNKNOWN = 0,
+
+    // The trigger is the standard prompt in the download bubble,
+    // shown for Advanced Protection or Enhanced Protection users.
+    TRIGGER_CONSUMER_PROMPT = 1,
+
+    // The trigger is the enterprise policy.
+    TRIGGER_POLICY = 2,
+
+    // The trigger is the encrypted archive prompt in the download
+    // bubble, which requires the password as well as the file.
+    TRIGGER_ENCRYPTED_CONSUMER_PROMPT = 3,
+
+    // The trigger is automatic deep scanning, with no prompt, which
+    // applies only to Enhanced Protection users.
+    TRIGGER_IMMEDIATE_DEEP_SCAN = 4,
+
+    kMaxValue = TRIGGER_IMMEDIATE_DEEP_SCAN,
+  };
+
   ~DownloadItemWarningData() override;
 
   // Gets all warning actions associated with this `download`. Returns an
@@ -146,6 +171,12 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   static void SetHasShownLocalDecryptionPrompt(download::DownloadItem* download,
                                                bool has_shown);
 
+  // Returns the reason we initiated deep scanning for the download.
+  static DeepScanTrigger DownloadDeepScanTrigger(
+      const download::DownloadItem* download);
+  static void SetDeepScanTrigger(download::DownloadItem* download,
+                                 DeepScanTrigger trigger);
+
   // Returns whether an encrypted archive was fully extracted.
   static bool IsFullyExtractedArchive(const download::DownloadItem* download);
   static void SetIsFullyExtractedArchive(download::DownloadItem* download,
@@ -173,6 +204,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   // Whether a "shown" event has been logged for the Downloads Page for this
   // download. Not persisted across restarts.
   bool logged_downloads_page_shown_ = false;
+  DeepScanTrigger deep_scan_trigger_ = DeepScanTrigger::TRIGGER_UNKNOWN;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WARNING_DATA_H_
