@@ -46,22 +46,32 @@ id<GREYMatcher> ExpandedManualFillView() {
   return grey_accessibilityID(manual_fill::kExpandedManualFillViewID);
 }
 
+id<GREYMatcher> ExpandedManualFillHeaderView() {
+  return grey_accessibilityID(manual_fill::kExpandedManualFillHeaderViewID);
+}
+
 // Matcher for the segmented control's password tab.
 id<GREYMatcher> SegmentedControlPasswordTab() {
-  return grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL));
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL)),
+      grey_ancestor(ExpandedManualFillHeaderView()), nil);
 }
 
 // Matcher for the segmented control's payment method tab.
 id<GREYMatcher> SegmentedControlPaymentMethodTab() {
-  return grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL));
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL)),
+      grey_ancestor(ExpandedManualFillHeaderView()), nil);
 }
 
 // Matcher for the segmented control's address tab.
 id<GREYMatcher> SegmentedControlAddressTab() {
-  return grey_accessibilityLabel(l10n_util::GetNSString(
-      IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL));
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL)),
+      grey_ancestor(ExpandedManualFillHeaderView()), nil);
 }
 
 // Matcher for the keyboard accessory's manual fill button.
@@ -78,9 +88,7 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestionChip() {
 // Checks that the header view is as expected according to whether or not the
 // device is in landscape mode.
 void CheckHeader(bool is_landscape) {
-  id<GREYMatcher> header_view =
-      grey_accessibilityID(manual_fill::kExpandedManualFillHeaderViewID);
-  [[EarlGrey selectElementWithMatcher:header_view]
+  [[EarlGrey selectElementWithMatcher:ExpandedManualFillHeaderView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // The header's top view should only be part of the UI when in portrait mode.

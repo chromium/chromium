@@ -5912,12 +5912,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Dismiss expanded view
       </message>
       <message name="IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's password tab.">
-        Google Password Manager
+        Passwords
       </message>
-            <message name="IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's payment method tab.">
+      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's payment method tab.">
         Payment methods
       </message>
-            <message name="IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's address tab.">
+      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's address tab.">
         Addresses and more
       </message>
     </messages>
