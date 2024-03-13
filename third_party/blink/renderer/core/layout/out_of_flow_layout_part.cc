@@ -189,14 +189,18 @@ class OOFCandidateStyleIterator {
          ++*try_option_index_) {
       const PositionTryOption& option =
           position_try_options_->GetOptions()[*try_option_index_];
-      // TODO(crbug.com/40279608): Handle flip-block/inline/start values.
+      const CSSPropertyValueSet* properties = nullptr;
       if (const ScopedCSSName* name = option.GetPositionTryName()) {
-        if (const StyleRulePositionTry* rule = GetPositionTryRule(*name)) {
-          style_ = UpdateStyle(&rule->Properties());
-          CHECK(style_);
-          return true;
+        const StyleRulePositionTry* rule = GetPositionTryRule(*name);
+        if (!rule) {
+          // @position-try option does not exist.
+          continue;
         }
+        properties = &rule->Properties();
       }
+      style_ = UpdateStyle(properties, option.GetTryTactic());
+      CHECK(style_);
+      return true;
     }
     return false;
   }
@@ -204,7 +208,7 @@ class OOFCandidateStyleIterator {
   void MoveToStyleWithoutOptions() {
     CHECK(element_);
     CHECK(position_try_options_);
-    style_ = UpdateStyle(/* try_set */ nullptr);
+    style_ = UpdateStyle(/* try_set */ nullptr, kNoTryTactics);
   }
 
  private:
@@ -219,7 +223,7 @@ class OOFCandidateStyleIterator {
       // Note that UpdateStyle returns early without any update
       // if the incoming try_set matches the set on OutOfFlowData
       // (including the case where both are nullptr).
-      style_ = UpdateStyle(/* try_set */ nullptr);
+      style_ = UpdateStyle(/* try_set */ nullptr, kNoTryTactics);
     }
   }
 
@@ -230,7 +234,8 @@ class OOFCandidateStyleIterator {
         scoped_name);
   }
 
-  const ComputedStyle* UpdateStyle(const CSSPropertyValueSet* try_set) {
+  const ComputedStyle* UpdateStyle(const CSSPropertyValueSet* try_set,
+                                   const TryTacticList& tactic_list) {
     CHECK(element_);
     if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()) {
       StyleEngine& style_engine = element_->GetDocument().GetStyleEngine();
@@ -238,7 +243,7 @@ class OOFCandidateStyleIterator {
           RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled()
               ? anchor_evaluator_
               : nullptr;
-      style_engine.UpdateStyleForOutOfFlow(*element_, try_set,
+      style_engine.UpdateStyleForOutOfFlow(*element_, try_set, tactic_list,
                                            anchor_evaluator);
     }
     CHECK(element_->GetLayoutObject());
@@ -247,7 +252,6 @@ class OOFCandidateStyleIterator {
     // propagation of writing modes.
     return element_->GetLayoutObject()->Style();
   }
-
   Element* element_ = nullptr;
 
   // The current candidate style if no auto anchor fallback is triggered.

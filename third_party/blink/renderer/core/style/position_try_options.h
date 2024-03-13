@@ -17,6 +17,9 @@ namespace blink {
 // in the order they were specified.
 using TryTacticList = std::array<TryTactic, 3>;
 
+static inline constexpr TryTacticList kNoTryTactics = {
+    TryTactic::kNone, TryTactic::kNone, TryTactic::kNone};
+
 class CORE_EXPORT PositionTryOption {
   DISALLOW_NEW();
 

@@ -1221,7 +1221,8 @@ const CSSValue* StyleCascade::ResolveFlipRevert(const CSSFlipRevertValue& value,
                                                 CascadePriority priority,
                                                 CascadeOrigin& origin,
                                                 CascadeResolver& resolver) {
-  const CSSProperty& property = CSSProperty::Get(value.PropertyID());
+  const CSSProperty& property =
+      ResolveSurrogate(CSSProperty::Get(value.PropertyID()));
   // TODO(crbug.com/40279608): Transform the result before returning.
   return ResolveRevertLayer(property, priority, origin, resolver);
 }

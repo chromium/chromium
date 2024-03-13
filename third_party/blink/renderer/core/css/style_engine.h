@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
+#include "third_party/blink/renderer/core/style/position_try_options.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -613,10 +614,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // after all.
   void UpdateStyleForNonEligibleContainer(Element& container);
   // Updates the style of `element`, and descendants if needed.
-  // The provided `try_set` represents the declaration block from a
-  // @position-try rule.
+  // The provided `try_set` represents the declaration block from
+  // a @position-try rule. The specified TryTacticList will cause
+  // CSSFlipRevertValues to appear in the try-tactics layer (see
+  // OutOfFlowData::try_tactics_set_).
   void UpdateStyleForOutOfFlow(Element& element,
                                const CSSPropertyValueSet* try_set,
+                               const TryTacticList&,
                                AnchorEvaluator*);
   StyleRulePositionFallback* GetPositionFallbackRule(const ScopedCSSName&);
   StyleRulePositionTry* GetPositionTryRule(const ScopedCSSName&);

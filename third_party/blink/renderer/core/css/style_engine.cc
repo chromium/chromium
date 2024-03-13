@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/css/style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/css/try_value_flips.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
@@ -3469,20 +3470,36 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
 void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
                                           const CSSPropertyValueSet* try_set,
+                                          const TryTacticList& tactic_list,
                                           AnchorEvaluator* anchor_evaluator) {
   // Note that we enter this function for any OOF element, not just those that
   // use position-try-options. Therefore, it's important to return immediately
   // without doing any work when `try_set` and `existing_try_set` both are
   // nullptr.
 
+  const CSSPropertyValueSet* existing_try_set = nullptr;
+  const CSSPropertyValueSet* existing_try_tactics_set = nullptr;
+
   OutOfFlowData* out_of_flow_data = element.GetOutOfFlowData();
-  const CSSPropertyValueSet* existing_try_set =
-      out_of_flow_data ? out_of_flow_data->GetTryPropertyValueSet() : nullptr;
+  if (out_of_flow_data) {
+    existing_try_set = out_of_flow_data->GetTryPropertyValueSet();
+    existing_try_tactics_set =
+        out_of_flow_data->GetTryTacticsPropertyValueSet();
+  }
+
+  // TODO(crbug.com/40279608): Store on StyleEngine to allow caching.
+  TryValueFlips flips;
+  const CSSPropertyValueSet* try_tactics_set = flips.FlipSet(tactic_list);
 
   bool needs_update = false;
 
   if (existing_try_set != try_set) {
     element.EnsureOutOfFlowData().SetTryPropertyValueSet(try_set);
+    needs_update = true;
+  }
+  if (existing_try_tactics_set != try_tactics_set) {
+    element.EnsureOutOfFlowData().SetTryTacticsPropertyValueSet(
+        try_tactics_set);
     needs_update = true;
   }
   if (element.ComputedStyleRef().HasAnchorFunctions()) {
