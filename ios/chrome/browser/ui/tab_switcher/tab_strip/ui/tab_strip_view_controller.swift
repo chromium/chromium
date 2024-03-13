@@ -24,6 +24,8 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     UICollectionViewDiffableDataSource<Section, TabStripItemIdentifier>?
   private var tabCellRegistration:
     UICollectionView.CellRegistration<TabStripTabCell, TabStripItemIdentifier>?
+  private var groupCellRegistration:
+    UICollectionView.CellRegistration<TabStripGroupCell, TabStripItemIdentifier>?
 
   // The New tab button.
   private let newTabButton: TabStripNewTabButton = TabStripNewTabButton()
@@ -365,10 +367,11 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     {
       (cell, indexPath, item) in
       guard let item = item.tabSwitcherItem else { return }
-      cell.setTitle(item.title)
+      cell.title = item.title
       cell.loading = item.showsActivity
       cell.delegate = self
-      cell.accessibilityIdentifier = self.tabTripCellAccessibilityIdentifier(index: indexPath.item)
+      cell.accessibilityIdentifier = self.tabTripTabCellAccessibilityIdentifier(
+        index: indexPath.item)
       cell.item = item
 
       item.fetchFavicon { (item: TabSwitcherItem?, image: UIImage?) -> Void in
@@ -378,11 +381,22 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
       }
     }
 
+    groupCellRegistration = UICollectionView.CellRegistration<
+      TabStripGroupCell, TabStripItemIdentifier
+    > {
+      (cell, indexPath, item) in
+      guard let item = item.tabGroupItem else { return }
+      cell.title = item.title
+      cell.groupColor = item.groupColor
+      cell.accessibilityIdentifier = self.tabTripGroupCellAccessibilityIdentifier(
+        index: indexPath.item)
+    }
+
     // UICollectionViewDropPlaceholder uses a TabStripTabCell and needs the class to be
     // registered.
     collectionView.register(
       TabStripTabCell.self,
-      forCellWithReuseIdentifier: TabStripConstants.CollectionView.tabStripCellReuseIdentifier)
+      forCellWithReuseIdentifier: TabStripConstants.CollectionView.tabStripTabCellReuseIdentifier)
   }
 
   /// Retuns the cell to be used in the collection view.
@@ -390,27 +404,49 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: TabStripItemIdentifier
   ) -> UICollectionViewCell? {
     let sectionIdentifier = diffableDataSource?.sectionIdentifier(for: indexPath.section)
-    guard let sectionIdentifier = sectionIdentifier, let tabCellRegistration = tabCellRegistration
+    guard let sectionIdentifier = sectionIdentifier, let tabCellRegistration = tabCellRegistration,
+      let groupCellRegistration = groupCellRegistration
     else {
       return nil
     }
     switch sectionIdentifier {
     case .tabs:
-      return collectionView.dequeueConfiguredReusableCell(
-        using: tabCellRegistration,
-        for: indexPath,
-        item: itemIdentifier)
+      switch itemIdentifier.item {
+      case .tab(_):
+        return collectionView.dequeueConfiguredReusableCell(
+          using: tabCellRegistration,
+          for: indexPath,
+          item: itemIdentifier)
+      case .group(_):
+        return collectionView.dequeueConfiguredReusableCell(
+          using: groupCellRegistration,
+          for: indexPath,
+          item: itemIdentifier)
+      }
     }
   }
 
   /// Returns a UIMenu for the context menu to be displayed at `indexPath`.
   private func contextMenuForIndexPath(_ indexPath: IndexPath) -> UIMenu {
     let selectedItem = diffableDataSource?.itemIdentifier(for: indexPath)
-    guard let selectedItem = selectedItem?.tabSwitcherItem else {
-      // TODO(crbug.com/41481950): Add context menu for group items.
+    switch selectedItem?.item {
+    case .tab(let tabSwitcherItem):
+      return contextMenuForTabSwitcherItem(tabSwitcherItem, at: indexPath)
+    case .group(let tabGroupItem):
+      return contextMenuForTabGroupItem(tabGroupItem, at: indexPath)
+    case nil:
       return UIMenu()
     }
 
+  }
+
+  /// Returns a UIMenu for the context menu to be displayed at `indexPath` for a tab item.
+  private func contextMenuForTabSwitcherItem(
+    _ tabSwitcherItem: TabSwitcherItem, at indexPath: IndexPath
+  )
+    -> UIMenu
+  {
+    let selectedItem = tabSwitcherItem
     let actionFactory = ActionFactory(scenario: kMenuScenarioHistogramTabStripEntry)
     weak var weakSelf = self
 
@@ -434,19 +470,39 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     return UIMenu(children: [share, closeActions])
   }
 
+  /// Returns a UIMenu for the context menu to be displayed at `indexPath` for a group item.
+  private func contextMenuForTabGroupItem(_ tabGroupItem: TabGroupItem, at indexPath: IndexPath)
+    -> UIMenu
+  {
+    return UIMenu()
+  }
+
   // Update visible cells identifier, following a reorg of cells.
   func updateVisibleCellIdentifiers() {
     for indexPath in collectionView.indexPathsForVisibleItems {
-      if let cell = collectionView.cellForItem(at: indexPath) {
-        cell.accessibilityIdentifier = tabTripCellAccessibilityIdentifier(index: indexPath.item)
+      switch collectionView.cellForItem(at: indexPath) {
+      case let tabCell as TabStripTabCell:
+        tabCell.accessibilityIdentifier = tabTripTabCellAccessibilityIdentifier(
+          index: indexPath.item)
+      case let groupCell as TabStripGroupCell:
+        groupCell.accessibilityIdentifier = tabTripGroupCellAccessibilityIdentifier(
+          index: indexPath.item)
+      default:
+        continue
       }
     }
   }
 
-  /// Returns the accessibility identifier to set on a TabStripTabCell when positioned at the given index.
-  func tabTripCellAccessibilityIdentifier(index: Int) -> String {
-    return String(
-      format: "%@%ld", TabStripConstants.CollectionView.tabStripCellPrefixIdentifier, index)
+  // Returns the accessibility identifier to set on a TabStripTabCell when
+  // positioned at the given index.
+  func tabTripTabCellAccessibilityIdentifier(index: Int) -> String {
+    return "\(TabStripConstants.CollectionView.tabStripTabCellPrefixIdentifier)\(index)"
+  }
+
+  // Returns the accessibility identifier to set on a TabStripGroupCell when
+  // positioned at the given index.
+  func tabTripGroupCellAccessibilityIdentifier(index: Int) -> String {
+    return "\(TabStripConstants.CollectionView.tabStripGroupCellPrefixIdentifier)\(index)"
   }
 
   /// Scrolls the collection view to the given horizontal `offset`.
@@ -566,7 +622,14 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     layout collectionViewLayout: UICollectionViewLayout,
     sizeForItemAt indexPath: IndexPath
   ) -> CGSize {
-    return layout.calculcateCellSize(indexPath: indexPath)
+    switch diffableDataSource?.itemIdentifier(for: indexPath)?.item {
+    case .tab(let tabSwitcherItem):
+      return layout.calculateCellSizeForTabSwitcherItem(tabSwitcherItem)
+    case .group(let tabGroupItem):
+      return layout.calculateCellSizeForTabGroupItem(tabGroupItem)
+    case nil:
+      return CGSizeZero
+    }
   }
 
 }
@@ -703,7 +766,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
         // Drop asynchronously if local object is not available.
         let placeholder: UICollectionViewDropPlaceholder = UICollectionViewDropPlaceholder(
           insertionIndexPath: dropIndexPah,
-          reuseIdentifier: TabStripConstants.CollectionView.tabStripCellReuseIdentifier)
+          reuseIdentifier: TabStripConstants.CollectionView.tabStripTabCellReuseIdentifier)
         placeholder.previewParametersProvider = {
           (placeholderCell: UICollectionViewCell) -> UIDragPreviewParameters? in
           guard let tabStripCell = placeholderCell as? TabStripTabCell else {

@@ -40,6 +40,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     super.init()
     scrollDirection = .horizontal
     minimumLineSpacing = TabStripConstants.TabItem.horizontalSpacing
+    minimumInteritemSpacing = TabStripConstants.TabItem.horizontalSpacing
     sectionInset = UIEdgeInsets(
       top: TabStripConstants.CollectionView.topInset,
       left: TabStripConstants.CollectionView.horizontalInset,
@@ -138,54 +139,64 @@ class TabStripLayout: UICollectionViewFlowLayout {
     guard
       let attributes: UICollectionViewLayoutAttributes = super
         .initialLayoutAttributesForAppearingItem(at: itemIndexPath),
-      let selectedAttributes: UICollectionViewLayoutAttributes = layoutAttributesForSelectedCell(
-        layoutAttributes: attributes)
+      let itemIdentifier = dataSource?.itemIdentifier(for: itemIndexPath)
     else { return nil }
-
-    // Animate the appearing item by starting it with zero opacity and
-    // translated down by its height.
-    selectedAttributes.alpha = 0
-    selectedAttributes.transform = CGAffineTransform(
-      translationX: 0,
-      y: attributes.frame.size.height)
-    return selectedAttributes
+    switch itemIdentifier.item {
+    case .tab(let tabSwitcherItem):
+      return initialLayoutAttributesForAppearingTabSwitcherItem(
+        tabSwitcherItem, at: itemIndexPath, attributes: attributes)
+    case .group(let tabGroupItem):
+      return initialLayoutAttributesForAppearingTabGroupItem(
+        tabGroupItem, at: itemIndexPath, attributes: attributes)
+    }
   }
 
   override func finalLayoutAttributesForDisappearingItem(at itemIndexPath: IndexPath)
     -> UICollectionViewLayoutAttributes?
   {
     guard
-      var attributes: UICollectionViewLayoutAttributes =
+      let itemIdentifier = dataSource?.itemIdentifier(for: itemIndexPath),
+      let attributes: UICollectionViewLayoutAttributes =
         super.finalLayoutAttributesForDisappearingItem(at: itemIndexPath)
     else { return nil }
 
-    /// Update `attributes` if the disappearing cell is selected.
-    if let selectedAttributes = self.layoutAttributesForSelectedCell(
-      layoutAttributes: attributes)
-    {
-      attributes = selectedAttributes
+    switch itemIdentifier.item {
+    case .tab(let tabSwitcherItem):
+      return finalLayoutAttributesForDisappearingTabSwitcherItem(
+        tabSwitcherItem, at: itemIndexPath, attributes: attributes)
+    case .group(let tabGroupItem):
+      return finalLayoutAttributesForDisappearingTabGroupItem(
+        tabGroupItem, at: itemIndexPath, attributes: attributes)
     }
-
-    if indexPathsOfDeletingItems.contains(itemIndexPath) {
-      // Animate the disappearing item by fading it out and translating it down
-      // by its height.
-      attributes.alpha = 0
-      attributes.transform = CGAffineTransform(
-        translationX: 0,
-        y: attributes.frame.size.height
-      )
-    }
-    return attributes
   }
 
   override func layoutAttributesForItem(at indexPath: IndexPath)
     -> UICollectionViewLayoutAttributes?
   {
     guard
+      let itemIdentifier = dataSource?.itemIdentifier(for: indexPath),
       let layoutAttributes = super.layoutAttributesForItem(at: indexPath),
       let collectionView = collectionView
     else { return nil }
 
+    switch itemIdentifier.item {
+    case .tab(let tabSwitcherItem):
+      return layoutAttributesForTabSwitcherItem(
+        tabSwitcherItem, at: indexPath, layoutAttributes: layoutAttributes,
+        collectionView: collectionView)
+    case .group(let tabGroupItem):
+      return layoutAttributesForTabGroupItem(
+        tabGroupItem, at: indexPath, layoutAttributes: layoutAttributes,
+        collectionView: collectionView)
+    }
+  }
+
+  private func layoutAttributesForTabSwitcherItem(
+    _ tabSwitcherItem: TabSwitcherItem, at indexPath: IndexPath,
+    layoutAttributes: UICollectionViewLayoutAttributes, collectionView: UICollectionView
+  )
+    -> UICollectionViewLayoutAttributes?
+  {
     /// Early return the updated `selectedAttributes` if the cell is selected.
     if let selectedAttributes = self.layoutAttributesForSelectedCell(
       layoutAttributes: layoutAttributes)
@@ -319,6 +330,15 @@ class TabStripLayout: UICollectionViewFlowLayout {
     return layoutAttributes
   }
 
+  private func layoutAttributesForTabGroupItem(
+    _ tabGroupItem: TabGroupItem, at indexPath: IndexPath,
+    layoutAttributes: UICollectionViewLayoutAttributes, collectionView: UICollectionView
+  )
+    -> UICollectionViewLayoutAttributes?
+  {
+    return layoutAttributes
+  }
+
   override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]?
   {
     let rectToConsider = CGRectInset(rect, -2 * TabStripConstants.TabItem.maxWidth, 0)
@@ -348,6 +368,37 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// Animation block executed when `newTabButtonLeadingConstraint` is updated.
   private func newTabButtonConstraintUpdateAnimationBlock() {
     newTabButton?.superview?.layoutIfNeeded()
+  }
+
+  /// Returns the initial layout attributes for an appearing `TabSwitcherItem`.
+  private func initialLayoutAttributesForAppearingTabSwitcherItem(
+    _ tabSwitcherItem: TabSwitcherItem, at itemIndexPath: IndexPath,
+    attributes: UICollectionViewLayoutAttributes
+  )
+    -> UICollectionViewLayoutAttributes?
+  {
+    guard
+      let selectedAttributes: UICollectionViewLayoutAttributes = layoutAttributesForSelectedCell(
+        layoutAttributes: attributes)
+    else { return nil }
+
+    // Animate the appearing item by starting it with zero opacity and
+    // translated down by its height.
+    selectedAttributes.alpha = 0
+    selectedAttributes.transform = CGAffineTransform(
+      translationX: 0,
+      y: attributes.frame.size.height)
+    return selectedAttributes
+  }
+
+  /// Returns the initial layout attributes for an appearing `TabGroupItem`.
+  private func initialLayoutAttributesForAppearingTabGroupItem(
+    _ tabGroupItem: TabGroupItem, at itemIndexPath: IndexPath,
+    attributes: UICollectionViewLayoutAttributes
+  )
+    -> UICollectionViewLayoutAttributes?
+  {
+    return attributes
   }
 
   /// Updates and returns the given `layoutAttributes` if the cell is selected.
@@ -447,6 +498,43 @@ class TabStripLayout: UICollectionViewFlowLayout {
     return layoutAttributes
   }
 
+  /// Returns the final layout attributes for an disappearing `TabSwitcherItem`.
+  private func finalLayoutAttributesForDisappearingTabSwitcherItem(
+    _ tabSwitcherItem: TabSwitcherItem, at itemIndexPath: IndexPath,
+    attributes: UICollectionViewLayoutAttributes
+  )
+    -> UICollectionViewLayoutAttributes?
+  {
+    var attributes = attributes
+    /// Update `attributes` if the disappearing cell is selected.
+    if let selectedAttributes = self.layoutAttributesForSelectedCell(
+      layoutAttributes: attributes)
+    {
+      attributes = selectedAttributes
+    }
+
+    if indexPathsOfDeletingItems.contains(itemIndexPath) {
+      // Animate the disappearing item by fading it out and translating it down
+      // by its height.
+      attributes.alpha = 0
+      attributes.transform = CGAffineTransform(
+        translationX: 0,
+        y: attributes.frame.size.height
+      )
+    }
+    return attributes
+  }
+
+  /// Returns the final layout attributes for an disappearing `TabGroupItem`.
+  private func finalLayoutAttributesForDisappearingTabGroupItem(
+    _ tabGroupItem: TabGroupItem, at itemIndexPath: IndexPath,
+    attributes: UICollectionViewLayoutAttributes
+  )
+    -> UICollectionViewLayoutAttributes?
+  {
+    return attributes
+  }
+
   /// This function calculates the separator height value for a given
   /// `frameWidth`. The returned value will always be within the range of
   /// `regularSeparatorHeight` and `minSeparatorHeight`.
@@ -484,7 +572,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
       return
     }
 
-    let groupCellWidthSum: CGFloat = 0
+    var groupCellWidthSum: CGFloat = 0
     var tabCellCount: CGFloat = 0
     let cellCount: CGFloat = CGFloat(snapshot.itemIdentifiers.count)
 
@@ -492,9 +580,13 @@ class TabStripLayout: UICollectionViewFlowLayout {
       return
     }
 
-    for _ in snapshot.itemIdentifiers {
-      // TODO(crbug.com/1509342): Handle tab group item.
-      tabCellCount += 1
+    for itemIdentifier in snapshot.itemIdentifiers {
+      switch itemIdentifier.item {
+      case .tab(_):
+        tabCellCount += 1
+      case .group(let tabGroupItem):
+        groupCellWidthSum += calculateCellSizeForTabGroupItem(tabGroupItem).width
+      }
     }
 
     let collectionViewWidth: CGFloat = CGRectGetWidth(collectionView.bounds)
@@ -509,9 +601,17 @@ class TabStripLayout: UICollectionViewFlowLayout {
     tabCellSize = CGSize(width: itemWidth, height: TabStripConstants.TabItem.height)
   }
 
-  public func calculcateCellSize(indexPath: IndexPath) -> CGSize {
-    // TODO(crbug.com/1509342): Handle tab group item.
+  public func calculateCellSizeForTabSwitcherItem(_ tabSwitcherItem: TabSwitcherItem) -> CGSize {
     return tabCellSize
+  }
+
+  public func calculateCellSizeForTabGroupItem(_ tabGroupItem: TabGroupItem) -> CGSize {
+    var width = tabGroupItem.title.size(withAttributes: [
+      .font: UIFont.systemFont(ofSize: TabStripConstants.GroupItem.fontSize, weight: .medium)
+    ]).width
+    width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalMargin
+    width += 2 * TabStripConstants.GroupItem.titleContainerHorizontalPadding
+    return CGSize(width: width, height: TabStripConstants.GroupItem.height)
   }
 
 }

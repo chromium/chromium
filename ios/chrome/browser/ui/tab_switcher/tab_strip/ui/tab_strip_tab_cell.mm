@@ -180,15 +180,6 @@ UIImage* DefaultFavicon() {
   return self;
 }
 
-- (void)setTitle:(NSString*)title {
-  self.accessibilityLabel = title;
-
-  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
-  _titleLabel.text = [title copy];
-  _titleLabel.textAlignment = titleTextAligment;
-  [self updateTitleGradientViewConstraints];
-}
-
 - (void)setFaviconImage:(UIImage*)image {
   if (!image) {
     _faviconView.image = DefaultFavicon();
@@ -207,6 +198,15 @@ UIImage* DefaultFavicon() {
 }
 
 #pragma mark - Setters
+
+- (void)setTitle:(NSString*)title {
+  [super setTitle:title];
+  self.accessibilityLabel = title;
+  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
+  _titleLabel.text = [title copy];
+  _titleLabel.textAlignment = titleTextAligment;
+  [self updateTitleGradientViewConstraints];
+}
 
 - (void)setLoading:(BOOL)loading {
   if (_loading == loading) {
@@ -323,7 +323,6 @@ UIImage* DefaultFavicon() {
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  _titleLabel.text = nil;
   self.selected = NO;
   [self setFaviconImage:nil];
   self.item = nil;

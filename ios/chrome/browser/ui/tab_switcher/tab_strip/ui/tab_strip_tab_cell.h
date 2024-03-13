@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_TAB_CELL_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_TAB_CELL_H_
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_cell.h"
+
 #import <UIKit/UIKit.h>
 
 @class TabStripTabCell;
@@ -15,9 +17,9 @@
 - (void)closeButtonTappedForCell:(TabStripTabCell*)cell;
 @end
 
-// UICollectionViewCell that contains a Tab title with a leading imageView
-// and a close tab button.
-@interface TabStripTabCell : UICollectionViewCell <UIPointerInteractionDelegate>
+// TabStripCell that contains a Tab title with a leading imageView and a close
+// tab button.
+@interface TabStripTabCell : TabStripCell <UIPointerInteractionDelegate>
 
 // Delegate to inform the TabStrip on the cell.
 @property(nonatomic, weak) id<TabStripTabCellDelegate> delegate;

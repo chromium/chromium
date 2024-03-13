@@ -9,8 +9,9 @@ struct TabStripConstants {
 
   /// Collection view constants.
   struct CollectionView {
-    static let tabStripCellReuseIdentifier = "tabStripCellReuseIdentifier"
-    static let tabStripCellPrefixIdentifier = "tabStripCellPrefixIdentifier"
+    static let tabStripTabCellReuseIdentifier = "tabStripTabCellReuseIdentifier"
+    static let tabStripTabCellPrefixIdentifier = "tabStripTabCellPrefixIdentifier"
+    static let tabStripGroupCellPrefixIdentifier = "tabStripGroupCellPrefixIdentifier"
     static let topInset: CGFloat = 4
     static let horizontalInset: CGFloat = 16
     static let scrollDelayAfterInsert: DispatchTimeInterval = .milliseconds(500)
@@ -26,6 +27,16 @@ struct TabStripConstants {
     static let horizontalInset: CGFloat = 4
     static let horizontalSelectedInset: CGFloat = 4
     static let selectedZIndex: Int = 10
+  }
+
+  /// Group item constants.
+  struct GroupItem {
+    static let height: CGFloat = TabItem.height
+    static let titleContainerCornerRadius: CGFloat = 12
+    static let titleContainerHorizontalPadding: CGFloat = 10
+    static let titleContainerVerticalPadding: CGFloat = 4
+    static let titleContainerHorizontalMargin: CGFloat = 4
+    static let fontSize: CGFloat = 14
   }
 
   /// New tab button constants.
