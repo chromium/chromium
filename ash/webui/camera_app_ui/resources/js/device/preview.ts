@@ -47,6 +47,7 @@ import {
   Mode,
   PreviewVideo,
   Resolution,
+  ViewName,
 } from '../type.js';
 import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
@@ -129,6 +130,17 @@ export class Preview {
 
   private readonly digitalZoomFlag =
       loadTimeData.getChromeFlag(Flag.DIGITAL_ZOOM);
+
+  /**
+   * Triggered when the screen orientation is updated.
+   */
+  private readonly orientationListener =
+      queuedAsyncCallback('keepLatest', async () => {
+        if (this.ptzController !== null) {
+          await this.ptzController.handleScreenRotationUpdated();
+          nav.close(ViewName.PTZ_PANEL);
+        }
+      });
 
   /**
    * PTZController for the current stream constraint. Null if PTZ is not
@@ -396,6 +408,8 @@ export class Preview {
       this.updateFacing();
       this.deviceId = getVideoTrackSettings(this.getVideoTrack()).deviceId;
       await this.updatePTZ();
+      window.screen.orientation.addEventListener(
+          'change', this.orientationListener);
 
       this.enableFaceOverlay = false;
       const deviceOperator = DeviceOperator.getInstance();
@@ -412,6 +426,11 @@ export class Preview {
                   'The camera is probably being used by another app.'));
         } else {
           this.enableFaceOverlay = true;
+          // Camera frame rotation value is updated once
+          // |setCameraFrameRotationEnabledAtSource| is called.
+          if (this.ptzController !== null) {
+            await this.ptzController.handleScreenRotationUpdated();
+          }
         }
         this.vidPid = await deviceOperator.getVidPid(deviceId);
       }
@@ -447,6 +466,8 @@ export class Preview {
     this.clearWatchdog();
     // Pause video element to avoid black frames during transition.
     this.video.pause();
+    window.screen.orientation.removeEventListener(
+        'change', this.orientationListener);
     this.disableShowMetadata();
     this.enableFaceOverlay = false;
     if (this.streamInternal !== null && this.isStreamAlive()) {

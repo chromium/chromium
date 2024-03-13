@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertExists} from '../assert.js';
+import {assert, assertExists, assertNotReached} from '../assert.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {CropRegionRect, Resolution} from '../type.js';
@@ -23,6 +23,15 @@ interface PTZSettings {
   pan?: number;
   tilt?: number;
   zoom?: number;
+}
+
+/**
+ * All pan, tilt, and zoom values must be non-empty.
+ */
+interface StrictPTZSettings {
+  pan: number;
+  tilt: number;
+  zoom: number;
 }
 
 export interface PTZController {
@@ -52,8 +61,13 @@ export interface PTZController {
   getSettings(): PTZSettings;
 
   /**
-   * Returns whether pan and tilt functionalities are disabled when the video is
-   * fully zoomed out.
+   * Updates PTZ settings when the screen is rotated.
+   */
+  handleScreenRotationUpdated(): Promise<void>;
+
+  /**
+   * Returns whether pan and tilt functionalities are disabled when the
+   * video is fully zoomed out.
    */
   isPanTiltRestricted(): boolean;
 
@@ -117,6 +131,10 @@ export class MediaStreamPTZController implements PTZController {
 
   getSettings(): PTZSettings {
     return this.track.getSettings();
+  }
+
+  async handleScreenRotationUpdated(): Promise<void> {
+    /* Do nothing. */
   }
 
   isPanTiltRestricted(): boolean {
@@ -192,15 +210,21 @@ function getFullCropRegionForAspectRatio(
   };
 }
 
+function assertStrictPTZSettings({pan, tilt, zoom}: PTZSettings):
+    StrictPTZSettings {
+  assert(pan !== undefined);
+  assert(tilt !== undefined);
+  assert(zoom !== undefined && zoom > 0, `Zoom value ${zoom} is invalid.`);
+  return {pan, tilt, zoom};
+}
+
 /**
  * Calculate a crop region from given PTZ settings. The crop region result is
  * normalized given full width and full height equal to 1.
  */
-function calculateNormalizedCropRegion({pan, tilt, zoom}: PTZSettings):
+function calculateNormalizedCropRegion(ptzSettings: PTZSettings):
     CropRegionRect {
-  assert(pan !== undefined);
-  assert(tilt !== undefined);
-  assert(zoom !== undefined && zoom > 0, `Zoom value ${zoom} is invalid.`);
+  const {pan, tilt, zoom} = assertStrictPTZSettings(ptzSettings);
 
   const width = 1 / zoom;
   const height = 1 / zoom;
@@ -252,8 +276,46 @@ function assertPTZRange(attr: PTZAttr, value: number) {
       `${attr} value ${value} is not within the allowed range.`);
 }
 
+/**
+ * Rotates (x, y) clockwise for |rotation| degree around the coordinate (0, 0).
+ */
+function rotateClockwise(
+    x: number, y: number, rotation: number): [number, number] {
+  rotation = rotation % 360;
+  switch (rotation) {
+    case 0:
+      return [x, y];
+    case 90:
+      return [y, -x];
+    case 180:
+      return [-x, -y];
+    case 270:
+      return [-y, x];
+    default:
+      assertNotReached(`Unexpected rotation: ${rotation}`);
+  }
+}
+
+/**
+ * Rotates PTZ settings clockwise by |rotation| degree.
+ */
+function rotatePTZ(ptzSettings: PTZSettings, rotation: number): PTZSettings {
+  const {pan, tilt, zoom} = assertStrictPTZSettings(ptzSettings);
+  const [rotatedPan, rotatedTilt] = rotateClockwise(pan, tilt, rotation);
+  return {pan: rotatedPan, tilt: rotatedTilt, zoom};
+}
+
 export class DigitalZoomPTZController implements PTZController {
+  /**
+   * Current PTZ settings based on the camera frame with rotation = 0. This
+   * value remains the same regardless of the camera rotation.
+   */
   private ptzSettings: PTZSettings = DIGITAL_ZOOM_DEFAULT_SETTINGS;
+
+  /**
+   * Current camera frame rotation.
+   */
+  private cameraRotation: number = 0;
 
   private constructor(
       private readonly deviceId: string,
@@ -276,7 +338,15 @@ export class DigitalZoomPTZController implements PTZController {
   }
 
   getSettings(): PTZSettings {
-    return this.ptzSettings;
+    // Rotates current PTZ settings because pan and tilt values are different in
+    // different camera frame rotations.
+    return rotatePTZ(this.ptzSettings, this.cameraRotation);
+  }
+
+  async handleScreenRotationUpdated(): Promise<void> {
+    const deviceOperator = assertExists(DeviceOperator.getInstance());
+    this.cameraRotation =
+        await deviceOperator.getCameraFrameRotation(this.deviceId);
   }
 
   isPanTiltRestricted(): boolean {
@@ -293,30 +363,38 @@ export class DigitalZoomPTZController implements PTZController {
 
   async pan(value: number): Promise<void> {
     assertPTZRange(PTZAttr.PAN, value);
-    const newSettings = {...this.ptzSettings, pan: value};
+    const newSettings = {...this.getSettings(), pan: value};
     await this.applyPTZ(newSettings);
   }
 
   async tilt(value: number): Promise<void> {
     assertPTZRange(PTZAttr.TILT, value);
-    const newSettings = {...this.ptzSettings, tilt: value};
+    const newSettings = {...this.getSettings(), tilt: value};
     await this.applyPTZ(newSettings);
   }
 
   async zoom(value: number): Promise<void> {
     assertPTZRange(PTZAttr.ZOOM, value);
-    const newSettings = {...this.ptzSettings, zoom: value};
+    const newSettings = {...this.getSettings(), zoom: value};
     await this.applyPTZ(newSettings);
   }
 
-  private async applyPTZ(newSettings: PTZSettings): Promise<void> {
-    if (this.isFullFrame(newSettings)) {
+  private async applyPTZ(settings: PTZSettings): Promise<void> {
+    if (this.isFullFrame(settings)) {
       return this.resetPTZ();
     }
+
     const deviceOperator = assertExists(DeviceOperator.getInstance());
-    const cropRegion = calculateCropRegion(newSettings, this.fullCropRegion);
+
+    // Rotates |settings| counterclockwise to get the PTZ settings for 0
+    // degree camera rotation.
+    this.cameraRotation =
+        await deviceOperator.getCameraFrameRotation(this.deviceId);
+    const baseSettings = rotatePTZ(settings, 360 - this.cameraRotation);
+
+    const cropRegion = calculateCropRegion(baseSettings, this.fullCropRegion);
     await deviceOperator.setCropRegion(this.deviceId, cropRegion);
-    this.ptzSettings = newSettings;
+    this.ptzSettings = baseSettings;
   }
 
   private isFullFrame({zoom}: PTZSettings): boolean {
