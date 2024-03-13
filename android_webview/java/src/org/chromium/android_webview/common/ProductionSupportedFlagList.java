@@ -30,7 +30,6 @@ import org.chromium.media.MediaFeatures;
 import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.services.tracing.TracingServiceFeatures;
-import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.base.UiAndroidFeatures;
 
 /**
@@ -474,9 +473,6 @@ public final class ProductionSupportedFlagList {
                 GpuFeatures.INCREASED_CMD_BUFFER_PARSE_SLICE,
                 "Enable the use of an increased parse slice size per command buffer before"
                         + " each forced context switch."),
-        Flag.baseFeature(
-                AccessibilityFeatures.ABLATE_SEND_PENDING_ACCESSIBILITY_EVENTS,
-                "Enable to increase the cost of SendPendingAccessibilityEvents"),
         Flag.baseFeature(
                 BlinkFeatures.RUN_TEXT_INPUT_UPDATE_POST_LIFECYCLE,
                 "Runs code to update IME state at the end of a lifecycle update "

@@ -612,14 +612,6 @@ bool RenderAccessibilityImpl::AXReadyCallback() {
     SendLocationChanges();
   }
 
-  if (features::IsAblateSendPendingAccessibilityEventsEnabled()) {
-    // Make the total time equal to 2x the original time.
-    auto new_end_time = base::Time::Now() + timer.Elapsed();
-    while (base::Time::Now() < new_end_time) {
-      // spin loop.
-    }
-  }
-
   // Measure the amount of time spent in this function. Keep track of the
   // maximum within a time interval so we can upload UKM.
   base::TimeDelta elapsed_time_ms = timer.Elapsed();

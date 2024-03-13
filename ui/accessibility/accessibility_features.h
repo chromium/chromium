@@ -43,10 +43,6 @@
 
 namespace features {
 
-// Increase the cost of SendPendingAccessibilityEvents.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAblateSendPendingAccessibilityEvents);
-AX_BASE_EXPORT bool IsAblateSendPendingAccessibilityEventsEnabled();
-
 // Draw a visual highlight around the focused element on the page
 // briefly whenever focus changes.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFocusHighlight);

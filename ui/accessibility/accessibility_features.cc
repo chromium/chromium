@@ -15,14 +15,6 @@
 
 namespace features {
 
-BASE_FEATURE(kAblateSendPendingAccessibilityEvents,
-             "AblateSendPendingAccessibilityEvents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAblateSendPendingAccessibilityEventsEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAblateSendPendingAccessibilityEvents);
-}
-
 BASE_FEATURE(kAccessibilityFocusHighlight,
              "AccessibilityFocusHighlight",
              base::FEATURE_ENABLED_BY_DEFAULT);
