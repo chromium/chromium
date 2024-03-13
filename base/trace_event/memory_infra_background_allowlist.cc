@@ -190,6 +190,7 @@ constexpr auto kAllocatorDumpNameAllowlist =
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         "malloc/partitions",
         "malloc/partitions/allocator",
+        "malloc/partitions/allocator/scheduler_loop_quarantine",
         "malloc/partitions/allocator/thread_cache",
         "malloc/partitions/allocator/thread_cache/main_thread",
         "malloc/partitions/aligned",

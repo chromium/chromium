@@ -284,6 +284,20 @@ void ReportPartitionAllocThreadCacheStats(
 #endif  // PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
   }
 }
+
+void ReportPartitionAllocLightweightQuarantineStats(
+    MemoryAllocatorDump* dump,
+    const partition_alloc::LightweightQuarantineStats& stats) {
+  dump->AddScalar("count", MemoryAllocatorDump::kUnitsObjects, stats.count);
+  dump->AddScalar("size_in_bytes", MemoryAllocatorDump::kUnitsBytes,
+                  stats.size_in_bytes);
+  dump->AddScalar("cumulative_count", MemoryAllocatorDump::kUnitsObjects,
+                  stats.cumulative_count);
+  dump->AddScalar("cumulative_size_in_bytes", MemoryAllocatorDump::kUnitsBytes,
+                  stats.cumulative_size_in_bytes);
+  dump->AddScalar("quarantine_miss_count", MemoryAllocatorDump::kUnitsObjects,
+                  stats.quarantine_miss_count);
+}
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace
@@ -550,6 +564,15 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
     ReportPartitionAllocThreadCacheStats(memory_dump_, all_thread_caches_dump,
                                          all_thread_caches_stats, "",
                                          detailed_);
+  }
+
+  if (memory_stats->has_scheduler_loop_quarantine) {
+    MemoryAllocatorDump* quarantine_dump_total =
+        memory_dump_->CreateAllocatorDump(dump_name +
+                                          "/scheduler_loop_quarantine");
+    ReportPartitionAllocLightweightQuarantineStats(
+        quarantine_dump_total,
+        memory_stats->scheduler_loop_quarantine_stats_total);
   }
 }
 

@@ -1517,6 +1517,15 @@ void PartitionRoot::DumpStats(const char* partition_name,
       ThreadCacheRegistry::Instance().DumpStats(false,
                                                 &stats.all_thread_caches_stats);
     }
+
+    stats.has_scheduler_loop_quarantine = settings.scheduler_loop_quarantine;
+    if (stats.has_scheduler_loop_quarantine) {
+      memset(
+          reinterpret_cast<void*>(&stats.scheduler_loop_quarantine_stats_total),
+          0, sizeof(LightweightQuarantineStats));
+      scheduler_loop_quarantine_root.AccumulateStats(
+          stats.scheduler_loop_quarantine_stats_total);
+    }
   }
 
   // Do not hold the lock when calling |dumper|, as it may allocate.

@@ -92,6 +92,9 @@ struct PartitionMemoryStats {
   ThreadCacheStats current_thread_cache_stats;
   ThreadCacheStats all_thread_caches_stats;
 
+  bool has_scheduler_loop_quarantine;
+  LightweightQuarantineStats scheduler_loop_quarantine_stats_total;
+
   // Count and total duration of system calls made since process start. May not
   // be reported on all platforms.
   uint64_t syscall_count;
