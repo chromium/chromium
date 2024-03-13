@@ -210,9 +210,6 @@ extern const char kMainThreadCompositingPriorityDescription[];
 extern const char kMediaSessionEnterPictureInPictureName[];
 extern const char kMediaSessionEnterPictureInPictureDescription[];
 
-extern const char kPasspointARCSupportName[];
-extern const char kPasspointARCSupportDescription[];
-
 extern const char kPasspointSettingsName[];
 extern const char kPasspointSettingsDescription[];
 

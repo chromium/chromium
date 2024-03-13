@@ -2187,11 +2187,6 @@ BASE_FEATURE(kParentAccessJelly,
              "ParentAccessJelly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables user to provision PasspointARCSupport credentials.
-BASE_FEATURE(kPasspointARCSupport,
-             "PasspointARCSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables user to display Passpoint credentials in the UI.
 BASE_FEATURE(kPasspointSettings,
              "PasspointSettings",
@@ -4067,13 +4062,8 @@ bool IsOverviewUpdatesEnabled() {
          base::FeatureList::IsEnabled(kOverviewUpdates);
 }
 
-bool IsPasspointARCSupportEnabled() {
-  return base::FeatureList::IsEnabled(kPasspointARCSupport);
-}
-
 bool IsPasspointSettingsEnabled() {
-  return base::FeatureList::IsEnabled(kPasspointSettings) &&
-         base::FeatureList::IsEnabled(kPasspointARCSupport);
+  return base::FeatureList::IsEnabled(kPasspointSettings);
 }
 
 bool IsParentAccessJellyEnabled() {

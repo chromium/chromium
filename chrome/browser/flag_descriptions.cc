@@ -6249,11 +6249,6 @@ const char kEnableRFC8925Description[] =
     "Let ChromeOS DHCPv4 client voluntarily drop DHCPv4 lease and prefer to"
     "operate IPv6-only, if the network is also IPv6-only capable.";
 
-const char kPasspointARCSupportName[] = "Enable Passpoint ARC support";
-const char kPasspointARCSupportDescription[] =
-    "Feature to allow Android apps (running on ARC) to provision WiFi networks "
-    "through Passpoint.";
-
 const char kPasspointSettingsName[] = "Enable Passpoint settings";
 const char kPasspointSettingsDescription[] =
     "Enables displaying Passpoint subscription information in network "

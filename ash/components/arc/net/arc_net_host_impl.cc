@@ -1094,9 +1094,6 @@ base::Value::Dict ArcNetHostImpl::TranslateProxyConfiguration(
 
 void ArcNetHostImpl::AddPasspointCredentials(
     mojom::PasspointCredentialsPtr credentials) {
-  if (!ash::features::IsPasspointARCSupportEnabled()) {
-    return;
-  }
   TranslatePasspointCredentialsToDict(
       std::move(credentials),
       base::BindOnce(&ArcNetHostImpl::AddPasspointCredentialsWithProperties,
@@ -1133,12 +1130,6 @@ aura::Window* ArcNetHostImpl::GetAppWindow(const std::string& package_name) {
 void ArcNetHostImpl::RequestPasspointAppApproval(
     mojom::PasspointApprovalRequestPtr request,
     RequestPasspointAppApprovalCallback callback) {
-  if (!ash::features::IsPasspointARCSupportEnabled()) {
-    std::move(callback).Run(
-        mojom::PasspointApprovalResponse::New(/*allow=*/false));
-    return;
-  }
-
   aura::Window* window = GetAppWindow(request->package_name);
   if (!window) {
     NET_LOG(ERROR) << __func__ << ": Failed to get app window";
