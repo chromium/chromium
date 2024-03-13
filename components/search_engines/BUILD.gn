@@ -29,8 +29,6 @@ static_library("search_engines") {
     "search_engine_choice_utils.cc",
     "search_engine_choice_utils.h",
     "search_engines_pref_names.h",
-    "search_engines_switches.cc",
-    "search_engines_switches.h",
     "search_host_to_urls_map.cc",
     "search_host_to_urls_map.h",
     "search_terms_data.cc",
@@ -62,6 +60,7 @@ static_library("search_engines") {
     ":prepopulated_engines",
     ":search_engine_type",
     ":search_engine_utils",
+    ":search_engines_switches",
     "//base",
     "//components/google/core/common",
     "//components/keyed_service/core",
@@ -258,4 +257,17 @@ if (is_android) {
       "search_engine_type.h",
     ]
   }
+}
+
+component("search_engines_switches") {
+  output_name = "search_engines_switches"
+
+  defines = [ "IS_SEARCH_ENGINES_SWITCHES_IMPL" ]
+
+  sources = [
+    "search_engines_switches.cc",
+    "search_engines_switches.h",
+  ]
+
+  deps = [ "//base" ]
 }
