@@ -102,11 +102,15 @@ class TouchToFillCreditCardViewBinder {
 
     /**
      * Factory used to create a card item inside the ListView inside the TouchToFillCreditCardView.
+     *
      * @param parent The parent {@link ViewGroup} of the new item.
      */
     static View createCardItemView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.touch_to_fill_credit_card_sheet_item, parent, false);
+        View cardItem =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.touch_to_fill_credit_card_sheet_item, parent, false);
+        AutofillUiUtils.setFilterTouchForSecurity(cardItem);
+        return cardItem;
     }
 
     /** Binds the item view to the model properties. */
@@ -182,8 +186,11 @@ class TouchToFillCreditCardViewBinder {
     }
 
     static View createFillButtonView(ViewGroup parent) {
-        return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.touch_to_fill_fill_button, parent, false);
+        View buttonView =
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.touch_to_fill_fill_button, parent, false);
+        AutofillUiUtils.setFilterTouchForSecurity(buttonView);
+        return buttonView;
     }
 
     static void bindFillButtonView(PropertyModel model, View view, PropertyKey propertyKey) {

@@ -7,6 +7,11 @@ package org.chromium.chrome.browser.autofill;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
 
+import android.os.SystemClock;
+import android.view.InputDevice;
+import android.view.MotionEvent;
+import android.view.View;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -460,6 +465,42 @@ public class AutofillTestHelper {
     // Only has an effect if autofill popup is being shown.
     public static void disableThresholdForCurrentlyShownAutofillPopup(WebContents webContents) {
         AutofillTestHelperJni.get().disableThresholdForCurrentlyShownAutofillPopup(webContents);
+    }
+
+    // Sends click event at the center of the `view` with the provided `flags`.
+    public static void singleClickView(View view, int flags) {
+        int x = view.getWidth() / 2;
+        int y = view.getHeight() / 2;
+        runOnUiThreadBlocking(
+                () -> {
+                    view.dispatchTouchEvent(
+                            getMotionEventWithFlags(MotionEvent.ACTION_DOWN, flags, x, y));
+                    view.dispatchTouchEvent(
+                            getMotionEventWithFlags(MotionEvent.ACTION_UP, flags, x, y));
+                });
+    }
+
+    private static MotionEvent getMotionEventWithFlags(int action, int flags, int x, int y) {
+        MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
+        coords.x = x;
+        coords.y = y;
+        coords.pressure = 1.0f;
+        coords.size = 1.0f;
+        return MotionEvent.obtain(
+                /* downTime= */ SystemClock.uptimeMillis(),
+                /* eventTime= */ SystemClock.uptimeMillis(),
+                /* action= */ action,
+                /* pointerCount= */ 1,
+                new MotionEvent.PointerProperties[] {new MotionEvent.PointerProperties()},
+                new MotionEvent.PointerCoords[] {coords},
+                /* metaState= */ 0,
+                /* buttonState= */ 0,
+                /* xPrecision= */ 1.0f,
+                /* yPrecision= */ 1.0f,
+                /* deviceId= */ InputDevice.SOURCE_CLASS_POINTER,
+                /* edgeFlags= */ 0,
+                /* source= */ 0,
+                /* flags= */ flags);
     }
 
     @NativeMethods
