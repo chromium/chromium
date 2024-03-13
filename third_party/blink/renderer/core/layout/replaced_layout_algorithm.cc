@@ -46,14 +46,7 @@ MinMaxSizesResult ReplacedLayoutAlgorithm::ComputeMinMaxSizes(
   sizes = ComputeReplacedSize(Node(), GetConstraintSpace(), BorderPadding(),
                               ReplacedSizeMode::kIgnoreInlineLengths)
               .inline_size;
-
-  const bool depends_on_block_constraints =
-      Style().LogicalHeight().IsPercentOrCalc() ||
-      Style().LogicalMinHeight().IsPercentOrCalc() ||
-      Style().LogicalMaxHeight().IsPercentOrCalc() ||
-      (Style().LogicalHeight().IsAuto() &&
-       GetConstraintSpace().IsBlockAutoBehaviorStretch());
-  return {sizes, depends_on_block_constraints};
+  return {sizes, /* depends_on_block_constraints */ false};
 }
 
 void ReplacedLayoutAlgorithm::LayoutMediaChildren() {

@@ -907,8 +907,10 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
             constraint_space.IsBlockAutoBehaviorStretch());
   };
 
-  if (!Style().AspectRatio().IsAuto() && !IsReplaced() &&
-      type == MinMaxSizesType::kContent) {
+  const bool has_aspect_ratio = !Style().AspectRatio().IsAuto();
+  const bool is_replaced = IsReplaced();
+
+  if (has_aspect_ratio && !is_replaced && type == MinMaxSizesType::kContent) {
     const FragmentGeometry fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this,
                                          /* break_token */ nullptr,
@@ -969,9 +971,9 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
   bool depends_on_block_constraints =
       (DependsOnBlockConstraints() ||
        UseParentPercentageResolutionBlockSizeForChildren()) &&
-      result.depends_on_block_constraints;
+      (result.depends_on_block_constraints || has_aspect_ratio || is_replaced);
 
-  if (!Style().AspectRatio().IsAuto() &&
+  if (has_aspect_ratio && !is_replaced &&
       initial_block_size == kIndefiniteSize) {
     // If the block size will be computed from the aspect ratio, we need
     // to take the max-block-size into account.
@@ -980,10 +982,6 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
         constraint_space, Style(), border_padding);
     result.sizes.min_size = min_max.ClampSizeToMinAndMax(result.sizes.min_size);
     result.sizes.max_size = min_max.ClampSizeToMinAndMax(result.sizes.max_size);
-    depends_on_block_constraints =
-        depends_on_block_constraints ||
-        Style().LogicalMinHeight().IsPercentOrCalcOrStretch() ||
-        Style().LogicalMaxHeight().IsPercentOrCalcOrStretch();
   }
 
   box_->SetIntrinsicLogicalWidths(

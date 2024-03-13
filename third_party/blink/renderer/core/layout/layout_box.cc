@@ -3058,7 +3058,8 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
     }
   }
 
-  return !containing_block->IsTableCell() &&
+  return !containing_block->IsLayoutReplaced() &&
+         !containing_block->IsTableCell() &&
          !containing_block->IsOutOfFlowPositioned() &&
          !containing_block->IsLayoutGrid() &&
          !containing_block->IsFlexibleBox() &&
