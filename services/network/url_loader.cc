@@ -2389,13 +2389,15 @@ void URLLoader::NotifyEarlyResponse(
   // Calculate IP address space.
   mojom::ParsedHeadersPtr parsed_headers =
       PopulateParsedHeaders(headers.get(), url_request_->url());
-  std::vector<GURL> url_list_via_service_worker;
   net::IPEndPoint transaction_endpoint;
   bool has_endpoint =
       url_request_->GetTransactionRemoteEndpoint(&transaction_endpoint);
   DCHECK(has_endpoint);
-  CalculateClientAddressSpaceParams params(
-      url_list_via_service_worker, parsed_headers, transaction_endpoint);
+  CalculateClientAddressSpaceParams params{
+      .client_address_space_inherited_from_service_worker = std::nullopt,
+      .parsed_headers = &parsed_headers,
+      .remote_endpoint = &transaction_endpoint,
+  };
   mojom::IPAddressSpace ip_address_space =
       CalculateClientAddressSpace(url_request_->url(), params);
 

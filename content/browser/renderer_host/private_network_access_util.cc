@@ -234,9 +234,18 @@ AddressSpace CalculateIPAddressSpace(
   std::optional<network::CalculateClientAddressSpaceParams> params =
       std::nullopt;
   if (response_head) {
-    params.emplace(response_head->url_list_via_service_worker,
-                   response_head->parsed_headers,
-                   response_head->remote_endpoint);
+    std::optional<network::mojom::IPAddressSpace> client_address_space;
+    if (response_head->was_fetched_via_service_worker &&
+        response_head->client_address_space !=
+            network::mojom::IPAddressSpace::kUnknown) {
+      client_address_space = response_head->client_address_space;
+    }
+    params.emplace<network::CalculateClientAddressSpaceParams>({
+        .client_address_space_inherited_from_service_worker =
+            client_address_space,
+        .parsed_headers = &response_head->parsed_headers,
+        .remote_endpoint = &response_head->remote_endpoint,
+    });
   }
   AddressSpace computed_ip_address_space =
       network::CalculateClientAddressSpace(url, params);

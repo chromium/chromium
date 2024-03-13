@@ -467,6 +467,10 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
     version_->set_fetch_handler_type(
         ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+    PolicyContainerPolicies policies;
+    policies.ip_address_space = network::mojom::IPAddressSpace::kPrivate;
+    version_->set_policy_container_host(
+        base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
     registration_->SetActiveVersion(version_);
 
     // Make the registration findable via storage functions.
@@ -639,6 +643,9 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, Basic) {
   EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
   EXPECT_LE(info->load_timing.receive_headers_start,
             info->load_timing.receive_headers_end);
+  EXPECT_TRUE(info->was_fetched_via_service_worker);
+  EXPECT_EQ(info->client_address_space,
+            network::mojom::IPAddressSpace::kPrivate);
   ExpectResponseInfo(*info, *CreateResponseInfoFromServiceWorker());
 
   histogram_tester.ExpectUniqueSample(kHistogramMainResourceFetchEvent,

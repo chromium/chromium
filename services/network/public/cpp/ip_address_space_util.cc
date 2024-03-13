@@ -317,40 +317,18 @@ bool IsLessPublicAddressSpace(IPAddressSpace lhs, IPAddressSpace rhs) {
   return CollapseUnknown(lhs) < CollapseUnknown(rhs);
 }
 
-namespace {
-
-// Helper for CalculateClientAddressSpace() with the same arguments.
-//
-// If the response was fetched via service workers, returns the last URL in the
-// list. Otherwise returns `request_url`.
-//
-// See: https://fetch.spec.whatwg.org/#concept-response-url-list
-const GURL& ResponseUrl(
-    const GURL& request_url,
-    std::optional<CalculateClientAddressSpaceParams> params) {
-  if (params.has_value() && !params->url_list_via_service_worker->empty()) {
-    return params.value().url_list_via_service_worker->back();
-  }
-  return request_url;
-}
-
-}  // namespace
-
-CalculateClientAddressSpaceParams::CalculateClientAddressSpaceParams(
-    const std::vector<GURL>& url_list_via_service_worker,
-    const mojom::ParsedHeadersPtr& parsed_headers,
-    const net::IPEndPoint& remote_endpoint)
-    : url_list_via_service_worker(url_list_via_service_worker),
-      parsed_headers(parsed_headers),
-      remote_endpoint(remote_endpoint) {}
-
 CalculateClientAddressSpaceParams::~CalculateClientAddressSpaceParams() =
     default;
 
 mojom::IPAddressSpace CalculateClientAddressSpace(
     const GURL& url,
     std::optional<CalculateClientAddressSpaceParams> params) {
-  if (ResponseUrl(url, params).SchemeIsFile()) {
+  if (params.has_value() &&
+      params->client_address_space_inherited_from_service_worker.has_value()) {
+    return *params->client_address_space_inherited_from_service_worker;
+  }
+
+  if (url.SchemeIsFile()) {
     // See: https://wicg.github.io/cors-rfc1918/#file-url.
     return mojom::IPAddressSpace::kLocal;
   }
