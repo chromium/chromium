@@ -9,32 +9,11 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/hid_preserving_controller/disable_bluetooth_dialog_controller.h"
-#include "chromeos/constants/devicetype.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
-namespace {
-
-std::string DeviceTypeToString(chromeos::DeviceType device_type) {
-  switch (device_type) {
-    case chromeos::DeviceType::kChromebase:
-      return "Chromebase";
-    case chromeos::DeviceType::kChromebit:
-      return "Chromebit";
-    case chromeos::DeviceType::kChromebook:
-      return "Chromebook";
-    case chromeos::DeviceType::kChromebox:
-      return "Chromebox";
-    case chromeos::DeviceType::kUnknown:
-    default:
-      return "ChromeOS device";
-  }
-}
-
-}  // namespace
 
 DisableBluetoothDialogControllerImpl::DisableBluetoothDialogControllerImpl() {
   CHECK(features::IsBluetoothDisconnectWarningEnabled());
@@ -55,24 +34,21 @@ void DisableBluetoothDialogControllerImpl::ShowDialog(
   DCHECK_EQ(dialog_widget_, nullptr);
   CHECK(!devices.empty());
 
-  const std::string device_type = DeviceTypeToString(chromeos::GetDeviceType());
   std::u16string dialog_description;
 
   if (devices.size() == 1) {
     dialog_description = l10n_util::GetStringFUTF16(
         IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_ONE_DEVICE,
-        base::UTF8ToUTF16(device_type), base::UTF8ToUTF16(devices[0]));
+        base::UTF8ToUTF16(devices[0]));
   } else if (devices.size() == 2) {
     dialog_description = l10n_util::GetStringFUTF16(
         IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_TWO_DEVICES,
-        base::UTF8ToUTF16(device_type), base::UTF8ToUTF16(devices[0]),
-        base::UTF8ToUTF16(devices[1]));
+        base::UTF8ToUTF16(devices[0]), base::UTF8ToUTF16(devices[1]));
   } else {
     dialog_description = l10n_util::GetStringFUTF16(
         IDS_ASH_DISCONNECT_BLUETOOTH_WARNING_DIALOG_DESCRIPTION_MULTIPLE_DEVICES,
-        base::NumberToString16(devices.size()), base::UTF8ToUTF16(device_type),
         base::UTF8ToUTF16(devices[0]), base::UTF8ToUTF16(devices[1]),
-        base::UTF8ToUTF16(devices[2]));
+        base::NumberToString16(devices.size() - 2));
   }
 
   auto dialog = views::Builder<SystemDialogDelegateView>()
