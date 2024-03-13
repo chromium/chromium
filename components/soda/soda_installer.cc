@@ -27,14 +27,6 @@ namespace {
 
 constexpr int kSodaCleanUpDelayInDays = 30;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-inline std::string GetProjectorLanguageCode(PrefService* pref_service) {
-  return pref_service->GetString(ash::prefs::kProjectorCreationFlowLanguage);
-}
-
-#endif  // IS_CHROMEOS_ASH
-
 }  // namespace
 
 namespace speech {
@@ -97,24 +89,7 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     // uninstalled when features are using it.
     global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
-
-    if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks).empty()) {
-      // TODO(crbug.com/1200667): Register the default language used by
-      // Dictation on ChromeOS.
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      RegisterLanguage(GetProjectorLanguageCode(profile_prefs), global_prefs);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-      RegisterLanguage(prefs::GetLiveCaptionLanguageCode(profile_prefs),
-                       global_prefs);
-    }
-
-    for (const auto& language :
-         global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)) {
-      SodaInstaller::GetInstance()->InstallLanguage(language.GetString(),
-                                                    global_prefs);
-    }
+    InitLanguages(profile_prefs, global_prefs);
   } else {
     base::Time deletion_time =
         global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
@@ -122,6 +97,20 @@ void SodaInstaller::Init(PrefService* profile_prefs,
       UninstallSoda(global_prefs);
       soda_installer_initialized_ = false;
     }
+  }
+}
+
+void SodaInstaller::InitLanguages(PrefService* profile_prefs,
+                                  PrefService* global_prefs) {
+  if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks).empty()) {
+    RegisterLanguage(prefs::GetLiveCaptionLanguageCode(profile_prefs),
+                     global_prefs);
+  }
+
+  for (const auto& language :
+       global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)) {
+    SodaInstaller::GetInstance()->InstallLanguage(language.GetString(),
+                                                  global_prefs);
   }
 }
 

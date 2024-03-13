@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // Initialize SODA if any SODA-utilising feature is enabled. Intended to be
   // called during embedder startup. Checks whether SODA is due for
   // uninstallation, and if so, triggers uninstallation.
-  void Init(PrefService* profile_prefs, PrefService* global_prefs);
+  virtual void Init(PrefService* profile_prefs, PrefService* global_prefs);
 
   // Schedules SODA for uninstallation if no SODA client features are
   // currently enabled. Should be called when client features using SODA are
@@ -139,6 +139,10 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   const std::set<LanguageCode> InstalledLanguages() const;
 
  protected:
+  // Initializes language and installs the per-language components.
+  virtual void InitLanguages(PrefService* profile_prefs,
+                             PrefService* global_prefs);
+
   // Registers the preference tracking the installed SODA language packs.
   static void RegisterRegisteredLanguagePackPref(PrefRegistrySimple* registry);
 

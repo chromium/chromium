@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -38,6 +40,26 @@ SodaInstaller::ErrorCode DlcCodeToSodaErrorCode(const std::string& code) {
 
 SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() {
   available_languages_ = ConstructAvailableLanguages();
+}
+
+void SodaInstallerImplChromeOS::InitLanguages(PrefService* profile_prefs,
+                                              PrefService* global_prefs) {
+  if (global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks).empty()) {
+    // TODO(crbug.com/1200667): Register the default language used by
+    // Dictation on ChromeOS.
+    std::string projector_language_code =
+        profile_prefs->GetString(ash::prefs::kProjectorCreationFlowLanguage);
+    RegisterLanguage(projector_language_code, global_prefs);
+
+    RegisterLanguage(prefs::GetLiveCaptionLanguageCode(profile_prefs),
+                     global_prefs);
+  }
+
+  for (const auto& language :
+       global_prefs->GetList(prefs::kSodaRegisteredLanguagePacks)) {
+    SodaInstaller::GetInstance()->InstallLanguage(language.GetString(),
+                                                  global_prefs);
+  }
 }
 
 base::flat_map<std::string, SodaInstallerImplChromeOS::LanguageInfo>

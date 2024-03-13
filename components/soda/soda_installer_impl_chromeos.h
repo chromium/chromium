@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   void SetSodaBinaryPath(base::FilePath new_path);
   void SetLanguagePath(const LanguageCode language, base::FilePath new_path);
 
+  // Initializes language and installs the per-language components.
+  void InitLanguages(PrefService* profile_prefs,
+                     PrefService* global_prefs) override;
+
   // These functions are the InstallCallbacks for DlcserviceClient::Install().
   void OnSodaInstalled(
       const base::Time start_time,
