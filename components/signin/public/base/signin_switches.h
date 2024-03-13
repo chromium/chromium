@@ -87,6 +87,8 @@ BASE_DECLARE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup);
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoice);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSearchEnginePromoDialogRewrite);
 #endif
 
 // Used to experiment and validate the UNO model on Desktop. Not meant to be

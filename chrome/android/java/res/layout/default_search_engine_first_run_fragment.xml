@@ -60,9 +60,10 @@ found in the LICENSE file.
     </FrameLayout>
 
     <TextView
+        android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/search_engine_dialog_footer"
+        android:text="@string/search_engine_dialog_footer_legacy"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         android:padding="@dimen/signin_chooser_padding" />
 

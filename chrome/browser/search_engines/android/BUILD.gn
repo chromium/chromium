@@ -9,6 +9,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelper.java",
     "java/src/org/chromium/chrome/browser/search_engines/DefaultSearchEnginePromoDialog.java",
     "java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java",
@@ -74,6 +75,7 @@ generate_jni("jni_headers") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/search_sogou.xml",
+    "java/res/layout/default_search_engine_dialog_view.xml",
     "java/res/layout/search_engine.xml",
     "java/res/layout/search_engine_choice_header.xml",
     "java/res/layout/search_engine_choice_item.xml",

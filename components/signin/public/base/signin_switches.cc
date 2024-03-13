@@ -100,6 +100,10 @@ BASE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup,
 BASE_FEATURE(kSearchEngineChoice,
              "SearchEngineChoice",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Rewrites DefaultSearchEnginePromoDialog into MVC pattern.
+BASE_FEATURE(kSearchEnginePromoDialogRewrite,
+             "SearchEnginePromoDialogRewrite",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kUnoDesktop, "UnoDesktop", base::FEATURE_DISABLED_BY_DEFAULT);

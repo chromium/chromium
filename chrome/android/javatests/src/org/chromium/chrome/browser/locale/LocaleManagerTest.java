@@ -12,8 +12,8 @@ import static org.chromium.components.search_engines.TemplateUrlTestHelpers.buil
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -29,6 +29,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
@@ -62,19 +63,15 @@ public class LocaleManagerTest {
     public static void setUpClass() throws ExecutionException {
         // Prevents recreating Chrome when the default search engine is changed.
         ToolbarManager.setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(true);
+        sActivityTestRule.setFinishActivity(true);
+    }
 
+    @Before
+    public void setUp() {
         // Launch any activity as an Activity ref is required to attempt to show the activity.
         sActivityTestRule.startMainActivityOnBlankPage();
         sActivityTestRule.waitForActivityNativeInitializationComplete();
         sActivityTestRule.waitForDeferredStartup();
-    }
-
-    @After
-    public void tearDown() {
-        sActivityTestRule
-                .getActivity()
-                .getModalDialogManager()
-                .dismissAllDialogs(DialogDismissalCause.UNKNOWN);
     }
 
     @Policies.Add({@Policies.Item(key = "DefaultSearchProviderEnabled", string = "false")})
@@ -110,6 +107,7 @@ public class LocaleManagerTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SEARCH_ENGINE_PROMO_DIALOG_REWRITE)
     public void testShowSearchEnginePromoIfNeeded_ForExisting() throws ExecutionException {
         final CallbackHelper searchEnginesFinalizedCallback = new CallbackHelper();
         final List<TemplateUrl> fakeTemplateUrls = List.of(mMockTemplateUrl);
