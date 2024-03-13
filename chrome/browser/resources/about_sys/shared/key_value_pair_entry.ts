@@ -5,10 +5,14 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {SystemLog} from './browser_proxy.js';
-import {getTemplate} from './log_entry.html.js';
+import {getTemplate} from './key_value_pair_entry.html.js';
 
 export const COLLAPSE_THRESHOLD = 200;
+
+export interface KeyValuePairEntry {
+  key: string;
+  value: string;
+}
 
 // <if expr="chromeos_ash">
 // Link to markdown doc with documentation for Chrome OS.
@@ -16,9 +20,9 @@ const CROS_MD_DOC_URL =
     'https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/debugd/docs/log_entries.md';
 // </if>
 
-export class LogEntryElement extends PolymerElement {
+export class KeyValuePairEntryElement extends PolymerElement {
   static get is() {
-    return 'log-entry';
+    return 'key-value-pair-entry';
   }
 
   static get template() {
@@ -27,12 +31,12 @@ export class LogEntryElement extends PolymerElement {
 
   static get properties() {
     return {
-      log: Object,
+      entry: Object,
 
       collapsible_: {
         type: Boolean,
         reflectToAttribute: true,
-        computed: 'computeCollabsible_(log.statValue)',
+        computed: 'computeCollabsible_(entry.statValue)',
       },
 
       collapsed: {
@@ -43,7 +47,7 @@ export class LogEntryElement extends PolymerElement {
     };
   }
 
-  log: SystemLog;
+  entry: KeyValuePairEntry;
   collapsed: boolean;
   private collapsible_: boolean;
 
@@ -57,11 +61,11 @@ export class LogEntryElement extends PolymerElement {
     urlPrefix = CROS_MD_DOC_URL;
     // </if>
 
-    return `${urlPrefix}#${this.log.statName}`;
+    return `${urlPrefix}#${this.entry.key}`;
   }
 
   private computeCollabsible_(): boolean {
-    return this.log.statValue.length > COLLAPSE_THRESHOLD;
+    return this.entry.value.length > COLLAPSE_THRESHOLD;
   }
 
   private onButtonClick_() {
@@ -76,8 +80,8 @@ export class LogEntryElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'log-entry': LogEntryElement;
+    'key-value-pair-entry': KeyValuePairEntryElement;
   }
 }
 
-customElements.define(LogEntryElement.is, LogEntryElement);
+customElements.define(KeyValuePairEntryElement.is, KeyValuePairEntryElement);

@@ -11,12 +11,13 @@ build_webui("build") {
   static_files = [ "about_sys.html" ]
   web_component_files = [
     "app.ts",
-    "log_entry.ts",
+    "shared/key_value_pair_viewer.ts",
+    "shared/key_value_pair_entry.ts",
   ]
 
   non_web_component_files = [
     "browser_proxy.ts",
-    "log_parser.ts",
+    "shared/key_value_pair_parser.ts",
   ]
 
   ts_composite = true

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {SystemLog} from './browser_proxy.js';
+import type {KeyValuePairEntry} from './key_value_pair_entry.js';
 
 // Contents of lines that act as delimiters for multi-line values.
 const DELIM_START = '---------- START ----------';
@@ -13,7 +13,7 @@ const DELIM_END = '---------- END ----------';
  * @param text The raw text of a log.
  * @return The parse result or null if any parsing error occurred.
  */
-export function parseSystemLog(text: string): SystemLog[]|null {
+export function parseKeyValuePairEntry(text: string): KeyValuePairEntry[]|null {
   const details = [];
   const lines = text.split('\n');
   for (let i = 0, len = lines.length; i < len; i++) {
@@ -59,7 +59,7 @@ export function parseSystemLog(text: string): SystemLog[]|null {
         value = value.substr(0, value.length - 1);
       }
     }
-    details.push({statName: name, statValue: value});
+    details.push({key: name, value: value});
   }
 
   return details;
