@@ -64,6 +64,14 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
                                     ReauthenticationResult::kSuccess];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
+
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    // Rotate iphone device so Magic Stack can be scrollable.
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                  error:nil];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_scrollInDirection(kGREYDirectionDown, 180)];
+  }
 }
 
 - (void)tearDown {
@@ -86,7 +94,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that long pressing the Safety Check view displays a context menu; tests
 // the Safety Check view is properly hidden via the context menu.
-- (void)DISABLED_testLongPressAndHide {
+- (void)testLongPressAndHide {
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               safety_check::kSafetyCheckViewID),
@@ -112,7 +120,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that the Password Checkup view is dismissed when there are no saved
 // passwords.
-- (void)DISABLED_testPasswordCheckupDismissedAfterAllPasswordsGone {
+- (void)testPasswordCheckupDismissedAfterAllPasswordsGone {
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
   [[[EarlGrey
@@ -160,7 +168,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that the Password Checkup view is dismissed when the user doesn't pass
 // Local Authentication.
-- (void)DISABLED_testPasswordCheckupDismissedAfterFailedAuthentication {
+- (void)testPasswordCheckupDismissedAfterFailedAuthentication {
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
   [[[EarlGrey
