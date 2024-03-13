@@ -795,18 +795,24 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   usage_ = wgpu_texture_usage;
 
   texture_ = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
+  if (!texture_) {
+    texture_ =
+        CreateWGPUTexture(shared_texture_memory_, usage(), io_surface_size_,
+                          wgpu_format_, view_formats_, wgpu_texture_usage);
+    iosurface_backing->MaybeCacheWGPUTexture(device_, texture_);
+  }
 
-  if (texture_ && iosurface_backing->WGPUTextureHasOngoingAccess(texture_)) {
-    // If there is already an ongoing access for this texture, then the
-    // necessary work for starting the access (i.e., waiting on fences and
-    // informing SharedTextureMemory) already happened as part of the initial
-    // BeginAccess(). Short-circuit out here, but ensure that the backing knows
-    // that there is now another ongoing access on this texture.  NOTE:
-    // SharedTextureMemory does not allow a BeginAccess() call on a texture
-    // that already has an ongoing access (at the internal wgpu::Texture
-    // level), so short-circuiting out here is not simply an optimization but
-    // is actually necessary.
-    iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture_);
+  // If there is already an ongoing Dawn access for this texture, then the
+  // necessary work for starting the access (i.e., waiting on fences and
+  // informing SharedTextureMemory) already happened as part of the initial
+  // BeginAccess().
+  // NOTE: SharedTextureMemory does not allow a BeginAccess() call on a texture
+  // that already has an ongoing access (at the internal wgpu::Texture
+  // level), so short-circuiting out here is not simply an optimization but
+  // is actually necessary.
+  int num_accesses_already_present =
+      iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture_);
+  if (num_accesses_already_present > 0) {
     return texture_;
   }
 
@@ -846,27 +852,18 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   begin_access_desc.fences = shared_fences.data();
   begin_access_desc.signaledValues = signaled_values.data();
 
-  if (!texture_) {
-    texture_ =
-        CreateWGPUTexture(shared_texture_memory_, usage(), io_surface_size_,
-                          wgpu_format_, view_formats_, wgpu_texture_usage);
-    iosurface_backing->MaybeCacheWGPUTexture(device_, texture_);
-  }
-
   if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
     // NOTE: WebGPU CTS tests intentionally pass in formats that are
     // incompatible with the format of the backing IOSurface to check error
     // handling.
     LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed";
+    iosurface_backing->DecrementNumberOfOngoingWGPUTextureAccesses(texture_);
     iosurface_backing->RemoveWGPUTextureFromCache(device_, texture_);
     texture_ = {};
 
     iosurface_backing->EndAccess(readonly);
   }
 
-  // NOTE: If SharedTextureMemory::BeginAccess() succeeds, `texture` is
-  // guaranteed to be non-null.
-  iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture_);
   return texture_.Get();
 }
 
@@ -1286,9 +1283,9 @@ bool IOSurfaceImageBacking::WGPUTextureHasOngoingAccess(wgpu::Texture texture) {
   return wgpu_texture_ongoing_accesses_.contains(texture.Get());
 }
 
-void IOSurfaceImageBacking::IncrementNumberOfOngoingWGPUTextureAccesses(
+int IOSurfaceImageBacking::IncrementNumberOfOngoingWGPUTextureAccesses(
     wgpu::Texture texture) {
-  wgpu_texture_ongoing_accesses_[texture.Get()]++;
+  return wgpu_texture_ongoing_accesses_[texture.Get()]++;
 }
 
 void IOSurfaceImageBacking::DecrementNumberOfOngoingWGPUTextureAccesses(
