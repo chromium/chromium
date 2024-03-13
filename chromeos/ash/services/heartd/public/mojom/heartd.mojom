@@ -7,7 +7,7 @@ module ash.heartd.mojom;
 // Control interface exposed by heartd. Chrome can use this interface to control
 // the behavior of heartd.
 //
-// NextMinVersion: 0, NextIndex: 2
+// NextMinVersion: 0, NextIndex: 3
 interface HeartdControl {
   // Enable the heartd daemon to perform normal reboot action, this asks the
   // powerd to reboot the device through D-Bus.
@@ -15,6 +15,8 @@ interface HeartdControl {
   // Enable the heartd daemon to perform force reboot action, this is done by
   // using /proc/sysrq-trigger.
   EnableForceRebootAction@1();
+  // Execute action immediately.
+  RunAction@2(ActionType action) => (bool success);
 };
 
 // Heartbeat service interface exposed by heartd. Clients can use this interface
@@ -54,6 +56,15 @@ struct Action {
   ActionType action@1;
 };
 
+// SendHeartbeat can either be successful or rate limited depending on how many
+// reboots have happened. The HeartbeatResponse Enum takes care of proper
+// replies.
+enum HeartbeatResponse {
+  kSuccess = 0,
+  kRateLimit,
+  kNotAllowed,
+};
+
 // Pacemaker interface. Clients hold the remote and use this to send heartbeat
 // or stop the service.
 //
@@ -61,7 +72,7 @@ struct Action {
 interface Pacemaker {
   // Clients have to call this method periodically to indicate they are alive.
   // Please call this at most once in a minute to minimize power consumption.
-  SendHeartbeat@0() => ();
+  SendHeartbeat@0() => (HeartbeatResponse response);
   // After calling this method, heartd will do the necessary clean up. Clients
   // can drop the connection safely after the callback is invoked.
   StopMonitor@1() => ();
@@ -82,4 +93,6 @@ enum ActionType {
   kNoOperation = 1,
   kNormalReboot = 2,
   kForceReboot = 3,
+  // Call `sync` to sync data to disk.
+  kSyncData = 4,
 };
