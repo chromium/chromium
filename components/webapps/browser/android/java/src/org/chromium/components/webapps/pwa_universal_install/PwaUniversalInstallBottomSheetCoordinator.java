@@ -49,9 +49,10 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     // instantenously.
     private static final int INITIAL_TOAST_DELAY_MS = 100;
     // How long (in milliseconds) to wait until giving up on waiting for the installability check
-    // and showing the bottom sheet. Set to 500ms because, according to our metrics, 96% of the time
-    // the installability check finishes within that time.
-    private static final int DIALOG_SHOW_TIMEOUT_MS = 500;
+    // and showing the bottom sheet. Set to 3.5 seconds to match the duration of the toast we show.
+    // NOTE: This may seem long, but this will only take effect for the pathological case, when the
+    // installability-check is super slow (e.g. when testing inside the emulator on a heavy site).
+    private static final int DIALOG_SHOW_TIMEOUT_MS = 3500;
 
     private final BottomSheetController mController;
     private final PwaUniversalInstallBottomSheetView mView;
@@ -165,7 +166,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
                     Toast.makeText(
                             ContextUtils.getApplicationContext(),
                             R.string.pwa_uni_install_toast_please_wait_msg,
-                            Toast.LENGTH_SHORT);
+                            Toast.LENGTH_LONG); // Note: Toast cancels when processing completes.
             mToast.show();
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,
@@ -256,6 +257,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
 
         mView.setIcon(icon, adaptive);
         mAppType = appType;
+        if (mToast != null) mToast.cancel();
 
         if (mWaitingToShow && mAppType == AppType.SHORTCUT) {
             mWaitingToShow = false;
