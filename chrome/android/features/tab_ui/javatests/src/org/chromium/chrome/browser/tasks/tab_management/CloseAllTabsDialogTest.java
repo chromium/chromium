@@ -73,7 +73,7 @@ public class CloseAllTabsDialogTest {
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
         navigateToCloseAllTabsDialog(selector);
-        onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button)).perform(click());
+        onViewWaiting(withId(org.chromium.chrome.test.R.id.positive_button), true).perform(click());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -90,7 +90,8 @@ public class CloseAllTabsDialogTest {
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
         navigateToCloseAllTabsDialog(selector);
-        onViewWaiting(withId(org.chromium.chrome.test.R.id.negative_button)).perform(click());
+
+        onViewWaiting(withId(org.chromium.chrome.test.R.id.negative_button), true).perform(click());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

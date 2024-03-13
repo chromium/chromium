@@ -241,15 +241,17 @@ public class ViewUtils {
     }
 
     /**
-     * Waits until a visible view matching the given matcher appears. Fails if the matcher applies
-     * to multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL}
-     * milliseconds.
+     * Waits until a visible view matching the given matcher Fails if the matcher applies to
+     * multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL} milliseconds.
+     *
+     * <p>Android API 30+ tests are flakey with espresso 3.2 without the inRoot(isDialog()) check.
      *
      * @param viewMatcher The matcher matching the view that should be waited for.
      * @return An interaction on the matching view.
      */
-    public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
-        CriteriaHelper.pollInstrumentationThread(
+    public static ViewInteraction onViewWaiting(
+            Matcher<View> viewMatcher, boolean checkRootDialog) {
+        Runnable r =
                 () -> {
                     onView(isRoot())
                             .check(
@@ -259,8 +261,39 @@ public class ViewUtils {
                                                         viewMatcher, VIEW_VISIBLE, (ViewGroup) view)
                                                 .run();
                                     });
-                });
+                };
+        // Needed to prevent flakiness with espresso 3.2 after API 29.
+        if (checkRootDialog) {
+            r =
+                    () -> {
+                        onView(isRoot())
+                                .inRoot(isDialog())
+                                .check(
+                                        (View view, NoMatchingViewException noMatchException) -> {
+                                            if (noMatchException != null) throw noMatchException;
+                                            new ExpectedViewCriteria(
+                                                            viewMatcher,
+                                                            VIEW_VISIBLE,
+                                                            (ViewGroup) view)
+                                                    .run();
+                                        });
+                    };
+        }
+
+        CriteriaHelper.pollInstrumentationThread(r);
         return onView(viewMatcher);
+    }
+
+    /**
+     * Waits until a visible view matching the given matcher appears. Fails if the matcher applies
+     * to multiple views. Times out after {@link CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL}
+     * milliseconds.
+     *
+     * @param viewMatcher The matcher matching the view that should be waited for.
+     * @return An interaction on the matching view.
+     */
+    public static ViewInteraction onViewWaiting(Matcher<View> viewMatcher) {
+        return onViewWaiting(viewMatcher, false);
     }
 
     /**

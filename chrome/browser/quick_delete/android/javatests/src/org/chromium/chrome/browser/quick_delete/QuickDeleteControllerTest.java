@@ -148,7 +148,7 @@ public class QuickDeleteControllerTest {
                     AppMenuTestSupport.callOnItemClick(
                             mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
                 });
-        onViewWaiting(withId(R.id.quick_delete_spinner))
+        onViewWaiting(withId(R.id.quick_delete_spinner), true)
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
