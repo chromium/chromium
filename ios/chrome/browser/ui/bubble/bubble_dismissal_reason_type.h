@@ -23,7 +23,8 @@ enum class IPHDismissalReasonType {
   kTappedOutsideIPHAndAnchorView = 7,
   kTappedAnchorView = 8,
   kVoiceOverAnnouncementEnded = 9,
-  kMaxValue = kVoiceOverAnnouncementEnded,
+  kSwipedAsInstructedByGestureIPH = 10,
+  kMaxValue = kSwipedAsInstructedByGestureIPH,
 };
 
 // Used for the bubble's dismissal callback.

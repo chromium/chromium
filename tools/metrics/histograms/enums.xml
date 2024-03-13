@@ -13574,6 +13574,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Tapped Outside IPH And Anchor View"/>
   <int value="8" label="Tapped Anchor View"/>
   <int value="9" label="Voice Over Announcement Ended"/>
+  <int value="10" label="Swiped As Instructed By Gesture IPH"/>
 </enum>
 
 <enum name="InProductHelpSnoozeAction">

@@ -16,6 +16,7 @@
 
 namespace {
 
+using ::chrome_test_util::IncognitoTabGrid;
 using ::chrome_test_util::TabGridIncognitoTabsPanelButton;
 using ::chrome_test_util::TabGridNormalModePageControl;
 using ::chrome_test_util::TabGridSearchTabsButton;
@@ -131,6 +132,43 @@ using ::chrome_test_util::TabGridSearchTabsButton;
   appearance = HasGestureIPHAppeared();
   GREYAssertFalse(appearance, @"IPH still displaying after the user goes to "
                               @"incognito mode and comes back.");
+}
+
+// Tests that swiping in the right direction dismisses the IPH and scrolls the
+// tab grid to incognito.
+- (void)testSwipeRightToDismissIPHAndGoToIncognito {
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap the incognito button with animation
+    // running.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(
+        appearance,
+        @"IPH doesn't show after the user taps to go to incognito twice.");
+    // Swipe right.
+    SwipeIPHInDirection(kGREYDirectionRight);
+  }
+  [[EarlGrey selectElementWithMatcher:IncognitoTabGrid()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that swiping in the wrong direction does nothing.
+- (void)testSwipeLeftDoesNotDismissIPHAndGoToIncognito {
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap the incognito button with animation
+    // running.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(
+        appearance,
+        @"IPH doesn't show after the user taps to go to incognito twice.");
+    // Swipe left.
+    SwipeIPHInDirection(kGREYDirectionLeft);
+  }
+  // The IPH should have auto-dismissed by now; verify that the user is NOT
+  // viewing in incognito.
+  [[EarlGrey selectElementWithMatcher:IncognitoTabGrid()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end

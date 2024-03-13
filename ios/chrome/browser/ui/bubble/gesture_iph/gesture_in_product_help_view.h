@@ -52,7 +52,9 @@ typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 
 /// Optional callback to handle side swipe dismissal with an
 /// IPHDismissalReasonType; called after the view is removed from its parent
-/// view.
+/// view. Note that if the reason type is `kTappedAnchorView`, the owner is
+/// oblidged to trigger an animation that resembles a user-initiated swipe on
+/// the views beneath the IPH.
 @property(nonatomic, copy) CallbackWithIPHDismissalReasonType dismissCallback;
 
 /// Number of animation repeats until the user intervenes; should be set before

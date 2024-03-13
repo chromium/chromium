@@ -1532,13 +1532,22 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   // Coast is clear. Show the message!
-  id<TabGridViewControllerDelegate> delegate = self.delegate;
+  __weak TabGridViewController* weakSelf = self;
   gestureIPHView.dismissCallback =
-      ^(IPHDismissalReasonType IPHDismissalReasonType,
+      ^(IPHDismissalReasonType reason,
         feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        [delegate tabGridDidDismissSwipeToIncognitoIPH];
+        if (reason == IPHDismissalReasonType::kSwipedAsInstructedByGestureIPH) {
+          // Animate a swipe to incognito if the user has swiped right on the
+          // IPH.
+          [weakSelf.mutator
+              pageChanged:TabGridPageIncognitoTabs
+              interaction:TabSwitcherPageChangeInteraction::kScrollDrag];
+          [weakSelf setCurrentPageAndPageControl:TabGridPageIncognitoTabs
+                                        animated:YES];
+        }
+        [weakSelf.delegate tabGridDidDismissSwipeToIncognitoIPH];
       };
-  if (![delegate tabGridShouldPresentSwipeToIncognitoIPH]) {
+  if (![self.delegate tabGridShouldPresentSwipeToIncognitoIPH]) {
     return;
   }
   self.swipeToIncognitoIPH = gestureIPHView;

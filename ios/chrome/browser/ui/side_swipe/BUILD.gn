@@ -6,8 +6,6 @@ source_set("side_swipe") {
   sources = [
     "card_side_swipe_view.h",
     "card_side_swipe_view.mm",
-    "side_swipe_gesture_recognizer.h",
-    "side_swipe_gesture_recognizer.mm",
     "side_swipe_mediator+Testing.h",
     "side_swipe_mediator.h",
     "side_swipe_mediator.mm",
@@ -18,6 +16,7 @@ source_set("side_swipe") {
     "swipe_view.h",
     "swipe_view.mm",
   ]
+  public_deps = [ ":gesture_recognizer" ]
   deps = [
     "resources:side_swipe_navigation_back",
     "//base",
@@ -50,6 +49,14 @@ source_set("side_swipe") {
     "//ui/base",
     "//url",
   ]
+}
+
+source_set("gesture_recognizer") {
+  sources = [
+    "side_swipe_gesture_recognizer.h",
+    "side_swipe_gesture_recognizer.mm",
+  ]
+  deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
 }
 

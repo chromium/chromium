@@ -34,3 +34,11 @@ void TapDismissButton() {
                                    kGestureInProductHelpViewDismissButtonAXId)]
       performAction:grey_tap()];
 }
+
+void SwipeIPHInDirection(GREYDirection direction) {
+  ScopedSynchronizationDisabler sync_disabler;
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kGestureInProductHelpViewBackgroundAXId)]
+      performAction:grey_swipeSlowInDirection(direction)];
+}
