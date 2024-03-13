@@ -60,6 +60,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -84,6 +85,9 @@ public class ReadAloudController
             new ObservableSupplierImpl();
     private final Map<String, String> mSanitizedToFullUrlMap = new HashMap<>();
     private final Map<String, Boolean> mReadabilityMap = new HashMap<>();
+    // the key is url, the value is time it was added to the map
+    private final Map<String, Long> mReadabilityRequestTimeMap = new HashMap<>();
+
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
@@ -139,6 +143,20 @@ public class ReadAloudController
 
         // Be sure to also update enums.xml when updating these values.
         int NUM_ENTRIES = 3;
+    }
+
+    /** Clock to use so we can mock time in tests. */
+    public interface Clock {
+        long currentTimeMillis();
+    }
+
+    private static Clock sClock = System::currentTimeMillis;
+    private static final long HOUR_TO_MS = Duration.ofHours(1).toMillis();
+
+    static void setClockForTesting(Clock clock) {
+        var oldValue = sClock;
+        sClock = clock;
+        ResettersForTesting.register(() -> sClock = oldValue);
     }
 
     // Information about a tab playback necessary for resuming later. Does not
@@ -299,6 +317,7 @@ public class ReadAloudController
                     isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
 
                     mReadabilityMap.put(url, isReadable);
+                    mReadabilityRequestTimeMap.put(url, sClock.currentTimeMillis());
                     mTimepointsSupportedMap.put(url, timepointsSupported);
                     mPendingRequests.remove(url);
                     mReadabilitySupplier.set(mSanitizedToFullUrlMap.get(url));
@@ -516,18 +535,29 @@ public class ReadAloudController
         String urlSpec = stripUserData(url).getSpec();
         // TODO: 2 different URLs can have the same sanitized URL
         mSanitizedToFullUrlMap.put(url.getSpec(), urlSpec);
-        if (mReadabilityMap.containsKey(urlSpec)) {
-            ReadAloudMetrics.recordIsPageReadable(mReadabilityMap.get(urlSpec));
-            return;
-        }
 
         if (mPendingRequests.contains(urlSpec)) {
             return;
         }
-
+        if (hasUnexpiredReadabilityInfo(urlSpec)) {
+            ReadAloudMetrics.recordIsPageReadable(mReadabilityMap.get(urlSpec));
+            return;
+        }
 
         mPendingRequests.add(urlSpec);
         mReadabilityHooks.isPageReadable(urlSpec, mReadabilityCallback);
+    }
+
+    private boolean hasUnexpiredReadabilityInfo(String sanitizedUrl) {
+        if (mReadabilityMap.containsKey(sanitizedUrl)) {
+            Long retrievalDate = mReadabilityRequestTimeMap.get(sanitizedUrl);
+            if (retrievalDate != null && sClock.currentTimeMillis() - retrievalDate <= HOUR_TO_MS) {
+                return true;
+            }
+            mReadabilityMap.remove(sanitizedUrl);
+            mReadabilityRequestTimeMap.remove(sanitizedUrl);
+        }
+        return false;
     }
 
     /**
@@ -568,8 +598,12 @@ public class ReadAloudController
         }
 
         if (isTabLanguageSupported(tab) && isAvailable() && tab.getUrl().isValid()) {
-            Boolean isReadable = mReadabilityMap.get(stripUserData(tab.getUrl()).getSpec());
-            return isReadable == null ? false : isReadable;
+            String sanitizedUrl = stripUserData(tab.getUrl()).getSpec();
+            if (hasUnexpiredReadabilityInfo(sanitizedUrl)) {
+                Boolean isReadable = mReadabilityMap.get(sanitizedUrl);
+                return isReadable == null ? false : isReadable;
+            }
+            maybeCheckReadability(tab.getUrl());
         }
         return false;
     }

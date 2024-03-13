@@ -163,6 +163,26 @@ public class ReadAloudControllerUnitTest {
     private HistogramWatcher mHighlightingEnabledOnStartupHistogram;
     private Promise<Long> mExtractorPromise;
 
+    private FakeClock mClock;
+
+    /** FakeClock for setting the time. */
+    static class FakeClock implements ReadAloudController.Clock {
+        private long mCurrentTimeMillis;
+
+        FakeClock() {
+            mCurrentTimeMillis = 0;
+        }
+
+        @Override
+        public long currentTimeMillis() {
+            return mCurrentTimeMillis;
+        }
+
+        void advanceCurrentTimeMillis(long millis) {
+            mCurrentTimeMillis += millis;
+        }
+    }
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -220,6 +240,9 @@ public class ReadAloudControllerUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "ReadAloud.HighlightingEnabled.OnStartup", true);
         when(mNavigationHandle.getUrl()).thenReturn(sTestRedirectGURL);
+
+        mClock = new FakeClock();
+        ReadAloudController.setClockForTesting(mClock);
         mController =
                 new ReadAloudController(
                         mActivity,
@@ -357,12 +380,13 @@ public class ReadAloudControllerUnitTest {
         verify(mPlaybackHooks).createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
         onPlaybackSuccess(mPlayback);
         resolvePromises();
+        verify(mHooksImpl).isPageReadable(eq(mTab.getUrl().getSpec()), any());
 
         // Load the same document
         mController.getTabModelTabObserverforTests().onLoadStarted(mTab, false);
 
         // nothing should happen
-        verify(mHooksImpl, never()).isPageReadable(eq(mTab.getUrl().getSpec()), any());
+        verify(mHooksImpl, times(1)).isPageReadable(eq(mTab.getUrl().getSpec()), any());
         verify(mHighlighter, never()).handleTabReloaded(eq(mTab));
         verify(mPlayerCoordinator, never()).dismissPlayers();
     }
@@ -592,6 +616,50 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void checkReadability_notReadable_resultExpired() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        assertFalse(mController.isReadable(mTab));
+
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), false, false);
+        assertFalse(mController.isReadable(mTab));
+
+        // check 1hr1s later for the same url, we should return false and request readability again
+        mClock.advanceCurrentTimeMillis(1 * 60 * 60 * 1000 + 1000);
+
+        mController.maybeCheckReadability(sTestGURL);
+
+        verify(mHooksImpl, times(2))
+                .isPageReadable(
+                        Mockito.anyString(),
+                        Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
+    }
+
+    @Test
+    public void checkReadability_readable_resultExpired() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        assertFalse(mController.isReadable(mTab));
+
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        assertTrue(mController.isReadable(mTab));
+
+        // check 1hr1s later for the same url, we should remove the record, return false and request
+        // readability again
+        mClock.advanceCurrentTimeMillis(1 * 60 * 60 * 1000 + 1000);
+
+        assertFalse(mController.isReadable(mTab));
+        mController.maybeCheckReadability(sTestGURL);
+
+        verify(mHooksImpl, times(2))
+                .isPageReadable(
+                        Mockito.anyString(),
+                        Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
+    }
+
+    @Test
     public void checkReadability_failure() {
         mController.maybeCheckReadability(sTestGURL);
 
@@ -627,6 +695,26 @@ public class ReadAloudControllerUnitTest {
         // check that URL is supported when the language is set to a supported language
         mFakeTranslateBridge.setCurrentLanguage("en");
         assertTrue(mController.isReadable(mTab));
+    }
+
+    @Test
+    public void isReadable_resultExpired() {
+        mController.maybeCheckReadability(sTestGURL);
+
+        verify(mHooksImpl).isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        assertTrue(mController.isReadable(mTab));
+
+        // advance by 1hr
+        mClock.advanceCurrentTimeMillis(1 * 60 * 60 * 1000);
+        assertTrue(mController.isReadable(mTab));
+
+        // advance by 1s - we're past the 1h limit, the record should be deleted
+        mClock.advanceCurrentTimeMillis(1000);
+        assertFalse(mController.isReadable(mTab));
+        verify(mHooksImpl, times(2))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
     }
 
     @Test
