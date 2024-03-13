@@ -2455,12 +2455,27 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputNumber) {
   RunHtmlTest(FILE_PATH_LITERAL("input-number.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputPassword) {
+// Test flakes on Android P - b/329275097.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityInputPassword DISABLED_AccessibilityInputPassword
+#else
+#define MAYBE_AccessibilityInputPassword AccessibilityInputPassword
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputPassword) {
   RunHtmlTest(FILE_PATH_LITERAL("input-password.html"));
 }
 
+// Test flakes on Android P - b/329271598.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilityInputPasswordObscured \
+  DISABLED_AccessibilityInputPasswordObscured
+#else
+#define MAYBE_AccessibilityInputPasswordObscured \
+  AccessibilityInputPasswordObscured
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityInputPasswordObscured) {
+                       MAYBE_AccessibilityInputPasswordObscured) {
   RunHtmlTest(FILE_PATH_LITERAL("input-password-obscured.html"));
 }
 
