@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
-#include "chrome/browser/ui/webui/realbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

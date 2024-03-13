@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_REALBOX_REALBOX_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_REALBOX_REALBOX_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_REALBOX_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_REALBOX_HANDLER_H_
 
 #include <atomic>
 #include <memory>
@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
@@ -43,7 +44,7 @@ class OmniboxWebUIPopupChangeObserver : public base::CheckedObserver {
 };
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
-class RealboxHandler : public omnibox::mojom::PageHandler,
+class RealboxHandler : public SearchboxHandler,
                        public AutocompleteController::Observer,
                        public LocationBarModel {
  public:
@@ -169,4 +170,4 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   base::WeakPtrFactory<RealboxHandler> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_REALBOX_REALBOX_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_REALBOX_HANDLER_H_
