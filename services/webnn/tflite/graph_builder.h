@@ -154,6 +154,8 @@ class GraphBuilder final {
   OperatorOffset SerializeLeakyRelu(const mojom::LeakyRelu& leaky_relu);
   base::expected<OperatorOffset, std::string> SerializePad(
       const mojom::Pad& pad);
+  base::expected<OperatorOffset, std::string> SerializePool2d(
+      const mojom::Pool2d& pool2d);
   OperatorOffset SerializeRelu(const mojom::Relu& relu);
   base::expected<OperatorOffset, std::string> SerializeReshape(
       const mojom::Reshape& reshape);

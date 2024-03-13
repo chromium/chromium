@@ -348,6 +348,12 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = pad_result.value();
       break;
     }
+    case mojom::Operation::Tag::kPool2d: {
+      const auto pool2d_result = SerializePool2d(*op.get_pool2d());
+      RETURN_IF_ERROR(pool2d_result);
+      operator_offset = pool2d_result.value();
+      break;
+    }
     case mojom::Operation::Tag::kRelu:
       operator_offset = SerializeRelu(*op.get_relu());
       break;
@@ -390,8 +396,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("lstm is not implemented");
     case mojom::Operation::Tag::kMatmul:
       return base::unexpected("matmul is not implemented");
-    case mojom::Operation::Tag::kPool2d:
-      return base::unexpected("pool2d is not implemented");
     case mojom::Operation::Tag::kPrelu:
       return base::unexpected("prelu is not implemented");
     case mojom::Operation::Tag::kReduce:
@@ -1023,6 +1027,72 @@ auto GraphBuilder::SerializePad(const mojom::Pad& pad)
                                   builder_.CreateVector<int32_t>(op_inputs),
                                   builder_.CreateVector<int32_t>(op_outputs),
                                   builtin_options_type, builtin_options);
+}
+
+auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
+    -> base::expected<OperatorOffset, std::string> {
+  // TODO(crbug.com/1273291): Transpose input operand to support other layouts
+  // because tflite only support nhwc layout.
+  if (pool2d.layout != mojom::InputOperandLayout::kChannelsLast) {
+    return base::unexpected("The channel first input layout is not supported.");
+  }
+
+  // The dilations are not supported in tflite schema.
+  if (pool2d.dilations->height != 1 || pool2d.dilations->width != 1) {
+    return base::unexpected("Pool2d in tflite doesn't support dilations.");
+  }
+
+  const mojom::Operand& input_operand = GetOperand(pool2d.input_operand_id);
+  const auto& input_shape = input_operand.dimensions;
+  CHECK_EQ(input_shape.size(), 4u);
+  const webnn::Size2d<uint32_t> input_size2d = {.height = input_shape[1],
+                                                .width = input_shape[2]};
+  webnn::Size2d<uint32_t> filter_size2d = {
+      .height = pool2d.window_dimensions->height,
+      .width = pool2d.window_dimensions->width};
+  const auto padding_mode =
+      GetTfLitePaddingMode(*pool2d.padding, input_size2d, filter_size2d,
+                           *pool2d.strides, *pool2d.dilations);
+  RETURN_IF_ERROR(padding_mode);
+  // Insert a Pad operator before TfLite Pool2d if needed for explicit padding.
+  std::optional<int32_t> explicit_pad_index;
+  const int32_t input_index = operand_to_index_map_.at(pool2d.input_operand_id);
+  if (padding_mode->paddings) {
+    const auto serialization_result = InsertPadOperation(
+        input_operand, input_index, padding_mode->paddings.value());
+    RETURN_IF_ERROR(serialization_result);
+    explicit_pad_index = serialization_result.value();
+  }
+
+  ::tflite::BuiltinOperator operator_code;
+  switch (pool2d.kind) {
+    case mojom::Pool2d::Kind::kAveragePool2d:
+      operator_code = ::tflite::BuiltinOperator_AVERAGE_POOL_2D;
+      break;
+    case mojom::Pool2d::Kind::kMaxPool2d:
+      operator_code = ::tflite::BuiltinOperator_MAX_POOL_2D;
+      break;
+    case mojom::Pool2d::Kind::kL2Pool2d:
+      return base::unexpected("L2Pool2d is not supported in tflite.");
+  }
+
+  const auto pool_2d_options = ::tflite::CreatePool2DOptions(
+      builder_, padding_mode->mode, pool2d.strides->width,
+      pool2d.strides->height, filter_size2d.width, filter_size2d.height,
+      ::tflite::ActivationFunctionType_NONE);
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const uint32_t operator_code_index = GetOperatorCodeIndex(operator_code);
+  const std::array<int32_t, 1> op_inputs = {
+      explicit_pad_index ? explicit_pad_index.value() : input_index};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(pool2d.output_operand_id)};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_Pool2DOptions, pool_2d_options.Union());
 }
 
 auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
