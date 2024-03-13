@@ -40,6 +40,8 @@
 #include <vector>
 
 #include "RawPtrHelpers.h"
+#include "RawPtrManualPathsToIgnore.h"
+#include "SeparateRepositoryPaths.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -72,6 +74,8 @@ namespace {
 // Include path that needs to be added to all the files where raw_ptr<...>
 // replaces a raw pointer.
 const char kRawPtrIncludePath[] = "base/memory/raw_ptr.h";
+
+const char kOverrideExcludePathsParamName[] = "override-exclude-paths";
 
 // This iterates over function parameters and matches the ones that match
 // parm_var_decl_matcher.
@@ -895,11 +899,13 @@ class VectorRawPtrRewriter {
       MatchFinder& finder,
       OutputHelper& output_helper,
       std::map<std::string, std::set<Node>>& sig_nodes,
-      std::vector<std::pair<std::string, std::string>>& sig_pairs)
+      std::vector<std::pair<std::string, std::string>>& sig_pairs,
+      const FilterFile* excluded_paths)
       : match_finder_(finder),
         affected_ptr_expr_rewriter_(output_helper),
         potentail_nodes_(output_helper),
-        fct_sig_nodes_(sig_nodes, sig_pairs) {}
+        fct_sig_nodes_(sig_nodes, sig_pairs),
+        paths_to_exclude(excluded_paths) {}
 
   void addMatchers() {
     // vectors of char pointers are usually used as char buffers, they are thus
@@ -1002,15 +1008,18 @@ class VectorRawPtrRewriter {
             .bind("field_decl");
     match_finder_.addMatcher(field_decl, &potentail_nodes_);
 
-    // Fields annotated with RAW_PTR_EXCLUSION cannot be filtered using field
-    // exclusions. They need to appear in the graph so that we can properly
-    // propagate the exclusion to reachable nodes. For this reason, and in order
-    // to capture this information, RAW_PTR_EXCLUSION fields are added as single
-    // nodes to the list and then used as a starting point to propagate the
-    // exclusion before running dfs on the graph.
-    auto excluded_field_decl = fieldDecl(hasExplicitFieldDecl(lhs_type_loc),
-                                         isRawPtrExclusionAnnotated())
-                                   .bind("excluded_field_decl");
+    // Fields annotated with RAW_PTR_EXCLUSION (as well as fields in excluded
+    // paths) cannot be filtered using field exclusions. They need to appear in
+    // the graph so that we can properly propagate the exclusion to reachable
+    // nodes. For this reason, and in order to capture this information,
+    // RAW_PTR_EXCLUSION fields are added as single nodes to the list and then
+    // used as a starting point to propagate the exclusion before running dfs on
+    // the graph.
+    auto excluded_field_decl =
+        fieldDecl(hasExplicitFieldDecl(lhs_type_loc),
+                  anyOf(isRawPtrExclusionAnnotated(),
+                        isInLocationListedInFilterFile(paths_to_exclude)))
+            .bind("excluded_field_decl");
     match_finder_.addMatcher(excluded_field_decl, &potentail_nodes_);
 
     auto ref_cref_move =
@@ -1389,6 +1398,7 @@ class VectorRawPtrRewriter {
   AffectedPtrExprRewriter affected_ptr_expr_rewriter_;
   PotentialNodes potentail_nodes_;
   FunctionSignatureNodes fct_sig_nodes_;
+  const FilterFile* paths_to_exclude;
 };
 
 }  // namespace
@@ -1399,11 +1409,32 @@ int main(int argc, const char* argv[]) {
   llvm::cl::OptionCategory category(
       "rewrite_templated_container_fields: changes |vector<T*> field_| to "
       "|vector<raw_ptr<T>> field_|.");
+
+  llvm::cl::opt<std::string> override_exclude_paths_param(
+      kOverrideExcludePathsParamName, llvm::cl::value_desc("filepath"),
+      llvm::cl::desc(
+          "override file listing paths to be blocked (not rewritten)"));
   llvm::Expected<clang::tooling::CommonOptionsParser> options =
       clang::tooling::CommonOptionsParser::create(argc, argv, category);
   assert(static_cast<bool>(options));  // Should not return an error.
   clang::tooling::ClangTool tool(options->getCompilations(),
                                  options->getSourcePathList());
+
+  std::unique_ptr<FilterFile> paths_to_exclude;
+  if (override_exclude_paths_param.getValue().empty()) {
+    std::vector<std::string> paths_to_exclude_lines;
+    for (auto* const line : kRawPtrManualPathsToIgnore) {
+      paths_to_exclude_lines.push_back(line);
+    }
+    for (auto* const line : kSeparateRepositoryPaths) {
+      paths_to_exclude_lines.push_back(line);
+    }
+    paths_to_exclude = std::make_unique<FilterFile>(paths_to_exclude_lines);
+  } else {
+    paths_to_exclude =
+        std::make_unique<FilterFile>(override_exclude_paths_param,
+                                     override_exclude_paths_param.ArgStr.str());
+  }
 
   // Map a function signature, which is modeled as a string representing file
   // location, to it's graph nodes (RTNode and ParmVarDecl nodes).
@@ -1415,7 +1446,7 @@ int main(int argc, const char* argv[]) {
   OutputHelper output_helper;
   MatchFinder match_finder;
   VectorRawPtrRewriter rewriter(match_finder, output_helper, fct_sig_nodes,
-                                fct_sig_pairs);
+                                fct_sig_pairs, paths_to_exclude.get());
   rewriter.addMatchers();
 
   // Prepare and run the tool.
