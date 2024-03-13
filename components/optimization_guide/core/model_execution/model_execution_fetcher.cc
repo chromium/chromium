@@ -264,10 +264,10 @@ void ModelExecutionFetcher::OnURLLoadComplete(
   // handling may start a new fetch.
   active_url_loader_.reset();
 
-  base::UmaHistogramEnumeration(
-      "OptimizationGuide.ModelExecutionFetcher.Status",
-      static_cast<net::HttpStatusCode>(response_code),
-      net::HTTP_VERSION_NOT_SUPPORTED);
+  if (response_code >= 0) {
+    base::UmaHistogramSparse("OptimizationGuide.ModelExecutionFetcher.Status",
+                             response_code);
+  }
   // Net error codes are negative but histogram enums must be positive.
   base::UmaHistogramSparse(
       "OptimizationGuide.ModelExecutionFetcher.NetErrorCode", -net_error);

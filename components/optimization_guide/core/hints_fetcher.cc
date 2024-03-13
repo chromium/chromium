@@ -342,10 +342,10 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
   std::unique_ptr<proto::GetHintsResponse> get_hints_response =
       std::make_unique<proto::GetHintsResponse>();
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.Status",
-      static_cast<net::HttpStatusCode>(response_code),
-      net::HTTP_VERSION_NOT_SUPPORTED);
+  if (response_code >= 0) {
+    base::UmaHistogramSparse(
+        "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", response_code);
+  }
   // Net error codes are negative but histogram enums must be positive.
   base::UmaHistogramSparse(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode",
