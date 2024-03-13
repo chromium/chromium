@@ -123,6 +123,27 @@ def __use_large_b289968566(ctx, step_config):
         # use_thin_lto = false
         "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
         "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
+
+        # Fallback happens with follwoing args.gn (try/linux_chromium_asan_rel_ng).
+        # dcheck_always_on = true
+        # fail_on_san_warnings = true
+        # is_asan = true
+        # is_component_build = false
+        # is_debug = false
+        # is_lsan = true
+        # symbol_level = 1
+        # use_remoteexec = true
+        "./obj/components/autofill/core/browser/unit_tests/browser_autofill_manager_unittest.o",
+        "./obj/content/test/content_browsertests/fenced_frame_browsertest.o",
+        "./obj/content/test/content_browsertests/interest_group_browsertest.o",
+        "./obj/content/test/content_browsertests/navigation_controller_impl_browsertest.o",
+        "./obj/content/test/content_browsertests/prerender_browsertest.o",
+        "./obj/content/test/content_browsertests/render_frame_host_impl_browsertest.o",
+        "./obj/content/test/content_browsertests/site_per_process_browsertest.o",
+        "./obj/content/test/content_browsertests/web_contents_impl_browsertest.o",
+        "./obj/net/third_party/quiche/quiche_tests/quic_connection_test.o",
+        "./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o",
+        "./obj/third_party/perfetto/protos/perfetto/trace/merged_trace_lite/perfetto_trace.pb.o",
     ]
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
