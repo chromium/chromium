@@ -16,6 +16,12 @@ import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
+// For Wolvic
+import androidx.annotation.IntDef;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import org.chromium.ui.touch_selection.SelectionEventType;
+
 /**
  * An interface that handles input-related web content selection UI like action mode
  * and paste popup view. It wraps an {@link ActionMode} created by the associated view,
@@ -26,6 +32,47 @@ import org.chromium.ui.base.WindowAndroid;
  * action mode tasks to their requirements.
  */
 public interface SelectionPopupController {
+    // Methods called by native in SelectionPopupControllerImpl will be delegated to
+    // Wolvic for plumbing the selection actions to Wolvic's selection prompt.
+    public interface Delegate {
+        void showSelectionMenu(int left, int top, int right, int bottom, int handleHeight,
+            boolean isEditable, boolean isPasswordType, String selectionText,
+            int selectionStartOffset, boolean canSelectAll, boolean canRichlyEdit);
+        void restoreSelectionPopupsIfNecessary();
+        void onSelectionEvent(
+                @SelectionEventType int eventType, int left, int top, int right, int bottom);
+        void onSelectionChanged(String text);
+        void hidePopupsAndPreserveSelection();
+        void nativeSelectionPopupControllerDestroyed();
+    }
+
+    @IntDef({ActionType.HIDE, ActionType.CUT, ActionType.COPY, ActionType.DELETE, ActionType.PASTE,
+             ActionType.PASTE_AS_PLAIN_TEXT, ActionType.SELECT_ALL, ActionType.UNSELECT,
+             ActionType.COLLAPSE_TO_START, ActionType.COLLAPSE_TO_END, ActionType.SHOW_CONTEXT_MENU,
+             ActionType.DISMISS_TEXT_HANDLERS })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActionType {
+        int HIDE = 0;
+        int CUT = 1;
+        int COPY = 2;
+        int DELETE = 3;
+        int PASTE = 4;
+        int PASTE_AS_PLAIN_TEXT = 5;
+        int SELECT_ALL = 6;
+        int UNSELECT = 7;
+        int COLLAPSE_TO_START = 8;
+        int COLLAPSE_TO_END = 9;
+        int SHOW_CONTEXT_MENU = 10;
+        int DISMISS_TEXT_HANDLERS = 11;
+    }
+
+    public interface DelegateEventHandler {
+        void onExecute(@ActionType int event, Object... args);
+    }
+
+    void setDelegate(Delegate delegate);
+    DelegateEventHandler getDelegateEventHandler();
+
     // User action of clicking on the Share option within the selection UI.
     static final String UMA_MOBILE_ACTION_MODE_SHARE = "MobileActionMode.Share";
 
