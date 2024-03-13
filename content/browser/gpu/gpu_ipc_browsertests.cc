@@ -6,7 +6,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/gpu_host_impl_test_api.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/compositor/image_transport_factory.h"
@@ -23,12 +23,6 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkPaint.h"
-#include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GpuTypes.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gl/gl_switches.h"
 
 namespace {
@@ -36,7 +30,7 @@ namespace {
 // RunLoop implementation that runs until it observes OnContextLost().
 class ContextLostRunLoop : public viz::ContextLostObserver {
  public:
-  ContextLostRunLoop(viz::ContextProvider* context_provider)
+  explicit ContextLostRunLoop(viz::RasterContextProvider* context_provider)
       : context_provider_(context_provider) {
     context_provider_->AddObserver(this);
   }
@@ -52,7 +46,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   // viz::LostContextProvider:
   void OnContextLost() override { run_loop_.Quit(); }
 
-  const raw_ptr<viz::ContextProvider> context_provider_;
+  const raw_ptr<viz::RasterContextProvider> context_provider_;
   base::RunLoop run_loop_;
 };
 
@@ -68,8 +62,8 @@ class ContextTestBase : public content::ContentBrowserTest {
         content::GpuBrowsertestEstablishGpuChannelSyncRunLoop();
     CHECK(gpu_channel_host);
 
-    provider_ =
-        content::GpuBrowsertestCreateContext(std::move(gpu_channel_host));
+    provider_ = content::GpuBrowsertestCreateContext(
+        std::move(gpu_channel_host), /*wants_raster_interface=*/false);
     auto result = provider_->BindToCurrentSequence();
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
     gl_ = provider_->ContextGL();
@@ -80,16 +74,16 @@ class ContextTestBase : public content::ContentBrowserTest {
 
   void TearDownOnMainThread() override {
     // Must delete the context first.
+    gl_ = nullptr;
+    context_support_ = nullptr;
     provider_ = nullptr;
     ContentBrowserTest::TearDownOnMainThread();
   }
 
  protected:
-  raw_ptr<gpu::gles2::GLES2Interface, DanglingUntriaged> gl_ = nullptr;
-  raw_ptr<gpu::ContextSupport, DanglingUntriaged> context_support_ = nullptr;
-
- private:
   scoped_refptr<viz::ContextProviderCommandBuffer> provider_;
+  raw_ptr<gpu::ContextSupport> context_support_ = nullptr;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
 };
 
 class TestGpuHostImplDelegate
@@ -204,61 +198,6 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   EXPECT_EQ(gpu_channel.get(), GetGpuChannel());
 }
 #endif
-
-// Test fails on Windows because GPU Channel set-up fails.
-#if !BUILDFLAG(IS_WIN)
-#define MAYBE_GrContextKeepsGpuChannelAlive GrContextKeepsGpuChannelAlive
-#else
-#define MAYBE_GrContextKeepsGpuChannelAlive \
-    DISABLED_GrContextKeepsGpuChannelAlive
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
-                       MAYBE_GrContextKeepsGpuChannelAlive) {
-  // Test for crbug.com/551143
-  // This test verifies that holding a reference to the GrContext created by
-  // a viz::ContextProviderCommandBuffer will keep the gpu channel alive after
-  // the
-  // provider has been destroyed. Without this behavior, user code would have
-  // to be careful to destroy objects in the right order to avoid using freed
-  // memory as a function pointer in the GrContext's GrGLInterface instance.
-  DCHECK(!IsChannelEstablished());
-  EstablishAndWait();
-
-  // Step 2: verify that holding onto the provider's GrContext will
-  // retain the host after provider is destroyed.
-  scoped_refptr<viz::ContextProviderCommandBuffer> provider =
-      content::GpuBrowsertestCreateContext(GetGpuChannel());
-  ASSERT_EQ(provider->BindToCurrentSequence(), gpu::ContextResult::kSuccess);
-
-  sk_sp<GrDirectContext> gr_context = sk_ref_sp(provider->GrContext());
-
-  SkImageInfo info = SkImageInfo::MakeN32Premul(100, 100);
-  sk_sp<SkSurface> surface =
-      SkSurfaces::RenderTarget(gr_context.get(), skgpu::Budgeted::kNo, info);
-  EXPECT_TRUE(surface);
-
-  // Destroy the GL context after we made a surface.
-  provider = nullptr;
-
-  // New surfaces will fail to create now.
-  sk_sp<SkSurface> surface2 =
-      SkSurfaces::RenderTarget(gr_context.get(), skgpu::Budgeted::kNo, info);
-  EXPECT_FALSE(surface2);
-
-  // Drop our reference to the gr_context also.
-  gr_context = nullptr;
-
-  // After the context provider is destroyed, the surface no longer has access
-  // to the GrContext, even though it's alive. Use the canvas after the provider
-  // and GrContext have been locally unref'ed. This should work fine as the
-  // GrContext has been abandoned when the GL context provider was destroyed
-  // above.
-  SkPaint greenFillPaint;
-  greenFillPaint.setColor(SK_ColorGREEN);
-  greenFillPaint.setStyle(SkPaint::kFill_Style);
-  // Passes by not crashing
-  surface->getCanvas()->drawRect(SkRect::MakeWH(100, 100), greenFillPaint);
-}
 
 // Test fails on Chromeos + Mac, flaky on Windows because UI Compositor
 // establishes a GPU channel.

@@ -25,7 +25,8 @@ GpuBrowsertestEstablishGpuChannelSyncRunLoop();
 // Creates a new ContextProviderCommandBuffer using the provided
 // GpuChannelHost.
 scoped_refptr<viz::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
-    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
+    bool wants_raster_interface = true);
 
 }  // namespace content
 
