@@ -11,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabLi
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -128,6 +130,7 @@ public class TabGridDialogMediator
     private final @Nullable SnackbarManager mSnackbarManager;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final String mComponentName;
+    private final @NonNull BottomSheetController mBottomSheetController;
 
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
@@ -150,6 +153,7 @@ public class TabGridDialogMediator
             AnimationSourceViewProvider animationSourceViewProvider,
             SnackbarManager snackbarManager,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
+            @NonNull BottomSheetController bottomSheetController,
             String componentName) {
         mContext = activity;
         mModel = model;
@@ -164,6 +168,7 @@ public class TabGridDialogMediator
         mComponentName = componentName;
         mActivity = activity;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
+        mBottomSheetController = bottomSheetController;
 
         // Register for tab model.
         mTabModelObserver =

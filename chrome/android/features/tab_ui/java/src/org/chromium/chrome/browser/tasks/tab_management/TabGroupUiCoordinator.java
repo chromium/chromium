@@ -137,6 +137,7 @@ public class TabGroupUiCoordinator
                 new TabGridDialogCoordinator(
                         mActivity,
                         mBrowserControlsStateProvider,
+                        mBottomSheetController,
                         currentTabModelFilterSupplier,
                         () -> mTabModelSelector.getModel(false),
                         mTabContentManager,

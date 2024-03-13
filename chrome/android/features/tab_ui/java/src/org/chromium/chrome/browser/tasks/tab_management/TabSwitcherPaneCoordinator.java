@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -89,6 +90,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param scrimCoordinator The scrim coordinator to use for the tab grid dialog.
      * @param snackbarManager The activity level snackbar manager.
      * @param modalDialogManager The modal dialog manager for the activity.
+     * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param parentView The view to use as a parent.
      * @param resetHandler The tab list reset handler for the pane.
      * @param isVisibleSupplier The supplier of the pane's visibility.
@@ -111,6 +113,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BottomSheetController bottomSheetController,
             @NonNull ViewGroup parentView,
             @NonNull TabSwitcherResetHandler resetHandler,
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
@@ -140,6 +143,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                         new TabGridDialogCoordinator(
                                                 activity,
                                                 browserControlsStateProvider,
+                                                bottomSheetController,
                                                 tabModelFilterSupplier,
                                                 regularTabModelSupplier,
                                                 tabContentManager,

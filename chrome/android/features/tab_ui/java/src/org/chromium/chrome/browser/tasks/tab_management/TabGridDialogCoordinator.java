@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.C
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -71,6 +72,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     TabGridDialogCoordinator(
             Activity activity,
             BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull BottomSheetController bottomSheetController,
             @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
             @NonNull Supplier<TabModel> regularTabModelSupplier,
             TabContentManager tabContentManager,
@@ -145,6 +147,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             animationSourceViewProvider,
                             mSnackbarManager,
                             mSharedImageTilesCoordinator,
+                            bottomSheetController,
                             mComponentName);
 
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to

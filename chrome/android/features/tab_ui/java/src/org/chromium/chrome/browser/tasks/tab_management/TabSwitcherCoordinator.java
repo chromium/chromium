@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUiScrimDelegate;
@@ -102,6 +103,7 @@ public class TabSwitcherCoordinator
     private final ViewGroup mCoordinatorView;
     private final ViewGroup mRootView;
     private TabContentManager mTabContentManager;
+    private final @NonNull BottomSheetController mBottomSheetController;
 
     /**
      * TODO(crbug.com/1227656): Refactor this to pass a supplier instead to ensure we re-use the
@@ -134,6 +136,7 @@ public class TabSwitcherCoordinator
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BottomSheetController bottomSheetController,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
@@ -151,6 +154,7 @@ public class TabSwitcherCoordinator
             mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
             mSnackbarManager = snackbarManager;
             mModalDialogManager = modalDialogManager;
+            mBottomSheetController = bottomSheetController;
 
             PropertyModel containerViewModel =
                     new PropertyModel.Builder(TabListContainerProperties.ALL_KEYS)
@@ -333,6 +337,7 @@ public class TabSwitcherCoordinator
                 new TabGridDialogCoordinator(
                         mActivity,
                         mBrowserControlsStateProvider,
+                        mBottomSheetController,
                         currentTabModelFilterSupplier,
                         () -> mTabModelSelector.getModel(false),
                         mTabContentManager,

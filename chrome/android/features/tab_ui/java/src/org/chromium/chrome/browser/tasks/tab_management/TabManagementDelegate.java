@@ -88,6 +88,7 @@ public interface TabManagementDelegate {
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.
+     *
      * @param activity The current android {@link Activity}.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param tabModelSelector Gives access to the current set of {@TabModel}.
@@ -102,11 +103,12 @@ public interface TabManagementDelegate {
      * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
      * @param snackbarManager Manages the snackbar.
      * @param modalDialogManager Manages modal dialogs.
+     * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
-     *         to detect pending re-auth when tab switcher is shown.
+     *     to detect pending re-auth when tab switcher is shown.
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
      * @param layoutStateProviderSupplier {@link OneshotSupplier<LayoutStateProvider>} to provide
-     *                                    the layout state changes.
+     *     the layout state changes.
      * @return The {@link TabSwitcher}.
      */
     TabSwitcher createGridTabSwitcher(
@@ -124,20 +126,22 @@ public interface TabManagementDelegate {
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BottomSheetController bottomSheetController,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier);
 
     /**
      * Create the {@link TabGroupUi}.
+     *
      * @param activity The {@link Activity} that creates this surface.
      * @param parentView The parent view of this UI.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} of the top
-     *                                     controls.
+     *     controls.
      * @param incognitoStateProvider Observable provider of incognito state.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control scrim view.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
-     * @param bottomSheetController Controls the state of the bottom sheet.
+     * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param tabModelSelector Gives access to the current set of {@TabModel}.
@@ -182,6 +186,7 @@ public interface TabManagementDelegate {
      *     unused as the root UI's scrim coordinator is used for the show/hide animation.
      * @param snackbarManager The activity level snackbar manager.
      * @param modalDialogManager The modal dialog manager for the activity.
+     * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      * @param incognitoReauthControllerSupplier The incognito reauth controller supplier.
      * @param newTabButtonOnClickListener The listener for clicking the new tab button.
      * @param isIncognito Whether this is an incognito pane.
@@ -199,6 +204,7 @@ public interface TabManagementDelegate {
             @NonNull ScrimCoordinator rootUiScrimCoordinator,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BottomSheetController bottomSheetController,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,

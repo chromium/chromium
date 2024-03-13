@@ -965,6 +965,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 mRootUiCoordinator.getScrimCoordinator(),
                                 getSnackbarManager(),
                                 getModalDialogManager(),
+                                mRootUiCoordinator.getBottomSheetController(),
                                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                                 mNewTabButtonClickListener,
                                 isIncognito,
@@ -1004,6 +1005,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 compositorViewHolder::getDynamicResourceLoader,
                                 getSnackbarManager(),
                                 getModalDialogManager(),
+                                mRootUiCoordinator.getBottomSheetController(),
                                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                                 mBackPressManager,
                                 mLayoutStateProviderSupplier);

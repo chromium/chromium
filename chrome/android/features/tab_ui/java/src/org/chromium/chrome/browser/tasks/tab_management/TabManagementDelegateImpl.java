@@ -86,6 +86,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BottomSheetController bottomSheetController,
             @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @Nullable BackPressManager backPressManager,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
@@ -107,6 +108,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 dynamicResourceLoaderSupplier,
                 snackbarManager,
                 modalDialogManager,
+                bottomSheetController,
                 incognitoReauthControllerSupplier,
                 backPressManager,
                 layoutStateProviderSupplier);
@@ -162,6 +164,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ScrimCoordinator rootUiScrimCoordinator,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BottomSheetController bottomSheetController,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
@@ -180,7 +183,8 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         multiWindowModeStateDispatcher,
                         rootUiScrimCoordinator,
                         snackbarManager,
-                        modalDialogManager);
+                        modalDialogManager,
+                        bottomSheetController);
         TabSwitcherPaneBase pane;
         if (isIncognito) {
             Supplier<TabModelFilter> incongitorTabModelFilterSupplier =

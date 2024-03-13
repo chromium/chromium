@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUiScrimDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -53,6 +54,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final SnackbarManager mSnackbarManager;
     private final ModalDialogManager mModalDialogManager;
     private final @TabListMode int mMode;
+    private final @NonNull BottomSheetController mBottomSheetController;
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
@@ -67,6 +69,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      *     unused as the root UI's scrim coordinator is used for the show/hide animation.
      * @param snackbarManager The activity level snackbar manager.
      * @param modalDialogManager The modal dialog manager for the activity.
+     * @param bottomSheetController The {@link BottomSheetController} for the current activity.
      */
     TabSwitcherPaneCoordinatorFactory(
             @NonNull Activity activity,
@@ -79,7 +82,8 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ScrimCoordinator rootUiScrimCoordinator,
             @NonNull SnackbarManager snackbarManager,
-            @NonNull ModalDialogManager modalDialogManager) {
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull BottomSheetController bottomSheetController) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileProviderSupplier = profileProviderSupplier;
@@ -94,6 +98,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                         : rootUiScrimCoordinator;
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
+        mBottomSheetController = bottomSheetController;
         mMode =
                 TabUiFeatureUtilities.shouldUseListMode()
                         ? TabListCoordinator.TabListMode.LIST
@@ -133,6 +138,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mScrimCoordinator,
                 mSnackbarManager,
                 mModalDialogManager,
+                mBottomSheetController,
                 parentView,
                 resetHandler,
                 isVisibleSupplier,

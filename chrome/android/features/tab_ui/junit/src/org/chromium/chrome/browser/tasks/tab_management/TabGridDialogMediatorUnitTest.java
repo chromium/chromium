@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -119,6 +120,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock Editable mEditable;
     @Mock SnackbarManager mSnackbarManager;
     @Mock Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
+    @Mock private BottomSheetController mBottomSheetController;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
@@ -176,6 +178,7 @@ public class TabGridDialogMediatorUnitTest {
                         mAnimationSourceViewProvider,
                         mSnackbarManager,
                         /*SharedImageTilesCoordinator*/ null,
+                        mBottomSheetController,
                         "");
 
         mMediator.initWithNative(
@@ -1148,6 +1151,7 @@ public class TabGridDialogMediatorUnitTest {
                         null,
                         mSnackbarManager,
                         /*SharedImageTilesCoordinator*/ null,
+                        mBottomSheetController,
                         "");
         mMediator.initWithNative(
                 () -> {
@@ -1206,6 +1210,7 @@ public class TabGridDialogMediatorUnitTest {
                         null,
                         mSnackbarManager,
                         /*SharedImageTilesCoordinator*/ null,
+                        mBottomSheetController,
                         "");
         mMediator.initWithNative(
                 () -> {
@@ -1255,6 +1260,7 @@ public class TabGridDialogMediatorUnitTest {
                         null,
                         mSnackbarManager,
                         /*SharedImageTilesCoordinator*/ null,
+                        mBottomSheetController,
                         "");
         mMediator.initWithNative(
                 () -> {
