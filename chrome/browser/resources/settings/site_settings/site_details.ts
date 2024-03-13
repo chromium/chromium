@@ -193,10 +193,8 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
     if (route !== routes.SITE_SETTINGS_SITE_DETAILS) {
       return;
     }
-    const site = Router.getInstance().getQueryParameters().get('site');
-    if (!site) {
-      return;
-    }
+
+    const site = Router.getInstance().getQueryParameters().get('site') ?? '';
     this.origin_ = site;
     this.browserProxy.isOriginValid(this.origin_).then((valid) => {
       if (!valid) {

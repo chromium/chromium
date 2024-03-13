@@ -5,12 +5,12 @@
 // clang-format off
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {listenOnce} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SiteDetailsElement, WebsiteUsageBrowserProxy} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl, WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -466,9 +466,7 @@ suite('SiteDetails', function() {
 
     const args = await browserProxy.whenCalled('isOriginValid');
     assertEquals(invalid_url, args);
-    await new Promise((resolve) => {
-      listenOnce(window, 'popstate', resolve);
-    });
+    await flushTasks();
     assertEquals(
         routes.SITE_SETTINGS.path, Router.getInstance().getCurrentRoute().path);
   });
@@ -562,5 +560,27 @@ suite('SiteDetails', function() {
 
         assertTrue(Boolean(testElement.shadowRoot!.querySelector<HTMLElement>(
             '#confirmClearStorage #adPersonalization')));
+      });
+
+  test(
+      'empty site navigates to parent for invalid site param',
+      async function() {
+        // Confirm that when attempting to load the page without a provided
+        // site, the page is navigated away.
+        const invalid_url = '';
+        browserProxy.setIsOriginValid(false);
+        Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
+
+        testElement = createSiteDetails(invalid_url);
+        assertEquals(
+            routes.SITE_SETTINGS_SITE_DETAILS.path,
+            Router.getInstance().getCurrentRoute().path);
+
+        const args = await browserProxy.whenCalled('isOriginValid');
+        assertEquals(invalid_url, args);
+        await flushTasks();
+        assertEquals(
+            routes.SITE_SETTINGS_ALL.path,
+            Router.getInstance().getCurrentRoute().path);
       });
 });
