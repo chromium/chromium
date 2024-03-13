@@ -62,6 +62,8 @@ class FakeCertDatabase : public crosapi::mojom::CertDatabase {
       const std::vector<::chromeos::certificate_provider::CertificateInfo>&
           cert_infos) override {}
 
+  void OnPkcs12CertDualWritten() override {}
+
   mojo::Receiver<crosapi::mojom::CertDatabase>& GetReceiver() {
     return receiver_;
   }

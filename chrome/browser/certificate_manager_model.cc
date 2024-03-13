@@ -697,6 +697,10 @@ void CertificateManagerModel::ImportFromPKCS12(
   // Bind" button and it's import into Chaps by default.
   if ((nss_import_result == net::OK) && is_extractable &&
       chromeos::features::IsPkcs12ToChapsDualWriteEnabled()) {
+    // Record the dual-write event. Even if the import fails, it's theoretically
+    // possible that some related objects are still created and would need to be
+    // deleted in case of a rollback.
+    kcer::KcerFactory::RecordPkcs12CertDualWritten();
     std::string u8_password = base::UTF16ToUTF8(password);
     return kcer_->ImportPkcs12Cert(
         kcer::Token::kUser,

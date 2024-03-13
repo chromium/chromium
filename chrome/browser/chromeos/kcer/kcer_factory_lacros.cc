@@ -106,4 +106,22 @@ bool KcerFactoryLacros::EnsureHighLevelChapsClientInitialized() {
   return (session_chaps_client_ && high_level_chaps_client_);
 }
 
+void KcerFactoryLacros::RecordPkcs12CertDualWrittenImpl() {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (!service) {
+    LOG(ERROR) << "Failed to notify PKCS#12 Dual Write, no lacros service";
+    return;
+  }
+
+  int cert_db_version =
+      service->GetInterfaceVersion<crosapi::mojom::CertDatabase>();
+  if (cert_db_version < int{crosapi::mojom::CertDatabase::MethodMinVersions::
+                                kOnPkcs12CertDualWrittenMinVersion}) {
+    LOG(ERROR) << "Failed to notify PKCS#12 Dual Write, Ash is too old";
+    return;
+  }
+
+  service->GetRemote<crosapi::mojom::CertDatabase>()->OnPkcs12CertDualWritten();
+}
+
 }  // namespace kcer

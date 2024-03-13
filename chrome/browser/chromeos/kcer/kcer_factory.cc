@@ -128,6 +128,13 @@ base::WeakPtr<Kcer> KcerFactory::GetKcer(Profile* profile) {
 }
 
 // static
+void KcerFactory::RecordPkcs12CertDualWritten() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(g_kcer_factory);
+  g_kcer_factory->RecordPkcs12CertDualWrittenImpl();
+}
+
+// static
 bool KcerFactory::IsHighLevelChapsClientInitialized() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(g_kcer_factory);

@@ -3095,6 +3095,7 @@ if (!is_android) {
       data += [ "//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js" ]
       sources += [
         "../browser/accessibility/media_app/ax_media_app_untrusted_handler_browsertest.cc",
+        "../browser/certificate_manager_model_ash_browsertest.cc",
         "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
         "../browser/chromeos/extensions/odfs_config_private/odfs_config_private_api_browsertest.cc",
         "../browser/media/webrtc/get_all_screens_media_browsertest.cc",
@@ -3412,6 +3413,7 @@ if (!is_android) {
       sources += [
         "../browser/apps/app_service/metrics/website_metrics_browsertest.cc",
         "../browser/apps/app_service/webapk/webapk_utils_lacros_browsertest.cc",
+        "../browser/certificate_manager_model_lacros_browsertest.cc",
         "../browser/lacros/app_mode/kiosk_accelerator_browsertest.cc",
         "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
         "../browser/lacros/lacros_apps_publisher_browsertest.cc",

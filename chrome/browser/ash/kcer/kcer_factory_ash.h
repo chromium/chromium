@@ -9,6 +9,10 @@
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 #include "components/account_id/account_id.h"
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 namespace kcer {
 
 class KcerFactoryAsh final : public KcerFactory {
@@ -21,7 +25,12 @@ class KcerFactoryAsh final : public KcerFactory {
  private:
   void Initialize();
 
+  // Implements BrowserContextKeyedServiceFactory.
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
+
   // Implements KcerFactory.
+  void RecordPkcs12CertDualWrittenImpl() override;
   base::WeakPtr<Kcer> GetKcerImpl(Profile* profile) override;
   bool IsPrimaryContext(content::BrowserContext* context) const override;
   void StartInitializingKcerWithoutNss(

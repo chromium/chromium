@@ -29,6 +29,7 @@ class KcerFactoryLacros final : public KcerFactory {
       base::WeakPtr<internal::KcerImpl> kcer_service,
       content::BrowserContext* context) override;
   bool EnsureHighLevelChapsClientInitialized() override;
+  void RecordPkcs12CertDualWrittenImpl() override;
 
   void OnCertDbInfoReceived(
       base::WeakPtr<internal::KcerImpl> kcer_service,
