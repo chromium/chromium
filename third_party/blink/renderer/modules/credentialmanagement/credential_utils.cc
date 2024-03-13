@@ -16,18 +16,20 @@ bool CheckGenericSecurityRequirementsForCredentialsContainerRequest(
     ScriptPromiseResolver* resolver) {
   // Ignore calls if the current realm execution context is no longer valid,
   // e.g., because the responsible document was detached.
-  if (!resolver->GetExecutionContext()) {
+  CHECK(resolver->GetExecutionContext());
+  if (resolver->GetExecutionContext()->IsContextDestroyed()) {
+    resolver->Reject();
     return false;
   }
 
   // The API is not exposed to Workers or Worklets, so if the current realm
   // execution context is valid, it must have a responsible browsing context.
-  auto* window = To<LocalDOMWindow>(resolver->GetExecutionContext());
+  SECURITY_CHECK(resolver->DomWindow());
 
   // The API is not exposed in non-secure context.
-  SECURITY_CHECK(window->IsSecureContext());
+  SECURITY_CHECK(resolver->GetExecutionContext()->IsSecureContext());
 
-  if (window->GetFrame()->IsInFencedFrameTree()) {
+  if (resolver->DomWindow()->GetFrame()->IsInFencedFrameTree()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The credential operation is not allowed in a fenced frame tree."));

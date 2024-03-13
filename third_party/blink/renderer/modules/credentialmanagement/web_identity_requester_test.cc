@@ -51,8 +51,7 @@ TEST(WebIdentityRequesterTest, StartDelayTimerBeforeOnload) {
   histogram_tester.ExpectTotalCount("Blink.FedCm.IsAfterWindowOnload", 0);
 
   // Start the window onload event.
-  To<LocalDOMWindow>(resolver->GetExecutionContext())
-      ->DispatchWindowLoadEvent();
+  resolver->DomWindow()->DispatchWindowLoadEvent();
   EXPECT_TRUE(scope.GetDocument().LoadEventFinished());
 
   // Since stopping the delay timer is done by posting a task, we wait for all
@@ -92,8 +91,7 @@ TEST(WebIdentityRequesterTest, StartDelayTimerAfterOnload) {
   histogram_tester.ExpectTotalCount("Blink.FedCm.IsAfterWindowOnload", 0);
 
   // Start delay timer after the start of the window onload event.
-  To<LocalDOMWindow>(resolver->GetExecutionContext())
-      ->DispatchWindowLoadEvent();
+  resolver->DomWindow()->DispatchWindowLoadEvent();
   EXPECT_TRUE(scope.GetDocument().LoadEventFinished());
   web_identity_requester->StartDelayTimer(resolver);
 

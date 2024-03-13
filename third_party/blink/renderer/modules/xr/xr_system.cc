@@ -577,10 +577,9 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
     mojo::PendingRemote<device::mojom::blink::XRSessionMetricsRecorder>
         metrics_recorder) {
   using device::mojom::XRSessionFeature;
-  auto* execution_context = resolver_->GetExecutionContext();
-  if (!execution_context) {
+
+  if (!resolver_->DomWindow())
     return;
-  }
 
   auto feature_request_viewer =
       GetFeatureRequestStatus(XRSessionFeature::REF_SPACE_VIEWER, session);
@@ -610,7 +609,7 @@ void XRSystem::PendingRequestSessionQuery::ReportRequestSessionResult(
       .SetFeature_BoundedFloor(
           static_cast<int64_t>(feature_request_bounded_floor))
       .SetFeature_Unbounded(static_cast<int64_t>(feature_request_unbounded))
-      .Record(execution_context->UkmRecorder());
+      .Record(resolver_->DomWindow()->UkmRecorder());
 
   // If the session was successfully created and DOM overlay was requested,
   // count this as a use of the DOM overlay feature.
