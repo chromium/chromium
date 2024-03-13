@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 
+#include "base/containers/heap_array.h"
 #include "base/notreached.h"
 #include "base/sys_byteorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -281,15 +282,15 @@ bool ColorCorrectionTestUtils::MatchSkImages(sk_sp<SkImage> src_image,
       src_image->alphaType(), dst_image->refColorSpace());
 
   if (src_image->colorType() != kRGBA_F16_SkColorType) {
-    std::unique_ptr<uint8_t[]> src_pixels(new uint8_t[num_pixels * 4]());
-    std::unique_ptr<uint8_t[]> dst_pixels(new uint8_t[num_pixels * 4]());
+    auto src_pixels = base::HeapArray<uint8_t>::Uninit(num_pixels * 4);
+    auto dst_pixels = base::HeapArray<uint8_t>::Uninit(num_pixels * 4);
 
-    src_image->readPixels(src_info, src_pixels.get(), src_info.minRowBytes(), 0,
-                          0);
-    dst_image->readPixels(dst_info, dst_pixels.get(), dst_info.minRowBytes(), 0,
-                          0);
+    src_image->readPixels(src_info, src_pixels.data(), src_info.minRowBytes(),
+                          0, 0);
+    dst_image->readPixels(dst_info, dst_pixels.data(), dst_info.minRowBytes(),
+                          0, 0);
 
-    for (int i = 0; test_passed && i < num_pixels; i++) {
+    for (size_t i = 0; test_passed && i < src_pixels.size(); i++) {
       for (int j = 0; j < num_components; j++) {
         test_passed &= IsNearlyTheSame(src_pixels[i * 4 + j],
                                        dst_pixels[i * 4 + j], uint8_tolerance);
@@ -298,18 +299,18 @@ bool ColorCorrectionTestUtils::MatchSkImages(sk_sp<SkImage> src_image,
     return test_passed;
   }
 
-  std::unique_ptr<float[]> src_pixels(new float[num_pixels * 4]());
-  std::unique_ptr<float[]> dst_pixels(new float[num_pixels * 4]());
+  auto src_pixels = base::HeapArray<float>::Uninit(num_pixels * 4);
+  auto dst_pixels = base::HeapArray<float>::Uninit(num_pixels * 4);
 
   src_info = src_info.makeColorType(kRGBA_F32_SkColorType);
   dst_info = dst_info.makeColorType(kRGBA_F32_SkColorType);
 
-  src_image->readPixels(src_info, src_pixels.get(), src_info.minRowBytes(), 0,
+  src_image->readPixels(src_info, src_pixels.data(), src_info.minRowBytes(), 0,
                         0);
-  dst_image->readPixels(dst_info, dst_pixels.get(), dst_info.minRowBytes(), 0,
+  dst_image->readPixels(dst_info, dst_pixels.data(), dst_info.minRowBytes(), 0,
                         0);
 
-  for (int i = 0; test_passed && i < num_pixels; i++) {
+  for (size_t i = 0; test_passed && i < src_pixels.size(); i++) {
     for (int j = 0; j < num_components; j++) {
       test_passed &= IsNearlyTheSame(src_pixels[i * 4 + j],
                                      dst_pixels[i * 4 + j], f16_tolerance);
