@@ -204,7 +204,7 @@ SyncTest::SyncTest(TestType test_type)
   }
   std::vector<base::test::FeatureRef> disabled_features;
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/328252586): Re-enable the feature after fixing the flakes.
+  // TODO(crbug.com/329426609): Re-enable the feature after fixing the flakes.
   disabled_features.push_back(switches::kSeedAccountsRevamp);
 #endif
   if (!enabled_features.empty() || !disabled_features.empty()) {
