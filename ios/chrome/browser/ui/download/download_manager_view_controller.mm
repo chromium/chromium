@@ -217,6 +217,17 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
   self.bottomMarginGuide = [[UILayoutGuide alloc] init];
   [self.view addLayoutGuide:self.bottomMarginGuide];
+  self.view.accessibilityElements = @[
+    self.statusLabel,
+    self.detailLabel,
+    self.downloadButton,
+    self.openInButton,
+    self.openInDriveButton,
+    self.installAppButton,
+    self.tryAgainButton,
+    self.progressView,
+    self.closeButton,
+  ];
 }
 
 - (void)updateViewConstraints {
@@ -541,6 +552,8 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
           [weakSelf.delegate
               downloadManagerViewControllerDidOpenInDriveApp:weakSelf];
         }]);
+    _openInDriveButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_DOWNLOAD_MANAGER_OPEN_ACCESSIBILITY_LABEL);
   }
 
   return _openInDriveButton;
@@ -753,12 +766,16 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   if (_multipleDestinationsAvailable) {
     downloadButtonConfiguration.attributedTitle = CreateActionButtonTitle(
         l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_SAVE_ELLIPSIS));
+    _openInDriveButton.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_DOWNLOAD_MANAGER_SAVE_ACCESSIBILITY_LABEL);
+
     self.downloadButton.accessibilityIdentifier =
         kDownloadManagerSaveEllipsisAccessibilityIdentifier;
   } else {
     downloadButtonConfiguration.attributedTitle = CreateActionButtonTitle(
         [l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD)
             localizedUppercaseString]);
+    self.downloadButton.accessibilityLabel = nil;
     self.downloadButton.accessibilityIdentifier =
         kDownloadManagerDownloadAccessibilityIdentifier;
   }
