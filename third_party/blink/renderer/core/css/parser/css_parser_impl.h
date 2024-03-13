@@ -119,8 +119,11 @@ class CORE_EXPORT CSSParserImpl {
   static ImmutableCSSPropertyValueSet* ParseInlineStyleDeclaration(
       const String&,
       Element*);
-  static ImmutableCSSPropertyValueSet*
-  ParseInlineStyleDeclaration(const String&, CSSParserMode, SecureContextMode);
+  static ImmutableCSSPropertyValueSet* ParseInlineStyleDeclaration(
+      const String&,
+      CSSParserMode,
+      SecureContextMode,
+      const Document*);
   // NOTE: This function can currently only be used to parse a
   // declaration list with no nested rules, not a full style rule
   // (it is only used for things like inline style).

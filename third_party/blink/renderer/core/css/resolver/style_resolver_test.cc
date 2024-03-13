@@ -3866,4 +3866,85 @@ TEST_P(ParameterizedStyleResolverTest, ResizeAutoCounted) {
       << "Author style resize:auto applied to div should be counted";
 }
 
+TEST_P(ParameterizedStyleResolverTest, NoCursorHandIfNoCursor) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          color: blue;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+}
+
+TEST_P(ParameterizedStyleResolverTest, CursorHandIsCounted) {
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          cursor: hand;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+}
+
+TEST_P(ParameterizedStyleResolverTest, CursorHandInStandardsModeIsIgnored) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          cursor: hand;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+}
+
+TEST_P(ParameterizedStyleResolverTest, IEIgnoreSyntaxForCursorHandIsIgnored) {
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          * cursor: hand;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+}
+
+TEST_P(ParameterizedStyleResolverTest, CursorHandThatLoses) {
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          color: blue;
+          cursor: hand;
+          cursor: pointer;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+}
+
+TEST_P(ParameterizedStyleResolverTest,
+       CursorHandThatWouldNotMatterIfWeIgnored) {
+  GetDocument().SetCompatibilityMode(Document::kQuirksMode);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          cursor: pointer;
+          color: blue;
+          cursor: hand;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHand));
+}
+
 }  // namespace blink

@@ -4259,6 +4259,7 @@ enum WebFeature {
   kBadgeSetWithoutNotificationPermissionInBrowserWindow = 4893,
   kBadgeSetWithoutNotificationPermissionInAppWindow = 4894,
   kBadgeSetWithoutNotificationPermissionInWorker = 4895,
+  kQuirksModeCursorHand = 4896,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

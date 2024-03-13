@@ -2757,12 +2757,15 @@ const CSSValue* Cursor::ParseSingleValue(CSSParserTokenRange& range,
       context.Count(WebFeature::kPrefixedCursorGrabbing);
     }
   }
-  CSSValue* cursor_type = nullptr;
+  CSSIdentifierValue* cursor_type = nullptr;
   if (id == CSSValueID::kHand) {
     if (!in_quirks_mode) {  // Non-standard behavior
       return nullptr;
     }
-    cursor_type = CSSIdentifierValue::Create(CSSValueID::kPointer);
+    cursor_type = MakeGarbageCollected<CSSIdentifierValue>(
+        CSSValueID::kPointer,
+        /*was_quirky=*/true);  // Cannot use the identifier value pool due to
+                               // was_quirky.
     range.ConsumeIncludingWhitespace();
   } else if ((id >= CSSValueID::kAuto && id <= CSSValueID::kWebkitZoomOut) ||
              id == CSSValueID::kCopy || id == CSSValueID::kNone) {

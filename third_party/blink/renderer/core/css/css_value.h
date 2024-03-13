@@ -370,6 +370,11 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // populated with a tree scope.
   uint8_t needs_tree_scope_population_ : 1;  // NOLINT
 
+  // Whether this value originally came from a quirksmode-specific declaration.
+  // Used for use counting of such situations (to see if we can try to remove
+  // the functionality).
+  uint8_t was_quirky_ : 1 = false;
+
  private:
   const uint8_t class_type_;  // ClassType
 };

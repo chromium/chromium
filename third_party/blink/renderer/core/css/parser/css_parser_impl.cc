@@ -236,10 +236,12 @@ static inline void FilterProperties(
 
 static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     HeapVector<CSSPropertyValue, 64>& parsed_properties,
-    CSSParserMode mode) {
-  if (parsed_properties.size() < 2 ||
-      (parsed_properties.size() == 2 &&
-       parsed_properties[0].Id() != parsed_properties[1].Id())) {
+    CSSParserMode mode,
+    const Document* document) {
+  if (mode != kHTMLQuirksMode &&
+      (parsed_properties.size() < 2 ||
+       (parsed_properties.size() == 2 &&
+        parsed_properties[0].Id() != parsed_properties[1].Id()))) {
     // Fast path for the situations where we can trivially detect that there can
     // be no collision between properties, and don't need to reorder, make
     // bitsets, or similar.
@@ -258,6 +260,32 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
                    seen_properties, seen_custom_properties);
   FilterProperties(false, parsed_properties, results, unused_entries,
                    seen_properties, seen_custom_properties);
+
+  if (document && mode == kHTMLQuirksMode &&
+      seen_properties.test(GetCSSPropertyIDIndex(CSSPropertyID::kCursor))) {
+    // See if the properties contain “cursor: hand” without also containing
+    // “cursor: pointer”. This is a reasonable approximation for whether
+    // removing support for the former would actually matter. (Of course,
+    // we don't check whether “cursor: hand” could lose in the cascade
+    // due to properties coming from other declarations, but that would be
+    // much more complicated)
+    bool contains_cursor_hand = false;
+    bool contains_cursor_pointer = false;
+    for (const CSSPropertyValue& property : parsed_properties) {
+      const CSSIdentifierValue* value =
+          DynamicTo<CSSIdentifierValue>(property.Value());
+      if (value) {
+        if (value->WasQuirky()) {
+          contains_cursor_hand = true;
+        } else if (value->GetValueID() == CSSValueID::kPointer) {
+          contains_cursor_pointer = true;
+        }
+      }
+    }
+    if (contains_cursor_hand && !contains_cursor_pointer) {
+      document->CountUse(WebFeature::kQuirksModeCursorHand);
+    }
+  }
 
   ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
       results.data() + unused_entries, results.size() - unused_entries, mode);
@@ -282,13 +310,14 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
                                 CSSNestingType::kNone,
                                 /*parent_rule_for_nesting=*/nullptr,
                                 /*child_rules=*/nullptr);
-  return CreateCSSPropertyValueSet(parser.parsed_properties_, mode);
+  return CreateCSSPropertyValueSet(parser.parsed_properties_, mode, &document);
 }
 
 ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
     const String& string,
     CSSParserMode parser_mode,
-    SecureContextMode secure_context_mode) {
+    SecureContextMode secure_context_mode,
+    const Document* document) {
   auto* context =
       MakeGarbageCollected<CSSParserContext>(parser_mode, secure_context_mode);
   CSSParserImpl parser(context);
@@ -298,7 +327,8 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
                                 CSSNestingType::kNone,
                                 /*parent_rule_for_nesting=*/nullptr,
                                 /*child_rules=*/nullptr);
-  return CreateCSSPropertyValueSet(parser.parsed_properties_, parser_mode);
+  return CreateCSSPropertyValueSet(parser.parsed_properties_, parser_mode,
+                                   document);
 }
 
 bool CSSParserImpl::ParseDeclarationList(
@@ -567,7 +597,8 @@ CSSPropertyValueSet* CSSParserImpl::ParseDeclarationListForLazyStyle(
                                 CSSNestingType::kNone,
                                 /*parent_rule_for_nesting=*/nullptr,
                                 /*child_rules=*/nullptr);
-  return CreateCSSPropertyValueSet(parser.parsed_properties_, context->Mode());
+  return CreateCSSPropertyValueSet(parser.parsed_properties_, context->Mode(),
+                                   context->GetDocument());
 }
 
 static CSSParserImpl::AllowedRulesType ComputeNewAllowedRules(
@@ -970,7 +1001,8 @@ StyleRulePageMargin* CSSParserImpl::ConsumePageMarginRule(
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
   return MakeGarbageCollected<StyleRulePageMargin>(
-      rule_id, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      rule_id, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
+                                         context_->GetDocument()));
 }
 
 StyleRuleCharset* CSSParserImpl::ConsumeCharsetRule(
@@ -1131,7 +1163,8 @@ StyleRule* CSSParserImpl::CreateImplicitNestedRule(
 
   return StyleRule::Create(
       base::span<CSSSelector>{selectors.data(), selectors.size()},
-      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
+                                context_->GetDocument()));
 }
 
 StyleRule* CSSParserImpl::CreateInvisibleRule(const CSSSelector* selector_list,
@@ -1163,7 +1196,8 @@ StyleRule* CSSParserImpl::CreateInvisibleRule(const CSSSelector* selector_list,
 
   return StyleRule::Create(
       base::span<CSSSelector>{selectors.data(), selectors.size()},
-      CreateCSSPropertyValueSet(invisible_declarations, context_->Mode()));
+      CreateCSSPropertyValueSet(invisible_declarations, context_->Mode(),
+                                context_->GetDocument()));
 }
 
 void CSSParserImpl::EmitInvisibleRuleIfNeeded(
@@ -1359,8 +1393,8 @@ StyleRuleFontFace* CSSParserImpl::ConsumeFontFaceRule(
   ConsumeDeclarationList(stream, StyleRule::kFontFace, CSSNestingType::kNone,
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
-  return MakeGarbageCollected<StyleRuleFontFace>(
-      CreateCSSPropertyValueSet(parsed_properties_, kCSSFontFaceRuleMode));
+  return MakeGarbageCollected<StyleRuleFontFace>(CreateCSSPropertyValueSet(
+      parsed_properties_, kCSSFontFaceRuleMode, context_->GetDocument()));
 }
 
 StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
@@ -1633,7 +1667,8 @@ StyleRulePage* CSSParserImpl::ConsumePageRule(CSSParserTokenStream& stream) {
 
   return MakeGarbageCollected<StyleRulePage>(
       selector_list,
-      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()),
+      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
+                                context_->GetDocument()),
       child_rules);
 }
 
@@ -1669,8 +1704,8 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
   StyleRuleProperty* rule = MakeGarbageCollected<StyleRuleProperty>(
-      name,
-      CreateCSSPropertyValueSet(parsed_properties_, kCSSPropertyRuleMode));
+      name, CreateCSSPropertyValueSet(parsed_properties_, kCSSPropertyRuleMode,
+                                      context_->GetDocument()));
 
   std::optional<CSSSyntaxDefinition> syntax =
       PropertyRegistration::ConvertSyntax(rule->GetSyntax());
@@ -1732,7 +1767,8 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
   return MakeGarbageCollected<StyleRuleCounterStyle>(
-      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
+                                      context_->GetDocument()));
 }
 
 StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
@@ -1770,7 +1806,8 @@ StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
                          /*child_rules=*/nullptr);
   return MakeGarbageCollected<StyleRuleFontPaletteValues>(
       name, CreateCSSPropertyValueSet(parsed_properties_,
-                                      kCSSFontPaletteValuesRuleMode));
+                                      kCSSFontPaletteValuesRuleMode,
+                                      context_->GetDocument()));
 }
 
 StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
@@ -1846,7 +1883,8 @@ StyleRuleViewTransition* CSSParserImpl::ConsumeViewTransitionRule(
                          /*child_rules=*/nullptr);
 
   return MakeGarbageCollected<StyleRuleViewTransition>(
-      *CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      *CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
+                                 context_->GetDocument()));
 }
 
 StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
@@ -2035,7 +2073,8 @@ StyleRulePositionTry* CSSParserImpl::ConsumePositionTryRule(
 
   return MakeGarbageCollected<StyleRulePositionTry>(
       AtomicString(name),
-      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
+                                context_->GetDocument()));
 }
 
 StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
@@ -2114,8 +2153,8 @@ StyleRuleTry* CSSParserImpl::ConsumeTryRule(CSSParserTokenStream& stream) {
   ConsumeDeclarationList(stream, StyleRule::kTry, CSSNestingType::kNone,
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
-  return MakeGarbageCollected<StyleRuleTry>(
-      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+  return MakeGarbageCollected<StyleRuleTry>(CreateCSSPropertyValueSet(
+      parsed_properties_, context_->Mode(), context_->GetDocument()));
 }
 
 // Parse a type for CSS Functions; e.g. length, color, etc..
@@ -2328,7 +2367,8 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
 
   return MakeGarbageCollected<StyleRuleKeyframe>(
       std::move(key_list),
-      CreateCSSPropertyValueSet(parsed_properties_, kCSSKeyframeRuleMode));
+      CreateCSSPropertyValueSet(parsed_properties_, kCSSKeyframeRuleMode,
+                                context_->GetDocument()));
 }
 
 // A (hopefully) fast check for whether the given declaration block could
@@ -2479,8 +2519,8 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
   for (StyleRuleBase* child_rule : child_rules) {
     style_rule->AddChildRule(child_rule);
   }
-  style_rule->SetProperties(
-      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+  style_rule->SetProperties(CreateCSSPropertyValueSet(
+      parsed_properties_, context_->Mode(), context_->GetDocument()));
   return style_rule;
 }
 
