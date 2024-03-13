@@ -35,6 +35,9 @@ class PlusAddressHttpClient {
   // specified server and runs `on_completed` when the request is completed.
   virtual void GetAllPlusAddresses(
       PlusAddressMapRequestCallback on_completed) = 0;
+
+  // Resets state in the client, e.g., by cancelling ongoing network requests.
+  virtual void Reset() = 0;
 };
 
 }  // namespace plus_addresses

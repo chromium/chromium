@@ -398,6 +398,7 @@ void PlusAddressService::HandleSignout() {
   plus_address_by_site_.clear();
   plus_addresses_.clear();
   polling_timer_.Stop();
+  plus_address_http_client_->Reset();
   if (webdata_service_) {
     webdata_service_->ClearPlusProfiles();
   }

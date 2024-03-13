@@ -60,6 +60,7 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                           const std::string& plus_address,
                           PlusAddressRequestCallback on_completed) override;
   void GetAllPlusAddresses(PlusAddressMapRequestCallback on_completed) override;
+  void Reset() override;
 
  private:
   friend class PlusAddressHttpClientImplTestApi;
@@ -103,14 +104,21 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                       GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);
 
-  // The IdentityManager instance for the signed-in user.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  // The IdentityManager instance for the current profile.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Used to make HTTP requests.
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  const std::optional<GURL> server_url_;
+
+  const signin::ScopeSet scopes_;
 
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Used to make HTTP requests.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  // Stores callbacks that raced to get an auth token to run them once ready.
+  base::queue<TokenReadyCallback> pending_callbacks_;
 
   // List of loaders used by the creation flow (CreatePlusAddress). We use a
   // list of loaders instead of a single one to handle several requests made
@@ -120,13 +128,6 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   // A loader used infrequently for calls to GetAllPlusAddresses which keeps
   // the PlusAddressService synced with the remote server.
   std::unique_ptr<network::SimpleURLLoader> loader_for_sync_;
-
-  std::optional<GURL> server_url_;
-
-  signin::ScopeSet scopes_;
-
-  // Stores callbacks that raced to get an auth token to run them once ready.
-  base::queue<TokenReadyCallback> pending_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

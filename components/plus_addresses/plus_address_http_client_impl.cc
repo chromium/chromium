@@ -187,6 +187,14 @@ void PlusAddressHttpClientImpl::GetAllPlusAddresses(
                               base::Unretained(this), std::move(on_completed)));
 }
 
+void PlusAddressHttpClientImpl::Reset() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  access_token_fetcher_.reset();
+  pending_callbacks_ = {};
+  loaders_for_creation_.clear();
+  loader_for_sync_.reset();
+}
+
 void PlusAddressHttpClientImpl::ReservePlusAddressInternal(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed,

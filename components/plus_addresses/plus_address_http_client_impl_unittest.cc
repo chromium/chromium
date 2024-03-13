@@ -545,6 +545,36 @@ TEST_F(
   EXPECT_TRUE(first.IsReady());
 }
 
+// Tests that calling reset cancels ongoing network requests without ever
+// invoking callbacks.
+TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForNetwork) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  std::string facet = origin.Serialize();
+  base::test::TestFuture<const PlusProfileOrError&> future;
+
+  client().ReservePlusAddress(origin, future.GetCallback());
+  identity_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      kToken, base::Time::Max());
+
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  client().Reset();
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that calling reset cancels ongoing OAuth requests without ever
+// invoking callbacks.
+TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForOAuth) {
+  const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
+  std::string facet = origin.Serialize();
+  base::test::TestFuture<const PlusProfileOrError&> future;
+
+  client().ReservePlusAddress(origin, future.GetCallback());
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
+  client().Reset();
+  EXPECT_FALSE(future.IsReady());
+}
+
 TEST(PlusAddressHttpClient, ChecksUrlParamIsValidGurl) {
   base::test::TaskEnvironment task_environment;
   signin::IdentityTestEnvironment identity_test_env;

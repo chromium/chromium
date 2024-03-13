@@ -33,6 +33,7 @@ class MockPlusAddressHttpClient : public PlusAddressHttpClient {
               GetAllPlusAddresses,
               (PlusAddressMapRequestCallback),
               (override));
+  MOCK_METHOD(void, Reset, (), (override));
 };
 
 }  // namespace plus_addresses

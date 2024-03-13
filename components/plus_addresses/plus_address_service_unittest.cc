@@ -99,6 +99,7 @@ class PlusAddressServiceTest : public ::testing::Test {
   shared_loader_factory() {
     return test_shared_loader_factory_;
   }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
   network::TestURLLoaderFactory& url_loader_factory() {
     return test_url_loader_factory_;
   }
@@ -423,6 +424,20 @@ TEST_F(PlusAddressServiceRequestsTest,
   EXPECT_EQ(confirm.Get()->plus_address, kPlusAddress);
 }
 
+// Tests that ongoing network requests are cancelled on signout.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
+  base::test::TestFuture<const PlusProfileOrError&> future;
+  service().ReservePlusAddress(kNoSubdomainOrigin, future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
+  identity_env().ClearPrimaryAccount();
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
+  EXPECT_FALSE(future.IsReady());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 class PlusAddressHttpForbiddenResponseTest
     : public PlusAddressServiceRequestsTest {
  public:
@@ -696,15 +711,19 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  task_environment().RunUntilIdle();
   service().SyncPlusAddressMapping();
-  // The above doesn't block since it doesn't make network requests in this
-  // state.
+  // No network requests are expected because the service is not enabled.
+  EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // Toggle creation back on by removing the error.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+  task_environment().RunUntilIdle();
+
   service().SyncPlusAddressMapping();
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
   // TODO: b/305696884 - Remove above call to verify that observing
   // OnPrimaryAccountChanged will trigger this via CreateAndStartTimer().
   url_loader_factory().SimulateResponseForPendingRequest(
