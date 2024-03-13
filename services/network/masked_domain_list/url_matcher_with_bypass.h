@@ -8,6 +8,7 @@
 #include <map>
 #include <string_view>
 
+#include "base/types/optional_ref.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/scheme_host_port_matcher.h"
 #include "net/base/scheme_host_port_matcher_rule.h"
@@ -49,27 +50,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
                       const std::optional<net::SchemefulSite>& top_frame_site,
                       bool skip_bypass_check = false);
 
-  // Adds a matcher rule and bypass matcher for the domain.
-  void AddDomainWithBypass(std::string_view domain,
-                           net::SchemeHostPortMatcher bypass_matcher,
-                           bool include_subdomains);
-
-  // Builds the bypass rules from the MDL ownership entry and adds a rule.
-  void AddMaskedDomainListRules(
-      std::string_view domain,
-      const masked_domain_list::ResourceOwner& resource_owner);
-
-  // Builds a single pair of matcher and bypass rules for the provided partition
-  // to minimize unnecessary memory usage.
+  // Builds a pair of matcher and bypass rules for the each partition needed for
+  // the set of domains. If a ResourceOwner is not provided then no bypass rules
+  // will be created.
   void AddMaskedDomainListRules(
       const std::set<std::string>& domains,
-      const std::string& partition_key,
-      const masked_domain_list::ResourceOwner& resource_owner);
+      base::optional_ref<masked_domain_list::ResourceOwner> resource_owner);
 
-  // Builds a single matcher for the provided partition that does not have any
-  // bypass rules.
-  void AddRulesWithoutBypass(const std::set<std::string>& domains,
-                             const std::string& partition_key);
+  // Builds a matcher for each partition needed that does not have any bypass
+  // rules.
+  void AddRulesWithoutBypass(const std::set<std::string>& domains);
 
   void Clear();
 

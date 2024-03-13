@@ -38,30 +38,6 @@ TEST_F(UrlMatcherWithBypassTest, PartitionMapKey) {
   EXPECT_EQ(PartitionMapKey("foo.co.uk"), "co.uk");
 }
 
-TEST_F(UrlMatcherWithBypassTest, AddDomainWithBypass_InvalidDomainString) {
-  UrlMatcherWithBypass matcher;
-  matcher.AddDomainWithBypass("", net::SchemeHostPortMatcher(), true);
-  EXPECT_FALSE(matcher.IsPopulated());
-}
-
-TEST_F(UrlMatcherWithBypassTest, AddDomainWithBypass_SubdomainMatching) {
-  UrlMatcherWithBypass matcher;
-  matcher.AddDomainWithBypass("foo.com", net::SchemeHostPortMatcher(), true);
-  EXPECT_TRUE(matcher
-                  .Matches(GURL("http://bar.foo.com"), net::SchemefulSite(),
-                           /*skip_bypass_check=*/true)
-                  .matches);
-}
-
-TEST_F(UrlMatcherWithBypassTest, AddDomainWithBypass_NoSubdomainMatching) {
-  UrlMatcherWithBypass matcher;
-  matcher.AddDomainWithBypass("foo.com", net::SchemeHostPortMatcher(), false);
-  EXPECT_FALSE(matcher
-                   .Matches(GURL("http://bar.foo.com"), net::SchemefulSite(),
-                            /*skip_bypass_check=*/true)
-                   .matches);
-}
-
 TEST_F(UrlMatcherWithBypassTest, BuildBypassMatcher_Dedupes) {
   auto resource_owner = masked_domain_list::ResourceOwner();
   resource_owner.add_owned_properties("example.com");
@@ -97,9 +73,11 @@ TEST_P(UrlMatcherWithBypassMatchTest, Match) {
   resourceOwner->add_owned_properties("bbco-pb.co.uk");
 
   for (auto owner : mdl.resource_owners()) {
+    std::set<std::string> domains;
     for (auto resource : owner.owned_resources()) {
-      matcher.AddMaskedDomainListRules(resource.domain(), owner);
+      domains.emplace(resource.domain());
     }
+    matcher.AddMaskedDomainListRules(domains, owner);
   }
 
   const MatchTest& p = GetParam();

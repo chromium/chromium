@@ -172,32 +172,28 @@ void NetworkServiceProxyAllowList::UseMaskedDomainList(
     // Group domains by partition first so that only one set of the owner's
     // bypass rules are created per partition.
 
-    std::map<std::string, std::set<std::string>> owned_domains_by_partition;
+    std::set<std::string> eligible_domains;
     for (auto resource : owner.owned_resources()) {
       if (is_eligible(resource)) {
-        const std::string partition =
-            UrlMatcherWithBypass::PartitionMapKey(resource.domain());
-        owned_domains_by_partition[partition].insert(resource.domain());
+        eligible_domains.insert(resource.domain());
       }
     }
 
-    for (const auto& [partition, domains] : owned_domains_by_partition) {
-      switch (proxy_bypass_policy_) {
-        case network::mojom::IpProtectionProxyBypassPolicy::kNone: {
-          url_matcher_with_bypass_.AddRulesWithoutBypass(domains, partition);
-          break;
-        }
-        case network::mojom::IpProtectionProxyBypassPolicy::
-            kFirstPartyToTopLevelFrame: {
-          url_matcher_with_bypass_.AddMaskedDomainListRules(domains, partition,
-                                                            owner);
-          break;
-        }
-        case network::mojom::IpProtectionProxyBypassPolicy::kExclusionList: {
-          url_matcher_with_bypass_.AddRulesWithoutBypass(
-              ExcludeDomainsFromMDL(domains, exclusion_set), partition);
-          break;
-        }
+    switch (proxy_bypass_policy_) {
+      case network::mojom::IpProtectionProxyBypassPolicy::kNone: {
+        url_matcher_with_bypass_.AddRulesWithoutBypass(eligible_domains);
+        break;
+      }
+      case network::mojom::IpProtectionProxyBypassPolicy::
+          kFirstPartyToTopLevelFrame: {
+        url_matcher_with_bypass_.AddMaskedDomainListRules(eligible_domains,
+                                                          owner);
+        break;
+      }
+      case network::mojom::IpProtectionProxyBypassPolicy::kExclusionList: {
+        url_matcher_with_bypass_.AddRulesWithoutBypass(
+            ExcludeDomainsFromMDL(eligible_domains, exclusion_set));
+        break;
       }
     }
   }
