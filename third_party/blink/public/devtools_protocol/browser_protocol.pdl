@@ -9674,6 +9674,10 @@ experimental domain Storage
       workletEntries
       workletLength
       workletRemainingBudget
+      headerSet
+      headerAppend
+      headerDelete
+      headerClear
 
   # Struct for a single key-value pair in an origin's shared storage.
   type SharedStorageEntry extends object
@@ -9732,18 +9736,24 @@ experimental domain Storage
       # SharedStorageAccessType.documentDelete,
       # SharedStorageAccessType.workletSet,
       # SharedStorageAccessType.workletAppend,
-      # SharedStorageAccessType.workletDelete, and
-      # SharedStorageAccessType.workletGet.
+      # SharedStorageAccessType.workletDelete,
+      # SharedStorageAccessType.workletGet,
+      # SharedStorageAccessType.headerSet,
+      # SharedStorageAccessType.headerAppend, and
+      # SharedStorageAccessType.headerDelete.
       optional string key
       # Value for a specific entry in an origin's shared storage.
       # Present only for SharedStorageAccessType.documentSet,
       # SharedStorageAccessType.documentAppend,
-      # SharedStorageAccessType.workletSet, and
-      # SharedStorageAccessType.workletAppend.
+      # SharedStorageAccessType.workletSet,
+      # SharedStorageAccessType.workletAppend,
+      # SharedStorageAccessType.headerSet, and
+      # SharedStorageAccessType.headerAppend.
       optional string value
       # Whether or not to set an entry for a key if that key is already present.
-      # Present only for SharedStorageAccessType.documentSet and
-      # SharedStorageAccessType.workletSet.
+      # Present only for SharedStorageAccessType.documentSet,
+      # SharedStorageAccessType.workletSet, and
+      # SharedStorageAccessType.headerSet.
       optional boolean ignoreIfPresent
 
   type StorageBucketsDurability extends string

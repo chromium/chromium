@@ -1,0 +1,65 @@
+Tests shared storage events from sharedStorageWritable fetch.
+Metadata: {
+    bytesUsed : 32
+    creationTime : <number>
+    length : 1
+    remainingBudget : 12
+}
+Entries:[
+    [0] : {
+        key : hello
+        value : worldfriend
+    }
+]
+Events: [
+    [0] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+        }
+        type : headerClear
+    }
+    [1] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : true
+            key : a
+            value : b
+        }
+        type : headerSet
+    }
+    [2] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            ignoreIfPresent : false
+            key : hello
+            value : world
+        }
+        type : headerSet
+    }
+    [3] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : hello
+            value : friend
+        }
+        type : headerAppend
+    }
+    [4] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        ownerOrigin : http://127.0.0.1:8000
+        params : {
+            key : a
+        }
+        type : headerDelete
+    }
+]
+

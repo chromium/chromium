@@ -55,7 +55,11 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
       kWorkletKeys,
       kWorkletEntries,
       kWorkletLength,
-      kWorkletRemainingBudget
+      kWorkletRemainingBudget,
+      kHeaderSet,
+      kHeaderAppend,
+      kHeaderDelete,
+      kHeaderClear,
     };
 
     virtual void OnSharedStorageAccessed(

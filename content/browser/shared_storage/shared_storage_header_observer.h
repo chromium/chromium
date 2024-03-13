@@ -14,14 +14,19 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
+#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/origin.h"
 
 namespace content {
+
+using AccessType =
+    SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType;
 
 // Receives notifications from `StoragePartitionImpl` when a parsed
 // "Shared-Storage-Write" header is received from the network service. The
@@ -106,17 +111,24 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
                                    OperationResult result) {}
 
  private:
-  bool Invoke(const url::Origin& request_origin, OperationPtr operation);
+  bool Invoke(const url::Origin& request_origin,
+              const GlobalRenderFrameHostId& main_frame_id,
+              OperationPtr operation);
 
   bool Set(const url::Origin& request_origin,
+           const GlobalRenderFrameHostId& main_frame_id,
            std::string key,
            std::string value,
            network::mojom::OptionalBool ignore_if_present);
   bool Append(const url::Origin& request_origin,
+              const GlobalRenderFrameHostId& main_frame_id,
               std::string key,
               std::string value);
-  bool Delete(const url::Origin& request_origin, std::string key);
-  bool Clear(const url::Origin& request_origin);
+  bool Delete(const url::Origin& request_origin,
+              const GlobalRenderFrameHostId& main_frame_id,
+              std::string key);
+  bool Clear(const url::Origin& request_origin,
+             const GlobalRenderFrameHostId& main_frame_id);
 
   storage::SharedStorageManager* GetSharedStorageManager();
 
@@ -129,6 +141,11 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
       NavigationOrDocumentHandle* navigation_or_document_handle,
       const url::Origin& request_origin,
       std::string* out_debug_message = nullptr);
+
+  void NotifySharedStorageAccessed(AccessType type,
+                                   const GlobalRenderFrameHostId& main_frame_id,
+                                   const url::Origin& request_origin,
+                                   const SharedStorageEventParams& params);
 
   // `storage_partition_` owns `this`, so it will outlive `this`.
   raw_ptr<StoragePartitionImpl> storage_partition_;

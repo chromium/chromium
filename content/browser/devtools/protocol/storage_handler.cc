@@ -1543,6 +1543,18 @@ void StorageHandler::NotifySharedStorageAccessed(
     case AccessType::kWorkletRemainingBudget:
       type_enum = Storage::SharedStorageAccessTypeEnum::WorkletRemainingBudget;
       break;
+    case AccessType::kHeaderSet:
+      type_enum = Storage::SharedStorageAccessTypeEnum::HeaderSet;
+      break;
+    case AccessType::kHeaderAppend:
+      type_enum = Storage::SharedStorageAccessTypeEnum::HeaderAppend;
+      break;
+    case AccessType::kHeaderDelete:
+      type_enum = Storage::SharedStorageAccessTypeEnum::HeaderDelete;
+      break;
+    case AccessType::kHeaderClear:
+      type_enum = Storage::SharedStorageAccessTypeEnum::HeaderClear;
+      break;
   };
 
   auto protocol_params =

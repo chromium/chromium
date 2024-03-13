@@ -25,7 +25,10 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/shared_storage/shared_storage_event_params.h"
+#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -48,6 +51,24 @@ bool IsSharedStorageAllowedByPermissionsPolicy(
          permissions_policy_status ==
              SharedStorageHeaderObserver::PermissionsPolicyDoubleCheckStatus::
                  kEnabled;
+}
+
+GlobalRenderFrameHostId GetMainFrameIdFromRFH(RenderFrameHost* rfh) {
+  return static_cast<RenderFrameHostImpl*>(rfh->GetOutermostMainFrame())
+      ->GetGlobalId();
+}
+
+GlobalRenderFrameHostId GetMainFrameIdFromNavigationOrDocumentHandle(
+    NavigationOrDocumentHandle* navigation_or_document_handle) {
+  if (auto* navigation_request =
+          navigation_or_document_handle->GetNavigationRequest()) {
+    return GetMainFrameIdFromRFH(
+        navigation_request->frame_tree_node()->current_frame_host());
+  }
+  if (auto* rfh = navigation_or_document_handle->GetDocument()) {
+    return GetMainFrameIdFromRFH(rfh);
+  }
+  return GlobalRenderFrameHostId();
 }
 
 }  // namespace
@@ -220,19 +241,25 @@ void SharedStorageHeaderObserver::HeaderReceived(
                     std::make_move_iterator(operations.end()));
 
   std::vector<bool> header_results;
+  GlobalRenderFrameHostId main_frame_id =
+      GetMainFrameIdFromNavigationOrDocumentHandle(
+          navigation_or_document_handle);
   while (!to_process.empty()) {
     network::mojom::SharedStorageOperationPtr operation =
         std::move(to_process.front());
     to_process.pop_front();
-    header_results.push_back(Invoke(request_origin, std::move(operation)));
+    header_results.push_back(
+        Invoke(request_origin, main_frame_id, std::move(operation)));
   }
 
   OnHeaderProcessed(request_origin, header_results);
   std::move(callback).Run();
 }
 
-bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
-                                         OperationPtr operation) {
+bool SharedStorageHeaderObserver::Invoke(
+    const url::Origin& request_origin,
+    const GlobalRenderFrameHostId& main_frame_id,
+    OperationPtr operation) {
   switch (operation->type) {
     case OperationType::kSet:
       if (!operation->key.has_value() || !operation->value.has_value()) {
@@ -240,16 +267,17 @@ bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
         // "Shared-Storage-Write: 'set' missing parameter 'key' or 'value'."
         return false;
       }
-      return Set(request_origin, std::move(operation->key.value()),
-                 std::move(operation->value.value()),
-                 operation->ignore_if_present);
+      return Set(
+          request_origin, main_frame_id, std::move(operation->key.value()),
+          std::move(operation->value.value()), operation->ignore_if_present);
     case OperationType::kAppend:
       if (!operation->key.has_value() || !operation->value.has_value()) {
         // TODO(crbug.com/1434529): Log the following error message to console:
         // "Shared-Storage-Write: 'append' missing parameter 'key' or 'value'."
         return false;
       }
-      return Append(request_origin, std::move(operation->key.value()),
+      return Append(request_origin, main_frame_id,
+                    std::move(operation->key.value()),
                     std::move(operation->value.value()));
     case OperationType::kDelete:
       if (!operation->key.has_value()) {
@@ -257,9 +285,10 @@ bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
         // "Shared-Storage-Write: 'delete' missing parameter 'key'."
         return false;
       }
-      return Delete(request_origin, std::move(operation->key.value()));
+      return Delete(request_origin, main_frame_id,
+                    std::move(operation->key.value()));
     case OperationType::kClear:
-      return Clear(request_origin);
+      return Clear(request_origin, main_frame_id);
     default:
       NOTREACHED();
   }
@@ -268,6 +297,7 @@ bool SharedStorageHeaderObserver::Invoke(const url::Origin& request_origin,
 
 bool SharedStorageHeaderObserver::Set(
     const url::Origin& request_origin,
+    const GlobalRenderFrameHostId& main_frame_id,
     std::string key,
     std::string value,
     network::mojom::OptionalBool ignore_if_present) {
@@ -287,8 +317,11 @@ bool SharedStorageHeaderObserver::Set(
           ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
           : storage::SharedStorageDatabase::SetBehavior::kDefault;
 
-  // TODO(crbug.com/1434529): Consider calling `NotifySharedStorageAccessed()`.
-  // Would need to add a new `AccessType::kHeaderSet`.
+  NotifySharedStorageAccessed(
+      AccessType::kHeaderSet, main_frame_id, request_origin,
+      SharedStorageEventParams::CreateForSet(
+          key, value,
+          ignore_if_present == network::mojom::OptionalBool::kTrue));
 
   GetSharedStorageManager()->Set(
       request_origin, std::move(utf16_key), std::move(utf16_value),
@@ -301,10 +334,11 @@ bool SharedStorageHeaderObserver::Set(
   return true;
 }
 
-bool SharedStorageHeaderObserver::Append(const url::Origin& request_origin,
-
-                                         std::string key,
-                                         std::string value) {
+bool SharedStorageHeaderObserver::Append(
+    const url::Origin& request_origin,
+    const GlobalRenderFrameHostId& main_frame_id,
+    std::string key,
+    std::string value) {
   std::u16string utf16_key;
   std::u16string utf16_value;
   if (!base::UTF8ToUTF16(key.c_str(), key.size(), &utf16_key) ||
@@ -316,8 +350,9 @@ bool SharedStorageHeaderObserver::Append(const url::Origin& request_origin,
     return false;
   }
 
-  // TODO(crbug.com/1434529): Consider calling `NotifySharedStorageAccessed()`.
-  // Would need to add a new `AccessType::kHeaderAppend`.
+  NotifySharedStorageAccessed(
+      AccessType::kHeaderAppend, main_frame_id, request_origin,
+      SharedStorageEventParams::CreateForAppend(key, value));
 
   GetSharedStorageManager()->Append(
       request_origin, std::move(utf16_key), std::move(utf16_value),
@@ -330,8 +365,10 @@ bool SharedStorageHeaderObserver::Append(const url::Origin& request_origin,
   return true;
 }
 
-bool SharedStorageHeaderObserver::Delete(const url::Origin& request_origin,
-                                         std::string key) {
+bool SharedStorageHeaderObserver::Delete(
+    const url::Origin& request_origin,
+    const GlobalRenderFrameHostId& main_frame_id,
+    std::string key) {
   std::u16string utf16_key;
   if (!base::UTF8ToUTF16(key.c_str(), key.size(), &utf16_key) ||
       !blink::IsValidSharedStorageKeyStringLength(utf16_key.size())) {
@@ -340,8 +377,9 @@ bool SharedStorageHeaderObserver::Delete(const url::Origin& request_origin,
     return false;
   }
 
-  // TODO(crbug.com/1434529): Consider calling `NotifySharedStorageAccessed()`.
-  // Would need to add a new `AccessType::kHeaderDelete`.
+  NotifySharedStorageAccessed(
+      AccessType::kHeaderDelete, main_frame_id, request_origin,
+      SharedStorageEventParams::CreateForGetOrDelete(key));
 
   GetSharedStorageManager()->Delete(
       request_origin, std::move(utf16_key),
@@ -354,9 +392,12 @@ bool SharedStorageHeaderObserver::Delete(const url::Origin& request_origin,
   return true;
 }
 
-bool SharedStorageHeaderObserver::Clear(const url::Origin& request_origin) {
-  // TODO(crbug.com/1434529): Consider calling `NotifySharedStorageAccessed()`.
-  // Would need to add a new `AccessType::kHeaderClear`.
+bool SharedStorageHeaderObserver::Clear(
+    const url::Origin& request_origin,
+    const GlobalRenderFrameHostId& main_frame_id) {
+  NotifySharedStorageAccessed(AccessType::kHeaderClear, main_frame_id,
+                              request_origin,
+                              SharedStorageEventParams::CreateDefault());
 
   GetSharedStorageManager()->Clear(
       request_origin,
@@ -487,6 +528,16 @@ bool SharedStorageHeaderObserver::IsSharedStorageAllowedBySiteSettings(
   return GetContentClient()->browser()->IsSharedStorageAllowed(
       storage_partition_->browser_context(), rfh, top_frame_origin,
       request_origin, out_debug_message);
+}
+
+void SharedStorageHeaderObserver::NotifySharedStorageAccessed(
+    AccessType type,
+    const GlobalRenderFrameHostId& main_frame_id,
+    const url::Origin& request_origin,
+    const SharedStorageEventParams& params) {
+  storage_partition_->GetSharedStorageWorkletHostManager()
+      ->NotifySharedStorageAccessed(type, main_frame_id,
+                                    request_origin.Serialize(), params);
 }
 
 }  // namespace content
