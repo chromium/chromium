@@ -112,6 +112,7 @@ if (build_with_tflite_lib) {
       "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//third_party/tensorflow_models:tflite_custom_ops",
       "//third_party/tflite",
+      "//third_party/tflite:buildflags",
       "//third_party/tflite:tflite_public_headers",
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]

@@ -4,7 +4,7 @@
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"

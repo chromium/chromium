@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -97,6 +98,11 @@ config("tflite_flags") {
   } else if (is_linux || is_chromeos_lacros) {
     defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
   }
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack" ]
 }
 
 static_library("tflite_builtin_op_resolver_internals") {

@@ -121,6 +121,7 @@ component("webnn_service") {
     deps += [
       ":tflite_graph_builder",
       "//third_party/tflite",
+      "//third_party/tflite:buildflags",
     ]
   }
 

@@ -7,5 +7,5 @@ include_rules = [
   "+ui/gl/init/gl_factory.h",
   "+third_party/coremltools/mlmodel/format",
   "+third_party/flatbuffers/src/include/flatbuffers",
-  "+third_party/tflite/src/tensorflow/lite",
+  "+third_party/tflite",
 ]
