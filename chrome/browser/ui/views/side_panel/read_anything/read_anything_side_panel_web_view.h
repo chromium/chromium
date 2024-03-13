@@ -21,6 +21,9 @@ class ReadAnythingSidePanelWebView
       delete;
   ~ReadAnythingSidePanelWebView() override;
 
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
