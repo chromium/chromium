@@ -242,13 +242,6 @@ void AndroidAutofillClient::PinPopupView() {
   NOTIMPLEMENTED();
 }
 
-autofill::AutofillClient::PopupOpenArgs
-AndroidAutofillClient::GetReopenPopupArgs(
-    autofill::AutofillSuggestionTriggerSource trigger_source) const {
-  NOTIMPLEMENTED();
-  return {};
-}
-
 void AndroidAutofillClient::UpdatePopup(
     const std::vector<autofill::Suggestion>& suggestions,
     autofill::FillingProduct main_filling_product,

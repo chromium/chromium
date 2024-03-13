@@ -311,12 +311,6 @@ void WebViewAutofillClientIOS::PinPopupView() {
   NOTIMPLEMENTED();
 }
 
-AutofillClient::PopupOpenArgs WebViewAutofillClientIOS::GetReopenPopupArgs(
-    AutofillSuggestionTriggerSource trigger_source) const {
-  NOTIMPLEMENTED();
-  return {};
-}
-
 void WebViewAutofillClientIOS::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
     FillingProduct main_filling_product,

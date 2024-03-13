@@ -131,8 +131,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       base::span<const autofill::SelectOption> datalist) override;
   std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
-  autofill::AutofillClient::PopupOpenArgs GetReopenPopupArgs(
-      autofill::AutofillSuggestionTriggerSource trigger_source) const override;
   void UpdatePopup(
       const std::vector<autofill::Suggestion>& suggestions,
       autofill::FillingProduct main_filling_product,

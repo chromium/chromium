@@ -751,19 +751,6 @@ class AutofillClient {
   // |UpdatePopup| to update the open popup in-place.
   virtual void PinPopupView() = 0;
 
-  // The returned arguments allow to reopen the dropdown with
-  // `ShowAutofillPopup()` even if the controller is destroyed temporarily.
-  // This function ensures that the element's bounds are transformed back to the
-  // screen space-independent bounds.
-  // The suggestion trigger source of the existing popup is not reused, but
-  // replaced with `trigger_source`. This is because it should indicate the
-  // reason for reopening the popup. Reusing the existing trigger source can
-  // have unwanted implications such as re-auto-selecting the first suggestion
-  // in the `AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown` case.
-  // Note that the password manager doesn't distinguish between trigger sources.
-  virtual PopupOpenArgs GetReopenPopupArgs(
-      AutofillSuggestionTriggerSource trigger_source) const = 0;
-
   // Returns the information of the popup on the screen, if there is one that is
   // showing. Note that this implemented only on Desktop.
   virtual std::optional<PopupScreenLocation> GetPopupScreenLocation() const;

@@ -220,10 +220,6 @@ class MockAutofillClient : public autofill::TestAutofillClient {
                base::WeakPtr<autofill::AutofillPopupDelegate> delegate),
               (override));
   MOCK_METHOD(void, PinPopupView, (), (override));
-  MOCK_METHOD(PopupOpenArgs,
-              GetReopenPopupArgs,
-              (autofill::AutofillSuggestionTriggerSource),
-              (const, override));
   MOCK_METHOD(std::vector<autofill::Suggestion>,
               GetPopupSuggestions,
               (),
@@ -290,17 +286,6 @@ std::vector<autofill::Suggestion> SetLoading(
   suggestions[index_of_loading_element].is_loading =
       Suggestion::IsLoading(true);
   return suggestions;
-}
-
-autofill::AutofillClient::PopupOpenArgs CreateReopenArgsWithTestSuggestions(
-    bool has_opt_in_and_fill,
-    bool has_opt_in_and_generate,
-    bool has_re_signin) {
-  return {gfx::RectF(), base::i18n::LEFT_TO_RIGHT,
-          CreateTestSuggestions(has_opt_in_and_fill, has_opt_in_and_generate,
-                                has_re_signin),
-          autofill::AutofillSuggestionTriggerSource::kPasswordManager,
-          /*form_control_ax_id=*/0};
 }
 
 }  // namespace
@@ -715,10 +700,6 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
   // As soon as the waiting state is pending, the next update resets the popup.
   EXPECT_CALL(autofill_client, UpdatePopup).WillOnce([&] {
     testing::Mock::VerifyAndClear(&autofill_client);
-    EXPECT_CALL(autofill_client, GetReopenPopupArgs)
-        .WillOnce(Return(CreateReopenArgsWithTestSuggestions(
-            /*has_opt_in_and_fill=*/true, /*has_opt_in_and_generate*/ false,
-            /*has_re_signin=*/false)));
     EXPECT_CALL(client,
                 TriggerReauthForPrimaryAccount(
                     signin_metrics::ReauthAccessPoint::kAutofillDropdown, _))
@@ -767,10 +748,6 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
   // As soon as the waiting state is pending, the next update resets the popup.
   EXPECT_CALL(autofill_client, UpdatePopup).WillOnce([&] {
     testing::Mock::VerifyAndClear(&autofill_client);
-    EXPECT_CALL(autofill_client, GetReopenPopupArgs)
-        .WillOnce(Return(CreateReopenArgsWithTestSuggestions(
-            /*has_opt_in_and_fill=*/false, /*has_opt_in_and_generate*/ true,
-            /*has_re_signin=*/false)));
     EXPECT_CALL(
         client,
         TriggerReauthForPrimaryAccount(
@@ -817,10 +794,6 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInAndFillHidesPopup) {
                                              /*has_opt_in_and_generate*/ false,
                                              /*has_re_signin=*/false)));
   EXPECT_CALL(autofill_client, UpdatePopup);
-  EXPECT_CALL(autofill_client, GetReopenPopupArgs)
-      .WillOnce(Return(CreateReopenArgsWithTestSuggestions(
-          /*has_opt_in_and_fill=*/true, /*has_opt_in_and_generate*/ false,
-          /*has_re_signin=*/false)));
   EXPECT_CALL(client,
               TriggerReauthForPrimaryAccount(
                   signin_metrics::ReauthAccessPoint::kAutofillDropdown, _))
@@ -852,10 +825,6 @@ TEST_F(PasswordAutofillManagerTest,
                                              /*has_opt_in_and_generate*/ true,
                                              /*has_re_signin=*/false)));
   EXPECT_CALL(autofill_client, UpdatePopup);
-  EXPECT_CALL(autofill_client, GetReopenPopupArgs)
-      .WillOnce(Return(CreateReopenArgsWithTestSuggestions(
-          /*has_opt_in_and_fill=*/false, /*has_opt_in_and_generate*/ true,
-          /*has_re_signin=*/false)));
   EXPECT_CALL(
       client,
       TriggerReauthForPrimaryAccount(

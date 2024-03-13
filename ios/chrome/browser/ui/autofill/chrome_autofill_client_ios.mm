@@ -515,12 +515,6 @@ void ChromeAutofillClientIOS::PinPopupView() {
   NOTIMPLEMENTED();
 }
 
-AutofillClient::PopupOpenArgs ChromeAutofillClientIOS::GetReopenPopupArgs(
-    AutofillSuggestionTriggerSource trigger_source) const {
-  NOTIMPLEMENTED();
-  return {};
-}
-
 void ChromeAutofillClientIOS::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
     FillingProduct main_filling_product,

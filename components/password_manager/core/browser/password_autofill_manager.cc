@@ -185,11 +185,9 @@ void PasswordAutofillManager::OnUnlockItemAccepted(
           : signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown;
   password_client_->TriggerReauthForPrimaryAccount(
       reauth_access_point,
-      base::BindOnce(
-          &PasswordAutofillManager::OnUnlockReauthCompleted,
-          weak_ptr_factory_.GetWeakPtr(), unlock_item,
-          autofill_client_->GetReopenPopupArgs(
-              autofill::AutofillSuggestionTriggerSource::kPasswordManager)));
+      base::BindOnce(&PasswordAutofillManager::OnUnlockReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), unlock_item,
+                     last_popup_open_args_));
 }
 
 void PasswordAutofillManager::DidAcceptSuggestion(
@@ -489,11 +487,11 @@ bool PasswordAutofillManager::ShowPopup(
   }
   LogMetricsForSuggestions(suggestions);
   // TODO(crbug.com/991253): Set the right `form_control_ax_id`.
-  autofill::AutofillClient::PopupOpenArgs open_args(
+  last_popup_open_args_ = autofill::AutofillClient::PopupOpenArgs(
       bounds, text_direction, suggestions,
       autofill::AutofillSuggestionTriggerSource::kPasswordManager,
       /*form_control_ax_id=*/0);
-  autofill_client_->ShowAutofillPopup(open_args,
+  autofill_client_->ShowAutofillPopup(last_popup_open_args_,
                                       weak_ptr_factory_.GetWeakPtr());
   return true;
 }
@@ -507,6 +505,7 @@ void PasswordAutofillManager::UpdatePopup(
         autofill::PopupHidingReason::kNoSuggestions);
     return;
   }
+  last_popup_open_args_.suggestions = suggestions;
   autofill_client_->UpdatePopup(
       suggestions, autofill::FillingProduct::kPassword,
       autofill::AutofillSuggestionTriggerSource::kPasswordManager);
@@ -615,6 +614,7 @@ void PasswordAutofillManager::OnUnlockReauthCompleted(
     PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
   autofill_client_->ShowAutofillPopup(reopen_args,
                                       weak_ptr_factory_.GetWeakPtr());
+  last_popup_open_args_ = reopen_args;
   autofill_client_->PinPopupView();
   if (reauth_succeeded) {
     if (unlock_item ==

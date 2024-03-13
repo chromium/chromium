@@ -1037,7 +1037,7 @@ void ChromeAutofillClient::ShowAutofillPopup(
   gfx::RectF element_bounds_in_screen_space =
       open_args.element_bounds + client_area.OffsetFromOrigin();
 
-  // Will delete or reuse the old |popup_controller_|.
+  // Deletes or reuses the old |popup_controller_|.
   popup_controller_ = AutofillPopupControllerImpl::GetOrCreate(
       popup_controller_, delegate, web_contents(),
       web_contents()->GetNativeView(), element_bounds_in_screen_space,
@@ -1068,26 +1068,6 @@ std::vector<Suggestion> ChromeAutofillClient::GetPopupSuggestions() const {
 void ChromeAutofillClient::PinPopupView() {
   if (popup_controller_.get())
     popup_controller_->PinView();
-}
-
-autofill::AutofillClient::PopupOpenArgs
-ChromeAutofillClient::GetReopenPopupArgs(
-    AutofillSuggestionTriggerSource trigger_source) const {
-  const AutofillPopupController* controller = popup_controller_.get();
-  if (!controller)
-    return autofill::AutofillClient::PopupOpenArgs();
-
-  // By calculating the screen space-independent values, bounds can be passed to
-  // |ShowAutofillPopup| which always computes the bounds in the screen space.
-  gfx::Rect client_area = web_contents()->GetContainerBounds();
-  gfx::RectF screen_space_independent_bounds =
-      controller->element_bounds() - client_area.OffsetFromOrigin();
-  // GetReopenPopupArgs() is only called by the Password Manager.
-  // TODO(crbug.com/991253): Set the right `form_control_ax_id` or eliminate
-  // GetReopenPopupArgs().
-  return autofill::AutofillClient::PopupOpenArgs(
-      screen_space_independent_bounds, controller->GetElementTextDirection(),
-      controller->GetSuggestions(), trigger_source, /*form_control_ax_id=*/0);
 }
 
 std::optional<AutofillClient::PopupScreenLocation>

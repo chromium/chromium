@@ -449,11 +449,6 @@ class TestAutofillClientTemplate : public T {
 
   void PinPopupView() override {}
 
-  AutofillClient::PopupOpenArgs GetReopenPopupArgs(
-      AutofillSuggestionTriggerSource trigger_source) const override {
-    return {};
-  }
-
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override {}
