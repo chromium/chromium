@@ -15,7 +15,7 @@ enum class IOSHomeActionType {
   kShortcuts = 1,
   kReturnToRecentTab = 2,
   kFeedCard = 3,
-  kFakebox = 4,
+  // Removed: kFakebox = 4,
   kSetUpList = 5,
   kOmnibox = 6,
   kSafetyCheck = 7,
@@ -23,7 +23,7 @@ enum class IOSHomeActionType {
   kOpenDistantTabResumption = 9,
   kMaxValue = kOpenDistantTabResumption,
 };
-// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/ios/enums.xml)
 
 // Logs a Home action and attributes it to the NTP or Start surface.
 void RecordHomeAction(IOSHomeActionType type, bool isStartSurface);

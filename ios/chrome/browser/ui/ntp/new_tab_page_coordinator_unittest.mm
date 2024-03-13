@@ -474,47 +474,6 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   [coordinator_ stop];
 }
 
-// Tests that tapping on the fake omnibox logs the correct metric depending on
-// if Start is configured.
-TEST_F(NewTabPageCoordinatorTest, FakeboxTappedMetricLogging) {
-  CreateCoordinator(/*off_the_record=*/false);
-  SetupCommandHandlerMocks();
-
-  // Test `-start` sets `isStartShowing` to true/false, depending on
-  // SetShowStartSurface.
-  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
-  [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
-  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
-                                        IOSHomeActionType::kFakebox, 0);
-  [coordinator_ fakeboxTapped];
-  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
-                                        IOSHomeActionType::kFakebox, 1);
-  web::FakeNavigationContext navigation_context;
-  navigation_context.SetUrl(GURL("chrome://version"));
-  static_cast<web::FakeWebState*>(web_state_)
-      ->OnNavigationStarted(&navigation_context);
-  [coordinator_ didNavigateAwayFromNTP];
-  [coordinator_ stopIfNeeded];
-  ASSERT_FALSE(coordinator_.started);
-
-  // Simulate navigate away and then back to non-Start NTP.
-  SetNTPAsCurrentURL();
-  [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
-  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
-                                        IOSHomeActionType::kFakebox, 1);
-  histogram_tester_->ExpectUniqueSample("IOS.NTP.Click",
-                                        IOSHomeActionType::kFakebox, 0);
-  [coordinator_ fakeboxTapped];
-  histogram_tester_->ExpectUniqueSample("IOS.Start.Click",
-                                        IOSHomeActionType::kFakebox, 1);
-  histogram_tester_->ExpectUniqueSample("IOS.NTP.Click",
-                                        IOSHomeActionType::kFakebox, 1);
-  [coordinator_ didNavigateAwayFromNTP];
-  [coordinator_ stop];
-}
-
 // Test that in response to tapping on Shortcuts while on the Start Surface, the
 // NTPTabHelper, NTPCoordinator, and ContentSuggestionsMediator perform as
 // expected, leading to logging the correct NTP metric and resets NTPTabHelper's

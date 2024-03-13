@@ -810,7 +810,6 @@
 }
 
 - (void)fakeboxTapped {
-  RecordHomeAction(IOSHomeActionType::kFakebox, [self isStartSurface]);
   [self focusFakebox];
 }
 

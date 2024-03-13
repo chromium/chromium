@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Shortcuts"/>
   <int value="2" label="Return to Recent Tab tile"/>
   <int value="3" label="Feed Card"/>
-  <int value="4" label="Fake Omnibox tap"/>
+  <int value="4" label="Obsolete in M124 - Fake Omnibox tap"/>
   <int value="5" label="Set Up List"/>
   <int value="6" label="Omnibox navigation"/>
   <int value="7" label="Safety Check tile"/>
