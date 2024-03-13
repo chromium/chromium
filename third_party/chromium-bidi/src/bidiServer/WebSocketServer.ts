@@ -205,7 +205,12 @@ export class WebSocketServer {
     // Session is set either by Classic or BiDi commands.
     let session: Session | undefined;
 
-    const requestSessionId = (request.resource ?? '').split('/').pop();
+    // Request to `/session` should be treated as a new session request.
+    let requestSessionId: string | undefined = '';
+    if ((request.resource ?? '').startsWith(`/session/`)) {
+      requestSessionId = (request.resource ?? '').split('/').pop() ?? '';
+    }
+
     debugInternal(
       `new WS request received. Path: ${JSON.stringify(
         request.resourceURL.path
@@ -341,6 +346,46 @@ export class WebSocketServer {
               sessionId: session.sessionId,
               capabilities: {},
             },
+          },
+          connection
+        );
+        return;
+      }
+
+      // Handle ending session. Close browser if open, remove session.
+      if (parsedCommandData.method === 'session.end') {
+        if (session === undefined) {
+          debugInfo('WS connection does not have an associated session.');
+
+          this.#respondWithError(
+            connection,
+            plainCommandData,
+            ErrorCode.SessionNotCreated,
+            'WS connection does not have an associated session.'
+          );
+          return;
+        }
+
+        try {
+          await this.#closeBrowserInstanceIfLaunched(session);
+          this.#sessions.delete(session.sessionId);
+        } catch (e: any) {
+          debugInfo('Error while closing session', e);
+
+          this.#respondWithError(
+            connection,
+            plainCommandData,
+            ErrorCode.UnknownError,
+            `Session cannot be closed. Error: ${e?.message}`
+          );
+          return;
+        }
+
+        this.#sendClientMessage(
+          {
+            id: parsedCommandData.id,
+            type: 'success',
+            result: {},
           },
           connection
         );

@@ -53,9 +53,13 @@ async def _websocket_connection():
     active BiDi session.
     """
     port = os.getenv("PORT", 8080)
-    url = f"ws://localhost:{port}"
+    url = f"ws://localhost:{port}/session"
     async with websockets.connect(url) as connection:
         yield connection
+        await execute_command(connection, {
+            "method": "session.end",
+            "params": {}
+        })
 
 
 @pytest_asyncio.fixture(params=[{"capabilities": {}}])
