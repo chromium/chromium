@@ -945,7 +945,13 @@ void CertProvisioningWorkerStatic::OnCleanUpDone() {
 
   RecordResult(cert_profile_.protocol_version, cert_scope_, state_,
                prev_state_);
-  std::move(result_callback_).Run(cert_profile_, state_);
+
+  // The worked is likely to be deleted in `result_callback_`. Run it
+  // asynchronously in case something is still interacting with it in the
+  // current call stack.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(result_callback_), cert_profile_, state_));
 }
 
 CertProvisioningClient::ProvisioningProcess

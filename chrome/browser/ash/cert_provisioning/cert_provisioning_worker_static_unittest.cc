@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/mock_tpm_challenge_key_subtle.h"
@@ -421,14 +422,6 @@ void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
         .WillOnce(RunOnceCallback<2>(Status::kSuccess)); \
   }
 
-// A mock for observing the result callback of the worker.
-class CallbackObserver {
- public:
-  MOCK_METHOD(void,
-              Callback,
-              (CertProfile profile, CertProvisioningWorkerState state));
-};
-
 // A mock for observing the state change callback of the worker.
 class StateChangeCallbackObserver {
  public:
@@ -446,9 +439,6 @@ class CertProvisioningWorkerStaticTest : public ::testing::Test {
 
   void SetUp() override {
     AttestationClient::InitializeFake();
-    // There should not be any calls to callback before this expect is
-    // overridden.
-    EXPECT_CALL(callback_observer_, Callback).Times(0);
 
     RegisterProfilePrefs(testing_pref_service_.registry());
     RegisterLocalStatePrefs(testing_pref_service_.registry());
@@ -522,8 +512,7 @@ class CertProvisioningWorkerStaticTest : public ::testing::Test {
   }
 
   CertProvisioningWorkerCallback GetResultCallback() {
-    return base::BindOnce(&CallbackObserver::Callback,
-                          base::Unretained(&callback_observer_));
+    return callback_observer_.GetCallback();
   }
 
   Profile* GetProfile() { return profile_helper_for_testing_.GetProfile(); }
@@ -543,7 +532,8 @@ class CertProvisioningWorkerStaticTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   StrictMock<StateChangeCallbackObserver> state_change_callback_observer_;
-  StrictMock<CallbackObserver> callback_observer_;
+  base::test::TestFuture<CertProfile, CertProvisioningWorkerState>
+      callback_observer_;
   ProfileHelperForTesting profile_helper_for_testing_;
   TestingPrefServiceSimple testing_pref_service_;
 
@@ -643,13 +633,13 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
         .WillOnce(VerifyNoBackendErrorsSeen);
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
-        .Times(1);
   }
 
   worker.DoStep();
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kSucceeded);
 
   histogram_tester.ExpectUniqueSample("ChromeOS.CertProvisioning.Result.User",
                                       CertProvisioningWorkerState::kSucceeded,
@@ -720,13 +710,13 @@ TEST_F(CertProvisioningWorkerStaticTest, NoVaSuccess) {
 
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
-        .Times(1);
   }
 
   worker.DoStep();
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kSucceeded);
 }
 
 // Checks that the worker correctly forwards a request with
@@ -802,13 +792,13 @@ TEST_F(CertProvisioningWorkerStaticTest, NoHashInStartCsr) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
-        .Times(1);
   }
 
   worker.DoStep();
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kSucceeded);
 }
 
 TEST_F(CertProvisioningWorkerStaticTest, PublicKeyMismatch) {
@@ -875,13 +865,13 @@ TEST_F(CertProvisioningWorkerStaticTest, PublicKeyMismatch) {
                   /*public_key_spki_der=*/GetPublicKeyBin(), /*callback=*/_))
         .Times(1)
         .WillOnce(RunOnceCallback<2>(Status::kSuccess));
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kFailed))
-        .Times(1);
   }
 
   worker.DoStep();
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kFailed);
 }
 
 // Checks that when the server returns try_again_later field, the worker will
@@ -984,12 +974,12 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterManualRetry) {
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kSystem, /*certificate=*/_, /*callback=*/_));
 
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
-        .Times(1);
-
     worker.DoStep();
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
+
+    EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+    EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+              CertProvisioningWorkerState::kSucceeded);
   }
 }
 
@@ -1103,11 +1093,12 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterWait) {
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
 
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
-        .Times(1);
     FastForwardBy(download_cert_real_delay + small_delay);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
+
+    EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+    EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+              CertProvisioningWorkerState::kSucceeded);
   }
 }
 
@@ -1229,11 +1220,12 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kFinishCsrResponseReceived);
 
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
-        .Times(1);
     FastForwardBy(kExpectedDownloadCsrDelay / 2 + kSmallDelay);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
+
+    EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+    EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+              CertProvisioningWorkerState::kSucceeded);
   }
 }
 
@@ -1363,13 +1355,15 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
 
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
-        .Times(1);
-
     on_invalidation_event_callback.Run(
         InvalidationEvent::kInvalidationReceived);
+    FastForwardBy(small_delay);
+
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
+
+    EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+    EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+              CertProvisioningWorkerState::kSucceeded);
   }
 }
 
@@ -1405,16 +1399,16 @@ TEST_F(CertProvisioningWorkerStaticTest, StatusErrorHandling) {
 
     EXPECT_START_CSR_INVALID_REQUEST(
         StartCsr(Eq(std::ref(provisioning_process)), /*callback=*/_));
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kFailed))
-        .Times(1);
   }
 
   worker.DoStep();
   FastForwardBy(base::Seconds(1));
 
   VerifyDeleteKeyCalledOnce(kCertScope);
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kFailed);
 }
 
 // Checks that when the server returns response error, the worker will enter an
@@ -1450,16 +1444,16 @@ TEST_F(CertProvisioningWorkerStaticTest, ResponseErrorHandling) {
                                               /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_CA_ERROR(StartCsr);
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kFailed))
-        .Times(1);
   }
 
   worker->DoStep();
   FastForwardBy(base::Seconds(1));
 
   VerifyDeleteKeyCalledOnce(kCertScope);
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kFailed);
 
   histogram_tester.ExpectBucketCount("ChromeOS.CertProvisioning.Result.User",
                                      CertProvisioningWorkerState::kFailed, 1);
@@ -1495,17 +1489,16 @@ TEST_F(CertProvisioningWorkerStaticTest, InconsistentDataErrorHandling) {
                                               /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_CSR_INCONSISTENT_DATA(StartCsr);
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile,
-                         CertProvisioningWorkerState::kInconsistentDataError))
-        .Times(1);
   }
 
   worker->DoStep();
   FastForwardBy(base::Seconds(1));
 
   VerifyDeleteKeyCalledOnce(kCertScope);
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kInconsistentDataError);
 }
 
 // Checks that when the server returns TEMPORARY_UNAVAILABLE status code, the
@@ -1727,14 +1720,14 @@ TEST_F(CertProvisioningWorkerStaticTest, RemoveRegisteredKey) {
                   /*public_key_spki_der=*/GetPublicKeyBin(), /*callback=*/_))
         .Times(1)
         .WillOnce(RunOnceCallback<2>(Status::kSuccess));
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kFailed))
-        .Times(1);
   }
 
   worker.DoStep();
   FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kFailed);
 
   histogram_tester.ExpectBucketCount("ChromeOS.CertProvisioning.Result.User",
                                      CertProvisioningWorkerState::kFailed, 1);
@@ -1969,10 +1962,11 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
 
     EXPECT_CALL(*mock_invalidator, Unregister()).Times(1);
 
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kSucceeded))
-        .Times(1);
     worker->DoStep();
+
+    EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+    EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+              CertProvisioningWorkerState::kSucceeded);
   }
 }
 
@@ -2028,16 +2022,16 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationOnFailure) {
 
     pref_val = ParseJsonDict("{}");
     EXPECT_CALL(pref_observer, OnPrefValueUpdated(IsJson(pref_val))).Times(1);
-
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kFailed))
-        .Times(1);
   }
 
   worker->DoStep();
   FastForwardBy(base::Seconds(1));
 
   VerifyDeleteKeyCalledOnce(kCertScope);
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kFailed);
 }
 
 TEST_F(CertProvisioningWorkerStaticTest, InformationalGetters) {
@@ -2076,10 +2070,6 @@ TEST_F(CertProvisioningWorkerStaticTest, InformationalGetters) {
 
     EXPECT_START_CSR_CA_ERROR(StartCsr);
 
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kFailed))
-        .Times(1);
-
     worker.DoStep();
     FastForwardBy(base::Seconds(1));
 
@@ -2090,6 +2080,10 @@ TEST_F(CertProvisioningWorkerStaticTest, InformationalGetters) {
               CertProvisioningWorkerState::kKeypairGenerated);
     EXPECT_EQ(worker.GetCertProfile(), cert_profile);
     EXPECT_EQ(worker.GetPublicKey(), GetPublicKeyBin());
+
+    EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+    EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+              CertProvisioningWorkerState::kFailed);
   }
 }
 
@@ -2109,8 +2103,6 @@ TEST_F(CertProvisioningWorkerStaticTest, CancelDeviceWorker) {
       kCertScope, GetProfile(), &testing_pref_service_, cert_profile,
       &cert_provisioning_client_, MakeInvalidator(), GetStateChangeCallback(),
       GetResultCallback());
-
-  EXPECT_CALL(callback_observer_, Callback).Times(0);
 
   PrefServiceObserver pref_observer(&testing_pref_service_,
                                     GetPrefNameForSerialization(kCertScope));
@@ -2157,13 +2149,14 @@ TEST_F(CertProvisioningWorkerStaticTest, CancelDeviceWorker) {
 
     worker->Stop(CertProvisioningWorkerState::kCanceled);
 
-    EXPECT_CALL(callback_observer_,
-                Callback(cert_profile, CertProvisioningWorkerState::kCanceled))
-        .Times(1);
     FastForwardBy(base::Seconds(1));
 
     VerifyDeleteKeyCalledOnce(kCertScope);
   }
+
+  EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
+  EXPECT_EQ(callback_observer_.Get<CertProvisioningWorkerState>(),
+            CertProvisioningWorkerState::kCanceled);
 
   histogram_tester.ExpectUniqueSample("ChromeOS.CertProvisioning.Result.Device",
                                       CertProvisioningWorkerState::kCanceled,
