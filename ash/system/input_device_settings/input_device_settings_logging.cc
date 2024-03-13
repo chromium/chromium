@@ -4,6 +4,8 @@
 
 #include "ash/system/input_device_settings/input_device_settings_logging.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,7 +17,7 @@ namespace {
 
 // Return the device type name based on the given device type.
 template <typename T>
-base::StringPiece GetDeviceTypeName() {
+std::string_view GetDeviceTypeName() {
   if constexpr (std::is_same_v<T, mojom::Keyboard>) {
     return "Keyboard";
   } else if constexpr (std::is_same_v<T, mojom::Mouse>) {
@@ -31,9 +33,9 @@ base::StringPiece GetDeviceTypeName() {
 
 // Get the general device information log.
 template <typename MojomDevice>
-std::string GetDeviceLog(base::StringPiece category,
+std::string GetDeviceLog(std::string_view category,
                          const MojomDevice& device,
-                         base::StringPiece type,
+                         std::string_view type,
                          std::string log) {
   std::string log_for_device;
   std::string general_info =
@@ -55,7 +57,7 @@ std::string GetDeviceLog(base::StringPiece category,
 
 }  // namespace
 
-base::StringPiece GetBooleanString(bool value) {
+std::string_view GetBooleanString(bool value) {
   if (value) {
     return "true";
   }
@@ -127,9 +129,9 @@ std::string GetKeyboardSettingsLogList(const mojom::Keyboard& keyboard) {
   if (!keyboard.settings.get()) {
     return "";
   }
-  base::StringPiece top_row_are_fkeys =
+  std::string_view top_row_are_fkeys =
       GetBooleanString(keyboard.settings->top_row_are_fkeys);
-  base::StringPiece suppress_meta_fkey_rewrites =
+  std::string_view suppress_meta_fkey_rewrites =
       GetBooleanString(keyboard.settings->suppress_meta_fkey_rewrites);
   std::string f11;
   std::string f12;
@@ -175,12 +177,12 @@ std::string GetKeyboardSettingsLogList(const mojom::Keyboard& keyboard) {
 }
 
 std::string GetMouseSettingsLogList(const mojom::Mouse& mouse) {
-  base::StringPiece swap_right = GetBooleanString(mouse.settings->swap_right);
-  base::StringPiece reverse_scrolling =
+  std::string_view swap_right = GetBooleanString(mouse.settings->swap_right);
+  std::string_view reverse_scrolling =
       GetBooleanString(mouse.settings->reverse_scrolling);
-  base::StringPiece acceleration_enabled =
+  std::string_view acceleration_enabled =
       GetBooleanString(mouse.settings->acceleration_enabled);
-  base::StringPiece scroll_acceleration =
+  std::string_view scroll_acceleration =
       GetBooleanString(mouse.settings->scroll_acceleration);
   std::string sensitivity = base::NumberToString(mouse.settings->sensitivity);
   std::string scroll_sensitivity =
@@ -196,9 +198,9 @@ std::string GetMouseSettingsLogList(const mojom::Mouse& mouse) {
 
 std::string GetPointingStickSettingsLogList(
     const mojom::PointingStick& pointing_stick) {
-  base::StringPiece swap_right =
+  std::string_view swap_right =
       GetBooleanString(pointing_stick.settings->swap_right);
-  base::StringPiece acceleration_enabled =
+  std::string_view acceleration_enabled =
       GetBooleanString(pointing_stick.settings->acceleration_enabled);
   std::string sensitivity =
       base::NumberToString(pointing_stick.settings->sensitivity);
@@ -210,17 +212,17 @@ std::string GetPointingStickSettingsLogList(
 }
 
 std::string GetTouchpadSettingsLogList(const mojom::Touchpad& touchpad) {
-  base::StringPiece tap_to_click_enabled =
+  std::string_view tap_to_click_enabled =
       GetBooleanString(touchpad.settings->tap_to_click_enabled);
-  base::StringPiece three_finger_click_enabled =
+  std::string_view three_finger_click_enabled =
       GetBooleanString(touchpad.settings->three_finger_click_enabled);
-  base::StringPiece tap_dragging_enabled =
+  std::string_view tap_dragging_enabled =
       GetBooleanString(touchpad.settings->tap_dragging_enabled);
-  base::StringPiece reverse_scrolling =
+  std::string_view reverse_scrolling =
       GetBooleanString(touchpad.settings->reverse_scrolling);
-  base::StringPiece acceleration_enabled =
+  std::string_view acceleration_enabled =
       GetBooleanString(touchpad.settings->acceleration_enabled);
-  base::StringPiece scroll_acceleration =
+  std::string_view scroll_acceleration =
       GetBooleanString(touchpad.settings->scroll_acceleration);
   std::string sensitivity =
       base::NumberToString(touchpad.settings->sensitivity);
@@ -259,7 +261,7 @@ std::string GetTouchpadSettingsLogList(const mojom::Touchpad& touchpad) {
 }
 
 std::string GetGraphicsTabletSettingsLog(
-    base::StringPiece category,
+    std::string_view category,
     const mojom::GraphicsTablet& graphics_tablet) {
   return GetDeviceLog(
       category, graphics_tablet, GetDeviceTypeName<mojom::GraphicsTablet>(),
@@ -270,13 +272,13 @@ std::string GetGraphicsTabletSettingsLog(
                        " "));
 }
 
-std::string GetKeyboardSettingsLog(base::StringPiece category,
+std::string GetKeyboardSettingsLog(std::string_view category,
                                    const mojom::Keyboard& keyboard) {
   return GetDeviceLog(category, keyboard, GetDeviceTypeName<mojom::Keyboard>(),
                       GetKeyboardSettingsLogList(keyboard));
 }
 
-std::string GetMouseSettingsLog(base::StringPiece category,
+std::string GetMouseSettingsLog(std::string_view category,
                                 const mojom::Mouse& mouse) {
   return GetDeviceLog(
       category, mouse, GetDeviceTypeName<mojom::Mouse>(),
@@ -287,14 +289,14 @@ std::string GetMouseSettingsLog(base::StringPiece category,
 }
 
 std::string GetPointingStickSettingsLog(
-    base::StringPiece category,
+    std::string_view category,
     const mojom::PointingStick& pointing_stick) {
   return GetDeviceLog(category, pointing_stick,
                       GetDeviceTypeName<mojom::PointingStick>(),
                       GetPointingStickSettingsLogList(pointing_stick));
 }
 
-std::string GetTouchpadSettingsLog(base::StringPiece category,
+std::string GetTouchpadSettingsLog(std::string_view category,
                                    const mojom::Touchpad& touchpad) {
   return GetDeviceLog(category, touchpad, GetDeviceTypeName<mojom::Touchpad>(),
                       GetTouchpadSettingsLogList(touchpad));

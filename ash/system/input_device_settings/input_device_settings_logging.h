@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_LOGGING_H_
 
 #include <sstream>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -18,24 +19,24 @@ namespace ash {
 
 // Get settings log for graphics tablet.
 ASH_EXPORT std::string GetGraphicsTabletSettingsLog(
-    base::StringPiece category,
+    std::string_view category,
     const mojom::GraphicsTablet& graphics_tablet);
 
 // Get settings log for keyboard.
-ASH_EXPORT std::string GetKeyboardSettingsLog(base::StringPiece category,
+ASH_EXPORT std::string GetKeyboardSettingsLog(std::string_view category,
                                               const mojom::Keyboard& keyboard);
 
 // Get settings log for mouse.
-ASH_EXPORT std::string GetMouseSettingsLog(base::StringPiece category,
+ASH_EXPORT std::string GetMouseSettingsLog(std::string_view category,
                                            const mojom::Mouse& mouse);
 
 // Get settings log for pointing stick.
 ASH_EXPORT std::string GetPointingStickSettingsLog(
-    base::StringPiece category,
+    std::string_view category,
     const mojom::PointingStick& pointing_stick);
 
 // Get settings log for touchpad.
-ASH_EXPORT std::string GetTouchpadSettingsLog(base::StringPiece category,
+ASH_EXPORT std::string GetTouchpadSettingsLog(std::string_view category,
                                               const mojom::Touchpad& touchpad);
 
 }  // namespace ash
