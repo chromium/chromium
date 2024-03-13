@@ -89,6 +89,9 @@
     "pause",
     "play",
     "toggleMuted",
+    // invokeaction for dialog
+    "showModal",
+    "close",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used

@@ -78,6 +78,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   // to stable with no issues.
   static void SetFocusForDialogLegacy(HTMLDialogElement* dialog);
 
+  bool HandleInvokeInternal(HTMLElement& invoker,
+                            AtomicString& action) override;
+
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
 
