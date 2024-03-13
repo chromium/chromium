@@ -16,8 +16,7 @@ struct yv12_buffer_config;
 extern "C" {
 #endif
 
-void aom_extend_frame_borders_c(struct yv12_buffer_config* ybf,
-                                const int num_planes);
+void aom_extend_frame_borders_c(struct yv12_buffer_config* ybf, int num_planes);
 #define aom_extend_frame_borders aom_extend_frame_borders_c
 
 void aom_extend_frame_borders_plane_row_c(const struct yv12_buffer_config* ybf,

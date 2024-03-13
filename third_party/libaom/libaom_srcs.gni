@@ -77,6 +77,9 @@ aom_av1_common_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/av1/common/x86/resize_ssse3.c",
 ]
 
+aom_av1_common_intrin_ssse3_x86 =
+    [ "//third_party/libaom/source/libaom/av1/common/x86/cdef_block_ssse3.c" ]
+
 aom_av1_common_intrin_sve = [
   "//third_party/libaom/source/libaom/av1/common/arm/highbd_warp_plane_sve.c",
   "//third_party/libaom/source/libaom/av1/common/arm/warp_plane_sve.c",

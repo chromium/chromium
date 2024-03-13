@@ -24,7 +24,6 @@ aom_unit_test_common_sources = [
   "//third_party/libaom/source/libaom/test/md5_helper.h",
   "//third_party/libaom/source/libaom/test/register_state_check.h",
   "//third_party/libaom/source/libaom/test/scan_test.cc",
-  "//third_party/libaom/source/libaom/test/selfguided_filter_test.cc",
   "//third_party/libaom/source/libaom/test/simd_cmp_impl.h",
   "//third_party/libaom/source/libaom/test/simd_impl.h",
   "//third_party/libaom/source/libaom/test/test_vectors.cc",
