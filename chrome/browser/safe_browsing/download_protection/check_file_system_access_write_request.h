@@ -62,6 +62,7 @@ class CheckFileSystemAccessWriteRequest
   void UploadBinary(DownloadCheckResult result,
                     DownloadCheckResultReason reason,
                     enterprise_connectors::AnalysisSettings settings) override;
+  bool ShouldImmediatelyDeepScan(bool server_requests_prompt) const override;
   bool ShouldPromptForDeepScanning(bool server_requests_prompt) const override;
   bool ShouldPromptForLocalDecryption(
       bool server_requests_prompt) const override;

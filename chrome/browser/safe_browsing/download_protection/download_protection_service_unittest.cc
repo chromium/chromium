@@ -41,6 +41,7 @@
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -5073,5 +5074,116 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+class ImmediateDeepScanTest : public DownloadProtectionServiceTest {
+ public:
+  ImmediateDeepScanTest() { EnableFeatures({kDeepScanningPromptRemoval}); }
+};
+
+TEST_F(ImmediateDeepScanTest, ESBRequestScan) {
+  PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
+                  /*upload_requested=*/true, /*request_deep_scan=*/true);
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
+      .Times(1);
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_, _))
+      .WillRepeatedly(
+          [](const GURL& url, base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(false);
+          });
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+
+  // Testing Scenario with request_deep_scan response is true and
+  // user is enrolled in the Enhanced Protection Program.
+  safe_browsing::SetEnhancedProtectionPrefForTests(profile()->GetPrefs(),
+                                                   /*value*/ true);
+
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(IsResult(DownloadCheckResult::IMMEDIATE_DEEP_SCAN));
+}
+
+TEST_F(ImmediateDeepScanTest, APPRequestScan) {
+  PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
+                  /*upload_requested=*/true, /*request_deep_scan=*/true);
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
+      .Times(1);
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_, _))
+      .WillRepeatedly(
+          [](const GURL& url, base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(false);
+          });
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+
+  // Testing Scenario with request_deep_scan response is true and
+  // user is enrolled in the the Advanced Protection Program
+  AdvancedProtectionStatusManagerFactory::GetForProfile(profile())
+      ->SetAdvancedProtectionStatusForTesting(/*enrolled=*/true);
+
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  // Advanced Protection users do not immediately deep scan.
+  EXPECT_TRUE(IsResult(DownloadCheckResult::PROMPT_FOR_SCANNING));
+}
+
+TEST_F(ImmediateDeepScanTest, EncryptedArchive) {
+  PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
+                  /*upload_requested=*/true, /*request_deep_scan=*/true);
+
+  base::FilePath test_zip;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
+  test_zip = test_zip.AppendASCII("safe_browsing")
+                 .AppendASCII("download_protection")
+                 .AppendASCII("encrypted.zip");
+
+  NiceMockDownloadItem item;
+  PrepareBasicDownloadItemWithFullPaths(
+      &item, {"http://www.evil.com/encrypted.zip"},  // url_chain
+      "http://www.google.com/",                      // referrer
+      test_zip,                                      // tmp_path
+      temp_dir_.GetPath().Append(
+          FILE_PATH_LITERAL("encrypted.zip")));  // final_path
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+
+  // Testing Scenario with request_deep_scan response is true and
+  // user is enrolled in the Enhanced Protection Program.
+  safe_browsing::SetEnhancedProtectionPrefForTests(profile()->GetPrefs(),
+                                                   /*value*/ true);
+
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  // Downloads of encrypted archives cannot immediately deep scan
+  EXPECT_TRUE(IsResult(DownloadCheckResult::PROMPT_FOR_SCANNING));
+}
 
 }  // namespace safe_browsing

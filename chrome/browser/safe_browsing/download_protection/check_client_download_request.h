@@ -72,6 +72,7 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
                                   bool upload_requested,
                                   const std::string& request_data,
                                   const std::string& response_body) override;
+  bool ShouldImmediatelyDeepScan(bool server_requests_prompt) const override;
   bool ShouldPromptForDeepScanning(bool server_requests_prompt) const override;
   bool ShouldPromptForLocalDecryption(
       bool server_requests_prompt) const override;

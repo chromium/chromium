@@ -306,6 +306,25 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
   if (ShouldPromptForDeepScanning(/*server_requests_prompt=*/true)) {
     LogDeepScanningPrompt(deep_scanning_prompt);
   }
+
+  bool immediate_deep_scan_prompt =
+      ShouldImmediatelyDeepScan(response.request_deep_scan());
+  if (immediate_deep_scan_prompt) {
+    *result = DownloadCheckResult::IMMEDIATE_DEEP_SCAN;
+    *reason = DownloadCheckResultReason::REASON_IMMEDIATE_DEEP_SCAN;
+    // Always set the token if Chrome should prompt for deep scanning.
+    // Otherwise, client Safe Browsing reports may be missed when the
+    // verdict is SAFE. See https://crbug.com/1485218.
+    *token = response.token();
+  }
+
+  // Only record the UMA metric if we're in a population that potentially
+  // could prompt for deep scanning.
+  if (ShouldImmediatelyDeepScan(/*server_requests_prompt=*/true)) {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.ServerRequestsImmediateDeepScan",
+        deep_scanning_prompt);
+  }
 }
 
 void CheckClientDownloadRequestBase::OnRequestBuilt(

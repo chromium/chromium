@@ -179,6 +179,7 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="ACCOUNT_COMPROMISE"/>
   <int value="37" label="LOCAL_DECRYPTION_PROMPT"/>
   <int value="38" label="LOCAL_DECRYPTION_FAILED"/>
+  <int value="39" label="IMMEDIATE_DEEP_SCAN"/>
 </enum>
 
 <enum name="SBClientDownloadCheckResult">
@@ -202,6 +203,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="PROMPT_FOR_LOCAL_PASSWORD_SCANNING"/>
   <int value="18" label="ASYNC_LOCAL_PASSWORD_SCANNING"/>
   <int value="19" label="BLOCKED_SCAN_FAILED"/>
+  <int value="20" label="IMMEDIATE_DEEP_SCAN"/>
 </enum>
 
 <enum name="SBClientDownloadUserGestureFileTypeAttributes">

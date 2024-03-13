@@ -133,6 +133,7 @@ bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
     case Result::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
     case Result::BLOCKED_SCAN_FAILED:
+    case Result::IMMEDIATE_DEEP_SCAN:
       return false;
   }
   NOTREACHED();

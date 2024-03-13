@@ -3076,6 +3076,9 @@ std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
     case DownloadCheckResult::BLOCKED_SCAN_FAILED:
       url_and_result.Set("result", "BLOCKED_SCAN_FAILED");
       break;
+    case DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
+      url_and_result.Set("result", "IMMEDIATE_DEEP_SCAN");
+      break;
   }
 
   std::string request_serialized;

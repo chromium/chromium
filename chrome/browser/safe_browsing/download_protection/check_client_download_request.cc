@@ -72,6 +72,7 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
     case DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case DownloadCheckResult::POTENTIALLY_UNWANTED:
     case DownloadCheckResult::UNCOMMON:
+    case DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
       if (reason == REASON_DOWNLOAD_DANGEROUS) {
         callback.Run(DownloadCheckResult::DANGEROUS);
       } else if (reason == REASON_DOWNLOAD_DANGEROUS_HOST) {
@@ -342,6 +343,32 @@ bool CheckClientDownloadRequest::IsUnderAdvancedProtection(
     return false;
   }
   return advanced_protection_status_manager->IsUnderAdvancedProtection();
+}
+
+bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
+    bool server_requests_prompt) const {
+  if (!ShouldPromptForDeepScanning(server_requests_prompt)) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
+  if (!profile) {
+    return false;
+  }
+
+  if (!IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+
+  if (DownloadItemWarningData::IsEncryptedArchive(item_)) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(kDeepScanningPromptRemoval)) {
+    return false;
+  }
+
+  return true;
 }
 
 bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(

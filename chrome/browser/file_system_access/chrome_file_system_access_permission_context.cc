@@ -501,6 +501,7 @@ InterpretSafeBrowsingResult(safe_browsing::DownloadCheckResult result) {
     case Result::PROMPT_FOR_SCANNING:
     case Result::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case Result::DEEP_SCANNED_FAILED:
+    case Result::IMMEDIATE_DEEP_SCAN:
       NOTREACHED();
       return ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::
           kAllow;

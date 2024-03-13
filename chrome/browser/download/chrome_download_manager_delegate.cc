@@ -1476,6 +1476,12 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       case safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED:
         danger_type = download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
         break;
+      case safe_browsing::DownloadCheckResult::IMMEDIATE_DEEP_SCAN:
+        is_pending_scanning = true;
+        danger_type = download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING;
+        safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
+            item, /*password=*/std::nullopt);
+        break;
     }
     DCHECK_NE(danger_type,
               download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);
