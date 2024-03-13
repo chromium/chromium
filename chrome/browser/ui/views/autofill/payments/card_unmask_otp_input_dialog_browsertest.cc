@@ -35,29 +35,25 @@ class CardUnmaskOtpInputDialogBrowserTest
     CardUnmaskChallengeOption challenge_option;
     challenge_option.challenge_input_length = kDefaultOtpLength;
     challenge_option.type = GetParam();
-    controller()->ShowDialog(
-        challenge_option,
-        /*delegate=*/nullptr,
-        base::BindOnce(
-            &CreateAndShowOtpInputDialog, controller()->GetWeakPtr(),
-            base::Unretained(
-                browser()->tab_strip_model()->GetActiveWebContents())));
+    controller_ = std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(
+        challenge_option, /*delegate=*/nullptr);
+    controller_->ShowDialog(base::BindOnce(
+        &CreateAndShowOtpInputDialog, controller_->GetWeakPtr(),
+        base::Unretained(
+            browser()->tab_strip_model()->GetActiveWebContents())));
   }
 
   CardUnmaskOtpInputDialogViews* GetDialog() {
-    if (!controller())
+    if (!controller_) {
       return nullptr;
+    }
 
     base::WeakPtr<CardUnmaskOtpInputDialogView> dialog_view =
-        controller()->GetDialogViewForTesting();
+        controller_->GetDialogViewForTesting();
     if (!dialog_view)
       return nullptr;
 
     return static_cast<CardUnmaskOtpInputDialogViews*>(dialog_view.get());
-  }
-
-  CardUnmaskOtpInputDialogControllerImpl* controller() {
-    return controller_.get();
   }
 
   std::string GetOtpAuthType() {
@@ -65,8 +61,7 @@ class CardUnmaskOtpInputDialogBrowserTest
   }
 
  private:
-  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl> controller_ =
-      std::make_unique<CardUnmaskOtpInputDialogControllerImpl>();
+  std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl> controller_;
 };
 
 // Ensures the UI can be shown.

@@ -15,8 +15,12 @@
 
 namespace autofill {
 
-CardUnmaskOtpInputDialogControllerImpl::
-    CardUnmaskOtpInputDialogControllerImpl() = default;
+CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
+    const CardUnmaskChallengeOption& challenge_option,
+    base::WeakPtr<OtpUnmaskDelegate> delegate)
+    : challenge_type_(challenge_option.type),
+      otp_length_(challenge_option.challenge_input_length),
+      delegate_(delegate) {}
 
 CardUnmaskOtpInputDialogControllerImpl::
     ~CardUnmaskOtpInputDialogControllerImpl() {
@@ -33,19 +37,13 @@ CardUnmaskOtpInputDialogControllerImpl::
 }
 
 void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
-    const CardUnmaskChallengeOption& challenge_option,
-    base::WeakPtr<OtpUnmaskDelegate> delegate,
     base::OnceCallback<base::WeakPtr<CardUnmaskOtpInputDialogView>()>
         create_and_show_view_callback) {
   if (dialog_view_) {
     return;
   }
 
-  otp_length_ = challenge_option.challenge_input_length;
-  challenge_type_ = challenge_option.type;
-  delegate_ = delegate;
   dialog_view_ = std::move(create_and_show_view_callback).Run();
-
   if (dialog_view_) {
     autofill_metrics::LogOtpInputDialogShown(challenge_type_);
   }

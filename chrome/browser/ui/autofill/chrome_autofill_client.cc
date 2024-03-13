@@ -554,12 +554,10 @@ void ChromeAutofillClient::ShowAutofillSettings(
 void ChromeAutofillClient::ShowCardUnmaskOtpInputDialog(
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
-  if (!card_unmask_otp_input_dialog_controller_) {
-    card_unmask_otp_input_dialog_controller_ =
-        std::make_unique<CardUnmaskOtpInputDialogControllerImpl>();
-  }
+  card_unmask_otp_input_dialog_controller_ =
+      std::make_unique<CardUnmaskOtpInputDialogControllerImpl>(challenge_option,
+                                                               delegate);
   card_unmask_otp_input_dialog_controller_->ShowDialog(
-      challenge_option, delegate,
       base::BindOnce(&CreateAndShowOtpInputDialog,
                      card_unmask_otp_input_dialog_controller_->GetWeakPtr(),
                      base::Unretained(web_contents())));

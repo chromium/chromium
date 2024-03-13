@@ -20,7 +20,9 @@ class CardUnmaskOtpInputDialogView;
 class CardUnmaskOtpInputDialogControllerImpl
     : public CardUnmaskOtpInputDialogController {
  public:
-  CardUnmaskOtpInputDialogControllerImpl();
+  CardUnmaskOtpInputDialogControllerImpl(
+      const CardUnmaskChallengeOption& challenge_option,
+      base::WeakPtr<OtpUnmaskDelegate> delegate);
   CardUnmaskOtpInputDialogControllerImpl(
       const CardUnmaskOtpInputDialogControllerImpl&) = delete;
   CardUnmaskOtpInputDialogControllerImpl& operator=(
@@ -29,8 +31,6 @@ class CardUnmaskOtpInputDialogControllerImpl
 
   // Show the dialog for users to type in OTPs.
   void ShowDialog(
-      const CardUnmaskChallengeOption& challenge_option,
-      base::WeakPtr<OtpUnmaskDelegate> delegate,
       base::OnceCallback<base::WeakPtr<CardUnmaskOtpInputDialogView>()>
           create_and_show_view_callback);
 
@@ -65,7 +65,7 @@ class CardUnmaskOtpInputDialogControllerImpl
   base::WeakPtr<CardUnmaskOtpInputDialogView> dialog_view_;
 
   // The challenge type of the OTP input dialog.
-  CardUnmaskChallengeOptionType challenge_type_;
+  const CardUnmaskChallengeOptionType challenge_type_;
 
  private:
   // Sets the view's state to the invalid state for the corresponding
@@ -73,7 +73,7 @@ class CardUnmaskOtpInputDialogControllerImpl
   void ShowInvalidState(OtpUnmaskResult otp_unmask_result);
 
   // The length of the OTP expected to be entered by the user.
-  size_t otp_length_;
+  const size_t otp_length_;
 
   // Weak reference to the delegate. Used to handle events of the dialog.
   base::WeakPtr<OtpUnmaskDelegate> delegate_;
