@@ -676,6 +676,28 @@ void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
   }
 }
 
+void DownloadsDOMHandler::OpenEsbSettings() {
+  Browser* browser = chrome::FindBrowserWithTab(GetWebUIWebContents());
+  if (!browser) {
+    return;
+  }
+  chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
+      browser,
+      safe_browsing::SafeBrowsingSettingReferralMethod::kDownloadPageRowPromo);
+}
+
+void DownloadsDOMHandler::IsEligibleForEsbPromo(
+    IsEligibleForEsbPromoCallback callback) {
+  content::DownloadManager* manager = GetMainNotifierManager();
+  if (manager) {
+    std::move(callback).Run(
+        safe_browsing::SafeBrowsingService::IsUserEligibleForESBPromo(
+            Profile::FromBrowserContext(manager->GetBrowserContext())));
+  } else {
+    std::move(callback).Run(false);
+  }
+}
+
 // DownloadsDOMHandler, private: --------------------------------------------
 
 content::DownloadManager* DownloadsDOMHandler::GetMainNotifierManager() const {
@@ -800,14 +822,4 @@ void DownloadsDOMHandler::RemoveDownloadInArgs(const std::string& id) {
   DownloadVector downloads;
   downloads.push_back(file);
   RemoveDownloads(downloads);
-}
-
-void DownloadsDOMHandler::OpenEsbSettings() {
-  Browser* browser = chrome::FindBrowserWithTab(GetWebUIWebContents());
-  if (!browser) {
-    return;
-  }
-  chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
-      browser,
-      safe_browsing::SafeBrowsingSettingReferralMethod::kDownloadPageRowPromo);
 }

@@ -164,6 +164,9 @@ interface PageHandler {
   // Bypass deep scan for download with the given |id|. This requires a user
   // gesture on the WebUI.
   BypassDeepScanRequiringGesture(string id);
+
+  // Checks whether an ESB Promotion can be shown on this profile.
+  IsEligibleForEsbPromo() => (bool result);
 };
 
 interface Page {

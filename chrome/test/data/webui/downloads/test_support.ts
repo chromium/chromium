@@ -86,6 +86,9 @@ class FakePageHandler implements PageHandlerInterface {
   deepScan(_id: string) {}
   bypassDeepScanRequiringGesture(_id: string) {}
   openEsbSettings() {}
+  async isEligibleForEsbPromo(): Promise<{result: boolean}> {
+    return {result: false};
+  }
 }
 
 export class TestIconLoader extends TestBrowserProxy implements IconLoader {
