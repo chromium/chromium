@@ -9,8 +9,14 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/webdata/plus_address_sync_util.h"
+#include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/webdata/common/web_database_backend.h"
 
 namespace plus_addresses {
@@ -19,7 +25,17 @@ PlusAddressSyncBridge::PlusAddressSyncBridge(
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     scoped_refptr<WebDatabaseBackend> db_backend)
     : ModelTypeSyncBridge(std::move(change_processor)),
-      db_backend_(std::move(db_backend)) {}
+      db_backend_(std::move(db_backend)) {
+  CHECK(db_backend_);
+  // Initializing the database from disk can fail.
+  if (!db_backend_->database()) {
+    ModelTypeSyncBridge::change_processor()->ReportError(
+        {FROM_HERE, "Failed to initialize database."});
+    return;
+  }
+  CHECK(GetPlusAddressTable());
+  // TODO(b/322147254): Load metadata and call `ModelReadyToSync()`.
+}
 
 PlusAddressSyncBridge::~PlusAddressSyncBridge() = default;
 
@@ -46,11 +62,19 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
 
 void PlusAddressSyncBridge::GetData(StorageKeyList storage_keys,
                                     DataCallback callback) {
-  NOTIMPLEMENTED();
+  // PLUS_ADDRESS is ready-only, so `GetData()` is not needed.
+  NOTREACHED();
 }
 
 void PlusAddressSyncBridge::GetAllDataForDebugging(DataCallback callback) {
-  NOTIMPLEMENTED();
+  auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const PlusProfile& profile : GetPlusAddressTable()->GetPlusProfiles()) {
+    auto entity = std::make_unique<syncer::EntityData>(
+        EntityDataFromPlusProfile(profile));
+    std::string storage_key = GetStorageKey(*entity);
+    batch->Put(storage_key, std::move(entity));
+  }
+  std::move(callback).Run(std::move(batch));
 }
 
 bool PlusAddressSyncBridge::IsEntityDataValid(
@@ -68,6 +92,10 @@ std::string PlusAddressSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
   return base::NumberToString(
       entity_data.specifics.plus_address().profile_id());
+}
+
+PlusAddressTable* PlusAddressSyncBridge::GetPlusAddressTable() {
+  return PlusAddressTable::FromWebDatabase(db_backend_->database());
 }
 
 }  // namespace plus_addresses

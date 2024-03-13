@@ -13,6 +13,8 @@ class WebDatabaseBackend;
 
 namespace plus_addresses {
 
+class PlusAddressTable;
+
 class PlusAddressSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   PlusAddressSyncBridge(
@@ -39,6 +41,8 @@ class PlusAddressSyncBridge : public syncer::ModelTypeSyncBridge {
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
  private:
+  PlusAddressTable* GetPlusAddressTable();
+
   // Used to access `PlusAddressTable` and commit changes.
   const scoped_refptr<WebDatabaseBackend> db_backend_;
 };

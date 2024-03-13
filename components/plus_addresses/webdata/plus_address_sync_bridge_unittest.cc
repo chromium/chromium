@@ -5,11 +5,17 @@
 #include "components/plus_addresses/webdata/plus_address_sync_bridge.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
+#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/plus_address_specifics.pb.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
@@ -36,6 +42,10 @@ class PlusAddressSyncBridgeTest : public testing::Test {
 
   PlusAddressSyncBridge& bridge() { return *bridge_; }
 
+  PlusAddressTable& table() {
+    return *PlusAddressTable::FromWebDatabase(db_backend_->database());
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<WebDatabaseBackend> db_backend_;
@@ -57,6 +67,24 @@ TEST_F(PlusAddressSyncBridgeTest, GetStorageKey) {
   syncer::EntityData entity;
   entity.specifics.mutable_plus_address()->set_profile_id(123);
   EXPECT_EQ(bridge().GetStorageKey(entity), "123");
+}
+
+TEST_F(PlusAddressSyncBridgeTest, GetAllDataForDebugging) {
+  const PlusProfile profile1 = test::GetPlusProfile();
+  const PlusProfile profile2 = test::GetPlusProfile2();
+  ASSERT_TRUE(table().AddPlusProfile(profile1));
+  ASSERT_TRUE(table().AddPlusProfile(profile2));
+
+  base::test::TestFuture<std::unique_ptr<syncer::DataBatch>> future;
+  bridge().GetAllDataForDebugging(future.GetCallback());
+  const std::unique_ptr<syncer::DataBatch>& batch = future.Get();
+  std::vector<PlusProfile> profiles_from_batch;
+  while (batch->HasNext()) {
+    profiles_from_batch.push_back(
+        PlusProfileFromEntityData(*batch->Next().second));
+  }
+  EXPECT_THAT(profiles_from_batch,
+              testing::UnorderedElementsAre(profile1, profile2));
 }
 
 }  // namespace
