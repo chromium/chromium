@@ -134,10 +134,6 @@ const char kArcErofs[] = "arc-erofs";
 const char kArcForceMountAndroidVolumesInFiles[] =
     "arc-force-mount-android-volumes-in-files";
 
-// If set, forces post boot dexopt to run immediately without device idle
-// requirement.
-const char kArcForcePostBootDexOpt[] = "arc-force-post-boot-dex-opt";
-
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
 

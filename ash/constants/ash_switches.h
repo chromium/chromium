@@ -48,7 +48,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcUseDevCaches[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcErofs[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kArcForceMountAndroidVolumesInFiles[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForcePostBootDexOpt[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceShowOptInUi[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcGeneratePlayAutoInstall[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcHostUreadaheadMode[];

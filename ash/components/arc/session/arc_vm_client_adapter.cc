@@ -177,12 +177,6 @@ std::vector<std::string> GenerateUpgradeProps(
         "%s.arc.lmk.perceptible_min_state_update=1", prefix.c_str()));
   }
 
-  if (GetArcAndroidSdkVersionAsInt() >= kArcVersionT &&
-      upgrade_params.force_post_boot_dex_opt) {
-    result.push_back(
-        base::StringPrintf("%s.force_post_boot_dexopt=1", prefix.c_str()));
-  }
-
   if (GetArcAndroidSdkVersionAsInt() == kArcVersionT &&
       upgrade_params.skip_dexopt_cache) {
     result.push_back(
