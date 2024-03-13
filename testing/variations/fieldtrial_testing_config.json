@@ -14920,6 +14920,20 @@
             ],
             "experiments": [
                 {
+                    "name": "EnabledSubframeWithQueueing_20240108",
+                    "params": {
+                        "level": "subframe",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument"
+                    ],
+                    "disable_features": [
+                        "RenderDocumentCompositorReuse"
+                    ]
+                },
+                {
                     "name": "EnabledCrashedFrameWithQueueing_20240108",
                     "params": {
                         "level": "crashed-frame",
@@ -14937,20 +14951,6 @@
                     "name": "EnabledNLRSubframeWithQueueing_20240108",
                     "params": {
                         "level": "non-local-root-subframe",
-                        "queueing_level": "full"
-                    },
-                    "enable_features": [
-                        "QueueNavigationsWhileWaitingForCommit",
-                        "RenderDocument"
-                    ],
-                    "disable_features": [
-                        "RenderDocumentCompositorReuse"
-                    ]
-                },
-                {
-                    "name": "EnabledSubframeWithQueueing_20240108",
-                    "params": {
-                        "level": "subframe",
                         "queueing_level": "full"
                     },
                     "enable_features": [
