@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -743,7 +744,15 @@ BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
           std::move(update_priority_signals_overrides)),
       pa_requests(std::move(pa_requests)),
       reject_reason(reject_reason),
-      error_msgs(std::move(error_msgs)) {}
+      error_msgs(std::move(error_msgs)) {
+  // TODO(https://crbug.com/41496188): Remove when bug has been fixed.
+  if (this->debug_loss_report_url && !this->debug_loss_report_url->is_valid()) {
+    base::debug::DumpWithoutCrashing();
+  }
+  if (this->debug_win_report_url && !this->debug_win_report_url->is_valid()) {
+    base::debug::DumpWithoutCrashing();
+  }
+}
 
 BidderWorklet::V8State::SingleGenerateBidResult::SingleGenerateBidResult(
     SingleGenerateBidResult&&) = default;

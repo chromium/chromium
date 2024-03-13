@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "url/gurl.h"
@@ -20,7 +21,7 @@ namespace auction_worklet {
 // used for a context managed by ContextRecycler. The URL passed to the last
 // successful call will be used as the reporting URL. Throws on invalid URLs or
 // non-HTTPS URLs.
-class ForDebuggingOnlyBindings : public Bindings {
+class CONTENT_EXPORT ForDebuggingOnlyBindings : public Bindings {
  public:
   explicit ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper);
   ForDebuggingOnlyBindings(const ForDebuggingOnlyBindings&) = delete;
@@ -32,10 +33,8 @@ class ForDebuggingOnlyBindings : public Bindings {
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
-  std::optional<GURL> TakeLossReportUrl() {
-    return std::move(loss_report_url_);
-  }
-  std::optional<GURL> TakeWinReportUrl() { return std::move(win_report_url_); }
+  std::optional<GURL> TakeLossReportUrl();
+  std::optional<GURL> TakeWinReportUrl();
 
  private:
   static void ReportAdAuctionLoss(
