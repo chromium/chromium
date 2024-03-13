@@ -92,10 +92,16 @@ LayoutUnit ResolveInlineLengthInternal(
     const ComputedStyle& style,
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
-    const Length& length,
+    const Length& original_length,
+    const Length* auto_length,
     LayoutUnit override_available_size,
     LayoutUnit unresolvable_length_result) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
+
+  CHECK(!original_length.IsAuto() || auto_length);
+  // for min-inline-size, this might still be 'auto'
+  const Length& length =
+      LIKELY(original_length.IsAuto()) ? *auto_length : original_length;
 
   switch (length.GetType()) {
     case Length::kFillAvailable: {
@@ -125,7 +131,7 @@ LayoutUnit ResolveInlineLengthInternal(
           {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
             return ResolveInlineLengthInternal(
                 constraint_space, style, border_padding, min_max_sizes_func,
-                length_to_evaluate, override_available_size,
+                length_to_evaluate, auto_length, override_available_size,
                 unresolvable_length_result);
           }});
 
@@ -351,6 +357,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       is_parent_writing_mode_horizontal ? style.Width() : style.Height();
 
   MinMaxSizesResult result;
+  // TODO(https://crbug.com/313072): Rewrite this test for calc-size().
   if (inline_size.IsAuto() || inline_size.IsPercentOrCalc() ||
       inline_size.IsFillAvailable() || inline_size.IsFitContent()) {
     result = min_max_sizes_func(MinMaxSizesType::kContent);
@@ -358,7 +365,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
     const auto size =
         is_parallel_with_parent
             ? ResolveMainInlineLength(space, style, border_padding,
-                                      min_max_sizes_func, inline_size)
+                                      min_max_sizes_func, inline_size,
+                                      /* auto_length */ nullptr)
             : ResolveMainBlockLength(
                   space, style, border_padding, inline_size,
                   [&]() -> LayoutUnit {
@@ -509,17 +517,17 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   }
 
   if (LIKELY(extent == kIndefiniteSize)) {
-    if (logical_width.IsAuto()) {
-      if (space.AvailableSize().inline_size == kIndefiniteSize) {
-        logical_width = Length::MinContent();
-      } else if (space.IsInlineAutoBehaviorStretch()) {
-        logical_width = Length::FillAvailable();
-      } else {
-        logical_width = Length::FitContent();
-      }
+    Length auto_length;
+    if (space.AvailableSize().inline_size == kIndefiniteSize) {
+      auto_length = Length::MinContent();
+    } else if (space.IsInlineAutoBehaviorStretch()) {
+      auto_length = Length::FillAvailable();
+    } else {
+      auto_length = Length::FitContent();
     }
     extent = ResolveMainInlineLength(space, style, border_padding,
-                                     min_max_sizes_func, logical_width);
+                                     min_max_sizes_func, logical_width,
+                                     &auto_length);
   }
 
   return ComputeMinMaxInlineSizes(space, node, border_padding,
@@ -958,7 +966,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
             NOTREACHED();
             return MinMaxSizesResult();
           },
-          Length::FillAvailable(),
+          Length::FillAvailable(), /* auto_length */ nullptr,
           /* override_available_size */ kIndefiniteSize);
     }
 
@@ -1022,9 +1030,12 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
         inline_length_to_resolve = Length::FillAvailable();
       }
 
+      const Length& auto_length = space.IsInlineAutoBehaviorStretch()
+                                      ? Length::FillAvailable()
+                                      : Length::FitContent();
       const LayoutUnit inline_size =
           ResolveMainInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                                  inline_length_to_resolve);
+                                  inline_length_to_resolve, &auto_length);
       if (inline_size != kIndefiniteSize) {
         DCHECK_GE(inline_size, LayoutUnit());
         replaced_inline =

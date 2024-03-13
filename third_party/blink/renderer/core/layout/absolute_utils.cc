@@ -654,36 +654,35 @@ bool ComputeOofInlineDimensions(
          block_alignment_position == ItemPosition::kStretch);
 
     // Determine how "auto" should resolve.
-    if (main_inline_length.IsAuto()) {
-      if (node.IsTable()) {
-        // Tables always shrink-to-fit unless explicitly asked to stretch.
-        main_inline_length = is_explicit_stretch ? Length::FillAvailable()
-                                                 : Length::FitContent();
-      } else if (!style.AspectRatio().IsAuto() &&
-                 can_compute_block_size_without_layout &&
-                 (!is_stretch || (is_implicit_stretch && is_block_explicit))) {
-        // We'd like to apply the aspect-ratio.
-        // The aspect-ratio applies from the block-axis if we can compute our
-        // block-size without invoking layout, and either:
-        //  - We aren't stretching our auto inline-size.
-        //  - We are stretching our auto inline-size, but the block-size has a
-        //    stronger (explicit) constraint, e.g:
-        //    "height:10px" or "align-self:stretch".
-        main_inline_length = Length::FitContent();
+    Length auto_length;
+    if (node.IsTable()) {
+      // Tables always shrink-to-fit unless explicitly asked to stretch.
+      auto_length =
+          is_explicit_stretch ? Length::FillAvailable() : Length::FitContent();
+    } else if (!style.AspectRatio().IsAuto() &&
+               can_compute_block_size_without_layout &&
+               (!is_stretch || (is_implicit_stretch && is_block_explicit))) {
+      // We'd like to apply the aspect-ratio.
+      // The aspect-ratio applies from the block-axis if we can compute our
+      // block-size without invoking layout, and either:
+      //  - We aren't stretching our auto inline-size.
+      //  - We are stretching our auto inline-size, but the block-size has a
+      //    stronger (explicit) constraint, e.g:
+      //    "height:10px" or "align-self:stretch".
+      auto_length = Length::FitContent();
 
-        // Apply the automatic minimum size.
-        if (style.OverflowInlineDirection() == EOverflow::kVisible &&
-            min_inline_length.IsAuto())
-          min_inline_length = Length::MinIntrinsic();
-      } else {
-        main_inline_length =
-            is_stretch ? Length::FillAvailable() : Length::FitContent();
+      // Apply the automatic minimum size.
+      if (style.OverflowInlineDirection() == EOverflow::kVisible &&
+          min_inline_length.IsAuto()) {
+        min_inline_length = Length::MinIntrinsic();
       }
+    } else {
+      auto_length = is_stretch ? Length::FillAvailable() : Length::FitContent();
     }
 
-    LayoutUnit main_inline_size =
-        ResolveMainInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                                main_inline_length, imcb.InlineSize());
+    LayoutUnit main_inline_size = ResolveMainInlineLength(
+        space, style, border_padding, MinMaxSizesFunc, main_inline_length,
+        &auto_length, imcb.InlineSize());
     MinMaxSizes min_max_inline_sizes =
         ComputeMinMaxInlineSizes(space, node, border_padding, MinMaxSizesFunc,
                                  &min_inline_length, imcb.InlineSize());

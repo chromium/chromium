@@ -414,6 +414,8 @@ bool FlexLayoutAlgorithm::IsUsedFlexBasisDefinite(
   const Length& flex_basis = GetUsedFlexBasis(child);
   if (out_flex_basis)
     *out_flex_basis = flex_basis;
+  // TODO(https://crbug.com/313072): This (and surrounding) tests should
+  // be HasAuto rather than IsAuto to account for calc-size().
   if (flex_basis.IsAuto() || flex_basis.IsContent())
     return false;
   const ConstraintSpace& space = BuildSpaceForFlexBasis(child);
@@ -427,6 +429,8 @@ bool FlexLayoutAlgorithm::IsItemCrossAxisLengthDefinite(
     const Length& length) const {
   // We don't consider inline value of 'auto' for the cross-axis min/main/max
   // size to be definite. Block value of 'auto' is always indefinite.
+  // TODO(https://crbug.com/313072): This (and surrounding) tests should
+  // be HasAuto rather than IsAuto to account for calc-size().
   if (length.IsAuto())
     return false;
   if (MainAxisIsInlineAxis(child))
@@ -775,6 +779,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
             cross_axis_length_to_resolve, kIndefiniteSize);
       } else {
+        // TODO(https://crbug.com/313072): This test should be moved
+        // into ResolveInlineLengthInternal so that it works with
+        // calc-size(fit-content, ...).
         if (cross_axis_length_to_resolve.IsFitContent() &&
             flex_basis_space.AvailableSize().inline_size == kIndefiniteSize) {
           // TODO(dgrogan): Figure out if orthogonal items require a similar
@@ -785,7 +792,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           cross_size = ResolveMainInlineLength(
               flex_basis_space, child_style,
               border_padding_in_child_writing_mode, MinMaxSizesFunc,
-              cross_axis_length_to_resolve);
+              cross_axis_length_to_resolve, /* auto_length */ nullptr);
         }
       }
 
@@ -872,7 +879,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (MainAxisIsInlineAxis(child)) {
         flex_base_border_box = ResolveMainInlineLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            MinMaxSizesFunc, flex_basis_length);
+            MinMaxSizesFunc, flex_basis_length, /* auto_length */ nullptr);
       } else {
         // Flex container's main axis is in child's block direction. Child's
         // flex basis is in child's block direction.
@@ -928,6 +935,9 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       // If the item’s computed main size property is definite, then the
       // specified size suggestion is that size.
       if (MainAxisIsInlineAxis(child)) {
+        // TODO(https://crbug.com/313072): This (and surrounding) tests
+        // should be HasAuto rather than IsAuto to account for
+        // calc-size().
         if (!specified_length_in_main_axis.IsAuto() &&
             !InlineLengthUnresolvable(flex_basis_space,
                                       specified_length_in_main_axis)) {
@@ -937,7 +947,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           specified_size_suggestion = ResolveMainInlineLength(
               flex_basis_space, child_style,
               border_padding_in_child_writing_mode, MinMaxSizesFunc,
-              specified_length_in_main_axis);
+              specified_length_in_main_axis, /* auto_length */ nullptr);
         }
       } else if (!BlockLengthUnresolvable(flex_basis_space,
                                           specified_length_in_main_axis)) {

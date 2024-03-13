@@ -53,7 +53,7 @@ class LengthUtilsTest : public testing::Test {
         [&](MinMaxSizesType) -> MinMaxSizesResult {
           return {*sizes, /* depends_on_block_constraints */ false};
         },
-        length);
+        length, /* auto_length */ nullptr);
   }
 
   LayoutUnit ResolveMinInlineLength(

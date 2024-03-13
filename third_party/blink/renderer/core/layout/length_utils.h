@@ -84,6 +84,7 @@ ResolveInlineLengthInternal(const ConstraintSpace&,
                             const BoxStrut& border_padding,
                             MinMaxSizesFunctionRef,
                             const Length&,
+                            const Length* auto_length,
                             LayoutUnit override_available_size,
                             LayoutUnit unresolvable_length_result);
 
@@ -109,7 +110,8 @@ inline LayoutUnit ResolveMinInlineLength(
     LayoutUnit override_available_size = kIndefiniteSize) {
   return ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      override_available_size, border_padding.InlineSum());
+      /* auto_length */ &Length::Auto(), override_available_size,
+      border_padding.InlineSum());
 }
 
 // Used for resolving max inline lengths, (|ComputedStyle::MaxLogicalWidth|).
@@ -124,7 +126,7 @@ inline LayoutUnit ResolveMaxInlineLength(
   // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
   return ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      override_available_size, LayoutUnit::Max());
+      /* auto_length */ nullptr, override_available_size, LayoutUnit::Max());
 }
 
 // Used for resolving main inline lengths, (|ComputedStyle::LogicalWidth|).
@@ -134,14 +136,10 @@ inline LayoutUnit ResolveMainInlineLength(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
+    const Length* auto_length,
     LayoutUnit override_available_size = kIndefiniteSize) {
-  // TODO(https://crbug.com/313072): We will need to accept 'auto'
-  // lengths here and handle them in ResolveInlineLengthInternal in
-  // order to support 'auto' values inside of calc-size().
-  DCHECK(!length.IsAuto());
-
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes_func, length,
+                                     min_max_sizes_func, length, auto_length,
                                      override_available_size, kIndefiniteSize);
 }
 
