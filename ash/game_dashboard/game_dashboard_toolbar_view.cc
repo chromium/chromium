@@ -332,6 +332,7 @@ void GameDashboardToolbarView::OnGamepadButtonPressed() {
       child->SetVisible(is_expanded_);
     }
   }
+  UpdateGamepadButtonTooltipText();
   context_->MaybeUpdateToolbarWidgetBounds();
 }
 
@@ -373,6 +374,7 @@ void GameDashboardToolbarView::AddShortcutTiles() {
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE),
       /*is_togglable=*/false, /*icon_color=*/cros_tokens::kCrosSysPrimary));
 
+  UpdateGamepadButtonTooltipText();
   MayAddGameControlsTile();
 
   if (base::FeatureList::IsEnabled(
@@ -393,13 +395,15 @@ void GameDashboardToolbarView::AddShortcutTiles() {
         GameDashboardController::Get()->active_recording_context() == context_);
   }
 
-  AddChildView(CreateIconButton(
+  auto* screenshot_button = AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardToolbarView::OnScreenshotButtonPressed,
                           base::Unretained(this)),
       &kGdScreenshotIcon, base::to_underlying(ToolbarViewId::kScreenshotButton),
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE),
       /*is_togglable=*/false));
+  screenshot_button->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_GAME_DASHBOARD_SCREENSHOT_TILE_BUTTON_TITLE));
 }
 
 void GameDashboardToolbarView::MayAddGameControlsTile() {
@@ -432,6 +436,17 @@ void GameDashboardToolbarView::UpdateRecordGameButton(
       is_recording_game_window ||
       CaptureModeController::Get()->can_start_new_recording());
   record_game_button_->SetToggled(is_recording_game_window);
+  record_game_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      is_recording_game_window
+          ? IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_STOP
+          : IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_TOOLTIPS_RECORD_START));
+}
+
+void GameDashboardToolbarView::UpdateGamepadButtonTooltipText() {
+  gamepad_button_->SetTooltipText(l10n_util::GetStringUTF16(
+      is_expanded_
+          ? IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_CLOSE_TOOLBAR
+          : IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_OPEN_TOOLBAR));
 }
 
 BEGIN_METADATA(GameDashboardToolbarView)

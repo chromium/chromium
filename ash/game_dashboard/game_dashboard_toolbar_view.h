@@ -87,6 +87,11 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView {
   // the default UI.
   void UpdateRecordGameButton(bool is_recording_game_window);
 
+  // Updates the 'gamepad_button_' tooltip text. If the toolbar is collapsed,
+  // the tooltip text will say "Open toolbar" and if the toolbar is expanded,
+  // the tooltip text will say "Close toolbar".
+  void UpdateGamepadButtonTooltipText();
+
   // The topmost `IconButton` in the toolbar's collection, which stays visible
   // in both the expanded and collapsed toolbar states.
   raw_ptr<IconButton> gamepad_button_ = nullptr;

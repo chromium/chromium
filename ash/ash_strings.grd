@@ -7550,6 +7550,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_TILE_ON" desc="The label for enabled Game Dashboard tiles.">
         On
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_CLOSE_TOOLBAR" translateable="false" desc="The tooltips for the toolbar gamepad button when the toolbar is expanded.">
+        Close toolbar
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_OPEN_TOOLBAR" translateable="false" desc="The tooltips for the toolbar gamepad button when the toolbar is not expanded.">
+        Open toolbar
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_TOOLTIPS_HIDE_TOOLBAR" translateable="false" desc="The tooltips for toolbar tile when the toolbar is visible.">
         Hide toolbar
       </message>
