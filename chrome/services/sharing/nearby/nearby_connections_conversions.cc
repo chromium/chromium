@@ -152,4 +152,16 @@ mojom::BandwidthQuality BandwidthQualityToMojom(v3::Quality quality) {
   }
 }
 
+mojom::AuthenticationStatus AuthenticationStatusToMojom(
+    AuthenticationStatus status) {
+  switch (status) {
+    case AuthenticationStatus::kUnknown:
+      return mojom::AuthenticationStatus::kUnknown;
+    case AuthenticationStatus::kSuccess:
+      return mojom::AuthenticationStatus::kSuccess;
+    case AuthenticationStatus::kFailure:
+      return mojom::AuthenticationStatus::kFailure;
+  }
+}
+
 }  // namespace nearby::connections

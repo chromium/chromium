@@ -169,6 +169,7 @@ ConnectionListener ConvertConnectionListenerV3ToV1(
                 .raw_authentication_token =
                     response_info.raw_authentication_token.string_data(),
                 .is_incoming_connection = response_info.is_incoming_connection,
+                .authentication_status = response_info.authentication_status,
             };
             v3_listener.initiated_cb(remote_device, new_info);
           },
@@ -580,6 +581,7 @@ class NearbyConnectionsTest : public testing::Test {
   ClientProxy* RequestConnectionV3(
       FakeConnectionListenerV3& fake_connection_listener_v3,
       PresenceDevicePtr remote_device,
+      AuthenticationStatus authentication_status,
       std::optional<std::vector<uint8_t>> bluetooth_mac_address =
           std::vector<uint8_t>(std::begin(kBluetoothMacAddress),
                                std::end(kBluetoothMacAddress))) {
@@ -609,7 +611,8 @@ class NearbyConnectionsTest : public testing::Test {
                .authentication_token = kAuthenticationToken,
                .raw_authentication_token = ByteArray(
                    kRawAuthenticationToken, sizeof(kRawAuthenticationToken)),
-               .is_incoming_connection = false},
+               .is_incoming_connection = false,
+               .authentication_status = authentication_status},
               options,
               ConvertConnectionListenerV3ToV1(nearby_device,
                                               std::move(info.listener)),
@@ -1637,7 +1640,42 @@ TEST_F(NearbyConnectionsTest, RequestConnectionV3Initiated) {
       });
 
   RequestConnectionV3(fake_connection_listener_v3,
-                      std::move(presence_device_mojom));
+                      std::move(presence_device_mojom),
+                      AuthenticationStatus::kSuccess);
+  initiated_run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsTest, RequestConnectionV3FailtoAuthenticate) {
+  nearby::presence::PresenceDevice presence_device(kEndpointId);
+  presence_device.SetMetadata(CreateMetadata());
+  PresenceDevicePtr presence_device_mojom =
+      ash::nearby::presence::BuildPresenceMojomDevice(presence_device);
+  EXPECT_EQ(presence_device_mojom->endpoint_id,
+            presence_device.GetEndpointId());
+
+  base::RunLoop initiated_run_loop;
+  FakeConnectionListenerV3 fake_connection_listener_v3;
+  fake_connection_listener_v3.initiated_cb =
+      base::BindLambdaForTesting([&](PresenceDevicePtr remote_device,
+                                     mojom::InitialConnectionInfoV3Ptr info) {
+        EXPECT_EQ(remote_device->endpoint_id, kEndpointId);
+        EXPECT_EQ(remote_device->metadata->device_name,
+                  presence_device.GetMetadata().device_name());
+        EXPECT_EQ(remote_device->metadata->account_name,
+                  presence_device.GetMetadata().account_name());
+        EXPECT_EQ(remote_device->metadata->user_name,
+                  presence_device.GetMetadata().user_name());
+        EXPECT_EQ(remote_device->metadata->device_profile_url,
+                  presence_device.GetMetadata().device_profile_url());
+        EXPECT_EQ(info->authentication_status,
+                  mojom::AuthenticationStatus::kFailure);
+
+        initiated_run_loop.Quit();
+      });
+
+  RequestConnectionV3(fake_connection_listener_v3,
+                      std::move(presence_device_mojom),
+                      AuthenticationStatus::kFailure);
   initiated_run_loop.Run();
 }
 
@@ -1679,7 +1717,8 @@ TEST_F(NearbyConnectionsTest, AcceptConnectionV3) {
       });
 
   RequestConnectionV3(fake_connection_listener_v3,
-                      presence_device_mojom.Clone());
+                      presence_device_mojom.Clone(),
+                      AuthenticationStatus::kSuccess);
   initiated_run_loop.Run();
 
   EXPECT_EQ(presence_device_mojom->endpoint_id,
@@ -1700,7 +1739,8 @@ TEST_F(NearbyConnectionsTest, RejectConnectionV3) {
 
   FakeConnectionListenerV3 fake_connection_listener_v3;
   RequestConnectionV3(fake_connection_listener_v3,
-                      presence_device_mojom.Clone());
+                      presence_device_mojom.Clone(),
+                      AuthenticationStatus::kSuccess);
 
   EXPECT_EQ(presence_device_mojom->endpoint_id,
             presence_device.GetEndpointId());
@@ -1749,7 +1789,8 @@ TEST_F(NearbyConnectionsTest, DisconnectFromDeviceV3) {
       });
 
   RequestConnectionV3(fake_connection_listener_v3,
-                      presence_device_mojom.Clone());
+                      presence_device_mojom.Clone(),
+                      AuthenticationStatus::kSuccess);
   initiated_run_loop.Run();
 
   presence_device_mojom =

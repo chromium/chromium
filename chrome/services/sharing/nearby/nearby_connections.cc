@@ -115,9 +115,7 @@ v3::ConnectionListener CreateConnectionListenerV3(
                 mojom::InitialConnectionInfoV3::New(
                     info.authentication_digits, info.raw_authentication_token,
                     info.is_incoming_connection,
-                    // TODO(b/314197753): Change to info.authentication_status
-                    // when implemented in the Nearby library.
-                    mojom::AuthenticationStatus::kSuccess));
+                    AuthenticationStatusToMojom(info.authentication_status)));
           },
       .result_cb =
           [remote](const NearbyDevice& remote_device,
