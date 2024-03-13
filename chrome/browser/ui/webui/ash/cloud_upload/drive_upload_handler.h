@@ -35,6 +35,8 @@ FORWARD_DECLARE_TEST(DriveUploadHandlerTest,
                      OnGetDriveMetadata_WhenInvalidAlternateUrl);
 FORWARD_DECLARE_TEST(DriveUploadHandlerTest,
                      OnGetDriveMetadata_WhenHostIsUnexpected);
+FORWARD_DECLARE_TEST(DriveUploadHandlerTest,
+                     OnGetDriveMetadata_WhenFileNotAnOfficeFile);
 
 // Manages the "upload to Drive" workflow after user confirmation on the upload
 // dialog. Instantiated by the static `Upload` method. Starts with moving the
@@ -64,6 +66,8 @@ class DriveUploadHandler : public base::RefCounted<DriveUploadHandler>,
                            OnGetDriveMetadata_WhenInvalidAlternateUrl);
   FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
                            OnGetDriveMetadata_WhenHostIsUnexpected);
+  FRIEND_TEST_ALL_PREFIXES(DriveUploadHandlerTest,
+                           OnGetDriveMetadata_WhenFileNotAnOfficeFile);
 
  private:
   friend base::RefCounted<DriveUploadHandler>;

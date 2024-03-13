@@ -210,7 +210,8 @@ enum class OfficeFilesUploadResult {
   kSyncCancelledAndTrashed = 22,
   kUploadNotStartedReauthenticationRequired = 23,
   kSuccessAfterReauth = 24,
-  kMaxValue = kSuccessAfterReauth,
+  kFileNotAnOfficeFile = 25,
+  kMaxValue = kFileNotAnOfficeFile,
 };
 
 constexpr char kGoogleDriveTaskResultMetricName[] =
@@ -304,6 +305,8 @@ const char kReauthenticationRequiredId[] =
 std::string GetGenericErrorMessage();
 // Get Microsoft authentication error message for uploading office files.
 std::string GetReauthenticationRequiredMessage();
+// Get error message for when the file is not a valid document.
+std::string GetNotAValidDocumentErrorMessage();
 
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(

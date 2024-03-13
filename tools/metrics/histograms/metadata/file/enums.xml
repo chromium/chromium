@@ -540,6 +540,7 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Sync error cancelled and trashed"/>
   <int value="23" label="Upload not started: Reauthentication needed"/>
   <int value="24" label="Success after reauthentication"/>
+  <int value="25" label="File not an office file"/>
 </enum>
 
 <enum name="OfficeFilesUseOutsideDriveHook">

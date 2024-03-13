@@ -161,6 +161,9 @@ bool IsQuickOfficeInstalled(Profile* profile);
 // Returns whether |path| is a MS Office file according to its extension.
 bool IsOfficeFile(const base::FilePath& path);
 
+// Returns whether |mime_type| is a MS Office file mimetype.
+bool IsOfficeFileMimeType(const std::string& mime_type);
+
 // Returns the group of extensions we consider to be 'Word', 'Excel' or
 // 'PowerPoint' files for the purpose of setting preferences. The extensions
 // contain the '.' character at the start.

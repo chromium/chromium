@@ -335,6 +335,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeFilesUploadResult::kSyncCancelledAndTrashed:
           case OfficeFilesUploadResult::
               kUploadNotStartedReauthenticationRequired:
+          case OfficeFilesUploadResult::kFileNotAnOfficeFile:
             break;
           case OfficeFilesUploadResult::kSuccess:
           case OfficeFilesUploadResult::kSuccessAfterReauth:
@@ -501,6 +502,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeFilesUploadResult::kSyncCancelledAndTrashed:
               case OfficeFilesUploadResult::
                   kUploadNotStartedReauthenticationRequired:
+              case OfficeFilesUploadResult::kFileNotAnOfficeFile:
                 SetWrongValueLogged(upload_result);
                 break;
             }

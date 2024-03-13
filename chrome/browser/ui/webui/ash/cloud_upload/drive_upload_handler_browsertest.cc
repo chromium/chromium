@@ -638,4 +638,35 @@ IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
       OfficeFilesUploadResult::kUnexpectedAlternateUrlHost, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(DriveUploadHandlerTest,
+                       OnGetDriveMetadata_WhenFileNotAnOfficeFile) {
+  // Set up a source file just to construct a DriveUploadHandler.
+  SetUpMyFiles();
+  const std::string test_file_name = "text.docx";
+  FileSystemURL source_file_url =
+      SetUpSourceFile(test_file_name, my_files_dir_);
+
+  drivefs::mojom::FileMetadataPtr metadata =
+      drivefs::mojom::FileMetadata::New();
+  // Set the mime type to be not an Office file mime type.
+  metadata->content_mime_type = "video/mp4";
+  // Set the host to be drive.google.com instead of docs.google.com. This occurs
+  // when a file with an Office extension is uploaded but it is actually not an
+  // Office file.
+  metadata->alternate_url =
+      "https://drive.google.com/document/d/smalldocxid?rtpof=true&usp=drive_fs";
+
+  scoped_refptr<DriveUploadHandler> drive_upload_handler =
+      new DriveUploadHandler(profile(), source_file_url,
+                             cloud_open_metrics_ref_);
+  // This should call the OnFailedUpload() immediately since no "upload"
+  // actually occurred so there is no need to do any clean up.
+  drive_upload_handler->OnGetDriveMetadata(
+      /*timed_out=*/true, /*error=*/drive::FILE_ERROR_OK, std::move(metadata));
+
+  histogram_.ExpectUniqueSample(kGoogleDriveUploadResultMetricName,
+                                OfficeFilesUploadResult::kFileNotAnOfficeFile,
+                                1);
+}
+
 }  // namespace ash::cloud_upload

@@ -425,4 +425,26 @@ TEST_F(FileManagerOfficeFileTasksTest,
       1);
 }
 
+TEST_F(FileManagerOfficeFileTasksTest, IsOfficeFileMimeType) {
+  // Powerpoint.
+  EXPECT_TRUE(IsOfficeFileMimeType("application/vnd.ms-powerpoint"));
+  EXPECT_TRUE(IsOfficeFileMimeType(
+      "application/"
+      "vnd.openxmlformats-officedocument.presentationml.presentation"));
+  // Excel.
+  EXPECT_TRUE(IsOfficeFileMimeType("application/vnd.ms-excel"));
+  EXPECT_TRUE(IsOfficeFileMimeType(
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+  // Word.
+  EXPECT_TRUE(IsOfficeFileMimeType("application/msword"));
+  EXPECT_TRUE(IsOfficeFileMimeType(
+      "application/"
+      "vnd.openxmlformats-officedocument.wordprocessingml.document"));
+
+  EXPECT_FALSE(IsOfficeFileMimeType("text/plain"));
+  EXPECT_FALSE(IsOfficeFileMimeType("video/webm"));
+  EXPECT_FALSE(IsOfficeFileMimeType("image/png'"));
+  EXPECT_FALSE(IsOfficeFileMimeType("image/png"));
+}
+
 }  // namespace file_manager::file_tasks

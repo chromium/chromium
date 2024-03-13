@@ -472,6 +472,20 @@ bool IsOfficeFile(const base::FilePath& path) {
   return false;
 }
 
+bool IsOfficeFileMimeType(const std::string& mime_type) {
+  std::vector<std::set<std::string>> groups = {
+      WordGroupMimeTypes(), ExcelGroupMimeTypes(), PowerPointGroupMimeTypes()};
+
+  for (const std::set<std::string>& group : groups) {
+    for (const std::string& office_mime_type : group) {
+      if (mime_type == office_mime_type) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 std::set<std::string> WordGroupExtensions() {
   static const base::NoDestructor<std::set<std::string>> extensions(
       std::initializer_list<std::string>({".doc", ".docx"}));

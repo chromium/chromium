@@ -58,6 +58,10 @@ std::string GetReauthenticationRequiredMessage() {
       IDS_OFFICE_UPLOAD_ERROR_REAUTHENTICATION_REQUIRED);
 }
 
+std::string GetNotAValidDocumentErrorMessage() {
+  return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_NOT_A_VALID_DOCUMENT);
+}
+
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,
     scoped_refptr<storage::FileSystemContext> file_system_context,
