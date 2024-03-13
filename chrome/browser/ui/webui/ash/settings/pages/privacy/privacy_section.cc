@@ -70,7 +70,9 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
          mojom::SearchResultDefaultRank::kMedium,
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kVerifiedAccess}},
-        {IDS_OS_SETTINGS_TAG_SECURITY_AND_PRIVACY,
+        {ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? IDS_OS_SETTINGS_TAG_PRIVACY_AND_SECURITY
+             : IDS_OS_SETTINGS_TAG_SECURITY_AND_PRIVACY,
          mojom::kPrivacyAndSecuritySectionPath,
          mojom::SearchResultIcon::kShield,
          mojom::SearchResultDefaultRank::kMedium,

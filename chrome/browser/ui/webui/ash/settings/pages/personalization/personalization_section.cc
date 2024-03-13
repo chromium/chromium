@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
@@ -24,6 +25,22 @@ using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 }  // namespace mojom
 
+namespace {
+
+const std::vector<SearchConcept>& GetPersonalizationSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_WALLPAPER_AND_STYLE,
+       mojom::kPersonalizationSectionPath,
+       mojom::SearchResultIcon::kPersonalization,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSection,
+       {.section = mojom::Section::kPersonalization}},
+  });
+  return *tags;
+}
+
+}  // namespace
+
 PersonalizationSection::PersonalizationSection(
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
@@ -34,7 +51,12 @@ PersonalizationSection::PersonalizationSection(
           ShouldShowMultitaskingInPersonalization()
               ? std::make_optional<MultitaskingSection>(profile,
                                                         search_tag_registry)
-              : std::nullopt) {}
+              : std::nullopt) {
+  if (isRevampEnabled_) {
+    SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+    updater.AddSearchTags(GetPersonalizationSearchConcepts());
+  }
+}
 
 PersonalizationSection::~PersonalizationSection() = default;
 

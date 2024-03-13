@@ -53,6 +53,7 @@ enum SearchResultIcon {
   kOnScreenKeyboard,
   kPaintbrush,
   kPenguin,
+  kPersonalization,
   kPhone,
   kPluginVm,
   kPointingStick,

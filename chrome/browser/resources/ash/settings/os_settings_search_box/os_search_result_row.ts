@@ -784,6 +784,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
                                  'os-settings:paint-brush';
       case SearchResultIcon.kPenguin:
         return 'os-settings:crostini-mascot';
+      case SearchResultIcon.kPersonalization:
+        return 'os-settings:personalization';
       case SearchResultIcon.kPhone:
         return isRevampEnabled ?
             'os-settings:connected-devices-android-phone' :
