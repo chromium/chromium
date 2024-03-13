@@ -6,6 +6,7 @@
 import json
 import ts_library
 import ts_definitions
+import path_mappings
 import os
 import shutil
 import tempfile
@@ -95,6 +96,20 @@ class TsLibraryTest(unittest.TestCase):
     project1_gen_dir = os.path.relpath(project1_gen_dir, gen_dir)
     project3_gen_dir = os.path.relpath(project3_gen_dir, gen_dir)
     project6_gen_dir = os.path.relpath(project6_gen_dir, gen_dir)
+    # Using path mappings to generate the path map file. path_mappings is also
+    # unit tested separately in path_mappings_test.py.
+    path_mappings.main([
+        '--root_gen_dir',
+        os.path.relpath(self._out_folder, gen_dir),
+        '--root_src_dir',
+        os.path.relpath(os.path.join(_HERE_DIR, 'tests'), gen_dir),
+        '--gen_dir',
+        os.path.relpath(gen_dir, _CWD),
+        '--raw_deps',
+        '//ui/webui/resources/js:build_ts',
+        '--output_suffix',
+        'project2',
+    ])
 
     ts_library.main([
         '--output_suffix',
@@ -103,8 +118,6 @@ class TsLibraryTest(unittest.TestCase):
         os.path.relpath(self._out_folder, gen_dir),
         '--root_src_dir',
         os.path.relpath(os.path.join(_HERE_DIR, 'tests'), gen_dir),
-        '--raw_deps',
-        '//ui/webui/resources/js:build_ts',
         '--root_dir',
         os.path.relpath(root_dir, _CWD),
         '--gen_dir',
@@ -119,6 +132,8 @@ class TsLibraryTest(unittest.TestCase):
         os.path.join(project6_gen_dir, 'tsconfig_build_ts.json'),
         '--path_mappings',
         'chrome://some-other-source/*|' + os.path.join(project1_gen_dir, '*'),
+        '--path_mappings_file',
+        'path_mappings_project2.json',
         '--tsconfig_base',
         os.path.relpath(os.path.join(root_dir, 'tsconfig_base.json'), gen_dir),
     ])
@@ -129,6 +144,7 @@ class TsLibraryTest(unittest.TestCase):
         'bar.js',
         'tsconfig_build_ts.json',
         'build_ts_manifest.json',
+        'path_mappings_project2.json',
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
@@ -249,7 +265,6 @@ class TsLibraryTest(unittest.TestCase):
     ts_library.main([
         '--output_suffix',
         'test_build_ts',
-        '--raw_deps',
         '--deps',
         os.path.join(gen_dir, 'tsconfig_build_ts.json'),
         '--root_gen_dir',

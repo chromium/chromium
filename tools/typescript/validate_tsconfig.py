@@ -176,31 +176,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'code should be added in TypeScript.'
 
 
-def isBrowserOnlyDep(dep):
-  browser_only_deps = [
-      '//ui/webui/resources/cr_elements',
-      '//ui/webui/resources/cr_components/localized_link',
-      '//ui/webui/resources/cr_components/managed_footnote',
-  ]
-  return any(dep.startswith(dep_folder) for dep_folder in browser_only_deps)
-
-
-def isDependencyAllowed(is_ash_target, raw_dep, target_path):
-  if is_ash_target and isBrowserOnlyDep(raw_dep):
-    return False
-
-  is_ash_dep = isInAshFolder(raw_dep[2:])
-  if not is_ash_dep or is_ash_target:
-    return True
-
-  exceptions = [
-      # TODO(https://crbug.com/1506299): Remove this incorrect dependency
-      'chrome/browser/resources/settings',
-  ]
-
-  return target_path in exceptions
-
-
 def isMappingAllowed(is_ash_target, target_path, mapping_path):
   if is_ash_target:
     return True

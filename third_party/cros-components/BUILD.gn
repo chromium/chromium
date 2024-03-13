@@ -55,8 +55,13 @@ ts_library("cros_components__ts_library") {
   in_files = _cros_components_ts_files
 
   root_src_dir = rebase_path("//", target_gen_dir)
+  resources_dir =
+      rebase_path("$root_gen_dir/ui/webui/resources/tsc", target_gen_dir)
 
-  path_mappings = [ "@material/*|$root_src_dir/third_party/material_web_components/components-chromium/node_modules/@material/*" ]
+  path_mappings = [
+    "chrome://resources/cr_components/color_change_listener/*|$resources_dir/cr_components/color_change_listener/*",
+    "@material/*|$root_src_dir/third_party/material_web_components/components-chromium/node_modules/@material/*",
+  ]
 
   foreach(_mwc_mapping, mwc_path_mappings) {
     path_mappings +=

@@ -18,9 +18,8 @@ sys.path.append(os.path.join(_SRC_DIR, 'third_party', 'node'))
 import node
 import node_modules
 
-from path_mappings import GetDepToPathMappings
 from path_utils import isInAshFolder, getTargetPath
-from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget, isDependencyAllowed, isMappingAllowed, validateDefinitionDeps
+from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget, isMappingAllowed, validateDefinitionDeps
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
@@ -34,7 +33,6 @@ def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument('--raw_deps', nargs='*')
   parser.add_argument('--deps', nargs='*')
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--path_mappings', nargs='*')
@@ -162,7 +160,6 @@ def main(argv):
   if args.deps is not None:
     tsconfig['references'] = [{'path': dep} for dep in args.deps]
 
-  # Handle path mappings, for example chrome://resources/ URLs.
   path_mappings = collections.defaultdict(list)
   # Load all mappings from the input file, if one exists.
   if (args.path_mappings_file is not None):
@@ -171,36 +168,6 @@ def main(argv):
       file_mappings = json.loads(f.read())
       for url in file_mappings:
         path_mappings[url] = file_mappings[url]
-  # Automatically add mappings for certain dependencies.
-  # TODO (crbug.com/328733315): Remove this logic from ts_library() and use
-  # webui_path_mappings() to generate the mappings instead.
-  elif args.deps is not None:
-    assert args.raw_deps is not None
-    dep_to_path_mappings = GetDepToPathMappings(
-        args.root_gen_dir,
-        # Sometimes root_src_dir has trailing slashes. Remove them if necessary.
-        args.root_src_dir.rstrip('/'),
-        args.platform)
-
-    for dep in args.raw_deps:
-      dependencyType = 'Browser-only' if is_ash_target else 'Ash-only'
-      assert isDependencyAllowed(is_ash_target, dep, target_path), \
-          f'{target_path} should not use {dependencyType} dependency {dep}.'
-
-      if dep not in dep_to_path_mappings:
-        assert not dep.startswith("//ui/webui/resources"), \
-            f'Missing path mapping for \'{dep}\'. Update ' \
-            '//tools/typescript/path_mappings.py accordingly.'
-
-        # Path mappings outside of //ui/webui/resources are not inferred from
-        # |args.deps| yet.
-        continue
-
-      mappings = dep_to_path_mappings[dep]
-      for (url, dir) in mappings:
-        path_mappings[url].append(os.path.join('./', dir))
-        if (url.startswith("//")):
-          path_mappings['chrome:' + url].append(os.path.join('./', dir))
 
   # Add target-specified mappings.
   if args.path_mappings is not None:
