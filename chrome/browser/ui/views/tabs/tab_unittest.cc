@@ -291,34 +291,60 @@ class AlertIndicatorButtonTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 };
 
-TEST_F(TabTest, HitTestTopPixel) {
-  // TODO (crbug/1520660): Fix or remove test.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
+TEST_F(TabTest, HitTest) {
   auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab =
       widget->SetContentsView(std::make_unique<Tab>(tab_slot_controller.get()));
   tab->SizeToPreferredSize();
 
-  // Tabs are slanted, so a click halfway down the left edge won't hit it.
+  // Attempt to click on the left curved extender. this is not a part of the
+  // hit target.
+  // x ╭─────────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
   int middle_y = tab->height() / 2;
   EXPECT_FALSE(tab->HitTestPoint(gfx::Point(0, middle_y)));
 
-  // Tabs should not be hit if we click above them.
+  // Attempt to click above the tab. this is not a part of the hit target.
+  //        x
+  //   ╭─────────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
   int middle_x = tab->width() / 2;
   EXPECT_FALSE(tab->HitTestPoint(gfx::Point(middle_x, -1)));
-  EXPECT_TRUE(tab->HitTestPoint(gfx::Point(middle_x, 0)));
 
-  // Make sure top edge clicks still select the tab when the window is
-  // maximized.
+  int tab_starting_y =
+      GetLayoutConstant(TAB_STRIP_HEIGHT) - GetLayoutConstant(TAB_HEIGHT);
+
+  // Attempt to click on the top pixel of the tab. This should be part of the
+  // hit target.
+  //   ╭────x────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  EXPECT_TRUE(tab->HitTestPoint(gfx::Point(middle_x, tab_starting_y)));
+
+  // In maximized mode, attempt to click on the top pixel of the tab. This
+  // should be part of the hit target.
+  //   ╭────x────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
   widget->Maximize();
-  EXPECT_TRUE(tab->HitTestPoint(gfx::Point(middle_x, 0)));
+  EXPECT_TRUE(tab->HitTestPoint(gfx::Point(middle_x, tab_starting_y)));
 
-  // But clicks in the area above the slanted sides should still miss.
-  EXPECT_FALSE(tab->HitTestPoint(gfx::Point(0, 0)));
-  EXPECT_FALSE(tab->HitTestPoint(gfx::Point(tab->width() - 1, 0)));
+  // Attempt to click on the left curved extender. this is not a part of the
+  // hit target.
+  // x ╭─────────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  EXPECT_FALSE(tab->HitTestPoint(gfx::Point(0, tab_starting_y)));
+
+  // Attempt to click on the right curved extender. this is not a part of the
+  // hit target.
+  //   ╭─────────╮ x
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  EXPECT_FALSE(tab->HitTestPoint(gfx::Point(tab->width() - 1, tab_starting_y)));
 }
 
 TEST_F(TabTest, LayoutAndVisibilityOfElements) {
