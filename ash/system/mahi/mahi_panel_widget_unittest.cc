@@ -18,8 +18,8 @@
 namespace ash {
 namespace {
 
-constexpr int kPanelDefaultWidth = 340;
-constexpr int kPanelDefaultHeight = 450;
+constexpr int kPanelDefaultWidth = 360;
+constexpr int kPanelDefaultHeight = 492;
 constexpr int kPanelBoundsShelfPadding = 8;
 
 class MahiPanelWidgetTest : public AshTestBase {

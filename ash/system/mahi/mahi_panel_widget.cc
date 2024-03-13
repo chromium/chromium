@@ -23,9 +23,9 @@ namespace ash {
 
 namespace {
 
-constexpr int kPanelDefaultWidth = 340;
-constexpr int kPanelDefaultHeight = 450;
-constexpr int kPanelHeightWithRefreshBanner = 482;
+constexpr int kPanelDefaultWidth = 360;
+constexpr int kPanelDefaultHeight = 492;
+constexpr int kPanelHeightWithRefreshBanner = 524;
 constexpr int kPanelBoundsPadding = 8;
 
 gfx::Rect CalculateWidgetBounds(aura::Window* root_window,

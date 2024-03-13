@@ -98,7 +98,8 @@ RefreshBannerView::RefreshBannerView() {
           .SetText(l10n_util::GetStringFUTF16(
               IDS_ASH_MAHI_REFRESH_BANNER_LABEL_TEXT,
               manager ? manager->GetContentTitle() : base::EmptyString16()))
-          .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
+          .SetAutoColorReadabilityEnabled(false)
+          .SetEnabledColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer)
           .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
               TypographyToken::kCrosAnnotation2))
           .SetProperty(views::kMarginsKey, kTitleLabelMargin)
@@ -108,7 +109,7 @@ RefreshBannerView::RefreshBannerView() {
                        .SetVectorIcon(&vector_icons::kReloadChromeRefreshIcon)
                        .SetType(IconButton::Type::kSmallProminentFloating)
                        .Build());
-  icon_button->SetIconColor(cros_tokens::kCrosSysPrimary);
+  icon_button->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
 }
 
 RefreshBannerView::~RefreshBannerView() = default;
