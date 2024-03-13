@@ -12,6 +12,8 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/load_flags.h"
 
@@ -21,6 +23,16 @@ AidaClient::AidaClient(Profile* profile)
       aida_scope_(features::kDevToolsConsoleInsightsAidaScope.Get()) {}
 
 AidaClient::~AidaClient() = default;
+
+bool AidaClient::CanUseAida(Profile* profile) {
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
+         profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
+             static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
+#endif
+}
 
 void AidaClient::OverrideAidaEndpointAndScopeForTesting(
     const std::string& aida_endpoint,

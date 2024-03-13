@@ -1967,7 +1967,7 @@ void DevToolsUIBindings::CanShowSurvey(DispatchCallback callback,
 void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
                                             const std::string& request,
                                             int stream_id) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+  if (!AidaClient::CanUseAida(profile_)) {
     return;
   }
   if (!aida_client_) {
@@ -1979,7 +1979,7 @@ void DevToolsUIBindings::DoAidaConversation(DispatchCallback callback,
 }
 
 void DevToolsUIBindings::RegisterAidaClientEvent(const std::string& request) {
-  if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
+  if (!AidaClient::CanUseAida(profile_)) {
     return;
   }
   if (!aida_client_) {

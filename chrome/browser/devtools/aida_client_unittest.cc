@@ -9,6 +9,8 @@
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/network_service_instance.h"
@@ -108,6 +110,19 @@ TEST_F(AidaClientTest, FailsIfNotAuthorized) {
   EXPECT_EQ(
       R"({"error": "Cannot get OAuth credentials", "detail": "Request canceled."})",
       absl::get<std::string>(delegate.response_));
+}
+
+TEST_F(AidaClientTest, NotAvailableIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(::features::kDevToolsConsoleInsights);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(AidaClient::CanUseAida(profile_.get()));
+#else
+  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
+#endif
+  feature_list.Reset();
+  feature_list.InitAndDisableFeature(::features::kDevToolsConsoleInsights);
+  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
 }
 
 TEST_F(AidaClientTest, Succeeds) {

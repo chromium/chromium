@@ -17,6 +17,12 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
+// The possible values for the DevTools AI enterprise policy.
+enum class DevToolsGenAiEnterprisePolicyValue {
+  kAllow = 0,
+  kDisable = 2,
+};
+
 class AidaClient {
  public:
   explicit AidaClient(Profile* profile);
@@ -33,6 +39,8 @@ class AidaClient {
       "/v1/aida:doConversation";
   static constexpr std::string_view kRegisterClientEventUrlPath =
       "/v1:registerClientEvent";
+
+  static bool CanUseAida(Profile* profile);
 
  private:
   void PrepareAidaRequest(

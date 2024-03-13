@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "aida_client.h"
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -121,12 +122,6 @@ static const char kWorkerFrontendURL[] =
 static const char kJSFrontendURL[] = "devtools://devtools/bundled/js_app.html";
 static const char kFallbackFrontendURL[] =
     "devtools://devtools/bundled/inspector.html";
-
-// The possible values for the DevTools GenAI enterprise policy.
-enum class DevToolsGenAiEnterprisePolicyValue {
-  kAllow = 0,
-  kDisable = 2,
-};
 
 bool FindInspectedBrowserAndTabIndex(
     WebContents* inspected_web_contents, Browser** browser, int* tab) {
@@ -1284,17 +1279,13 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
         url += "&veLogging=true";
       }
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
-          profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
-              static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow)) {
+      if (AidaClient::CanUseAida(profile)) {
         url += "&enableAida=true&aidaModelId=" +
                features::kDevToolsConsoleInsightsModelId.Get() +
                "&aidaTemperature=" +
                base::NumberToString(
                    features::kDevToolsConsoleInsightsTemperature.Get());
       }
-#endif
       break;
     case kFrontendWorker:
       url = kWorkerFrontendURL + remote_base;
