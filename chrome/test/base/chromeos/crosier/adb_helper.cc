@@ -156,8 +156,16 @@ bool AdbHelper::InstallApk(const base::FilePath& apk_path) {
   CHECK_EQ(result.return_code, 0);
 
   // Install the apk.
-  return Command(
-      base::StringPrintf(R"(install "%s")", apk_path.value().c_str()));
+  const bool success =
+      Command(base::StringPrintf(R"(install "%s")", apk_path.value().c_str()));
+  if (success) {
+    return true;
+  }
+
+  // Dump logcat to debug the installation failure. The output of `logcat` would
+  // be in sudo helper command output so not dumping it again here.
+  Command("logcat -d");
+  return false;
 }
 
 bool AdbHelper::Command(const std::string_view command) {
