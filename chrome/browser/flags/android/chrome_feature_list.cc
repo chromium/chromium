@@ -245,6 +245,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReadAloudInMultiWindow,
     &kReadAloudPlayback,
     &kReadAloudTapToSeek,
+    &kReadAloudIPHMenuButtonHighlightCCT,
     &kReaderModeInCCT,
     &kRecordSuppressionMetrics,
     &kReengagementNotification,
@@ -780,6 +781,10 @@ BASE_FEATURE(kReadAloudPlayback,
 
 BASE_FEATURE(kReadAloudTapToSeek,
              "ReadAloudTapToSeek",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT,
+             "ReadAloudIPHMenuButtonHighlightCCT",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReaderModeInCCT,

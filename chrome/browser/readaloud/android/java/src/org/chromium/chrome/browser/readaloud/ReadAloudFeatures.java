@@ -138,6 +138,12 @@ public final class ReadAloudFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_TAP_TO_SEEK);
     }
 
+    /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */
+    public static boolean isIPHMenuButtonHighlightCCTEnabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT);
+    }
+
     /** Returns the API key override feature param if present, or null otherwise. */
     @Nullable
     public static String getApiKeyOverride() {

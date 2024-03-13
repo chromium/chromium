@@ -35,6 +35,7 @@ public class IPHCommand {
     @Nullable public final HighlightParams highlightParams;
     public final Rect anchorRect;
     public final boolean removeArrow;
+    public final boolean showTextBubble;
     @AnchoredPopupWindow.VerticalOrientation public final int preferredVerticalOrientation;
 
     public void fetchFromResources() {
@@ -81,6 +82,7 @@ public class IPHCommand {
             HighlightParams params,
             Rect anchorRect,
             boolean removeArrow,
+            boolean showTextBubble,
             @AnchoredPopupWindow.VerticalOrientation int preferredVerticalOrientation,
             Rect insetRect) {
         this.mResources = resources;
@@ -99,6 +101,7 @@ public class IPHCommand {
         this.highlightParams = params;
         this.anchorRect = anchorRect;
         this.removeArrow = removeArrow;
+        this.showTextBubble = showTextBubble;
         this.preferredVerticalOrientation = preferredVerticalOrientation;
         this.insetRect = insetRect;
     }

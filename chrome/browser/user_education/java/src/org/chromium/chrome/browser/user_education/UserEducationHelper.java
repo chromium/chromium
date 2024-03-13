@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class that shows and hides in-product help message bubbles.
+ * Class that manages requests to trigger IPH's. Customizes the IPH with text bubbles, view
+ * highlights, etc. based on the configuration.
  * Recipes for use:
  * 1. Create an IPH bubble anchored to a view:
  * mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(myContext.getResources(),
@@ -160,34 +161,38 @@ public class UserEducationHelper {
         // needed from this point on.
         iphCommand.fetchFromResources();
 
-        String contentString = iphCommand.contentString;
-        String accessibilityString = iphCommand.accessibilityText;
-        assert (!contentString.isEmpty());
-        assert (!accessibilityString.isEmpty());
+        if (iphCommand.showTextBubble) {
+            String contentString = iphCommand.contentString;
+            String accessibilityString = iphCommand.accessibilityText;
+            assert (!contentString.isEmpty());
+            assert (!accessibilityString.isEmpty());
 
-        textBubble =
-                new TextBubble(
-                        mActivity,
-                        anchorView,
-                        contentString,
-                        accessibilityString,
-                        !iphCommand.removeArrow,
-                        viewRectProvider != null ? viewRectProvider : rectProvider,
-                        ChromeAccessibilityUtil.get().isAccessibilityEnabled());
-        textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
-        textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
-        textBubble.addOnDismissListener(
-                () ->
-                        mHandler.postDelayed(
-                                () -> {
-                                    if (featureName != null) tracker.dismissed(featureName);
-                                    iphCommand.onDismissCallback.run();
-                                    if (highlightParams != null) {
-                                        ViewHighlighter.turnOffHighlight(anchorView);
-                                    }
-                                },
-                                ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
-        textBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
+            textBubble =
+                    new TextBubble(
+                            mActivity,
+                            anchorView,
+                            contentString,
+                            accessibilityString,
+                            !iphCommand.removeArrow,
+                            viewRectProvider != null ? viewRectProvider : rectProvider,
+                            ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+            textBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
+            textBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
+            textBubble.addOnDismissListener(
+                    () ->
+                            mHandler.postDelayed(
+                                    () -> {
+                                        if (featureName != null) tracker.dismissed(featureName);
+                                        iphCommand.onDismissCallback.run();
+                                        if (highlightParams != null) {
+                                            ViewHighlighter.turnOffHighlight(anchorView);
+                                        }
+                                    },
+                                    ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
+            textBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
+
+            textBubble.show();
+        }
 
         if (highlightParams != null) {
             ViewHighlighter.turnOnHighlight(anchorView, highlightParams);
@@ -196,7 +201,7 @@ public class UserEducationHelper {
         if (viewRectProvider != null) {
             viewRectProvider.setInsetPx(iphCommand.insetRect);
         }
-        textBubble.show();
+
         iphCommand.onShowCallback.run();
     }
 }

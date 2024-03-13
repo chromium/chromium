@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig
 import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -107,6 +108,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private @Nullable BrandingController mBrandingController;
 
     private @Nullable DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
+    private @Nullable ReadAloudIPHController mReadAloudIPHController;
 
     private @Nullable PageInsightsCoordinator mPageInsightsCoordinator;
     private @Nullable ContextualSearchObserver mContextualSearchObserver;
@@ -326,20 +328,31 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         maybeCreatePageInsightsComponent();
 
-        if (ReengagementNotificationController.isEnabled()) {
-            new OneShotCallback<>(
-                    mProfileSupplier,
-                    mCallbackController.makeCancelable(
-                            profile -> {
-                                assert profile != null : "Unexpectedly null profile from TabModel.";
-                                if (profile == null) return;
+        new OneShotCallback<>(
+                mProfileSupplier,
+                mCallbackController.makeCancelable(
+                        profile -> {
+                            assert profile != null : "Unexpectedly null profile from TabModel.";
+                            if (profile == null) return;
+                            if (ReengagementNotificationController.isEnabled()) {
                                 Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
                                 ReengagementNotificationController controller =
                                         new ReengagementNotificationController(
                                                 mActivity, tracker, ReengagementActivity.class);
                                 controller.tryToReengageTheUser();
-                            }));
-        }
+                            }
+                            if (mAppMenuCoordinator != null) {
+                                mReadAloudIPHController =
+                                        new ReadAloudIPHController(
+                                                mActivity,
+                                                profile,
+                                                getToolbarManager().getMenuButtonView(),
+                                                mAppMenuCoordinator.getAppMenuHandler(),
+                                                mActivityTabProvider,
+                                                mReadAloudControllerSupplier,
+                                                /* showAppMenuTextBubble= */ false);
+                            }
+                        }));
     }
 
     @Override
@@ -547,6 +560,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mDesktopSiteSettingsIPHController != null) {
             mDesktopSiteSettingsIPHController.destroy();
             mDesktopSiteSettingsIPHController = null;
+        }
+
+        if (mReadAloudIPHController != null) {
+            mReadAloudIPHController.destroy();
+            mReadAloudIPHController = null;
         }
 
         mCustomTabHeightStrategy.destroy();

@@ -842,7 +842,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler(),
                         mActivityTabProvider,
-                        mReadAloudControllerSupplier);
+                        mReadAloudControllerSupplier,
+                        /* showAppMenuTextBubble= */ true);
         mReadLaterIPHController =
                 new ReadLaterIPHController(
                         mActivity,

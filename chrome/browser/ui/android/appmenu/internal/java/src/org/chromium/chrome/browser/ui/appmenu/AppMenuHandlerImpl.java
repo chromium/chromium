@@ -123,11 +123,18 @@ class AppMenuHandlerImpl
 
     @Override
     public void setMenuHighlight(Integer highlightItemId) {
+        boolean highlighting = highlightItemId != null;
+        setMenuHighlight(highlightItemId, highlighting);
+    }
+
+    @Override
+    public void setMenuHighlight(Integer highlightItemId, boolean shouldHighlightMenuButton) {
         if (mHighlightMenuId == null && highlightItemId == null) return;
         if (mHighlightMenuId != null && mHighlightMenuId.equals(highlightItemId)) return;
         mHighlightMenuId = highlightItemId;
-        boolean highlighting = mHighlightMenuId != null;
-        for (AppMenuObserver observer : mObservers) observer.onMenuHighlightChanged(highlighting);
+        for (AppMenuObserver observer : mObservers) {
+            observer.onMenuHighlightChanged(shouldHighlightMenuButton);
+        }
     }
 
     /**

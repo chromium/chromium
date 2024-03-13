@@ -78,6 +78,16 @@ public interface AppMenuHandler {
      */
     void setMenuHighlight(Integer highlightItemId);
 
+    /**
+     * Overloaded setMenuHighlight method to control whether the menu button itself is highlighted
+     * or not.
+     *
+     * @param highlightItemId The id of a menu item to highlight or {@code null} to turn off the
+     *     highlight.
+     * @param shouldHighlightMenuButton whether the triple dot app menu button should be highlighted
+     */
+    void setMenuHighlight(Integer highlightItemId, boolean shouldHighlightMenuButton);
+
     /** Clears the menu highlight. */
     void clearMenuHighlight();
 
