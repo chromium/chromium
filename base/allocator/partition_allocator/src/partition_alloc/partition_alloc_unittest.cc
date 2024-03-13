@@ -508,19 +508,8 @@ class PartitionAllocTest
     return bucket->active_slot_spans_head;
   }
 
-  void CycleFreeCache(size_t size) {
-    for (size_t i = 0; i < kMaxFreeableSpans; ++i) {
-      void* ptr = allocator.root()->Alloc(size, type_name);
-      auto* slot_span = SlotSpanMetadata::FromSlotStart(
-          allocator.root()->ObjectToSlotStart(ptr));
-      auto* bucket = slot_span->bucket;
-      EXPECT_EQ(1u, bucket->active_slot_spans_head->num_allocated_slots);
-      allocator.root()->Free(ptr);
-      EXPECT_EQ(0u, bucket->active_slot_spans_head->num_allocated_slots);
-      EXPECT_TRUE(bucket->active_slot_spans_head->in_empty_cache() ||
-                  bucket->active_slot_spans_head ==
-                      SlotSpanMetadata::get_sentinel_slot_span());
-    }
+  void ClearEmptySlotSpanCache() {
+    allocator.root()->DecommitEmptySlotSpansForTesting();
   }
 
   enum ReturnNullTestMode {
@@ -2284,20 +2273,13 @@ TEST_P(PartitionAllocTest, FreeCache) {
   EXPECT_TRUE(slot_span->in_empty_cache());
   EXPECT_TRUE(slot_span->get_freelist_head());
 
-  CycleFreeCache(kTestAllocSize);
+  ClearEmptySlotSpanCache();
 
   // Flushing the cache should have really freed the unused slot spans.
   EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_FALSE(slot_span->in_empty_cache());
   EXPECT_EQ(0u, slot_span->num_allocated_slots);
-  size_t num_system_pages_per_slot_span = allocator.root()
-                                              ->buckets[test_bucket_index_]
-                                              .num_system_pages_per_slot_span;
-  size_t expected_size =
-      kUseLazyCommit ? SystemPageSize()
-                     : num_system_pages_per_slot_span * SystemPageSize();
-  EXPECT_EQ(expected_size,
-            allocator.root()->get_total_size_of_committed_pages());
+  EXPECT_EQ(0u, allocator.root()->get_total_size_of_committed_pages());
 
   // Check that an allocation works ok whilst in this state (a free'd slot span
   // as the active slot spans head).
@@ -2356,7 +2338,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
   EXPECT_TRUE(slot_span->get_freelist_head());
   EXPECT_TRUE(slot_span2->get_freelist_head());
 
-  CycleFreeCache(kTestAllocSize);
+  ClearEmptySlotSpanCache();
 
   EXPECT_FALSE(slot_span->get_freelist_head());
   EXPECT_FALSE(slot_span2->get_freelist_head());
@@ -2376,7 +2358,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
   EXPECT_TRUE(bucket->empty_slot_spans_head);
   EXPECT_TRUE(bucket->decommitted_slot_spans_head);
 
-  CycleFreeCache(kTestAllocSize);
+  ClearEmptySlotSpanCache();
 
   // We're now set up to trigger a historical bug by scanning over the active
   // slot spans list. The current code gets into a different state, but we'll
@@ -2745,7 +2727,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
     // TODO(crbug.com/722911): Commenting this out causes this test to fail when
     // run singly (--gtest_filter=PartitionAllocTest.DumpMemoryStats), but not
     // when run with the others (--gtest_filter=PartitionAllocTest.*).
-    CycleFreeCache(kTestAllocSize);
+    ClearEmptySlotSpanCache();
 
     {
       MockPartitionStatsDumper dumper;
@@ -2777,7 +2759,7 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
     allocator.root()->Free(ptr1);
     allocator.root()->Free(ptr2);
 
-    CycleFreeCache(kTestAllocSize);
+    ClearEmptySlotSpanCache();
 
     ptr1 = allocator.root()->Alloc(size, type_name);
 
@@ -5312,20 +5294,33 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   root->EnableLargeEmptySlotSpanRing();
 
   constexpr size_t single_slot_large_count = kDefaultEmptySlotSpanRingSize + 10;
-  for (size_t i = 0; i < single_slot_large_count; i++) {
-    void* ptr = root->Alloc(single_slot_size);
-    single_slot_allocated_memory.push_back(ptr);
+  // The assertion following the alloc/free checks that the ring contains the
+  // slots spans for the allocations done here. Slot spans that have not yet
+  // been added to the ring are added at
+  // `PartitionRoot::global_empty_slot_span_ring_index`. By iterating twice,
+  // we ensure the ring contains the allocations here. This is because the
+  // first time through the empty slot span may decommit one of the allocations
+  // done here, the second time through that won't happen (because
+  // `global_empty_slot_span_ring_index` will have incremented past
+  // `kDefaultEmptySlotSpanRingSize`, and the frees in the second iteration
+  // won't decommit one of the allocations here).
+  for (int x = 0; x < 2; ++x) {
+    for (size_t i = 0; i < single_slot_large_count; i++) {
+      void* ptr = root->Alloc(single_slot_size);
+      single_slot_allocated_memory.push_back(ptr);
+    }
+
+    for (void* ptr : single_slot_allocated_memory) {
+      root->Free(ptr);
+    }
+    single_slot_allocated_memory.clear();
   }
 
-  for (void* ptr : single_slot_allocated_memory) {
-    root->Free(ptr);
-  }
-  single_slot_allocated_memory.clear();
-
-  // No overflow this time.
   EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes),
             single_slot_large_count * bucket_size);
 
+  // Constants used here don't work with USE_LARGE_EMPTY_SLOT_SPAN_RING.
+#if !BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
   constexpr size_t single_slot_too_many_count = kMaxFreeableSpans + 10;
   for (size_t i = 0; i < single_slot_too_many_count; i++) {
     void* ptr = root->Alloc(single_slot_size);
@@ -5340,6 +5335,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
   // Overflow still works.
   EXPECT_EQ(PA_TS_UNCHECKED_READ(root->empty_slot_spans_dirty_bytes),
             kMaxFreeableSpans * bucket_size);
+#endif
 }
 
 #if BUILDFLAG(PA_IS_CAST_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -5654,6 +5650,27 @@ TEST_P(PartitionAllocTest, FreeSlotBitmapResetAfterPurge) {
 }
 
 #endif  // BUILDFLAG(USE_FREESLOT_BITMAP)
+
+#if BUILDFLAG(USE_LARGE_EMPTY_SLOT_SPAN_RING)
+TEST_P(PartitionAllocTest, GlobalEmptySlotSpanRingIndexResets) {
+  // Switch to the larger slot span size, and set the
+  // global_empty_slot_span_ring_index to one less than max.
+  allocator.root()->AdjustForForeground();
+  allocator.root()->SetGlobalEmptySlotSpanRingIndexForTesting(
+      internal::kMaxFreeableSpans - 1);
+
+  // Switch to the smaller size, allocate, free, and clear the empty cache.
+  allocator.root()->AdjustForBackground();
+  void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
+  allocator.root()->Free(ptr);
+  ClearEmptySlotSpanCache();
+
+  // This should result in 0 empty_slot_span_dirty_bytes, and more importantly,
+  // not crash.
+  EXPECT_EQ(
+      0u, PA_TS_UNCHECKED_READ(allocator.root()->empty_slot_spans_dirty_bytes));
+}
+#endif
 
 }  // namespace partition_alloc::internal
 

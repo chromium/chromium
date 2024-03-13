@@ -53,6 +53,10 @@ namespace WTF {
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
 
+BASE_FEATURE(kBlinkUseLargeEmptySlotSpanRingForBufferRoot,
+             "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(USE_STARSCAN)
 // Runs PCScan on WTF partitions.
 BASE_FEATURE(kPCScanBlinkPartitions,
@@ -139,6 +143,10 @@ bool Partitions::InitializeOnce() {
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       buffer_allocator(options);
   buffer_root_ = buffer_allocator->root();
+  if (base::FeatureList::IsEnabled(
+          kBlinkUseLargeEmptySlotSpanRingForBufferRoot)) {
+    buffer_root_->EnableLargeEmptySlotSpanRing();
+  }
 
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocDisableBRPInBufferPartition)) {
@@ -473,6 +481,32 @@ void Partitions::HandleOutOfMemory(size_t size) {
     PartitionsOutOfMemoryUsing16M(size);
   }
   PartitionsOutOfMemoryUsingLessThan16M(size);
+}
+
+// static
+void Partitions::AdjustPartitionsForForeground() {
+  DCHECK(initialized_);
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocAdjustSizeWhenInForeground)) {
+    array_buffer_root_->AdjustForForeground();
+    buffer_root_->AdjustForForeground();
+    if (fast_malloc_root_) {
+      fast_malloc_root_->AdjustForForeground();
+    }
+  }
+}
+
+// static
+void Partitions::AdjustPartitionsForBackground() {
+  DCHECK(initialized_);
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocAdjustSizeWhenInForeground)) {
+    array_buffer_root_->AdjustForBackground();
+    buffer_root_->AdjustForBackground();
+    if (fast_malloc_root_) {
+      fast_malloc_root_->AdjustForBackground();
+    }
+  }
 }
 
 }  // namespace WTF

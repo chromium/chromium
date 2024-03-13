@@ -842,6 +842,12 @@ void PartitionRoot::DecommitEmptySlotSpans() {
   PA_DCHECK(empty_slot_spans_dirty_bytes == 0);
 }
 
+void PartitionRoot::DecommitEmptySlotSpansForTesting() {
+  ::partition_alloc::internal::ScopedGuard guard{
+      internal::PartitionRootLock(this)};
+  DecommitEmptySlotSpans();
+}
+
 void PartitionRoot::DestructForTesting() {
   // We need to destruct the thread cache before we unreserve any of the super
   // pages below, which we currently are not doing. So, we should only call
@@ -1638,6 +1644,12 @@ void PartitionRoot::ResetBookkeepingForTesting() {
       internal::PartitionRootLock(this)};
   max_size_of_allocated_bytes = total_size_of_allocated_bytes;
   max_size_of_committed_pages.store(total_size_of_committed_pages);
+}
+
+void PartitionRoot::SetGlobalEmptySlotSpanRingIndexForTesting(int16_t index) {
+  ::partition_alloc::internal::ScopedGuard guard{
+      internal::PartitionRootLock(this)};
+  global_empty_slot_span_ring_index = index;
 }
 
 ThreadCache* PartitionRoot::MaybeInitThreadCache() {

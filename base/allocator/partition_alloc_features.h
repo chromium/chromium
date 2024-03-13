@@ -223,6 +223,10 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDisableBRPInBufferPartition);
 BASE_EXPORT BASE_DECLARE_FEATURE(kUsePoolOffsetFreelists);
 #endif
 
+// When set, partitions use a larger ring buffer and free memory less
+// aggressively when in the foreground.
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground);
+
 }  // namespace features
 }  // namespace base
 

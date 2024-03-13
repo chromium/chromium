@@ -29,6 +29,9 @@ if (is_nacl) {
   assert(false, "Unknown CPU: $current_cpu")
 }
 
+# Increases the size of the empty slot span ring.
+use_large_empty_slot_span_ring = is_mac
+
 has_memory_tagging =
     current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)
 
