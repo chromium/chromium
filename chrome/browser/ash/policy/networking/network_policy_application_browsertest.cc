@@ -2692,4 +2692,108 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsKillSwitchTest,
   // Verify that the unmanaged wifi service has not been wiped.
   EXPECT_TRUE(shill_profile_client_test_->HasService(kServiceWifi2));
 }
+
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
+                       CheckCaptivePortal_AllValues) {
+  constexpr char kGuidWifiTrue[] = "guid_wifi_true";
+  constexpr char kGuidWifiFalse[] = "guid_wifi_false";
+  constexpr char kGuidWifiHTTPOnly[] = "guid_wifi_http_only";
+
+  constexpr char kNetworkNameTrue[] = "NetworkTrue";
+  constexpr char kNetworkNameFalse[] = "NetworkFalse";
+  constexpr char kNetworkNameHTTPOnly[] = "NetworkHTTPOnly";
+
+  constexpr char kWifiNameTrue[] = "WifiTrue";
+  constexpr char kWifiNameFalse[] = "WifiFalse";
+  constexpr char kWifiNameHTTPOnly[] = "WifiHTTPOnly";
+
+  AddPskWifiService(kServiceWifi1, kGuidWifiTrue, kWifiNameTrue,
+                    shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, kGuidWifiFalse, kWifiNameFalse,
+                    shill::kStateIdle);
+  AddPskWifiService(kServiceWifi3, kGuidWifiHTTPOnly, kWifiNameHTTPOnly,
+                    shill::kStateIdle);
+
+  const char* kConfig = R"(
+      {
+        "GlobalNetworkConfiguration": {
+        },
+        "NetworkConfigurations": [
+          {
+            "GUID": "%s",
+            "Name": "%s",
+            "Type": "WiFi",
+            "CheckCaptivePortal": "%s",
+            "WiFi": {
+              "AutoConnect": true,
+              "HiddenSSID": false,
+              "Passphrase": "DeviceLevelWifiPwd",
+              "SSID": "%s",
+              "Security": "WPA-PSK"
+            }
+          },
+          {
+            "GUID": "%s",
+            "Name": "%s",
+            "Type": "WiFi",
+            "CheckCaptivePortal": "%s",
+            "WiFi": {
+              "AutoConnect": true,
+              "HiddenSSID": false,
+              "Passphrase": "DeviceLevelWifiPwd",
+              "SSID": "%s",
+              "Security": "WPA-PSK"
+            }
+          },
+          {
+            "GUID": "%s",
+            "Name": "%s",
+            "Type": "WiFi",
+            "CheckCaptivePortal": "%s",
+            "WiFi": {
+              "AutoConnect": true,
+              "HiddenSSID": false,
+              "Passphrase": "DeviceLevelWifiPwd",
+              "SSID": "%s",
+              "Security": "WPA-PSK"
+            }
+          }
+        ],
+        "Type": "UnencryptedConfiguration"
+      })";
+
+  const std::string kDeviceONC = base::StringPrintf(
+      kConfig, kGuidWifiTrue, kNetworkNameTrue,
+      ::onc::check_captive_portal::kTrue, kWifiNameTrue, kGuidWifiFalse,
+      kNetworkNameFalse, ::onc::check_captive_portal::kFalse, kWifiNameFalse,
+      kGuidWifiHTTPOnly, kNetworkNameHTTPOnly,
+      ::onc::check_captive_portal::kHTTPOnly, kWifiNameHTTPOnly);
+  SetDeviceOpenNetworkConfiguration(kDeviceONC,
+                                    /*wait_applied=*/true);
+
+  // Verify that the CheckCaptivePortal of the managed Wi-Fi services are set
+  // correctly.
+  {
+    const base::Value::Dict* shill_properties1 =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi1);
+    ASSERT_TRUE(shill_properties1);
+    EXPECT_THAT(
+        *shill_properties1,
+        DictionaryHasValue(shill::kCheckPortalProperty, base::Value("true")));
+
+    const base::Value::Dict* shill_properties2 =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi2);
+    ASSERT_TRUE(shill_properties2);
+    EXPECT_THAT(
+        *shill_properties2,
+        DictionaryHasValue(shill::kCheckPortalProperty, base::Value("false")));
+
+    const base::Value::Dict* shill_properties3 =
+        shill_service_client_test_->GetServiceProperties(kServiceWifi3);
+    ASSERT_TRUE(shill_properties3);
+    EXPECT_THAT(*shill_properties3,
+                DictionaryHasValue(shill::kCheckPortalProperty,
+                                   base::Value("http-only")));
+  }
+}
 }  // namespace policy
