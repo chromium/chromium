@@ -2169,39 +2169,40 @@ void CrasAudioHandler::HandleNonHotplugNodesChange(
     return;
   }
 
-  if (hotplug_devices.empty()) {
-    if (has_device_removed) {
-      if (!active_device_removed && has_current_active_node) {
-        // Removed a non-active device, keep the current active device.
-        // Record the decision of system not switching active device.
-        MaybeRecordSystemSwitchDecisionAndContext(is_input,
-                                                  /*is_switched=*/false);
-        return;
-      }
-
-      if (active_device_removed) {
-        // Pauses active streams when the active output device is
-        // removed.
-        if (!is_input) {
-          PauseAllStreams();
-        }
-
-        // Unplugged the current active device.
-        SwitchToTopPriorityDevice(devices);
-
-        return;
-      }
-    }
-
-    // Some unexpected error happens on cras side. See crbug.com/586026.
-    // Either cras sent stale nodes to chrome again or cras triggered some
-    // error. Restore the previously selected active.
-    VLOG(1) << "Odd case from cras, the active node is lost unexpectedly.";
-    SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
-  } else {
+  if (!hotplug_devices.empty()) {
     // Looks like a new chrome session starts.
     SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
+    return;
   }
+
+  if (has_device_removed) {
+    if (!active_device_removed && has_current_active_node) {
+      // Removed a non-active device, keep the current active device.
+      // Record the decision of system not switching active device.
+      MaybeRecordSystemSwitchDecisionAndContext(is_input,
+                                                /*is_switched=*/false);
+      return;
+    }
+
+    if (active_device_removed) {
+      // Pauses active streams when the active output device is
+      // removed.
+      if (!is_input) {
+        PauseAllStreams();
+      }
+
+      // Unplugged the current active device.
+      SwitchToTopPriorityDevice(devices);
+
+      return;
+    }
+  }
+
+  // Some unexpected error happens on cras side. See crbug.com/586026.
+  // Either cras sent stale nodes to chrome again or cras triggered some
+  // error. Restore the previously selected active.
+  VLOG(1) << "Odd case from cras, the active node is lost unexpectedly.";
+  SwitchToPreviousActiveDeviceIfAvailable(is_input, devices);
 }
 
 bool CrasAudioHandler::ShouldSwitchToHotPlugDevice(
