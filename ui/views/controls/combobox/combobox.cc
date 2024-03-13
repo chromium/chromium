@@ -387,10 +387,13 @@ bool Combobox::SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) {
 
 bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   // TODO(oshima): handle IME.
-  DCHECK_EQ(e.type(), ui::ET_KEY_PRESSED);
+  CHECK_EQ(e.type(), ui::ET_KEY_PRESSED);
 
-  DCHECK(selected_index_.has_value());
-  DCHECK_LT(selected_index_.value(), GetModel()->GetItemCount());
+  if (!selected_index_.has_value()) {
+    CHECK_EQ(model_->GetItemCount(), 0u);
+    return false;
+  }
+  CHECK_LT(selected_index_.value(), GetModel()->GetItemCount());
 
 #if BUILDFLAG(IS_MAC)
   if (e.key_code() != ui::VKEY_DOWN && e.key_code() != ui::VKEY_UP &&
@@ -504,12 +507,15 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->AddState(ax::mojom::State::kCollapsed);
   }
 
-  node_data->SetValue(model_->GetItemAt(selected_index_.value()));
   if (GetEnabled()) {
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kOpen);
   }
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                             base::checked_cast<int>(selected_index_.value()));
+  if (selected_index_.has_value()) {
+    node_data->SetValue(model_->GetItemAt(selected_index_.value()));
+    node_data->AddIntAttribute(
+        ax::mojom::IntAttribute::kPosInSet,
+        base::checked_cast<int>(selected_index_.value()));
+  }
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
                              base::checked_cast<int>(model_->GetItemCount()));
 }
@@ -537,7 +543,8 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
 
   // If the selection is no longer valid (or the model is empty), restore the
   // default index.
-  if (selected_index_ >= model_->GetItemCount() ||
+  if (!selected_index_.has_value() ||
+      selected_index_ >= model_->GetItemCount() ||
       model_->GetItemCount() == 0 ||
       model_->IsItemSeparatorAt(selected_index_.value())) {
     SetSelectedIndex(model_->GetDefaultIndex());
@@ -584,6 +591,11 @@ void Combobox::AdjustBoundsForRTLUI(gfx::Rect* rect) const {
 }
 
 void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
+  if (!selected_index_.has_value()) {
+    return;
+  }
+  CHECK_LT(selected_index_.value(), GetModel()->GetItemCount());
+
   gfx::Insets insets = GetInsets();
   insets += gfx::Insets::VH(0, LayoutProvider::Get()->GetDistanceMetric(
                                    DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
@@ -594,9 +606,6 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   int x = insets.left();
   int y = insets.top();
   int contents_height = height() - insets.height();
-
-  DCHECK(selected_index_.has_value());
-  DCHECK_LT(selected_index_.value(), GetModel()->GetItemCount());
 
   // Draw the icon.
   ui::ImageModel icon = GetModel()->GetIconAt(selected_index_.value());
