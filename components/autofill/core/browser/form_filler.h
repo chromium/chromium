@@ -48,7 +48,9 @@ enum class FieldFillingSkipReason : uint8_t {
   kUnrecognizedAutocompleteAttribute = 13,
   kFieldDoesNotMatchTargetFieldsSet = 14,
   kFieldTypeUnrelated = 15,
-  kMaxValue = kFieldTypeUnrelated
+  kNoValueToFill = 16,
+  kAutofilledValueDidNotChange = 17,
+  kMaxValue = kAutofilledValueDidNotChange
 };
 
 // Helper class responsible for [re]filling forms and fields.
@@ -160,7 +162,7 @@ class FormFiller {
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
-      const FormFieldData& field,
+      const FormFieldData& trigger_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
       base::optional_ref<const std::u16string> optional_cvc,

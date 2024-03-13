@@ -539,9 +539,9 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
     // Now, after FillCard(), the form gets filled in the renderer (which
     // triggers three OnDidFillAutofillFormData() events) and then changes.
     // The change triggers an OnFormsSeen() event, followed by a form
-    // re-extraction and re-fill, which then triggers another four
-    // OnDidFillAutofillFormData() events.
-    EXPECT_TRUE(manager.WaitForAutofill(3 + 4));
+    // re-extraction and re-fill. The only newly filled field in the refill is
+    // the CVC field, which triggers another OnDidFillAutofillFormData() event.
+    EXPECT_TRUE(manager.WaitForAutofill(3 + 1));
     form =
         manager.form_structures().find(form.global_id())->second->ToFormData();
     EXPECT_EQ(4u, form.fields.size());  // The CVC field has now been seen.

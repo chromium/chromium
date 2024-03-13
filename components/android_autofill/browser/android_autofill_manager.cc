@@ -208,10 +208,15 @@ FieldTypeGroup AndroidAutofillManager::ComputeFieldTypeGroupForField(
 
 void AndroidAutofillManager::FillOrPreviewForm(
     mojom::ActionPersistence action_persistence,
-    const FormData& form,
+    FormData form,
     FieldTypeGroup field_type_group,
     const url::Origin& triggered_origin) {
   DCHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
+  std::erase_if(form.fields, [&](const FormFieldData& field) {
+    // The renderer doesn't fill such fields, and therefore they can be removed
+    // from here to reduce IPC traffic and avoid accidental filling.
+    return !field.is_autofilled || field.value.empty();
+  });
   driver().ApplyFormAction(mojom::FormActionType::kFill, action_persistence,
                            form, triggered_origin, {});
   // We do not call OnAutofillProfileOrCreditCardFormFilled() because WebView

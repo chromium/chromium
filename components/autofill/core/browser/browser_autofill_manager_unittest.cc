@@ -816,15 +816,23 @@ class BrowserAutofillManagerTest : public testing::Test {
       std::string guid,
       AutofillTriggerDetails trigger_details = {
           .trigger_source = AutofillTriggerSource::kPopup}) {
-    FormData response_data;
+    FormData filled_form;
     std::vector<FieldGlobalId> global_ids;
     for (const auto& field : input_form.fields) {
       global_ids.push_back(field.global_id());
     }
     EXPECT_CALL(*autofill_driver_, ApplyFormAction)
-        .WillOnce(DoAll(SaveArg<2>(&response_data), Return(global_ids)));
+        .WillOnce(DoAll(SaveArg<2>(&filled_form), Return(global_ids)));
     FillAutofillFormData(input_form, input_field, guid, trigger_details);
-    return response_data;
+    FormData result_form = input_form;
+    // Copy the filled data into the form.
+    for (FormFieldData& field : result_form.fields) {
+      if (const FormFieldData* filled_field =
+              filled_form.FindFieldByGlobalId(field.global_id())) {
+        field = *filled_field;
+      }
+    }
+    return result_form;
   }
 
   FormData CreateTestCreditCardFormData(bool is_https, bool use_month_type) {
@@ -3742,10 +3750,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kFalse,
-          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+          .autofill_skipped_status = FieldFillingSkipReason::kNoValueToFill,
           .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kFalse,
-          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_method = AutofillFillingMethod::kNone,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kUndefined,
       });
@@ -3975,6 +3983,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       expected_event.had_value_after_filling = OptionalBoolean::kFalse;
       expected_event.filling_prevented_by_iframe_security_policy =
           OptionalBoolean::kUndefined;
+      expected_event.filling_method = AutofillFillingMethod::kNone;
+      expected_event.autofill_skipped_status =
+          FieldFillingSkipReason::kNoValueToFill;
       expected_events.push_back(expected_event);
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
@@ -4154,10 +4165,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
           .had_value_before_filling = OptionalBoolean::kFalse,
-          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+          .autofill_skipped_status = FieldFillingSkipReason::kNoValueToFill,
           .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kFalse,
-          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_method = AutofillFillingMethod::kNone,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kUndefined,
       });
@@ -4971,7 +4982,7 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
 
-  // Remove phonenumber field.
+  // Remove phone number field.
   auto phonenumber_it =
       base::ranges::find(form.fields, u"phonenumber", &FormFieldData::name);
   ASSERT_TRUE(phonenumber_it != form.fields.end());
