@@ -93,43 +93,43 @@ class FakeMultipartUploadRequest : public MultipartUploadRequest {
   Callback callback_;
 };
 
-class FakeMultipartUploadRequestFactory : public MultipartUploadRequestFactory {
+class FakeMultipartUploadRequestFactory : public ConnectorUploadRequestFactory {
  public:
   FakeMultipartUploadRequestFactory(
       bool should_succeed,
       enterprise_connectors::ContentAnalysisResponse response)
       : should_succeed_(should_succeed), response_(response) {}
 
-  std::unique_ptr<MultipartUploadRequest> CreateStringRequest(
+  std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) override {
+      ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeMultipartUploadRequest>(
         should_succeed_, response_, std::move(callback));
   }
 
-  std::unique_ptr<MultipartUploadRequest> CreateFileRequest(
+  std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
       const base::FilePath& path,
       uint64_t file_size,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) override {
+      ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeMultipartUploadRequest>(
         should_succeed_, response_, std::move(callback));
   }
 
-  std::unique_ptr<MultipartUploadRequest> CreatePageRequest(
+  std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
       base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) override {
+      ConnectorUploadRequest::Callback callback) override {
     return std::make_unique<FakeMultipartUploadRequest>(
         should_succeed_, response_, std::move(callback));
   }

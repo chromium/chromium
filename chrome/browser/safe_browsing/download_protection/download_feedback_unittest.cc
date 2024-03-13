@@ -71,56 +71,56 @@ FakeUploader::FakeUploader(
       finish_callback_(std::move(finish_callback)),
       start_called_(false) {}
 
-class FakeUploaderFactory : public MultipartUploadRequestFactory {
+class FakeUploaderFactory : public ConnectorUploadRequestFactory {
  public:
   FakeUploaderFactory() : uploader_(nullptr) {}
   ~FakeUploaderFactory() override {}
 
-  std::unique_ptr<MultipartUploadRequest> CreateStringRequest(
+  std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
       const std::string& data,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) override;
-  std::unique_ptr<MultipartUploadRequest> CreateFileRequest(
+      ConnectorUploadRequest::Callback callback) override;
+  std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
       const base::FilePath& file_path,
       uint64_t file_size,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) override;
-  std::unique_ptr<MultipartUploadRequest> CreatePageRequest(
+      ConnectorUploadRequest::Callback callback) override;
+  std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
       base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) override;
+      ConnectorUploadRequest::Callback callback) override;
 
   raw_ptr<FakeUploader, DanglingUntriaged> uploader_;
 };
 
-std::unique_ptr<MultipartUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 FakeUploaderFactory::CreateStringRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    MultipartUploadRequest::Callback callback) {
+    ConnectorUploadRequest::Callback callback) {
   NOTREACHED_NORETURN();
 }
 
-std::unique_ptr<MultipartUploadRequest> FakeUploaderFactory::CreateFileRequest(
+std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
     const base::FilePath& file_path,
     uint64_t file_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    MultipartUploadRequest::Callback callback) {
+    ConnectorUploadRequest::Callback callback) {
   EXPECT_FALSE(uploader_);
 
   auto uploader =
@@ -129,13 +129,13 @@ std::unique_ptr<MultipartUploadRequest> FakeUploaderFactory::CreateFileRequest(
   uploader_ = uploader.get();
   return uploader;
 }
-std::unique_ptr<MultipartUploadRequest> FakeUploaderFactory::CreatePageRequest(
+std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
     base::ReadOnlySharedMemoryRegion page_region,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
-    MultipartUploadRequest::Callback callback) {
+    ConnectorUploadRequest::Callback callback) {
   NOTREACHED_NORETURN();
 }
 
@@ -158,11 +158,11 @@ class DownloadFeedbackTest : public testing::Test {
     upload_file_path_ = temp_dir_.GetPath().AppendASCII("test file");
     upload_file_data_ = "data";
     ASSERT_TRUE(base::WriteFile(upload_file_path_, upload_file_data_));
-    MultipartUploadRequest::RegisterFactoryForTests(&uploader_factory_);
+    ConnectorUploadRequest::RegisterFactoryForTests(&uploader_factory_);
   }
 
   void TearDown() override {
-    MultipartUploadRequest::RegisterFactoryForTests(nullptr);
+    ConnectorUploadRequest::RegisterFactoryForTests(nullptr);
   }
 
   FakeUploader* uploader() const { return uploader_factory_.uploader_; }

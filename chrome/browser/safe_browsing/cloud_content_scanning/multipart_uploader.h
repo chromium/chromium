@@ -21,8 +21,6 @@
 
 namespace safe_browsing {
 
-class MultipartUploadRequestFactory;
-
 // This class encapsulates the upload of a file with metadata using the
 // multipart protocol. This class is neither movable nor copyable.
 class MultipartUploadRequest : public ConnectorUploadRequest {
@@ -67,17 +65,9 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
 
   ~MultipartUploadRequest() override;
 
-  // Start the upload. This must be called on the UI thread. When complete, this
-  // will call `callback_` on the UI thread.
-  virtual void Start();
+  void Start() override;
 
-  // Makes the passed `factory` the factory used to instantiate a
-  // MultipartUploadRequest. Useful for tests.
-  static void RegisterFactoryForTests(MultipartUploadRequestFactory* factory) {
-    factory_ = factory;
-  }
-
-  static std::unique_ptr<MultipartUploadRequest> CreateStringRequest(
+  static std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -85,7 +75,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
-  static std::unique_ptr<MultipartUploadRequest> CreateFileRequest(
+  static std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -94,7 +84,7 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
-  static std::unique_ptr<MultipartUploadRequest> CreatePageRequest(
+  static std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -152,8 +142,6 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
   void CreateDatapipe(std::unique_ptr<network::ResourceRequest> request,
                       file_access::ScopedFileAccess file_access);
 
-  static MultipartUploadRequestFactory* factory_;
-
   std::string boundary_;
 
   base::TimeDelta current_backoff_;
@@ -162,33 +150,6 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
   base::Time start_time_;
 
   base::WeakPtrFactory<MultipartUploadRequest> weak_factory_{this};
-};
-
-class MultipartUploadRequestFactory {
- public:
-  virtual ~MultipartUploadRequestFactory() = default;
-  virtual std::unique_ptr<MultipartUploadRequest> CreateStringRequest(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& base_url,
-      const std::string& metadata,
-      const std::string& data,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) = 0;
-  virtual std::unique_ptr<MultipartUploadRequest> CreateFileRequest(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& base_url,
-      const std::string& metadata,
-      const base::FilePath& path,
-      uint64_t file_size,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) = 0;
-  virtual std::unique_ptr<MultipartUploadRequest> CreatePageRequest(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& base_url,
-      const std::string& metadata,
-      base::ReadOnlySharedMemoryRegion page_region,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      MultipartUploadRequest::Callback callback) = 0;
 };
 
 }  // namespace safe_browsing

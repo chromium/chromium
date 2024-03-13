@@ -512,7 +512,7 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
       GetTrafficAnnotationTag(IsConsumerScanRequest(*request));
   auto callback = base::BindOnce(&CloudBinaryUploadService::OnUploadComplete,
                                  weakptr_factory_.GetWeakPtr(), request_id);
-  std::unique_ptr<MultipartUploadRequest> upload_request;
+  std::unique_ptr<ConnectorUploadRequest> upload_request;
   if (request->IsAuthRequest() || !data.contents.empty()) {
     upload_request = MultipartUploadRequest::CreateStringRequest(
         url_loader_factory_, std::move(url), metadata, data.contents,

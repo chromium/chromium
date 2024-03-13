@@ -89,9 +89,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   // Set the headers for the given metadata `request`.
   void SetMetadataRequestHeaders(network::ResourceRequest* request);
 
-  // Start the upload. This must be called on the UI thread. When complete, this
-  // will call `callback_` on the UI thread.
-  virtual void Start();
+  void Start() override;
 
  private:
   // Send the metadata information about the file/page to the server.

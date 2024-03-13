@@ -181,7 +181,7 @@ class CloudBinaryUploadService : public BinaryUploadService {
   base::flat_map<Request::Id, base::TimeTicks> start_times_;
   base::flat_map<Request::Id, std::unique_ptr<base::OneShotTimer>>
       active_timers_;
-  base::flat_map<Request::Id, std::unique_ptr<MultipartUploadRequest>>
+  base::flat_map<Request::Id, std::unique_ptr<ConnectorUploadRequest>>
       active_uploads_;
   base::flat_map<Request::Id, std::string> active_tokens_;
 

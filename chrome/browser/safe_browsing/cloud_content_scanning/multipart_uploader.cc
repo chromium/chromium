@@ -334,10 +334,7 @@ void MultipartUploadRequest::RetryOrFinish(
 }
 
 // static
-MultipartUploadRequestFactory* MultipartUploadRequest::factory_ = nullptr;
-
-// static
-std::unique_ptr<MultipartUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 MultipartUploadRequest::CreateStringRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
@@ -357,7 +354,7 @@ MultipartUploadRequest::CreateStringRequest(
 }
 
 // static
-std::unique_ptr<MultipartUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 MultipartUploadRequest::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
@@ -378,7 +375,7 @@ MultipartUploadRequest::CreateFileRequest(
 }
 
 // static
-std::unique_ptr<MultipartUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 MultipartUploadRequest::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,

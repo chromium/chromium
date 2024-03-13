@@ -99,10 +99,10 @@ class MockMultipartUploadDataPipeRequest : public MultipartUploadRequest {
 };
 
 TEST_F(MultipartUploadRequestTest, GeneratesCorrectBody) {
-  std::unique_ptr<MultipartUploadRequest> request =
-      MultipartUploadRequest::CreateStringRequest(
-          nullptr, GURL(), "metadata", "data", TRAFFIC_ANNOTATION_FOR_TESTS,
-          base::DoNothing());
+  auto connector_request = MultipartUploadRequest::CreateStringRequest(
+      nullptr, GURL(), "metadata", "data", TRAFFIC_ANNOTATION_FOR_TESTS,
+      base::DoNothing());
+  auto* request = static_cast<MultipartUploadRequest*>(connector_request.get());
 
   std::string expected_body =
       "--boundary\r\n"
@@ -339,10 +339,11 @@ TEST_F(MultipartUploadRequestTest, GeneratesCorrectHeaders_StringRequest) {
   network::ResourceRequest resource_request;
   std::string header_value;
 
-  std::unique_ptr<MultipartUploadRequest> request =
-      MultipartUploadRequest::CreateStringRequest(
-          nullptr, GURL(), "metadata", "data", TRAFFIC_ANNOTATION_FOR_TESTS,
-          base::DoNothing());
+  auto connector_request = MultipartUploadRequest::CreateStringRequest(
+      nullptr, GURL(), "metadata", "data", TRAFFIC_ANNOTATION_FOR_TESTS,
+      base::DoNothing());
+  auto* request = static_cast<MultipartUploadRequest*>(connector_request.get());
+
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
   ASSERT_TRUE(resource_request.headers.GetHeader("X-Goog-Upload-Protocol",
@@ -359,11 +360,11 @@ TEST_F(MultipartUploadRequestTest, GeneratesCorrectHeaders_FileRequest) {
   network::ResourceRequest resource_request;
   std::string header_value;
 
-  std::unique_ptr<MultipartUploadRequest> request =
-      MultipartUploadRequest::CreateFileRequest(
-          nullptr, GURL(), "metadata",
-          CreateFile("my_file_name.foo", "file_data"), 9,
-          TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  auto connector_request = MultipartUploadRequest::CreateFileRequest(
+      nullptr, GURL(), "metadata", CreateFile("my_file_name.foo", "file_data"),
+      9, TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  auto* request = static_cast<MultipartUploadRequest*>(connector_request.get());
+
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
   ASSERT_TRUE(resource_request.headers.GetHeader("X-Goog-Upload-Protocol",
@@ -380,10 +381,11 @@ TEST_F(MultipartUploadRequestTest, GeneratesCorrectHeaders_PageRequest) {
   network::ResourceRequest resource_request;
   std::string header_value;
 
-  std::unique_ptr<MultipartUploadRequest> request =
-      MultipartUploadRequest::CreatePageRequest(
-          nullptr, GURL(), "metadata", CreatePage("print_data"),
-          TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  auto connector_request = MultipartUploadRequest::CreatePageRequest(
+      nullptr, GURL(), "metadata", CreatePage("print_data"),
+      TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  auto* request = static_cast<MultipartUploadRequest*>(connector_request.get());
+
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
   ASSERT_TRUE(resource_request.headers.GetHeader("X-Goog-Upload-Protocol",

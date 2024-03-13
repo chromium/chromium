@@ -23,12 +23,20 @@ class SimpleURLLoader;
 
 namespace safe_browsing {
 
+class ConnectorUploadRequestFactory;
+
 // This class encapsulates the base class of uploading metadata and file.
 // This class is neither movable nor copyable.
 class ConnectorUploadRequest {
  public:
   using Callback = base::OnceCallback<
       void(bool success, int http_status, const std::string& response_data)>;
+
+  // Makes the passed `factory` the factory used to instantiate a
+  // MultipartUploadRequest. Useful for tests.
+  static void RegisterFactoryForTests(ConnectorUploadRequestFactory* factory) {
+    factory_ = factory;
+  }
 
   // Creates a ConnectorUploadRequest, which will upload `metadata` and `data`
   // to the given `base_url`.
@@ -74,7 +82,13 @@ class ConnectorUploadRequest {
 
   void set_access_token(const std::string& access_token);
 
+  // Start the upload. This must be called on the UI thread. When complete, this
+  // will call `callback_` on the UI thread.
+  virtual void Start() = 0;
+
  protected:
+  static ConnectorUploadRequestFactory* factory_;
+
   GURL base_url_;
   std::string metadata_;
 
@@ -106,6 +120,33 @@ class ConnectorUploadRequest {
   std::string access_token_;
 
   std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access_;
+};
+
+class ConnectorUploadRequestFactory {
+ public:
+  virtual ~ConnectorUploadRequestFactory() = default;
+  virtual std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      const std::string& data,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      ConnectorUploadRequest::Callback callback) = 0;
+  virtual std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      const base::FilePath& path,
+      uint64_t file_size,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      ConnectorUploadRequest::Callback callback) = 0;
+  virtual std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      base::ReadOnlySharedMemoryRegion page_region,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      ConnectorUploadRequest::Callback callback) = 0;
 };
 
 }  // namespace safe_browsing

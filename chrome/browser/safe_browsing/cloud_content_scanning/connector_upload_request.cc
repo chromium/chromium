@@ -13,6 +13,9 @@
 
 namespace safe_browsing {
 
+// static
+ConnectorUploadRequestFactory* ConnectorUploadRequest::factory_ = nullptr;
+
 ConnectorUploadRequest::ConnectorUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
