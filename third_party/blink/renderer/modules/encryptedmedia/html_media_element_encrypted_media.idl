@@ -7,7 +7,7 @@
     ImplementedAs=HTMLMediaElementEncryptedMedia
 ] partial interface HTMLMediaElement {
     [SecureContext] readonly attribute MediaKeys mediaKeys;
-    [SecureContext, CallWith=ScriptState, RaisesException] Promise<void> setMediaKeys(MediaKeys? mediaKeys);
+    [SecureContext, CallWith=ScriptState, RaisesException] Promise<undefined> setMediaKeys(MediaKeys? mediaKeys);
     attribute EventHandler onencrypted;
     attribute EventHandler onwaitingforkey;
 };

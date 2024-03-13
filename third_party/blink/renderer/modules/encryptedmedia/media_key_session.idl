@@ -47,11 +47,11 @@ enum MediaKeySessionClosedReason {
     attribute EventHandler onmessage;
 
     // session initialization
-    [CallWith=ScriptState, RaisesException] Promise<void> generateRequest(DOMString initDataType, BufferSource initData);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> generateRequest(DOMString initDataType, BufferSource initData);
     [CallWith=ScriptState, RaisesException] Promise<boolean> load(DOMString sessionId);
 
     // session operations
-    [CallWith=ScriptState, RaisesException] Promise<void> update(BufferSource response);
-    [CallWith=ScriptState, RaisesException] Promise<void> close();
-    [CallWith=ScriptState, RaisesException] Promise<void> remove();
+    [CallWith=ScriptState, RaisesException] Promise<undefined> update(BufferSource response);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> close();
+    [CallWith=ScriptState, RaisesException] Promise<undefined> remove();
 };

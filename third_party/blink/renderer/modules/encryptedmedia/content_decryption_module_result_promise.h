@@ -47,9 +47,6 @@ class ContentDecryptionModuleResultPromise
                          uint32_t system_code,
                          const WebString&) override;
 
-  // It is only valid to call this before completion.
-  ScriptPromise Promise();
-
   void Trace(Visitor*) const override;
 
  protected:
