@@ -54,13 +54,9 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*"],
         },
-        "third_party/llvm-build/Release+Asserts/lib/clang/18/lib:libs": {
+        "third_party/llvm-build/Release+Asserts/lib/clang:libs": {
             "type": "glob",
-            "includes": ["*"],
-        },
-        "third_party/llvm-build/Release+Asserts/lib/clang/18/share:share": {
-            "type": "glob",
-            "includes": ["*"],
+            "includes": ["*/lib/*/*", "*/lib/*", "*/share/*"],
         },
         "build/linux/debian_bullseye_amd64-sysroot/lib/x86_64-linux-gnu:libso": {
             "type": "glob",
@@ -120,8 +116,7 @@ def __step_config(ctx, step_config):
             "third_party/llvm-build/Release+Asserts/bin/llvm-readobj",
             # The following inputs are used for sanitizer builds.
             # It might be better to add them only for sanitizer builds if there is a performance issue.
-            "third_party/llvm-build/Release+Asserts/lib/clang/18/lib:libs",
-            "third_party/llvm-build/Release+Asserts/lib/clang/18/share:share",
+            "third_party/llvm-build/Release+Asserts/lib/clang:libs",
         ],
         "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
             "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
@@ -224,6 +219,28 @@ def __step_config(ctx, step_config):
                     "*.stamp",
                 ],
                 "remote": config.get(ctx, "remote-library-link"),
+                "platform_ref": "large",
+            },
+            {
+                "name": "clang/link/gcc_link_wrapper",
+                "action": "(.*_)?link",
+                "command_prefix": "\"python3\" \"../../build/toolchain/gcc_link_wrapper.py\"",
+                "inputs": [
+                    # TODO: b/316267242 - Add inputs to GN config.
+                    "build/toolchain/gcc_link_wrapper.py",
+                    "build/toolchain/whole_archive.py",
+                    "build/toolchain/wrapper_utils.py",
+                    "build/linux/debian_bullseye_amd64-sysroot:link",
+                ],
+                "exclude_input_patterns": [
+                    "*.cc",
+                    "*.h",
+                    "*.js",
+                    "*.pak",
+                    "*.py",
+                    "*.stamp",
+                ],
+                "remote": config.get(ctx, "remote-exec-link"),
                 "platform_ref": "large",
             },
         ])

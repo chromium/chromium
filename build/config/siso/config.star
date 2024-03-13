@@ -15,6 +15,7 @@ __KNOWN_CONFIG_OPTIONS = [
 
     # TODO: b/316267242 - Enable remote links after confirming performance.
     "remote-library-link",
+    "remote-exec-link",
 ]
 
 def __check(ctx):
