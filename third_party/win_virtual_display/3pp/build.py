@@ -88,8 +88,8 @@ def build(ewdk_path, output_path):
               f"/property:Platform=x64 /p:OutDir={build_path}")
     cmd = ["cmd", "/c", command]
     result = subprocess.run(cmd, capture_output=True, text=True)
+    print(result.stdout)
     if "Build succeeded" not in result.stdout:
-        print(result.stdout)
         raise Exception("Build failed.")
     # Copy compilation output and test certificate files to the output path.
     print(f"Copying build output to {output_path}")
