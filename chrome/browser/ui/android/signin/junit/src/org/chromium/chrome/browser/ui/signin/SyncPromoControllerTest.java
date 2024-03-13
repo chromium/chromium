@@ -29,12 +29,14 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -84,6 +86,8 @@ public class SyncPromoControllerTest {
 
     @Mock private SyncService mSyncService;
 
+    @Mock private PrefService mPrefService;
+
     @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
 
     @Mock private SigninAndHistoryOptInActivityLauncher mSigninAndHistoryOptInActivityLauncher;
@@ -108,6 +112,7 @@ public class SyncPromoControllerTest {
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, 0L);
         mSharedPreferencesManager.writeLong(
                 ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, 0L);
+        when(mPrefService.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_GAIA_ID)).thenReturn("");
 
         mSyncPromoController =
                 new SyncPromoController(
@@ -454,7 +459,8 @@ public class SyncPromoControllerTest {
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
-                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com"))));
+                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com")),
+                        mPrefService));
     }
 
     @Test
@@ -470,7 +476,8 @@ public class SyncPromoControllerTest {
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
-                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com"))));
+                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com")),
+                        mPrefService));
     }
 
     @Test
@@ -486,7 +493,8 @@ public class SyncPromoControllerTest {
                         SigninAccessPoint.NTP_CONTENT_SUGGESTIONS,
                         mIdentityManager,
                         mSigninManager,
-                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com"))));
+                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com")),
+                        mPrefService));
     }
 
     @Test
@@ -502,7 +510,26 @@ public class SyncPromoControllerTest {
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
-                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com"))));
+                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com")),
+                        mPrefService));
+    }
+
+    @Test
+    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void shouldLaunchSigninFlowReturnsFalse_SyncDataLeft() {
+        when(mPrefService.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_GAIA_ID))
+                .thenReturn("gaia_id");
+        doReturn(SyncPromoController.GMAIL_DOMAIN)
+                .when(mSigninManager)
+                .extractDomainName(anyString());
+
+        Assert.assertFalse(
+                SyncPromoController.shouldLaunchSigninFlow(
+                        SigninAccessPoint.BOOKMARK_MANAGER,
+                        mIdentityManager,
+                        mSigninManager,
+                        List.of(mAccountManagerTestRule.addAccount("test@gmail.com")),
+                        mPrefService));
     }
 
     @Test
@@ -516,7 +543,8 @@ public class SyncPromoControllerTest {
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
-                        List.of(mAccountManagerTestRule.addAccount("test@nongmail.com"))));
+                        List.of(mAccountManagerTestRule.addAccount("test@nongmail.com")),
+                        mPrefService));
     }
 
     @Test
@@ -532,7 +560,8 @@ public class SyncPromoControllerTest {
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
-                        List.of()));
+                        List.of(),
+                        mPrefService));
     }
 
     @Test
@@ -548,7 +577,8 @@ public class SyncPromoControllerTest {
                         SigninAccessPoint.BOOKMARK_MANAGER,
                         mIdentityManager,
                         mSigninManager,
-                        null));
+                        null,
+                        mPrefService));
     }
 
     private void disableNTPSyncPromoBySettingLimits(

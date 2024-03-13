@@ -25,6 +25,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessP
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -49,6 +51,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -515,8 +518,10 @@ public class SyncPromoController {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         List<CoreAccountInfo> accounts =
                 AccountManagerFacadeProvider.getInstance().getCoreAccountInfos().getResult();
+        PrefService prefService = UserPrefs.get(mProfile);
         boolean launchSigninFlow =
-                shouldLaunchSigninFlow(mAccessPoint, identityManager, signinManager, accounts);
+                shouldLaunchSigninFlow(
+                        mAccessPoint, identityManager, signinManager, accounts, prefService);
         view.getPrimaryButton()
                 .setOnClickListener(v -> signinWithDefaultAccount(context, launchSigninFlow));
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
@@ -630,7 +635,8 @@ public class SyncPromoController {
             @SigninAccessPoint int accessPoint,
             IdentityManager identityManager,
             SigninManager signinManager,
-            @Nullable List<CoreAccountInfo> accounts) {
+            @Nullable List<CoreAccountInfo> accounts,
+            PrefService prefService) {
         if (!SyncFeatureMap.isEnabled(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)) {
             return false;
         }
@@ -640,6 +646,13 @@ public class SyncPromoController {
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             return false;
         }
+
+        // If the last syncing user did not remove data during sign-out, show the sync promo
+        // instead.
+        if (!prefService.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_GAIA_ID).isEmpty()) {
+            return false;
+        }
+
         return accounts != null
                 && !accounts.isEmpty()
                 && !existsNonGmailAccount(signinManager, accounts);
