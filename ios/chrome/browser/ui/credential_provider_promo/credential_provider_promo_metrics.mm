@@ -11,14 +11,6 @@ const char kIOSCredentialProviderPromoImpressionHistogram[] =
     "IOS.CredentialProviderExtension.Promo.Impression";
 const char kIOSCredentialProviderPromoImpressionIsReminderHistogram[] =
     "IOS.CredentialProviderExtension.Promo.Impression.IsReminder";
-const char kIOSCredentialProviderPromoOnPasswordSavedHistogram[] =
-    "IOS.CredentialProviderExtension.Promo.OnPasswordSaved";
-const char kIOSCredentialProviderPromoOnPasswordSavedIsReminderHistogram[] =
-    "IOS.CredentialProviderExtension.Promo.OnPasswordSaved.IsReminder";
-const char kIOSCredentialProviderPromoOnPasswordCopiedHistogram[] =
-    "IOS.CredentialProviderExtension.Promo.OnPasswordCopied";
-const char kIOSCredentialProviderPromoOnPasswordCopiedIsReminderHistogram[] =
-    "IOS.CredentialProviderExtension.Promo.OnPasswordCopied.IsReminder";
 const char kIOSCredentialProviderPromoOnAutofillUsedHistogram[] =
     "IOS.CredentialProviderExtension.Promo."
     "OnSuccessfulLoginWithAutofilledPassword";
@@ -48,17 +40,6 @@ void RecordAction(IOSCredentialProviderPromoSource source,
                   IOSCredentialProviderPromoAction action) {
   std::string name;
   switch (source) {
-    case IOSCredentialProviderPromoSource::kPasswordCopied:
-      name =
-          is_reminder
-              ? kIOSCredentialProviderPromoOnPasswordCopiedIsReminderHistogram
-              : kIOSCredentialProviderPromoOnPasswordCopiedHistogram;
-      break;
-    case IOSCredentialProviderPromoSource::kPasswordSaved:
-      name = is_reminder
-                 ? kIOSCredentialProviderPromoOnPasswordSavedIsReminderHistogram
-                 : kIOSCredentialProviderPromoOnPasswordSavedHistogram;
-      break;
     case IOSCredentialProviderPromoSource::kAutofillUsed:
       name = is_reminder
                  ? kIOSCredentialProviderPromoOnAutofillUsedIsReminderHistogram

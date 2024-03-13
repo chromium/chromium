@@ -21,7 +21,6 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
-#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
@@ -687,10 +686,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // prevent flakiness, due to a spinner that appears in some tests and blocks
   // later ones from interacting with the UI.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  // TODO(crbug.com/1448574): Re-enable CPE promo and update
-  // testCopyPasswordToast and testCopyPasswordMenuItem to check for the promo.
-  config.features_disabled.push_back(kCredentialProviderExtensionPromo);
 
   if ([self isRunningTest:@selector
             (testAccountStorageSwitchDisabledByPolicy_SyncToSigninDisabled)] ||

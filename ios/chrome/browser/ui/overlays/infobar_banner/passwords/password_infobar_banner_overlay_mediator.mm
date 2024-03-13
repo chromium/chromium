@@ -7,12 +7,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "build/build_config.h"
-#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
@@ -67,16 +65,6 @@
   }
 
   self.passwordDelegate->Accept();
-  if (infobarType_ == InfobarType::kInfobarTypePasswordSave) {
-    if (IsCredentialProviderExtensionPromoEnabledOnPasswordSaved()) {
-      id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
-          HandlerForProtocol(self.passwordDelegate->GetDispatcher(),
-                             CredentialProviderPromoCommands);
-      [credentialProviderPromoHandler
-          showCredentialProviderPromoWithTrigger:
-              CredentialProviderPromoTrigger::PasswordSaved];
-    }
-  }
   [self dismissOverlay];
 }
 

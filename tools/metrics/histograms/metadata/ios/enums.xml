@@ -149,8 +149,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="IOSCredentialProviderPromoSource">
   <int value="0" label="Unknown"/>
-  <int value="1" label="Password Copied"/>
-  <int value="2" label="Password Saved"/>
+  <int value="1" label="Password Copied (deprecated)"/>
+  <int value="2" label="Password Saved (deprecated)"/>
   <int value="3" label="Autofill Used"/>
   <int value="4" label="Set Up List"/>
 </enum>

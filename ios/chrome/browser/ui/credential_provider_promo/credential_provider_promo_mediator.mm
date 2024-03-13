@@ -11,7 +11,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -69,8 +68,7 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
        trigger != CredentialProviderPromoTrigger::RemindMeLater);
   BOOL policyEnabled = GetApplicationContext()->GetLocalState()->GetBoolean(
       prefs::kIosCredentialProviderPromoPolicyEnabled);
-  return !impressionLimitMet && IsCredentialProviderExtensionPromoEnabled() &&
-         policyEnabled &&
+  return !impressionLimitMet && policyEnabled &&
          !password_manager_util::IsCredentialProviderEnabledOnStartup(
              self.prefService);
 }
@@ -80,16 +78,6 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   IOSCredentialProviderPromoSource source;
   self.promoContext = context;
   switch (trigger) {
-    case CredentialProviderPromoTrigger::PasswordCopied:
-      source = IOSCredentialProviderPromoSource::kPasswordCopied;
-      [self setAnimation];
-      break;
-    case CredentialProviderPromoTrigger::PasswordSaved:
-      source = IOSCredentialProviderPromoSource::kPasswordSaved;
-      if (self.promoContext == CredentialProviderPromoContext::kLearnMore) {
-        [self setAnimation];
-      }
-      break;
     case CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword:
       source = IOSCredentialProviderPromoSource::kAutofillUsed;
       if (self.promoContext == CredentialProviderPromoContext::kLearnMore) {
@@ -186,9 +174,6 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
     image = ios::provider::GetBrandedImage(
         ios::provider::BrandedImage::kPasswordSuggestionKey);
-    if (source == IOSCredentialProviderPromoSource::kPasswordCopied) {
-      image = nil;
-    }
   } else {
     titleString = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);

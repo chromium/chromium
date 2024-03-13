@@ -971,8 +971,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       [self showToast:l10n_util::GetNSString(
                           IDS_IOS_SETTINGS_PASSWORD_WAS_COPIED_MESSAGE)
            forSuccess:YES];
-      DCHECK(self.handler);
-      [self.handler onPasswordCopiedByUser];
       break;
     }
     case PasswordAccessReasonEdit:

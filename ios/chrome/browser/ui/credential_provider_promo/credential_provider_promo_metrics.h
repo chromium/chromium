@@ -8,12 +8,6 @@
 
 extern const char kIOSCredentialProviderPromoImpressionHistogram[];
 extern const char kIOSCredentialProviderPromoImpressionIsReminderHistogram[];
-extern const char kIOSCredentialProviderPromoOnPasswordSavedHistogram[];
-extern const char
-    kIOSCredentialProviderPromoOnPasswordSavedIsReminderHistogram[];
-extern const char kIOSCredentialProviderPromoOnPasswordCopiedHistogram[];
-extern const char
-    kIOSCredentialProviderPromoOnPasswordCopiedIsReminderHistogram[];
 extern const char kIOSCredentialProviderPromoOnAutofillUsedHistogram[];
 extern const char
     kIOSCredentialProviderPromoOnAutofillUsedIsReminderHistogram[];

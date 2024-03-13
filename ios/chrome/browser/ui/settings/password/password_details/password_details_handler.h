@@ -46,9 +46,6 @@
 // Called when the user wants to save edited password.
 - (void)showPasswordEditDialogWithOrigin:(NSString*)origin;
 
-// Called by the view controller when the user successfully copied a password.
-- (void)onPasswordCopiedByUser;
-
 // Called when all passwords were deleted, in order to close the view.
 - (void)onAllPasswordsDeleted;
 

@@ -599,8 +599,6 @@ chromium-metrics-reviews@google.com.
     Note: this was expired from 2023-09 to 2023-12. Data may be missing.
   </summary>
   <token key="PromoSource">
-    <variant name="OnPasswordCopied" summary="the user copies the password"/>
-    <variant name="OnPasswordSaved" summary="the user saves the password"/>
     <variant name="OnSetUpList" summary="the user selects the SetUpList item"/>
     <variant name="OnSuccessfulLoginWithAutofilledPassword"
         summary="the user logs in with autofilled password"/>

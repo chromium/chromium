@@ -89,10 +89,6 @@ constexpr char kNote[] = "note";
   self.editingCalled = YES;
 }
 
-- (void)onPasswordCopiedByUser {
-  self.passwordCopiedByUserCalled = YES;
-}
-
 - (void)onAllPasswordsDeleted {
 }
 
@@ -856,8 +852,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
     [password_details copyPasswordDetails:menu];
   }
 #endif
-
-  EXPECT_TRUE(handler().passwordCopiedByUserCalled);
 
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   EXPECT_NSEQ(@"test", generalPasteboard.string);

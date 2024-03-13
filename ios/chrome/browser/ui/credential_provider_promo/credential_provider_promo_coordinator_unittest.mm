@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
 
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -28,10 +26,7 @@ class CredentialProviderPromoCoordinatorTest : public PlatformTest {
   CredentialProviderPromoCoordinatorTest()
       : browser_state_(TestChromeBrowserState::Builder().Build()),
         browser_(std::make_unique<TestBrowser>(browser_state_.get())),
-        scoped_feature_list_(std::make_unique<base::test::ScopedFeatureList>()),
         histogram_tester_(std::make_unique<base::HistogramTester>()) {
-    scoped_feature_list_->InitAndEnableFeature(
-        kCredentialProviderExtensionPromo);
 
     coordinator_ = [[CredentialProviderPromoCoordinator alloc]
         initWithBaseViewController:nil
@@ -55,7 +50,6 @@ class CredentialProviderPromoCoordinatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
   CredentialProviderPromoCoordinator* coordinator_;
@@ -70,16 +64,16 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
        CredentialProviderPromoImpressionRecorded) {
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoImpressionHistogram,
-      IOSCredentialProviderPromoSource::kPasswordCopied, 0);
+      IOSCredentialProviderPromoSource::kAutofillUsed, 0);
 
   // Coordinator will show the promo with PasswordCopied as source.
   [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 PasswordCopied];
+      showCredentialProviderPromoWithTrigger:
+          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
 
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoImpressionHistogram,
-      IOSCredentialProviderPromoSource::kPasswordCopied, 1);
+      IOSCredentialProviderPromoSource::kAutofillUsed, 1);
 }
 
 // Tests that the remind-me-later promo's impression is recorded with the
@@ -88,16 +82,16 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
        CredentialProviderPromoImpressionFromReminderRecorded) {
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoImpressionIsReminderHistogram,
-      IOSCredentialProviderPromoSource::kPasswordCopied, 0);
+      IOSCredentialProviderPromoSource::kAutofillUsed, 0);
 
-  // Coordinator will show the promo with PasswordCopied as source, and update
+  // Coordinator will show the promo with AutofillUsed as source, and update
   // `prefs::kIosCredentialProviderPromoSource`.
   [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 PasswordCopied];
+      showCredentialProviderPromoWithTrigger:
+          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
 
   // Coordinator is called to again to show the promo as reminder.
-  // `kPasswordCopied` will be used as the original source when recording
+  // `kAutofillUsed` will be used as the original source when recording
   // metric.
   [credential_provider_promo_command_handler_
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
@@ -105,7 +99,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoImpressionIsReminderHistogram,
-      IOSCredentialProviderPromoSource::kPasswordCopied, 1);
+      IOSCredentialProviderPromoSource::kAutofillUsed, 1);
 }
 
 // Tests that tapping the primary CTA in both the first and second step of the
@@ -113,14 +107,14 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 TEST_F(CredentialProviderPromoCoordinatorTest,
        CredentialProviderPromoTwoStepPrimaryActionRecorded) {
   histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnPasswordSavedHistogram,
+      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
       0);
   // Trigger the promo with PasswordSaved.
   // The primary CTA on the first step of the promo is 'learn more'.
   [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 PasswordSaved];
+      showCredentialProviderPromoWithTrigger:
+          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
 
   // Perform the action. Coordinator will record the action and set.
   // `promoContext` to 'learn more'
@@ -130,11 +124,11 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
           coordinator_ confirmationAlertPrimaryAction];
 
   histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnPasswordSavedHistogram,
+      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::kLearnMore,
       1);
   histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnPasswordSavedHistogram,
+      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::
           kGoToSettings,
       0);
@@ -144,7 +138,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
   [(id<ConfirmationAlertActionHandler>)
           coordinator_ confirmationAlertPrimaryAction];
   histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnPasswordSavedHistogram,
+      kIOSCredentialProviderPromoOnAutofillUsedHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::
           kGoToSettings,
       1);
@@ -172,33 +166,6 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoOnAutofillUsedHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::kNo, 1);
-}
-
-// Tests that tapping the tertiary CTA is recorded correctly when the promo is
-// shown from password copied.
-TEST_F(CredentialProviderPromoCoordinatorTest,
-       CredentialProviderPromoTertiaryActionRecorded) {
-  histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnPasswordCopiedHistogram,
-      credential_provider_promo::IOSCredentialProviderPromoAction::
-          kRemindMeLater,
-      0);
-
-  // Trigger the promo with PasswordCopied.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 PasswordCopied];
-  // Perform the action, Coordinator will record the action.
-  EXPECT_TRUE([coordinator_
-      conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
-  [(id<ConfirmationAlertActionHandler>)
-          coordinator_ confirmationAlertTertiaryAction];
-
-  histogram_tester_->ExpectBucketCount(
-      kIOSCredentialProviderPromoOnPasswordCopiedHistogram,
-      credential_provider_promo::IOSCredentialProviderPromoAction::
-          kRemindMeLater,
-      1);
 }
 
 // Tests the flow when the trigger is the SetUpList. It should go directly to

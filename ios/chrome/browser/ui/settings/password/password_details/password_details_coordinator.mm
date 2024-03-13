@@ -16,7 +16,6 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_visits_recorder.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -30,7 +29,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
@@ -347,17 +345,6 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
 - (void)showPasswordDetailsInEditModeWithoutAuthentication {
   [self.viewController showEditViewWithoutAuthentication];
-}
-
-- (void)onPasswordCopiedByUser {
-  if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
-    id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
-        HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                           CredentialProviderPromoCommands);
-    [credentialProviderPromoHandler
-        showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                   PasswordCopied];
-  }
 }
 
 - (void)onAllPasswordsDeleted {
