@@ -27,6 +27,7 @@ chrome.automation.EventType = {
   ALERT: 'alert',
   ARIA_ATTRIBUTE_CHANGED_DEPRECATED: 'ariaAttributeChangedDeprecated',
   ARIA_CURRENT_CHANGED: 'ariaCurrentChanged',
+  ARIA_NOTIFICATIONS_POSTED: 'ariaNotificationsPosted',
   ATOMIC_CHANGED: 'atomicChanged',
   AUTO_COMPLETE_CHANGED: 'autoCompleteChanged',
   AUTOCORRECTION_OCCURED: 'autocorrectionOccured',

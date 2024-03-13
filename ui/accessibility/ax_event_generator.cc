@@ -1300,6 +1300,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "alert";
     case AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
       return "ariaCurrentChanged";
+    case AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED:
+      return "ariaNotificationsPosted";
     case AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
       return "atkTextObjectAttributeChanged";
     case AXEventGenerator::Event::ATOMIC_CHANGED:

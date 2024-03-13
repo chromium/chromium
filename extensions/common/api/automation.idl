@@ -21,6 +21,7 @@
     // present in earlier versions of LaCros.
     ariaAttributeChangedDeprecated,
     ariaCurrentChanged,
+    ariaNotificationsPosted,
     atomicChanged,
     autoCompleteChanged,
     autocorrectionOccured,

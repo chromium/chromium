@@ -104,6 +104,7 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
     case AXEventGenerator::Event::ALERT:
     case AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+    case AXEventGenerator::Event::ARIA_NOTIFICATIONS_POSTED:
     case AXEventGenerator::Event::ATOMIC_CHANGED:
     case AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
     case AXEventGenerator::Event::AUTOFILL_AVAILABILITY_CHANGED:
