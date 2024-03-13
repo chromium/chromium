@@ -12,18 +12,13 @@
 namespace content {
 
 // static
-std::unique_ptr<ui::AXTreeFormatter>
-AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(ui::AXApiType::kMac);
+ui::AXApiType::Type AXInspectFactory::DefaultPlatformFormatterType() {
+  return ui::AXApiType::kMac;
 }
 
 // static
-std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
-    BrowserAccessibilityManager*,
-    base::ProcessId pid,
-    const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(ui::AXApiType::kMac,
-                                          /*manager=*/nullptr, pid, selector);
+ui::AXApiType::Type AXInspectFactory::DefaultPlatformRecorderType() {
+  return ui::AXApiType::kMac;
 }
 
 // static

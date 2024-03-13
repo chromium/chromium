@@ -5102,6 +5102,15 @@ ui::AXNode* WebContentsImpl::GetAccessibilityRootNode() {
 std::string WebContentsImpl::DumpAccessibilityTree(
     bool internal,
     std::vector<ui::AXPropertyFilter> property_filters) {
+  ui::AXApiType::Type api_type =
+      internal ? ui::AXApiType::Type(ui::AXApiType::kBlink)
+               : AXInspectFactory::DefaultPlatformFormatterType();
+  return DumpAccessibilityTree(api_type, property_filters);
+}
+
+std::string WebContentsImpl::DumpAccessibilityTree(
+    ui::AXApiType::Type api_type,
+    std::vector<ui::AXPropertyFilter> property_filters) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DumpAccessibilityTree");
   auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
   // Since for Web Content we get the AXTree updates through the renderer at a
@@ -5119,16 +5128,22 @@ std::string WebContentsImpl::DumpAccessibilityTree(
   // This only runs during integration tests, or if a developer is
   // using an inspection tool, e.g. chrome://accessibility.
   BrowserAccessibilityManager::AlwaysFailFast();
-
+  DCHECK(base::Contains(AXInspectFactory::SupportedApis(), api_type));
   std::unique_ptr<ui::AXTreeFormatter> formatter =
-      internal ? AXInspectFactory::CreateBlinkFormatter()
-               : AXInspectFactory::CreatePlatformFormatter();
+      AXInspectFactory::CreateFormatter(api_type);
 
   formatter->SetPropertyFilters(property_filters);
   return formatter->Format(ax_mgr->GetBrowserAccessibilityRoot());
 }
 
 void WebContentsImpl::RecordAccessibilityEvents(
+    bool start_recording,
+    std::optional<ui::AXEventCallback> callback) {
+  RecordAccessibilityEvents(AXInspectFactory::DefaultPlatformRecorderType(),
+                            start_recording, callback);
+}
+void WebContentsImpl::RecordAccessibilityEvents(
+    ui::AXApiType::Type api_type,
     bool start_recording,
     std::optional<ui::AXEventCallback> callback) {
   OPTIONAL_TRACE_EVENT0("content",
@@ -5147,8 +5162,10 @@ void WebContentsImpl::RecordAccessibilityEvents(
     gfx::AcceleratedWidget widget =
         ax_mgr->GetBrowserAccessibilityRoot()
             ->GetTargetForNativeAccessibilityEvent();
-    event_recorder_ = content::AXInspectFactory::CreatePlatformRecorder(
-        ax_mgr, pid, ui::AXTreeSelector(widget));
+
+    DCHECK(base::Contains(AXInspectFactory::SupportedApis(), api_type));
+    event_recorder_ = content::AXInspectFactory::CreateRecorder(
+        api_type, ax_mgr, pid, ui::AXTreeSelector(widget));
     event_recorder_->ListenToEvents(*callback);
   } else {
     if (event_recorder_) {

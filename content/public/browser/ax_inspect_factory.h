@@ -29,6 +29,12 @@ class CONTENT_EXPORT AXInspectFactory {
   // on Linux or NSAccessibility tree on macOS.
   static std::unique_ptr<ui::AXTreeFormatter> CreatePlatformFormatter();
 
+  // Returns the API type of the current platform's default platform formatter.
+  static ui::AXApiType::Type DefaultPlatformFormatterType();
+
+  // Returns the API type of the current platform's default platform recorder.
+  static ui::AXApiType::Type DefaultPlatformRecorderType();
+
   // Creates the appropriate event recorder for the platform we are currently
   // running on.
   static std::unique_ptr<ui::AXEventRecorder> CreatePlatformRecorder(

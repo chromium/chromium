@@ -675,7 +675,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::string DumpAccessibilityTree(
       bool internal,
       std::vector<ui::AXPropertyFilter> property_filters) override;
+  std::string DumpAccessibilityTree(
+      ui::AXApiType::Type api_type,
+      std::vector<ui::AXPropertyFilter> property_filters) override;
   void RecordAccessibilityEvents(
+      bool start_recording,
+      std::optional<ui::AXEventCallback> callback) override;
+  void RecordAccessibilityEvents(
+      ui::AXApiType::Type api_type,
       bool start_recording,
       std::optional<ui::AXEventCallback> callback) override;
   void AccessibilityFatalError() override;

@@ -50,6 +50,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/display/types/display_constants.h"
@@ -608,6 +609,10 @@ class WebContents : public PageNavigator,
       bool internal,
       std::vector<ui::AXPropertyFilter> property_filters) = 0;
 
+  virtual std::string DumpAccessibilityTree(
+      ui::AXApiType::Type api_type,
+      std::vector<ui::AXPropertyFilter> property_filters) = 0;
+
   // A callback that takes a string which contains accessibility event
   // information.
   using AccessibilityEventCallback =
@@ -623,6 +628,10 @@ class WebContents : public PageNavigator,
       bool start_recording,
       std::optional<AccessibilityEventCallback> callback) = 0;
 
+  virtual void RecordAccessibilityEvents(
+      ui::AXApiType::Type api_type,
+      bool start_recording,
+      std::optional<AccessibilityEventCallback> callback) = 0;
   // Tab navigation state ------------------------------------------------------
 
   // Returns the current navigation properties, which if a navigation is

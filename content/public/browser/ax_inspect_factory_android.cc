@@ -13,22 +13,13 @@
 namespace content {
 
 // static
-std::unique_ptr<ui::AXTreeFormatter>
-AXInspectFactory::CreatePlatformFormatter() {
-  // The default platform tree formatter for Android uses the "external" tree,
-  // i.e. pulling from the AccessibilityNodeInfo objects in the Java-side code.
-  // If the internal tree is desired, then CreateFormatter() should be called
-  // with the appropriate tree type.
-  return AXInspectFactory::CreateFormatter(ui::AXApiType::kAndroidExternal);
+ui::AXApiType::Type AXInspectFactory::DefaultPlatformFormatterType() {
+  return ui::AXApiType::kAndroidExternal;
 }
 
 // static
-std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(ui::AXApiType::kAndroid, manager, pid,
-                                          selector);
+ui::AXApiType::Type AXInspectFactory::DefaultPlatformRecorderType() {
+  return ui::AXApiType::kAndroid;
 }
 
 // static
