@@ -184,7 +184,7 @@ using CheckPseudoHasFastRejectFilterCache =
 
 // CheckPseudoHasCacheScope is the stack-allocated scoping class for :has()
 // pseudo class checking result cache and :has() pseudo class checking fast
-// reject filter cache. It also manages checking for recursive :has().
+// reject filter cache.
 //
 // This class has hashmap to hold the checking result and filter, so the
 // lifecycle of the caches follow the lifecycle of the CheckPseudoHasCacheScope
@@ -225,13 +225,7 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
   STACK_ALLOCATED();
 
  public:
-  // If within_selector_checking is false, we are just setting up the cache for
-  // later convenience. However, if it is true, we are actually within matching
-  // a selector, and document->IsInPseudoHasChecking() will return true while
-  // this object is in scope. This is used to make sure we do not run :has()
-  // within :has(), which isn't allowed. (It is typically disallowed by parsing,
-  // but it can be constructed through nesting.)
-  CheckPseudoHasCacheScope(Document* document, bool within_selector_checking);
+  explicit CheckPseudoHasCacheScope(Document*);
   ~CheckPseudoHasCacheScope();
 
   // Context provides getter and setter of the following cache items.
@@ -306,7 +300,6 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
   CheckPseudoHasFastRejectFilterCache fast_reject_filter_cache_;
 
   Document* document_;
-  const bool within_selector_checking_;
 };
 
 }  // namespace blink

@@ -1069,8 +1069,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     stylesheet->SyncTextIfNeeded();
   }
 
-  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
-      &document, /*within_selector_checking=*/false);
+  CheckPseudoHasCacheScope check_pseudo_has_cache_scope(&document);
   InspectorStyleResolver resolver(element, element_pseudo_id,
                                   view_transition_name);
 

@@ -161,8 +161,7 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
         document->getElementById(AtomicString(query_scope_element_id));
     ASSERT_TRUE(query_scope_element);
 
-    CheckPseudoHasCacheScope cache_scope(document,
-                                         /*within_selector_checking=*/false);
+    CheckPseudoHasCacheScope cache_scope(document);
 
     String query_name = String::Format("#%s.matches('%s')",
                                        query_scope_element_id, selector_text);
@@ -192,8 +191,7 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
         document->getElementById(AtomicString(query_scope_element_id));
     ASSERT_TRUE(query_scope_element);
 
-    CheckPseudoHasCacheScope cache_scope(document,
-                                         /*within_selector_checking=*/false);
+    CheckPseudoHasCacheScope cache_scope(document);
 
     String query_name = String::Format("#%s.querySelectorAll('%s')",
                                        query_scope_element_id, selector_text);

@@ -1250,17 +1250,8 @@ EarlyBreakOnHasArgumentChecking CheckEarlyBreakForHasArgument(
 
 bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                      MatchResult& result) const {
-  if (context.element->GetDocument().InPseudoHasChecking()) {
-    // :has() within :has() would normally be rejected parse-time, but we can
-    // end up in this situation nevertheless, due to nesting. We just return
-    // a not-matched for now; it is possible that we should fail the entire rule
-    // (consider what happens if it is e.g. within :not()), but we would have to
-    // have some way to propagate that up the stack, and consider interactions
-    // with the forgiveness of :is().
-    return false;
-  }
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
-      &context.element->GetDocument(), /*within_selector_checking=*/true);
+      &context.element->GetDocument());
 
   Element* has_anchor_element = context.element;
   Document& document = has_anchor_element->GetDocument();

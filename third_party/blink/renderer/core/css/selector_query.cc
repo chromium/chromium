@@ -109,14 +109,14 @@ inline bool SelectorMatches(const CSSSelector& selector,
 bool SelectorQuery::Matches(Element& target_element) const {
   QUERY_STATS_RESET();
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
-      &target_element.GetDocument(), /*within_selector_checking=*/false);
+      &target_element.GetDocument());
   return SelectorListMatches(target_element, target_element);
 }
 
 Element* SelectorQuery::Closest(Element& target_element) const {
   QUERY_STATS_RESET();
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
-      &target_element.GetDocument(), /*within_selector_checking=*/false);
+      &target_element.GetDocument());
   if (selectors_.empty()) {
     return nullptr;
   }
@@ -133,7 +133,7 @@ Element* SelectorQuery::Closest(Element& target_element) const {
 StaticElementList* SelectorQuery::QueryAll(ContainerNode& root_node) const {
   QUERY_STATS_RESET();
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
-      &root_node.GetDocument(), /*within_selector_checking=*/false);
+      &root_node.GetDocument());
   NthIndexCache nth_index_cache(root_node.GetDocument());
   HeapVector<Member<Element>> result;
   Execute<AllElementsSelectorQueryTrait>(root_node, result);
@@ -143,7 +143,7 @@ StaticElementList* SelectorQuery::QueryAll(ContainerNode& root_node) const {
 Element* SelectorQuery::QueryFirst(ContainerNode& root_node) const {
   QUERY_STATS_RESET();
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
-      &root_node.GetDocument(), /*within_selector_checking=*/false);
+      &root_node.GetDocument());
   NthIndexCache nth_index_cache(root_node.GetDocument());
   Element* matched_element = nullptr;
   Execute<SingleElementSelectorQueryTrait>(root_node, matched_element);
