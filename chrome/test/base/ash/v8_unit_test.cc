@@ -4,10 +4,11 @@
 
 #include "chrome/test/base/ash/v8_unit_test.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ash/js_test_api.h"
@@ -275,8 +276,8 @@ void V8UnitTest::SetGlobalStringVar(const std::string& var_name,
       .Check();
 }
 
-void V8UnitTest::ExecuteScriptInContext(const base::StringPiece& script_source,
-                                        const base::StringPiece& script_name) {
+void V8UnitTest::ExecuteScriptInContext(const std::string_view& script_source,
+                                        const std::string_view& script_name) {
   v8::Isolate* isolate = handle_scope_.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =

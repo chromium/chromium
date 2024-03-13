@@ -6,10 +6,10 @@
 #define CHROME_TEST_BASE_ASH_V8_UNIT_TEST_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8.h"
@@ -36,8 +36,8 @@ class V8UnitTest : public testing::Test {
 
   // Executes the given |script_source| in the context. The specified
   // |script_name| is used when reporting errors.
-  virtual void ExecuteScriptInContext(const base::StringPiece& script_source,
-                                      const base::StringPiece& script_name);
+  virtual void ExecuteScriptInContext(const std::string_view& script_source,
+                                      const std::string_view& script_name);
 
   // Set the variable |var_name| to a string |value| in the global scope.
   virtual void SetGlobalStringVar(const std::string& var_name,

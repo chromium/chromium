@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/window_backdrop.h"
 #include "base/check_op.h"
@@ -51,7 +52,7 @@ bool IsDeviceAccountEmail(const std::string& email) {
          gaia::AreEmailsSame(active_user->GetDisplayEmail(), email);
 }
 
-GURL GetUrlWithEmailParam(base::StringPiece url_string,
+GURL GetUrlWithEmailParam(std::string_view url_string,
                           const std::string& email) {
   GURL url = GURL(url_string);
   if (!email.empty()) {
