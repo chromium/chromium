@@ -642,21 +642,21 @@ TEST_F(BrowserUtilTest, StatefulLacrosSelectionUpdateChannel) {
   cmdline->RemoveSwitch(browser_util::kLacrosStabilitySwitch);
 }
 
-TEST_F(BrowserUtilTest, GetMigrationStatus) {
+TEST_F(BrowserUtilTest, GetMigrationStatusForUser) {
   using ash::standalone_browser::migrator_util::MigrationMode;
-  using browser_util::GetMigrationStatus;
+  using browser_util::GetMigrationStatusForUser;
   using browser_util::MigrationStatus;
 
   const user_manager::User* const user = AddRegularUser("user@test.com");
 
-  EXPECT_EQ(GetMigrationStatus(local_state(), user),
+  EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
             MigrationStatus::kLacrosNotEnabled);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {ash::standalone_browser::features::kLacrosOnly}, {});
 
-  EXPECT_EQ(GetMigrationStatus(local_state(), user),
+  EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
             MigrationStatus::kUncompleted);
 
   {
@@ -668,7 +668,7 @@ TEST_F(BrowserUtilTest, GetMigrationStatus) {
                                              user->username_hash());
     }
 
-    EXPECT_EQ(GetMigrationStatus(local_state(), user),
+    EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
               MigrationStatus::kMaxAttemptReached);
 
     ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
@@ -680,7 +680,7 @@ TEST_F(BrowserUtilTest, GetMigrationStatus) {
         local_state(), user->username_hash(),
         ash::standalone_browser::migrator_util::MigrationMode::kCopy);
 
-    EXPECT_EQ(GetMigrationStatus(local_state(), user),
+    EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
               MigrationStatus::kCopyCompleted);
 
     ash::standalone_browser::migrator_util::
@@ -693,7 +693,7 @@ TEST_F(BrowserUtilTest, GetMigrationStatus) {
         local_state(), user->username_hash(),
         ash::standalone_browser::migrator_util::MigrationMode::kMove);
 
-    EXPECT_EQ(GetMigrationStatus(local_state(), user),
+    EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
               MigrationStatus::kMoveCompleted);
 
     ash::standalone_browser::migrator_util::
@@ -706,7 +706,7 @@ TEST_F(BrowserUtilTest, GetMigrationStatus) {
         local_state(), user->username_hash(),
         ash::standalone_browser::migrator_util::MigrationMode::kSkipForNewUser);
 
-    EXPECT_EQ(GetMigrationStatus(local_state(), user),
+    EXPECT_EQ(GetMigrationStatusForUser(local_state(), user),
               MigrationStatus::kSkippedForNewUser);
 
     ash::standalone_browser::migrator_util::

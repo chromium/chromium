@@ -125,6 +125,10 @@ const char kLacrosLaunchModeDaily[] = "Ash.Lacros.Launch.Mode.Daily";
 const char kLacrosLaunchModeAndSourceDaily[] =
     "Ash.Lacros.Launch.ModeAndSource.Daily";
 
+// Used to get field data on how much users have migrated to Lacros.
+const char kLacrosMigrationStatus[] = "Ash.LacrosMigrationStatus2";
+const char kLacrosMigrationStatusDaily[] = "Ash.LacrosMigrationStatus2.Daily";
+
 // The interval at which the daily UMA reporting function should be
 // called. De-duping of events will be happening on the server side.
 constexpr base::TimeDelta kDailyLaunchModeTimeDelta = base::Minutes(30);
@@ -563,10 +567,9 @@ void BrowserManager::InitializeAndStartIfNeeded() {
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
-  // Perform the UMA recording for the current Lacros mode of operation.
-  RecordLacrosLaunchMode();
-
-  browser_util::RecordMigrationStatus();
+  // Perform the UMA recording for the current Lacros launch mode and migration
+  // status.
+  RecordLacrosLaunchModeAndMigrationStatus();
 
   // As a switch between Ash and Lacros mode requires an Ash restart plus
   // profile migration, the state will not change while the system is up.
@@ -1177,7 +1180,7 @@ void BrowserManager::ResumeLaunch() {
     browser_launcher_.TriggerTerminate(/*exit_code=*/0);
     SetState(State::WAITING_FOR_MOJO_DISCONNECTED);
     // We need to tell the server that Lacros does not run in this session.
-    RecordLacrosLaunchMode();
+    RecordLacrosLaunchModeAndMigrationStatus();
     unload_requested_ = true;
     return;
   }
@@ -1234,8 +1237,10 @@ void BrowserManager::OnResumeLaunchComplete(
   // Lacros launch is unblocked now.
   SetState(State::STARTING);
 
-  // Record Lacros launch mode and state.
-  RecordLacrosLaunchMode();
+  // Perform the UMA recording for the current Lacros launch mode and migration
+  // status.
+  RecordLacrosLaunchModeAndMigrationStatus();
+
   crosapi::lacros_startup_state::SetLacrosStartupState(true);
 
   // Post `DryRunToCollectUMA()` to send UMA stats about sizes of files/dirs
@@ -1313,7 +1318,22 @@ void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
   browser_service_->service->UpdateKeepAlive(enabled);
 }
 
-void BrowserManager::RecordLacrosLaunchMode() {
+void BrowserManager::SetLacrosMigrationStatus() {
+  const std::optional<browser_util::MigrationStatus> status =
+      browser_util::GetMigrationStatus();
+
+  if (!status.has_value()) {
+    // This should only happen in tests.
+    return;
+  }
+
+  CHECK(!migration_status_.has_value() || *migration_status_ == *status)
+      << "Lacros migration status should not change in-session.";
+
+  migration_status_ = status;
+}
+
+void BrowserManager::SetLacrosLaunchMode() {
   LacrosLaunchMode lacros_mode;
   LacrosLaunchModeAndSource lacros_mode_and_source;
 
@@ -1327,8 +1347,6 @@ void BrowserManager::RecordLacrosLaunchMode() {
     lacros_mode_and_source =
         LacrosLaunchModeAndSource::kPossiblySetByUserLacrosDisabled;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("Ash.Lacros.Launch.Mode", lacros_mode);
 
   crosapi::browser_util::LacrosLaunchSwitchSource source =
       crosapi::browser_util::GetLacrosLaunchSwitchSource();
@@ -1354,8 +1372,6 @@ void BrowserManager::RecordLacrosLaunchMode() {
       static_cast<int>(source_offset) +
       static_cast<int>(lacros_mode_and_source));
 
-  UMA_HISTOGRAM_ENUMERATION("Ash.Lacros.Launch.ModeAndSource",
-                            lacros_mode_and_source);
   LOG(WARNING) << "Using LacrosLaunchModeAndSource "
                << static_cast<int>(lacros_mode_and_source);
 
@@ -1365,14 +1381,33 @@ void BrowserManager::RecordLacrosLaunchMode() {
     // Remember new values.
     lacros_mode_ = lacros_mode;
     lacros_mode_and_source_ = lacros_mode_and_source;
+  }
+}
 
-    // Call our Daily launch mode reporting once now to make sure we have an
-    // event. If it's a dupe, the server will de-dupe.
-    OnDailyLaunchModeTimer();
-    if (!daily_event_timer_.IsRunning()) {
-      daily_event_timer_.Start(FROM_HERE, kDailyLaunchModeTimeDelta, this,
-                               &BrowserManager::OnDailyLaunchModeTimer);
-    }
+void BrowserManager::RecordLacrosLaunchModeAndMigrationStatus() {
+  SetLacrosMigrationStatus();
+  if (!migration_status_.has_value()) {
+    // `SetLacrosMigrationStatus()` does not set `migration_status_` if primary
+    // user is not yet set at the time of calling (see
+    // `browser_util::GetMigrationMode()` for details). This should only happen
+    // in tests.
+    CHECK_IS_TEST();
+    return;
+  }
+  SetLacrosLaunchMode();
+
+  base::UmaHistogramEnumeration("Ash.Lacros.Launch.Mode", *lacros_mode_);
+  base::UmaHistogramEnumeration("Ash.Lacros.Launch.ModeAndSource",
+                                *lacros_mode_and_source_);
+  base::UmaHistogramEnumeration(kLacrosMigrationStatus, *migration_status_);
+
+  // Call our Daily reporting once now to make sure we have an event. If it's a
+  // dupe, the server will de-dupe.
+  OnDailyLaunchModeAndMigrationStatusTimer();
+  if (!daily_event_timer_.IsRunning()) {
+    daily_event_timer_.Start(
+        FROM_HERE, kDailyLaunchModeTimeDelta, this,
+        &BrowserManager::OnDailyLaunchModeAndMigrationStatusTimer);
   }
 }
 
@@ -1452,10 +1487,12 @@ void BrowserManager::OnActionPerformed(std::unique_ptr<BrowserAction> action,
 }
 
 // Callback called when the daily event happens.
-void BrowserManager::OnDailyLaunchModeTimer() {
-  UMA_HISTOGRAM_ENUMERATION(kLacrosLaunchModeDaily, *lacros_mode_);
-  UMA_HISTOGRAM_ENUMERATION(kLacrosLaunchModeAndSourceDaily,
-                            *lacros_mode_and_source_);
+void BrowserManager::OnDailyLaunchModeAndMigrationStatusTimer() {
+  base::UmaHistogramEnumeration(kLacrosMigrationStatusDaily,
+                                *migration_status_);
+  base::UmaHistogramEnumeration(kLacrosLaunchModeDaily, *lacros_mode_);
+  base::UmaHistogramEnumeration(kLacrosLaunchModeAndSourceDaily,
+                                *lacros_mode_and_source_);
 }
 
 // static

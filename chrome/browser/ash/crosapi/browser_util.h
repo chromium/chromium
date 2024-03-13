@@ -182,9 +182,6 @@ extern const char kLaunchOnLoginPref[];
 // migration was marked as completed.
 extern const char kDataVerPref[];
 
-// Used to get field data on how much users have migrated to Lacros.
-constexpr char kLacrosMigrationStatus[] = "Ash.LacrosMigrationStatus2";
-
 // Registers user profile preferences related to the lacros-chrome binary.
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -338,13 +335,11 @@ bool IsProfileMigrationEnabled(const user_manager::User* user,
 // Returns true if the profile migration is enabled, but not yet completed.
 bool IsProfileMigrationAvailable();
 
-// Records `kLacrosMigrationStatus`. It should be called after primary user is
-// set. If it is called prior to that, it does not send any UMA.
-void RecordMigrationStatus();
-
-// Get the migration status for the user.
-MigrationStatus GetMigrationStatus(PrefService* local_state,
-                                   const user_manager::User* user);
+// Returns migration status for the primary user. Returns nullopt if the primary
+// user is not yet set, which should only happen in tests.
+std::optional<MigrationStatus> GetMigrationStatus();
+MigrationStatus GetMigrationStatusForUser(PrefService* local_state,
+                                          const user_manager::User* user);
 
 // Sets the value of `kProfileMigrationCompletionTimeForUserPref` for the user
 // identified by `user_id_hash` to the current time.
