@@ -7,12 +7,12 @@ interface PaperRippleElement extends LegacyElementMixin, HTMLElement {
   recenters: boolean;
 
   clear(): void;
-  downAction(e: Event): void;
+  downAction(e?: Event): void;
   showAndHoldDown(): void;
   simulatedRipple(): void;
-  uiDownAction(e: Event): void;
-  uiUpAction(e: Event): void;
-  upAction(): void;
+  uiDownAction(e?: Event): void;
+  uiUpAction(e?: Event): void;
+  upAction(e?: Event): void;
 }
 
 export {PaperRippleElement};

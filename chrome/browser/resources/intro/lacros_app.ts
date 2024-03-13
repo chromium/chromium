@@ -4,6 +4,7 @@
 
 import 'chrome://intro/tangible_sync_style_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './strings.m.js';

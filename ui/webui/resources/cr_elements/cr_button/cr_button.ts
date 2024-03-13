@@ -8,15 +8,14 @@
  * enter to effectively click the button and fire a 'click' event. It can also
  * style an icon inside of the button with the [has-icon] attribute.
  */
-import '../cr_hidden_style.css.js';
-import '../cr_shared_vars.css.js';
-import '//resources/polymer/v3_0/paper-styles/color.js';
-
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_button.html.js';
+import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
+
+import {getCss} from './cr_button.css.js';
+import {getHtml} from './cr_button.html.js';
 
 export interface CrButtonElement {
   $: {
@@ -25,24 +24,26 @@ export interface CrButtonElement {
   };
 }
 
-const CrButtonElementBase = PaperRippleMixin(PolymerElement);
+const CrButtonElementBase = CrPaperRippleMixin(CrLitElement);
 
 export class CrButtonElement extends CrButtonElementBase {
   static get is() {
     return 'cr-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       disabled: {
         type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: 'disabledChanged_',
+        reflect: true,
       },
 
       /**
@@ -51,27 +52,24 @@ export class CrButtonElement extends CrButtonElementBase {
        */
       customTabIndex: {
         type: Number,
-        observer: 'applyTabIndex_',
       },
 
       hasPrefixIcon_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
 
       hasSuffixIcon_: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
     };
   }
 
-  disabled: boolean;
-  customTabIndex: number;
-  private hasPrefixIcon_: boolean;
-  private hasSuffixIcon_: boolean;
+  disabled: boolean = false;
+  customTabIndex?: number;
+  private hasPrefixIcon_: boolean = false;
+  private hasSuffixIcon_: boolean = false;
 
   /**
    * It is possible to activate a tab when the space key is pressed down. When
@@ -96,19 +94,28 @@ export class CrButtonElement extends CrButtonElementBase {
     this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'button');
     }
     if (!this.hasAttribute('tabindex')) {
       this.setAttribute('tabindex', '0');
     }
-    if (!this.hasAttribute('aria-disabled')) {
-      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
-    }
 
     FocusOutlineManager.forDocument(document);
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('disabled')) {
+      this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+      this.disabledChanged_(this.disabled, changedProperties.get('disabled'));
+    }
+
+    if (changedProperties.has('customTabIndex')) {
+      this.applyTabIndex_();
+    }
   }
 
   override disconnectedCallback() {
@@ -135,7 +142,6 @@ export class CrButtonElement extends CrButtonElementBase {
     if (this.disabled) {
       this.blur();
     }
-    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
     this.applyTabIndex_();
   }
 
@@ -163,11 +169,11 @@ export class CrButtonElement extends CrButtonElementBase {
     }
   }
 
-  private onPrefixIconSlotChanged_() {
+  protected onPrefixIconSlotChanged_() {
     this.hasPrefixIcon_ = this.$.prefixIcon.assignedElements().length > 0;
   }
 
-  private onSuffixIconSlotChanged_() {
+  protected onSuffixIconSlotChanged_() {
     this.hasSuffixIcon_ = this.$.suffixIcon.assignedElements().length > 0;
   }
 
