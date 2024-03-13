@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ActivityIndicatorState">
+  <int value="0" label="In use"/>
+  <int value="1" label="Blocked on the site level"/>
+  <int value="2" label="Blocked on the system level"/>
+</enum>
+
 <enum name="AutoDSEPermissionRevertTransition">
   <int value="0" label="NO_DECISION_ASK"/>
   <int value="1" label="PRESERVE_ALLOW"/>

@@ -366,6 +366,106 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
                               0);
 }
 
+TEST_F(PermissionUmaUtilTest, LhsIndicatorsShowTest) {
+  base::HistogramTester histograms;
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_CAMERA},
+      /*blocked=*/false,
+      /*blocked_system_level=*/false,
+      /*click=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.VideoCapture.Show",
+      ActivityIndicatorState::kInUse, 1);
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_CAMERA},
+      /*blocked=*/true,
+      /*blocked_system_level=*/false,
+      /*click=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.VideoCapture.Show",
+      ActivityIndicatorState::kBlockedOnSiteLevel, 1);
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_CAMERA},
+      /*blocked=*/true,
+      /*blocked_system_level=*/true,
+      /*click=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.VideoCapture.Show",
+      ActivityIndicatorState::kBlockedOnSystemLevel, 1);
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_MIC},
+      /*blocked=*/false,
+      /*blocked_system_level=*/false,
+      /*click=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.AudioCapture.Show",
+      ActivityIndicatorState::kInUse, 1);
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_MIC,
+       ContentSettingsType::MEDIASTREAM_CAMERA},
+      /*blocked=*/false,
+      /*blocked_system_level=*/false,
+      /*click=*/false);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.AudioAndVideoCapture.Show",
+      ActivityIndicatorState::kInUse, 1);
+}
+
+TEST_F(PermissionUmaUtilTest, LhsIndicatorsClickTest) {
+  base::HistogramTester histograms;
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_CAMERA},
+      /*blocked=*/false,
+      /*blocked_system_level=*/false,
+      /*click=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.VideoCapture.Click",
+      ActivityIndicatorState::kInUse, 1);
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_CAMERA},
+      /*blocked=*/true,
+      /*blocked_system_level=*/false,
+      /*click=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.VideoCapture.Click",
+      ActivityIndicatorState::kBlockedOnSiteLevel, 1);
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_CAMERA},
+      /*blocked=*/true,
+      /*blocked_system_level=*/true,
+      /*click=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.VideoCapture.Click",
+      ActivityIndicatorState::kBlockedOnSystemLevel, 1);
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_MIC},
+      /*blocked=*/false,
+      /*blocked_system_level=*/false,
+      /*click=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.AudioCapture.Click",
+      ActivityIndicatorState::kInUse, 1);
+
+  PermissionUmaUtil::RecordActivityIndicator(
+      {ContentSettingsType::MEDIASTREAM_MIC,
+       ContentSettingsType::MEDIASTREAM_CAMERA},
+      /*blocked=*/false,
+      /*blocked_system_level=*/false,
+      /*click=*/true);
+  histograms.ExpectBucketCount(
+      "Permissions.ActivityIndicator.LHS.AudioAndVideoCapture.Click",
+      ActivityIndicatorState::kInUse, 1);
+}
+
 TEST_F(PermissionUmaUtilTest, PageInfoPermissionReallowedTest) {
   base::HistogramTester histograms;
 

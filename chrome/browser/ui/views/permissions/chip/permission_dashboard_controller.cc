@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -90,6 +91,24 @@ bool ShouldExpandChipIndicator(
 
   return true;
 }
+
+void RecordIndicators(ContentSettingImageModel* indicator_model,
+                      content_settings::PageSpecificContentSettings* pscs,
+                      bool clicked) {
+  std::set<ContentSettingsType> permissions;
+  if (pscs->GetMicrophoneCameraState().Has(
+          content_settings::PageSpecificContentSettings::kCameraAccessed)) {
+    permissions.insert(ContentSettingsType::MEDIASTREAM_CAMERA);
+  }
+  if (pscs->GetMicrophoneCameraState().Has(
+          content_settings::PageSpecificContentSettings::kMicrophoneAccessed)) {
+    permissions.insert(ContentSettingsType::MEDIASTREAM_MIC);
+  }
+
+  permissions::PermissionUmaUtil::RecordActivityIndicator(
+      permissions, indicator_model->is_blocked(),
+      indicator_model->blocked_on_system_level(), clicked);
+}
 }  // namespace
 
 PermissionDashboardController::PermissionDashboardController(
@@ -137,6 +156,7 @@ bool PermissionDashboardController::Update(
     return true;
   }
 
+  indicator_model_ = indicator_model;
   permission_dashboard_view_->SetVisible(true);
 
   indicator_chip->SetChipIcon(indicator_model->icon());
@@ -156,20 +176,20 @@ bool PermissionDashboardController::Update(
     request_chip_controller_->ResetPermissionPromptChip();
   }
 
-  indicator_chip->ResetAnimation();
-
   content_settings::PageSpecificContentSettings* content_settings =
       content_settings::PageSpecificContentSettings::GetForFrame(
           location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
 
+  indicator_chip->SetVisible(true);
+
   if (ShouldExpandChipIndicator(content_settings)) {
+    indicator_chip->ResetAnimation();
     indicator_chip->SetMessage(GetIndicatorTitle(indicator_model));
     indicator_chip->AnimateExpand(
         GetAnimationDuration(kExpandAnimationDuration));
-  } else {
-    UpdateIndicatorsVisibilityFlags(location_bar_view_);
   }
-  indicator_chip->SetVisible(true);
+
+  UpdateIndicatorsVisibilityFlags(location_bar_view_);
 
   indicator_chip->SetTooltipText(indicator_model->get_tooltip());
   indicator_chip->GetViewAccessibility().SetIsIgnored(false);
@@ -186,6 +206,8 @@ bool PermissionDashboardController::Update(
         l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
     indicator_chip->SetAccessibleDescription(accessible_description);
     indicator_chip->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+
+    RecordIndicators(indicator_model, content_settings, /*clicked=*/false);
 
     indicator_model->AccessibilityWasNotified(
         location_bar_view_->GetWebContents());
@@ -237,8 +259,10 @@ void PermissionDashboardController::Collapse(bool hide) {
   if (hide) {
     UpdateIndicatorsVisibilityFlags(location_bar_view_);
   }
-  permission_dashboard_view_->GetIndicatorChip()->AnimateCollapse(
-      GetAnimationDuration(kCollapseAnimationDuration));
+  if (!permission_dashboard_view_->GetIndicatorChip()->is_animating()) {
+    permission_dashboard_view_->GetIndicatorChip()->AnimateCollapse(
+        GetAnimationDuration(kCollapseAnimationDuration));
+  }
 }
 
 void PermissionDashboardController::HideIndicators() {
@@ -248,6 +272,7 @@ void PermissionDashboardController::HideIndicators() {
       ->GetViewAccessibility()
       .SetIsIgnored(true);
   permission_dashboard_view_->GetIndicatorChip()->SetVisible(false);
+  indicator_model_ = nullptr;
   permission_dashboard_view_->GetDividerView()->SetVisible(false);
   if (permission_dashboard_view_->GetRequestChip()->GetVisible()) {
     // After the indicator view is gone, remove the divider padding if the
@@ -318,6 +343,17 @@ void PermissionDashboardController::OnPageInfoBubbleClosed(
 
 void PermissionDashboardController::OnIndicatorsChipButtonPressed() {
   ShowPageInfoDialog();
+
+  if (indicator_model_) {
+    content_settings::PageSpecificContentSettings* pscs =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            location_bar_view_->GetWebContents()->GetPrimaryMainFrame());
+    if (!pscs) {
+      return;
+    }
+
+    RecordIndicators(indicator_model_, pscs, /*clicked=*/true);
+  }
 }
 
 std::u16string PermissionDashboardController::GetIndicatorTitle(

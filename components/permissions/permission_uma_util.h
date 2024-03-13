@@ -37,6 +37,15 @@ enum class PermissionRequestGestureType;
 enum class PermissionAction;
 class PermissionRequest;
 
+enum class ActivityIndicatorState {
+  kInUse = 0,
+  kBlockedOnSiteLevel = 1,
+  kBlockedOnSystemLevel = 2,
+
+  // Always keep at the end.
+  kMaxValue = kBlockedOnSystemLevel
+};
+
 // Used for UMA to record the types of permission prompts shown.
 // When updating, you also need to update:
 //   1) The PermissionRequestType enum in tools/metrics/histograms/enums.xml.
@@ -496,6 +505,11 @@ class PermissionUmaUtil {
   PermissionUmaUtil& operator=(const PermissionUmaUtil&) = delete;
 
   static void PermissionRequested(ContentSettingsType permission);
+
+  static void RecordActivityIndicator(std::set<ContentSettingsType> permissions,
+                                      bool blocked,
+                                      bool blocked_system_level,
+                                      bool clicked);
 
   static void RecordPermissionRequestedFromFrame(
       ContentSettingsType content_settings_type,

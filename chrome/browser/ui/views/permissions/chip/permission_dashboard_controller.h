@@ -70,9 +70,11 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   void OnIndicatorsChipButtonPressed();
   std::u16string GetIndicatorTitle(ContentSettingImageModel* model);
 
-  raw_ptr<Browser> browser_;
-  raw_ptr<LocationBarView> location_bar_view_;
-  raw_ptr<PermissionDashboardView> permission_dashboard_view_;
+  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<LocationBarView> location_bar_view_ = nullptr;
+  raw_ptr<PermissionDashboardView> permission_dashboard_view_ = nullptr;
+  // Currently only Camera and Mic are supported.
+  raw_ptr<ContentSettingImageModel> indicator_model_ = nullptr;
   std::unique_ptr<ChipController> request_chip_controller_;
   // A timer used to collapse indicators after a delay.
   base::OneShotTimer collapse_timer_;

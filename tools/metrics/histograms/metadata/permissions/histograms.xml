@@ -230,6 +230,29 @@ chromium-metrics-reviews@google.com.
       variants="PermissionTypesSupportPermissionsPolicy"/>
 </histogram>
 
+<histogram
+    name="Permissions.ActivityIndicator.{Disposition}.{PermissionType}.{Action}"
+    enum="ActivityIndicatorState" expires_after="2024-09-01">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when a permission activity indicator has been shown from in the
+    location bar. Records the indicator's state.
+  </summary>
+  <token key="PermissionType">
+    <variant name="AudioAndVideoCapture"/>
+    <variant name="AudioCapture"/>
+    <variant name="VideoCapture"/>
+  </token>
+  <token key="Disposition">
+    <variant name="LHS"/>
+  </token>
+  <token key="Action">
+    <variant name="Click"/>
+    <variant name="Show"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.API.CreatedPermissionStatusObjects" units="units"
     expires_after="2024-12-10">
   <owner>andypaicu@chromium.org</owner>

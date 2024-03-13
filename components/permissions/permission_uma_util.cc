@@ -650,6 +650,48 @@ void PermissionUmaUtil::PermissionRequested(ContentSettingsType content_type) {
                                 permission, PermissionType::NUM);
 }
 
+void PermissionUmaUtil::RecordActivityIndicator(
+    std::set<ContentSettingsType> permissions,
+    bool blocked,
+    bool blocked_system_level,
+    bool clicked) {
+  DCHECK(!permissions.empty());
+  DCHECK(permissions.contains(ContentSettingsType::MEDIASTREAM_CAMERA) ||
+         permissions.contains(ContentSettingsType::MEDIASTREAM_MIC));
+
+  ActivityIndicatorState state;
+  if (blocked) {
+    if (blocked_system_level) {
+      state = ActivityIndicatorState::kBlockedOnSystemLevel;
+    } else {
+      state = ActivityIndicatorState::kBlockedOnSiteLevel;
+    }
+  } else {
+    state = ActivityIndicatorState::kInUse;
+  }
+
+  std::string indicators_type;
+
+  if (permissions.size() > 1) {
+    indicators_type = "AudioAndVideoCapture";
+  } else if (permissions.contains(ContentSettingsType::MEDIASTREAM_CAMERA)) {
+    indicators_type = "VideoCapture";
+  } else {
+    indicators_type = "AudioCapture";
+  }
+
+  std::string action;
+  if (clicked) {
+    action = "Click";
+  } else {
+    action = "Show";
+  }
+
+  base::UmaHistogramEnumeration(
+      "Permissions.ActivityIndicator.LHS." + indicators_type + "." + action,
+      state);
+}
+
 void PermissionUmaUtil::RecordPermissionRequestedFromFrame(
     ContentSettingsType content_settings_type,
     content::RenderFrameHost* rfh) {
