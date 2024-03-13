@@ -511,7 +511,7 @@ TEST_F(SBNavigationObserverTest,
 }
 
 TEST_F(SBNavigationObserverTest,
-       TestNotificationNavigationEventsNotAddedForNonHttps) {
+       TestNotificationNavigationEventsAddedForExtensions) {
   GURL url_0("http://foo/0");
   GURL url_1("http://foo/1");
   GURL url_2("http://foo/2");
@@ -520,6 +520,19 @@ TEST_F(SBNavigationObserverTest,
   RecordNotificationNavigationEvent(script_url, url_0);
   RecordNotificationNavigationEvent(GURL("chrome-extension://some-extension"),
                                     url_1);
+  RecordNotificationNavigationEvent(GURL("http://bogus-web-origin.com"), url_2);
+  EXPECT_EQ(2U, notification_navigation_events()->size());
+}
+
+TEST_F(SBNavigationObserverTest,
+       TestNotificationNavigationEventsNotAddedForNonExtensionsAndNonHttps) {
+  GURL url_0("http://foo/0");
+  GURL url_1("http://foo/1");
+  GURL url_2("http://foo/2");
+  GURL script_url("https://example.com/script.js");
+  SetEnhancedProtection(/*esb_enabled=*/true);
+  RecordNotificationNavigationEvent(script_url, url_0);
+  RecordNotificationNavigationEvent(GURL("ftp://some-host"), url_1);
   RecordNotificationNavigationEvent(GURL("http://bogus-web-origin.com"), url_2);
   EXPECT_EQ(1U, notification_navigation_events()->size());
 }

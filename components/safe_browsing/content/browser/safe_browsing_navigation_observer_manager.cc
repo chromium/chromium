@@ -888,7 +888,9 @@ void SafeBrowsingNavigationObserverManager::RecordNotificationNavigationEvent(
     const GURL& script_url,
     const GURL& url) {
   // Push notifications are tied to the https scheme.
-  if (!script_url.SchemeIs(url::kHttpsScheme)) {
+  // We also care about notifications from Chrome extensions.
+  if (!script_url.SchemeIs(url::kHttpsScheme) &&
+      !script_url.SchemeIs("chrome-extension")) {
     return;
   }
   // We only collect notification referrers for ESB users.
