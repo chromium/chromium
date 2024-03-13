@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_grid.html.js';
+import {getCss} from './cr_grid.css.js';
+import {getHtml} from './cr_grid.html.js';
 
 // Displays children in a two-dimensional grid and supports focusing children
 // with arrow keys.
@@ -15,33 +17,43 @@ export interface CrGridElement {
   };
 }
 
-export class CrGridElement extends PolymerElement {
+export class CrGridElement extends CrLitElement {
   static get is() {
     return 'cr-grid';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       columns: {
         type: Number,
-        observer: 'onColumnsChange_',
       },
-      disableArrowNavigation: Boolean,
+
+      disableArrowNavigation: {
+        type: Boolean,
+      },
     };
   }
 
   disableArrowNavigation: boolean = false;
   columns: number = 1;
 
-  private onColumnsChange_() {
-    this.updateStyles({'--cr-grid-columns': this.columns});
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('columns')) {
+      this.style.setProperty('--cr-grid-columns', String(this.columns));
+    }
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  protected onKeyDown_(e: KeyboardEvent) {
     if (!this.disableArrowNavigation &&
         ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
       e.preventDefault();
