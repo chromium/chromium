@@ -23,6 +23,7 @@ bool IsLimitedEntropyModeEnabled(version_info::Channel channel) {
   }
   // TODO(crbug.com/1511779): Enable limited entropy mode in more channels.
   return channel == version_info::Channel::CANARY ||
+         channel == version_info::Channel::DEV ||
          channel == version_info::Channel::UNKNOWN;
 }
 
