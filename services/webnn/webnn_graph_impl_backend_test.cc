@@ -214,6 +214,10 @@ void VerifyIsEqual(mojo_base::BigBuffer actual,
 #if BUILDFLAG(IS_WIN)
 class WebNNGraphImplBackendTest : public dml::TestBase {
  public:
+  WebNNGraphImplBackendTest()
+      : scoped_feature_list_(
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+
   void SetUp() override;
 
  protected:
@@ -224,8 +228,6 @@ class WebNNGraphImplBackendTest : public dml::TestBase {
 
 void WebNNGraphImplBackendTest::SetUp() {
   SKIP_TEST_IF(!dml::UseGPUInTests());
-  scoped_feature_list_.InitAndEnableFeature(
-      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
 
   ASSERT_TRUE(InitializeGLDisplay());
   dml::Adapter::EnableDebugLayerForTesting();
@@ -302,6 +304,10 @@ void WebNNGraphImplBackendTest::SetUp() {
 #if BUILDFLAG(IS_MAC)
 class WebNNGraphImplBackendTest : public testing::Test {
  public:
+  WebNNGraphImplBackendTest()
+      : scoped_feature_list_(
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+
   void SetUp() override;
 
  protected:
@@ -323,14 +329,16 @@ void WebNNGraphImplBackendTest::SetUp() {
     GTEST_SKIP()
         << "Skipping test because the operator is not yet supported.";
   }
-  scoped_feature_list_.InitAndEnableFeature(
-      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
 }
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX)
 class WebNNGraphImplBackendTest : public testing::Test {
  public:
+  WebNNGraphImplBackendTest()
+      : scoped_feature_list_(
+            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+
   void SetUp() override;
 
  protected:
@@ -350,8 +358,6 @@ void WebNNGraphImplBackendTest::SetUp() {
   if (!kSupportedTests.contains(current_test_name)) {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
   }
-  scoped_feature_list_.InitAndEnableFeature(
-      webnn::mojom::features::kWebMachineLearningNeuralNetwork);
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
