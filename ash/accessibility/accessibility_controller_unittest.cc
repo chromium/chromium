@@ -67,7 +67,9 @@ class AccessibilityControllerTest : public AshTestBase {
                               media::kLiveCaptionSystemWideOnChromeOS,
                               ash::features::kOnDeviceSpeechRecognition,
                               ::features::kAccessibilityFaceGaze,
-                              ::features::kAccessibilityMouseKeys},
+                              ::features::kAccessibilityMouseKeys,
+                              ::features::
+                                  kAccessibilityCaretBlinkIntervalSetting},
         /*disabled_feaures=*/{
             ::features::kAccessibilityDictationKeyboardImprovements});
     AshTestBase::SetUp();
@@ -203,6 +205,21 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionAmount));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityFaceGazeEnabled));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeCursorSpeedUp));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeCursorSpeedDown));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeCursorSpeedLeft));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeCursorSpeedRight));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeCursorSmoothing));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityFaceGazeCursorUseAcceleration));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeGesturesToMacros));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {

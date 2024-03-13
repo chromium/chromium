@@ -7676,6 +7676,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePeripheralNotificationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPeripheralNotification)},
 
+    {"enable-accessibility-caret-blink-interval-setting",
+     flag_descriptions::kAccessibilityCaretBlinkIntervalSettingName,
+     flag_descriptions::kAccessibilityCaretBlinkIntervalSettingDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityCaretBlinkIntervalSetting)},
+
     {"enable-accessibility-service",
      flag_descriptions::kAccessibilityServiceName,
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,

@@ -538,6 +538,10 @@ inline constexpr char kAccessibilityColorVisionCorrectionType[] =
 // A boolean pref which determines whether caret highlighting is enabled.
 inline constexpr char kAccessibilityCaretHighlightEnabled[] =
     "settings.a11y.caret_highlight";
+// A TimeDelta pref which stores the user's preferred caret blink interval. If
+// 0, the caret will not blink.
+inline constexpr char kAccessibilityCaretBlinkInterval[] =
+    "settings.a11y.caret.blink_interval";
 // A boolean pref which determines whether cursor highlighting is enabled.
 inline constexpr char kAccessibilityCursorHighlightEnabled[] =
     "settings.a11y.cursor_highlight";

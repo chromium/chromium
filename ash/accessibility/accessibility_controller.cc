@@ -82,6 +82,7 @@
 #include "ui/display/tablet_state.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/wm/core/cursor_manager.h"
 
@@ -1313,6 +1314,11 @@ void AccessibilityController::RegisterProfilePrefs(
         prefs::kAccessibilityFaceGazeGesturesToMacros,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
+
+  if (::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
+    registry->RegisterIntegerPref(prefs::kAccessibilityCaretBlinkInterval,
+                                  kDefaultCaretBlinkIntervalMs);
+  }
 }
 
 void AccessibilityController::Shutdown() {
@@ -2230,6 +2236,13 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(
           &AccessibilityController::UpdateColorCorrectionFromPrefs,
           base::Unretained(this)));
+  if (::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
+    pref_change_registrar_->Add(
+        prefs::kAccessibilityCaretBlinkInterval,
+        base::BindRepeating(
+            &AccessibilityController::UpdateCaretBlinkIntervalFromPrefs,
+            base::Unretained(this)));
+  }
 
   // Load current state.
   for (const std::unique_ptr<Feature>& feature : features_) {
@@ -2248,6 +2261,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
   UpdateColorCorrectionFromPrefs();
+  UpdateCaretBlinkIntervalFromPrefs();
 
   if (::features::IsAccessibilityFaceGazeEnabled()) {
     UpdateFaceGazeFromPrefs();
@@ -2458,6 +2472,15 @@ void AccessibilityController::UpdateColorCorrectionFromPrefs() {
   // Ensure displays get updated.
   color_enhancement_controller->SetColorCorrectionEnabledAndUpdateDisplays(
       true);
+}
+
+void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
+  if (!::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
+    return;
+  }
+  // int caret_blink_interval =
+  //     active_user_prefs_->GetInteger(prefs::kAccessibilityCaretBlinkInterval);
+  // TODO(b:259374492): Update the native theme with the caret_blink_interval.
 }
 
 void AccessibilityController::UpdateAccessibilityHighlightingFromPrefs() {

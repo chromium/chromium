@@ -35,6 +35,8 @@ constexpr int kMinLargeCursorSize = 25;
 constexpr int kMaxLargeCursorSize = 64;
 constexpr int kMaxExtraLargeCursorSize = 128;
 
+constexpr int kDefaultCaretBlinkIntervalMs = 500;
+
 constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;
 
 // These device types are a subset of ui::InputDeviceType. These strings are

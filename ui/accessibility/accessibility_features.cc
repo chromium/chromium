@@ -224,6 +224,14 @@ bool IsAccessibilityMouseKeysEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityMouseKeys);
 }
 
+BASE_FEATURE(kAccessibilityCaretBlinkIntervalSetting,
+             "AccessibilityCaretBlinkIntervalSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityCaretBlinkIntervalSettingEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityCaretBlinkIntervalSetting);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -7,10 +7,6 @@
     padding-inline-start: var(--cr-section-indent-width);
   }
 
-  .settings-box {
-    padding-inline-start: 0;
-  }
-
   settings-toggle-button,
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
@@ -136,6 +132,25 @@
     sub-label="$i18n{caretHighlightLabelSubtext}"
     deep-link-focus-id$="[[Setting.kHighlightTextCaret]]">
 </settings-toggle-button>
+<template is="dom-if" if="[[isAccessibilityCaretBlinkIntervalSettingEnabled_]]">
+  <div class="settings-box" id="caretBlinkIntervalRow">
+    <div class="flex start settings-box-text">
+      <div class="label" aria-hidden="true">
+        $i18n{caretBlinkIntervalLabel}
+      </div>
+      <div class="secondary label">
+        $i18n{caretBlinkIntervalDescription}
+      </div>
+    </div>
+    <settings-dropdown-menu
+      id="caretBlinkIntervalMenu"
+      pref="{{prefs.settings.a11y.caret.blink_interval}}"
+      label="$i18n{caretBlinkIntervalLabel}"
+      menu-options="[[caretBlinkIntervalMenuOptions_]]"
+      deep-link-focus-id$="[[Setting.kCaretBlinkInterval]]">
+    </settings-dropdown-menu>
+  </div>
+</template>
 <settings-toggle-button
     id="caretBrowsingToggle"
     class="hr"

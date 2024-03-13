@@ -175,6 +175,10 @@ AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsStsEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMouseKeys);
 AX_BASE_EXPORT bool IsAccessibilityMouseKeysEnabled();
 
+// Control blink rate of text cursor.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityCaretBlinkIntervalSetting);
+AX_BASE_EXPORT bool IsAccessibilityCaretBlinkIntervalSettingEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

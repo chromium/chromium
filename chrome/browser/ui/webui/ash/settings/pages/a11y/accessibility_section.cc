@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/color_enhancement/color_enhancement_controller.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
@@ -872,6 +873,13 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_LABEL},
       {"reducedAnimationsDescription",
        IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_DESCRIPTION},
+      {"caretBlinkIntervalLabel", IDS_SETTINGS_CARET_BLINK_INTERVAL_LABEL},
+      {"caretBlinkIntervalDescription",
+       IDS_SETTINGS_CARET_BLINK_INTERVAL_DESCRIPTION},
+      {"caretBlinkIntervalOff", IDS_SETTINGS_CARET_BLINK_INTERVAL_OFF},
+      {"caretBlinkIntervalNormal", IDS_SETTINGS_CARET_BLINK_INTERVAL_NORMAL},
+      {"caretBlinkIntervalSlow", IDS_SETTINGS_CARET_BLINK_INTERVAL_SLOW},
+      {"caretBlinkIntervalFast", IDS_SETTINGS_CARET_BLINK_INTERVAL_FAST},
       {"faceGazeCursorAccelerationLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL},
       {"faceGazeCursorSmoothingLabel",
@@ -1202,6 +1210,9 @@ void AccessibilitySection::AddLoadTimeData(
       l10n_util::GetStringUTF16(
           GetDisplayAndMangificationLinkDescriptionResourceId()));
 
+  html_source->AddInteger("defaultCaretBlinkIntervalMs",
+                          ash::kDefaultCaretBlinkIntervalMs);
+
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",
       IsSwitchAccessTextAllowed());
@@ -1226,6 +1237,10 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilityExtraLargeCursorEnabled",
                           IsAccessibilityExtraLargeCursorEnabled());
+
+  html_source->AddBoolean(
+      "isAccessibilityCaretBlinkIntervalSettingEnabled",
+      ::features::IsAccessibilityCaretBlinkIntervalSettingEnabled());
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }
@@ -1392,6 +1407,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kColorCorrectionEnabled,
       mojom::Setting::kColorCorrectionFilterType,
       mojom::Setting::kColorCorrectionFilterAmount,
+      mojom::Setting::kCaretBlinkInterval,
       mojom::Setting::kReducedAnimationsEnabled,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,

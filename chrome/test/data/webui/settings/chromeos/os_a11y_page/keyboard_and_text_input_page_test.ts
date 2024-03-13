@@ -5,13 +5,13 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsKeyboardAndTextInputPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrLinkRowElement, CrSettingsPrefs, Router, routes, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrSettingsPrefs, Router, routes, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -201,6 +201,42 @@ suite('<settings-keyboard-and-text-input-page>', () => {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Switch access toggle should be focused for settingId=1522.');
+  });
+
+  test('Caret blink interval setting', async () => {
+    await initPage();
+    if (!loadTimeData.getBoolean(
+            'isAccessibilityCaretBlinkIntervalSettingEnabled')) {
+      // Caret blink interval section should not be visible if flag is disabled.
+      const caretBlinkIntervalRow =
+          page.shadowRoot!.querySelector('#caretBlinkIntervalRow');
+      assertNull(caretBlinkIntervalRow);
+      return;
+    }
+
+    // Caret blink interval section is visible. Test it is connected to
+    // the expected preference.
+    const caretBlinkIntervalRow =
+        page.shadowRoot!.querySelector('#caretBlinkIntervalRow');
+    assert(caretBlinkIntervalRow);
+    assertTrue(isVisible(caretBlinkIntervalRow));
+
+    const caretBlinkIntervalMenu =
+        page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
+            '#caretBlinkIntervalMenu');
+    assert(caretBlinkIntervalMenu);
+    assertTrue(isVisible(caretBlinkIntervalMenu));
+
+    // Check the default value is what is expected.
+    const selectElement =
+        caretBlinkIntervalMenu.shadowRoot!.querySelector('select');
+    assert(selectElement);
+    assertEquals(String(500), selectElement.value);
+    selectElement.value = String(0);
+    selectElement.dispatchEvent(new CustomEvent('change'));
+
+    const newInterval = page.prefs.settings.a11y.caret.blink_interval.value;
+    assertEquals(newInterval, 0);
   });
 
   const selectorRouteList = [

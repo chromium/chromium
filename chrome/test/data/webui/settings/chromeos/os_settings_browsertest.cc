@@ -102,6 +102,17 @@ class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class OSSettingsMochaTestCaretBlinkSettingEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsMochaTestCaretBlinkSettingEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityCaretBlinkIntervalSetting);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled, ApnSubpage) {
   RunSettingsTest("apn_subpage_test.js");
 }
@@ -1005,6 +1016,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestReducedAnimationsEnabled,
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsA11yPageKeyboardAndTextInputPage) {
+  RunSettingsTest("os_a11y_page/keyboard_and_text_input_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestCaretBlinkSettingEnabled,
                        OsA11yPageKeyboardAndTextInputPage) {
   RunSettingsTest("os_a11y_page/keyboard_and_text_input_page_test.js");
 }

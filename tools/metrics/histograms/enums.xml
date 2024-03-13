@@ -19575,6 +19575,8 @@ from previous Chrome versions.
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
   <int value="-554140610" label="NtpRealboxCr23All:disabled"/>
   <int value="-553732400" label="ShoppingPageTypes:enabled"/>
+  <int value="-552937174"
+      label="AccessibilityCaretBlinkIntervalSetting:disabled"/>
   <int value="-552425893" label="ProjectorAnnotator:disabled"/>
   <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>
   <int value="-551664909" label="DrawEdgeToEdge:enabled"/>
@@ -20556,6 +20558,8 @@ from previous Chrome versions.
   <int value="-110465424" label="PictureInPicture:enabled"/>
   <int value="-109901772" label="HttpsUpgrades:disabled"/>
   <int value="-109569254" label="QueryTilesInOmnibox:enabled"/>
+  <int value="-108896948"
+      label="AccessibilityCaretBlinkIntervalSetting:enabled"/>
   <int value="-108881882" label="NTPCondensedTileLayout:enabled"/>
   <int value="-108468535" label="ChromeColorsCustomColorPicker:disabled"/>
   <int value="-107856449"

@@ -1402,6 +1402,25 @@
   <message name="IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_DESCRIPTION" desc="Description for a checkbox which enables reduced animations.">
     Limit movement on the screen
   </message>
+  <!-- TODO(b:259374492): Mark these strings translatable before launch. -->
+  <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_LABEL" desc="The label for a drop-down menu that allows users to pick the blink rate of their text insertion caret." translateable="false">
+    Text caret blink rate
+  </message>
+  <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_DESCRIPTION" desc="The description for a drop-down menu that allows users to pick the blink rate of their text insertion caret." translateable="false">
+    Change the blink rate of the text caret in most text fields.
+  </message>
+  <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_OFF" desc="The name of a drop-down menu item that turns off the caret blink rate (so the caret is always steady on)." translateable="false">
+    Do not blink
+  </message>
+  <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_NORMAL" desc="The name of a drop-down menu item that makes the caret blink at the normal rate." translateable="false">
+    Normal
+  </message>
+  <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_SLOW" desc="The name of a drop-down menu item that makes the caret blink rate slower than normal." translateable="false">
+    Slow
+  </message>
+  <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_FAST" desc="The name of a drop-down menu item that makes the caret blink rate faster than normal." translateable="false">
+    Fast
+  </message>
   <message name="IDS_SETTINGS_STICKY_KEYS_LABEL" desc="Label for checkbox which enables sticky keys, with an explanation of the term 'sticky keys'.">
     Sticky keys
   </message>

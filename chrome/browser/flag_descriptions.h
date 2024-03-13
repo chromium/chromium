@@ -647,6 +647,9 @@ extern const char kEnableTLS13EarlyDataDescription[];
 extern const char kEnableTLS13KyberName[];
 extern const char kEnableTLS13KyberDescription[];
 
+extern const char kAccessibilityCaretBlinkIntervalSettingName[];
+extern const char kAccessibilityCaretBlinkIntervalSettingDescription[];
+
 extern const char kAccessibilityServiceName[];
 extern const char kAccessibilityServiceDescription[];
 

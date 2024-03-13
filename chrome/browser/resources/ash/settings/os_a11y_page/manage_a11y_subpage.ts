@@ -362,6 +362,7 @@ export class SettingsManageA11ySubpageElement extends
           Setting.kColorCorrectionFilterType,
           Setting.kColorCorrectionFilterAmount,
           Setting.kReducedAnimationsEnabled,
+          Setting.kCaretBlinkInterval,
         ]),
       },
     };
