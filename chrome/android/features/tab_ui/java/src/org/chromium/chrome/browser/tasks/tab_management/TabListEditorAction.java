@@ -236,10 +236,7 @@ public abstract class TabListEditorAction {
         assert mCurrentTabModelFilterSupplier != null;
         assert mSelectionDelegate != null;
 
-        List<Tab> tabs =
-                editorSupportsActionOnRelatedTabs()
-                        ? getTabsAndRelatedTabsFromSelection()
-                        : getTabsFromSelection();
+        List<Tab> tabs = getTabsOrTabsAndRelatedTabsFromSelection();
         if (shouldNotifyObserversOfAction()) {
             for (ActionObserver obs : mObsevers) {
                 obs.preProcessSelectedTabs(tabs);
@@ -316,7 +313,7 @@ public abstract class TabListEditorAction {
         return selectedTabs;
     }
 
-    protected List<Tab> getTabsAndRelatedTabsFromSelection() {
+    private List<Tab> getTabsAndRelatedTabsFromSelection() {
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
 
         List<Tab> tabs = new ArrayList<>();
@@ -324,6 +321,12 @@ public abstract class TabListEditorAction {
             tabs.addAll(filter.getRelatedTabList(tabId));
         }
         return tabs;
+    }
+
+    protected List<Tab> getTabsOrTabsAndRelatedTabsFromSelection() {
+        return editorSupportsActionOnRelatedTabs()
+                ? getTabsAndRelatedTabsFromSelection()
+                : getTabsFromSelection();
     }
 
     public static int getTabCountIncludingRelatedTabs(

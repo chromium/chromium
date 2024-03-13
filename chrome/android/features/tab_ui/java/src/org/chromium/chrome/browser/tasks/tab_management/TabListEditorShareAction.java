@@ -117,7 +117,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
         boolean enableShare = false;
-        List<Tab> selectedTabs = getTabsAndRelatedTabsFromSelection();
+        List<Tab> selectedTabs = getTabsOrTabsAndRelatedTabsFromSelection();
 
         for (Tab tab : selectedTabs) {
             if (!shouldFilterUrl(tab.getUrl())) {
@@ -127,7 +127,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
         }
 
         int size = editorSupportsActionOnRelatedTabs() ? selectedTabs.size() : tabIds.size();
-        setEnabledAndItemCount(enableShare && !tabIds.isEmpty(), size);
+        setEnabledAndItemCount(enableShare, size);
     }
 
     @Override

@@ -118,12 +118,13 @@ public class TabListEditorShareActionUnitTest {
                 .when(mTabModelFilter)
                 .getRelatedTabList(anyInt());
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
-        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
     }
 
     @Test
     @SmallTest
     public void testInherentActionProperties() {
+        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
+
         Drawable drawable =
                 AppCompatResources.getDrawable(
                         mContext, R.drawable.tab_list_editor_share_icon);
@@ -151,6 +152,8 @@ public class TabListEditorShareActionUnitTest {
     @Test
     @SmallTest
     public void testShareActionNoTabs() {
+        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
+
         mAction.onSelectionStateChange(new ArrayList<Integer>());
         Assert.assertEquals(
                 false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
@@ -161,6 +164,8 @@ public class TabListEditorShareActionUnitTest {
     @Test
     @SmallTest
     public void testShareActionWithOneTab() throws Exception {
+        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
+
         mAction.setSkipUrlCheckForTesting(true);
         List<Integer> tabIds = new ArrayList<>();
         tabIds.add(1);
@@ -224,6 +229,8 @@ public class TabListEditorShareActionUnitTest {
     @Test
     @SmallTest
     public void testShareActionWithMultipleTabs() throws Exception {
+        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
+
         mAction.setSkipUrlCheckForTesting(true);
         List<Integer> tabIds = new ArrayList<>();
         tabIds.add(1);
@@ -285,7 +292,32 @@ public class TabListEditorShareActionUnitTest {
 
     @Test
     @SmallTest
-    public void testShareActionWithAllFilterableTabs() throws Exception {
+    public void testShareActionWithAllFilterableTabs_actionsOnTabs() throws Exception {
+        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
+
+        List<Integer> tabIds = new ArrayList<>();
+        tabIds.add(4);
+        tabIds.add(5);
+
+        for (int id : tabIds) {
+            mTabModel.addTab(id);
+        }
+        Set<Integer> tabIdsSet = new LinkedHashSet<>(tabIds);
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
+
+        mAction.onSelectionStateChange(tabIds);
+        Assert.assertEquals(
+                false, mAction.getPropertyModel().get(TabListEditorActionProperties.ENABLED));
+        Assert.assertEquals(
+                2, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
+    }
+
+    @Test
+    @SmallTest
+    public void testShareActionWithAllFilterableTabs_actionsOnTabsAndRelatedTabs()
+            throws Exception {
+        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, true);
+
         List<Integer> tabIds = new ArrayList<>();
         tabIds.add(4);
         tabIds.add(5);
