@@ -898,7 +898,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorBatchNormalization) {
 
 template <typename T>
 struct Conv2dTester {
-  mojom::Conv2d_Type type;
+  mojom::Conv2d::Kind type;
   OperandInfo<T> input;
   OperandInfo<T> filter;
   struct Conv2dAttributes {
@@ -956,7 +956,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // fusing with bias.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 5, 5},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -981,7 +981,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // fusing with bias.
   {
     Conv2dTester<float16>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 1, 5, 5},
                   .values = Float16FromFloat32(
@@ -1007,7 +1007,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // without bias.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 5, 5},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -1027,7 +1027,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // without bias.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 5, 5, 1},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -1049,7 +1049,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // without bias.
   {
     Conv2dTester<float16>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 5, 5, 1},
                   .values = Float16FromFloat32(
@@ -1122,7 +1122,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // linear activation.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 5, 5},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -1152,7 +1152,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // activation.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 5, 5, 1},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -1179,7 +1179,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // activation.
   {
     Conv2dTester<float16>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 5, 5, 1},
                   .values = Float16FromFloat32(
@@ -1206,7 +1206,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorConv2d) {
   // Test conv2d with NCHW layout, fusing with hardSigmoid activation.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kDirect,
+        .type = mojom::Conv2d::Kind::kDirect,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 5, 5},
                   .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
@@ -1351,7 +1351,7 @@ TEST_F(WebNNGraphImplBackendTest,
   // Test convTranspose2d with default attributes.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kTransposed,
+        .type = mojom::Conv2d::Kind::kTransposed,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 3, 3},
                   .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
@@ -1370,7 +1370,7 @@ TEST_F(WebNNGraphImplBackendTest,
   // Test convTranspose2d with NHWC input layout.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kTransposed,
+        .type = mojom::Conv2d::Kind::kTransposed,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 3, 3, 1},
                   .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
@@ -1390,7 +1390,7 @@ TEST_F(WebNNGraphImplBackendTest,
   }
   // Test convTranspose2d with padding = {1, 1, 1, 1}.
   {
-    Conv2dTester<float>{.type = mojom::Conv2d_Type::kTransposed,
+    Conv2dTester<float>{.type = mojom::Conv2d::Kind::kTransposed,
                         .input = {.type = mojom::Operand::DataType::kFloat32,
                                   .dimensions = {1, 1, 2, 2},
                                   .values = {0, 1, 2, 3}},
@@ -1406,7 +1406,7 @@ TEST_F(WebNNGraphImplBackendTest,
   // Test convTranspose2d with groups = 2.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kTransposed,
+        .type = mojom::Conv2d::Kind::kTransposed,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 2, 2},
                   .values = {2, 4, 0, 1, 2, 4, 0, 1}},
@@ -1423,7 +1423,7 @@ TEST_F(WebNNGraphImplBackendTest,
   // Test convTranspose2d with strides = {3, 2}.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kTransposed,
+        .type = mojom::Conv2d::Kind::kTransposed,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 3, 3},
                   .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
@@ -1452,7 +1452,7 @@ TEST_F(WebNNGraphImplBackendTest,
   // be {10, 8}, which is equivalent to setting outputPadding = {1, 1}.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kTransposed,
+        .type = mojom::Conv2d::Kind::kTransposed,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 3, 3},
                   .values = {0, 1, 2, 3, 4, 5, 6, 7, 8}},
@@ -1482,7 +1482,7 @@ TEST_F(WebNNGraphImplBackendTest,
   // Test convTranspose2d fusing with bias.
   {
     Conv2dTester<float>{
-        .type = mojom::Conv2d_Type::kTransposed,
+        .type = mojom::Conv2d::Kind::kTransposed,
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 1, 2, 2},
                   .values = {0, 1, 2, 3}},
@@ -1503,7 +1503,7 @@ TEST_F(WebNNGraphImplBackendTest,
   // activation.
   {
     Conv2dTester<float16>{
-        .type = mojom::Conv2d_Type::kTransposed,
+        .type = mojom::Conv2d::Kind::kTransposed,
         .input = {.type = mojom::Operand::DataType::kFloat16,
                   .dimensions = {1, 1, 2, 2},
                   .values = Float16FromFloat32({0, 1, 2, 3})},

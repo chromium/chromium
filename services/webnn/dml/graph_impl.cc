@@ -798,7 +798,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     // To support other layouts, we can transpose the input and output
     // tensors
     case mojom::InputOperandLayout::kChannelsLast: {
-      if (conv2d->type == mojom::Conv2d::Type::kDirect) {
+      if (conv2d->kind == mojom::Conv2d::Kind::kDirect) {
         const uint32_t input_channels = input_tensor_desc.GetDimensions()[3];
         const uint32_t output_channels = output_tensor_desc.GetDimensions()[3];
         const bool depthwise = webnn::IsDepthwiseConv2d(
@@ -850,12 +850,12 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   }
 
   DML_CONVOLUTION_DIRECTION conv2d_direction;
-  switch (conv2d->type) {
-    case mojom::Conv2d_Type::kDirect:
+  switch (conv2d->kind) {
+    case mojom::Conv2d::Kind::kDirect:
       conv2d_direction =
           DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_FORWARD;
       break;
-    case mojom::Conv2d_Type::kTransposed:
+    case mojom::Conv2d::Kind::kTransposed:
       conv2d_direction =
           DML_CONVOLUTION_DIRECTION::DML_CONVOLUTION_DIRECTION_BACKWARD;
       break;

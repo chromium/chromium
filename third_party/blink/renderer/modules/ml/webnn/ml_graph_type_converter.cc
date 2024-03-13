@@ -515,7 +515,7 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
   }
 
   if constexpr (std::is_same<MLConv2dOptionsType, MLConv2dOptions>::value) {
-    conv2d_mojo->type = blink_mojom::Conv2d::Type::kDirect;
+    conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kDirect;
 
     // The filter layout is being discussed to simplify in working group
     // https://github.com/webmachinelearning/webnn/issues/324.
@@ -525,7 +525,7 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
     }
   } else if constexpr (std::is_same<MLConv2dOptionsType,
                                     MLConvTranspose2dOptions>::value) {
-    conv2d_mojo->type = blink_mojom::Conv2d::Type::kTransposed;
+    conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kTransposed;
 
     if (options->filterLayout().AsEnum() !=
         blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw) {
@@ -1153,10 +1153,10 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case blink_mojom::Operation::Tag::kConcat:
       return CreateConcatOperation(operand_to_id_map, op);
     case blink_mojom::Operation::Tag::kConv2d: {
-      switch (op->SubKind<blink_mojom::Conv2d::Type>()) {
-        case blink_mojom::Conv2d::Type::kDirect:
+      switch (op->SubKind<blink_mojom::Conv2d::Kind>()) {
+        case blink_mojom::Conv2d::Kind::kDirect:
           return CreateConv2dOperation<MLConv2dOptions>(operand_to_id_map, op);
-        case blink_mojom::Conv2d::Type::kTransposed:
+        case blink_mojom::Conv2d::Kind::kTransposed:
           return CreateConv2dOperation<MLConvTranspose2dOptions>(
               operand_to_id_map, op);
       }

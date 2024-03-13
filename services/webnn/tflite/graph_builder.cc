@@ -713,7 +713,7 @@ auto GraphBuilder::SerializeConcat(const mojom::Concat& concat)
 
 auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
     -> base::expected<OperatorOffset, std::string> {
-  if (conv2d.type != mojom::Conv2d::Type::kDirect) {
+  if (conv2d.kind != mojom::Conv2d::Kind::kDirect) {
     return base::unexpected("convTranspose2d is not implemented.");
   }
   // TODO(crbug.com/327941466): Transpose input operand to support other layouts

@@ -916,7 +916,7 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
   // to its input and output operands.
   auto* conv2d = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kConv2d,
-      /*sub_type=*/webnn::mojom::blink::Conv2d::Type::kDirect, options);
+      /*sub_type=*/webnn::mojom::blink::Conv2d::Kind::kDirect, options);
   HeapVector<Member<const MLOperand>> inputs = {input, filter};
   if (options->hasBias()) {
     inputs.push_back(options->bias());
@@ -958,7 +958,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(
   // convTranspose2d operator to its input and output operands.
   auto* convTranspose2d = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kConv2d,
-      /*sub_type=*/webnn::mojom::blink::Conv2d::Type::kTransposed, options);
+      /*sub_type=*/webnn::mojom::blink::Conv2d::Kind::kTransposed, options);
   HeapVector<Member<const MLOperand>> inputs = {input, filter};
   if (options->hasBias()) {
     inputs.push_back(options->bias());

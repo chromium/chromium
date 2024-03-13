@@ -63,10 +63,10 @@ String MLOperator::OperatorKindToString(
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "concat";
     case webnn::mojom::blink::Operation::Tag::kConv2d: {
-      switch (absl::get<webnn::mojom::blink::Conv2d::Type>(sub_kind)) {
-        case webnn::mojom::blink::Conv2d::Type::kDirect:
+      switch (absl::get<webnn::mojom::blink::Conv2d::Kind>(sub_kind)) {
+        case webnn::mojom::blink::Conv2d::Kind::kDirect:
           return "conv2d";
-        case webnn::mojom::blink::Conv2d::Type::kTransposed:
+        case webnn::mojom::blink::Conv2d::Kind::kTransposed:
           return "convTranspose2d";
       }
     }

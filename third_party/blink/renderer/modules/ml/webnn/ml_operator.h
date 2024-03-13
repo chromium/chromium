@@ -23,8 +23,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  public:
   using OperationSubKind =
       absl::variant<webnn::mojom::blink::ArgMinMax::Kind,
-                    // TODO: crbug.com/325598628 - Rename Type -> Kind.
-                    webnn::mojom::blink::Conv2d::Type,
+                    webnn::mojom::blink::Conv2d::Kind,
                     webnn::mojom::blink::ElementWiseBinary::Kind,
                     webnn::mojom::blink::ElementWiseUnary::Kind,
                     webnn::mojom::blink::Pool2d::Kind,

@@ -711,8 +711,8 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
   }
 
   std::optional<base::expected<Operand, std::string>> validated_output;
-  switch (conv2d->type) {
-    case mojom::Conv2d_Type::kDirect: {
+  switch (conv2d->kind) {
+    case mojom::Conv2d::Kind::kDirect: {
       validated_output = ValidateConv2dAndInferOutput(
           ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
           ConvertToConv2dAttributes(id_to_operand_map, conv2d,
@@ -720,7 +720,7 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
       break;
     }
 
-    case mojom::Conv2d_Type::kTransposed: {
+    case mojom::Conv2d::Kind::kTransposed: {
       validated_output = ValidateConvTranspose2dAndInferOutput(
           ConvertToComponentOperand(input), ConvertToComponentOperand(filter),
           ConvertToConvTranspose2dAttributes(id_to_operand_map, conv2d,

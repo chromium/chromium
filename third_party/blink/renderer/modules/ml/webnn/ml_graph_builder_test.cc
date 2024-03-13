@@ -1668,8 +1668,8 @@ MLOperand* BuildConvTranspose2d(V8TestingScope& scope,
   EXPECT_THAT(convTranspose2d, testing::NotNull());
   EXPECT_EQ(convTranspose2d->Kind(),
             webnn::mojom::blink::Operation::Tag::kConv2d);
-  EXPECT_EQ(convTranspose2d->SubKind<webnn::mojom::blink::Conv2d::Type>(),
-            webnn::mojom::blink::Conv2d::Type::kTransposed);
+  EXPECT_EQ(convTranspose2d->SubKind<webnn::mojom::blink::Conv2d::Kind>(),
+            webnn::mojom::blink::Conv2d::Kind::kTransposed);
   EXPECT_TRUE(convTranspose2d->IsConnected());
   EXPECT_THAT(convTranspose2d->Options(), testing::NotNull());
   return output;

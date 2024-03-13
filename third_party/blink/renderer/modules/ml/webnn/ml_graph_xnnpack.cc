@@ -1794,11 +1794,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       return DefineXnnNodeForClamp(subgraph, ml_operator, operand_value_id_map,
                                    error_message);
     case webnn::mojom::blink::Operation::Tag::kConv2d: {
-      switch (ml_operator->SubKind<webnn::mojom::blink::Conv2d::Type>()) {
-        case webnn::mojom::blink::Conv2d::Type::kDirect:
+      switch (ml_operator->SubKind<webnn::mojom::blink::Conv2d::Kind>()) {
+        case webnn::mojom::blink::Conv2d::Kind::kDirect:
           return DefineXnnNodeForConv2d(subgraph, ml_operator,
                                         operand_value_id_map, error_message);
-        case webnn::mojom::blink::Conv2d::Type::kTransposed:
+        case webnn::mojom::blink::Conv2d::Kind::kTransposed:
           return DefineXnnNodeForConvTranspose2d(
               subgraph, ml_operator, operand_value_id_map, error_message);
       }

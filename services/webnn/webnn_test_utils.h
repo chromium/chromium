@@ -174,7 +174,7 @@ class GraphInfoBuilder final {
   //   std::optional<Activation> activation;
   // };
   template <typename Conv2dAttributes>
-  void BuildConv2d(mojom::Conv2d_Type type,
+  void BuildConv2d(mojom::Conv2d::Kind type,
                    uint64_t input_operand_id,
                    uint64_t filter_operand_id,
                    uint64_t output_operand_id,
@@ -186,7 +186,7 @@ class GraphInfoBuilder final {
     conv2d->output_operand_id = output_operand_id;
 
     // Configure the attributes of conv2d.
-    conv2d->type = type;
+    conv2d->kind = type;
     CHECK_EQ(attributes.padding.size(), 4u);
     conv2d->padding = mojom::Padding2d::New(
         /*beginning padding*/ mojom::Size2d::New(attributes.padding[0],
