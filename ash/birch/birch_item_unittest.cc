@@ -53,44 +53,70 @@ class BirchItemTest : public testing::Test {
 // When both conference URL and calendar URL are set, the conference URL is
 // preferred.
 TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
-  BirchCalendarItem item(u"item");
-  item.conference_url = GURL("http://meet.com/");
-  item.calendar_url = GURL("http://calendar.com/");
+  BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
+                         /*end_time=*/base::Time(),
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL("http://meet.com"));
   item.PerformAction();
+  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+            GURL("http://calendar.com/"));
+
+  EXPECT_TRUE(item.secondary_action());
+  item.PerformSecondaryAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL("http://meet.com/"));
 }
 
 // If only the calendar URL is set, it is opened.
-TEST_F(BirchItemTest, Calendar_PerformAction_OnlyCalendar) {
-  BirchCalendarItem item(u"item");
-  item.calendar_url = GURL("http://calendar.com/");
+TEST_F(BirchItemTest, Calendar_PerformAction_CalendarOnly) {
+  BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
+                         /*end_time=*/base::Time(),
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL());
   item.PerformAction();
+  EXPECT_EQ(new_window_delegate_->last_opened_url_,
+            GURL("http://calendar.com/"));
+
+  EXPECT_FALSE(item.secondary_action());
+  item.PerformSecondaryAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://calendar.com/"));
 }
 
 // If neither the conference URL nor the calendar URL is set, nothing opens.
 TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
-  BirchCalendarItem item(u"item");
+  BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
+                         /*end_time=*/base::Time(),
+                         /*calendar_url=*/GURL(),
+                         /*conference_url=*/GURL());
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
 
 TEST_F(BirchItemTest, Attachment_PerformAction_ValidUrl) {
-  BirchAttachmentItem item(u"item");
-  item.file_url = GURL("http://file.com/");
+  BirchAttachmentItem item(u"item",
+                           /*file_url=*/GURL("http://file.com/"),
+                           /*icon_url=*/GURL("http://attachment.icon"),
+                           /*start_time=*/base::Time(),
+                           /*end_time=*/base::Time());
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL("http://file.com/"));
 }
 
 TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
-  BirchAttachmentItem item(u"item");
+  BirchAttachmentItem item(u"item",
+                           /*file_url=*/GURL(),
+                           /*icon_url=*/GURL("http://attachment.icon"),
+                           /*start_time=*/base::Time(),
+                           /*end_time=*/base::Time());
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
 
 TEST_F(BirchItemTest, File_PerformAction) {
-  BirchFileItem item(base::FilePath("file_path"), base::Time());
+  BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time());
+  EXPECT_EQ(u"file_path", item.title());
+  EXPECT_EQ(u"suggested", item.subtitle());
+
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_file_path_,
             base::FilePath("file_path"));
@@ -131,23 +157,32 @@ class BirchItemIconTest : public AshTestBase {
 };
 
 TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
-  BirchCalendarItem item(u"item");
+  BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
+                         /*end_time=*/base::Time(),
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL("http://meet.com"));
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 }
 
 TEST_F(BirchItemIconTest, Attachment_LoadIcon) {
-  BirchAttachmentItem item(u"item");
-  item.icon_url = GURL("http://icon.com/");
+  BirchAttachmentItem item(u"item",
+                           /*file_url=*/GURL("http://file.com/"),
+                           /*icon_url=*/GURL("http://attachment.icon"),
+                           /*start_time=*/base::Time(),
+                           /*end_time=*/base::Time());
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 }
 
 TEST_F(BirchItemIconTest, Attachment_LoadIcon_InvalidUrl) {
-  BirchAttachmentItem item(u"item");
-  item.icon_url = GURL("invalid-url");
+  BirchAttachmentItem item(u"item",
+                           /*file_url=*/GURL("http://file.com/"),
+                           /*icon_url=*/GURL("invalid-url"),
+                           /*start_time=*/base::Time(),
+                           /*end_time=*/base::Time());
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_TRUE(icon.IsEmpty()); }));
@@ -191,7 +226,7 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
 
 TEST_F(BirchItemIconTest, File_LoadIcon) {
   const base::FilePath excel_path("/my/test/mySheet.xlsx");
-  BirchFileItem item(excel_path, base::Time());
+  BirchFileItem item(excel_path, u"suggested", base::Time());
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));

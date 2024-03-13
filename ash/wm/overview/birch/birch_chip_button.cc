@@ -4,7 +4,9 @@
 
 #include "ash/wm/overview/birch/birch_chip_button.h"
 
+#include "ash/birch/birch_item.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -40,6 +42,7 @@ constexpr ui::ColorId kBackgroundColorId =
     cros_tokens::kCrosSysSystemOnBaseOpaque;
 
 // The layout parameters of icon.
+constexpr gfx::Size kItemIconSize = gfx::Size(20, 20);
 constexpr gfx::Insets kIconMargins = gfx::Insets::VH(0, 12);
 
 // The colors and fonts of title and subtitle.
@@ -121,8 +124,10 @@ BirchChipButton::BirchChipButton()
       .SetAccessibleName(u"Birch Chip")
       .AddChildren(
           // Icon.
-          views::Builder<views::ImageView>().CopyAddressTo(&icon_).SetProperty(
-              views::kMarginsKey, kIconMargins),
+          views::Builder<views::ImageView>()
+              .CopyAddressTo(&icon_)
+              .SetProperty(views::kMarginsKey, kIconMargins)
+              .SetImageSize(kItemIconSize),
           // Title and subtitle.
           views::Builder<views::BoxLayoutView>()
               .CopyAddressTo(&titles_container)
@@ -160,21 +165,32 @@ BirchChipButton::BirchChipButton()
 
 BirchChipButton::~BirchChipButton() = default;
 
-void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image) {
-  icon_->SetImage(icon_image);
-}
+void BirchChipButton::SetBirchItem(std::unique_ptr<BirchItem> item) {
+  item_ = std::move(item);
 
-void BirchChipButton::SetTitleText(const std::u16string& title) {
-  title_->SetText(title);
-}
+  title_->SetText(item_->title());
+  subtitle_->SetText(item_->subtitle());
 
-void BirchChipButton::SetSubtitleText(const std::u16string& subtitle) {
-  subtitle_->SetText(subtitle);
+  SetCallback(base::BindRepeating(&BirchItem::PerformAction,
+                                  base::Unretained(item_.get())));
+  if (item_->secondary_action().has_value()) {
+    auto* button = SetAddon(std::make_unique<PillButton>(
+        base::BindRepeating(&BirchItem::PerformSecondaryAction,
+                            base::Unretained(item_.get())),
+        *item_->secondary_action(), PillButton::Type::kPrimaryWithoutIcon));
+    button->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 16));
+  }
+  item_->LoadIcon(base::BindOnce(&BirchChipButton::SetIconImage,
+                                 weak_factory_.GetWeakPtr()));
 }
 
 void BirchChipButton::SetDelegate(Delegate* delegate) {
   CHECK(!delegate_);
   delegate_ = delegate;
+}
+
+void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image) {
+  icon_->SetImage(icon_image);
 }
 
 void BirchChipButton::OnGestureEvent(ui::GestureEvent* event) {

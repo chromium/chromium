@@ -11,11 +11,11 @@
 
 namespace ash {
 
-struct BirchAttachmentItem;
-struct BirchCalendarItem;
-struct BirchFileItem;
-struct BirchTabItem;
-struct BirchWeatherItem;
+class BirchAttachmentItem;
+class BirchCalendarItem;
+class BirchFileItem;
+class BirchTabItem;
+class BirchWeatherItem;
 
 // Computes a ranking for birch items of various types. The ranking depends on
 // the time of day. The "now" time is a constructor parameter to allow testing.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/birch/birch_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -28,11 +29,41 @@ namespace ash {
 
 namespace {
 
+class TestBirchItem : public BirchItem {
+ public:
+  TestBirchItem(const std::u16string& title,
+                const std::u16string& subtitle,
+                const std::optional<std::u16string>& secondary_action)
+      : BirchItem(title, subtitle) {
+    if (secondary_action) {
+      set_secondary_action(*secondary_action);
+    }
+  }
+  TestBirchItem(const BirchItem&) = delete;
+  const BirchItem& operator=(const BirchItem&) = delete;
+  ~TestBirchItem() override = default;
+
+  // BirchItem:
+  const char* GetItemType() const override { return "Test"; }
+  std::string ToString() const override {
+    return std::string("Test item ") + base::UTF16ToUTF8(title());
+  }
+  void PerformAction() override {}
+  void PerformSecondaryAction() override {}
+  void LoadIcon(LoadIconCallback callback) const override {
+    std::move(callback).Run(
+        ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20));
+  }
+};
+
 // Add one chip with title, subtitle and an icon to the given `birch_bar_view`.
-void AddOneChipToBirchBar(BirchBarView* birch_bar_view) {
+void AddOneChipToBirchBar(
+    BirchBarView* birch_bar_view,
+    const std::u16string& title,
+    const std::u16string& subtitle,
+    const std::optional<std::u16string>& secondary_action) {
   birch_bar_view->AddChip(
-      ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20),
-      u"Title", u"subtitle", BirchChipButton::PressedCallback());
+      std::make_unique<TestBirchItem>(title, subtitle, secondary_action));
 }
 
 }  // namespace
@@ -236,7 +267,12 @@ TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
 
   // Add chips to the bar in landscape mode.
   for (int i = 0; i < 4; i++) {
-    AddOneChipToBirchBar(birch_bar_view);
+    std::optional<std::u16string> secondary_action;
+    if (i % 2) {
+      secondary_action = u"add-on";
+    }
+    AddOneChipToBirchBar(birch_bar_view, u"title", u"subtitle",
+                         secondary_action);
     EXPECT_EQ(birch_bar_widget->GetWindowBoundsInScreen(),
               params.expected_landscape_bounds[i]);
   }

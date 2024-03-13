@@ -9,6 +9,7 @@
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
@@ -23,6 +24,8 @@ class Widget;
 }  // namespace views
 
 namespace ash {
+
+class BirchItem;
 
 // The birch chips bar container holds up to four birch chips. It has a
 // responsive layout to adjust the chips position according to the number of
@@ -80,13 +83,7 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
   // Adds a new birch chip to the bar.
   // TODO(zxdan): move the function to private when using model and replace the
   // arguments with chip data structure.
-  void AddChip(const ui::ImageModel& icon,
-               const std::u16string& title,
-               const std::u16string& sub_title,
-               views::Button::PressedCallback callback,
-               std::optional<std::u16string> button_title = std::nullopt,
-               std::optional<views::Button::PressedCallback> button_callback =
-                   std::nullopt);
+  void AddChip(std::unique_ptr<BirchItem> birch_item);
 
   // BirchChipButton::Delegate:
   void RemoveChip(BirchChipButton* chip) override;
@@ -101,6 +98,10 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
     kOneByFour,
     kTwoByTwo,
   };
+
+  // Called in response to birch item fetch requested from birch mode.
+  // Adds chips for top items present in the birch model.
+  void AddChipsFromBirchModel();
 
   // Calculates the chip size according to current shelf position and display
   // size.
@@ -136,6 +137,8 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
 
   base::RepeatingCallbackList<RelayoutCallback::RunType>
       relayout_callback_list_;
+
+  base::WeakPtrFactory<BirchBarView> weak_factory_{this};
 };
 
 }  // namespace ash

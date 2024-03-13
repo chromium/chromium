@@ -19,6 +19,7 @@ class Label;
 
 namespace ash {
 
+class BirchItem;
 class PillButton;
 
 // A compact view of an app, displaying its icon, name, a brief description, and
@@ -43,9 +44,7 @@ class BirchChipButton : public views::Button,
   ~BirchChipButton() override;
 
   // Chip configuration methods.
-  void SetIconImage(const ui::ImageModel& icon_image);
-  void SetTitleText(const std::u16string& title);
-  void SetSubtitleText(const std::u16string& subtitle);
+  void SetBirchItem(std::unique_ptr<BirchItem> item);
 
   template <typename T>
   T* SetAddon(std::unique_ptr<T> addon_view) {
@@ -70,6 +69,14 @@ class BirchChipButton : public views::Button,
   // The callback when the removal button or removal panel is pressed.
   void OnRemoveComponentPressed();
 
+  // Sets the item icon.
+  void SetIconImage(const ui::ImageModel& icon_image);
+
+  std::unique_ptr<BirchItem> item_;
+
+  // The removal chip context menu controller.
+  std::unique_ptr<RemovalChipMenuController> removal_chip_menu_controller_;
+
   // The components owned by the chip view.
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
@@ -79,14 +86,11 @@ class BirchChipButton : public views::Button,
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
-  // The removal chip context menu controller.
-  std::unique_ptr<RemovalChipMenuController> removal_chip_menu_controller_;
+  base::WeakPtrFactory<BirchChipButton> weak_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, views::Button)
-VIEW_BUILDER_PROPERTY(const ui::ImageModel&, IconImage)
-VIEW_BUILDER_PROPERTY(const std::u16string&, TitleText)
-VIEW_BUILDER_PROPERTY(const std::u16string&, SubtitleText)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<BirchItem>, BirchItem)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, Addon)
 VIEW_BUILDER_PROPERTY(BirchChipButton::Delegate*, Delegate)
 END_VIEW_BUILDER

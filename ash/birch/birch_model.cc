@@ -212,7 +212,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   // Sort items by ranking.
   std::sort(all_items.begin(), all_items.end(),
             [](const auto& item_a, const auto& item_b) {
-              return item_a->ranking < item_b->ranking;
+              return item_a->ranking() < item_b->ranking();
             });
 
   return all_items;
@@ -232,7 +232,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetItemsForDisplay() {
   // done after the resize() for efficiency. The unranked items are sorted to
   // the end, so the resize() has likely already removed them.
   std::erase_if(results, [](const auto& item) {
-    return item->ranking == std::numeric_limits<float>::max();
+    return item->ranking() == std::numeric_limits<float>::max();
   });
 
   return results;

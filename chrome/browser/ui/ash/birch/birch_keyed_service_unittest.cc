@@ -57,9 +57,6 @@ constexpr char kExampleURL2[] = "http://www.example.com/2";
 constexpr char16_t kTabTitle1[] = u"Tab Title 1";
 constexpr char16_t kTabTitle2[] = u"Tab Title 2";
 
-constexpr int kLastVersionWithReleaseNotes =
-    ash::kLastChromeVersionWithReleaseNotes;
-
 std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
     const std::string& session_name,
     const std::string& session_tag,
@@ -392,15 +389,15 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   auto& tabs = Shell::Get()->birch_model()->GetTabsForTest();
   ASSERT_EQ(tabs.size(), 2u);
 
-  EXPECT_EQ(tabs[0].title, kTabTitle1);
-  EXPECT_EQ(tabs[0].url, GURL(kExampleURL1));
-  EXPECT_EQ(tabs[0].session_name, kSessionName1);
-  EXPECT_EQ(tabs[0].form_factor, BirchTabItem::DeviceFormFactor::kDesktop);
+  EXPECT_EQ(tabs[0].title(), kTabTitle1);
+  EXPECT_EQ(tabs[0].url(), GURL(kExampleURL1));
+  EXPECT_EQ(tabs[0].session_name(), kSessionName1);
+  EXPECT_EQ(tabs[0].form_factor(), BirchTabItem::DeviceFormFactor::kDesktop);
 
-  EXPECT_EQ(tabs[1].title, kTabTitle2);
-  EXPECT_EQ(tabs[1].url, GURL(kExampleURL2));
-  EXPECT_EQ(tabs[1].session_name, kSessionName2);
-  EXPECT_EQ(tabs[1].form_factor, BirchTabItem::DeviceFormFactor::kPhone);
+  EXPECT_EQ(tabs[1].title(), kTabTitle2);
+  EXPECT_EQ(tabs[1].url(), GURL(kExampleURL2));
+  EXPECT_EQ(tabs[1].session_name(), kSessionName2);
+  EXPECT_EQ(tabs[1].form_factor(), BirchTabItem::DeviceFormFactor::kPhone);
 }
 
 TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
@@ -421,11 +418,9 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   auto& release_notes_items = model->GetReleaseNotesItemsForTest();
 
   ASSERT_EQ(release_notes_items.size(), 1u);
-  EXPECT_EQ(release_notes_items[0].title, u"Welcome to version");
-  EXPECT_EQ(release_notes_items[0].milestone, kLastVersionWithReleaseNotes);
-  EXPECT_EQ(release_notes_items[0].release_notes_text,
-            u"Learn what's new in explore");
-  EXPECT_EQ(release_notes_items[0].url, GURL("chrome://help-app/updates"));
+  EXPECT_EQ(release_notes_items[0].title(), u"Welcome to version");
+  EXPECT_EQ(release_notes_items[0].subtitle(), u"Learn what's new in explore");
+  EXPECT_EQ(release_notes_items[0].url(), GURL("chrome://help-app/updates"));
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
             3);

@@ -75,22 +75,20 @@ void BirchCalendarProvider::OnEventsFetched(
     if (!item) {
       continue;
     }
+
     // Convert the data from google_apis format to birch format.
-    BirchCalendarItem birch_item(base::UTF8ToUTF16(item->summary()));
-    birch_item.start_time = item->start_time().date_time();
-    birch_item.end_time = item->end_time().date_time();
-    birch_item.calendar_url = GURL(item->html_link());
-    birch_item.conference_url = item->conference_data_uri();
+    BirchCalendarItem birch_item(
+        base::UTF8ToUTF16(item->summary()), item->start_time().date_time(),
+        item->end_time().date_time(), GURL(item->html_link()),
+        item->conference_data_uri());
     calendar_items.push_back(std::move(birch_item));
 
     // Attachments are stored as separate items.
     for (const auto& attachment : item->attachments()) {
       BirchAttachmentItem birch_attachment(
-          base::UTF8ToUTF16(attachment.title()));
-      birch_attachment.file_url = attachment.file_url();
-      birch_attachment.icon_url = attachment.icon_link();
-      birch_attachment.start_time = birch_item.start_time;
-      birch_attachment.end_time = birch_item.end_time;
+          base::UTF8ToUTF16(attachment.title()), attachment.file_url(),
+          attachment.icon_link(), item->start_time().date_time(),
+          item->end_time().date_time());
       attachment_items.push_back(std::move(birch_attachment));
     }
   }

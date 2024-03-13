@@ -45,10 +45,9 @@ void BirchReleaseNotesProvider::RequestBirchDataFetch() {
 
   // TODO(b/325472224): Upgrade to V1, which includes dynamic feature titles
   // and images.
-  items.emplace_back(
-      u"Welcome to version", ash::kLastChromeVersionWithReleaseNotes,
-      u"Learn what's new in explore", GURL("chrome://help-app/updates"),
-      first_seen_time_.value_or(base::Time::Min()));
+  items.emplace_back(u"Welcome to version", u"Learn what's new in explore",
+                     GURL("chrome://help-app/updates"),
+                     first_seen_time_.value_or(base::Time::Min()));
 
   Shell::Get()->birch_model()->SetReleaseNotesItems(std::move(items));
 }

@@ -84,12 +84,12 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents) {
   // Verify the events were inserted into the birch model.
   const auto& items = Shell::Get()->birch_model()->GetCalendarItemsForTest();
   ASSERT_EQ(2u, items.size());
-  EXPECT_EQ(items[0].title, u"title_0");
-  EXPECT_EQ(items[0].start_time, TimeFromString("10 Jan 2010 10:00 GMT"));
-  EXPECT_EQ(items[0].end_time, TimeFromString("10 Jan 2010 11:00 GMT"));
-  EXPECT_EQ(items[1].title, u"title_1");
-  EXPECT_EQ(items[1].start_time, TimeFromString("11 Jan 2010 10:00 GMT"));
-  EXPECT_EQ(items[1].end_time, TimeFromString("11 Jan 2010 11:00 GMT"));
+  EXPECT_EQ(items[0].title(), u"title_0");
+  EXPECT_EQ(items[0].start_time(), TimeFromString("10 Jan 2010 10:00 GMT"));
+  EXPECT_EQ(items[0].end_time(), TimeFromString("10 Jan 2010 11:00 GMT"));
+  EXPECT_EQ(items[1].title(), u"title_1");
+  EXPECT_EQ(items[1].start_time(), TimeFromString("11 Jan 2010 10:00 GMT"));
+  EXPECT_EQ(items[1].end_time(), TimeFromString("11 Jan 2010 11:00 GMT"));
 }
 
 TEST_F(BirchCalendarProviderTest, GetCalendarEvents_WithAttachments) {
@@ -122,19 +122,19 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_WithAttachments) {
   auto* birch_model = Shell::Get()->birch_model();
   const auto& items = birch_model->GetCalendarItemsForTest();
   ASSERT_EQ(1u, items.size());
-  EXPECT_EQ(items[0].title, u"title_0");
-  EXPECT_EQ(items[0].start_time, TimeFromString("10 Jan 2010 10:00 GMT"));
-  EXPECT_EQ(items[0].end_time, TimeFromString("10 Jan 2010 11:00 GMT"));
-  EXPECT_EQ(items[0].conference_url.spec(), "http://meet.com/");
+  EXPECT_EQ(items[0].title(), u"title_0");
+  EXPECT_EQ(items[0].start_time(), TimeFromString("10 Jan 2010 10:00 GMT"));
+  EXPECT_EQ(items[0].end_time(), TimeFromString("10 Jan 2010 11:00 GMT"));
+  EXPECT_EQ(items[0].conference_url().spec(), "http://meet.com/");
 
   // Verify the attachments were converted correctly to Birch data types.
   const auto& attachments = birch_model->GetAttachmentItemsForTest();
-  EXPECT_EQ(attachments[0].title, u"attachment0");
-  EXPECT_EQ(attachments[0].file_url.spec(), "http://file0.com/");
-  EXPECT_EQ(attachments[0].icon_url.spec(), "http://icon0.com/");
-  EXPECT_EQ(attachments[1].title, u"attachment1");
-  EXPECT_EQ(attachments[1].file_url.spec(), "http://file1.com/");
-  EXPECT_EQ(attachments[1].icon_url.spec(), "http://icon1.com/");
+  EXPECT_EQ(attachments[0].title(), u"attachment0");
+  EXPECT_EQ(attachments[0].file_url().spec(), "http://file0.com/");
+  EXPECT_EQ(attachments[0].icon_url().spec(), "http://icon0.com/");
+  EXPECT_EQ(attachments[1].title(), u"attachment1");
+  EXPECT_EQ(attachments[1].file_url().spec(), "http://file1.com/");
+  EXPECT_EQ(attachments[1].icon_url().spec(), "http://icon1.com/");
 }
 
 TEST_F(BirchCalendarProviderTest, GetCalendarEvents_HttpError) {
@@ -143,7 +143,9 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_HttpError) {
   // Populate the birch model with an event so the test can sense when the
   // model is cleared later.
   std::vector<BirchCalendarItem> items;
-  items.emplace_back(u"Event 1");
+  items.emplace_back(u"Event 1", /*start_time=*/base::Time(),
+                     /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
+                     /*conference_url=*/GURL());
   Shell::Get()->birch_model()->SetCalendarItems(std::move(items));
 
   // Set up a customer fetcher that returns an error.
@@ -164,7 +166,9 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_NullEventList) {
   // Populate the birch model with an event so the test can sense when the
   // model is cleared later.
   std::vector<BirchCalendarItem> items;
-  items.emplace_back(u"Event 1");
+  items.emplace_back(u"Event 1", /*start_time=*/base::Time(),
+                     /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
+                     /*conference_url=*/GURL());
   Shell::Get()->birch_model()->SetCalendarItems(std::move(items));
 
   // Set up a customer fetcher that returns a null event list.

@@ -56,20 +56,29 @@ TEST(BirchRankerTest, RankCalendarItems_Morning) {
   ASSERT_TRUE(ranker.IsMorning());
 
   // Create an ongoing event (8:00 - 11:00).
-  BirchCalendarItem item0(u"Ongoing");
-  item0.start_time = TimeFromString("22 Feb 2024 08:00 UTC");
-  item0.end_time = TimeFromString("22 Feb 2024 11:00 UTC");
+  BirchCalendarItem item0(
+      u"Ongoing",
+      /*start_time=*/TimeFromString("22 Feb 2024 08:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 11:00 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL());
 
   // Create an upcoming event (10:00 - 10:30).
-  BirchCalendarItem item1(u"Upcoming");
-  item1.start_time = TimeFromString("22 Feb 2024 10:00 UTC");
-  item1.end_time = TimeFromString("22 Feb 2024 10:30 UTC");
+  BirchCalendarItem item1(
+      u"Upcoming",
+      /*start_time=*/TimeFromString("22 Feb 2024 10:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 10:30 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL());
 
   // Create another event later in the day. It isn't the first one, so it won't
   // be ranked.
-  BirchCalendarItem item2(u"Generic");
-  item2.start_time = TimeFromString("22 Feb 2024 13:00 UTC");
-  item2.end_time = TimeFromString("22 Feb 2024 13:30 UTC");
+  BirchCalendarItem item2(
+      u"Generic",
+      /*start_time=*/TimeFromString("22 Feb 2024 13:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 13:30 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL());
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -80,11 +89,11 @@ TEST(BirchRankerTest, RankCalendarItems_Morning) {
   ASSERT_EQ(3u, items.size());
 
   // The ongoing and upcoming events have the same ranking.
-  EXPECT_FLOAT_EQ(items[0].ranking, 6.f);
-  EXPECT_FLOAT_EQ(items[1].ranking, 6.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 6.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 6.f);
 
   // The generic event wasn't ranked, so has the default value for ranking.
-  EXPECT_FLOAT_EQ(items[2].ranking, std::numeric_limits<float>::max());
+  EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
 }
 
 TEST(BirchRankerTest, RankCalendarItems_Evening) {
@@ -96,19 +105,28 @@ TEST(BirchRankerTest, RankCalendarItems_Evening) {
   ASSERT_TRUE(ranker.IsEvening());
 
   // Create an event starting in the next 30 minutes (6:15 PM).
-  BirchCalendarItem item0(u"Soon");
-  item0.start_time = TimeFromString("22 Feb 2024 18:15 UTC");
-  item0.end_time = TimeFromString("22 Feb 2024 18:45 UTC");
+  BirchCalendarItem item0(
+      u"Soon",
+      /*start_time=*/TimeFromString("22 Feb 2024 18:15 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 18:45 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL());
 
   // Create an event starting more than 30 minutes from now (7 PM).
-  BirchCalendarItem item1(u"Later");
-  item1.start_time = TimeFromString("22 Feb 2024 19:00 UTC");
-  item1.end_time = TimeFromString("22 Feb 2024 19:30 UTC");
+  BirchCalendarItem item1(
+      u"Later",
+      /*start_time=*/TimeFromString("22 Feb 2024 19:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 19:30 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL());
 
   // Create an event for 9 AM tomorrow morning.
-  BirchCalendarItem item2(u"Tomorrow");
-  item2.start_time = TimeFromString("23 Feb 2024 09:00 UTC");
-  item2.end_time = TimeFromString("23 Feb 2024 09:30 UTC");
+  BirchCalendarItem item2(
+      u"Tomorrow",
+      /*start_time=*/TimeFromString("23 Feb 2024 09:00 UTC"),
+      /*end_time=*/TimeFromString("23 Feb 2024 09:30 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL());
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -119,13 +137,13 @@ TEST(BirchRankerTest, RankCalendarItems_Evening) {
   ASSERT_EQ(3u, items.size());
 
   // The soon event has a ranking.
-  EXPECT_FLOAT_EQ(items[0].ranking, 12.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 12.f);
 
   // The later event has no ranking, it was too far in the future.
-  EXPECT_FLOAT_EQ(items[1].ranking, std::numeric_limits<float>::max());
+  EXPECT_FLOAT_EQ(items[1].ranking(), std::numeric_limits<float>::max());
 
   // The tomorrow event has a ranking.
-  EXPECT_FLOAT_EQ(items[2].ranking, 25.f);
+  EXPECT_FLOAT_EQ(items[2].ranking(), 25.f);
 }
 
 TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
@@ -136,9 +154,11 @@ TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
   BirchRanker ranker(now);
 
   // Create an ongoing event (2 PM to 4 PM).
-  BirchCalendarItem item(u"Ongoing");
-  item.start_time = TimeFromString("22 Feb 2024 14:00 UTC");
-  item.end_time = TimeFromString("22 Feb 2024 16:00 UTC");
+  BirchCalendarItem item(u"Ongoing",
+                         /*start_time=*/TimeFromString("22 Feb 2024 14:00 UTC"),
+                         /*end_time=*/TimeFromString("22 Feb 2024 16:00 UTC"),
+                         /*calendar_url=*/GURL(),
+                         /*conference_url=*/GURL());
   std::vector<BirchCalendarItem> items = {item};
 
   ranker.RankCalendarItems(&items);
@@ -146,7 +166,7 @@ TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
   ASSERT_EQ(1u, items.size());
 
   // The ongoing event has a ranking.
-  EXPECT_FLOAT_EQ(items[0].ranking, 9.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 9.f);
 }
 
 TEST(BirchRankerTest, RankAttachmentItems_Morning) {
@@ -158,19 +178,28 @@ TEST(BirchRankerTest, RankAttachmentItems_Morning) {
   ASSERT_TRUE(ranker.IsMorning());
 
   // Create an attachment for an ongoing event (8 AM to 10 AM).
-  BirchAttachmentItem item0(u"Ongoing");
-  item0.start_time = TimeFromString("22 Feb 2024 08:00 UTC");
-  item0.end_time = TimeFromString("22 Feb 2024 10:00 UTC");
+  BirchAttachmentItem item0(
+      u"Ongoing",
+      /*file_url=*/GURL(),
+      /*icon_url=*/GURL(),
+      /*start_time=*/TimeFromString("22 Feb 2024 08:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 10:00 UTC"));
 
   // Create an attachment for an upcoming event (9:15 to 9:45).
-  BirchAttachmentItem item1(u"Upcoming");
-  item1.start_time = TimeFromString("22 Feb 2024 9:15 UTC");
-  item1.end_time = TimeFromString("22 Feb 2024 9:45 UTC");
+  BirchAttachmentItem item1(
+      u"Upcoming",
+      /*file_url=*/GURL(),
+      /*icon_url=*/GURL(),
+      /*start_time=*/TimeFromString("22 Feb 2024 09:15 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 09:45 UTC"));
 
   // Create an attachment for another event later in the day (1 PM).
-  BirchAttachmentItem item2(u"Later");
-  item2.start_time = TimeFromString("22 Feb 2024 13:00 UTC");
-  item2.end_time = TimeFromString("22 Feb 2024 13:30 UTC");
+  BirchAttachmentItem item2(
+      u"Later",
+      /*file_url=*/GURL(),
+      /*icon_url=*/GURL(),
+      /*start_time=*/TimeFromString("22 Feb 2024 13:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 13:30 UTC"));
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -181,13 +210,13 @@ TEST(BirchRankerTest, RankAttachmentItems_Morning) {
   ASSERT_EQ(3u, items.size());
 
   // The ongoing event's item has a high priority.
-  EXPECT_FLOAT_EQ(items[0].ranking, 7.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 7.f);
 
   // The upcoming event's item has a medium priority.
-  EXPECT_FLOAT_EQ(items[1].ranking, 13.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 13.f);
 
   // The later event's item wasn't ranked, so has the default value.
-  EXPECT_FLOAT_EQ(items[2].ranking, std::numeric_limits<float>::max());
+  EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
 }
 
 TEST(BirchRankerTest, RankAttachmentItems_Evening) {
@@ -199,19 +228,28 @@ TEST(BirchRankerTest, RankAttachmentItems_Evening) {
   ASSERT_TRUE(ranker.IsEvening());
 
   // Create an attachment for an ongoing event (5 PM to 7 PM).
-  BirchAttachmentItem item0(u"Ongoing");
-  item0.start_time = TimeFromString("22 Feb 2024 17:00 UTC");
-  item0.end_time = TimeFromString("22 Feb 2024 19:00 UTC");
+  BirchAttachmentItem item0(
+      u"Ongoing",
+      /*file_url=*/GURL(),
+      /*icon_url=*/GURL(),
+      /*start_time=*/TimeFromString("22 Feb 2024 17:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 19:00 UTC"));
 
   // Create an attachment for an upcoming event (6:15 PM).
-  BirchAttachmentItem item1(u"Upcoming");
-  item1.start_time = TimeFromString("22 Feb 2024 18:15 UTC");
-  item1.end_time = TimeFromString("22 Feb 2024 18:45 UTC");
+  BirchAttachmentItem item1(
+      u"Upcoming",
+      /*file_url=*/GURL(),
+      /*icon_url=*/GURL(),
+      /*start_time=*/TimeFromString("22 Feb 2024 18:15 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 18:45 UTC"));
 
   // Create an attachment for another event later in the evening (8 PM).
-  BirchAttachmentItem item2(u"Later");
-  item2.start_time = TimeFromString("22 Feb 2024 20:00 UTC");
-  item2.end_time = TimeFromString("22 Feb 2024 20:30 UTC");
+  BirchAttachmentItem item2(
+      u"Later",
+      /*file_url=*/GURL(),
+      /*icon_url=*/GURL(),
+      /*start_time=*/TimeFromString("22 Feb 2024 20:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 20:30 UTC"));
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -222,13 +260,13 @@ TEST(BirchRankerTest, RankAttachmentItems_Evening) {
   ASSERT_EQ(3u, items.size());
 
   // The ongoing event's item has a medium priority.
-  EXPECT_FLOAT_EQ(items[0].ranking, 10.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 10.f);
 
   // The upcoming event's item has a lower priority.
-  EXPECT_FLOAT_EQ(items[1].ranking, 13.f);
+  EXPECT_FLOAT_EQ(items[1].ranking(), 13.f);
 
   // The later event's item wasn't ranked, so has the default value.
-  EXPECT_FLOAT_EQ(items[2].ranking, std::numeric_limits<float>::max());
+  EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
 }
 
 TEST(BirchRankerTest, RankFileSuggestItems) {
@@ -239,19 +277,19 @@ TEST(BirchRankerTest, RankFileSuggestItems) {
   BirchRanker ranker(now);
 
   // Create a file shared in the last hour.
-  BirchFileItem item0(base::FilePath("/item0"),
+  BirchFileItem item0(base::FilePath("/item0"), u"suggested",
                       TimeFromString("22 Feb 2024 08:45 UTC"));
 
   // Create a file shared in the last day.
-  BirchFileItem item1(base::FilePath("/item1"),
+  BirchFileItem item1(base::FilePath("/item1"), u"suggested",
                       TimeFromString("21 Feb 2024 09:15 UTC"));
 
   // Create a file shared in the last week.
-  BirchFileItem item2(base::FilePath("/item2"),
+  BirchFileItem item2(base::FilePath("/item2"), u"suggested",
                       TimeFromString("15 Feb 2024 09:15 UTC"));
 
   // Create a file shared more than a week ago.
-  BirchFileItem item3(base::FilePath("/item3"),
+  BirchFileItem item3(base::FilePath("/item3"), u"suggested",
                       TimeFromString("14 Feb 2024 09:15 UTC"));
 
   // Put the items in the vector in reverse order to validate that they are
@@ -263,20 +301,20 @@ TEST(BirchRankerTest, RankFileSuggestItems) {
   ASSERT_EQ(4u, items.size());
 
   // The file shared in the last hour has high priority.
-  EXPECT_EQ(items[0].file_path.MaybeAsASCII(), "/item0");
-  EXPECT_FLOAT_EQ(items[0].ranking, 19.f);
+  EXPECT_EQ(items[0].title(), u"item0");
+  EXPECT_FLOAT_EQ(items[0].ranking(), 19.f);
 
   // The file shared in the last day has medium priority.
-  EXPECT_EQ(items[1].file_path.MaybeAsASCII(), "/item1");
-  EXPECT_FLOAT_EQ(items[1].ranking, 32.f);
+  EXPECT_EQ(items[1].title(), u"item1");
+  EXPECT_FLOAT_EQ(items[1].ranking(), 32.f);
 
   // The file shared in the last week has low priority.
-  EXPECT_EQ(items[2].file_path.MaybeAsASCII(), "/item2");
-  EXPECT_FLOAT_EQ(items[2].ranking, 40.f);
+  EXPECT_EQ(items[2].title(), u"item2");
+  EXPECT_FLOAT_EQ(items[2].ranking(), 40.f);
 
   // The file shared more than a week ago wasn't ranked.
-  EXPECT_EQ(items[3].file_path.MaybeAsASCII(), "/item3");
-  EXPECT_FLOAT_EQ(items[3].ranking, std::numeric_limits<float>::max());
+  EXPECT_EQ(items[3].title(), u"item3");
+  EXPECT_FLOAT_EQ(items[3].ranking(), std::numeric_limits<float>::max());
 }
 
 TEST(BirchRankerTest, RankRecentTabItems) {
@@ -311,20 +349,20 @@ TEST(BirchRankerTest, RankRecentTabItems) {
   ASSERT_EQ(4u, items.size());
 
   // The tab with a timestamp in the last 5 minutes has high priority.
-  EXPECT_EQ(items[0].title, u"item0");
-  EXPECT_FLOAT_EQ(items[0].ranking, 14.f);
+  EXPECT_EQ(items[0].title(), u"item0");
+  EXPECT_FLOAT_EQ(items[0].ranking(), 14.f);
 
   // The tab with a timestamp in the last hour has medium priority.
-  EXPECT_EQ(items[1].title, u"item1");
-  EXPECT_FLOAT_EQ(items[1].ranking, 17.f);
+  EXPECT_EQ(items[1].title(), u"item1");
+  EXPECT_FLOAT_EQ(items[1].ranking(), 17.f);
 
   // The tab with a timestamp in the last day has low priority.
-  EXPECT_EQ(items[2].title, u"item2");
-  EXPECT_FLOAT_EQ(items[2].ranking, 30.f);
+  EXPECT_EQ(items[2].title(), u"item2");
+  EXPECT_FLOAT_EQ(items[2].ranking(), 30.f);
 
   // The tab with a timestamp more than a day ago wasn't ranked.
-  EXPECT_EQ(items[3].title, u"item3");
-  EXPECT_FLOAT_EQ(items[3].ranking, std::numeric_limits<float>::max());
+  EXPECT_EQ(items[3].title(), u"item3");
+  EXPECT_FLOAT_EQ(items[3].ranking(), std::numeric_limits<float>::max());
 }
 
 TEST(BirchRankerTest, RankWeatherItems_Morning) {
@@ -344,7 +382,7 @@ TEST(BirchRankerTest, RankWeatherItems_Morning) {
   ASSERT_EQ(1u, items.size());
 
   // The item had a ranking assigned.
-  EXPECT_FLOAT_EQ(items[0].ranking, 5.f);
+  EXPECT_FLOAT_EQ(items[0].ranking(), 5.f);
 }
 
 TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
@@ -364,7 +402,7 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
   ASSERT_EQ(1u, items.size());
 
   // The item did not have a ranking assigned.
-  EXPECT_FLOAT_EQ(items[0].ranking, std::numeric_limits<float>::max());
+  EXPECT_FLOAT_EQ(items[0].ranking(), std::numeric_limits<float>::max());
 }
 
 }  // namespace

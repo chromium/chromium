@@ -6,12 +6,13 @@
 
 #include <vector>
 
+#include "ash/birch/birch_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_settings.h"
 #include "ash/shelf/shelf.h"
-#include "ash/style/pill_button.h"
+#include "ash/shell.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -80,6 +81,8 @@ BirchBarView::BirchBarView(aura::Window* root_window)
                        .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
                        .SetBetweenChildSpacing(kChipSpacing))
       .BuildChildren();
+  Shell::Get()->birch_model()->RequestBirchDataFetch(base::BindOnce(
+      &BirchBarView::AddChipsFromBirchModel, weak_factory_.GetWeakPtr()));
 }
 
 BirchBarView::~BirchBarView() = default;
@@ -118,36 +121,34 @@ base::CallbackListSubscription BirchBarView::AddRelayoutCallback(
   return relayout_callback_list_.Add(std::move(callback));
 }
 
+void BirchBarView::AddChipsFromBirchModel() {
+  std::vector<std::unique_ptr<BirchItem>> items =
+      Shell::Get()->birch_model()->GetAllItems();
+
+  int added_items = 0;
+  for (auto& item : items) {
+    AddChip(std::move(item));
+    ++added_items;
+    if (added_items == kMaxChipsNum) {
+      break;
+    }
+  }
+}
 int BirchBarView::GetChipsNum() const {
   return chips_.size();
 }
 
-void BirchBarView::AddChip(
-    const ui::ImageModel& icon,
-    const std::u16string& title,
-    const std::u16string& sub_title,
-    views::Button::PressedCallback callback,
-    std::optional<std::u16string> button_title,
-    std::optional<views::Button::PressedCallback> button_callback) {
+void BirchBarView::AddChip(std::unique_ptr<BirchItem> item) {
   if (static_cast<int>(chips_.size()) == kMaxChipsNum) {
     NOTREACHED() << "The number of birch chips reaches the limit of 4";
     return;
   }
 
   auto chip = views::Builder<BirchChipButton>()
-                  .SetIconImage(icon)
-                  .SetTitleText(title)
-                  .SetSubtitleText(sub_title)
-                  .SetCallback(std::move(callback))
+                  .SetBirchItem(std::move(item))
                   .SetDelegate(this)
                   .SetPreferredSize(chip_size_)
                   .Build();
-  if (button_title.has_value() && button_callback.has_value()) {
-    auto* button = chip->SetAddon(
-        std::make_unique<PillButton>(std::move(*button_callback), *button_title,
-                                     PillButton::Type::kPrimaryWithoutIcon));
-    button->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 16));
-  }
 
   // Attach the chip to the secondary row if it is not empty, otherwise, to the
   // primary row.
