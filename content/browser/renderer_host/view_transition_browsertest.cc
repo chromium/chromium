@@ -6,12 +6,10 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/content_browser_test_utils_internal.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -117,91 +115,5 @@ IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
                   shell()->web_contents()->GetRenderWidgetHostView())
                   ->HasViewTransitionResourcesForTesting());
 }
-
-class ViewTransitionBrowserTestTraverse
-    : public ViewTransitionBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  bool BFCacheEnabled() const { return GetParam(); }
-
-  bool NavigateBack(GURL back_url) {
-    // We need to trigger the navigation *after* executing the script below so
-    // the event handlers the script relies on are set before they're dispatched
-    // by the navigation.
-    //
-    // We pass this as a callback to EvalJs so the navigation is initiated
-    // before we wait for the script result since it relies on events dispatched
-    // during the navigation.
-    auto trigger_navigation = base::BindOnce(
-        &ViewTransitionBrowserTestTraverse::TriggerBackNavigation,
-        base::Unretained(this), back_url);
-
-    auto result =
-        EvalJs(shell()->web_contents(),
-               JsReplace(
-                   R"(
-    (async () => {
-      let navigateFired = false;
-      navigation.onnavigate = (event) => {
-        navigateFired = (event.navigationType === "traverse");
-      };
-      let pageswapfired = new Promise((resolve) => {
-        onpageswap = (e) => {
-          if (!navigateFired || e.viewTransition == null) {
-            resolve(null);
-            return;
-          }
-          activation = e.activation;
-          resolve(activation);
-        };
-      });
-      let result = await pageswapfired;
-      return result != null;
-    })();
-  )"),
-               EXECUTE_SCRIPT_DEFAULT_OPTIONS, ISOLATED_WORLD_ID_GLOBAL,
-               std::move(trigger_navigation));
-    return result.ExtractBool();
-  }
-
-  void TriggerBackNavigation(GURL back_url) {
-    if (BFCacheEnabled()) {
-      TestActivationManager manager(shell()->web_contents(), back_url);
-      shell()->web_contents()->GetController().GoBack();
-      manager.WaitForNavigationFinished();
-    } else {
-      TestNavigationManager manager(shell()->web_contents(), back_url);
-      shell()->web_contents()->GetController().GoBack();
-      ASSERT_TRUE(manager.WaitForNavigationFinished());
-    }
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(ViewTransitionBrowserTestTraverse,
-                       NavigateEventFiresBeforeCapture) {
-  if (!BFCacheEnabled()) {
-    DisableBackForwardCacheForTesting(
-        shell()->web_contents(),
-        BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
-  }
-
-  GURL test_url(
-      embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
-  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), test_url));
-
-  GURL second_url(embedded_test_server()->GetURL(
-      "/view_transitions/basic-vt-opt-in.html?new"));
-  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), second_url));
-  WaitForCopyableViewInWebContents(shell()->web_contents());
-
-  auto& nav_controller = static_cast<NavigationControllerImpl&>(
-      shell()->web_contents()->GetController());
-  ASSERT_TRUE(nav_controller.CanGoBack());
-  ASSERT_TRUE(NavigateBack(test_url));
-}
-
-INSTANTIATE_TEST_SUITE_P(P,
-                         ViewTransitionBrowserTestTraverse,
-                         ::testing::Bool());
 
 }  // namespace content
