@@ -236,6 +236,22 @@ OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy) const {
                  base::SysNSStringToUTF16(urls_and_titles.firstObject.title)};
 }
 
+std::optional<std::vector<GURL>> OSExchangeDataProviderMac::GetURLs(
+    FilenameToURLPolicy policy) const {
+  NSArray<URLAndTitle*>* urls_and_titles =
+      clipboard_util::URLsAndTitlesFromPasteboard(
+          GetPasteboard(), policy == FilenameToURLPolicy::CONVERT_FILENAMES);
+  if (!urls_and_titles.count) {
+    return std::nullopt;
+  }
+
+  std::vector<GURL> local_urls;
+  for (URLAndTitle* url_and_title in urls_and_titles) {
+    local_urls.emplace_back(base::SysNSStringToUTF8(url_and_title.URL));
+  }
+  return local_urls;
+}
+
 bool OSExchangeDataProviderMac::GetFilenames(
     std::vector<FileInfo>* filenames) const {
   std::vector<FileInfo> files =

@@ -116,15 +116,15 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   void SetPickledData(const ClipboardFormatType& format,
                       const base::Pickle& data);
 
-  // These functions retrieve data of the specified type. If data exists, the
-  // functions return and the result is in the out parameter. If the data does
-  // not exist, the out parameter is not touched. The out parameter cannot be
-  // NULL.
+  // These functions retrieve data of the specified type. If the data is
+  // present, it is returned, and if not, nullopt is returned.
+
   // GetString() returns the plain text representation of the pasteboard
   // contents.
   std::optional<std::u16string> GetString() const;
   using UrlInfo = OSExchangeDataProvider::UrlInfo;
   std::optional<UrlInfo> GetURLAndTitle(FilenameToURLPolicy policy) const;
+  std::optional<std::vector<GURL>> GetURLs(FilenameToURLPolicy policy) const;
   // Return information about the contained files, if any.
   bool GetFilenames(std::vector<FileInfo>* file_names) const;
   bool GetPickledData(const ClipboardFormatType& format,

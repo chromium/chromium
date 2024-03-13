@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
@@ -517,47 +518,89 @@ TEST_F(TabContainerTest, DropIndexForDragLocationIsCorrect) {
       tab_container_->GetGroupViews(group)->header();
 
   using DropIndex = BrowserRootView::DropIndex;
+  using BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup;
+  using BrowserRootView::DropIndex::GroupInclusion::kIncludeInGroup;
+  using BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
 
   // Check dragging near the edge of each tab.
-  EXPECT_EQ((DropIndex{0, true, false}),
-            tab_container_->GetDropIndex(MakeEventForDragLocation(
-                tab1->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{1, true, false}),
-            tab_container_->GetDropIndex(MakeEventForDragLocation(
-                tab1->bounds().right_center() + gfx::Vector2d(-1, 0))));
-  EXPECT_EQ((DropIndex{1, true, true}),
-            tab_container_->GetDropIndex(MakeEventForDragLocation(
-                tab2->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{2, true, false}),
-            tab_container_->GetDropIndex(MakeEventForDragLocation(
-                tab2->bounds().right_center() + gfx::Vector2d(-1, 0))));
-  EXPECT_EQ((DropIndex{2, true, false}),
-            tab_container_->GetDropIndex(MakeEventForDragLocation(
-                tab3->bounds().left_center() + gfx::Vector2d(1, 0))));
-  EXPECT_EQ((DropIndex{3, true, false}),
-            tab_container_->GetDropIndex(MakeEventForDragLocation(
-                tab3->bounds().right_center() + gfx::Vector2d(-1, 0))));
+  EXPECT_EQ((DropIndex{.index = 0,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(tab1->bounds().left_center() +
+                                         gfx::Vector2d(1, 0)),
+                true));
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(tab1->bounds().right_center() +
+                                         gfx::Vector2d(-1, 0)),
+                true));
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(tab2->bounds().left_center() +
+                                         gfx::Vector2d(1, 0)),
+                true));
+  EXPECT_EQ((DropIndex{.index = 2,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(tab2->bounds().right_center() +
+                                         gfx::Vector2d(-1, 0)),
+                true));
+  EXPECT_EQ((DropIndex{.index = 2,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(tab3->bounds().left_center() +
+                                         gfx::Vector2d(1, 0)),
+                true));
+  EXPECT_EQ((DropIndex{.index = 3,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(tab3->bounds().right_center() +
+                                         gfx::Vector2d(-1, 0)),
+                true));
 
   // Check dragging in the center of each tab.
-  EXPECT_EQ((DropIndex{0, false, false}),
+  EXPECT_EQ((DropIndex{.index = 0,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(
-                MakeEventForDragLocation(tab1->bounds().CenterPoint())));
-  EXPECT_EQ((DropIndex{1, false, false}),
+                MakeEventForDragLocation(tab1->bounds().CenterPoint()), true));
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(
-                MakeEventForDragLocation(tab2->bounds().CenterPoint())));
-  EXPECT_EQ((DropIndex{2, false, false}),
+                MakeEventForDragLocation(tab2->bounds().CenterPoint()), true));
+  EXPECT_EQ((DropIndex{.index = 2,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
             tab_container_->GetDropIndex(
-                MakeEventForDragLocation(tab3->bounds().CenterPoint())));
+                MakeEventForDragLocation(tab3->bounds().CenterPoint()), true));
 
   // Check dragging over group header.
   // The left half of the header should drop outside the group.
-  EXPECT_EQ((DropIndex{1, true, false}),
-            tab_container_->GetDropIndex(MakeEventForDragLocation(
-                group_header->bounds().CenterPoint() + gfx::Vector2d(-1, 0))));
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(group_header->bounds().CenterPoint() +
+                                         gfx::Vector2d(-1, 0)),
+                true));
   // The right half of the header should drop inside the group.
-  EXPECT_EQ((DropIndex{1, true, true}),
-            tab_container_->GetDropIndex(MakeEventForDragLocation(
-                group_header->bounds().CenterPoint() + gfx::Vector2d(1, 0))));
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kInsertBeforeIndex,
+                       .group_inclusion = kIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(group_header->bounds().CenterPoint() +
+                                         gfx::Vector2d(1, 0)),
+                true));
 }
 
 TEST_F(TabContainerTest, AccessibilityData) {

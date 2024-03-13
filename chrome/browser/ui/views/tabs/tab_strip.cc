@@ -1940,8 +1940,9 @@ void TabStrip::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-BrowserRootView::DropIndex TabStrip::GetDropIndex(
-    const ui::DropTargetEvent& event) {
+std::optional<BrowserRootView::DropIndex> TabStrip::GetDropIndex(
+    const ui::DropTargetEvent& event,
+    bool allow_replacement) {
   // BrowserView should talk directly to |tab_container_| instead of asking us.
   NOTREACHED_NORETURN();
 }

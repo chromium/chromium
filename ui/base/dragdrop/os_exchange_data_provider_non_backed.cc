@@ -134,6 +134,31 @@ OSExchangeDataProviderNonBacked::GetURLAndTitle(
   return UrlInfo{url_, title_};
 }
 
+std::optional<std::vector<GURL>> OSExchangeDataProviderNonBacked::GetURLs(
+    FilenameToURLPolicy policy) const {
+  std::vector<GURL> local_urls;
+
+  std::optional<UrlInfo> url_info =
+      GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  if (url_info.has_value()) {
+    local_urls.push_back(url_info->url);
+  }
+
+  if (policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
+    std::vector<FileInfo> fileinfos;
+    if (GetFilenames(&fileinfos)) {
+      for (const auto& fileinfo : fileinfos) {
+        local_urls.push_back(net::FilePathToFileURL(fileinfo.path));
+      }
+    }
+  }
+
+  if (local_urls.size()) {
+    return local_urls;
+  }
+  return std::nullopt;
+}
+
 bool OSExchangeDataProviderNonBacked::GetFilenames(
     std::vector<FileInfo>* filenames) const {
   if ((formats_ & OSExchangeData::FILE_NAME) == 0)

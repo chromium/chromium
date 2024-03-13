@@ -291,6 +291,44 @@ XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy) const {
   return std::nullopt;
 }
 
+std::optional<std::vector<GURL>> XOSExchangeDataProvider::GetURLs(
+    FilenameToURLPolicy policy) const {
+  std::vector<GURL> local_urls;
+
+  ui::SelectionData data = format_map_.Get(x11::GetAtom(kMimeTypeURIList));
+  if (data.IsValid()) {
+    std::vector<std::string> tokens = ui::ParseURIList(data);
+    for (const std::string& token : tokens) {
+      GURL test_url(token);
+      if (!test_url.SchemeIsFile() ||
+          policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
+        local_urls.push_back(test_url);
+      }
+    }
+  }
+
+  data = format_map_.Get(x11::GetAtom(kMimeTypeMozillaURL));
+  if (data.IsValid()) {
+    std::u16string unparsed;
+    data.AssignTo(&unparsed);
+
+    // Mozilla URLs are (UTF16: URL, newline, title).
+    std::vector<std::u16string> tokens = base::SplitString(
+        unparsed, u"\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (tokens.size() > 0) {
+      GURL url(tokens[0]);
+      if (!base::Contains(local_urls, url)) {
+        local_urls.push_back(url);
+      }
+    }
+  }
+
+  if (local_urls.size()) {
+    return local_urls;
+  }
+  return std::nullopt;
+}
+
 bool XOSExchangeDataProvider::GetFilenames(
     std::vector<FileInfo>* filenames) const {
   std::vector<x11::Atom> url_atoms = ui::GetURIListAtomsFrom();

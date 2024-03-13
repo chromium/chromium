@@ -252,8 +252,9 @@ class ToolbarView : public views::AccessiblePaneView,
   DownloadToolbarButtonView* GetDownloadButton() override;
 
   // BrowserRootView::DropTarget
-  BrowserRootView::DropIndex GetDropIndex(
-      const ui::DropTargetEvent& event) override;
+  std::optional<BrowserRootView::DropIndex> GetDropIndex(
+      const ui::DropTargetEvent& event,
+      bool allow_replacement) override;
   BrowserRootView::DropTarget* GetDropTarget(
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;

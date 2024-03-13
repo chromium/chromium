@@ -767,8 +767,9 @@ void CompoundTabContainer::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-BrowserRootView::DropIndex CompoundTabContainer::GetDropIndex(
-    const ui::DropTargetEvent& event) {
+std::optional<BrowserRootView::DropIndex> CompoundTabContainer::GetDropIndex(
+    const ui::DropTargetEvent& event,
+    bool allow_replacement) {
   TabContainer* sub_drop_target = GetTabContainerForDrop(event.location());
   CHECK(sub_drop_target);
   CHECK(sub_drop_target->GetDropTarget(
@@ -784,14 +785,16 @@ BrowserRootView::DropIndex CompoundTabContainer::GetDropIndex(
   if (sub_drop_target == base::to_address(pinned_tab_container_)) {
     // Pinned tab container shares an index and coordinate space, so no
     // adjustments needed.
-    return sub_drop_target->GetDropIndex(adjusted_event);
+    return sub_drop_target->GetDropIndex(adjusted_event, allow_replacement);
   } else {
     // For the unpinned container, we need to transform the output to the
     // correct index space.
-    const BrowserRootView::DropIndex sub_target_index =
-        sub_drop_target->GetDropIndex(adjusted_event);
-    return {sub_target_index.value + NumPinnedTabs(),
-            sub_target_index.drop_before, sub_target_index.drop_in_group};
+    const std::optional<BrowserRootView::DropIndex> sub_target_index =
+        sub_drop_target->GetDropIndex(adjusted_event, allow_replacement);
+    return BrowserRootView::DropIndex{
+        .index = sub_target_index->index + NumPinnedTabs(),
+        .relative_to_index = sub_target_index->relative_to_index,
+        .group_inclusion = sub_target_index->group_inclusion};
   }
 }
 
@@ -817,7 +820,7 @@ void CompoundTabContainer::HandleDragUpdate(
   // Update `current_text_drop_target_`.
   TabContainer* next_drop_target = nullptr;
   if (index.has_value()) {
-    next_drop_target = base::to_address(index.value().value < NumPinnedTabs()
+    next_drop_target = base::to_address(index->index < NumPinnedTabs()
                                             ? pinned_tab_container_
                                             : unpinned_tab_container_);
   }
@@ -836,9 +839,10 @@ void CompoundTabContainer::HandleDragUpdate(
   if (current_text_drop_target_ == base::to_address(pinned_tab_container_)) {
     pinned_tab_container_->HandleDragUpdate(index);
   } else {
-    BrowserRootView::DropIndex adjusted_index = {
-        index.value().value - NumPinnedTabs(), index.value().drop_before,
-        index.value().drop_in_group};
+    BrowserRootView::DropIndex adjusted_index{
+        .index = index->index - NumPinnedTabs(),
+        .relative_to_index = index->relative_to_index,
+        .group_inclusion = index->group_inclusion};
     unpinned_tab_container_->HandleDragUpdate(adjusted_index);
   }
 }

@@ -117,6 +117,15 @@ ui::SelectionData SelectionFormatMap::GetFirstOf(
   return SelectionData();
 }
 
+ui::SelectionData SelectionFormatMap::Get(x11::Atom requested_type) const {
+  auto data_it = data_.find(requested_type);
+  if (data_it != data_.end()) {
+    return SelectionData(data_it->first, data_it->second);
+  }
+
+  return SelectionData();
+}
+
 std::vector<x11::Atom> SelectionFormatMap::GetTypes() const {
   std::vector<x11::Atom> atoms;
   for (const auto& datum : data_)

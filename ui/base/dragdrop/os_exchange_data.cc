@@ -78,6 +78,11 @@ std::optional<OSExchangeData::UrlInfo> OSExchangeData::GetURLAndTitle(
   return provider_->GetURLAndTitle(policy);
 }
 
+std::optional<std::vector<GURL>> OSExchangeData::GetURLs(
+    FilenameToURLPolicy policy) const {
+  return provider_->GetURLs(policy);
+}
+
 bool OSExchangeData::GetFilenames(std::vector<FileInfo>* filenames) const {
   return provider_->GetFilenames(filenames);
 }

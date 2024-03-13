@@ -12,6 +12,7 @@
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
@@ -881,8 +882,51 @@ views::View* TabContainerImpl::GetTooltipHandlerForPoint(
   return this;
 }
 
-BrowserRootView::DropIndex TabContainerImpl::GetDropIndex(
-    const ui::DropTargetEvent& event) {
+namespace {
+
+enum class InsertionLocation {
+  kInsertToLeft,
+  kReplace,
+  kInsertToRight,
+};
+
+// Returns the insertion location for a drop over `tab` if replacement is
+// allowed. `drop_location` is the x coordinate of the proposed drop.
+InsertionLocation InsertionLocationReplacementAllowed(Tab* const tab,
+                                                      int drop_location) {
+  // When hovering over the left or right quarter of a tab, the drop
+  // indicator will point between tabs. Otherwise, it will point at the tab.
+  const int hot_width = tab->width() / 4;
+
+  if (drop_location >= (tab->x() + tab->width() - hot_width)) {
+    return InsertionLocation::kInsertToRight;
+  } else if (drop_location < tab->x() + hot_width) {
+    return InsertionLocation::kInsertToLeft;
+  } else {
+    return InsertionLocation::kReplace;
+  }
+}
+
+// Returns the insertion location for a drop over `tab` if replacement is not
+// allowed. `drop_location` is the x coordinate of the proposed drop.
+InsertionLocation InsertionLocationReplacementNotAllowed(Tab* const tab,
+                                                         int drop_location) {
+  // When replacement is not allowed, the drop indicator will point to the side
+  // of the tab it is on.
+  const int hot_width = tab->width() / 2;
+
+  if (drop_location >= (tab->x() + tab->width() - hot_width)) {
+    return InsertionLocation::kInsertToRight;
+  } else {
+    return InsertionLocation::kInsertToLeft;
+  }
+}
+
+}  // namespace
+
+std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
+    const ui::DropTargetEvent& event,
+    bool allow_replacement) {
   // Force animations to stop, otherwise it makes the index calculation tricky.
   CompleteAnimationAndLayout();
 
@@ -892,6 +936,11 @@ BrowserRootView::DropIndex TabContainerImpl::GetDropIndex(
   const int x = GetMirroredXInView(event.x());
 
   std::vector<TabSlotView*> views = layout_helper_->GetTabSlotViews();
+
+  using BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup;
+  using BrowserRootView::DropIndex::GroupInclusion::kIncludeInGroup;
+  using BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+  using BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex;
 
   // Loop until we find a tab or group header that intersects |event|'s
   // location.
@@ -913,22 +962,41 @@ BrowserRootView::DropIndex TabContainerImpl::GetDropIndex(
       // Hence the loop is still O(n). Calling this every loop iteration
       // must be avoided since it will become O(n^2).
       const int model_index = GetModelIndexOf(tab).value();
-      const bool first_in_group =
-          tab->group().has_value() &&
-          model_index == controller_->GetFirstTabInGroup(tab->group().value());
 
-      // When hovering over the left or right quarter of a tab, the drop
-      // indicator will point between tabs.
-      const int hot_width = tab->width() / 4;
-
-      if (x >= (max_x - hot_width)) {
-        return {model_index + 1, true /* drop_before */,
-                false /* drop_in_group */};
-      } else if (x < tab->x() + hot_width) {
-        return {model_index, true /* drop_before */, first_in_group};
+      InsertionLocation location;
+      if (allow_replacement) {
+        location = InsertionLocationReplacementAllowed(tab, x);
       } else {
-        return {model_index, false /* drop_before */,
-                false /* drop_in_group */};
+        location = InsertionLocationReplacementNotAllowed(tab, x);
+      }
+
+      switch (location) {
+        case InsertionLocation::kInsertToLeft: {
+          const bool first_in_group =
+              tab->group().has_value() &&
+              model_index ==
+                  controller_->GetFirstTabInGroup(tab->group().value());
+          return BrowserRootView::DropIndex{
+              .index = model_index,
+              .relative_to_index = kInsertBeforeIndex,
+              .group_inclusion =
+                  first_in_group ? kIncludeInGroup : kDontIncludeInGroup};
+        }
+
+        case InsertionLocation::kReplace: {
+          CHECK(allow_replacement);
+          return BrowserRootView::DropIndex{
+              .index = model_index,
+              .relative_to_index = kReplaceIndex,
+              .group_inclusion = kDontIncludeInGroup};
+        }
+
+        case InsertionLocation::kInsertToRight: {
+          return BrowserRootView::DropIndex{
+              .index = model_index + 1,
+              .relative_to_index = kInsertBeforeIndex,
+              .group_inclusion = kDontIncludeInGroup};
+        }
       }
     } else {
       TabGroupHeader* const group_header = static_cast<TabGroupHeader*>(view);
@@ -937,17 +1005,23 @@ BrowserRootView::DropIndex TabContainerImpl::GetDropIndex(
               .value();
 
       if (x < max_x - group_header->width() / 2) {
-        return {first_tab_index, true /* drop_before */,
-                false /* drop_in_group */};
+        return BrowserRootView::DropIndex{
+            .index = first_tab_index,
+            .relative_to_index = kInsertBeforeIndex,
+            .group_inclusion = kDontIncludeInGroup};
       } else {
-        return {first_tab_index, true /* drop_before */,
-                true /* drop_in_group */};
+        return BrowserRootView::DropIndex{
+            .index = first_tab_index,
+            .relative_to_index = kInsertBeforeIndex,
+            .group_inclusion = kIncludeInGroup};
       }
     }
   }
 
   // The drop isn't over a tab, add it to the end.
-  return {GetTabCount(), true, false};
+  return BrowserRootView::DropIndex{.index = GetTabCount(),
+                                    .relative_to_index = kInsertBeforeIndex,
+                                    .group_inclusion = kDontIncludeInGroup};
 }
 
 views::View* TabContainerImpl::GetViewForDrop() {
@@ -1662,15 +1736,21 @@ void TabContainerImpl::SetDropArrow(
   }
 
   // Let the controller know of the index update.
-  controller_->OnDropIndexUpdate(index->value, index->drop_before);
+  const bool drop_before =
+      index->relative_to_index ==
+      BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex;
+  const bool group_inclusion =
+      index->group_inclusion ==
+      BrowserRootView::DropIndex::GroupInclusion::kIncludeInGroup;
+  controller_->OnDropIndexUpdate(index->index, drop_before);
 
   if (drop_arrow_ && (index == drop_arrow_->index())) {
     return;
   }
 
   bool is_beneath;
-  gfx::Rect drop_bounds = GetDropBounds(index->value, index->drop_before,
-                                        index->drop_in_group, &is_beneath);
+  gfx::Rect drop_bounds =
+      GetDropBounds(index->index, drop_before, group_inclusion, &is_beneath);
 
   if (!drop_arrow_) {
     drop_arrow_ = std::make_unique<DropArrow>(*index, !is_beneath, GetWidget());

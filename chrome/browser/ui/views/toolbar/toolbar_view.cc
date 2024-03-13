@@ -1200,9 +1200,17 @@ DownloadToolbarButtonView* ToolbarView::GetDownloadButton() {
   return download_button();
 }
 
-BrowserRootView::DropIndex ToolbarView::GetDropIndex(
-    const ui::DropTargetEvent& event) {
-  return {browser_->tab_strip_model()->active_index(), false};
+std::optional<BrowserRootView::DropIndex> ToolbarView::GetDropIndex(
+    const ui::DropTargetEvent& event,
+    bool allow_replacement) {
+  if (!allow_replacement) {
+    return std::nullopt;
+  }
+
+  return BrowserRootView::DropIndex{
+      .index = browser_->tab_strip_model()->active_index(),
+      .relative_to_index =
+          BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex};
 }
 
 BrowserRootView::DropTarget* ToolbarView::GetDropTarget(

@@ -14,6 +14,7 @@
 
 #include <iterator>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -587,6 +588,31 @@ OSExchangeDataProviderWin::GetURLAndTitle(FilenameToURLPolicy policy) const {
     DCHECK(url.is_valid());
     title = net::GetSuggestedFilename(url, "", "", "", "", std::string());
     return UrlInfo{std::move(url), std::move(title)};
+  }
+  return std::nullopt;
+}
+
+std::optional<std::vector<GURL>> OSExchangeDataProviderWin::GetURLs(
+    FilenameToURLPolicy policy) const {
+  std::vector<GURL> local_urls;
+
+  std::optional<UrlInfo> url_info =
+      GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  if (url_info.has_value()) {
+    local_urls.push_back(url_info->url);
+  }
+
+  if (policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
+    std::vector<FileInfo> fileinfos;
+    if (GetFilenames(&fileinfos)) {
+      for (const auto& fileinfo : fileinfos) {
+        local_urls.push_back(net::FilePathToFileURL(fileinfo.path));
+      }
+    }
+  }
+
+  if (local_urls.size()) {
+    return local_urls;
   }
   return std::nullopt;
 }

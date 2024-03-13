@@ -51,6 +51,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   std::optional<std::u16string> GetString() const override;
   std::optional<UrlInfo> GetURLAndTitle(
       FilenameToURLPolicy policy) const override;
+  std::optional<std::vector<GURL>> GetURLs(
+      FilenameToURLPolicy policy) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
   bool GetPickledData(const ClipboardFormatType& format,
                       base::Pickle* data) const override;
