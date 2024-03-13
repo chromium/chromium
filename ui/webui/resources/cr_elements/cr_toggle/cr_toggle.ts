@@ -50,11 +50,6 @@ export class CrToggleElement extends CrToggleElementBase {
         notify: true,
       },
 
-      dark: {
-        type: Boolean,
-        reflect: true,
-      },
-
       disabled: {
         type: Boolean,
         reflect: true,
@@ -63,7 +58,6 @@ export class CrToggleElement extends CrToggleElementBase {
   }
 
   checked: boolean = false;
-  dark: boolean = false;
   disabled: boolean = false;
 
   private boundPointerMove_: ((e: PointerEvent) => void)|null = null;
