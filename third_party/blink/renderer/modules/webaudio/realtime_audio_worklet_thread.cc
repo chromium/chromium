@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_global_scope.h"
@@ -31,6 +32,15 @@ int dedicated_backing_thread_count = 0;
 // Used for ref-counting of all backing thread in the current renderer process.
 // Incremented by the constructor and decremented by destructor.
 int shared_backing_thread_ref_count = 0;
+
+// For UMA logging: Represents the maximum number of dedicated backing worklet
+// threads throughout the lifetime of the document/frame. Can't exceed
+// `kMaxDedicatedBackingThreadCount`.
+int peak_dedicated_backing_thread_count = 0;
+
+// For UMA logging: Represents the maximum number of ref counts using the
+// shared backing thread throughout the lifetime of the document/frame.
+int peak_shared_backing_thread_ref_count = 0;
 
 }  // namespace
 
@@ -76,11 +86,25 @@ RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
       dedicated_backing_thread_count < kMaxDedicatedBackingThreadCount) {
     worker_backing_thread_ = std::make_unique<WorkerBackingThread>(params);
     dedicated_backing_thread_count++;
+    if (peak_dedicated_backing_thread_count < dedicated_backing_thread_count) {
+      peak_dedicated_backing_thread_count = dedicated_backing_thread_count;
+      base::UmaHistogramExactLinear(
+          "WebAudio.AudioWorklet.PeakDedicatedBackingThreadCount",
+          peak_dedicated_backing_thread_count,
+          kMaxDedicatedBackingThreadCount + 1);
+    }
   } else {
     if (!shared_backing_thread_ref_count) {
       WorkletThreadHolder<RealtimeAudioWorkletThread>::EnsureInstance(params);
     }
-    ++shared_backing_thread_ref_count;
+    shared_backing_thread_ref_count++;
+    if (peak_shared_backing_thread_ref_count <
+        shared_backing_thread_ref_count) {
+      peak_shared_backing_thread_ref_count = shared_backing_thread_ref_count;
+      base::UmaHistogramExactLinear(
+          "WebAudio.AudioWorklet.PeakSharedBackingThreadRefCount",
+          peak_shared_backing_thread_ref_count, 101);
+    }
   }
 }
 

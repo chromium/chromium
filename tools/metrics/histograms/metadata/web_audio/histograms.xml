@@ -200,6 +200,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioWorklet.PeakDedicatedBackingThreadCount"
+    units="threads" expires_after="2024-12-31">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The maximum number of dedicated backing worklet threads throughout the
+    lifetime of the document/frame.
+  </summary>
+</histogram>
+
+<histogram name="WebAudio.AudioWorklet.PeakSharedBackingThreadRefCount"
+    units="refcounts" expires_after="2024-12-31">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    The maximum number of ref counts using the shared backing thread throughout
+    the lifetime of the document/frame.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.Autoplay" enum="WebAudioAutoplayStatus"
     expires_after="2024-12-01">
   <owner>mjwilson@chromium.org</owner>
