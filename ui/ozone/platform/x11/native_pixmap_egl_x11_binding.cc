@@ -279,8 +279,4 @@ GLuint NativePixmapEGLX11Binding::GetInternalFormat() {
       format_);
 }
 
-GLenum NativePixmapEGLX11Binding::GetDataType() {
-  return GL_UNSIGNED_BYTE;
-}
-
 }  // namespace ui

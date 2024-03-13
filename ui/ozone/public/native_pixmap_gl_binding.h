@@ -20,7 +20,6 @@ class COMPONENT_EXPORT(OZONE_BASE) NativePixmapGLBinding {
   virtual ~NativePixmapGLBinding();
 
   virtual GLuint GetInternalFormat() = 0;
-  virtual GLenum GetDataType() = 0;
 
  protected:
   // Maps buffer format to GL internalformat. Returns GL_NONE if no sensible

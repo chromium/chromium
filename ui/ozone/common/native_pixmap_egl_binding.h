@@ -39,7 +39,6 @@ class NativePixmapEGLBinding : public NativePixmapGLBinding {
 
   // NativePixmapGLBinding:
   GLuint GetInternalFormat() override;
-  GLenum GetDataType() override;
 
  private:
   // Create an EGLImage from a given NativePixmap and bind |texture_id| to

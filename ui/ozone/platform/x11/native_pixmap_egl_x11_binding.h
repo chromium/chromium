@@ -35,7 +35,6 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
 
   // NativePixmapGLBinding:
   GLuint GetInternalFormat() override;
-  GLenum GetDataType() override;
 
  private:
   bool Initialize(x11::Pixmap pixmap);
