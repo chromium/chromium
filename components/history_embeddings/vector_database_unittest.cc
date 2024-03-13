@@ -52,7 +52,7 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, DISABLED_ManyVectorsAreFastEnough) {
   size_t count = 0;
   // 95th percentile for URL count
   for (size_t i = 0; i < 15000; i++) {
-    UrlEmbeddings url_embeddings;
+    UrlEmbeddings url_embeddings(i + 1, i + 1, base::Time::Now());
     // Times 3 embeddings each, on average
     for (size_t j = 0; j < 3; j++) {
       url_embeddings.embeddings.push_back(RandomEmbedding());

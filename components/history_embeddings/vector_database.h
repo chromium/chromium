@@ -7,17 +7,37 @@
 
 #include <vector>
 
+#include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "url/gurl.h"
 
 namespace history_embeddings {
+
+struct UrlPassages {
+  UrlPassages(history::URLID url_id,
+              history::VisitID visit_id,
+              base::Time visit_time);
+  ~UrlPassages();
+  UrlPassages(const UrlPassages&);
+  UrlPassages& operator=(const UrlPassages&);
+  UrlPassages(UrlPassages&&);
+  UrlPassages& operator=(UrlPassages&&);
+
+  history::URLID url_id;
+  history::VisitID visit_id;
+  base::Time visit_time;
+  std::vector<std::string> passages;
+};
 
 class Embedding {
  public:
   explicit Embedding(std::vector<float> data);
   ~Embedding();
-  Embedding(Embedding&&);
   Embedding(const Embedding&);
+  Embedding& operator=(const Embedding&);
+  Embedding(Embedding&&);
+  Embedding& operator=(Embedding&&);
+  bool operator==(const Embedding&) const;
 
   // The number of elements in the data vector.
   size_t Dimensions() const;
@@ -31,24 +51,36 @@ class Embedding {
   // Compares one embedding with another and returns a similarity measure.
   float ScoreWith(const Embedding& other) const;
 
+  // Const accessor used for storage.
+  const std::vector<float>& GetData() const { return data_; }
+
  private:
-  std::vector<float> data;
+  std::vector<float> data_;
 };
 
 struct UrlEmbeddings {
   UrlEmbeddings();
+  UrlEmbeddings(history::URLID url_id,
+                history::VisitID visit_id,
+                base::Time visit_time);
+  explicit UrlEmbeddings(const UrlPassages& url_passages);
   ~UrlEmbeddings();
   UrlEmbeddings(UrlEmbeddings&&);
-  UrlEmbeddings(const UrlEmbeddings&) = delete;
+  UrlEmbeddings& operator=(UrlEmbeddings&&);
+  UrlEmbeddings(const UrlEmbeddings&);
+  UrlEmbeddings& operator=(UrlEmbeddings&);
+  bool operator==(const UrlEmbeddings&) const;
 
   float BestScoreWith(const Embedding& query) const;
 
-  GURL url;
+  history::URLID url_id;
+  history::VisitID visit_id;
+  base::Time visit_time;
   std::vector<Embedding> embeddings;
 };
 
 struct ScoredUrl {
-  GURL url;
+  history::URLID url_id;
   float score;
 };
 
@@ -72,12 +104,12 @@ class VectorDatabase {
   virtual size_t GetEmbeddingDimensions() const = 0;
 
   // Insert or update all embeddings for a URL's full set of passages.
-  virtual void AddUrlEmbeddings(UrlEmbeddings url_embeddings) = 0;
+  // Returns true on success.
+  virtual bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) = 0;
 
   // Create an iterator that steps through database items.
   // Null may be returned if there are none.
-  virtual std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator()
-      const = 0;
+  virtual std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() = 0;
 
   // Searches the database for embeddings near given `query` and returns
   // information about where they were found and how nearly the query matched.
@@ -98,8 +130,8 @@ class VectorDatabaseInMemory : public VectorDatabase {
 
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  void AddUrlEmbeddings(UrlEmbeddings url_embeddings) override;
-  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() const override;
+  bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) override;
+  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() override;
 
  private:
   std::vector<UrlEmbeddings> data_;

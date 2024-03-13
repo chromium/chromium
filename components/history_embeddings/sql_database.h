@@ -48,8 +48,10 @@ class SqlDatabase : public VectorDatabase {
 
   // VectorDatabase:
   size_t GetEmbeddingDimensions() const override;
-  void AddUrlEmbeddings(UrlEmbeddings url_embeddings) override;
-  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() const override;
+  bool AddUrlEmbeddings(const UrlEmbeddings& url_embeddings) override;
+  // Note: Ensure the returned iterator destructs before closing the database
+  // since it holds a sql::Statement.
+  std::unique_ptr<EmbeddingsIterator> MakeEmbeddingsIterator() override;
 
  private:
   // Initializes the database, if it's not already initialized. Returns true if

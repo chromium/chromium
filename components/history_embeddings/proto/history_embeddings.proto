@@ -14,3 +14,14 @@ message PassagesValue {
   // is applied to the whole proto message, not to individual passage strings.
   repeated string passages = 1;
 }
+
+// A single embedding vector for a single passage.
+message EmbeddingVector {
+  repeated float floats = 1;
+}
+
+// The packed storable value that encapsulates all embeddings vectors for all
+// passages from a single source.
+message EmbeddingsValue {
+  repeated EmbeddingVector vectors = 1;
+}

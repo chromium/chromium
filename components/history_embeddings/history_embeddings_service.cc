@@ -23,21 +23,12 @@
 
 namespace history_embeddings {
 
-UrlPassages::UrlPassages() = default;
-UrlPassages::~UrlPassages() = default;
-UrlPassages::UrlPassages(const UrlPassages&) = default;
-UrlPassages& UrlPassages::operator=(const UrlPassages&) = default;
-UrlPassages::UrlPassages(UrlPassages&&) = default;
-UrlPassages& UrlPassages::operator=(UrlPassages&&) = default;
-
 void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
                     base::TimeTicks start_time,
-                    GURL url,
+                    UrlPassages url_passages,
                     base::OnceCallback<void(UrlPassages)> callback,
                     blink::mojom::InnerTextFramePtr mojo_frame) {
   const base::TimeDelta extraction_time = base::TimeTicks::Now() - start_time;
-  UrlPassages url_passages;
-  url_passages.url = std::move(url);
   if (mojo_frame) {
     for (const auto& segment : mojo_frame->segments) {
       if (segment->is_text()) {
@@ -100,7 +91,9 @@ void HistoryEmbeddingsService::RetrievePassages(content::RenderFrameHost& host,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
               &OnGotInnerText, std::move(agent), start_time,
-              host.GetLastCommittedURL(),
+              // TODO(orinj): These IDs should come from history observer or
+              // the like once history metadata is plumbed through.
+              UrlPassages(1, 1, base::Time::Now()),
               base::BindOnce(&HistoryEmbeddingsService::OnPassagesRetrieved,
                              weak_ptr_factory_.GetWeakPtr(),
                              std::move(callback))),
@@ -118,8 +111,7 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
     ComputeEmbeddingsCallback compute_embeddings,
     UrlPassages url_passages) {
   // Compute and save embeddings vectors.
-  UrlEmbeddings url_embeddings;
-  url_embeddings.url = url_passages.url;
+  UrlEmbeddings url_embeddings(url_passages);
   url_embeddings.embeddings = std::move(compute_embeddings).Run(url_passages);
   vector_database.AddUrlEmbeddings(std::move(url_embeddings));
   vector_database.SaveTo(&sql_database);
@@ -131,14 +123,9 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
     passages_value.add_passages(passage);
   }
 
-  // TODO(orinj): These should come from url_passages once the history metadata
-  //  is plumbed through.
-  history::URLID url_id(1);
-  history::VisitID visit_id(1);
-  base::Time visit_time = base::Time::Now();
-
-  sql_database.InsertOrReplacePassages(url_id, visit_id, visit_time,
-                                       passages_value);
+  sql_database.InsertOrReplacePassages(url_passages.url_id,
+                                       url_passages.visit_id,
+                                       url_passages.visit_time, passages_value);
 }
 
 void HistoryEmbeddingsService::OnPassagesRetrieved(PassagesCallback callback,

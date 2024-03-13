@@ -43,7 +43,6 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
                             future.GetCallback());
 
   UrlPassages url_passages = future.Take();
-  ASSERT_EQ(url_passages.url.path(), "/inner_text/test1.html");
 
   // Note: Currently the passage extraction algorithm does not recurse
   // into iframes. If that changes then the passage structure and content

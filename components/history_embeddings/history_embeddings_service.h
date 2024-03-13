@@ -16,21 +16,8 @@
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/render_frame_host.h"
-#include "url/gurl.h"
 
 namespace history_embeddings {
-
-struct UrlPassages {
-  UrlPassages();
-  ~UrlPassages();
-  UrlPassages(const UrlPassages&);
-  UrlPassages& operator=(const UrlPassages&);
-  UrlPassages(UrlPassages&&);
-  UrlPassages& operator=(UrlPassages&&);
-
-  GURL url;
-  std::vector<std::string> passages;
-};
 
 using PassagesCallback = base::OnceCallback<void(UrlPassages)>;
 using ComputeEmbeddingsCallback =
