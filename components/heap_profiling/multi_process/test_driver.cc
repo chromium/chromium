@@ -55,7 +55,7 @@ constexpr int kVariadicAllocCount = 1000;
 // choose an odd number.
 constexpr int kSampleRate = 777;
 
-// Test fixed-size partition alloc. The size must be aligned to system pointer
+// Test fixed-size PartitionAlloc. The size must be aligned to system pointer
 // size.
 constexpr int kPartitionAllocSize = 8 * 25;
 constexpr int kPartitionAllocCount = 2000;
