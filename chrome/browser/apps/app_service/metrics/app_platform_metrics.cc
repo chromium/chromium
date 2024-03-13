@@ -6,13 +6,13 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -1423,7 +1423,7 @@ void AppPlatformMetrics::CleanUpAppsUsageInfoInPrefStore() {
 }
 
 void AppPlatformMetrics::ClearAppsUsageTimeForInstance(
-    const base::StringPiece& instance_id) {
+    std::string_view instance_id) {
   ScopedDictPrefUpdate usage_time_pref_update(profile_->GetPrefs(),
                                               kAppUsageTime);
   auto* instance_dict =

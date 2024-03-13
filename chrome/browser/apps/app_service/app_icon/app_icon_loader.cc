@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -645,7 +646,7 @@ void AppIconLoader::LoadIconFromResource(int icon_resource) {
       // For compressed icons with no |icon_effects|, serve the
       // already-compressed bytes.
       if (icon_effects_ == apps::IconEffects::kNone) {
-        base::StringPiece data =
+        std::string_view data =
             ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
                 icon_resource);
         CompleteWithCompressed(/*is_maskable_icon=*/false,

@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -29,7 +30,7 @@ namespace apps {
 namespace {
 
 void LoadDefaultImage(content::URLDataSource::GotDataCallback callback) {
-  base::StringPiece contents =
+  std::string_view contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
           IDR_APP_DEFAULT_ICON, apps_util::GetPrimaryDisplayUIScaleFactor());
 

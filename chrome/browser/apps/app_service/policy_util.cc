@@ -5,12 +5,12 @@
 #include "chrome/browser/apps/app_service/policy_util.h"
 
 #include <array>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -39,7 +39,7 @@ namespace fm_tasks = file_manager::file_tasks;
 // These app Id constants need to be kept in sync with java/com/
 // google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
 constexpr auto kSystemWebAppsMapping =
-    base::MakeFixedFlatMap<base::StringPiece, ash::SystemWebAppType>(
+    base::MakeFixedFlatMap<std::string_view, ash::SystemWebAppType>(
         {{"file_manager", ash::SystemWebAppType::FILE_MANAGER},
          {"settings", ash::SystemWebAppType::SETTINGS},
          {"camera", ash::SystemWebAppType::CAMERA},
@@ -78,7 +78,7 @@ static_assert(GetMaxSystemWebAppType() == ash::SystemWebAppType::kMaxValue,
 // These virtual task identifiers are supposed to be a subset of tasks listed in
 // chrome/browser/ash/file_manager/virtual_file_tasks.cc
 constexpr auto kVirtualFileTasksMapping =
-    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"install-isolated-web-app", fm_tasks::kActionIdInstallIsolatedWebApp},
          {"microsoft-office", fm_tasks::kActionIdOpenInOffice}});
 
@@ -89,41 +89,41 @@ constexpr auto kVirtualFileTasksMapping =
 // These app Id constants need to be kept in sync with java/com/
 // google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
 constexpr auto kPreinstalledWebAppsMapping =
-    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+    base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"cursive", web_app::kCursiveAppId},
          {"canvas", web_app::kCanvasAppId}});
 
-std::optional<base::flat_map<base::StringPiece, base::StringPiece>>&
+std::optional<base::flat_map<std::string_view, std::string_view>>&
 GetPreinstalledWebAppsMappingForTesting() {
   static base::NoDestructor<
-      std::optional<base::flat_map<base::StringPiece, base::StringPiece>>>
+      std::optional<base::flat_map<std::string_view, std::string_view>>>
       preinstalled_web_apps_mapping_for_testing;
   return *preinstalled_web_apps_mapping_for_testing;
 }
 
 }  // namespace
 
-bool IsChromeAppPolicyId(base::StringPiece policy_id) {
+bool IsChromeAppPolicyId(std::string_view policy_id) {
   return crx_file::id_util::IdIsValid(policy_id);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsArcAppPolicyId(base::StringPiece policy_id) {
+bool IsArcAppPolicyId(std::string_view policy_id) {
   return base::Contains(policy_id, '.') && !IsWebAppPolicyId(policy_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool IsWebAppPolicyId(base::StringPiece policy_id) {
+bool IsWebAppPolicyId(std::string_view policy_id) {
   return GURL{policy_id}.is_valid();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsSystemWebAppPolicyId(base::StringPiece policy_id) {
+bool IsSystemWebAppPolicyId(std::string_view policy_id) {
   return base::Contains(kSystemWebAppsMapping, policy_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool IsPreinstalledWebAppPolicyId(base::StringPiece policy_id) {
+bool IsPreinstalledWebAppPolicyId(std::string_view policy_id) {
   if (auto& mapping = GetPreinstalledWebAppsMappingForTesting()) {  // IN-TEST
     return base::Contains(*mapping, policy_id);
   }
@@ -131,12 +131,12 @@ bool IsPreinstalledWebAppPolicyId(base::StringPiece policy_id) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsFileManagerVirtualTaskPolicyId(base::StringPiece policy_id) {
+bool IsFileManagerVirtualTaskPolicyId(std::string_view policy_id) {
   return GetVirtualTaskIdFromPolicyId(policy_id).has_value();
 }
 
-std::optional<base::StringPiece> GetVirtualTaskIdFromPolicyId(
-    base::StringPiece policy_id) {
+std::optional<std::string_view> GetVirtualTaskIdFromPolicyId(
+    std::string_view policy_id) {
   if (!base::StartsWith(policy_id, kVirtualTaskPrefix)) {
     return std::nullopt;
   }
@@ -189,7 +189,7 @@ std::optional<std::vector<std::string>> GetPolicyIdsFromAppId(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-std::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
+std::optional<std::string_view> GetPolicyIdForSystemWebAppType(
     ash::SystemWebAppType swa_type) {
   for (const auto& [policy_id, mapped_swa_type] : kSystemWebAppsMapping) {
     if (mapped_swa_type == swa_type) {
@@ -200,8 +200,8 @@ std::optional<base::StringPiece> GetPolicyIdForSystemWebAppType(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-std::optional<base::StringPiece> GetPolicyIdForPreinstalledWebApp(
-    base::StringPiece app_id) {
+std::optional<std::string_view> GetPolicyIdForPreinstalledWebApp(
+    std::string_view app_id) {
   if (const auto& test_mapping = GetPreinstalledWebAppsMappingForTesting()) {
     for (const auto& [policy_id, mapped_app_id] : *test_mapping) {
       if (mapped_app_id == app_id) {
@@ -220,7 +220,7 @@ std::optional<base::StringPiece> GetPolicyIdForPreinstalledWebApp(
 }
 
 void SetPreinstalledWebAppsMappingForTesting(  // IN-TEST
-    std::optional<base::flat_map<base::StringPiece, base::StringPiece>>
+    std::optional<base::flat_map<std::string_view, std::string_view>>
         preinstalled_web_apps_mapping_for_testing) {
   GetPreinstalledWebAppsMappingForTesting() =                // IN-TEST
       std::move(preinstalled_web_apps_mapping_for_testing);  // IN-TEST
