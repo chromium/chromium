@@ -6035,7 +6035,7 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled",
+                    "name": "Enabled",
                     "params": {
                         "history-cluster-behavior": "1",
                         "merchant-wide-behavior": "0",
