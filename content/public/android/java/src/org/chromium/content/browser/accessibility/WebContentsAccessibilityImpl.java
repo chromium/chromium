@@ -1141,10 +1141,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             mNativeAssistDataObj,
                             viewRoot,
                             () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
+        } else {
+            mDelegate.requestAccessibilitySnapshot(
+                    viewRoot, () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
         }
-
-        mDelegate.requestAccessibilitySnapshot(
-                viewRoot, () -> onSnapshotDoneCallback(viewRoot, beforeSnapshotTimeMs));
     }
 
     private void onSnapshotDoneCallback(ViewStructure viewRoot, long beforeSnapshotTimeMs) {

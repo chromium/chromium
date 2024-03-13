@@ -1776,12 +1776,13 @@ void WebContentsAccessibilityAndroid::RecursivelyPopulateViewStructureTree(
     const base::android::JavaRef<jobject>& java_side_assist_data_object,
     bool is_root) {
   PopulateViewStructureNode(env, obj, node, java_side_assist_data_object);
-  for (const auto& child : node->PlatformChildren()) {
+  for (size_t child_index = 0; const auto& child : node->PlatformChildren()) {
     const auto& child_node =
         static_cast<const BrowserAccessibilityAndroid&>(child);
     base::android::ScopedJavaLocalRef<jobject> java_side_child_object =
-        Java_AssistDataBuilder_addChildNode(env, obj,
-                                            java_side_assist_data_object);
+        Java_AssistDataBuilder_addChildNode(
+            env, obj, java_side_assist_data_object, child_index);
+    child_index++;
     RecursivelyPopulateViewStructureTree(env, obj, &child_node,
                                          java_side_child_object,
                                          /* is_root= */ false);
@@ -1796,17 +1797,43 @@ void WebContentsAccessibilityAndroid::PopulateViewStructureNode(
     ScopedJavaLocalRef<jobject> obj,
     const BrowserAccessibilityAndroid* node,
     const base::android::JavaRef<jobject>& java_side_assist_data_object) {
-  Java_AssistDataBuilder_populateBaseProperties(env, obj,
-                                                java_side_assist_data_object);
+  Java_AssistDataBuilder_populateBaseProperties(
+      env, obj, java_side_assist_data_object,
+      GetCanonicalJNIString(env, node->GetClassName()), node->GetChildCount());
 
-  Java_AssistDataBuilder_populateTextProperties(env, obj,
-                                                java_side_assist_data_object);
+  int bgcolor = 0;
+  int color = 0;
+  int text_size = -1.0;
+  if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
+    color = node->GetIntAttribute(ax::mojom::IntAttribute::kColor);
+    bgcolor = node->GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor);
+    text_size = node->GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize);
+  }
+  Java_AssistDataBuilder_populateTextProperties(
+      env, obj, java_side_assist_data_object,
+      base::android::ConvertUTF16ToJavaString(env, node->GetTextContentUTF16()),
+      node->GetSelectedItemCount() > 0, node->GetSelectionStart(),
+      node->GetSelectionEnd(), color, bgcolor, text_size,
+      node->HasTextStyle(ax::mojom::TextStyle::kBold),
+      node->HasTextStyle(ax::mojom::TextStyle::kItalic),
+      node->HasTextStyle(ax::mojom::TextStyle::kUnderline),
+      node->HasTextStyle(ax::mojom::TextStyle::kLineThrough));
 
   Java_AssistDataBuilder_populateBoundsProperties(env, obj,
                                                   java_side_assist_data_object);
 
-  Java_AssistDataBuilder_populateHTMLProperties(env, obj,
-                                                java_side_assist_data_object);
+  std::vector<std::vector<std::u16string>> html_attrs;
+  for (const auto& attr : node->GetHtmlAttributes()) {
+    html_attrs.push_back(
+        {base::UTF8ToUTF16(attr.first), base::UTF8ToUTF16(attr.second)});
+  }
+  Java_AssistDataBuilder_populateHTMLProperties(
+      env, obj, java_side_assist_data_object,
+      GetCanonicalJNIString(
+          env, node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag)),
+      GetCanonicalJNIString(
+          env, node->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)),
+      base::android::ToJavaArrayOfStringArray(env, html_attrs));
 }
 
 base::WeakPtr<WebContentsAccessibilityAndroid>
