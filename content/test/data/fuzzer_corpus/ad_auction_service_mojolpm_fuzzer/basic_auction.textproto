@@ -137,24 +137,25 @@ actions {
                   m_allows_latency_stats: false
                 }
               }
-              m_component_auctions {
-              }
-              m_max_trusted_scoring_signals_url_length: 0
               m_per_buyer_multi_bid_limits {
               }
               m_all_buyers_multi_bid_limit: 1
+              m_component_auctions {
+              }
+              m_max_trusted_scoring_signals_url_length: 0
             }
           }
 
           m_direct_from_seller_signals {
             old: 1
           }
+          m_deprecated_render_url_replacements {
+            old: 1
+          }
           m_expects_direct_from_seller_signals_header_ad_slot: false
           m_seller_experiment_group_id: 0
           m_all_buyer_experiment_group_id: 0
           m_per_buyer_experiment_group_ids {
-          }
-          m_deprecated_render_url_replacements {
           }
           m_expects_additional_bids: false
         }
