@@ -551,8 +551,8 @@ void FullscreenController::ExitFullscreenModeInternal() {
   if (chrome::IsRunningInAppMode())
     return;
 
-  CHECK(fullscreen_start_time_);
-  if (exclusive_access_tab()) {
+  // `fullscreen_start_time_` is null if a fullscreen tab moves to a new window.
+  if (fullscreen_start_time_ && exclusive_access_tab()) {
     ukm::SourceId source_id =
         exclusive_access_tab()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     ukm::builders::Fullscreen_Exit(source_id)
