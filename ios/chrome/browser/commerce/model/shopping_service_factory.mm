@@ -87,6 +87,8 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
                                 CommerceSubscriptionContentProto>::GetInstance()
           ->GetForBrowserState(chrome_state),
       PowerBookmarkServiceFactory::GetForBrowserState(chrome_state), nullptr,
+      nullptr, /**ProductSpecificationsService not currently used on iOS
+                  b/329431295 */
       SessionProtoDBFactory<
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()
           ->GetForBrowserState(chrome_state),

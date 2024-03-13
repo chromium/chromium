@@ -91,6 +91,7 @@ ShoppingService::ShoppingService(
         commerce_subscription_db::CommerceSubscriptionContentProto>*
         subscription_proto_db,
     power_bookmarks::PowerBookmarkService* power_bookmark_service,
+    ProductSpecificationsService* product_specifications_service,
     SessionProtoStorage<discounts_db::DiscountsContentProto>*
         discounts_proto_db,
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
@@ -106,6 +107,7 @@ ShoppingService::ShoppingService(
       account_bookmark_model_(account_bookmark_model),
       bookmark_model_used_for_sync_(nullptr),
       power_bookmark_service_(power_bookmark_service),
+      product_specifications_service_(product_specifications_service),
       bookmark_consent_throttle_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedBookmarksDataCollectionConsentHelper(

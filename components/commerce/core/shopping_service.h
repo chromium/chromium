@@ -108,6 +108,7 @@ class ScheduledMetricsManager;
 class BookmarkUpdateManager;
 class DiscountsStorage;
 class ParcelsManager;
+class ProductSpecificationsService;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
 class SubscriptionsManager;
@@ -246,6 +247,7 @@ class ShoppingService : public KeyedService,
           commerce_subscription_db::CommerceSubscriptionContentProto>*
           subscription_proto_db,
       power_bookmarks::PowerBookmarkService* power_bookmark_service,
+      ProductSpecificationsService* product_specifications_service,
       SessionProtoStorage<discounts_db::DiscountsContentProto>*
           discounts_proto_db,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
@@ -697,6 +699,8 @@ class ShoppingService : public KeyedService,
   std::unique_ptr<SubscriptionsManager> subscriptions_manager_;
 
   raw_ptr<power_bookmarks::PowerBookmarkService> power_bookmark_service_;
+
+  raw_ptr<ProductSpecificationsService> product_specifications_service_;
 
   // The service's means of observing the bookmark model which is automatically
   // removed from the model when destroyed. This will be null if no

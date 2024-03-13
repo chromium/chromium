@@ -246,6 +246,7 @@ static_library("shopping_service") {
     "//components/bookmarks/browser",
     "//components/commerce/core/compare",
     "//components/commerce/core/parcel:parcel",
+    "//components/commerce/core/product_specifications:product_specifications",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
