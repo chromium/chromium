@@ -19,6 +19,7 @@ public class PdfCoordinator {
     private int mFragmentContainerViewId;
     private String mPdfFilePath;
     private boolean mPdfIsDownloaded;
+    private boolean mIsPdfLoaded;
 
     /**
      * Creates a PdfCoordinator for the PdfPage.
@@ -31,7 +32,18 @@ public class PdfCoordinator {
      */
     public PdfCoordinator(
             NativePageHost host, Profile profile, Activity activity, String filepath, String url) {
+        mIsPdfLoaded = false;
         mView = LayoutInflater.from(host.getContext()).inflate(R.layout.pdf_page, null);
+        mView.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View view) {
+                        loadPdfFileIfNeeded();
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View view) {}
+                });
         View fragmentContainerView = mView.findViewById(R.id.pdf_fragment_container);
         mFragmentContainerViewId = View.generateViewId();
         fragmentContainerView.setId(mFragmentContainerViewId);
@@ -63,17 +75,22 @@ public class PdfCoordinator {
     }
 
     private void setPdfIsDownloaded(boolean pdfIsDownloaded) {
-        if (mPdfIsDownloaded != pdfIsDownloaded) {
-            mPdfIsDownloaded = pdfIsDownloaded;
-            loadPdfFileIfNeeded();
-        }
+        mPdfIsDownloaded = pdfIsDownloaded;
+        loadPdfFileIfNeeded();
     }
 
     private void loadPdfFileIfNeeded() {
+        if (mIsPdfLoaded) {
+            return;
+        }
         if (!mPdfIsDownloaded) {
             return;
         }
+        if (mView.getParent() == null) {
+            return;
+        }
         // TODO: load file with PdfViewer.
+        mIsPdfLoaded = true;
     }
 
     private boolean isPdfDownloaded(String url) {
@@ -86,5 +103,9 @@ public class PdfCoordinator {
                 || scheme.equals(UrlConstants.FILE_SCHEME);
         return scheme.equals(UrlConstants.CONTENT_SCHEME)
                 || scheme.equals(UrlConstants.FILE_SCHEME);
+    }
+
+    boolean getIsPdfLoadedForTesting() {
+        return mIsPdfLoaded;
     }
 }

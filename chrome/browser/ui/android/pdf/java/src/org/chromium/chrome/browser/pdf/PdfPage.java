@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
@@ -13,7 +15,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Native page that displays pdf file. */
 public class PdfPage extends BasicNativePage {
-    private final PdfCoordinator mPdfCoordinator;
+    @VisibleForTesting final PdfCoordinator mPdfCoordinator;
     private String mTitle;
     private final String mUrl;
 
