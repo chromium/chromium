@@ -9847,6 +9847,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "lcpp_font_prefetch_threshold": "1.0",
                         "lcpp_font_url_frequency_threshold": "0.1",
                         "lcpp_max_font_url_count_per_origin": "5",
                         "lcpp_max_font_url_length": "1024",
@@ -9860,6 +9861,7 @@
                     "name": "WithPrefetch",
                     "params": {
                         "lcpp_enable_font_prefetch": "true",
+                        "lcpp_font_prefetch_threshold": "1.0",
                         "lcpp_font_url_frequency_threshold": "0.1",
                         "lcpp_max_font_url_count_per_origin": "5",
                         "lcpp_max_font_url_length": "1024",
