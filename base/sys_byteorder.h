@@ -22,28 +22,6 @@
 
 namespace base {
 
-// Returns a value with all bytes in |x| swapped, i.e. reverses the endianness.
-// TODO(danakj): Replace with base::numerics::byteswap().
-inline constexpr uint16_t ByteSwap(uint16_t x) {
-  // Forward to templated function in //base/numerics.
-  return numerics::ByteSwap(x);
-}
-
-inline constexpr uint32_t ByteSwap(uint32_t x) {
-  // Forward to templated function in //base/numerics.
-  return numerics::ByteSwap(x);
-}
-
-inline constexpr uint64_t ByteSwap(uint64_t x) {
-  // Forward to templated function in //base/numerics.
-  return numerics::ByteSwap(x);
-}
-
-inline constexpr uintptr_t ByteSwapUintPtrT(uintptr_t x) {
-  // Forward to templated function in //base/numerics.
-  return numerics::ByteSwap(x);
-}
-
 // Converts the bytes in |x| from host order (endianness) to little endian, and
 // returns the result.
 inline constexpr uint16_t ByteSwapToLE16(uint16_t x) {

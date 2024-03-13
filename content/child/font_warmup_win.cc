@@ -17,11 +17,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/sys_byteorder.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
 #include "build/build_config.h"
@@ -295,7 +295,7 @@ DWORD WINAPI GetFontDataPatch(HDC dc_handle,
   // the correct answer for emulating GDI. |table_tag| must also have its
   // byte order swapped to counter the swap which occurs in the called method.
   size_t length = typeface->getTableData(
-      base::ByteSwap(base::strict_cast<uint32_t>(table_tag)), table_offset,
+      base::numerics::ByteSwap(uint32_t{table_tag}), table_offset,
       buffer ? buffer_length : INT32_MAX, buffer);
   // We can't distinguish between an empty table and an error.
   if (length == 0)

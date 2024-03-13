@@ -9,7 +9,7 @@
 #include <string_view>
 
 #include "base/hash/sha1.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace base {
 // Implementation of SHA-1. Only handles data in byte-sized blocks,
@@ -84,7 +84,7 @@ void SHA1Context::Final() {
   Process();
 
   for (auto& t : H) {
-    t = ByteSwap(t);
+    t = numerics::ByteSwap(t);
   }
 }
 
@@ -128,7 +128,7 @@ void SHA1Context::Process() {
   // W and M are in a union, so no need to memcpy.
   // memcpy(W, M, sizeof(M));
   for (t = 0; t < 16; ++t) {
-    W[t] = ByteSwap(W[t]);
+    W[t] = numerics::ByteSwap(W[t]);
   }
 
   // b.
