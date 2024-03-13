@@ -91,8 +91,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
@@ -484,10 +482,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 };
 
         // Register a broadcast receiver for locale change.
-        if (mView.isAttachedToWindow()) {
-            PostTask.postTask(
-                    TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> registerLocaleChangeReceiver());
-        }
+        if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
 
         // Define a set of relevant AccessibilityEvents.
         Runnable serviceMaskRunnable =
@@ -695,7 +690,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mCaptioningController.startListening();
         }
 
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> registerLocaleChangeReceiver());
+        registerLocaleChangeReceiver();
         TraceEvent.end("WebContentsAccessibilityImpl.onAttachedToWindow");
     }
 
