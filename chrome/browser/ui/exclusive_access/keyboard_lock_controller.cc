@@ -41,8 +41,9 @@ KeyboardLockController::KeyboardLockController(ExclusiveAccessManager* manager)
 KeyboardLockController::~KeyboardLockController() = default;
 
 bool KeyboardLockController::HandleUserPressedEscape() {
-  if (!IsKeyboardLockActive())
+  if (!IsKeyboardLockActive() || RequiresPressAndHoldEscToExit()) {
     return false;
+  }
 
   UnlockKeyboard();
   return true;
@@ -121,10 +122,6 @@ bool KeyboardLockController::HandleKeyEvent(
 void KeyboardLockController::CancelKeyboardLockRequest(WebContents* tab) {
   if (tab == exclusive_access_tab())
     UnlockKeyboard();
-}
-
-void KeyboardLockController::LostKeyboardLock() {
-  UnlockKeyboard();
 }
 
 void KeyboardLockController::LockKeyboard(content::WebContents* web_contents,

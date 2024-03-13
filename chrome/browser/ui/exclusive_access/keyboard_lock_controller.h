@@ -54,10 +54,6 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   // Returns true if the user must press and hold esc to exit keyboard lock.
   bool RequiresPressAndHoldEscToExit() const;
 
-  // Notifies KeyboardLockController instance that the current tab has lost
-  // exclusive access.
-  void LostKeyboardLock();
-
   // Allows for special handling for KeyDown/KeyUp events.  Returns true if the
   // event was handled by the KeyboardLockController.
   bool HandleKeyEvent(const content::NativeWebKeyboardEvent& event);

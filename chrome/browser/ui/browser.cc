@@ -2302,7 +2302,8 @@ void Browser::RequestPointerLock(WebContents* web_contents,
 }
 
 void Browser::LostPointerLock() {
-  exclusive_access_manager_->pointer_lock_controller()->LostPointerLock();
+  exclusive_access_manager_->pointer_lock_controller()
+      ->ExitExclusiveAccessToPreviousState();
 }
 
 void Browser::RequestKeyboardLock(WebContents* web_contents,

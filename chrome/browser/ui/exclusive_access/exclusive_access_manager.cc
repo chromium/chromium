@@ -177,9 +177,9 @@ void ExclusiveAccessManager::OnUserInput() {
 }
 
 void ExclusiveAccessManager::ExitExclusiveAccess() {
-  fullscreen_controller_.ExitExclusiveAccessToPreviousState();
-  keyboard_lock_controller_.LostKeyboardLock();
-  pointer_lock_controller_.LostPointerLock();
+  for (auto controller : exclusive_access_controllers_) {
+    controller->ExitExclusiveAccessToPreviousState();
+  }
 }
 
 void ExclusiveAccessManager::RecordLockStateOnEnteringFullscreen(

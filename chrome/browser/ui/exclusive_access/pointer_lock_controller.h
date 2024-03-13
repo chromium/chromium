@@ -41,11 +41,7 @@ class PointerLockController : public ExclusiveAccessControllerBase {
 
   // Override from ExclusiveAccessControllerBase
   bool HandleUserPressedEscape() override;
-
   void ExitExclusiveAccessToPreviousState() override;
-
-  // Called by Browser::LostPointerLock.
-  void LostPointerLock();
 
   void UnlockPointer();
 
