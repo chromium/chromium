@@ -562,6 +562,11 @@ bool CaptureModeController::IsAudioCaptureDisabledByPolicy() const {
   return delegate_->IsAudioCaptureDisabledByPolicy();
 }
 
+bool CaptureModeController::IsCustomFolderManagedByPolicy() const {
+  return delegate_->GetPolicyCapturePath().enforcement ==
+         CaptureModeDelegate::CapturePathEnforcement::kManaged;
+}
+
 bool CaptureModeController::IsAudioRecordingInProgress() const {
   return video_recording_watcher_ &&
          !video_recording_watcher_->is_shutting_down() &&
@@ -707,6 +712,7 @@ void CaptureModeController::DisableUserNudgeForever() {
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
+  DCHECK(!IsCustomFolderManagedByPolicy());
   GetActiveUserPrefService()->SetBoolean(kUsesDefaultCapturePathPrefName,
                                          value);
 
@@ -715,6 +721,7 @@ void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
 }
 
 void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
+  DCHECK(!IsCustomFolderManagedByPolicy());
   auto* pref_service = GetActiveUserPrefService();
   pref_service->SetFilePath(kCustomCapturePathPrefName, path);
 

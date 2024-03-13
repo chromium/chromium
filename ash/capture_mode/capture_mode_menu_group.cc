@@ -151,7 +151,8 @@ class CaptureModeMenuItem
   // appear to be pushed inside under the header.
   CaptureModeMenuItem(views::Button::PressedCallback callback,
                       std::u16string item_label,
-                      bool indented)
+                      bool indented,
+                      bool enabled)
       : views::Button(std::move(callback)),
         label_view_(AddChildView(
             std::make_unique<views::Label>(std::move(item_label)))) {
@@ -162,6 +163,7 @@ class CaptureModeMenuItem
     SetInkDropForButton(this);
     GetViewAccessibility().OverrideIsLeaf(true);
     SetAccessibleName(label_view_->GetText());
+    SetEnabled(enabled);
   }
 
   CaptureModeMenuItem(const CaptureModeMenuItem&) = delete;
@@ -421,11 +423,12 @@ void CaptureModeMenuGroup::RemoveOptionIfAny(int option_id) {
 }
 
 void CaptureModeMenuGroup::AddMenuItem(views::Button::PressedCallback callback,
-                                       std::u16string item_label) {
+                                       std::u16string item_label,
+                                       bool enabled) {
   menu_items_.push_back(
       views::View::AddChildView(std::make_unique<CaptureModeMenuItem>(
           std::move(callback), std::move(item_label),
-          /*indented=*/!!menu_header_)));
+          /*indented=*/!!menu_header_, enabled)));
 }
 
 bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {

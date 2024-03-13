@@ -104,7 +104,8 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // will open a folder window for user to select a new folder to save the
   // captured filed on click/press.
   void AddMenuItem(views::Button::PressedCallback callback,
-                   std::u16string item_label);
+                   std::u16string item_label,
+                   bool enabled);
 
   // Returns true if the option with the given `option_id` is checked, if such
   // option exists.

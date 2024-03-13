@@ -144,6 +144,10 @@ class ASH_EXPORT CaptureModeController
   // `AudioCaptureAllowed` policy.
   bool IsAudioCaptureDisabledByPolicy() const;
 
+  // Returns true if the folder to save captures is enforced by
+  // `ScreenCaptureLocation` policy and can't be changed.
+  bool IsCustomFolderManagedByPolicy() const;
+
   // Returns true if there's an active video recording that is recording audio.
   bool IsAudioRecordingInProgress() const;
 
