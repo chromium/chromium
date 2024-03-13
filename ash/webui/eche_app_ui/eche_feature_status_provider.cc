@@ -11,70 +11,24 @@
 #include "chromeos/ash/components/multidevice/software_feature_state.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
-#include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
 
 namespace ash {
 namespace eche_app {
 namespace {
 
-using multidevice::RemoteDeviceRef;
-using multidevice::RemoteDeviceRefList;
-using multidevice::SoftwareFeature;
-using multidevice::SoftwareFeatureState;
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
-
-bool IsEnabledHost(const RemoteDeviceRef& device) {
-  return device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) !=
-             SoftwareFeatureState::kNotSupported &&
-         device.GetSoftwareFeatureState(SoftwareFeature::kEcheHost) ==
-             SoftwareFeatureState::kEnabled;
-}
-
-bool IsEligibleForFeature(
-    const std::optional<RemoteDeviceRef>& local_device,
-    multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice host_status,
-    const RemoteDeviceRefList& remote_devices,
-    FeatureState feature_state) {
-  if (feature_state == FeatureState::kProhibitedByPolicy)
-    return false;
-  if (feature_state == FeatureState::kNotSupportedByPhone)
-    return false;
-  if (!local_device)
-    return false;
-  if (local_device->GetSoftwareFeatureState(SoftwareFeature::kEcheClient) ==
-      SoftwareFeatureState::kNotSupported)
-    return false;
-  if (host_status.first == HostStatus::kNoEligibleHosts)
-    return false;
-  if (host_status.second.has_value()) {
-    return IsEnabledHost(*(host_status.second));
-  }
-  for (const RemoteDeviceRef& device : remote_devices) {
-    if (IsEnabledHost(device))
-      return true;
-  }
-  return false;
-}
-
-bool IsFeatureDisabledByUser(FeatureState feature_state) {
-  return feature_state == FeatureState::kDisabledByUser ||
-         feature_state == FeatureState::kUnavailableSuiteDisabled ||
-         feature_state == FeatureState::kUnavailableTopLevelFeatureDisabled;
-}
 
 }  // namespace
 
 EcheFeatureStatusProvider::EcheFeatureStatusProvider(
     phonehub::PhoneHubManager* phone_hub_manager,
-    device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     secure_channel::ConnectionManager* connection_manager,
     EcheConnectionStatusHandler* eche_connection_status_handler)
     : phone_hub_feature_status_provider_(
           phone_hub_manager->GetFeatureStatusProvider()),
-      device_sync_client_(device_sync_client),
       multidevice_setup_client_(multidevice_setup_client),
       connection_manager_(connection_manager),
       eche_connection_status_handler_(eche_connection_status_handler),
@@ -138,46 +92,42 @@ void EcheFeatureStatusProvider::UpdateStatus() {
 }
 
 FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
-  // If PhoneHub is in some degree of unavailability, return that Eche is
-  // unavailable.
   switch (current_phone_hub_feature_status_) {
     case phonehub::FeatureStatus::kNotEligibleForFeature:
-      [[fallthrough]];
     case phonehub::FeatureStatus::kEligiblePhoneButNotSetUp:
-      [[fallthrough]];
     case phonehub::FeatureStatus::kPhoneSelectedAndPendingSetup:
-      [[fallthrough]];
     case phonehub::FeatureStatus::kDisabled:
-      [[fallthrough]];
     case phonehub::FeatureStatus::kUnavailableBluetoothOff:
       return FeatureStatus::kDependentFeature;
+
     case phonehub::FeatureStatus::kEnabledAndConnecting:
-      [[fallthrough]];
     case phonehub::FeatureStatus::kEnabledButDisconnected:
-      [[fallthrough]];
-    // The device is in a suspended state.
     case phonehub::FeatureStatus::kLockOrSuspended:
       return FeatureStatus::kDependentFeaturePending;
+
     case phonehub::FeatureStatus::kEnabledAndConnected:
       break;
   }
 
-  FeatureState feature_state =
-      multidevice_setup_client_->GetFeatureState(Feature::kEche);
+  switch (multidevice_setup_client_->GetFeatureState(Feature::kEche)) {
+    case FeatureState::kDisabledByUser:
+    case FeatureState::kUnavailableTopLevelFeatureDisabled:
+      return FeatureStatus::kDisabled;
 
-  if (!device_sync_client_->is_ready()) {
-    return FeatureStatus::kIneligible;
+    case FeatureState::kProhibitedByPolicy:
+    case FeatureState::kNotSupportedByChromebook:
+    case FeatureState::kNotSupportedByPhone:
+    case FeatureState::kUnavailableInsufficientSecurity:
+    case FeatureState::kUnavailableSuiteDisabled:
+    case FeatureState::kUnavailableNoVerifiedHost_ClientNotReady:
+    case FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts:
+    case FeatureState::
+        kUnavailableNoVerifiedHost_HostExistsButNotSetAndVerified:
+      return FeatureStatus::kIneligible;
+
+    case FeatureState::kEnabledByUser:
+      break;
   }
-
-  if (!IsEligibleForFeature(device_sync_client_->GetLocalDeviceMetadata(),
-                            multidevice_setup_client_->GetHostStatus(),
-                            device_sync_client_->GetSyncedDevices(),
-                            feature_state)) {
-    return FeatureStatus::kIneligible;
-  }
-
-  if (IsFeatureDisabledByUser(feature_state))
-    return FeatureStatus::kDisabled;
 
   switch (connection_manager_->GetStatus()) {
     case secure_channel::ConnectionManager::Status::kDisconnected:
@@ -187,8 +137,6 @@ FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
     case secure_channel::ConnectionManager::Status::kConnected:
       return FeatureStatus::kConnected;
   }
-  PA_LOG(INFO) << "Unexpected feature status state, returning default";
-  return FeatureStatus::kDisconnected;
 }
 
 }  // namespace eche_app

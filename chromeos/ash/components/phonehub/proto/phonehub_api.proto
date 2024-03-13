@@ -271,6 +271,8 @@ message CrosState {
   CameraRollSetting camera_roll_setting = 2;
   // Optional for older Chromebooks pre-attestation.
   AttestationData attestation_data = 4;
+  // Request Eche feature status info from the phone through Phone hub.
+  bool should_provide_eche_status = 5;
 
   reserved 3;  // deprecated notification_icon_styling field.
 }

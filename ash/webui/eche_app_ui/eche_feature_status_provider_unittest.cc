@@ -83,9 +83,8 @@ class EcheFeatureStatusProviderTest : public testing::Test {
     eche_connection_status_handler_ =
         std::make_unique<EcheConnectionStatusHandler>();
     provider_ = std::make_unique<EcheFeatureStatusProvider>(
-        &fake_phone_hub_manager, &fake_device_sync_client_,
-        &fake_multidevice_setup_client_, &fake_connection_manager_,
-        eche_connection_status_handler_.get());
+        &fake_phone_hub_manager, &fake_multidevice_setup_client_,
+        &fake_connection_manager_, eche_connection_status_handler_.get());
     provider_->AddObserver(&fake_observer_);
   }
 
@@ -228,10 +227,10 @@ TEST_F(EcheFeatureStatusProviderTest, Disabled) {
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostVerified,
-                      FeatureState::kUnavailableSuiteDisabled,
+                      FeatureState::kNotSupportedByChromebook,
                       /*eche_host_supported=*/true,
                       /*eche_host_enabled=*/true);
-  EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
+  EXPECT_EQ(FeatureStatus::kIneligible, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostVerified,
                       FeatureState::kUnavailableTopLevelFeatureDisabled,

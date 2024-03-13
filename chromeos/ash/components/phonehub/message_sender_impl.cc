@@ -70,6 +70,8 @@ void MessageSenderImpl::SendCrosState(
     }
   }
 
+  request.set_should_provide_eche_status(true);
+
   SendMessage(proto::MessageType::PROVIDE_CROS_STATE, &request);
   phone_hub_ui_readiness_recorder_->RecordCrosStateMessageSent();
 }
