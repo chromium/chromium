@@ -176,7 +176,6 @@ ConnectJobParams MakeSSLSocketParams(
     ConnectJobParams params,
     const HostPortPair& host_and_port,
     const SSLConfig& ssl_config,
-    PrivacyMode privacy_mode,
     const NetworkAnonymizationKey& network_anonymization_key) {
   scoped_refptr<TransportSocketParams> transport_socket_params =
       MaybeTransportSocketParams(params);
@@ -187,7 +186,7 @@ ConnectJobParams MakeSSLSocketParams(
   return ConnectJobParams(base::MakeRefCounted<SSLSocketParams>(
       std::move(transport_socket_params), std::move(socks_socket_params),
       std::move(http_proxy_socket_params), host_and_port, ssl_config,
-      privacy_mode, network_anonymization_key));
+      network_anonymization_key));
 }
 
 // Recursively generate the params for a proxy at `host_port_pair` and the given
@@ -258,8 +257,7 @@ ConnectJobParams CreateProxyParams(
   if (proxy_server.is_secure_http_like()) {
     params =
         MakeSSLSocketParams(std::move(params), proxy_server.host_port_pair(),
-                            proxy_server_ssl_config, PRIVACY_MODE_DISABLED,
-                            network_anonymization_key);
+                            proxy_server_ssl_config, network_anonymization_key);
   }
 
   // Further wrap the underlying connection params, or the SSL params wrapping
@@ -313,6 +311,7 @@ ConnectJobParams ConstructConnectJobParams(
   SSLConfig ssl_config;
   if (UsingSsl(endpoint)) {
     ssl_config.allowed_bad_certs = allowed_bad_certs;
+    ssl_config.privacy_mode = privacy_mode;
 
     ConfigureAlpn(endpoint, alpn_mode, network_anonymization_key,
                   *common_connect_job_params, ssl_config,
@@ -352,8 +351,7 @@ ConnectJobParams ConstructConnectJobParams(
     // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
     // when available)?
     params = MakeSSLSocketParams(std::move(params), ToHostPortPair(endpoint),
-                                 ssl_config, privacy_mode,
-                                 network_anonymization_key);
+                                 ssl_config, network_anonymization_key);
   }
 
   return params;

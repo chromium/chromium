@@ -106,11 +106,12 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
       /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
 
   SSLConfig ssl_config;
+  ssl_config.privacy_mode = key.privacy_mode();
   auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
       transport_params, /*socks_proxy_params=*/nullptr,
       /*http_proxy_params=*/nullptr,
       HostPortPair::FromSchemeHostPort(destination), ssl_config,
-      key.privacy_mode(), key.network_anonymization_key());
+      key.network_anonymization_key());
   TestConnectJobDelegate connect_job_delegate;
   SSLConnectJob connect_job(MEDIUM, SocketTag(), common_connect_job_params,
                             ssl_params, &connect_job_delegate,

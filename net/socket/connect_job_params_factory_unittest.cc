@@ -187,7 +187,7 @@ void VerifySSLSocketParams(
             ssl_config.renego_allowed_default);
   EXPECT_EQ(params->ssl_config().renego_allowed_for_protos,
             ssl_config.renego_allowed_for_protos);
-  EXPECT_EQ(params->privacy_mode(), privacy_mode);
+  EXPECT_EQ(params->ssl_config().privacy_mode, privacy_mode);
   EXPECT_EQ(params->network_anonymization_key(), network_anonymization_key);
 }
 

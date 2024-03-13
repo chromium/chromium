@@ -51,14 +51,12 @@ SSLSocketParams::SSLSocketParams(
     scoped_refptr<HttpProxySocketParams> http_proxy_params,
     const HostPortPair& host_and_port,
     const SSLConfig& ssl_config,
-    PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key)
     : direct_params_(std::move(direct_params)),
       socks_proxy_params_(std::move(socks_proxy_params)),
       http_proxy_params_(std::move(http_proxy_params)),
       host_and_port_(host_and_port),
       ssl_config_(ssl_config),
-      privacy_mode_(privacy_mode),
       network_anonymization_key_(network_anonymization_key) {
   // Only one set of lower level ConnectJob params should be non-NULL.
   DCHECK((direct_params_ && !socks_proxy_params_ && !http_proxy_params_) ||
@@ -388,7 +386,6 @@ int SSLConnectJob::DoSSLConnect() {
   ssl_config.ignore_certificate_errors =
       *common_connect_job_params()->ignore_certificate_errors;
   ssl_config.network_anonymization_key = params_->network_anonymization_key();
-  ssl_config.privacy_mode = params_->privacy_mode();
 
   if (ssl_client_context()->config().ech_enabled) {
     if (ech_retry_configs_) {

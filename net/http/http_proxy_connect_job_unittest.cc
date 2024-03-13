@@ -155,7 +155,7 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
             secure_dns_policy, OnHostResolutionCallback(),
             /*supported_alpns=*/base::flat_set<std::string>()),
         nullptr, nullptr, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
-        PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
+        NetworkAnonymizationKey());
   }
 
   // Returns a correctly constructed HttpProxyParams for a single HTTP or HTTPS
@@ -211,8 +211,7 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
     return base::MakeRefCounted<SSLSocketParams>(
         std::move(transport_params),
         /*socks_proxy_params=*/nullptr, std::move(http_proxy_params),
-        proxy_server.host_port_pair(), SSLConfig(), PRIVACY_MODE_DISABLED,
-        NetworkAnonymizationKey());
+        proxy_server.host_port_pair(), SSLConfig(), NetworkAnonymizationKey());
   }
 
   // Creates a correctly constructed `HttpProxySocketParams()` corresponding to

@@ -180,7 +180,7 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
             ? CreateHttpProxySocketParams(secure_dns_policy)
             : nullptr,
         HostPortPair::FromSchemeHostPort(kHostHttps), SSLConfig(),
-        PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
+        NetworkAnonymizationKey());
   }
 
   void AddAuthToCache() {

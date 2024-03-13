@@ -19,7 +19,6 @@
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/base/privacy_mode.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/socket/connect_job.h"
@@ -48,7 +47,6 @@ class NET_EXPORT_PRIVATE SSLSocketParams
                   scoped_refptr<HttpProxySocketParams> http_proxy_params,
                   const HostPortPair& host_and_port,
                   const SSLConfig& ssl_config,
-                  PrivacyMode privacy_mode,
                   NetworkAnonymizationKey network_anonymization_key);
 
   SSLSocketParams(const SSLSocketParams&) = delete;
@@ -69,7 +67,6 @@ class NET_EXPORT_PRIVATE SSLSocketParams
 
   const HostPortPair& host_and_port() const { return host_and_port_; }
   const SSLConfig& ssl_config() const { return ssl_config_; }
-  PrivacyMode privacy_mode() const { return privacy_mode_; }
   const NetworkAnonymizationKey& network_anonymization_key() const {
     return network_anonymization_key_;
   }
@@ -83,7 +80,6 @@ class NET_EXPORT_PRIVATE SSLSocketParams
   const scoped_refptr<HttpProxySocketParams> http_proxy_params_;
   const HostPortPair host_and_port_;
   const SSLConfig ssl_config_;
-  const PrivacyMode privacy_mode_;
   const NetworkAnonymizationKey network_anonymization_key_;
 };
 
