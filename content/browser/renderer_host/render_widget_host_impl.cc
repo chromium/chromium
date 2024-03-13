@@ -2487,6 +2487,9 @@ void RenderWidgetHostImpl::ClearDisplayedGraphics() {
   if (view_) {
     view_->ResetFallbackToFirstNavigationSurface();
   }
+  if (blink_frame_widget_) {
+    blink_frame_widget_->NotifyClearedDisplayedGraphics();
+  }
 }
 
 void RenderWidgetHostImpl::OnKeyboardEventAck(

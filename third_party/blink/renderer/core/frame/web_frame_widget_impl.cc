@@ -635,6 +635,25 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   std::move(callback).Run(std::nullopt, std::nullopt);
 }
 
+void WebFrameWidgetImpl::NotifyClearedDisplayedGraphics() {
+  if (!LocalRootImpl() || !LocalRootImpl()->GetFrame() ||
+      !LocalRootImpl()->GetFrame()->GetDocument()) {
+    return;
+  }
+
+  auto& document = *LocalRootImpl()->GetFrame()->GetDocument();
+  // If we've already been revealed, then we may have produced a frame already.
+  if (document.domWindow() && document.domWindow()->HasBeenRevealed()) {
+    return;
+  }
+
+  // Skip any incoming cross document transitions here.
+  if (ViewTransition* transition =
+          ViewTransitionUtils::GetIncomingCrossDocumentTransition(document)) {
+    transition->SkipTransition();
+  }
+}
+
 void WebFrameWidgetImpl::HandleStylusWritingGestureAction(
     mojom::blink::StylusWritingGestureDataPtr gesture_data,
     HandleStylusWritingGestureActionCallback callback) {

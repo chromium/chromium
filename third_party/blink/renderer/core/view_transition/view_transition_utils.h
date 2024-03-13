@@ -164,6 +164,10 @@ class CORE_EXPORT ViewTransitionUtils {
   // exists.
   static ViewTransition* GetTransition(const Document& document);
 
+  // Return the incoming cross-document view transition, if one exists.
+  static ViewTransition* GetIncomingCrossDocumentTransition(
+      const Document& document);
+
   // If the given document has an in-progress view transition, this will return
   // the script delegate associated with that view transition (which may be
   // null).

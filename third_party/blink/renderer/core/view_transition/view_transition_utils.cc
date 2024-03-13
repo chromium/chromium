@@ -26,6 +26,16 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
 }
 
 // static
+ViewTransition* ViewTransitionUtils::GetIncomingCrossDocumentTransition(
+    const Document& document) {
+  if (auto* transition = GetTransition(document);
+      transition && transition->IsForNavigationOnNewDocument()) {
+    return transition;
+  }
+  return nullptr;
+}
+
+// static
 DOMViewTransition* ViewTransitionUtils::GetTransitionScriptDelegate(
     const Document& document) {
   ViewTransition* view_transition =

@@ -62,6 +62,7 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
   void OnStartStylusWriting(OnStartStylusWritingCallback callback) override {}
   void SetBackgroundOpaque(bool value) override {}
   void SetTextDirection(base::i18n::TextDirection direction) override;
+  void NotifyClearedDisplayedGraphics() override {}
   void SetActive(bool active) override;
   void SetInheritedEffectiveTouchActionForSubFrame(
       const cc::TouchAction touch_action) override {}
