@@ -9,7 +9,6 @@
     --content-container-width: 500px;
     --radio-button-horizontal-padding: 16px;
     --choice-gap: 16px;
-    --cr-expand-button-icon-size: 20px;
     color: var(--cr-primary-text-color);
   }
 
@@ -79,9 +78,8 @@
   .choice-text {
     --choice-text-width: calc(var(--content-container-width) -
         2 * var(--radio-button-horizontal-padding) -
-        var(--search-engine-icon-size) - 3*var(--choice-gap) -
-        var(--cr-expand-button-icon-size) - var(--cr-radio-button-label-spacing)
-        - var(--cr-radio-button-size));
+        var(--search-engine-icon-size) - var(--choice-gap) -
+        var(--cr-radio-button-label-spacing) - var(--cr-radio-button-size));
     display: flex;
     flex-direction: column;
     width: var(--choice-text-width);
@@ -192,24 +190,12 @@
     border-radius: calc(var(--scrollbar-height) /2);
   }
 
-  .chevron {
-    --cr-expand-button-size: 24px;
-    --cr-icon-button-margin-start: 0;
-    --cr-section-vertical-padding: 0;
-    margin-inline-start: auto;
-  }
-
   .cr-icon {
     --cr-icon-color: currentColor;
     --cr-icon-image: url(images/arrow_downward.svg);
     --cr-icon-ripple-size: 18px;
     --cr-icon-size: 18px;
     margin: 0;
-  }
-
-  .vertical-separator {
-    border-left: 0.5px solid var(--google-grey-300);
-    height: 24px;
   }
 
   .marketing-snippet {
@@ -246,10 +232,6 @@
 
     #infoLink {
       color: var(--google-blue-300);
-    }
-
-    .vertical-separator {
-      border-color: var(--google-grey-700);
     }
 
     .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -361,17 +343,10 @@
                 [[item.name]]
               </div>
               <div class$="marketing-snippet
-                  [[getMarketingSnippetClass(item.showMarketingSnippet)]]">
+                  [[getMarketingSnippetClass_(item, snippetDisplayed_)]]">
                 [[item.marketingSnippet]]
               </div>
             </div>
-            <cr-expand-button class="chevron"
-                no-hover role="button"
-                expanded="{{item.showMarketingSnippet}}"
-                aria-label="$i18n{chevronA11yLabel}"
-                on-click="[[onChevronClicked_(item.showMarketingSnippet)]]">
-            </cr-expand-button>
-            <div class="vertical-separator"></div>
           </div>
         </cr-radio-button>
     </template>

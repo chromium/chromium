@@ -32,7 +32,6 @@ const DeepQuery kLearnMoreLink{"search-engine-choice-app", "#infoLink"};
 const DeepQuery kLearnMoreDialog{"search-engine-choice-app", "#infoDialog"};
 const DeepQuery kLearnMoreDialogCloseButton{"search-engine-choice-app",
                                             "#infoDialogButton"};
-const DeepQuery kChevron = {"search-engine-choice-app", "cr-expand-button"};
 const DeepQuery kRadioButton = {"search-engine-choice-app", "cr-radio-button"};
 
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonEnabled);
@@ -131,7 +130,6 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
       PressJsButton(kWebContentsId, kActionButton),
       // The button should become disabled because we didn't make a choice.
       WaitForButtonDisabled(kWebContentsId, kActionButton),
-      PressJsButton(kWebContentsId, kChevron),
       PressJsButton(kWebContentsId, kRadioButton),
       WaitForButtonEnabled(kWebContentsId, kActionButton),
       PressJsButton(kWebContentsId, kActionButton),
@@ -141,8 +139,6 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed,
       1);
-  EXPECT_EQ(UserActionTester().GetActionCount("ExpandSearchEngineDescription"),
-            1);
 
   EXPECT_FALSE(search_engine_choice_service->IsShowingDialog(browser()));
   TemplateURLService* template_url_service =

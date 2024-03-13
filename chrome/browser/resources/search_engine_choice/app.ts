@@ -10,7 +10,6 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import './strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -64,6 +63,7 @@ export class SearchEngineChoiceAppElement extends
       selectedChoice_: {
         type: Number,
         value: -1,
+        observer: 'onSelectedChoiceChanged_',
       },
 
       isActionButtonDisabled_: {
@@ -81,6 +81,8 @@ export class SearchEngineChoiceAppElement extends
         type: Boolean,
         value: false,
       },
+
+      snippetDisplayed_: Boolean,
     };
   }
 
@@ -89,6 +91,7 @@ export class SearchEngineChoiceAppElement extends
   private pageHandler_: PageHandlerRemote;
   private hasUserScrolledToTheBottom_: boolean;
   private actionButtonText_: string;
+  private snippetDisplayed_: boolean;
 
   constructor() {
     super();
@@ -155,18 +158,48 @@ export class SearchEngineChoiceAppElement extends
     window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
   }
 
-  private onChevronClicked_(chevronExpanded: boolean) {
-    if (chevronExpanded) {
-      chrome.metricsPrivate.recordUserAction('ExpandSearchEngineDescription');
-    }
-  }
-
-  private getMarketingSnippetClass(showMarketingSnippet: boolean) {
-    return showMarketingSnippet ? '' : 'truncate-text';
+  private getMarketingSnippetClass_(item: SearchEngineChoice) {
+    return item.showMarketingSnippet ? '' : 'truncate-text';
   }
 
   private onInfoDialogButtonClicked_() {
     this.$.infoDialog.close();
+  }
+
+  private resetSnippetState_(prepopulatedId: number) {
+    if (prepopulatedId === -1) {
+      return;
+    }
+
+    // Get the selected engine.
+    const choice =
+        this.choiceList_.find(elem => elem.prepopulateId === prepopulatedId)!;
+    choice.showMarketingSnippet = false;
+    this.snippetDisplayed_ = false;
+  }
+
+  private showSearchEngineSnippet_(prepopulateId: number) {
+    if (prepopulateId === -1) {
+      return;
+    }
+
+    // Get the selected engine.
+    const choice =
+        this.choiceList_.find(elem => elem.prepopulateId === prepopulateId)!;
+
+    choice.showMarketingSnippet = true;
+    this.snippetDisplayed_ = true;
+  }
+
+  private onSelectedChoiceChanged_(
+      newPrepopulatedId: string, oldPrepopulatedId: string) {
+    // No search engine selected.
+    if (parseInt(newPrepopulatedId) === -1) {
+      return;
+    }
+
+    this.resetSnippetState_(parseInt(oldPrepopulatedId));
+    this.showSearchEngineSnippet_(parseInt(newPrepopulatedId));
   }
 
   private onPageScroll_() {
