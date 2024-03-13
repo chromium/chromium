@@ -36,10 +36,8 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkScalar.h"
-#include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/effects/SkHighContrastFilter.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "third_party/skia/include/private/chromium/SkImageChromium.h"
 #include "third_party/skia/include/private/chromium/Slug.h"
@@ -515,19 +513,8 @@ void PaintOpWriter::Write(const sk_sp<sktext::gpu::Slug>& slug) {
   if (slug) {
     // TODO(penghuang): should we use a unique id to avoid sending the same
     // slug?
-    SkSerialProcs procs;
-    procs.fImageProc = [](SkImage* img, void*) -> sk_sp<SkData> {
-      if (!img) {
-        return nullptr;
-      }
-      // Slugs never use GPU-backed images because OOP-R does not use
-      // GrDirectContext.
-      CHECK(!img->isTextureBacked());
-      return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
-    };
     bytes_written = slug->serialize(
-        memory_, base::bits::AlignDown(remaining_bytes(), kDefaultAlignment),
-        procs);
+        memory_, base::bits::AlignDown(remaining_bytes(), kDefaultAlignment));
     if (bytes_written == 0u) {
       valid_ = false;
       return;
