@@ -545,8 +545,8 @@ TEST_F(
   EXPECT_TRUE(first.IsReady());
 }
 
-// Tests that calling reset cancels ongoing network requests without ever
-// invoking callbacks.
+// Tests that calling reset cancels ongoing network requests and runs pending
+// callbacks with a `PlusAddressRequestErrorType::kUserSignedOut`.
 TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForNetwork) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
@@ -559,11 +559,13 @@ TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForNetwork) {
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
   client().Reset();
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
-  EXPECT_FALSE(future.IsReady());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
+                              PlusAddressRequestErrorType::kUserSignedOut)));
 }
 
-// Tests that calling reset cancels ongoing OAuth requests without ever
-// invoking callbacks.
+// Tests that calling reset cancels ongoing OAuth requests and runs pending
+// callbacks with a `PlusAddressRequestErrorType::kUserSignedOut`.
 TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForOAuth) {
   const url::Origin origin = url::Origin::Create(GURL("https://foobar.com"));
   std::string facet = origin.Serialize();
@@ -572,7 +574,9 @@ TEST_F(PlusAddressHttpClientRequests, ResetWhileWaitingForOAuth) {
   client().ReservePlusAddress(origin, future.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
   client().Reset();
-  EXPECT_FALSE(future.IsReady());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
+                              PlusAddressRequestErrorType::kUserSignedOut)));
 }
 
 TEST(PlusAddressHttpClient, ChecksUrlParamIsValidGurl) {

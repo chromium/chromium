@@ -434,7 +434,9 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
   identity_env().ClearPrimaryAccount();
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
-  EXPECT_FALSE(future.IsReady());
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
+                              PlusAddressRequestErrorType::kUserSignedOut)));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

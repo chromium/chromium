@@ -34,12 +34,16 @@ enum class PlusAddressRequestErrorType {
   kRequestNotSupportedError = 3,
   // The refresh request is not allowed because the limit of requests has been
   // meet.
-  kMaxRefreshesReached = 4
+  kMaxRefreshesReached = 4,
+  // The request could not be fulfilled because the user signed out and the
+  // network request was cancelled.
+  kUserSignedOut = 5,
 };
 
 class PlusAddressRequestError {
  public:
-  explicit PlusAddressRequestError(PlusAddressRequestErrorType error_type)
+  constexpr explicit PlusAddressRequestError(
+      PlusAddressRequestErrorType error_type)
       : error_type_(error_type) {}
 
   static PlusAddressRequestError AsNetworkError(
