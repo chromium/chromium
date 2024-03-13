@@ -338,6 +338,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   ui::HeatmapPalmDetector::SetInstance(
       std::make_unique<ash::HeatmapPalmDetectorImpl>());
+
+  read_write_cards_manager_ =
+      std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
@@ -398,9 +401,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
-
-  read_write_cards_manager_ =
-      std::make_unique<chromeos::ReadWriteCardsManagerImpl>();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
