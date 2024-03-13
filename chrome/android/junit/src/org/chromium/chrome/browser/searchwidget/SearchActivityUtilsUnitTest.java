@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.text.TextUtils;
 
 import org.junit.Test;
@@ -21,6 +22,8 @@ import org.robolectric.Shadows;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -31,6 +34,19 @@ public class SearchActivityUtilsUnitTest {
     private static final GURL GOOD_URL = new GURL("https://abc.xyz");
     private static final GURL EMPTY_URL = GURL.emptyGURL();
     private Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+
+    private Intent buildSearchWidgetIntent() {
+        Intent intent = new Intent();
+        intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
+        return intent;
+    }
+
+    private Intent buildQuickActionSearchWidgetIntent() {
+        Intent intent = new Intent();
+        intent.putExtra(
+                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET, true);
+        return intent;
+    }
 
     @Test
     public void buildTrustedIntent_appliesExpectedAction() {
@@ -90,29 +106,43 @@ public class SearchActivityUtilsUnitTest {
     }
 
     @Test
-    public void isOmniboxRequestForResult_validIntent() {
+    public void getIntentOrigin_forOmniboxRequestForResult() {
         SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
-        assertTrue(SearchActivityUtils.isOmniboxRequestForResult(intent));
+        assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
     }
 
     @Test
-    public void isOmniboxRequestForResult_untrustedIntent() {
+    public void getIntentOrigin_forSearchWidgetRequest() {
+        Intent intent = buildSearchWidgetIntent();
+        assertEquals(IntentOrigin.SEARCH_WIDGET, SearchActivityUtils.getIntentOrigin(intent));
+    }
+
+    @Test
+    public void getIntentOrigin_forQuickActionSearchWidgetRequest() {
+        Intent intent = buildQuickActionSearchWidgetIntent();
+        assertEquals(
+                IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
+                SearchActivityUtils.getIntentOrigin(intent));
+    }
+
+    @Test
+    public void getIntentOrigin_untrustedIntent() {
         SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
-        assertFalse(SearchActivityUtils.isOmniboxRequestForResult(intent));
+        assertEquals(IntentOrigin.UNKNOWN, SearchActivityUtils.getIntentOrigin(intent));
     }
 
     @Test
-    public void isOmniboxRequestForResult_missingData() {
+    public void getOmniboxRequestType_omniboxRequestForResultMissingData() {
         SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(SearchActivityUtils.EXTRA_CURRENT_URL);
-        assertFalse(SearchActivityUtils.isOmniboxRequestForResult(intent));
+        assertEquals(IntentOrigin.UNKNOWN, SearchActivityUtils.getIntentOrigin(intent));
     }
 
     @Test

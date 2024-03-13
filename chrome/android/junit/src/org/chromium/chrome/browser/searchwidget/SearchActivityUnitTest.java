@@ -35,6 +35,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.IntentOrigin;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.url.GURL;
 
@@ -45,7 +46,8 @@ import org.chromium.url.GURL;
 public class SearchActivityUnitTest {
     // SearchActivityUtils call intercepting mock.
     private interface TestSearchActivityUtils {
-        boolean isOmniboxRequestForResult(Intent intent);
+        @IntentOrigin
+        int getIntentOrigin(Intent intent);
 
         void resolveOmniboxRequestForResult(Activity activity, GURL url);
     }
@@ -56,8 +58,8 @@ public class SearchActivityUnitTest {
         static TestSearchActivityUtils sMockUtils;
 
         @Implementation
-        public static boolean isOmniboxRequestForResult(Intent intent) {
-            return sMockUtils.isOmniboxRequestForResult(intent);
+        public static @IntentOrigin int getIntentOrigin(Intent intent) {
+            return sMockUtils.getIntentOrigin(intent);
         }
 
         @Implementation
@@ -94,7 +96,8 @@ public class SearchActivityUnitTest {
 
     @Test
     public void loadUrl_dispatchResultToCallingActivity() {
-        doReturn(true).when(mUtils).isOmniboxRequestForResult(any());
+        doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent());
 
         mActivity.loadUrl("https://abc.xyz", 0, null, null);
         verify(mUtils)
@@ -104,7 +107,8 @@ public class SearchActivityUnitTest {
 
     @Test
     public void loadUrl_openInChromeBrowser() {
-        doReturn(false).when(mUtils).isOmniboxRequestForResult(any());
+        doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent());
 
         mActivity.loadUrl("https://abc.xyz", 0, null, null);
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
@@ -113,8 +117,9 @@ public class SearchActivityUnitTest {
 
     @Test
     public void loadUrl_noActionWhenActivityIsNotReady() {
+        doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
         mActivity.setActivityUsableForTesting(false);
-        doReturn(false).when(mUtils).isOmniboxRequestForResult(any());
+        mActivity.handleNewIntent(new Intent());
 
         mActivity.loadUrl("https://abc.xyz", 0, null, null);
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
@@ -123,7 +128,8 @@ public class SearchActivityUnitTest {
 
     @Test
     public void cancelSearch_dispatchResultToCallingActivity() {
-        doReturn(true).when(mUtils).isOmniboxRequestForResult(any());
+        doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent());
 
         mActivity.cancelSearch();
         verify(mUtils).resolveOmniboxRequestForResult(mActivity, null);
@@ -131,7 +137,8 @@ public class SearchActivityUnitTest {
 
     @Test
     public void cancelSearch_terminateSearch() {
-        doReturn(false).when(mUtils).isOmniboxRequestForResult(any());
+        doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent());
 
         mActivity.cancelSearch();
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());

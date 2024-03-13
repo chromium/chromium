@@ -10,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -19,8 +20,25 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Class facilitating interactions with the SearchActivity and the Omnibox. */
 public class SearchActivityUtils {
+    @IntDef({
+        IntentOrigin.UNKNOWN,
+        IntentOrigin.SEARCH_WIDGET,
+        IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
+        IntentOrigin.CUSTOM_TAB
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface IntentOrigin {
+        int UNKNOWN = 0;
+        int SEARCH_WIDGET = 1;
+        int QUICK_ACTION_SEARCH_WIDGET = 2;
+        int CUSTOM_TAB = 3;
+    }
+
     @VisibleForTesting
     /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8 | 'I';
 
@@ -58,11 +76,46 @@ public class SearchActivityUtils {
     }
 
     /**
-     * @return true if the intent represents request for Omnibox for current activity.
+     * @return true if the intent represents a Search request for current activity.
      */
-    /* package */ static boolean isOmniboxRequestForResult(@NonNull Intent intent) {
+    private static boolean isOmniboxRequestForResult(@NonNull Intent intent) {
         return IntentUtils.isTrustedIntentFromSelf(intent)
                 && IntentUtils.safeHasExtra(intent, EXTRA_CURRENT_URL);
+    }
+
+    /**
+     * @return true if the intent represents a Search request from QuickActionSearchWidget.
+     */
+    private static boolean isQuickActionSearchWidgetRequest(@NonNull Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(
+                intent,
+                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET,
+                false);
+    }
+
+    /**
+     * @return true if the intent represents a Search request from old SearchWidget.
+     */
+    private static boolean isSearchWidgetRequest(@NonNull Intent intent) {
+        return IntentUtils.safeGetBooleanExtra(
+                intent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
+    }
+
+    /**
+     * Retrieve the intent origin.
+     *
+     * @param intent intent received by SearchActivity
+     * @return the origin of an intent
+     */
+    /* package */ static @IntentOrigin int getIntentOrigin(@NonNull Intent intent) {
+        if (isSearchWidgetRequest(intent)) {
+            return IntentOrigin.SEARCH_WIDGET;
+        } else if (isQuickActionSearchWidgetRequest(intent)) {
+            return IntentOrigin.QUICK_ACTION_SEARCH_WIDGET;
+        } else if (isOmniboxRequestForResult(intent)) {
+            return IntentOrigin.CUSTOM_TAB;
+        }
+        return IntentOrigin.UNKNOWN;
     }
 
     /**

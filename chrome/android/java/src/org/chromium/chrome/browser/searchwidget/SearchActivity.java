@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImp
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.IntentOrigin;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -147,6 +148,9 @@ public class SearchActivity extends AsyncInitializationActivity
     private ViewGroup mContentView;
 
     private View mAnchorView;
+
+    /** Incoming intent request type. See {@link SearchActivityUtils#IntentOrigin}. */
+    @IntentOrigin Integer mIntentOrigin;
 
     /** Whether the user is now allowed to perform searches. */
     private boolean mIsActivityUsable;
@@ -330,6 +334,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);
 
         // Kick off everything needed for the user to type into the box.
+        handleNewIntent(getIntent());
         beginQuery();
 
         // Kick off loading of the native library.
@@ -338,6 +343,13 @@ public class SearchActivity extends AsyncInitializationActivity
         }
 
         onInitialLayoutInflationComplete();
+    }
+
+    @VisibleForTesting
+    /* package */ void handleNewIntent(Intent intent) {
+        mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
+        mSearchBoxDataProvider.setIsFromQuickActionSearchWidget(
+                mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
     }
 
     @Override
@@ -486,7 +498,7 @@ public class SearchActivity extends AsyncInitializationActivity
         VoiceRecognitionHandler voiceRecognitionHandler =
                 mLocationBarCoordinator.getVoiceRecognitionHandler();
         @SearchType int searchType = getSearchType(getIntent().getAction());
-        if (isFromQuickActionSearchWidget()) {
+        if (mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET) {
             recordQuickActionSearchType(searchType);
         }
         mSearchBox.onDeferredStartup(searchType, voiceRecognitionHandler, getWindowAndroid());
@@ -504,7 +516,7 @@ public class SearchActivity extends AsyncInitializationActivity
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        mSearchBoxDataProvider.setIsFromQuickActionSearchWidget(isFromQuickActionSearchWidget());
+        handleNewIntent(intent);
         beginQuery();
     }
 
@@ -568,25 +580,13 @@ public class SearchActivity extends AsyncInitializationActivity
         }
     }
 
-    private boolean isFromSearchWidget() {
-        return IntentUtils.safeGetBooleanExtra(
-                getIntent(), SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
-    }
-
-    private boolean isFromQuickActionSearchWidget() {
-        return IntentUtils.safeGetBooleanExtra(
-                getIntent(),
-                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET,
-                false);
-    }
-
     private String getOptionalIntentQuery() {
         return IntentUtils.safeGetStringExtra(getIntent(), SearchManager.QUERY);
     }
 
     private void beginQuery() {
         @SearchType int searchType = getSearchType(getIntent().getAction());
-        if (isFromQuickActionSearchWidget()) {
+        if (mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET) {
             recordQuickActionSearchType(searchType);
         }
         mSearchBox.beginQuery(
@@ -626,7 +626,7 @@ public class SearchActivity extends AsyncInitializationActivity
             @Nullable String postDataType,
             @Nullable byte[] postData) {
         finish();
-        if (SearchActivityUtils.isOmniboxRequestForResult(getIntent())) {
+        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
             SearchActivityUtils.resolveOmniboxRequestForResult(this, new GURL(url));
             overridePendingTransition(0, android.R.anim.fade_out);
         } else {
@@ -685,7 +685,7 @@ public class SearchActivity extends AsyncInitializationActivity
             intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, postDataType);
             intent.putExtra(IntentHandler.EXTRA_POST_DATA, postData);
         }
-        if (isFromSearchWidget()) {
+        if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {
             intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
         }
         intent.putExtra(EXTRA_FROM_SEARCH_ACTIVITY, true);
@@ -727,7 +727,7 @@ public class SearchActivity extends AsyncInitializationActivity
     @VisibleForTesting
     /* package */ void cancelSearch() {
         finish();
-        if (SearchActivityUtils.isOmniboxRequestForResult(getIntent())) {
+        if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
             SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
             overridePendingTransition(0, android.R.anim.fade_out);
         } else {
