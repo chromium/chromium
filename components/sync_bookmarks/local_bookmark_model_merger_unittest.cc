@@ -232,7 +232,9 @@ TEST(LocalBookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
   //  |- url1(http://www.url1.com)
   // managed_bookmarks
   //  |- url2(http://www.url2.com)
-  TestBookmarkModelView local_model(std::move(local_client));
+  TestBookmarkModelView local_model(
+      TestBookmarkModelView::ViewType::kLocalOrSyncableNodes,
+      std::move(local_client));
 
   FolderBuilder::AddChildrenTo(&local_model, local_model.bookmark_bar_node(),
                                {UrlBuilder(kUrl1Title, kUrl1)});

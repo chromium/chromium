@@ -18,11 +18,17 @@ class TestBookmarkClient;
 
 namespace sync_bookmarks {
 
-class TestBookmarkModelView
-    : public BookmarkModelViewUsingLocalOrSyncableNodes {
+class TestBookmarkModelView : public BookmarkModelView {
  public:
-  TestBookmarkModelView();
+  enum ViewType {
+    kLocalOrSyncableNodes,
+    kAccountNodes,
+  };
+
   explicit TestBookmarkModelView(
+      ViewType type = ViewType::kLocalOrSyncableNodes);
+  TestBookmarkModelView(
+      ViewType type,
       std::unique_ptr<bookmarks::TestBookmarkClient> bookmark_client);
   ~TestBookmarkModelView() override;
 
@@ -33,6 +39,15 @@ class TestBookmarkModelView
     return static_cast<bookmarks::TestBookmarkClient*>(
         bookmark_model_->client());
   }
+
+  // BookmarkModelView overrides.
+  const bookmarks::BookmarkNode* bookmark_bar_node() const override;
+  const bookmarks::BookmarkNode* other_node() const override;
+  const bookmarks::BookmarkNode* mobile_node() const override;
+  void EnsurePermanentNodesExist() override;
+  void RemoveAllSyncableNodes() override;
+  const bookmarks::BookmarkNode* GetNodeByUuid(
+      const base::Uuid& uuid) const override;
 
   // Convenience overloads with default argument values, used often in tests.
   const bookmarks::BookmarkNode* AddFolder(
@@ -60,10 +75,15 @@ class TestBookmarkModelView
 
  private:
   // Constructor overload needed to enforce construction order.
-  explicit TestBookmarkModelView(
+  TestBookmarkModelView(
+      ViewType type,
       std::unique_ptr<bookmarks::BookmarkModel> bookmark_model);
 
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+
+  // A wrapped view is used to avoid templates and still allow the constructor
+  // to choose which precise BookmarkModelView subclass should be used.
+  const std::unique_ptr<BookmarkModelView> wrapped_view_;
 };
 
 }  // namespace sync_bookmarks

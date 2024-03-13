@@ -896,7 +896,9 @@ TEST(SyncedBookmarkTrackerTest,
      ShouldInvalidateMetadataIfUnsyncableNodeIsTracked) {
   auto client = std::make_unique<bookmarks::TestBookmarkClient>();
   bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
-  TestBookmarkModelView model(std::move(client));
+  TestBookmarkModelView model(
+      TestBookmarkModelView::ViewType::kLocalOrSyncableNodes,
+      std::move(client));
 
   // The model should contain the managed node now.
   ASSERT_THAT(GetBookmarkNodeByID(model.underlying_model(), managed_node->id()),
@@ -983,7 +985,9 @@ TEST(SyncedBookmarkTrackerTest,
      ShouldMatchModelWithUnsyncableNodesAndMetadata) {
   auto client = std::make_unique<bookmarks::TestBookmarkClient>();
   bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
-  TestBookmarkModelView model(std::move(client));
+  TestBookmarkModelView model(
+      TestBookmarkModelView::ViewType::kLocalOrSyncableNodes,
+      std::move(client));
 
   // The model should contain the managed node now.
   ASSERT_THAT(GetBookmarkNodeByID(model.underlying_model(), managed_node->id()),

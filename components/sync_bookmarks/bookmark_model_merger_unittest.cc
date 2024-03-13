@@ -18,6 +18,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
@@ -31,6 +32,7 @@
 
 using testing::_;
 using testing::Eq;
+using testing::IsEmpty;
 using testing::IsNull;
 using testing::NotNull;
 using testing::UnorderedElementsAre;
@@ -519,6 +521,85 @@ TEST(BookmarkModelMergerTest, ShouldMergeRemoteReorderToLocalModel) {
 
   // Verify positions in tracker.
   EXPECT_TRUE(PositionsInTrackerMatchModel(bookmark_bar_node, *tracker));
+}
+
+TEST(BookmarkModelMergerTest, ShouldIgnoreManagedNodes) {
+  auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+  bookmarks::BookmarkNode* managed_node = client->EnableManagedNode();
+  TestBookmarkModelView view(
+      TestBookmarkModelView::ViewType::kLocalOrSyncableNodes,
+      std::move(client));
+
+  const bookmarks::BookmarkNode* unsyncable_node =
+      view.underlying_model()->AddURL(/*parent=*/managed_node, /*index=*/0,
+                                      u"Title", GURL("http://www.url.com"));
+  ASSERT_FALSE(view.IsNodeSyncable(unsyncable_node));
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      Merge(syncer::UpdateResponseDataList(), &view);
+  ASSERT_THAT(tracker, NotNull());
+
+  EXPECT_THAT(tracker->GetEntityForBookmarkNode(unsyncable_node), IsNull());
+  EXPECT_THAT(tracker->GetEntitiesWithLocalChanges(), IsEmpty());
+  EXPECT_THAT(managed_node->children().size(), Eq(1));
+}
+
+TEST(BookmarkModelMergerTest, ShouldIgnoreUnsyncableNodes) {
+  base::test::ScopedFeatureList override_features{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
+  TestBookmarkModelView view(TestBookmarkModelView::ViewType::kAccountNodes);
+  view.EnsurePermanentNodesExist();
+
+  const bookmarks::BookmarkNode* unsyncable_node =
+      view.underlying_model()->AddURL(
+          /*parent=*/view.underlying_model()->bookmark_bar_node(), /*index=*/0,
+          u"Title", GURL("http://www.url.com"));
+  ASSERT_FALSE(view.IsNodeSyncable(unsyncable_node));
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      Merge(syncer::UpdateResponseDataList(), &view);
+  ASSERT_THAT(tracker, NotNull());
+
+  EXPECT_THAT(tracker->GetEntityForBookmarkNode(unsyncable_node), IsNull());
+  EXPECT_THAT(tracker->GetEntitiesWithLocalChanges(), IsEmpty());
+  EXPECT_THAT(view.underlying_model()->bookmark_bar_node()->children().size(),
+              Eq(1));
+}
+
+// Regression test for crbug.com/329278277. A UUID collision with an unsyncable
+// node is a common scenario for the case where BookmarkModelMerger is being
+// exercised for account bookmarks, while local unsyncable bookmarks contain an
+// exact copy of the server-side updates as a result of sync-the-feature having
+// been previously turned on and later off.
+TEST(BookmarkModelMergerTest, ShouldIgnoreUnsyncableNodeWithCollidingUuid) {
+  base::test::ScopedFeatureList override_features{
+      syncer::kEnableBookmarkFoldersForAccountStorage};
+  TestBookmarkModelView view(TestBookmarkModelView::ViewType::kAccountNodes);
+  view.EnsurePermanentNodesExist();
+
+  const bookmarks::BookmarkNode* unsyncable_node =
+      view.underlying_model()->AddURL(
+          /*parent=*/view.underlying_model()->bookmark_bar_node(), /*index=*/0,
+          u"Title", GURL("http://www.foo.com"));
+  ASSERT_FALSE(view.IsNodeSyncable(unsyncable_node));
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateBookmarkBarNodeUpdateData());
+  updates.push_back(CreateUpdateResponseData(
+      unsyncable_node->uuid(), /*parent_uuid=*/BookmarkBarUuid(), "Title",
+      /*url=*/"http://www.bar.com",
+      /*is_folder=*/false,
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix())));
+
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      Merge(std::move(updates), &view);
+  ASSERT_THAT(tracker, NotNull());
+
+  EXPECT_THAT(tracker->GetEntityForBookmarkNode(unsyncable_node), IsNull());
+  EXPECT_THAT(tracker->GetEntitiesWithLocalChanges(), IsEmpty());
+  EXPECT_THAT(view.underlying_model()->bookmark_bar_node()->children().size(),
+              Eq(1));
 }
 
 TEST(BookmarkModelMergerTest, ShouldMergeFaviconsForRemoteNodesOnly) {
@@ -2058,8 +2139,8 @@ TEST(BookmarkModelMergerTest, ShouldEnsureLimitDepthOfTree) {
 }
 
 TEST(BookmarkModelMergerTest, ShouldReuploadBookmarkOnEmptyUniquePosition) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(switches::kSyncReuploadBookmarks);
+  base::test::ScopedFeatureList override_features{
+      switches::kSyncReuploadBookmarks};
 
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";

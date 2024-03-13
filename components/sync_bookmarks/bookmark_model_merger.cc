@@ -701,6 +701,15 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
     const bookmarks::BookmarkNode* const node = iterator.Next();
     DCHECK(node->uuid().is_valid());
 
+    // Ignore changes to non-syncable nodes. Managed nodes, which are
+    // unsyncable, use a random UUID so they should never match, but this
+    // codepath is useful when BookmarkModelMerger is used together with
+    // `BookmarkModelViewUsingAccountNodes`, which would otherwise match against
+    // local nodes.
+    if (!bookmark_model->IsNodeSyncable(node)) {
+      continue;
+    }
+
     const auto remote_it = uuid_to_remote_node_map.find(node->uuid());
     if (remote_it == uuid_to_remote_node_map.end()) {
       continue;
