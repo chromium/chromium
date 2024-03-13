@@ -207,10 +207,12 @@ function convert_srcs_to_project_files() {
         local neon_i8mm_sources=$(echo "$intrinsic_list" | \
           grep '_neon_i8mm\.c$')
         local sve_sources=$(echo "$intrinsic_list" | grep '_sve\.c$')
+        local sve2_sources=$(echo "$intrinsic_list" | grep '_sve2\.c$')
         write_gni neon_dotprod_sources $2_neon_dotprod \
           "$BASE_DIR/libvpx_srcs.gni"
         write_gni neon_i8mm_sources $2_neon_i8mm "$BASE_DIR/libvpx_srcs.gni"
         write_gni sve_sources $2_sve "$BASE_DIR/libvpx_srcs.gni"
+        write_gni sve2_sources $2_sve2 "$BASE_DIR/libvpx_srcs.gni"
       fi
      fi
   fi
