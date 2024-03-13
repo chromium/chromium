@@ -6,6 +6,7 @@ module ash.camera_app.mojom;
 
 import "ash/components/arc/mojom/camera_intent.mojom";
 import "ash/webui/camera_app_ui/events_sender.mojom";
+import "ash/webui/camera_app_ui/types.mojom";
 import "chromeos/services/machine_learning/public/mojom/document_scanner_param_types.mojom";
 import "media/capture/video/chromeos/mojom/system_event_monitor.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -25,33 +26,6 @@ enum ScreenState {
   kOn,
   kOff,
   kOffAuto,
-};
-
-// Wi-Fi security type.
-enum WifiSecurityType {
-  kNone,
-  kEap,
-  kWep,
-  kWpa,
-};
-
-// EAP methods.
-enum WifiEapMethod {
-  kEapTls,
-  kEapTtls,
-  kLeap,
-  kPeap,
-};
-
-// EAP phase2 methods.
-enum WifiEapPhase2Method {
-  kAutomatic,
-  kChap,
-  kGtc,
-  kMd5,
-  kMschap,
-  kMschapv2,
-  kPap,
 };
 
 // Configurations which can be provided by Wi-Fi QR Code.

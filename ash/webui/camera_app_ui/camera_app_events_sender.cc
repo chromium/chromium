@@ -141,7 +141,11 @@ int GetTimelapseSpeed(const camera_app::mojom::CaptureEventParamsPtr& params) {
 }  // namespace
 
 CameraAppEventsSender::CameraAppEventsSender(std::string system_language)
-    : system_language_(std::move(system_language)) {}
+    : system_language_(std::move(system_language)) {
+  receivers_.set_disconnect_handler(
+      base::BindRepeating(&CameraAppEventsSender::OnMojoDisconnected,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 CameraAppEventsSender::~CameraAppEventsSender() = default;
 
@@ -164,6 +168,7 @@ void CameraAppEventsSender::SendStartSessionEvent(
       std::move(cros_events::CameraApp_StartSession()
                     .SetLaunchType(static_cast<int64_t>(params->launch_type))
                     .SetLanguage(static_cast<int64_t>(language))));
+  start_time_ = base::TimeTicks::Now();
 }
 
 void CameraAppEventsSender::SendCaptureEvent(
@@ -250,6 +255,101 @@ void CameraAppEventsSender::SendDocScanResultEvent(
                     .SetFixTypes(static_cast<int64_t>(params->fix_types_mask))
                     .SetFixCount(static_cast<int64_t>(params->fix_count))
                     .SetPageCount(static_cast<int64_t>(params->page_count))));
+}
+
+void CameraAppEventsSender::SendOpenCameraEvent(
+    camera_app::mojom::OpenCameraEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  std::string camera_module_id;
+  auto& camera_module = params->camera_module;
+  if (camera_module->is_mipi_camera()) {
+    camera_module_id = "MIPI";
+  } else if (camera_module->is_usb_camera()) {
+    auto& usb_camera = camera_module->get_usb_camera();
+    auto id = usb_camera->id;
+    if (id.has_value()) {
+      camera_module_id = *id;
+    } else {
+      camera_module_id = "others";
+    }
+  } else {
+    NOTREACHED_NORETURN() << "Unexpected camera module type";
+  }
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      cros_events::CameraApp_OpenCamera().SetCameraModuleId(camera_module_id)));
+}
+
+void CameraAppEventsSender::SendLowStorageActionEvent(
+    camera_app::mojom::LowStorageActionEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::CameraApp_LowStorageAction().SetActionType(
+          static_cast<int64_t>(params->action_type))));
+}
+
+void CameraAppEventsSender::SendBarcodeDetectedEvent(
+    camera_app::mojom::BarcodeDetectedEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(
+      std::move(cros_events::CameraApp_BarcodeDetected()
+                    .SetContentType(static_cast<int64_t>(params->content_type))
+                    .SetWifiSecurityType(
+                        static_cast<int64_t>(params->wifi_security_type))));
+}
+
+void CameraAppEventsSender::SendPerfEvent(
+    camera_app::mojom::PerfEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      cros_events::CameraApp_Perf()
+          .SetEventType(static_cast<int64_t>(params->event_type))
+          .SetDuration(static_cast<int64_t>(params->duration))
+          .SetFacing(static_cast<int64_t>(params->facing))
+          .SetResolutionWidth(static_cast<int64_t>(params->resolution_width))
+          .SetResolutionHeight(
+              static_cast<int64_t>(params->resolution_height))));
+}
+
+void CameraAppEventsSender::UpdateMemoryUsageEventParams(
+    camera_app::mojom::MemoryUsageEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  session_memory_usage_ = params.Clone();
+}
+
+void CameraAppEventsSender::OnMojoDisconnected() {
+  if (!receivers_.empty()) {
+    return;
+  }
+  if (!start_time_.has_value()) {
+    return;
+  }
+  if (session_memory_usage_.is_null()) {
+    return;
+  }
+  int64_t duration = static_cast<int64_t>(
+      (base::TimeTicks::Now() - start_time_.value()).InMilliseconds());
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      cros_events::CameraApp_EndSession()
+          .SetDuration(duration)
+          .SetBehaviors(
+              static_cast<int64_t>(session_memory_usage_->behaviors_mask))
+          .SetMemoryUsage(
+              static_cast<int64_t>(session_memory_usage_->memory_usage))));
 }
 
 }  // namespace ash

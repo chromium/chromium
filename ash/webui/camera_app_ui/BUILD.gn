@@ -117,6 +117,7 @@ mojom("mojo_bindings") {
   sources = [
     "camera_app_helper.mojom",
     "events_sender.mojom",
+    "types.mojom",
   ]
 
   deps = [

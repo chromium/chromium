@@ -31,7 +31,7 @@ export async function measureAppMemoryUsage(): Promise<CCAMemoryMeasurement> {
 
 const MEASUREMENT_INTERVAL_MS = 30000;
 
-enum SessionBehavior {
+export enum SessionBehavior {
   TAKE_NORMAL_PHOTO = 1 << 0,
   TAKE_PORTRAIT_PHOTO = 1 << 1,
   SCAN_BARCODE = 1 << 2,

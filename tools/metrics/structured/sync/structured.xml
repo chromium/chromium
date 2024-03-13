@@ -1159,6 +1159,103 @@
     </metric>
   </event>
 
+  <event name="CameraApp.OpenCamera">
+    <summary>
+      Event recorded when the camera is opened in the camera app.
+    </summary>
+    <metric name="CameraModuleId" type="raw-string">
+      <summary>
+        String showing the camera module ID in "[VID]:[PID]" format if the camera
+        module is in the top 20 list. Otherwise, it will be "others".
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.LowStorageAction">
+    <summary>
+      Event recorded when a action is performed in the camera app due to low
+      storage detection.
+    </summary>
+    <metric name="ActionType" type="int">
+      <summary>
+        The type of the action for low storage handling.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.BarcodeDetected">
+    <summary>
+      Event recorded when a barcode is detected on the preview of the camera app.
+    </summary>
+    <metric name="ContentType" type="int">
+      <summary>
+        The type of the content detected via the barcode.
+      </summary>
+    </metric>
+    <metric name="WifiSecurityType" type="int">
+      <summary>
+        The Wi-Fi security type brought in the Wi-Fi QR code. If the barcode content
+        is not Wi-Fi, the type will be set to none.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.Perf">
+    <summary>
+      Event recorded when a performance measurement is done in the camera app.
+    </summary>
+    <metric name="EventType" type="int">
+      <summary>
+        The type of the performance measurement.
+      </summary>
+    </metric>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the performance event in milliseconds.
+      </summary>
+    </metric>
+    <metric name="Facing" type="int">
+      <summary>
+        The facing of the current camera. Will be unknown if the camera facing is
+        irrelevant.
+      </summary>
+    </metric>
+    <metric name="ResolutionWidth" type="int">
+      <summary>
+        The resolution width of the camera. Will be 0 if the resolution information
+        is not provided.
+      </summary>
+    </metric>
+    <metric name="ResolutionHeight" type="int">
+      <summary>
+        The resolution height of the camera. Will be 0 if the resolution information
+        is not provided.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.EndSession">
+    <summary>
+      Event recorded when the camera app is closed.
+    </summary>
+    <metric name="Duration" type="int">
+      <summary>
+        The duration of the camera app session in milliseconds.
+      </summary>
+    </metric>
+    <metric name="Behaviors" type="int">
+      <summary>
+        Bit mask indicating the combination of user behavior(s) that the user
+        performed within the session.
+      </summary>
+    </metric>
+    <metric name="MemoryUsage" type="int">
+      <summary>
+        Integer indicating the maximum memory usage within the session in bytes.
+      </summary>
+    </metric>
+  </event>
+
   <event name="OOBE.GaiaSigninRequested" force_record="true">
     <summary>
       Recorded after the password is entered for authentication in the GAIA Sign-

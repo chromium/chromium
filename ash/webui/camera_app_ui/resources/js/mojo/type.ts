@@ -25,9 +25,6 @@ export {
   StorageMonitorStatus,
   TabletModeMonitorCallbackRouter,
   ToteMetricFormat,
-  WifiEapMethod,
-  WifiEapPhase2Method,
-  WifiSecurityType,
   WindowStateControllerRemote,
   WindowStateMonitorCallbackRouter,
   WindowStateType,
@@ -38,6 +35,7 @@ export type {
 export {
   AndroidIntentResultType,
   AspectRatioSet,
+  BarcodeContentType,
   DocScanActionType,
   DocScanFixType,
   DocScanResultType,
@@ -45,16 +43,24 @@ export {
   GifResultType,
   GridType,
   LaunchType,
+  LowStorageActionType,
   Mode,
+  PerfEventType,
   RecordType,
   ResolutionLevel,
   ShutterType,
   TimerType,
+  UserBehavior,
 } from '../../mojom/ash/webui/camera_app_ui/events_sender.mojom-webui.js';
 export type {
   CaptureEventParams,
   EventsSenderRemote,
 } from '../../mojom/ash/webui/camera_app_ui/events_sender.mojom-webui.js';
+export {
+  WifiEapMethod,
+  WifiEapPhase2Method,
+  WifiSecurityType,
+} from '../../mojom/ash/webui/camera_app_ui/types.mojom-webui.js';
 export {
   Rotation,
 } from

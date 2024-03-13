@@ -4,6 +4,8 @@
 
 module ash.camera_app.mojom;
 
+import "ash/webui/camera_app_ui/types.mojom";
+
 // The type indicates how the camera app is launched.
 enum LaunchType {
   // The default option that most of the launches will fall in.
@@ -192,6 +194,94 @@ struct DocScanResultEventParams {
   int32 page_count;
 };
 
+struct MipiCameraModule {
+};
+
+struct UsbCameraModule {
+  // If it is in the top 20 module list, the format will be "[vid]:[pid]"
+  // (e.g. "abcd:1234"). Otherwise, it will be null.
+  string? id;
+};
+
+union CameraModule {
+  MipiCameraModule mipi_camera;
+  UsbCameraModule usb_camera;
+};
+
+struct OpenCameraEventParams {
+  CameraModule camera_module;
+};
+
+enum LowStorageActionType {
+  kManageStorageAutoStop,
+  kManageStorageCannotStart,
+  kShowAutoStopDialog,
+  kShowCannotStartDialog,
+  kShowWarningMessage,
+};
+
+struct LowStorageActionEventParams {
+  LowStorageActionType action_type;
+};
+
+enum BarcodeContentType {
+  kText,
+  kUrl,
+  kWiFi,
+};
+
+struct BarcodeDetectedEventParams {
+  BarcodeContentType content_type;
+  WifiSecurityType wifi_security_type;
+};
+
+enum PerfEventType {
+  kCameraSwitching,
+  kGifCapturePostProcessing,
+  kLaunchingFromLaunchAppCold,
+  kLaunchingFromLaunchAppWarm,
+  kLaunchingFromWindowCreation,
+  kModeSwitching,
+  kPhotoCapturePostProcessing,
+  kPhotoCaptureShutter,
+  kPhotoTaking,
+  kPortraitModeCapturePostProcessing,
+  kTimelapseCapturePostProcessing,
+  kVideoCapturePostProcessing,
+};
+
+struct PerfEventParams {
+  PerfEventType event_type;
+
+  // In milliseconds.
+  int32 duration;
+
+  // Extra information.
+  Facing facing;
+  int32 resolution_width;
+  int32 resolution_height;
+};
+
+enum UserBehavior {
+  kTakeNormalPhoto = 1,
+  kTakePortraitPhoto = 2,
+  kScanBarcode = 4,
+  kScanDocument = 8,
+  kRecordNormalVideo = 16,
+  kRecordGifVideo = 32,
+  kRecordTimelapseVideo = 64,
+  // Next enum value should be 128.
+};
+
+struct MemoryUsageEventParams {
+  // A bit mask of the combination of `UserBehavior` representing what kinds of
+  // behavior the user has performed in this session.
+  uint32 behaviors_mask;
+
+  // In bytes.
+  uint64 memory_usage;
+};
+
 // This interface is used by CCA to send metrics to CrOS Events.
 interface EventsSender {
   // Sends an event to indicate a CCA session is started.
@@ -211,4 +301,20 @@ interface EventsSender {
 
   // Sends an event when the user finishes a document scanning session.
   SendDocScanResultEvent(DocScanResultEventParams params);
+
+  // Sends an event when the camera is opened.
+  SendOpenCameraEvent(OpenCameraEventParams params);
+
+  // Sends an event when an action is performed due to low storage detection.
+  SendLowStorageActionEvent(LowStorageActionEventParams params);
+
+  // Sends an event when a barcode is detected on the preview.
+  SendBarcodeDetectedEvent(BarcodeDetectedEventParams params);
+
+  // Sends an event when a performance measurement is performed.
+  SendPerfEvent(PerfEventParams params);
+
+  // Update the memory usage events parameter of the current camera session
+  // which will be sent when the camera session ends.
+  UpdateMemoryUsageEventParams(MemoryUsageEventParams params);
 };
