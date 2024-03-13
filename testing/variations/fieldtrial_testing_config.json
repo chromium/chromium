@@ -15052,22 +15052,6 @@
             ]
         }
     ],
-    "RestartToGainAccessToKeychain": [
-        {
-            "platforms": [
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RestartToGainAccessToKeychain"
-                    ]
-                }
-            ]
-        }
-    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
