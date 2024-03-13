@@ -157,13 +157,6 @@ struct SkDrawRegion {
   SkPoint points[4];
 };
 
-// Additional YUV information to skia renderer to draw 9- and 10- bits color.
-struct YUVInput {
-  YUVInput() { memset(this, 0, sizeof(*this)); }
-  float offset;
-  float multiplier;
-};
-
 SkDrawRegion::SkDrawRegion(const gfx::QuadF& draw_region) {
   points[0] = gfx::PointFToSkPoint(draw_region.p1());
   points[1] = gfx::PointFToSkPoint(draw_region.p2());
@@ -2967,8 +2960,7 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
 
   sk_sp<SkColorFilter> color_filter = GetColorSpaceConversionFilter(
       src_color_space, quad->bits_per_channel, quad->hdr_metadata,
-      dst_color_space, /*is_video_frame=*/true, quad->resource_offset,
-      quad->resource_multiplier);
+      dst_color_space, /*is_video_frame=*/true);
 
   auto content_color_filter = GetContentColorFilter();
   if (content_color_filter)
@@ -3107,9 +3099,7 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
     std::optional<uint32_t> src_bit_depth,
     std::optional<gfx::HDRMetadata> src_hdr_metadata,
     const gfx::ColorSpace& dst,
-    bool is_video_frame,
-    float resource_offset,
-    float resource_multiplier) {
+    bool is_video_frame) {
   // Use the current SDR slider white level for PQ HDR videos on
   // Windows, so that they look similar when rendered by the
   // compositor and when rendered as an overlay (HDR10 MPO).
@@ -3124,8 +3114,7 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
         current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
   }
   return color_filter_cache_.Get(
-      src, dst, resource_offset, resource_multiplier, src_bit_depth,
-      hdr_metadata,
+      src, dst, src_bit_depth, hdr_metadata,
       current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
       current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative());
 }

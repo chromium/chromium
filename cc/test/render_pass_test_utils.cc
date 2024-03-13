@@ -310,7 +310,7 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
                    gfx::Size(100, 100), gfx::Rect(0, 0, 50, 50),
                    gfx::Size(2, 2), plane_resources[0], plane_resources[1],
                    plane_resources[2], plane_resources[3],
-                   gfx::ColorSpace::CreateREC601(), 0.0, 1.0, 8,
+                   gfx::ColorSpace::CreateREC601(), 8,
                    gfx::ProtectedVideoType::kClear, std::nullopt);
 
   return {resource1,          resource2,          resource3,
@@ -497,7 +497,7 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
                    gfx::Size(2, 1), mapped_plane_resources[0],
                    mapped_plane_resources[1], mapped_plane_resources[2],
                    mapped_plane_resources[3], gfx::ColorSpace::CreateREC601(),
-                   0.0, 1.0, 8, gfx::ProtectedVideoType::kClear, std::nullopt);
+                   8, gfx::ProtectedVideoType::kClear, std::nullopt);
 }
 
 std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(

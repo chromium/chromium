@@ -150,28 +150,6 @@ class VideoResourceUpdaterTest : public testing::Test {
     }
   }
 
-  void ExpectedMultiplanarResourceMultiplier(float actual_multiplier,
-                                             float expected_multiplier,
-                                             float error) {
-    if (UseMultiplanarSoftwarePixelUpload()) {
-      // With multiplanar shared images, the multiplier is always 1.0
-      EXPECT_NEAR(actual_multiplier, 1.0, error);
-    } else {
-      EXPECT_NEAR(actual_multiplier, expected_multiplier, error);
-    }
-  }
-
-  void ExpectedMultiplanarResourceOffset(float actual_offset,
-                                         float expected_offset,
-                                         float error) {
-    if (UseMultiplanarSoftwarePixelUpload()) {
-      // With multiplanar shared images, the multiplier is always 0
-      EXPECT_NEAR(actual_offset, 0, error);
-    } else {
-      EXPECT_NEAR(actual_offset, expected_offset, error);
-    }
-  }
-
   std::unique_ptr<VideoResourceUpdater> CreateUpdaterForHardware(
       bool use_stream_video_draw_quad = false) {
     return std::make_unique<VideoResourceUpdater>(
@@ -614,16 +592,12 @@ TEST_F(VideoResourceUpdaterTestWithF16, HighBitFrame) {
   VideoFrameExternalResources resources =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   ExpectedMultiplanarResourceType(resources.type);
-  ExpectedMultiplanarResourceMultiplier(resources.multiplier, 1.0, 0.1);
-  ExpectedMultiplanarResourceOffset(resources.offset, 0, 0.1);
 
   // Create the resource again, to test the path where the
   // resources are cached.
   VideoFrameExternalResources resources2 =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   ExpectedMultiplanarResourceType(resources2.type);
-  ExpectedMultiplanarResourceMultiplier(resources2.multiplier, 1.0, 0.1);
-  ExpectedMultiplanarResourceOffset(resources2.offset, 0, 0.1);
 }
 
 class VideoResourceUpdaterTestWithR16 : public VideoResourceUpdaterTest {
@@ -647,18 +621,12 @@ TEST_F(VideoResourceUpdaterTestWithR16, HighBitFrame) {
   ExpectedMultiplanarResourceType(resources.type);
   EXPECT_EQ(resources.bits_per_channel, 10u);
 
-  // Max 10-bit values as read by a sampler.
-  ExpectedMultiplanarResourceMultiplier(resources.multiplier, 1.0, 0.0001);
-  ExpectedMultiplanarResourceOffset(resources.offset, 0.0, 0.1);
-
   // Create the resource again, to test the path where the
   // resources are cached.
   VideoFrameExternalResources resources2 =
       updater->CreateExternalResourcesFromVideoFrame(video_frame);
   ExpectedMultiplanarResourceType(resources2.type);
   EXPECT_EQ(resources2.bits_per_channel, 10u);
-  ExpectedMultiplanarResourceMultiplier(resources2.multiplier, 1.0, 0.0001);
-  ExpectedMultiplanarResourceOffset(resources2.offset, 0.0, 0.1);
 }
 
 TEST_F(VideoResourceUpdaterTest, NV12FrameSoftwareCompositor) {

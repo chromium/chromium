@@ -1285,8 +1285,6 @@ void YUVVideoDrawQuadToDict(const YUVVideoDrawQuad* draw_quad,
   dict->Set("uv_tex_coord_rect", RectFToDict(draw_quad->uv_tex_coord_rect()));
   dict->Set("ya_tex_size", SizeToDict(draw_quad->ya_tex_size()));
   dict->Set("uv_tex_size", SizeToDict(draw_quad->uv_tex_size()));
-  dict->Set("resource_offset", draw_quad->resource_offset);
-  dict->Set("resource_multiplier", draw_quad->resource_multiplier);
   dict->Set("bits_per_channel", static_cast<int>(draw_quad->bits_per_channel));
   dict->Set("video_color_space",
             ColorSpaceToDict(draw_quad->video_color_space));
@@ -1557,9 +1555,6 @@ bool YUVVideoDrawQuadFromDict(const base::Value::Dict& dict,
   const base::Value::Dict* ya_tex_size = dict.FindDict("ya_tex_size");
   const base::Value::Dict* uv_tex_size = dict.FindDict("uv_tex_size");
   const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
-  std::optional<double> resource_offset = dict.FindDouble("resource_offset");
-  std::optional<double> resource_multiplier =
-      dict.FindDouble("resource_multiplier");
   std::optional<int> bits_per_channel = dict.FindInt("bits_per_channel");
   const base::Value::Dict* video_color_space =
       dict.FindDict("video_color_space");
@@ -1567,8 +1562,8 @@ bool YUVVideoDrawQuadFromDict(const base::Value::Dict& dict,
       dict.FindString("protected_video_type");
 
   if (!ya_tex_coord_rect || !uv_tex_coord_rect || !ya_tex_size ||
-      !uv_tex_size || !resource_offset || !resource_multiplier ||
-      !bits_per_channel || !video_color_space || !protected_video_type) {
+      !uv_tex_size || !bits_per_channel || !video_color_space ||
+      !protected_video_type) {
     return false;
   }
   gfx::RectF t_ya_tex_coord_rect, t_uv_tex_coord_rect;
@@ -1614,8 +1609,6 @@ bool YUVVideoDrawQuadFromDict(const base::Value::Dict& dict,
       common.needs_blending, coded_size, video_visible_rect, uv_sample_size,
       y_plane_resource_id, u_plane_resource_id, v_plane_resource_id,
       a_plane_resource_id, t_video_color_space,
-      static_cast<float>(resource_offset.value()),
-      static_cast<float>(resource_multiplier.value()),
       static_cast<uint32_t>(bits_per_channel.value()),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index),
       gfx::HDRMetadata());

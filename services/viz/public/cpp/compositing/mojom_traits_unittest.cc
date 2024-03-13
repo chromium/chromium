@@ -1272,8 +1272,6 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   const ResourceId v_plane_resource_id(2468);
   const ResourceId a_plane_resource_id(7890);
   const gfx::ColorSpace video_color_space = gfx::ColorSpace::CreateJpeg();
-  const float resource_offset = 1337.5f;
-  const float resource_multiplier = 1234.6f;
   const uint32_t bits_per_channel = 13;
   const gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kSoftwareProtected;
@@ -1286,8 +1284,8 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   quad->SetAll(sqs, rect, visible_rect, needs_blending, coded_size,
                video_visible_rect, uv_sample_size, y_plane_resource_id,
                u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
-               video_color_space, resource_offset, resource_multiplier,
-               bits_per_channel, protected_video_type, hdr_metadata);
+               video_color_space, bits_per_channel, protected_video_type,
+               hdr_metadata);
 
   std::unique_ptr<CompositorRenderPass> output;
   mojo::test::SerializeAndDeserialize<mojom::CompositorRenderPass>(render_pass,
@@ -1309,8 +1307,6 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   EXPECT_EQ(u_plane_resource_id, out_quad->u_plane_resource_id());
   EXPECT_EQ(v_plane_resource_id, out_quad->v_plane_resource_id());
   EXPECT_EQ(a_plane_resource_id, out_quad->a_plane_resource_id());
-  EXPECT_EQ(resource_offset, out_quad->resource_offset);
-  EXPECT_EQ(resource_multiplier, out_quad->resource_multiplier);
   EXPECT_EQ(bits_per_channel, out_quad->bits_per_channel);
   EXPECT_EQ(protected_video_type, out_quad->protected_video_type);
   EXPECT_EQ(hdr_metadata, out_quad->hdr_metadata);

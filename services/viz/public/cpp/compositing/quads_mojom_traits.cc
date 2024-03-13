@@ -262,8 +262,6 @@ bool StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad>::Read(
       quad->resources.ids[viz::YUVVideoDrawQuad::kAPlaneResourceIdIndex] ? 4
                                                                          : 3;
 
-  quad->resource_offset = data.resource_offset();
-  quad->resource_multiplier = data.resource_multiplier();
   quad->bits_per_channel = data.bits_per_channel();
   if (quad->bits_per_channel < viz::YUVVideoDrawQuad::kMinBitsPerChannel) {
     viz::SetDeserializationCrashKeyString("Bits per channel too small");

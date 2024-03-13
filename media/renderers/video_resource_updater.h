@@ -69,10 +69,6 @@ class MEDIA_EXPORT VideoFrameExternalResources {
   std::vector<viz::TransferableResource> resources;
   std::vector<viz::ReleaseCallback> release_callbacks;
 
-  // Used by hardware textures which do not return values in the 0-1 range.
-  // After a lookup, subtract offset and multiply by multiplier.
-  float offset = 0.f;
-  float multiplier = 1.f;
   uint32_t bits_per_channel = 8;
 
   VideoFrameExternalResources();
@@ -272,8 +268,6 @@ class MEDIA_EXPORT VideoResourceUpdater
 
   VideoFrameResourceType frame_resource_type_;
 
-  float frame_resource_offset_;
-  float frame_resource_multiplier_;
   uint32_t frame_bits_per_channel_;
 
   // Resources that will be placed into quads by the next call to

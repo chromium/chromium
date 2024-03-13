@@ -122,8 +122,6 @@ struct YUVVideoQuadState {
   ResourceId u_plane_resource_id;
   ResourceId v_plane_resource_id;
   ResourceId a_plane_resource_id;
-  float resource_offset;
-  float resource_multiplier;
   uint32 bits_per_channel;
   gfx.mojom.ColorSpace video_color_space;
   ProtectedVideoState protected_video_type;

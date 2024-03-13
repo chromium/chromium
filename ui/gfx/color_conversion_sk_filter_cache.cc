@@ -129,8 +129,6 @@ ColorConversionSkFilterCache::Value::~Value() = default;
 sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     const gfx::ColorSpace& src,
     const gfx::ColorSpace& dst,
-    float resource_offset,
-    float resource_multiplier,
     std::optional<uint32_t> src_bit_depth,
     std::optional<gfx::HDRMetadata> src_hdr_metadata,
     float dst_sdr_max_luminance_nits,
@@ -166,8 +164,8 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
   }
 
   gfx::ColorTransform::RuntimeOptions options;
-  options.offset = resource_offset;
-  options.multiplier = resource_multiplier;
+  options.offset = 0.0f;
+  options.multiplier = 1.0f;
   options.src_hdr_metadata = src_hdr_metadata;
   options.dst_sdr_max_luminance_nits = dst_sdr_max_luminance_nits;
   options.dst_max_luminance_relative = dst_max_luminance_relative;
@@ -292,7 +290,6 @@ sk_sp<SkImage> ColorConversionSkFilterCache::ApplyToneCurve(
                                 ColorSpace::TransferID::LINEAR_HDR);
   sk_sp<SkColorFilter> filter =
       Get(image_color_space, target_color_space,
-          /*resource_offset=*/0, /*resource_multiplier=*/1,
           /*src_bit_depth=*/std::nullopt, src_hdr_metadata,
           dst_sdr_max_luminance_nits, dst_max_luminance_relative);
   SkPaint paint;

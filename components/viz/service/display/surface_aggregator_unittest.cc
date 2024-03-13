@@ -475,7 +475,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     quad->SetNew(shared_state, output_rect, output_rect, false,
                  output_rect.size(), gfx::Rect(output_rect.size()),
                  gfx::Size(1, 1), ResourceId(1), ResourceId(2), ResourceId(3),
-                 kInvalidResourceId, gfx::ColorSpace::CreateREC709(), 0, 1.0, 8,
+                 kInvalidResourceId, gfx::ColorSpace::CreateREC709(), 8,
                  gfx::ProtectedVideoType::kClear, std::nullopt);
     if (per_quad_damage_output) {
       quad->damage_rect = output_rect;

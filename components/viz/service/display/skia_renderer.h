@@ -265,17 +265,13 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 
   // Get a color filter that converts from |src| color space to |dst| color
   // space using a shader constructed from gfx::ColorTransform.  The color
-  // filters are cached in |color_filter_cache_|.  Resource offset and
-  // multiplier are used to adjust the RGB output of the shader for YUV video
-  // quads. The default values perform no adjustment.
+  // filters are cached in |color_filter_cache_|.
   sk_sp<SkColorFilter> GetColorSpaceConversionFilter(
       const gfx::ColorSpace& src,
       std::optional<uint32_t> src_bit_depth,
       std::optional<gfx::HDRMetadata> src_hdr_metadata,
       const gfx::ColorSpace& dst,
-      bool is_video_frame,
-      float resource_offset = 0.0f,
-      float resource_multiplier = 1.0f);
+      bool is_video_frame);
   // Returns the color filter that should be applied to the current canvas.
   sk_sp<SkColorFilter> GetContentColorFilter();
 

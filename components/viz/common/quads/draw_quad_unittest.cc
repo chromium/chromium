@@ -398,8 +398,6 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   ResourceId u_plane_resource_id(532);
   ResourceId v_plane_resource_id(4);
   ResourceId a_plane_resource_id(63);
-  float resource_offset = 0.5f;
-  float resource_multiplier = 2.001f;
   uint32_t bits_per_channel = 5;
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kHardwareProtected;
@@ -412,8 +410,8 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   CREATE_QUAD_NEW(YUVVideoDrawQuad, visible_rect, blending, coded_size,
                   video_frame_visible_rect, uv_sample_size, y_plane_resource_id,
                   u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
-                  video_color_space, resource_offset, resource_multiplier,
-                  bits_per_channel, protected_video_type, hdr_metadata);
+                  video_color_space, bits_per_channel, protected_video_type,
+                  hdr_metadata);
   EXPECT_EQ(DrawQuad::Material::kYuvVideoContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
@@ -429,8 +427,6 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   EXPECT_EQ(u_plane_resource_id, copy_quad->u_plane_resource_id());
   EXPECT_EQ(v_plane_resource_id, copy_quad->v_plane_resource_id());
   EXPECT_EQ(a_plane_resource_id, copy_quad->a_plane_resource_id());
-  EXPECT_EQ(resource_offset, copy_quad->resource_offset);
-  EXPECT_EQ(resource_multiplier, copy_quad->resource_multiplier);
   EXPECT_EQ(bits_per_channel, copy_quad->bits_per_channel);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
   EXPECT_EQ(hdr_metadata, copy_quad->hdr_metadata);
@@ -438,8 +434,7 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   CREATE_QUAD_ALL(YUVVideoDrawQuad, coded_size, video_frame_visible_rect,
                   uv_sample_size, y_plane_resource_id, u_plane_resource_id,
                   v_plane_resource_id, a_plane_resource_id, video_color_space,
-                  resource_offset, resource_multiplier, bits_per_channel,
-                  protected_video_type, hdr_metadata);
+                  bits_per_channel, protected_video_type, hdr_metadata);
   EXPECT_EQ(DrawQuad::Material::kYuvVideoContent, copy_quad->material);
   EXPECT_EQ(gfx::RectF(4, 8, 32, 68), copy_quad->ya_tex_coord_rect());
   EXPECT_EQ(gfx::RectF(2, 4, 16, 34), copy_quad->uv_tex_coord_rect());
@@ -449,8 +444,6 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   EXPECT_EQ(u_plane_resource_id, copy_quad->u_plane_resource_id());
   EXPECT_EQ(v_plane_resource_id, copy_quad->v_plane_resource_id());
   EXPECT_EQ(a_plane_resource_id, copy_quad->a_plane_resource_id());
-  EXPECT_EQ(resource_offset, copy_quad->resource_offset);
-  EXPECT_EQ(resource_multiplier, copy_quad->resource_multiplier);
   EXPECT_EQ(bits_per_channel, copy_quad->bits_per_channel);
   EXPECT_EQ(protected_video_type, copy_quad->protected_video_type);
   EXPECT_EQ(hdr_metadata, copy_quad->hdr_metadata);
@@ -628,8 +621,8 @@ TEST_F(DrawQuadIteratorTest, YUVVideoDrawQuad) {
   CREATE_QUAD_NEW(YUVVideoDrawQuad, visible_rect, needs_blending, coded_size,
                   video_frame_visible_rect, uv_sample_size, y_plane_resource_id,
                   u_plane_resource_id, v_plane_resource_id, a_plane_resource_id,
-                  video_color_space, 0.0, 1.0, 5,
-                  gfx::ProtectedVideoType::kClear, std::nullopt);
+                  video_color_space, 5, gfx::ProtectedVideoType::kClear,
+                  std::nullopt);
   EXPECT_EQ(DrawQuad::Material::kYuvVideoContent, copy_quad->material);
   EXPECT_EQ(y_plane_resource_id, quad_new->y_plane_resource_id());
   EXPECT_EQ(u_plane_resource_id, quad_new->u_plane_resource_id());

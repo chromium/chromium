@@ -392,8 +392,6 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
                      /*video_frame_uv_sample_size=*/uv_sample_size,
                      y_resource_id, uv_resource_id, uv_resource_id,
                      kInvalidResourceId, gfx::ColorSpace::CreateREC709(),
-                     /*offset=*/0.0f,
-                     /*multiplier=*/1.0f,
                      /*bits_per_channel=*/8,
                      /*video_type=*/gfx::ProtectedVideoType::kClear,
                      /*metadata=*/std::nullopt);
@@ -428,8 +426,6 @@ TEST_F(CALayerOverlayTest, YUVDrawQuadOverlay) {
                      /*video_frame_uv_sample_size=*/uv_sample_size,
                      y_resource_id, u_resource_id, v_resource_id,
                      kInvalidResourceId, gfx::ColorSpace::CreateREC709(),
-                     /*offset=*/0.0f,
-                     /*multiplier=*/1.0f,
                      /*bits_per_channel=*/8,
                      /*video_type=*/gfx::ProtectedVideoType::kClear,
                      /*metadata=*/std::nullopt);

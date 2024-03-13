@@ -875,8 +875,6 @@ void VideoResourceUpdater::ObtainFrameResources(
 
   if (external_resources.type == VideoFrameResourceType::YUV ||
       external_resources.type == VideoFrameResourceType::YUVA) {
-    frame_resource_offset_ = external_resources.offset;
-    frame_resource_multiplier_ = external_resources.multiplier;
     frame_bits_per_channel_ = external_resources.bits_per_channel;
   }
 
@@ -978,7 +976,6 @@ void VideoResourceUpdater::AppendQuads(
           shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
           coded_size, visible_rect, uv_sample_size, frame_resources_[0].id,
           frame_resources_[1].id, v_plane_id, a_plane_id, frame->ColorSpace(),
-          frame_resource_offset_, frame_resource_multiplier_,
           frame_bits_per_channel_,
           ProtectedVideoTypeFromMetadata(frame->metadata()),
           frame->hdr_metadata().value_or(gfx::HDRMetadata()));

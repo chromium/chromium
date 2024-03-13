@@ -254,13 +254,13 @@ TEST(RenderPassIOTest, QuadList) {
                                          {0.0081f, 0.0659f, 0.7965f}}};
       skcms_TransferFunction transfer_func = {
           0.9495f, 0.0495f, 0.6587f, 0.3206f, 0.0003f, 0.f, 2.3955f};
-      quad->SetAll(
-          render_pass0->shared_quad_state_list.ElementAt(sqs_index),
-          gfx::Rect(0, 0, 800, 600), gfx::Rect(10, 15, 780, 570), false,
-          gfx::Size(800, 400), gfx::Rect(10, 20, 300, 400), gfx::Size(2, 2),
-          ResourceId(1u), ResourceId(2u), ResourceId(3u), ResourceId(4u),
-          gfx::ColorSpace::CreateCustom(primary_matrix, transfer_func), 3.f,
-          1.1f, 12u, gfx::ProtectedVideoType::kClear, gfx::HDRMetadata());
+      quad->SetAll(render_pass0->shared_quad_state_list.ElementAt(sqs_index),
+                   gfx::Rect(0, 0, 800, 600), gfx::Rect(10, 15, 780, 570),
+                   false, gfx::Size(800, 400), gfx::Rect(10, 20, 300, 400),
+                   gfx::Size(2, 2), ResourceId(1u), ResourceId(2u),
+                   ResourceId(3u), ResourceId(4u),
+                   gfx::ColorSpace::CreateCustom(primary_matrix, transfer_func),
+                   12u, gfx::ProtectedVideoType::kClear, gfx::HDRMetadata());
       ++sqs_index;
       ++quad_count;
     }

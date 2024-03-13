@@ -857,8 +857,8 @@ void CreateTestYUVVideoDrawQuad_NV12(
   yuv_quad->SetNew(shared_state, rect, visible_rect, needs_blending,
                    ya_tex_size, video_frame_visible_rect, uv_sample_size,
                    mapped_resource_y, mapped_resource_u, mapped_resource_v,
-                   resource_a, color_space, 0.0f, 1.0f, 8,
-                   gfx::ProtectedVideoType::kClear, std::nullopt);
+                   resource_a, color_space, 8, gfx::ProtectedVideoType::kClear,
+                   std::nullopt);
 }
 
 // Create two quads of specified colors on half-pixel boundaries.

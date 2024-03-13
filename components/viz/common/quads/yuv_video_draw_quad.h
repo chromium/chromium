@@ -52,8 +52,6 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
               ResourceId v_plane_resource_id,
               ResourceId a_plane_resource_id,
               const gfx::ColorSpace& color_space,
-              float offset,
-              float multiplier,
               uint32_t bits,
               gfx::ProtectedVideoType video_type,
               std::optional<gfx::HDRMetadata> metadata);
@@ -74,8 +72,6 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
               ResourceId v_plane_resource_id,
               ResourceId a_plane_resource_id,
               const gfx::ColorSpace& color_space,
-              float offset,
-              float multiplier,
               uint32_t bits,
               gfx::ProtectedVideoType video_type,
               std::optional<gfx::HDRMetadata> metadata);
@@ -86,8 +82,6 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
   gfx::Size coded_size;
   gfx::Rect video_visible_rect;
 
-  float resource_offset = 0.0f;
-  float resource_multiplier = 1.0f;
   uint32_t bits_per_channel = 8;
   // TODO(hubbe): Move to ResourceProvider::ScopedSamplerGL.
   gfx::ColorSpace video_color_space;

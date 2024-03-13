@@ -38,14 +38,11 @@ class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
 
   // Retrieve an SkColorFilter to transform `src` to `dst`. The bit depth of
   // `src` maybe specified in `src_bit_depth` (relevant only for YUV to RGB
-  // conversion). The filter also applies the offset `src_resource_offset` and
-  // then scales by `src_resource_multiplier`. Apply tone mapping of `src` is
+  // conversion). Apply tone mapping of `src` is
   // HLG or PQ, using `src_hdr_metadata`, `dst_sdr_max_luminance_nits`, and
   // `dst_max_luminance_relative` as parameters.
   sk_sp<SkColorFilter> Get(const gfx::ColorSpace& src,
                            const gfx::ColorSpace& dst,
-                           float resource_offset,
-                           float resource_multiplier,
                            std::optional<uint32_t> src_bit_depth,
                            std::optional<gfx::HDRMetadata> src_hdr_metadata,
                            float dst_sdr_max_luminance_nits,
