@@ -278,7 +278,7 @@ class Template:
 
   def _stamp_enum(self, enum):
     ENUM_TEMPLATE = """
-enum {enum.name} {{
+enum class {enum.name} {{
 {variants}
 }};
     """

@@ -936,11 +936,139 @@
     </metric>
   </event>
 
+  <enum name="CameraAppLaunchType">
+    <variant value="0">DEFAULT</variant>
+    <variant value="1">ASSISTANT</variant>
+  </enum>
+
+  <enum name="CameraAppMode">
+    <variant value="0">PHOTO</variant>
+    <variant value="1">VIDEO</variant>
+    <variant value="2">SCAN</variant>
+    <variant value="3">PORTRAIT</variant>
+  </enum>
+
+  <enum name="CameraAppFacing">
+    <variant value="0">ENVIRONMENT</variant>
+    <variant value="1">USER</variant>
+    <variant value="2">EXTERNAL</variant>
+    <variant value="3">UNKNOWN</variant>
+  </enum>
+
+  <enum name="CameraAppGridType">
+    <variant value="0">NONE</variant>
+    <variant value="1">THREE_BY_THREE</variant>
+    <variant value="2">FOUR_BY_FOUR</variant>
+    <variant value="3">GOLDEN</variant>
+  </enum>
+
+  <enum name="CameraAppTimerType">
+    <variant value="0">NONE</variant>
+    <variant value="1">THREE_SECONDS</variant>
+    <variant value="2">TEN_SECONDS</variant>
+  </enum>
+
+  <enum name="CameraAppShutterType">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">ASSISTANT</variant>
+    <variant value="2">KEYBOARD</variant>
+    <variant value="3">MOUSE</variant>
+    <variant value="4">TOUCH</variant>
+    <variant value="5">VOLUME_KEY</variant>
+  </enum>
+
+  <enum name="CameraAppAndroidIntentResultType">
+    <variant value="0">NON_INTENT</variant>
+    <variant value="1">CONFIRMED</variant>
+    <variant value="2">CANCELED</variant>
+  </enum>
+
+  <enum name="CameraAppResolutionLevel">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">FOUR_K</variant>
+    <variant value="2">QUAD_HD</variant>
+    <variant value="3">FULL_HD</variant>
+    <variant value="4">HD</variant>
+    <variant value="5">THREE_HUNDRED_THIRTY_P</variant>
+    <variant value="6">FULL</variant>
+    <variant value="7">MEDIUM</variant>
+  </enum>
+
+  <enum name="CameraAppAspectRatioSet">
+    <variant value="0">OTHERS</variant>
+    <variant value="1">FOUR_TO_THREE</variant>
+    <variant value="2">SIXTEEN_TO_NINE</variant>
+    <variant value="3">SQUARE</variant>
+  </enum>
+
+  <enum name="CameraAppRecordType">
+    <variant value="0">NOT_RECORDING</variant>
+    <variant value="1">NORMAL</variant>
+    <variant value="2">GIF</variant>
+    <variant value="3">TIMELAPSE</variant>
+  </enum>
+
+  <enum name="CameraAppGifResultType">
+    <variant value="0">NOT_GIF</variant>
+    <variant value="1">RETAKE</variant>
+    <variant value="2">SHARE</variant>
+    <variant value="3">SAVE</variant>
+  </enum>
+
+  <enum name="CameraAppDocScanActionType">
+    <variant value="0">ADD_PAGE</variant>
+    <variant value="1">DELETE_PAGE</variant>
+    <variant value="2">FIX</variant>
+  </enum>
+
+  <enum name="CameraAppDocScanResultType">
+    <variant value="0">CANCEL</variant>
+    <variant value="1">SAVE_AS_PDF</variant>
+    <variant value="2">SAVE_AS_PHOTO</variant>
+    <variant value="3">SHARE</variant>
+  </enum>
+
+  <enum name="CameraAppLowStorageActionType">
+    <variant value="0">MANAGE_STORAGE_AUTO_STOP</variant>
+    <variant value="1">MANAGE_STORAGE_CANNOT_START</variant>
+    <variant value="2">SHOW_AUTO_STOP_DIALOG</variant>
+    <variant value="3">SHOW_CANNOT_START_DIALOG</variant>
+    <variant value="4">SHOW_WARNING_MESSAGE</variant>
+  </enum>
+
+  <enum name="CameraAppBarcodeContentType">
+    <variant value="0">TEXT</variant>
+    <variant value="1">URL</variant>
+    <variant value="2">WIFI</variant>
+  </enum>
+
+  <enum name="CameraAppWifiSecurityType">
+    <variant value="0">NONE</variant>
+    <variant value="1">EAP</variant>
+    <variant value="2">WEP</variant>
+    <variant value="3">WPA</variant>
+  </enum>
+
+  <enum name="CameraAppPerfEventType">
+    <variant value="0">CAMERA_SWITCHING</variant>
+    <variant value="1">GIF_CAPTURE_POST_PROCESSING</variant>
+    <variant value="2">LAUNCHING_FROM_LAUNCH_APP_COLD</variant>
+    <variant value="3">LAUNCHING_FROM_LAUNCH_APP_WARM</variant>
+    <variant value="4">LAUNCHING_FROM_WINDOW_CREATION</variant>
+    <variant value="5">MODE_SWITCHING</variant>
+    <variant value="6">PHOTO_CAPTURE_POST_PROCESSING</variant>
+    <variant value="7">PHOTO_CAPTURE_SHUTTER</variant>
+    <variant value="8">PHOTO_TAKING</variant>
+    <variant value="9">PORTRAIT_MODE_CAPTURE_POST_PROCESSING</variant>
+    <variant value="10">TIMELAPSE_CAPTURE_POST_PROCESSING</variant>
+    <variant value="11">VIDEO_CAPTURE_POST_PROCESSING</variant>
+  </enum>
+
   <event name="CameraApp.StartSession">
     <summary>
       Event recorded when the camera app is started.
     </summary>
-    <metric name="LaunchType" type="int">
+    <metric name="LaunchType" type="CameraAppLaunchType">
       <summary>
         The type indicates how the camera app is launched.
       </summary>
@@ -957,12 +1085,12 @@
     <summary>
       Event recorded when the camera app executes a capture.
     </summary>
-    <metric name="Mode" type="int">
+    <metric name="Mode" type="CameraAppMode">
       <summary>
         The mode where the capture happens.
       </summary>
     </metric>
-    <metric name="Facing" type="int">
+    <metric name="Facing" type="CameraAppFacing">
       <summary>
         The facing of the capturing camera.
       </summary>
@@ -973,22 +1101,22 @@
         happens.
       </summary>
     </metric>
-    <metric name="GridType" type="int">
+    <metric name="GridType" type="CameraAppGridType">
       <summary>
         The applied grid setting when the capture happens.
       </summary>
     </metric>
-    <metric name="TimerType" type="int">
+    <metric name="TimerType" type="CameraAppTimerType">
       <summary>
         The applied timer setting when the capture happens.
       </summary>
     </metric>
-    <metric name="ShutterType" type="int">
+    <metric name="ShutterType" type="CameraAppShutterType">
       <summary>
         The shutter type which triggers the camera capture.
       </summary>
     </metric>
-    <metric name="AndroidIntentResultType" type="int">
+    <metric name="AndroidIntentResultType" type="CameraAppAndroidIntentResultType">
       <summary>
         The type of Android intent result which the capture leads to.
       </summary>
@@ -1014,12 +1142,12 @@
         The height of the capture resolution.
       </summary>
     </metric>
-    <metric name="ResolutionLevel" type="int">
+    <metric name="ResolutionLevel" type="CameraAppResolutionLevel">
       <summary>
         The level that the capture resolution falls within.
       </summary>
     </metric>
-    <metric name="AspectRatioSet" type="int">
+    <metric name="AspectRatioSet" type="CameraAppAspectRatioSet">
       <summary>
         The aspect ratio set that the capture aspect ratio falls within.
       </summary>
@@ -1051,12 +1179,12 @@
         The duration of the captured video in milliseconds.
       </summary>
     </metric>
-    <metric name="RecordType" type="int">
+    <metric name="RecordType" type="CameraAppRecordType">
       <summary>
         The type of the video recording.
       </summary>
     </metric>
-    <metric name="GifResultType" type="int">
+    <metric name="GifResultType" type="CameraAppGifResultType">
       <summary>
         The type of the GIF recording result.
       </summary>
@@ -1074,7 +1202,7 @@
       Event recorded when the camera app is successfully handled an Android camera
       intent.
     </summary>
-    <metric name="Mode" type="int">
+    <metric name="Mode" type="CameraAppMode">
       <summary>
         The mode where the Android camera intent is corresponding to.
       </summary>
@@ -1124,7 +1252,7 @@
     <summary>
       Event recorded when action related to document scanning is performed.
     </summary>
-    <metric name="ActionType" type="int">
+    <metric name="ActionType" type="CameraAppDocScanActionType">
       <summary>
         The type of the document scanning related action.
       </summary>
@@ -1135,7 +1263,7 @@
     <summary>
       Event recorded when the user finishes a document scanning session.
     </summary>
-    <metric name="ResultType" type="int">
+    <metric name="ResultType" type="CameraAppDocScanResultType">
       <summary>
         The type of the result of this document scanning session.
       </summary>
@@ -1176,7 +1304,7 @@
       Event recorded when a action is performed in the camera app due to low
       storage detection.
     </summary>
-    <metric name="ActionType" type="int">
+    <metric name="ActionType" type="CameraAppLowStorageActionType">
       <summary>
         The type of the action for low storage handling.
       </summary>
@@ -1187,12 +1315,12 @@
     <summary>
       Event recorded when a barcode is detected on the preview of the camera app.
     </summary>
-    <metric name="ContentType" type="int">
+    <metric name="ContentType" type="CameraAppBarcodeContentType">
       <summary>
         The type of the content detected via the barcode.
       </summary>
     </metric>
-    <metric name="WifiSecurityType" type="int">
+    <metric name="WifiSecurityType" type="CameraAppWifiSecurityType">
       <summary>
         The Wi-Fi security type brought in the Wi-Fi QR code. If the barcode content
         is not Wi-Fi, the type will be set to none.
@@ -1204,7 +1332,7 @@
     <summary>
       Event recorded when a performance measurement is done in the camera app.
     </summary>
-    <metric name="EventType" type="int">
+    <metric name="EventType" type="CameraAppPerfEventType">
       <summary>
         The type of the performance measurement.
       </summary>
@@ -1214,7 +1342,7 @@
         The duration of the performance event in milliseconds.
       </summary>
     </metric>
-    <metric name="Facing" type="int">
+    <metric name="Facing" type="CameraAppFacing">
       <summary>
         The facing of the current camera. Will be unknown if the camera facing is
         irrelevant.
