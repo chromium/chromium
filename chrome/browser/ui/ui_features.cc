@@ -64,13 +64,13 @@ BASE_FEATURE(kDefaultBrowserPromptRefresh,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kUpdatedInfoBarCopy{
-    &kDefaultBrowserPromptRefresh, "updated_info_bar_copy", false};
+    &kDefaultBrowserPromptRefresh, "updated_info_bar_copy", true};
 
 const base::FeatureParam<base::TimeDelta> kRepromptDuration{
-    &kDefaultBrowserPromptRefresh, "reprompt_duration", base::Days(14)};
+    &kDefaultBrowserPromptRefresh, "reprompt_duration", base::Days(28)};
 
 const base::FeatureParam<int> kMaxPromptCount{&kDefaultBrowserPromptRefresh,
-                                              "max_prompt_count", 1};
+                                              "max_prompt_count", -1};
 
 const base::FeatureParam<int> kRepromptDurationMultiplier{
     &kDefaultBrowserPromptRefresh, "reprompt_duration_multiplier", 2};

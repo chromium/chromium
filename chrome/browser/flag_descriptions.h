@@ -170,6 +170,9 @@ extern const char kWallpaperSearchSettingsVisibilityDescription[];
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
 
+extern const char kDefaultBrowserPromptRefreshName[];
+extern const char kDefaultBrowserPromptRefreshDescription[];
+
 extern const char kDIPSName[];
 extern const char kDIPSDescription[];
 

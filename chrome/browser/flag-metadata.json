@@ -1739,6 +1739,11 @@
     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 125
   },
+  {
+    "name": "default-browser-prompt-refresh",
+    "owners": [ "agale@chromium.org", "charlesmeng@chromium.org" ],
+    "expiry_milestone": 130
+  },
   {  "name": "default-browser-video-in-settings",
      "owners": [ "gayane@google.com", "bling-flags@google.com" ],
      "expiry_milestone": 130

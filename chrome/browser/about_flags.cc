@@ -3724,6 +3724,22 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
          nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshAggressive[] = {
+    {"max_prompt_count", "-1"},
+    {"reprompt_duration", "7d"},
+    {"reprompt_duration_multiplier", "1"}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromptRefreshTesting[] = {
+    {"max_prompt_count", "3"},
+    {"reprompt_duration", "5m"},
+    {"reprompt_duration_multiplier", "2"}};
+const FeatureEntry::FeatureVariation kDefaultBrowserPromptRefreshVariations[] =
+    {{"- Aggressive (1 week reprompt with no backoff)",
+      kDefaultBrowserPromptRefreshAggressive,
+      std::size(kDefaultBrowserPromptRefreshAggressive), nullptr},
+     {"- For Testing (5 minute reprompt with 2x backoff, max 3 times)",
+      kDefaultBrowserPromptRefreshTesting,
+      std::size(kDefaultBrowserPromptRefreshTesting), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -11098,6 +11114,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kAuthenticateUsingNewWindowsHelloApi)},
 #endif
+
+    {"default-browser-prompt-refresh",
+     flag_descriptions::kDefaultBrowserPromptRefreshName,
+     flag_descriptions::kDefaultBrowserPromptRefreshDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDefaultBrowserPromptRefresh,
+                                    kDefaultBrowserPromptRefreshVariations,
+                                    "DefaultBrowserPromptRefresh")},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

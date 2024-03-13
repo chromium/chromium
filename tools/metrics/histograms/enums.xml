@@ -23879,6 +23879,7 @@ from previous Chrome versions.
   <int value="1398044738" label="EchePhoneHubPermissionsOnboarding:enabled"/>
   <int value="1398049903" label="WebUIDarkMode:disabled"/>
   <int value="1398333721" label="ForceEnableDevicesPage:disabled"/>
+  <int value="1399126464" label="DefaultBrowserPromptRefresh:disabled"/>
   <int value="1399386367" label="LocalHistoryZeroSuggestBeyondNTP:disabled"/>
   <int value="1399657075" label="IndexedDBCompressValuesWithSnappy:enabled"/>
   <int value="1401948539" label="TpcdSupportSettings:disabled"/>
@@ -24693,6 +24694,7 @@ from previous Chrome versions.
   <int value="1770189877" label="ConfirmNtpSuggestionRemovals:enabled"/>
   <int value="1771548551" label="DisableKeepaliveFetch:enabled"/>
   <int value="1772248386" label="SeedAccountsRevamp:enabled"/>
+  <int value="1772277480" label="DefaultBrowserPromptRefresh:enabled"/>
   <int value="1772454319" label="enable-storage-manager"/>
   <int value="1772618273"
       label="WebAuthenticationFilterGooglePasskeys:disabled"/>
