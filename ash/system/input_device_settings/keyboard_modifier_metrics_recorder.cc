@@ -66,9 +66,10 @@ constexpr int kNumModifiers =
 // 32-bit int will fit without any overflow or UB.
 // Modifier hash is limited to 32 bits as metrics can only handle 32 bit ints.
 static_assert((sizeof(int32_t) * 8) >= (kModifierHashWidth * kNumModifiers));
-// `kIsoLevel5ShiftMod3` is not a valid modifier for the purposes of these
-// metrics so there is 1 less modifier than the max value.
-static_assert(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) - 1 <=
+// `kIsoLevel5ShiftMod3`, `kRightAlt`, and `kFunction` are not valid modifiers
+// for this metric. Therefore there are 3 less values here than are contained in
+// the enum.
+static_assert(static_cast<int>(ui::mojom::ModifierKey::kMaxValue) - 3 <=
               kMaxModifierValue);
 
 constexpr ui::mojom::ModifierKey GetDefaultModifier(size_t index) {

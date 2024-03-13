@@ -173,12 +173,15 @@ int ConvertModifierKeyToFlags(ui::mojom::ModifierKey modifier_key) {
       return ui::EF_CONTROL_DOWN;
     case ui::mojom::ModifierKey::kAlt:
       return ui::EF_ALT_DOWN;
+    case ui::mojom::ModifierKey::kFunction:
+      return ui::EF_FUNCTION_DOWN;
     case ui::mojom::ModifierKey::kEscape:
     case ui::mojom::ModifierKey::kBackspace:
     case ui::mojom::ModifierKey::kAssistant:
     case ui::mojom::ModifierKey::kCapsLock:
     case ui::mojom::ModifierKey::kVoid:
     case ui::mojom::ModifierKey::kIsoLevel5ShiftMod3:
+    case ui::mojom::ModifierKey::kRightAlt:
       return ui::EF_NONE;
   }
 }

@@ -145,9 +145,11 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::ValuesIn(kKeyboardModifierMetricTestData),
         testing::Range(static_cast<int>(ui::mojom::ModifierKey::kMinValue),
-                       static_cast<int>(ui::mojom::ModifierKey::kMaxValue)),
+                       static_cast<int>(ui::mojom::ModifierKey::kAssistant) +
+                           1),
         testing::Range(static_cast<int>(ui::mojom::ModifierKey::kMinValue),
-                       static_cast<int>(ui::mojom::ModifierKey::kMaxValue))),
+                       static_cast<int>(ui::mojom::ModifierKey::kAssistant) +
+                           1)),
     ([](const testing::TestParamInfo<
          KeyboardModifierMetricsRecorderPrefChangedTest::ParamType>& info) {
       const auto& [data, int_modifier_key_from, int_modifier_key_to] =
@@ -208,8 +210,11 @@ INSTANTIATE_TEST_SUITE_P(
     KeyboardModifierMetricsRecorderPrefStartedTest,
     testing::Combine(
         testing::ValuesIn(kKeyboardModifierMetricTestData),
+        // Only test from 0 to Assistant as those are the only modifiers
+        // supported pre settings split.
         testing::Range(static_cast<int>(ui::mojom::ModifierKey::kMinValue),
-                       static_cast<int>(ui::mojom::ModifierKey::kMaxValue))),
+                       static_cast<int>(ui::mojom::ModifierKey::kAssistant) +
+                           1)),
     ([](const testing::TestParamInfo<
          KeyboardModifierMetricsRecorderPrefStartedTest::ParamType>& info) {
       const auto& [data, int_modifier_key] = info.param;
