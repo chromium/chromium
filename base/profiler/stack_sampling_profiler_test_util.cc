@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/profiler/stack_sampling_profiler_test_util.h"
-#include "base/memory/raw_ptr.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
 #include "base/profiler/native_unwinder_android_memory_regions_map.h"
@@ -425,7 +426,7 @@ void ExpectStackDoesNotContain(
   }
 }
 
-NativeLibrary LoadTestLibrary(StringPiece library_name) {
+NativeLibrary LoadTestLibrary(std::string_view library_name) {
   // The lambda gymnastics works around the fact that we can't use ASSERT_*
   // macros in a function returning non-null.
   const auto load = [&](NativeLibrary* library) {

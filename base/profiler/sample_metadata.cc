@@ -5,6 +5,7 @@
 #include "base/profiler/sample_metadata.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
@@ -24,7 +25,7 @@ std::optional<PlatformThreadId> GetPlatformThreadIdForScope(
 
 }  // namespace
 
-SampleMetadata::SampleMetadata(StringPiece name, SampleMetadataScope scope)
+SampleMetadata::SampleMetadata(std::string_view name, SampleMetadataScope scope)
     : name_hash_(HashMetricName(name)), scope_(scope) {}
 
 void SampleMetadata::Set(int64_t value) {
@@ -47,7 +48,7 @@ void SampleMetadata::Remove(int64_t key) {
                                       GetPlatformThreadIdForScope(scope_));
 }
 
-ScopedSampleMetadata::ScopedSampleMetadata(StringPiece name,
+ScopedSampleMetadata::ScopedSampleMetadata(std::string_view name,
                                            int64_t value,
                                            SampleMetadataScope scope)
     : name_hash_(HashMetricName(name)),
@@ -55,7 +56,7 @@ ScopedSampleMetadata::ScopedSampleMetadata(StringPiece name,
   GetSampleMetadataRecorder()->Set(name_hash_, std::nullopt, thread_id_, value);
 }
 
-ScopedSampleMetadata::ScopedSampleMetadata(StringPiece name,
+ScopedSampleMetadata::ScopedSampleMetadata(std::string_view name,
                                            int64_t key,
                                            int64_t value,
                                            SampleMetadataScope scope)
@@ -83,7 +84,7 @@ void ApplyMetadataToPastSamplesImpl(TimeTicks period_start,
 
 void ApplyMetadataToPastSamples(TimeTicks period_start,
                                 TimeTicks period_end,
-                                StringPiece name,
+                                std::string_view name,
                                 int64_t value,
                                 SampleMetadataScope scope) {
   return ApplyMetadataToPastSamplesImpl(
@@ -93,7 +94,7 @@ void ApplyMetadataToPastSamples(TimeTicks period_start,
 
 void ApplyMetadataToPastSamples(TimeTicks period_start,
                                 TimeTicks period_end,
-                                StringPiece name,
+                                std::string_view name,
                                 int64_t key,
                                 int64_t value,
                                 SampleMetadataScope scope) {
@@ -109,7 +110,7 @@ void AddProfileMetadataImpl(uint64_t name_hash,
   StackSamplingProfiler::AddProfileMetadata(name_hash, key, value, thread_id);
 }
 
-void AddProfileMetadata(StringPiece name,
+void AddProfileMetadata(std::string_view name,
                         int64_t key,
                         int64_t value,
                         SampleMetadataScope scope) {

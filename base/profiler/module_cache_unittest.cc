@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/profiler/module_cache.h"
+
 #include <iomanip>
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/profiler/module_cache.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -347,7 +348,7 @@ TEST(ModuleCacheTest, CheckAgainstProcMaps) {
   // Map distinct paths to lists of regions for the path in increasing memory
   // order.
   using RegionVector = std::vector<const debug::MappedMemoryRegion*>;
-  using PathRegionsMap = std::map<StringPiece, RegionVector>;
+  using PathRegionsMap = std::map<std::string_view, RegionVector>;
   PathRegionsMap path_regions;
   for (const debug::MappedMemoryRegion& region : regions)
     path_regions[region.path].push_back(&region);

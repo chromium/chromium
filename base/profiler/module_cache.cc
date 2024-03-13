@@ -5,6 +5,7 @@
 #include "base/profiler/module_cache.h"
 
 #include <iterator>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -32,7 +33,7 @@ struct ModuleAddressCompare {
 
 }  // namespace
 
-std::string TransformModuleIDToSymbolServerFormat(StringPiece module_id) {
+std::string TransformModuleIDToSymbolServerFormat(std::string_view module_id) {
   std::string mangled_id(module_id);
   // Android and Linux Chrome builds use the "breakpad" format to index their
   // build id, so we transform the build id for these platforms. All other

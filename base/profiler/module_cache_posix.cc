@@ -8,9 +8,9 @@
 #include <elf.h>
 
 #include <optional>
+#include <string_view>
 
 #include "base/debug/elf_reader.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -68,12 +68,12 @@ size_t GetLastExecutableOffset(const void* module_addr) {
 }
 
 FilePath GetDebugBasenameForModule(const void* base_address,
-                                   base::StringPiece file) {
+                                   std::string_view file) {
 #if BUILDFLAG(IS_ANDROID)
   // Preferentially identify the library using its soname on Android. Libraries
   // mapped directly from apks have the apk filename in |dl_info.dli_fname|, and
   // this doesn't distinguish the particular library.
-  std::optional<StringPiece> library_name =
+  std::optional<std::string_view> library_name =
       debug::ReadElfLibraryName(base_address);
   if (library_name)
     return FilePath(*library_name);
