@@ -82,6 +82,10 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   // This is called when cryptohome was successfully created/unlocked.
   void OnAuthSuccess();
 
+  // This is called when ash-chrome is restarted (i.e. on start up procedure
+  // of restoring).
+  void OnAshRestart();
+
   // This is true if we need to report Ash.ArcAppInitialAppsInstallDuration
   // histogram in this session but it has not been reported yet.
   bool NeedReportArcAppListReady() const;

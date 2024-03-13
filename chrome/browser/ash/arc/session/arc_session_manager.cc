@@ -1930,6 +1930,19 @@ void ArcSessionManager::MaybeRecordFirstActivationDuringUserSessionStartUp(
     return;
   }
   is_first_activation_during_user_session_start_up_recorded_ = true;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kLoginUser)) {
+    // On browser restart, we don't record the user session start up,
+    // because the start up process is different.
+    // Theoretically, this is not a pure user login start up, so out of
+    // the scope.
+    // Practically, start up tasks are considered to be completed
+    // quickly as a workaround of the current architecture (b/328339021),
+    // so the recording is not reliable.
+    return;
+  }
+
   CHECK(profile_);
   RecordFirstActivationDuringUserSessionStartUp(profile_->GetPrefs(), value);
 }

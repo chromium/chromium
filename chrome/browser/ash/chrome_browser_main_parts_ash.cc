@@ -1086,6 +1086,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
     session_manager::SessionManager::Get()->CreateSessionForRestart(
         account_id, user_id_hash);
+    ash::Shell::Get()->login_unlock_throughput_recorder()->OnAshRestart();
 
     // If restarting demo session, mark demo session as started before primary
     // profile starts initialization so browser context keyed services created

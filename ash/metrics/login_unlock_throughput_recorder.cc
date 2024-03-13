@@ -243,6 +243,13 @@ void LoginUnlockThroughputRecorder::OnAuthSuccess() {
   AddLoginTimeMarker("OnAuthSuccess");
 }
 
+void LoginUnlockThroughputRecorder::OnAshRestart() {
+  login_animation_finished_timer_.Stop();
+  if (!post_login_deferred_task_runner_->Started()) {
+    post_login_deferred_task_runner_->Start();
+  }
+}
+
 void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
   auto* login_state = LoginState::Get();
   auto logged_in_user = login_state->GetLoggedInUserType();
