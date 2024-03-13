@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
-#include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
-#include "base/logging.h"
-#include "components/prefs/pref_service.h"
 
 namespace ash {
 namespace ambient {
@@ -61,53 +55,6 @@ constexpr char kAmbientModeManagedScreensaverImages[] =
 
 constexpr char kAmbientModeRunningDurationMinutes[] =
     "ash.ambient.screensaver_duration_minutes";
-
-void MigrateDeprecatedPrefs(PrefService& pref_service) {
-  // The largest |AmbientTheme| value possible with the old pref
-  // |kAmbientTheme|.
-  static constexpr personalization_app::mojom::AmbientTheme
-      kLegacyMaxAmbientTheme =
-          personalization_app::mojom::AmbientTheme::kFloatOnBy;
-
-  if (pref_service.HasPrefPath(ash::ambient::prefs::kAmbientUiSettings)) {
-    DVLOG(4) << "PrefService has already been migrated to new scheme.";
-    // See comments at end of function.
-    pref_service.ClearPref(ash::ambient::prefs::kAmbientTheme);
-    return;
-  }
-
-  if (!pref_service.HasPrefPath(ash::ambient::prefs::kAmbientTheme)) {
-    DVLOG(4)
-        << "PrefService does not have legacy ambient theme. Nothing to migrate";
-    return;
-  }
-
-  int current_theme_as_int =
-      pref_service.GetInteger(ash::ambient::prefs::kAmbientTheme);
-  if (current_theme_as_int < 0 ||
-      current_theme_as_int > static_cast<int>(kLegacyMaxAmbientTheme)) {
-    // This should be very rare. It can only happen if the pref storage is
-    // corrupted somehow.
-    LOG(WARNING) << "Loaded invalid ambient theme from pref storage: "
-                 << current_theme_as_int << ". Not migrating to new scheme.";
-    pref_service.ClearPref(ash::ambient::prefs::kAmbientTheme);
-    return;
-  }
-
-  // The |kVideo| theme should not be possible here. It's checked above and
-  // counted as an invalid theme in the old pref storage.
-  base::Value::Dict converted_pref;
-  converted_pref.Set(ash::ambient::prefs::kAmbientUiSettingsFieldTheme,
-                     current_theme_as_int);
-  pref_service.SetDict(ash::ambient::prefs::kAmbientUiSettings,
-                       std::move(converted_pref));
-  // The legacy pref |kAmbientTheme| is intentionally not erased here to avoid
-  // the corner case where erasure of the old pref happens to get committed to
-  // storage but the new pref does not, which would lose the old pref value
-  // permanently. Wait until the next time MigrateAmbientThemePref() is called,
-  // if the new pref is detected, that confirms it's committed permanently to
-  // storage, and it's safe to erase the legacy pref.
-}
 
 }  // namespace prefs
 }  // namespace ambient

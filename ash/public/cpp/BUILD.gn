@@ -507,7 +507,6 @@ source_set("unit_tests") {
     "accelerator_actions_unittest.cc",
     "accelerator_keycode_lookup_cache_unittest.cc",
     "accelerators_util_unittest.cc",
-    "ambient/ambient_prefs_unittest.cc",
     "android_intent_helper_unittest.cc",
     "app_list/app_list_config_provider_unittest.cc",
     "holding_space/holding_space_controller_unittest.cc",
