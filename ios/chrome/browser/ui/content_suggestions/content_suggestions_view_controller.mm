@@ -757,7 +757,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [self.safetyCheckModuleContainer removeFromSuperview];
   self.safetyCheckModuleContainer =
       [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
-  self.safetyCheckModuleContainer.delegate = self;
   [self.safetyCheckModuleContainer configureWithConfig:_safetyCheckState];
 
   if (!_magicStackRankReceived) {

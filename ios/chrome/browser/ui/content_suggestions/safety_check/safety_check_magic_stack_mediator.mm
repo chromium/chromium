@@ -121,6 +121,7 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
 - (void)disableModule {
   safety_check_prefs::DisableSafetyCheckInMagicStack(_localState);
+  [self.delegate removeSafetyCheckModule];
 }
 
 #pragma mark - SafetyCheckConsumerSource
