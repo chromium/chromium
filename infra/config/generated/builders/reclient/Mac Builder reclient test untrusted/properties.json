@@ -58,6 +58,7 @@
     "metrics_project": "chromium-reclient-metrics",
     "profiler_service": "reclient-mac",
     "rewrapper_env": {
+      "RBE_compression_threshold": "0",
       "RBE_exec_timeout": "2m"
     },
     "scandeps_server": true

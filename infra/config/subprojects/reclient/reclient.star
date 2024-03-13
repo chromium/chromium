@@ -182,6 +182,9 @@ fyi_reclient_test_builder(
     ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
+    reclient_rewrapper_env = {
+        "RBE_compression_threshold": "0",
+    },
 )
 
 fyi_reclient_test_builder(
@@ -288,6 +291,9 @@ fyi_reclient_test_builder(
         "GLOG_vmodule": "bridge*=2",
     },
     reclient_profiler_service = "reclient-mac",
+    reclient_rewrapper_env = {
+        "RBE_compression_threshold": "0",
+    },
 )
 
 fyi_reclient_staging_builder(
@@ -338,6 +344,9 @@ fyi_reclient_test_builder(
     os = os.WINDOWS_ANY,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
+    reclient_rewrapper_env = {
+        "RBE_compression_threshold": "0",
+    },
 )
 
 fyi_reclient_staging_builder(
