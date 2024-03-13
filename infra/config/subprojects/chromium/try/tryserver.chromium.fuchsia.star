@@ -5,6 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "builders", "os", "reclient", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -114,6 +115,31 @@ try_.builder(
 )
 
 try_.builder(
+    name = "fuchsia-x64-cast-receiver-dbg-compile",
+    description_html = "A compile only replica of " + linkify_builder("ci", "fuchsia-x64-cast-receiver-dbg", "chromium"),
+    mirrors = [
+        "ci/fuchsia-x64-cast-receiver-dbg",
+    ],
+    builder_config_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/fuchsia-x64-cast-receiver-dbg",
+        ],
+    ),
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+    # TODO(b/1509109): Enable the tryjob once it's green.
+    # tryjob = try_.job(
+    #     location_filters = [
+    #         ".*fuchsia.+",
+    #         cq.location_filter(exclude = True, path_regexp = ".*\\.md"),
+    #     ],
+    # ),
+)
+
+try_.builder(
     name = "fuchsia-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(
@@ -157,7 +183,7 @@ try_.builder(
 try_.builder(
     name = "fuchsia-x64-cast-receiver-dbg",
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
-    description_html = "try replica of ci/fuchsia-x64-cast-receiver-dbg",
+    description_html = "try replica of " + linkify_builder("ci", "fuchsia-x64-cast-receiver-dbg", "chromium"),
     mirrors = ["ci/fuchsia-x64-cast-receiver-dbg"],
     gn_args = gn_args.config(
         configs = [

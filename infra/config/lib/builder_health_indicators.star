@@ -641,6 +641,7 @@ _exempted_from_contact_builders = {
         "fuchsia-fyi-arm64-dbg",
         "fuchsia-fyi-x64-dbg",
         "fuchsia-x64-accessibility-rel",
+        "fuchsia-x64-cast-receiver-dbg-compile",
         "fuchsia-x64-cast-receiver-rel",
         "fuchsia-x64-cast-receiver-rel-compilator",
         "gpu-fyi-cq-android-arm64",
