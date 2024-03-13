@@ -217,16 +217,29 @@ class CampaignsManagerTest : public testing::Test {
               *payload->FindStringByDottedPath("attractionLoop.videoSrcLang2"));
   }
 
-  void LoadComponentWithDeviceTargeting(const std::string& milestone_range) {
+  void LoadComponentWithDeviceTargeting(
+      const std::string& milestone_range,
+      std::optional<bool> target_feature_aware_device = std::nullopt) {
+    std::string feature_aware_targeting = "";
+    if (target_feature_aware_device) {
+      std::string isFeatureAwareDeviceStr =
+          target_feature_aware_device.value() ? "true" : "false";
+      feature_aware_targeting =
+          base::StringPrintf(R"(,
+        "isFeatureAwareDevice": %s
+      )",
+                             isFeatureAwareDeviceStr.c_str());
+    }
     auto device_targeting = base::StringPrintf(R"(
             "device": {
               "locales": ["en-US"],
               "milestone": {
                 %s
-              }
+              }%s
             }
           )",
-                                               milestone_range.c_str());
+                                               milestone_range.c_str(),
+                                               feature_aware_targeting.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
         kValidCampaignsFileTemplate, device_targeting.c_str()));
   }
@@ -860,6 +873,64 @@ TEST_F(CampaignsManagerTest, GetCampaignApplicationLocaleMismatch) {
       base::StringPrintf(R"("max": %d)", current_version));
   EXPECT_CALL(mock_client_, GetApplicationLocale())
       .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-CA")));
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTargetFeatureAwareDevice) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("max": %d)", current_version),
+      /*target_feature_aware_device=*/true);
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kFeatureManagementGrowthFramework}, {});
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTargetFeatureAwareDeviceMismatch) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("max": %d)", current_version),
+      /*target_feature_aware_device=*/false);
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  scoped_feature_list_.InitWithFeatures(
+      {ash::features::kFeatureManagementGrowthFramework}, {});
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTargetNotFeatureAwareDevice) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("max": %d)", current_version),
+      /*target_feature_aware_device=*/false);
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  scoped_feature_list_.InitWithFeatures(
+      {}, {ash::features::kFeatureManagementGrowthFramework});
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignTargetNotFeatureAwareDeviceMismatch) {
+  auto current_version = version_info::GetMajorVersionNumberAsInt();
+  LoadComponentWithDeviceTargeting(
+      base::StringPrintf(R"("max": %d)", current_version),
+      /*target_feature_aware_device=*/true);
+  EXPECT_CALL(mock_client_, GetApplicationLocale())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::string("en-US")));
+
+  scoped_feature_list_.InitWithFeatures(
+      {}, {ash::features::kFeatureManagementGrowthFramework});
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

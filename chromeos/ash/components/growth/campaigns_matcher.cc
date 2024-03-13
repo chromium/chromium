@@ -258,6 +258,13 @@ bool CampaignsMatcher::MatchDeviceTargeting(
     return true;
   }
 
+  auto target_feature_aware_device = targeting.GetFeatureAwareDevice();
+  if (target_feature_aware_device &&
+      target_feature_aware_device.value() !=
+          ash::features::IsFeatureManagementGrowthFrameworkEnabled()) {
+    return false;
+  }
+
   auto* targeting_locales = targeting.GetLocales();
   if (targeting_locales &&
       !Contains(*targeting_locales, client_->GetApplicationLocale())) {

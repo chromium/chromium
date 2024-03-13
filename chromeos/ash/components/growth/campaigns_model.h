@@ -170,6 +170,7 @@ class DeviceTargeting : public TargetingBase {
   const base::Value::List* GetLocales() const;
   const std::optional<int> GetMinMilestone() const;
   const std::optional<int> GetMaxMilestone() const;
+  const std::optional<bool> GetFeatureAwareDevice() const;
 };
 
 // Wrapper around scheduling targeting dictionary.

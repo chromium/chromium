@@ -37,6 +37,7 @@ inline constexpr char kDeviceTargeting[] = "device";
 inline constexpr char kDeviceLocales[] = "locales";
 inline constexpr char kMinMilestone[] = "milestone.min";
 inline constexpr char kMaxMilestone[] = "milestone.max";
+inline constexpr char kFeatureAware[] = "isFeatureAwareDevice";
 
 // Session Targeting paths.
 inline constexpr char kSessionTargeting[] = "session";
@@ -172,6 +173,10 @@ const std::optional<int> DeviceTargeting::GetMinMilestone() const {
 
 const std::optional<int> DeviceTargeting::GetMaxMilestone() const {
   return GetIntCriteria(kMaxMilestone);
+}
+
+const std::optional<bool> DeviceTargeting::GetFeatureAwareDevice() const {
+  return GetBoolCriteria(kFeatureAware);
 }
 
 // Scheduling Targeting.

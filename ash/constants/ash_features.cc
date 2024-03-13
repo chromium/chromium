@@ -1366,6 +1366,12 @@ BASE_FEATURE(kGoogleOneOfferFilesBanner,
              "GoogleOneOfferFilesBanner",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables targeting for feature-aware devices, as controlled by the feature
+// management module.
+BASE_FEATURE(kFeatureManagementGrowthFramework,
+             "FeatureManagementGrowthFramework",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables growth framework.
 BASE_FEATURE(kGrowthFramework,
              "GrowthFramework",
@@ -3546,6 +3552,10 @@ bool IsGalleryAppPdfEditNotificationEnabled() {
 
 bool IsGifRecordingEnabled() {
   return base::FeatureList::IsEnabled(kGifRecording);
+}
+
+bool IsFeatureManagementGrowthFrameworkEnabled() {
+  return base::FeatureList::IsEnabled(kFeatureManagementGrowthFramework);
 }
 
 bool IsGrowthFrameworkEnabled() {
