@@ -814,7 +814,8 @@ void SQLitePersistentCookieStore::Backend::DeleteTopFrameSiteKeys(
     delete_statement.Reset(true);
   }
 }
-
+// TODO crbug.com/328624585 explore removing top_frame_site_keys_to_delete
+//  after ancestor chain bit changes to cookie partition key are added.
 bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     std::vector<std::unique_ptr<CanonicalCookie>>& cookies,
     sql::Statement& statement,
@@ -835,16 +836,18 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
       value = statement.ColumnString(4);
     }
 
-    std::optional<CookiePartitionKey> cookie_partition_key;
-    std::string top_frame_site_key = statement.ColumnString(2);
-    // If we can't deserialize a top_frame_site_key, we delete any cookie with
-    // that key.
-    if (!CookiePartitionKey::Deserialize(top_frame_site_key,
-                                         cookie_partition_key)) {
-      top_frame_site_keys_to_delete.insert(std::move(top_frame_site_key));
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
+    //
+    // If we can't create a CookiePartitionKey from SQL values, we delete any
+    // cookie with the same top_frame_site_key value.
+    base::expected<std::optional<CookiePartitionKey>, std::string>
+        partition_key =
+            CookiePartitionKey::FromStorage(statement.ColumnString(2));
+    if (!partition_key.has_value()) {
+      top_frame_site_keys_to_delete.insert(statement.ColumnString(2));
       continue;
     }
-
     // Returns nullptr if the resulting cookie is not canonical.
     std::unique_ptr<net::CanonicalCookie> cc = CanonicalCookie::FromStorage(
         statement.ColumnString(3),  // name
@@ -861,7 +864,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
             statement.ColumnInt(14))),  // samesite
         DBCookiePriorityToCookiePriority(static_cast<DBCookiePriority>(
             statement.ColumnInt(12))),                    // priority
-        std::move(cookie_partition_key),                  // top_frame_site_key
+        std::move(partition_key.value()),                 // top_frame_site_key
         DBToCookieSourceScheme(statement.ColumnInt(15)),  // source_scheme
         statement.ColumnInt(16));                         // source_port
     if (cc) {
@@ -1153,9 +1156,13 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
     for (std::unique_ptr<PendingOperation>& po_entry : kv.second) {
       // Free the cookies as we commit them to the database.
       std::unique_ptr<PendingOperation> po(std::move(po_entry));
-      std::string top_frame_site_key;
-      if (!CookiePartitionKey::Serialize(po->cc().PartitionKey(),
-                                         top_frame_site_key)) {
+      // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+      // implemented update this method utilize the ancestor bit.
+      base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
+                     std::string>
+          serialized_partition_key =
+              CookiePartitionKey::Serialize(po->cc().PartitionKey());
+      if (!serialized_partition_key.has_value()) {
         continue;
       }
       switch (po->op()) {
@@ -1163,7 +1170,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_statement.Reset(true);
           add_statement.BindTime(0, po->cc().CreationDate());
           add_statement.BindString(1, po->cc().Domain());
-          add_statement.BindString(2, top_frame_site_key);
+          add_statement.BindString(2, serialized_partition_key->TopLevelSite());
           add_statement.BindString(3, po->cc().Name());
           if (crypto_) {
             std::string encrypted_value;
@@ -1205,7 +1212,10 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           update_access_statement.BindTime(0, po->cc().LastAccessDate());
           update_access_statement.BindString(1, po->cc().Name());
           update_access_statement.BindString(2, po->cc().Domain());
-          update_access_statement.BindString(3, top_frame_site_key);
+          // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+          // implemented update this method utilize the ancestor bit.
+          update_access_statement.BindString(
+              3, serialized_partition_key->TopLevelSite());
           update_access_statement.BindString(4, po->cc().Path());
           update_access_statement.BindInt(
               5, static_cast<int>(po->cc().SourceScheme()));
@@ -1221,7 +1231,10 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           delete_statement.Reset(true);
           delete_statement.BindString(0, po->cc().Name());
           delete_statement.BindString(1, po->cc().Domain());
-          delete_statement.BindString(2, top_frame_site_key);
+          // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+          // implemented update this method utilize the ancestor bit.
+          delete_statement.BindString(2,
+                                      serialized_partition_key->TopLevelSite());
           delete_statement.BindString(3, po->cc().Path());
           delete_statement.BindInt(4,
                                    static_cast<int>(po->cc().SourceScheme()));

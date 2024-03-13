@@ -13,12 +13,63 @@
 
 namespace net {
 
+TEST(CookiePartitionKeyTest, TestFromStorage) {
+  struct {
+    const std::string top_level_site;
+    bool expected_return;
+    const std::optional<CookiePartitionKey> expected_output;
+  } cases[] = {{/*empty site*/
+                "", true, std::nullopt},
+               /*invalid site*/
+               {"Invalid", false, std::nullopt},
+               /*valid site*/
+               {"https://toplevelsite.com", true,
+                CookiePartitionKey::FromURLForTesting(
+                    GURL("https://toplevelsite.com"))}};
+
+  for (const auto& tc : cases) {
+    base::expected<std::optional<CookiePartitionKey>, std::string> got =
+        CookiePartitionKey::FromStorage(tc.top_level_site);
+    EXPECT_EQ(got.has_value(), tc.expected_return);
+    if (got.has_value()) {
+      EXPECT_EQ(got.value(), tc.expected_output);
+    }
+  }
+}
+
+TEST(CookiePartitionKeyTest, TestFromUntrustedInput) {
+  const std::string kFullURL = "https://subdomain.toplevelsite.com/index.html";
+  const std::string kValidSite = "https://toplevelsite.com";
+  struct {
+    const std::string top_level_site;
+    bool partition_key_created;
+  } cases[] = {{/*empty site*/
+                "", false},
+               {/*valid site*/
+                kValidSite, true},
+               {/*full url*/
+                kFullURL, true},
+               {/*invalid site (missing scheme)*/
+                "toplevelsite.com", false},
+               {/*invalid site*/
+                "abc123foobar!!", false}};
+
+  for (const auto& tc : cases) {
+    base::expected<CookiePartitionKey, std::string> got =
+        CookiePartitionKey::FromUntrustedInput(tc.top_level_site);
+    EXPECT_EQ(got.has_value(), tc.partition_key_created);
+    if (tc.partition_key_created) {
+      EXPECT_EQ(got->site().Serialize(), kValidSite);
+    }
+  }
+}
+
 TEST(CookiePartitionKeyTest, Serialization) {
   base::UnguessableToken nonce = base::UnguessableToken::Create();
   struct {
-    std::optional<CookiePartitionKey> input;
-    bool expected_ret;
-    std::string expected_output;
+    const std::optional<CookiePartitionKey> input;
+    bool expected_success;
+    const std::string expected_output_top_level_site;
   } cases[] = {
       // No partition key
       {std::nullopt, true, kEmptyCookiePartitionKey},
@@ -40,38 +91,20 @@ TEST(CookiePartitionKeyTest, Serialization) {
            SchemefulSite(GURL("https://cookiesite.com")), nonce)),
        false, ""},
       // Invalid partition key
-      {std::make_optional(
-           CookiePartitionKey::FromURLForTesting(GURL("abc123foobar!!"))),
-       false, ""},
+      {CookiePartitionKey::FromURLForTesting(GURL("abc123foobar!!")), false,
+       ""},
   };
 
   for (const auto& tc : cases) {
-    std::string got;
-    EXPECT_EQ(tc.expected_ret, CookiePartitionKey::Serialize(tc.input, got));
-    EXPECT_EQ(tc.expected_output, got);
-  }
-}
+    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        got = CookiePartitionKey::Serialize(tc.input);
 
-TEST(CookiePartitionKeyTest, Deserialization) {
-  struct {
-    std::string input;
-    bool expected_ret;
-    std::optional<CookiePartitionKey> expected_output;
-  } cases[] = {
-      {kEmptyCookiePartitionKey, true, std::nullopt},
-      {"https://toplevelsite.com", true,
-       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))},
-      {"abc123foobar!!", false, std::nullopt},
-  };
-
-  for (const auto& tc : cases) {
-    std::optional<CookiePartitionKey> got;
-    EXPECT_EQ(tc.expected_ret, CookiePartitionKey::Deserialize(tc.input, got));
-    if (tc.expected_output.has_value()) {
-      EXPECT_TRUE(got.has_value());
-      EXPECT_EQ(tc.expected_output.value(), got.value());
-    } else {
-      EXPECT_FALSE(got.has_value());
+    EXPECT_EQ(tc.expected_success, got.has_value());
+    if (got.has_value()) {
+      // TODO (crbug.com/41486025) once ancestor chain bit is implemented update
+      // test to check bit's value.
+      EXPECT_EQ(tc.expected_output_top_level_site, got->TopLevelSite());
     }
   }
 }
@@ -126,8 +159,7 @@ TEST(CookiePartitionKeyTest, FromWire) {
   } test_cases[] = {
       {GURL("https://foo.com"), std::nullopt},
       {GURL(), std::nullopt},
-      {GURL("https://foo.com"),
-       std::make_optional(base::UnguessableToken::Create())},
+      {GURL("https://foo.com"), base::UnguessableToken::Create()},
   };
 
   for (const auto& test_case : test_cases) {

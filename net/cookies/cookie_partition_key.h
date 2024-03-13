@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/types/expected.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
@@ -17,6 +18,23 @@ namespace net {
 
 class NET_EXPORT CookiePartitionKey {
  public:
+  class NET_EXPORT SerializedCookiePartitionKey {
+   public:
+    const std::string& TopLevelSite() const;
+
+   private:
+    friend class CookiePartitionKey;
+    // This constructor does not check if the values being serialized are valid.
+    // The caller of this function must ensure that only valid values are passed
+    // to this method.
+    //
+    // TODO (crbug.com/41486025) once ancestor chain bit is implemented update
+    // update constructor to set the value.
+    explicit SerializedCookiePartitionKey(const std::string& site);
+
+    std::string top_level_site_;
+  };
+
   CookiePartitionKey();
   CookiePartitionKey(const CookiePartitionKey& other);
   CookiePartitionKey(CookiePartitionKey&& other);
@@ -42,15 +60,8 @@ class NET_EXPORT CookiePartitionKey {
   //
   // TODO(crbug.com/1225444) Investigate ways to persist partition keys with
   // opaque origins if a browser session is restored.
-  [[nodiscard]] static bool Serialize(
-      const std::optional<CookiePartitionKey>& in,
-      std::string& out);
-  // Deserializes the result of the method above.
-  // If the result is std::nullopt, the resulting cookie is not partitioned.
-  //
-  // Returns if the resulting partition key is valid.
-  [[nodiscard]] static bool Deserialize(const std::string& in,
-                                        std::optional<CookiePartitionKey>& out);
+  [[nodiscard]] static base::expected<SerializedCookiePartitionKey, std::string>
+  Serialize(const std::optional<CookiePartitionKey>& in);
 
   static CookiePartitionKey FromURLForTesting(
       const GURL& url,
@@ -93,9 +104,27 @@ class NET_EXPORT CookiePartitionKey {
   // Forwards to FromWire, but unlike that method in this one the optional nonce
   // argument has no default. It also checks that cookie partitioning is enabled
   // before returning a valid key, which FromWire does not check.
-  static std::optional<CookiePartitionKey> FromStorageKeyComponents(
-      const SchemefulSite& top_level_site,
-      const std::optional<base::UnguessableToken>& nonce);
+  [[nodiscard]] static std::optional<CookiePartitionKey>
+  FromStorageKeyComponents(const SchemefulSite& top_level_site,
+                           const std::optional<base::UnguessableToken>& nonce);
+
+  // FromStorage is a factory method which is meant for creating a new
+  // CookiePartitionKey using properties of a previously existing
+  // CookiePartitionKey that was already ingested into storage. This should NOT
+  // be used to create a new CookiePartitionKey that was not previously saved in
+  // storage.
+  [[nodiscard]] static base::expected<std::optional<CookiePartitionKey>,
+                                      std::string>
+  FromStorage(const std::string& top_level_site);
+
+  // This method should be used when the data provided is expected to be
+  // non-null but might be invalid or comes from a potentially untrustworthy
+  // source (such as user-supplied data).
+  //
+  // This reserves FromStorage to handle cases that can result in a null key
+  // (and perfectly validly, like in the case when the top_level_site is empty).
+  [[nodiscard]] static base::expected<CookiePartitionKey, std::string>
+  FromUntrustedInput(const std::string& top_level_site);
 
   const SchemefulSite& site() const { return site_; }
 
@@ -116,6 +145,12 @@ class NET_EXPORT CookiePartitionKey {
                               std::optional<base::UnguessableToken> nonce);
   explicit CookiePartitionKey(const GURL& url);
   explicit CookiePartitionKey(bool from_script);
+
+  // This method holds the deserialization logic for validating input from
+  // DeserializeForTesting and FromUntrustedInput which can be used to pass
+  // unserializable top_level_site values.
+  [[nodiscard]] static base::expected<CookiePartitionKey, std::string>
+  DeserializeInternal(const std::string& top_level_site);
 
   SchemefulSite site_;
   bool from_script_ = false;

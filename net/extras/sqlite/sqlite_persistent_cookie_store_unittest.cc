@@ -1643,10 +1643,15 @@ bool AddV18CookiesToDB(sql::Database* db,
 
     statement.Reset(true);
     statement.BindTime(0, cookie.CreationDate());
-    std::string top_frame_site_key;
-    EXPECT_TRUE(CookiePartitionKey::Serialize(cookie.PartitionKey(),
-                                              top_frame_site_key));
-    statement.BindString(1, top_frame_site_key);
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
+    base::expected<CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_partition_key =
+            CookiePartitionKey::Serialize(cookie.PartitionKey());
+    EXPECT_TRUE(serialized_partition_key.has_value());
+
+    statement.BindString(1, serialized_partition_key->TopLevelSite());
     statement.BindString(2, cookie.Domain());
     statement.BindString(3, cookie.Name());
     statement.BindString(4, cookie.Value());

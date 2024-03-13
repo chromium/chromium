@@ -201,12 +201,15 @@ std::unique_ptr<Network::Cookie> BuildCookie(
   }
   std::optional<net::CookiePartitionKey> partition_key = cookie.PartitionKey();
   if (partition_key) {
-    std::string serialized_partition_key;
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
     if (partition_key->IsSerializeable()) {
-      bool serialized = net::CookiePartitionKey::Serialize(
-          partition_key, serialized_partition_key);
-      DCHECK(serialized);
-      devtools_cookie->SetPartitionKey(serialized_partition_key);
+      base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                     std::string>
+          key_serialized_result =
+              net::CookiePartitionKey::Serialize(partition_key);
+      CHECK(key_serialized_result.has_value());
+      devtools_cookie->SetPartitionKey(key_serialized_result->TopLevelSite());
     } else {
       devtools_cookie->SetPartitionKeyOpaque(partition_key->site().opaque());
       // IsSerializeable may return false when the partition key's site is not
@@ -249,17 +252,20 @@ class CookieRetrieverNetworkService
                   const net::CookieAccessResultList& excluded_cookies) {
     for (const auto& cookie_with_access_result : cookies) {
       const net::CanonicalCookie& cookie = cookie_with_access_result.cookie;
-      std::string serialized_partition_key;
+      // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+      // implemented update this method utilize the ancestor bit.
+      base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                     std::string>
+          serialized_partition_key =
+              net::CookiePartitionKey::Serialize(cookie.PartitionKey());
       // We could be missing cookies that have unserializable partition key.
       // Reference the CookiePartitionKey::IsSerializable docs for more details.
-      if (!net::CookiePartitionKey::Serialize(cookie.PartitionKey(),
-                                              serialized_partition_key)) {
-        serialized_partition_key = "invalid";
-      }
       std::string key = base::StringPrintf(
           "%s::%s::%s::%d::%s", cookie.Name().c_str(), cookie.Domain().c_str(),
           cookie.Path().c_str(), cookie.SecureAttribute(),
-          serialized_partition_key.c_str());
+          serialized_partition_key.has_value()
+              ? serialized_partition_key->TopLevelSite().c_str()
+              : serialized_partition_key.error().c_str());
       all_cookies_.emplace(std::move(key), cookie);
     }
   }
@@ -291,11 +297,14 @@ std::vector<net::CanonicalCookie> FilterCookies(
       continue;
     if (!path.empty() && cookie.Path() != path)
       continue;
-
-    std::string serialized_key;
-    if (!net::CookiePartitionKey::Serialize(cookie.PartitionKey(),
-                                            serialized_key) ||
-        serialized_key != partition_key) {
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
+    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_result =
+            net::CookiePartitionKey::Serialize(cookie.PartitionKey());
+    if (!serialized_result.has_value() ||
+        serialized_result->TopLevelSite() != partition_key) {
       continue;
     }
     result.push_back(cookie);
@@ -419,20 +428,25 @@ MakeCookieFromProtocolValues(const std::string& name,
   else if (priority == Network::CookiePriorityEnum::Low)
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
-  std::optional<net::CookiePartitionKey> deserialized_partition_key;
-  if (partition_key.has_value()) {
-    if (!net::CookiePartitionKey::Deserialize(partition_key.value(),
-                                              deserialized_partition_key)) {
+  std::optional<net::CookiePartitionKey> cookie_partition_key;
+  if (partition_key.has_value() && !partition_key.value().empty()) {
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
+    base::expected<net::CookiePartitionKey, std::string>
+        deserialized_partition_key =
+            net::CookiePartitionKey::FromUntrustedInput(partition_key.value());
+    if (!deserialized_partition_key.has_value()) {
       return Response::InvalidParams(
           "Deserializing cookie partition key failed");
     }
+    cookie_partition_key = deserialized_partition_key.value();
   }
   // TODO(crbug.com/1225444) Add Partitioned to DevTools cookie structures.
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           url, name, value, normalized_domain, path, base::Time(),
           expiration_date, base::Time(), secure, http_only, css, cp,
-          deserialized_partition_key);
+          cookie_partition_key);
 
   if (!cookie)
     return Response::InvalidParams("Sanitizing cookie failed");
@@ -3206,10 +3220,16 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
     return;
 
   Maybe<std::string> frontend_partition_key;
-  std::string serialized_key;
-  if (cookie_partition_key && net::CookiePartitionKey::Serialize(
-                                  cookie_partition_key, serialized_key)) {
-    frontend_partition_key = serialized_key;
+  // TODO (crbug.com/326605834) Once ancestor chain bit changes are implemented
+  // update this method utilize the ancestor bit.
+  if (cookie_partition_key) {
+    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_result =
+            net::CookiePartitionKey::Serialize(cookie_partition_key);
+    if (serialized_result.has_value()) {
+      frontend_partition_key = serialized_result->TopLevelSite();
+    }
   }
 
   frontend_->ResponseReceivedExtraInfo(

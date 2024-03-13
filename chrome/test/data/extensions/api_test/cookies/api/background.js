@@ -370,7 +370,7 @@ chrome.test.runTests([
           partitionKey: TEST_PARTITIONED_INVALID_PARTITION_KEY.partitionKey
         },
         chrome.test.callbackFail(
-            'Invalid format for partitionKey.topLevelSite.'));
+            'Cannot deserialize opaque origin to CookiePartitionKey'));
   },
   function setPartitionedCookie() {
     removeTestCookies();
@@ -415,7 +415,7 @@ chrome.test.runTests([
     } catch (e) {
       chrome.test.fail(e.message);
       chrome.assertEq(
-          e.message, 'Invalid format for partitionKey.topLevelSite.');
+          e.message, 'Cannot deserialize opaque origin to CookiePartitionKey');
     }
   },
   function getAllPartitionedCookies() {
@@ -644,7 +644,7 @@ chrome.test.runTests([
                     TEST_PARTITIONED_INVALID_PARTITION_KEY.partitionKey
               },
               chrome.test.callbackFail(
-                  'Invalid format for partitionKey.topLevelSite.'));
+                  'Cannot deserialize opaque origin to CookiePartitionKey'));
         }));
   },
   function removePartitionedCookie() {
