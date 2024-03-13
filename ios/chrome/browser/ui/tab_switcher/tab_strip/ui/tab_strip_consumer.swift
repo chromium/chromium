@@ -7,13 +7,13 @@
 
   /// Tells the consumer to replace its current set of items with `items` and updates the selected
   /// item to be `selectedItem`. The selected item must be in the `items`.
-  func populate(items: [TabSwitcherItem]?, selectedItem: TabSwitcherItem?)
+  func populate(items: [TabStripItemIdentifier]?, selectedItem: TabSwitcherItem?)
 
   /// Tells the consumer to select `item`.
   func selectItem(_ item: TabSwitcherItem?)
 
   /// Reloads `item`'s content.
-  func reloadItem(_ item: TabSwitcherItem?)
+  func reloadItem(_ item: TabStripItemIdentifier?)
 
   /// Moves `item`  after `destinationItem`. Pass nil to insert at the beginning.
   func moveItem(

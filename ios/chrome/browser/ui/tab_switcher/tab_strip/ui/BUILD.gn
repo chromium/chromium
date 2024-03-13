@@ -10,6 +10,7 @@ swift_source_set("swift") {
     "tab_strip_constants.swift",
     "tab_strip_consumer.swift",
     "tab_strip_decoration_view.swift",
+    "tab_strip_item_identifier.swift",
     "tab_strip_layout.swift",
     "tab_strip_new_tab_button.swift",
     "tab_strip_new_tab_button_delegate.swift",
@@ -27,6 +28,7 @@ swift_source_set("swift") {
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:group_utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ui/base",
@@ -63,5 +65,17 @@ source_set("utils") {
     "//base",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:features_utils",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_strip_item_identifier_unittest.mm" ]
+  deps = [
+    ":swift",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/web/public:public",
+    "//testing/gtest",
   ]
 }

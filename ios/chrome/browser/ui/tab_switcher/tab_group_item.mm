@@ -35,4 +35,10 @@
   return;
 }
 
+#pragma mark - Debugging
+
+- (NSString*)description {
+  return [NSString stringWithFormat:@"Group Title: %@", self.title];
+}
+
 @end

@@ -34,7 +34,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
   /// The DataSource for this collection view.
   weak var dataSource:
-    UICollectionViewDiffableDataSource<TabStripViewController.Section, TabSwitcherItem>?
+    UICollectionViewDiffableDataSource<TabStripViewController.Section, TabStripItemIdentifier>?
 
   override init() {
     super.init()

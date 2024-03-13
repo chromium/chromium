@@ -19,6 +19,13 @@
   return self;
 }
 
+#pragma mark - Debugging
+
+- (NSString*)description {
+  return
+      [NSString stringWithFormat:@"Tab ID: %d", self.identifier.identifier()];
+}
+
 #pragma mark - Image Fetching
 
 - (void)fetchFavicon:(TabSwitcherImageFetchingCompletionBlock)completion {

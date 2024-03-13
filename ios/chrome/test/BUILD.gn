@@ -455,6 +455,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator:unit_tests",
+    "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:unit_tests",
     "//ios/chrome/browser/ui/tabs:unit_tests",
     "//ios/chrome/browser/ui/toolbar:unit_tests",
     "//ios/chrome/browser/ui/toolbar/fullscreen:unit_tests",

@@ -35,12 +35,16 @@
 namespace {
 
 // Constructs an array of TabSwitcherItems from a `web_state_list`.
-NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
-  NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
+NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
+  NSMutableArray<TabStripItemIdentifier*>* items =
+      [[NSMutableArray alloc] init];
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items
-        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
+    TabSwitcherItem* tab_item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+    TabStripItemIdentifier* tab_item_identifier =
+        [TabStripItemIdentifier tabIdentifier:tab_item];
+    [items addObject:tab_item_identifier];
   }
   return items;
 }
@@ -275,19 +279,19 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [self.consumer reloadItem:item];
+  [self.consumer reloadItem:[TabStripItemIdentifier tabIdentifier:item]];
 }
 
 - (void)webStateDidStopLoading:(web::WebState*)webState {
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [self.consumer reloadItem:item];
+  [self.consumer reloadItem:[TabStripItemIdentifier tabIdentifier:item]];
 }
 
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [self.consumer reloadItem:item];
+  [self.consumer reloadItem:[TabStripItemIdentifier tabIdentifier:item]];
 }
 
 #pragma mark - WebStateFaviconDriverObserver
@@ -296,7 +300,7 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
     didUpdateFaviconForWebState:(web::WebState*)webState {
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
-  [self.consumer reloadItem:item];
+  [self.consumer reloadItem:[TabStripItemIdentifier tabIdentifier:item]];
 }
 
 #pragma mark - TabCollectionDragDropHandler

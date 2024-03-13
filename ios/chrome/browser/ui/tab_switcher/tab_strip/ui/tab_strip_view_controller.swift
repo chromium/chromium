@@ -20,9 +20,10 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   // The CollectionView used to display the items.
   private let collectionView: UICollectionView
   // The DataSource for this collection view.
-  private var diffableDataSource: UICollectionViewDiffableDataSource<Section, TabSwitcherItem>?
+  private var diffableDataSource:
+    UICollectionViewDiffableDataSource<Section, TabStripItemIdentifier>?
   private var tabCellRegistration:
-    UICollectionView.CellRegistration<TabStripTabCell, TabSwitcherItem>?
+    UICollectionView.CellRegistration<TabStripTabCell, TabStripItemIdentifier>?
 
   // The New tab button.
   private let newTabButton: TabStripNewTabButton = TabStripNewTabButton()
@@ -90,10 +91,13 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     collectionView.showsHorizontalScrollIndicator = false
 
     createRegistrations()
-    diffableDataSource = UICollectionViewDiffableDataSource<Section, TabSwitcherItem>(
+    diffableDataSource = UICollectionViewDiffableDataSource<Section, TabStripItemIdentifier>(
       collectionView: collectionView
     ) {
-      (collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: TabSwitcherItem)
+      (
+        collectionView: UICollectionView, indexPath: IndexPath,
+        itemIdentifier: TabStripItemIdentifier
+      )
         -> UICollectionViewCell? in
       return self.getCell(
         collectionView: collectionView, indexPath: indexPath, itemIdentifier: itemIdentifier)
@@ -207,11 +211,11 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
   // MARK: - TabStripConsumer
 
-  func populate(items: [TabSwitcherItem]?, selectedItem: TabSwitcherItem?) {
+  func populate(items: [TabStripItemIdentifier]?, selectedItem: TabSwitcherItem?) {
     guard let items = items else {
       return
     }
-    var snapshot = NSDiffableDataSourceSnapshot<Section, TabSwitcherItem>()
+    var snapshot = NSDiffableDataSourceSnapshot<Section, TabStripItemIdentifier>()
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
 
@@ -264,7 +268,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     self.selectedItem = item
   }
 
-  func reloadItem(_ item: TabSwitcherItem?) {
+  func reloadItem(_ item: TabStripItemIdentifier?) {
     guard let item = item, let diffableDataSource = diffableDataSource else {
       return
     }
@@ -277,6 +281,8 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   func moveItem(
     _ item: TabSwitcherItem, afterItem destinationItem: TabSwitcherItem?
   ) {
+    let item = TabStripItemIdentifier(item)
+    let destinationItem = TabStripItemIdentifier(destinationItem)
     guard let diffableDataSource = diffableDataSource else { return }
     var snapshot = diffableDataSource.snapshot()
     if let destinationItem = destinationItem {
@@ -294,7 +300,9 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   }
 
   func replaceItem(_ oldItem: TabSwitcherItem?, withItem newItem: TabSwitcherItem?) {
-    guard let oldItem = oldItem, let newItem = newItem, let diffableDataSource = diffableDataSource
+    guard let oldItem = TabStripItemIdentifier.tabIdentifier(oldItem),
+      let newItem = TabStripItemIdentifier.tabIdentifier(newItem),
+      let diffableDataSource = diffableDataSource
     else {
       return
     }
@@ -314,14 +322,12 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   // MARK: - TabStripTabCellDelegate
 
   func closeButtonTapped(for cell: TabStripTabCell?) {
-    guard let cell = cell, let diffableDataSource = diffableDataSource else {
+    guard let cell = cell, let diffableDataSource = diffableDataSource,
+      let indexPath = collectionView.indexPath(for: cell),
+      let item = diffableDataSource.itemIdentifier(for: indexPath)?.tabSwitcherItem
+    else {
       return
     }
-
-    guard let indexPath = collectionView.indexPath(for: cell) else {
-      return
-    }
-    let item = diffableDataSource.itemIdentifier(for: indexPath)
     mutator?.close(item)
   }
 
@@ -339,8 +345,8 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
   /// Applies `snapshot` to `diffableDataSource` and updates the collection view layout.
   private func applySnapshot(
-    diffableDataSource: UICollectionViewDiffableDataSource<Section, TabSwitcherItem>?,
-    snapshot: NSDiffableDataSourceSnapshot<Section, TabSwitcherItem>,
+    diffableDataSource: UICollectionViewDiffableDataSource<Section, TabStripItemIdentifier>?,
+    snapshot: NSDiffableDataSourceSnapshot<Section, TabStripItemIdentifier>,
     animatingDifferences: Bool = false,
     numberOfItemChanged: Bool = false
   ) {
@@ -355,8 +361,10 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
   /// Creates the registrations of the different cells used in the collection view.
   private func createRegistrations() {
-    tabCellRegistration = UICollectionView.CellRegistration<TabStripTabCell, TabSwitcherItem> {
+    tabCellRegistration = UICollectionView.CellRegistration<TabStripTabCell, TabStripItemIdentifier>
+    {
       (cell, indexPath, item) in
+      guard let item = item.tabSwitcherItem else { return }
       cell.setTitle(item.title)
       cell.loading = item.showsActivity
       cell.delegate = self
@@ -379,7 +387,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
   /// Retuns the cell to be used in the collection view.
   private func getCell(
-    collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: TabSwitcherItem
+    collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: TabStripItemIdentifier
   ) -> UICollectionViewCell? {
     let sectionIdentifier = diffableDataSource?.sectionIdentifier(for: indexPath.section)
     guard let sectionIdentifier = sectionIdentifier, let tabCellRegistration = tabCellRegistration
@@ -398,6 +406,10 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   /// Returns a UIMenu for the context menu to be displayed at `indexPath`.
   private func contextMenuForIndexPath(_ indexPath: IndexPath) -> UIMenu {
     let selectedItem = diffableDataSource?.itemIdentifier(for: indexPath)
+    guard let selectedItem = selectedItem?.tabSwitcherItem else {
+      // TODO(crbug.com/41481950): Add context menu for group items.
+      return UIMenu()
+    }
 
     let actionFactory = ActionFactory(scenario: kMenuScenarioHistogramTabStripEntry)
     weak var weakSelf = self
@@ -458,7 +470,9 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     }
 
     let expectedIndexPathForSelectedItem =
-      self.selectedItem.map { diffableDataSource.indexPath(for: $0) }
+      self.selectedItem.flatMap(TabStripItemIdentifier.tabIdentifier).map {
+        diffableDataSource.indexPath(for: $0)
+      }
     let observedIndexPathForSelectedItem = collectionView.indexPathsForSelectedItems?.first
 
     // If the observed selected indexPath doesn't match the expected selected
@@ -510,7 +524,7 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     guard let item = diffableDataSource?.itemIdentifier(for: indexPath) else {
       return
     }
-    mutator?.activate(item)
+    mutator?.activate(item.tabSwitcherItem)
   }
 
   func collectionView(
@@ -618,7 +632,8 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     itemsForBeginning session: UIDragSession,
     at indexPath: IndexPath
   ) -> [UIDragItem] {
-    guard let item = diffableDataSource?.itemIdentifier(for: indexPath),
+    guard let itemIdentifier = diffableDataSource?.itemIdentifier(for: indexPath),
+      let item = itemIdentifier.tabSwitcherItem,
       let dragItem = dragDropHandler?.dragItem(for: item)
     else {
       return []

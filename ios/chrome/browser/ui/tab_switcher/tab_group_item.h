@@ -10,7 +10,9 @@
 @class TabGroupItem;
 
 @class GroupTabInfo;
+#ifdef __cplusplus
 class TabGroup;
+#endif
 
 // Block invoked when a GroupTabInfo fetching operation completes. The
 // `groupTabInfos` is nil if the operation failed.
@@ -21,11 +23,15 @@ typedef void (^GroupTabInfosFetchingCompletionBlock)(
 // Model object representing an group item.
 @interface TabGroupItem : NSObject
 
+#ifdef __cplusplus
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
     NS_DESIGNATED_INITIALIZER;
+#endif
 - (instancetype)init NS_UNAVAILABLE;
 
+#ifdef __cplusplus
 @property(nonatomic, readonly) const TabGroup* tabGroup;
+#endif
 @property(nonatomic, readonly) NSString* title;
 @property(nonatomic, readonly) UIColor* groupColor;
 
