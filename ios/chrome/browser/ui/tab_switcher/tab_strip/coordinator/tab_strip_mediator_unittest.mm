@@ -178,6 +178,29 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
             consumer_.items[0].tabSwitcherItem.identifier);
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
             consumer_.items[1].tabSwitcherItem.identifier);
+
+  // Check that the group is correctly added to the consumer.
+  const TabGroup* group_0 = web_state_list_->CreateGroup({0}, {});
+
+  ASSERT_NE(nil, consumer_.selectedItem);
+  EXPECT_EQ(web_state_list_->GetActiveWebState()->GetUniqueIdentifier(),
+            consumer_.selectedItem.identifier);
+  ASSERT_EQ(3ul, consumer_.items.count);
+  EXPECT_EQ(group_0, consumer_.items[0].tabGroupItem.tabGroup);
+  EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
+            consumer_.items[1].tabSwitcherItem.identifier);
+  EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
+            consumer_.items[2].tabSwitcherItem.identifier);
+
+  // Check that the closed tab and its group are removed from the consumer.
+  web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
+
+  ASSERT_NE(nil, consumer_.selectedItem);
+  EXPECT_EQ(web_state_list_->GetActiveWebState()->GetUniqueIdentifier(),
+            consumer_.selectedItem.identifier);
+  ASSERT_EQ(1ul, consumer_.items.count);
+  EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
+            consumer_.items[0].tabSwitcherItem.identifier);
 }
 
 // Tests that changing the selected tab is correctly reflected in the consumer.

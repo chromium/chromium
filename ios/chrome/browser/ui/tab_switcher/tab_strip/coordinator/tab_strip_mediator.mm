@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
@@ -39,6 +40,16 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
   NSMutableArray<TabStripItemIdentifier*>* items =
       [[NSMutableArray alloc] init];
   for (int i = 0; i < web_state_list->count(); i++) {
+    const TabGroup* tab_group = web_state_list->GetGroupOfWebStateAt(i);
+    if (tab_group && web_state_list->GetWebStates(tab_group).start() == i) {
+      // If WebState at index `i` is the first of its TabGroup, add a
+      // `TabGroupItem` to the result before adding the `TabSwitcherItem`.
+      TabGroupItem* group_item =
+          [[TabGroupItem alloc] initWithTabGroup:tab_group];
+      TabStripItemIdentifier* group_item_identifier =
+          [TabStripItemIdentifier groupIdentifier:group_item];
+      [items addObject:group_item_identifier];
+    }
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
     TabSwitcherItem* tab_item =
         [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
@@ -134,9 +145,15 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
   }
 
   switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
+    case WebStateListChange::Type::kStatusOnly: {
       // The activation is handled after this switch statement.
+      const WebStateListChangeStatusOnly& statusOnlyChange =
+          change.As<WebStateListChangeStatusOnly>();
+      if (statusOnlyChange.new_group()) {
+        [self populateConsumerItems];
+      }
       break;
+    }
     case WebStateListChange::Type::kDetach:
     case WebStateListChange::Type::kInsert:
       [self populateConsumerItems];
