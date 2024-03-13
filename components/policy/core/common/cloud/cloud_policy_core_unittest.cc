@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "build/buildflag.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -216,11 +217,17 @@ TEST_F(CloudPolicyCoreTest, RefreshSoon) {
   testing::Mock::VerifyAndClearExpectations(client);
 }
 
+// Based64 string is used on desktop when reading policy cache from Google
+// Update.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 TEST_F(CloudPolicyCoreTest, DmProtocolBase64Constants) {
   std::string encoded =
       base::Base64Encode(dm_protocol::kChromeMachineLevelUserCloudPolicyType);
   EXPECT_EQ(encoded, dm_protocol::kChromeMachineLevelUserCloudPolicyTypeBase64);
 }
+
+#endif
 
 TEST_F(CloudPolicyCoreTest, DestroyWithoutConnecting) {
   core_.reset();

@@ -746,10 +746,7 @@ CloudPolicyValidatorBase::GetSignatureType() {
     return em::PolicyFetchRequest::SHA1_RSA;
   }
 
-  if (policy_type_ != dm_protocol::kChromeMachineLevelUserCloudPolicyType &&
-      policy_type_ !=
-          dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType &&
-      policy_type_ != dm_protocol::kChromeMachineLevelUserCloudPolicyIOSType) {
+  if (policy_type_ != dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
     return em::PolicyFetchRequest::SHA1_RSA;
   }
 

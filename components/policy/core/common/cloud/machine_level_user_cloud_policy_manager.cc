@@ -32,7 +32,7 @@ MachineLevelUserCloudPolicyManager::MachineLevelUserCloudPolicyManager(
     const base::FilePath& policy_dir,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
-    : CloudPolicyManager(GetMachineLevelUserCloudPolicyTypeForCurrentOS(),
+    : CloudPolicyManager(dm_protocol::kChromeMachineLevelUserCloudPolicyType,
                          std::string(),
                          std::move(store),
                          task_runner,

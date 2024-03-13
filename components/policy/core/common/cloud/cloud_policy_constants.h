@@ -78,8 +78,6 @@ extern const char kChromePublicAccountPolicyType[];
 extern const char kChromeExtensionPolicyType[];
 extern const char kChromeSigninExtensionPolicyType[];
 extern const char kChromeMachineLevelUserCloudPolicyType[];
-extern const char kChromeMachineLevelUserCloudPolicyAndroidType[];
-extern const char kChromeMachineLevelUserCloudPolicyIOSType[];
 extern const char kChromeMachineLevelExtensionCloudPolicyType[];
 extern const char kChromeRemoteCommandPolicyType[];
 

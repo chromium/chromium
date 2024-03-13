@@ -276,17 +276,7 @@ void GetBrowserDeviceIdentifierAsync(
 #endif  // BUILDFLAG(IS_WIN)
 
 bool IsMachineLevelUserCloudPolicyType(const std::string& type) {
-  return type == GetMachineLevelUserCloudPolicyTypeForCurrentOS();
-}
-
-std::string GetMachineLevelUserCloudPolicyTypeForCurrentOS() {
-#if BUILDFLAG(IS_IOS)
-  return dm_protocol::kChromeMachineLevelUserCloudPolicyIOSType;
-#elif BUILDFLAG(IS_ANDROID)
-  return dm_protocol::kChromeMachineLevelUserCloudPolicyAndroidType;
-#else
-  return dm_protocol::kChromeMachineLevelUserCloudPolicyType;
-#endif
+  return type == dm_protocol::kChromeMachineLevelUserCloudPolicyType;
 }
 
 }  // namespace policy

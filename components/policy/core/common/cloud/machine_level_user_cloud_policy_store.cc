@@ -204,7 +204,7 @@ MachineLevelUserCloudPolicyStore::CreateValidator(
   auto validator = std::make_unique<UserCloudPolicyValidator>(
       std::move(policy_fetch_response), background_task_runner());
   validator->ValidatePolicyType(
-      GetMachineLevelUserCloudPolicyTypeForCurrentOS());
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
   validator->ValidateDMToken(machine_dm_token_.value(),
                              CloudPolicyValidatorBase::DM_TOKEN_REQUIRED);
   validator->ValidateDeviceId(machine_client_id_,

@@ -92,12 +92,15 @@ const char kChromePublicAccountPolicyType[] = "google/chromeos/publicaccount";
 const char kChromeExtensionPolicyType[] = "google/chrome/extension";
 const char kChromeSigninExtensionPolicyType[] =
     "google/chromeos/signinextension";
+
 const char kChromeMachineLevelUserCloudPolicyType[] =
-    "google/chrome/machine-level-user";
-const char kChromeMachineLevelUserCloudPolicyAndroidType[] =
+#if BUILDFLAG(IS_ANDROID)
     "google/chrome/machine-level-user-android";
-const char kChromeMachineLevelUserCloudPolicyIOSType[] =
+#elif BUILDFLAG(IS_IOS)
     "google/chrome/machine-level-user-ios";
+#else
+    "google/chrome/machine-level-user";
+#endif
 const char kChromeMachineLevelExtensionCloudPolicyType[] =
     "google/chrome/machine-level-extension";
 const char kChromeRemoteCommandPolicyType[] = "google/chromeos/remotecommand";

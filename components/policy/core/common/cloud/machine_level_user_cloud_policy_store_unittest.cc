@@ -38,7 +38,7 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
     policy_.SetDefaultInitialSigningKey();
     policy_.policy_data().set_policy_type(
-        GetMachineLevelUserCloudPolicyTypeForCurrentOS());
+        dm_protocol::kChromeMachineLevelUserCloudPolicyType);
     policy_.payload().mutable_searchsuggestenabled()->set_value(false);
     policy_.Build();
   }
