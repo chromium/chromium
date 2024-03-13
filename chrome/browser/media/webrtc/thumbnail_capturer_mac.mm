@@ -182,7 +182,7 @@ const base::FeatureParam<CaptureMode>::Option capture_mode_options[] = {
     {CaptureMode::kSCScreenshotManager, "sc_screenshot_manager"},
 };
 const base::FeatureParam<CaptureMode> kThumbnailCapturerMacCaptureMode{
-    &kThumbnailCapturerMac, "capture_mode", CaptureMode::kSCStream,
+    &kThumbnailCapturerMac, "capture_mode", CaptureMode::kSCScreenshotManager,
     &capture_mode_options};
 
 CaptureMode GetCaptureModeFeatureParam() {
