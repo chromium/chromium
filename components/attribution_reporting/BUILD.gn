@@ -345,6 +345,8 @@ mojom("registration_mojom") {
         {
           mojom = "attribution_reporting.mojom.OsRegistrationItem"
           cpp = "::attribution_reporting::OsRegistrationItem"
+          forward_declaration =
+              "namespace attribution_reporting { struct OsRegistrationItem; }"
         },
         {
           mojom = "attribution_reporting.mojom.EventReportWindows"
