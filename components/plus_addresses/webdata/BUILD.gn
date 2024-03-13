@@ -23,10 +23,14 @@ source_set("webdata") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "plus_address_table_unittest.cc" ]
+  sources = [
+    "plus_address_sync_bridge_unittest.cc",
+    "plus_address_table_unittest.cc",
+  ]
   deps = [
     ":webdata",
     "//base/test:test_support",
     "//components/plus_addresses:test_support",
+    "//components/sync:test_support",
   ]
 }

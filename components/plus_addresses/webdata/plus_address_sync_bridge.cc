@@ -7,7 +7,9 @@
 #include <memory>
 #include <optional>
 
+#include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/webdata/common/web_database_backend.h"
 
@@ -51,16 +53,21 @@ void PlusAddressSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   NOTIMPLEMENTED();
 }
 
+bool PlusAddressSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_plus_address());
+  return entity_data.specifics.plus_address().has_profile_id();
+}
+
 std::string PlusAddressSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  return GetStorageKey(entity_data);
 }
 
 std::string PlusAddressSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  NOTIMPLEMENTED();
-  return "";
+  return base::NumberToString(
+      entity_data.specifics.plus_address().profile_id());
 }
 
 }  // namespace plus_addresses
