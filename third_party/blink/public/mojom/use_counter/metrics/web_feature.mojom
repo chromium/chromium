@@ -3941,7 +3941,7 @@ enum WebFeature {
   kEditContext = 4588,
   kServiceWorkerStaticRouter_RegisterRouter = 4589,
   kServiceWorkerStaticRouter_Evaluate = 4590,
-  kClientHintsUAFormFactor = 4591,
+  kClientHintsUAFormFactors = 4591,
   kURLSearchParamsHasFnBehaviourDiverged = 4592,
   kURLSearchParamsDeleteFnBehaviourDiverged = 4593,
   kOBSOLETE_TextWrapPretty = 4594,

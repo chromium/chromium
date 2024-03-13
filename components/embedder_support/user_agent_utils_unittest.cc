@@ -767,9 +767,9 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.model, content::BuildModelInfo());
   EXPECT_EQ(metadata.bitness, content::GetCpuBitness());
   EXPECT_EQ(metadata.wow64, content::IsWoW64());
-  std::vector<std::string> expected_form_factor = {metadata.mobile ? "Mobile"
-                                                                   : "Desktop"};
-  EXPECT_EQ(metadata.form_factor, expected_form_factor);
+  std::vector<std::string> expected_form_factors = {
+      metadata.mobile ? "Mobile" : "Desktop"};
+  EXPECT_EQ(metadata.form_factors, expected_form_factors);
 
   // Verify only populate low-entropy client hints.
   metadata = GetUserAgentMetadata(true);
@@ -787,9 +787,9 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadataXR) {
   scoped_feature_list.InitAndEnableFeature(
       blink::features::kClientHintsXRFormFactor);
   auto metadata = GetUserAgentMetadata();
-  std::vector<std::string> expected_form_factor = {
+  std::vector<std::string> expected_form_factors = {
       (metadata.mobile ? "Mobile" : "Desktop"), "XR"};
-  EXPECT_EQ(metadata.form_factor, expected_form_factor);
+  EXPECT_EQ(metadata.form_factors, expected_form_factors);
 }
 
 TEST_F(UserAgentUtilsTest, GenerateBrandVersionListUnbranded) {

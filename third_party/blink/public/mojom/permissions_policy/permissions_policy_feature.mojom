@@ -220,7 +220,7 @@ enum PermissionsPolicyFeature {
   kPrivateStateTokenIssuance = 110,
 
   // Client Hint for form factor
-  kClientHintUAFormFactor = 111,
+  kClientHintUAFormFactors = 111,
 
   // Client hint for prefers-reduced-transparency
   kClientHintPrefersReducedTransparency = 112,

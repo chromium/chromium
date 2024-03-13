@@ -777,9 +777,9 @@ void UpdateNavigationRequestClientUaHeadersImpl(
       AddUAHeader(headers, WebClientHintsType::kUAFullVersionList,
                   ua_metadata->SerializeBrandFullVersionList());
     }
-    if (ShouldAddClientHint(data, WebClientHintsType::kUAFormFactor)) {
-      AddUAHeader(headers, WebClientHintsType::kUAFormFactor,
-                  ua_metadata->SerializeFormFactor());
+    if (ShouldAddClientHint(data, WebClientHintsType::kUAFormFactors)) {
+      AddUAHeader(headers, WebClientHintsType::kUAFormFactors,
+                  ua_metadata->SerializeFormFactors());
     }
   } else if (call_type == ClientUaHeaderCallType::kAfterCreated) {
     RemoveClientHintHeader(WebClientHintsType::kUA, headers);
@@ -792,7 +792,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     RemoveClientHintHeader(WebClientHintsType::kUABitness, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAFullVersionList, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAWoW64, headers);
-    RemoveClientHintHeader(WebClientHintsType::kUAFormFactor, headers);
+    RemoveClientHintHeader(WebClientHintsType::kUAFormFactors, headers);
   }
 }
 

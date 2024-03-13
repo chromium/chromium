@@ -71,7 +71,7 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
  public:
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kClientHintsFormFactor);
+        blink::features::kClientHintsFormFactors);
   }
 
   void SetUpOnMainThread() override {
@@ -156,8 +156,8 @@ class HeadlessBrowserNavigatorUADataTest : public HeadlessBrowserTest {
           navigator.userAgentData.getHighEntropyValues(['wow64'])
               .then(r => r.wow64))";
   static constexpr char kFormFactorScript[] = R"(
-          navigator.userAgentData.getHighEntropyValues(['formFactor'])
-              .then(r => r.formFactor.join(', ')))";
+          navigator.userAgentData.getHighEntropyValues(['formFactors'])
+              .then(r => r.formFactors.join(', ')))";
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, DefaultValues) {
               DictHasValue("result.result.value", expected.wow64));
   EXPECT_THAT(GetUAMetadataValue(kFormFactorScript),
               DictHasValue("result.result.value",
-                           base::JoinString(expected.form_factor, ", ")));
+                           base::JoinString(expected.form_factors, ", ")));
 }
 
 // UA Metadata is available via `navigator.userAgentData` when overridden via
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserNavigatorUADataTest, CDPOverride) {
               DictHasValue("result.result.value", "1.2.3"));
   EXPECT_THAT(GetUAMetadataValue(kWow64Script),
               DictHasValue("result.result.value", true));
-  // TODO(https://crbug.com/1442283): Allow overriding formFactor.
+  // TODO(https://crbug.com/1442283): Allow overriding formFactors.
   EXPECT_THAT(GetUAMetadataValue(kFormFactorScript),
               DictHasValue("result.result.value", ""));
 }

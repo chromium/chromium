@@ -222,7 +222,7 @@ TEST_F(ClientHintsTest, DownlinkRandomized) {
 TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {blink::features::kClientHintsFormFactor,
+      {blink::features::kClientHintsFormFactors,
        blink::features::kClientHintsPrefersReducedTransparency},
       {});
 

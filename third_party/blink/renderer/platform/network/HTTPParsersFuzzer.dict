@@ -383,7 +383,7 @@
 "sec-ch-ua"
 "sec-ch-ua-arch"
 "sec-ch-ua-bitness"
-"sec-ch-ua-form-factor"
+"sec-ch-ua-form-factors"
 "sec-ch-ua-full-version"
 "sec-ch-ua-full-version-list"
 "sec-ch-ua-mobile"

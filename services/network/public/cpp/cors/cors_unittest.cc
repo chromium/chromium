@@ -296,9 +296,9 @@ TEST_F(CorsTest, SafelistedSecCHPrefersReducedTransparency) {
                                      "\"Prefers-Reduced-Transparency!\""));
 }
 
-TEST_F(CorsTest, SafelistedSecCHUAFormFactor) {
+TEST_F(CorsTest, SafelistedSecCHUAFormFactors) {
   EXPECT_TRUE(
-      IsCorsSafelistedHeader("Sec-CH-UA-Form-Factor", "\"Form Factor!\""));
+      IsCorsSafelistedHeader("Sec-CH-UA-Form-Factors", "\"Form Factors!\""));
 }
 
 TEST_F(CorsTest, SafelistedSecCHUA) {

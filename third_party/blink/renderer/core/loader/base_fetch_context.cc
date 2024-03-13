@@ -386,10 +386,10 @@ void BaseFetchContext::AddClientHintsIfNecessary(
 
     if (ShouldSendClientHint(
             policy, resource_origin, is_1p_origin,
-            network::mojom::blink::WebClientHintsType::kUAFormFactor,
+            network::mojom::blink::WebClientHintsType::kUAFormFactors,
             hints_preferences)) {
-      SetHttpHeader(WebClientHintsType::kUAFormFactor,
-                    AtomicString(ua->SerializeFormFactor().c_str()), request);
+      SetHttpHeader(WebClientHintsType::kUAFormFactors,
+                    AtomicString(ua->SerializeFormFactors().c_str()), request);
     }
   }
 

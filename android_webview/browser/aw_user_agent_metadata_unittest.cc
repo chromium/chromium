@@ -45,7 +45,7 @@ class AwUserAgentMetadataTest : public testing::Test {
     EXPECT_EQ(expect.mobile, actual.mobile);
     EXPECT_EQ(expect.bitness, actual.bitness);
     EXPECT_EQ(expect.wow64, actual.wow64);
-    EXPECT_EQ(expect.form_factor, actual.form_factor);
+    EXPECT_EQ(expect.form_factors, actual.form_factors);
   }
 
   std::string RoundTripBitness(std::string_view input) {
@@ -79,7 +79,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_Full) {
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = {"Desktop", "Mobile"}};
+      .form_factors = {"Desktop", "Mobile"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -98,7 +98,7 @@ TEST_F(AwUserAgentMetadataTest,
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = {"Desktop"}};
+      .form_factors = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -117,7 +117,7 @@ TEST_F(AwUserAgentMetadataTest,
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = {}};
+      .form_factors = {}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -135,7 +135,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_NoBrandList) {
       .mobile = true,
       .bitness = "64",
       .wow64 = false,
-      .form_factor = {"Desktop"}};
+      .form_factors = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));
@@ -153,7 +153,7 @@ TEST_F(AwUserAgentMetadataTest, TestJavaObjectCppObject_Metadata_LowEntropy) {
       .mobile = false,
       .bitness = "",
       .wow64 = false,
-      .form_factor = {"Desktop"}};
+      .form_factors = {"Desktop"}};
   verifyUaMetadata(ua_metadata,
                    FromJavaAwUserAgentMetadata(
                        env(), ToJavaAwUserAgentMetadata(env(), ua_metadata)));

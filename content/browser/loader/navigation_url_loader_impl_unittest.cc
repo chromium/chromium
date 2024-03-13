@@ -192,7 +192,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kClientHintsFormFactor);
+        blink::features::kClientHintsFormFactors);
     // Do not create TestNavigationURLLoaderFactory as this tests creates
     // NavigationURLLoaders explicitly and TestNavigationURLLoaderFactory
     // interferes with that.

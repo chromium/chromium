@@ -53,9 +53,9 @@ const std::string UserAgentMetadata::SerializeBrandMajorVersionList() {
   return SerializeBrandVersionList(brand_version_list);
 }
 
-const std::string UserAgentMetadata::SerializeFormFactor() {
+const std::string UserAgentMetadata::SerializeFormFactors() {
   net::structured_headers::List structured;
-  for (auto& ff : form_factor) {
+  for (auto& ff : form_factors) {
     structured.push_back(net::structured_headers::ParameterizedMember(
         net::structured_headers::Item(ff), {}));
   }
@@ -93,9 +93,9 @@ std::optional<std::string> UserAgentMetadata::Marshal(
   out.WriteString(in->bitness);
   out.WriteBool(in->wow64);
 
-  out.WriteUInt32(base::checked_cast<uint32_t>(in->form_factor.size()));
-  for (const auto& form_factor : in->form_factor) {
-    out.WriteString(form_factor);
+  out.WriteUInt32(base::checked_cast<uint32_t>(in->form_factors.size()));
+  for (const auto& form_factors : in->form_factors) {
+    out.WriteString(form_factors);
   }
   return std::string(reinterpret_cast<const char*>(out.data()), out.size());
 }
@@ -154,17 +154,17 @@ std::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
     return std::nullopt;
   if (!in.ReadBool(&out.wow64))
     return std::nullopt;
-  uint32_t form_factor_size;
-  if (!in.ReadUInt32(&form_factor_size)) {
+  uint32_t form_factors_size;
+  if (!in.ReadUInt32(&form_factors_size)) {
     return std::nullopt;
   }
-  std::string form_factor;
-  form_factor.reserve(form_factor_size);
-  for (uint32_t i = 0; i < form_factor_size; i++) {
-    if (!in.ReadString(&form_factor)) {
+  std::string form_factors;
+  form_factors.reserve(form_factors_size);
+  for (uint32_t i = 0; i < form_factors_size; i++) {
+    if (!in.ReadString(&form_factors)) {
       return std::nullopt;
     }
-    out.form_factor.push_back(std::move(form_factor));
+    out.form_factors.push_back(std::move(form_factors));
   }
   return std::make_optional(std::move(out));
 }
@@ -180,7 +180,7 @@ bool operator==(const UserAgentMetadata& a, const UserAgentMetadata& b) {
          a.platform_version == b.platform_version &&
          a.architecture == b.architecture && a.model == b.model &&
          a.mobile == b.mobile && a.bitness == b.bitness && a.wow64 == b.wow64 &&
-         a.form_factor == b.form_factor;
+         a.form_factors == b.form_factors;
 }
 
 // static
