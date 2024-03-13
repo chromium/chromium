@@ -226,7 +226,7 @@ executable("v4l2_stateless_decoder") {
 
 test("v4l2_unittest") {
   testonly = true
-  sources = [ "test/v4l2_unittest.cc" ]
+  sources = [ "v4l2_unittest.cc" ]
 
   deps = [
     ":v4l2",
