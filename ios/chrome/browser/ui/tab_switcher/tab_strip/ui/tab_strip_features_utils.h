@@ -14,6 +14,9 @@
 // modern tab strip is dynamic.
 + (BOOL)isModernTabStripNewTabButtonDynamic;
 
+// Helper function to check if tab groups appear in the tab strip.
++ (BOOL)isModernTabStripWithTabGroups;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_FEATURES_UTILS_H_

@@ -17,4 +17,8 @@
   return feature_param != kModernTabStripNTBStaticParam;
 }
 
++ (BOOL)isModernTabStripWithTabGroups {
+  return base::FeatureList::IsEnabled(kTabGroupsInGrid);
+}
+
 @end
