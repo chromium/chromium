@@ -71,10 +71,16 @@ DelegatedFrameHostClientAura::CollectSurfaceIdsForEviction() {
   auto ids = render_widget_host_view_->host()->CollectSurfaceIdsForEviction();
 
   // If the ui compositor is no longer visible, include its surface ID for
-  // eviction as well.
+  // eviction as well. The surface ID may be invalid if we already evicted the
+  // ui compositor. This can happen, for example, if we have multiple tabs that
+  // were unlocked frames (not visible but not evicted) for the same ui
+  // compositor which is now not visible, and we evict them. If the surface ID
+  // is invalid, it means we already evicted the ui compositor so it is safe to
+  // skip doing it again.
   auto* host = render_widget_host_view_->window()->GetHost();
   if (DelegatedFrameHost::ShouldIncludeUiCompositorForEviction() && host &&
-      !host->compositor()->IsVisible()) {
+      !host->compositor()->IsVisible() &&
+      host->window()->GetSurfaceId().is_valid()) {
     ids.push_back(host->window()->GetSurfaceId());
   }
   return ids;
