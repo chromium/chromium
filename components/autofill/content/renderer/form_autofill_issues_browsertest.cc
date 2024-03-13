@@ -19,6 +19,7 @@
 using blink::WebFormControlElement;
 using blink::WebFormElement;
 using blink::WebLocalFrame;
+using blink::WebString;
 using blink::mojom::GenericIssueErrorType;
 
 namespace autofill::form_issues {
@@ -133,6 +134,32 @@ TEST_F(FormAutofillIssuesTest,
       GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
 
   EXPECT_TRUE(FormIssuesContainIssueType(
+      form_issues,
+      GenericIssueErrorType::
+          kFormInputHasWrongButWellIntendedAutocompleteValueError,
+      /*violating_attr=*/"autocomplete"));
+}
+
+// Having an autocomplete attribute that is too large does not trigger issues,
+// even if it contains a substring that would match a "honest" developer
+// error/typo. This is done to avoid large string comparisons during form
+// parsing.
+TEST_F(
+    FormAutofillIssuesTest,
+    FormInputHasWrongButWellIntendedAutocompleteValueError_LargeAutocompleteString_DoNotCalculateIssue) {
+  std::string autocomplete(100, 'a');
+  autocomplete += "address-line-1";
+  constexpr char kHtml[] = R"(
+      <form id=target>
+        <input>
+      </form>)";
+  WebFormElement form_target = WebFormElementFromHTML(kHtml);
+  form_target.GetFormControlElements()[0].SetAttribute(
+      "autocomplete", WebString::FromUTF8(autocomplete));
+  std::vector<FormIssue> form_issues =
+      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
+
+  EXPECT_FALSE(FormIssuesContainIssueType(
       form_issues,
       GenericIssueErrorType::
           kFormInputHasWrongButWellIntendedAutocompleteValueError,
