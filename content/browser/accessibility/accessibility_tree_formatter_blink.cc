@@ -99,10 +99,10 @@ std::string IntAttrToString(const ui::AXNode& node,
   switch (attr) {
     case ax::mojom::IntAttribute::kAriaCurrentState:
       return ui::ToString(static_cast<ax::mojom::AriaCurrentState>(value));
-    case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
+    case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
       return ui::ToString(
           static_cast<ax::mojom::AriaNotificationInterrupt>(value));
-    case ax::mojom::IntAttribute::kAriaNotificationPriority:
+    case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
       return ui::ToString(
           static_cast<ax::mojom::AriaNotificationPriority>(value));
     case ax::mojom::IntAttribute::kCheckedState:

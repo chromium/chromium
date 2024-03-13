@@ -586,7 +586,7 @@ enum StringAttribute {
   [MinVersion=2] kAriaBrailleLabel = 33,
   [MinVersion=2] kAriaBrailleRoleDescription = 34,
   // Deprecated - Do not use.
-  // These attributes are replaced by its StringListAttribute equivalents to
+  // These attributes are replaced by its `StringListAttribute` equivalents to
   // support multiple contiguous calls to `ariaNotify`.
   [MinVersion=4] kAriaNotificationAnnouncementDeprecated = 36,
   [MinVersion=4] kAriaNotificationIdDeprecated = 37,
@@ -778,9 +778,11 @@ enum IntAttribute {
   [MinVersion=2] kNextWindowFocusId = 62,
   [MinVersion=2] kPreviousWindowFocusId = 63,
 
-  // ARIA notification options.
-  [MinVersion=3] kAriaNotificationInterrupt = 64,
-  [MinVersion=3] kAriaNotificationPriority = 65,
+  // Deprecated - Do not use.
+  // These attributes are replaced by its `IntListAttribute` equivalents to
+  // support multiple contiguous calls to `ariaNotify`.
+  [MinVersion=3] kAriaNotificationInterruptDeprecated = 64,
+  [MinVersion=3] kAriaNotificationPriorityDeprecated = 65,
 };
 
 // Next version: 2
@@ -902,8 +904,8 @@ enum BoolAttribute {
   [MinVersion=2] kHasHiddenOffscreenNodes,
 };
 
-// Next version: 6
-// Next value: 27
+// Next version: 7
+// Next value: 29
 // Note: if changing an IntListAttribute property that stores a relation where
 // the reverse should be computed, be sure to also update
 // kReverseRelationIntListAttributes in AXTree.
@@ -977,6 +979,11 @@ enum IntListAttribute {
   [MinVersion=4] kTextOperationEndAnchorIds = 23,
   [MinVersion=4] kTextOperationEndOffsets = 24,
   [MinVersion=4] kTextOperations = 25,
+
+  // List of `AriaNotificationInterrupt` and `AriaNotificationPriority`
+  // properties for their respective ARIA notifications.
+  [MinVersion=6] kAriaNotificationInterruptProperties = 27,
+  [MinVersion=6] kAriaNotificationPriorityProperties = 28,
 };
 
 // Next version: 2

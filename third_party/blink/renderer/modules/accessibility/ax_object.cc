@@ -1324,13 +1324,13 @@ void SerializeAriaNotificationAttributes(const AriaNotification& notification,
       ax::mojom::blink::StringListAttribute::kAriaNotificationIds,
       {TruncateString(notification.NotificationId())});
 
-  node_data->AddIntAttribute(
-      ax::mojom::blink::IntAttribute::kAriaNotificationInterrupt,
-      static_cast<int32_t>(notification.Interrupt()));
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kAriaNotificationInterruptProperties,
+      {static_cast<int32_t>(notification.Interrupt())});
 
-  node_data->AddIntAttribute(
-      ax::mojom::blink::IntAttribute::kAriaNotificationPriority,
-      static_cast<int32_t>(notification.Priority()));
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kAriaNotificationPriorityProperties,
+      {static_cast<int32_t>(notification.Priority())});
 }
 
 }  // namespace

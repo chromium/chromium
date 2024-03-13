@@ -1551,9 +1551,9 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "nextWindowFocusId";
     case ax::mojom::IntAttribute::kPreviousWindowFocusId:
       return "previousWindowFocusId";
-    case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
+    case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
       return "ariaNotificationInterrupt";
-    case ax::mojom::IntAttribute::kAriaNotificationPriority:
+    case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
       return "ariaNotificationPriority";
   }
 
@@ -1689,10 +1689,10 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
     return ax::mojom::IntAttribute::kNextWindowFocusId;
   } else if (int_attribute == "kPreviousWindowFocusId") {
     return ax::mojom::IntAttribute::kPreviousWindowFocusId;
-  } else if (int_attribute == "kAriaNotificationInterrupt") {
-    return ax::mojom::IntAttribute::kAriaNotificationInterrupt;
-  } else if (int_attribute == "kAriaNotificationPriority") {
-    return ax::mojom::IntAttribute::kAriaNotificationPriority;
+  } else if (int_attribute == "kAriaNotificationInterruptDeprecated") {
+    return ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated;
+  } else if (int_attribute == "kAriaNotificationPriorityDeprecated") {
+    return ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated;
   }
 
   NOTREACHED() << "An invalid IntAttribute was provided: " << int_attribute;
@@ -1885,6 +1885,10 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "textOperationEndAnchorIds";
     case ax::mojom::IntListAttribute::kTextOperations:
       return "textOperations";
+    case ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties:
+      return "ariaNotificationInterruptProperties";
+    case ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties:
+      return "ariaNotificationPriorityProperties";
   }
 
   return "";

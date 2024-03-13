@@ -175,8 +175,8 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
     case ax::mojom::IntAttribute::kDropeffectDeprecated:
     case ax::mojom::IntAttribute::kDOMNodeId:
-    case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
-    case ax::mojom::IntAttribute::kAriaNotificationPriority:
+    case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
+    case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
       return false;
   }
 
@@ -221,6 +221,8 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
     case ax::mojom::IntListAttribute::kTextOperationEndAnchorIds:
     case ax::mojom::IntListAttribute::kTextOperationStartAnchorIds:
     case ax::mojom::IntListAttribute::kTextOperations:
+    case ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties:
+    case ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties:
       return false;
   }
 }
@@ -1668,30 +1670,16 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::IntAttribute::kDOMNodeId:
         result += " dom_node_id=" + value;
         break;
-      case ax::mojom::IntAttribute::kAriaNotificationInterrupt:
-        switch (static_cast<ax::mojom::AriaNotificationInterrupt>(
-            int_attribute.second)) {
-          case ax::mojom::AriaNotificationInterrupt::kNone:
-            result += " aria_notification_interrupt=none";
-            break;
-          case ax::mojom::AriaNotificationInterrupt::kAll:
-            result += " aria_notification_interrupt=all";
-            break;
-          case ax::mojom::AriaNotificationInterrupt::kPending:
-            result += " aria_notification_interrupt=pending";
-            break;
-        }
+      case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
+        result +=
+            std::string(" aria_notification_interrupt=") +
+            ui::ToString(static_cast<ax::mojom::AriaNotificationInterrupt>(
+                int_attribute.second));
         break;
-      case ax::mojom::IntAttribute::kAriaNotificationPriority:
-        switch (static_cast<ax::mojom::AriaNotificationPriority>(
-            int_attribute.second)) {
-          case ax::mojom::AriaNotificationPriority::kNone:
-            result += " aria_notification_priority=none";
-            break;
-          case ax::mojom::AriaNotificationPriority::kImportant:
-            result += " aria_notification_priority=important";
-            break;
-        }
+      case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
+        result += std::string(" aria_notification_priority=") +
+                  ui::ToString(static_cast<ax::mojom::AriaNotificationPriority>(
+                      int_attribute.second));
         break;
       case ax::mojom::IntAttribute::kNone:
         break;
@@ -2043,6 +2031,22 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::IntListAttribute::kTextOperations:
         result += " text_operations=" + IntVectorToString(values);
+        break;
+      case ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties:
+        result +=
+            " aria_notification_interrupt_properties=" +
+            VectorToString(values, [](int32_t interrupt) {
+              return ui::ToString(
+                  static_cast<ax::mojom::AriaNotificationInterrupt>(interrupt));
+            });
+        break;
+      case ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties:
+        result +=
+            " aria_notification_priority_properties=" +
+            VectorToString(values, [](int32_t priority) {
+              return ui::ToString(
+                  static_cast<ax::mojom::AriaNotificationPriority>(priority));
+            });
         break;
     }
   }
