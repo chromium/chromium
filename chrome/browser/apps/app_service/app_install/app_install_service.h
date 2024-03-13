@@ -11,6 +11,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 
+class Profile;
+
 namespace apps {
 
 class PackageId;
@@ -21,6 +23,8 @@ class PackageId;
 // used to make decisions on behavior and record metrics per-usecase.
 class AppInstallService {
  public:
+  static std::unique_ptr<AppInstallService> Create(Profile& profile);
+
   virtual ~AppInstallService();
 
   // Requests installation of the app with ID `package_id` from `surface`. This

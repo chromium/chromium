@@ -4,9 +4,24 @@
 
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
+#else
+#include "chrome/browser/apps/app_service/app_install/app_install_service_lacros.h"
+#endif
+
 #include <ostream>
 
 namespace apps {
+
+// static
+std::unique_ptr<AppInstallService> AppInstallService::Create(Profile& profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<AppInstallServiceAsh>(profile);
+#else
+  return std::make_unique<AppInstallServiceLacros>();
+#endif
+}
 
 AppInstallService::~AppInstallService() = default;
 

@@ -104,7 +104,7 @@ source_set("app_service") {
 
     deps += [
       "//ash/webui/projector_app/public/cpp",
-      "//chrome/browser/apps/app_service/app_install:app_install_service",
+      "//chrome/browser/apps/app_service/app_install",
       "//chromeos/constants",
       "//chromeos/crosapi/mojom",
       "//chromeos/startup",

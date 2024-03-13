@@ -22,7 +22,6 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
-#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"

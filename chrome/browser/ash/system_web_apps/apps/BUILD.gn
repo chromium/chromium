@@ -52,7 +52,7 @@ source_set("browser_tests") {
     "//ash/webui/web_applications/test:test_support",
     "//chrome/browser/accessibility/media_app/test:test_support",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/apps/app_service/app_install:app_install_service",
+    "//chrome/browser/apps/app_service/app_install:implementation",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/error_reporting:test_support",

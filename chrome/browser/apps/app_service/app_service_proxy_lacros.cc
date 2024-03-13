@@ -15,7 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
-#include "chrome/browser/apps/app_service/app_install/app_install_service_lacros.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
@@ -571,8 +571,7 @@ void AppServiceProxyLacros::Initialize() {
   remote_crosapi_app_service_proxy_ =
       service->GetRemote<crosapi::mojom::AppServiceProxy>().get();
 
-  app_install_service_ = std::make_unique<AppInstallServiceLacros>(
-      *remote_crosapi_app_service_proxy_);
+  app_install_service_ = AppInstallService::Create(*profile_);
 }
 
 void AppServiceProxyLacros::Shutdown() {

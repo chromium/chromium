@@ -13,15 +13,27 @@ proto_library("proto") {
   link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }
 
-source_set("app_install_service") {
+source_set("app_install") {
   sources = [
-    "app_install_service.cc",
     "app_install_service.h",
     "app_install_types.cc",
     "app_install_types.h",
   ]
 
   deps = [
+    "//components/services/app_service",
+    "//services/network/public/cpp",
+  ]
+}
+
+# This target is separated from the :app_install interface target to allow the
+# implementation to depend on //chrome/browser/apps/app_service without circular
+# deps.
+source_set("implementation") {
+  sources = [ "app_install_service.cc" ]
+
+  deps = [
+    ":app_install",
     "//base",
     "//chromeos/crosapi/mojom",
     "//components/services/app_service",
@@ -56,7 +68,17 @@ source_set("app_install_service") {
       "app_install_service_lacros.cc",
       "app_install_service_lacros.h",
     ]
+
+    deps += [ "//chromeos/lacros" ]
   }
+
+  # Outside of //chrome/browser only tests should be depending on this target.
+  visibility = [
+    ":browser_tests",
+    ":unit_tests",
+    "//chrome/browser",
+    "//chrome/browser/ash/system_web_apps/apps:browser_tests",
+  ]
 }
 
 source_set("navigation_throttle") {
@@ -66,7 +88,7 @@ source_set("navigation_throttle") {
   ]
 
   deps = [
-    ":app_install_service",
+    ":app_install",
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
@@ -83,6 +105,8 @@ source_set("unit_tests") {
   sources = [ "app_install_navigation_throttle_unittest.cc" ]
 
   deps = [
+    ":app_install",
+    ":implementation",
     ":navigation_throttle",
     "//base",
     "//chrome/browser/web_applications",
@@ -97,7 +121,6 @@ source_set("unit_tests") {
     sources += [ "app_install_almanac_connector_unittest.cc" ]
 
     deps += [
-      ":app_install_service",
       ":proto",
       "//chrome/browser/apps/almanac_api_client/proto",
       "//chrome/browser/apps/app_service",
@@ -120,7 +143,8 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
-    ":app_install_service",
+    ":app_install",
+    ":implementation",
     ":navigation_throttle",
     ":proto",
     "//base",
