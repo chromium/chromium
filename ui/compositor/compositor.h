@@ -449,8 +449,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void StartThroughputTracker(
       TrackerId tracker_id,
       ThroughputTrackerHost::ReportCallback callback) override;
-  bool StopThroughtputTracker(TrackerId tracker_id) override;
-  void CancelThroughtputTracker(TrackerId tracker_id) override;
+  bool StopThroughputTracker(TrackerId tracker_id) override;
+  void CancelThroughputTracker(TrackerId tracker_id) override;
 
   // base::PowerSuspendObserver:
   void OnResume() override;
@@ -602,7 +602,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   bool animations_are_enabled_ = true;
 
-  // This together with the animatinos observer list carries the "last
+  // This together with the animations observer list carries the "last
   // animation finished" state to the next BeginMainFrame so that it could
   // notify observers if needed. It is set in AddAnimationObserver and
   // Cleared in BeginMainFrame when there are no animation observers.

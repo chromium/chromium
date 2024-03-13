@@ -568,7 +568,7 @@ void Compositor::SetDisplayVSyncParameters(base::TimeTicks timebase,
   }
   DCHECK_GT(interval.InMillisecondsF(), 0);
 
-  // This is called at high frequenty on macOS, so early-out of redundant
+  // This is called at high frequency on macOS, so early-out of redundant
   // updates here.
   if (vsync_timebase_ == timebase && vsync_interval_ == interval)
     return;
@@ -862,7 +862,7 @@ void Compositor::StartThroughputTracker(
   animation_host_->StartThroughputTracking(tracker_id);
 }
 
-bool Compositor::StopThroughtputTracker(TrackerId tracker_id) {
+bool Compositor::StopThroughputTracker(TrackerId tracker_id) {
   auto it = throughput_tracker_map_.find(tracker_id);
   DCHECK(it != throughput_tracker_map_.end());
 
@@ -878,7 +878,7 @@ bool Compositor::StopThroughtputTracker(TrackerId tracker_id) {
   return true;
 }
 
-void Compositor::CancelThroughtputTracker(TrackerId tracker_id) {
+void Compositor::CancelThroughputTracker(TrackerId tracker_id) {
   auto it = throughput_tracker_map_.find(tracker_id);
   DCHECK(it != throughput_tracker_map_.end());
 
