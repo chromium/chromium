@@ -30,6 +30,12 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
+namespace {
+// Frame delay for synthetic frame timing.
+// TODO(b/325532633): match this to the requested capture rate.
+constexpr auto kSyntheticFrameDelay = base::Milliseconds(16);
+}  // namespace
+
 namespace blink {
 
 struct CanvasResourceDispatcher::FrameResource {
@@ -76,7 +82,10 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
       client_(client),
       task_runner_(std::move(task_runner)),
       agent_group_scheduler_compositor_task_runner_(
-          std::move(agent_group_scheduler_compositor_task_runner)) {
+          std::move(agent_group_scheduler_compositor_task_runner)),
+      fake_frame_timer_(task_runner_,
+                        this,
+                        &CanvasResourceDispatcher::OnFakeFrameTimer) {
   // Frameless canvas pass an invalid |frame_sink_id_|; don't create mojo
   // channel for this special case.
   if (!frame_sink_id_.is_valid())
@@ -250,7 +259,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   // indirectly, to picture-in-picture content even if those frames are not
   // consumed by a viz frame sink directly.  In those cases, it might choose to
   // throttle us, incorrectly.
-  frame->metadata.may_throttle_if_undrawn_frames = suspend_animation_;
+  frame->metadata.may_throttle_if_undrawn_frames = !IsAnimationSuspended();
 
   const gfx::Rect bounds(size_.width(), size_.height());
   constexpr viz::CompositorRenderPassId kRenderPassId{1};
@@ -347,24 +356,36 @@ void CanvasResourceDispatcher::SetNeedsBeginFrame(bool needs_begin_frame) {
     return;
   }
   needs_begin_frame_ = needs_begin_frame;
-  if (!suspend_animation_)
+  if (!IsAnimationSuspended()) {
     SetNeedsBeginFrameInternal();
+  }
 }
 
-void CanvasResourceDispatcher::SetSuspendAnimation(bool suspend_animation) {
-  if (suspend_animation_ == suspend_animation)
+void CanvasResourceDispatcher::SetAnimationState(
+    AnimationState animation_state) {
+  if (animation_state_ == animation_state) {
     return;
-  suspend_animation_ = suspend_animation;
-  if (needs_begin_frame_)
+  }
+  animation_state_ = animation_state;
+  if (needs_begin_frame_) {
     SetNeedsBeginFrameInternal();
+  }
 }
 
 void CanvasResourceDispatcher::SetNeedsBeginFrameInternal() {
   if (!sink_)
     return;
 
-  bool needs_begin_frame = needs_begin_frame_ && !suspend_animation_;
-  sink_->SetNeedsBeginFrame(needs_begin_frame);
+  bool needs_begin_frame = needs_begin_frame_ && !IsAnimationSuspended();
+  if (needs_begin_frame &&
+      animation_state_ == AnimationState::kActiveWithSyntheticTiming) {
+    // Generate a synthetic OBF instead of asking viz.
+    sink_->SetNeedsBeginFrame(false);
+    fake_frame_timer_.StartRepeating(kSyntheticFrameDelay, FROM_HERE);
+  } else {
+    sink_->SetNeedsBeginFrame(needs_begin_frame);
+    fake_frame_timer_.Stop();
+  }
 }
 
 bool CanvasResourceDispatcher::HasTooManyPendingFrames() const {
@@ -395,12 +416,28 @@ void CanvasResourceDispatcher::OnBeginFrame(
   // We usually never get to BeginFrame if we are on RAF mode. But it could
   // still happen that begin frame gets requested and we don't have a frame
   // anymore, so we shouldn't let the compositor wait.
-  bool submitted_frame = Client() && Client()->BeginFrame();
+  const bool submitted_frame = Client() && Client()->BeginFrame();
+
   if (!submitted_frame) {
     sink_->DidNotProduceFrame(current_begin_frame_ack_);
   }
 
   // TODO(fserb): Update this with the correct value if we are on RAF submit.
+  current_begin_frame_ack_.frame_id.sequence_number =
+      viz::BeginFrameArgs::kInvalidFrameNumber;
+}
+
+void CanvasResourceDispatcher::OnFakeFrameTimer(TimerBase* timer) {
+  viz::BeginFrameArgs begin_frame_args;
+  if (HasTooManyPendingFrames() || !Client()) {
+    return;
+  }
+
+  // Since this is a synthetic OBF, create a manual ack to go with it.
+  current_begin_frame_ack_ = viz::BeginFrameAck::CreateManualAckWithDamage();
+  // It doesn't matter if this succeeds or fails, because viz didn't ask for a
+  // frame from us.
+  /*void*/ Client()->BeginFrame();
   current_begin_frame_ack_.frame_id.sequence_number =
       viz::BeginFrameArgs::kInvalidFrameNumber;
 }
