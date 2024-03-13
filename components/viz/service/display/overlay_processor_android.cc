@@ -162,7 +162,7 @@ void OverlayProcessorAndroid::CheckOverlaySupportImpl(
     // SurfaceView.  Record that it should get a promotion hint.
     promotion_hint_info_map_[candidate.resource_id] = candidate.display_rect;
 
-    if (candidate.is_backed_by_surface_texture) {
+    if (!candidate.is_video_in_surface_view) {
       // This quad would be promoted if it were backed by a SurfaceView.  Since
       // it isn't, we can't promote it.
       return;

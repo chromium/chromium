@@ -187,10 +187,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  // For candidates from TextureDrawQuads with is_stream_video set to true, this
-  // records whether the quad is marked as being backed by a SurfaceTexture or
-  // not.  If so, it's not really promotable to an overlay.
-  bool is_backed_by_surface_texture = false;
+  // Is video using SurfaceView-like architecture. It's currently actually uses
+  // `DialogOverlay` in browser instead of actual SurfaceView. But "SurfaceView"
+  // is used throughout the code so is used here as well for consistency.
+  bool is_video_in_surface_view = false;
   // Crop within the buffer to be placed inside |display_rect| before
   // |clip_rect| was applied. Valid only for surface control.
   gfx::RectF unclipped_uv_rect = gfx::RectF(0.f, 0.f, 1.f, 1.f);
