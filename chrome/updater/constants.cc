@@ -98,6 +98,7 @@ const char kUninstallScript[] = "uninstall.cmd";
 const char kDevOverrideKeyUrl[] = "url";
 const char kDevOverrideKeyCrashUploadUrl[] = "crash_upload_url";
 const char kDevOverrideKeyDeviceManagementUrl[] = "device_management_url";
+const char kDevOverrideKeyAppLogoUrl[] = "app_logo_url";
 const char kDevOverrideKeyUseCUP[] = "use_cup";
 const char kDevOverrideKeyInitialDelay[] = "initial_delay";
 const char kDevOverrideKeyServerKeepAliveSeconds[] = "server_keep_alive";

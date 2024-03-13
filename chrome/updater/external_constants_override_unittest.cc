@@ -37,6 +37,8 @@ TEST_F(ExternalConstantsOverriderTest, TestEmptyDictValue) {
   EXPECT_EQ(overrider->DeviceManagementURL(),
             GURL(DEVICE_MANAGEMENT_SERVER_URL));
   EXPECT_TRUE(overrider->DeviceManagementURL().is_valid());
+  EXPECT_EQ(overrider->AppLogoURL(), GURL(APP_LOGO_URL));
+  EXPECT_TRUE(overrider->AppLogoURL().is_valid());
 
   EXPECT_EQ(overrider->InitialDelay(), kInitialDelay);
   EXPECT_EQ(overrider->ServerKeepAliveTime(), kServerKeepAliveTime);
@@ -57,6 +59,7 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   overrides.Set(kDevOverrideKeyUrl, std::move(url_list));
   overrides.Set(kDevOverrideKeyCrashUploadUrl, "https://crash_test.google.com");
   overrides.Set(kDevOverrideKeyDeviceManagementUrl, "https://dm.google.com");
+  overrides.Set(kDevOverrideKeyAppLogoUrl, "https://applogo.google.com/");
   overrides.Set(kDevOverrideKeyInitialDelay, 137.1);
   overrides.Set(kDevOverrideKeyServerKeepAliveSeconds, 1);
   overrides.Set(kDevOverrideKeyGroupPolicies, std::move(group_policies));
@@ -79,6 +82,8 @@ TEST_F(ExternalConstantsOverriderTest, TestFullOverrides) {
   EXPECT_TRUE(overrider->CrashUploadURL().is_valid());
   EXPECT_EQ(overrider->DeviceManagementURL(), GURL("https://dm.google.com"));
   EXPECT_TRUE(overrider->DeviceManagementURL().is_valid());
+  EXPECT_EQ(overrider->AppLogoURL(), GURL("https://applogo.google.com/"));
+  EXPECT_TRUE(overrider->AppLogoURL().is_valid());
 
   EXPECT_EQ(overrider->InitialDelay(), base::Seconds(137.1));
   EXPECT_EQ(overrider->ServerKeepAliveTime(), base::Seconds(1));

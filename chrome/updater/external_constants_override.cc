@@ -117,6 +117,18 @@ GURL ExternalConstantsOverrider::DeviceManagementURL() const {
   return {GURL(device_management_url_value->GetString())};
 }
 
+GURL ExternalConstantsOverrider::AppLogoURL() const {
+  if (!override_values_.contains(kDevOverrideKeyAppLogoUrl)) {
+    return next_provider_->AppLogoURL();
+  }
+  const base::Value* app_logo_url_value =
+      override_values_.Find(kDevOverrideKeyAppLogoUrl);
+  CHECK(app_logo_url_value->is_string())
+      << "Unexpected type of override[" << kDevOverrideKeyAppLogoUrl
+      << "]: " << base::Value::GetTypeName(app_logo_url_value->type());
+  return {GURL(app_logo_url_value->GetString())};
+}
+
 bool ExternalConstantsOverrider::UseCUP() const {
   if (!override_values_.contains(kDevOverrideKeyUseCUP)) {
     return next_provider_->UseCUP();

@@ -46,6 +46,7 @@
 #include "chrome/updater/app/app_install_progress.h"
 #include "chrome/updater/app/app_install_util_win.h"
 #include "chrome/updater/app/app_install_win_internal.h"
+#include "chrome/updater/external_constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
@@ -397,7 +398,7 @@ class AppInstallControllerImpl : public AppInstallController,
   BOOL PreTranslateMessage(MSG* msg) override;
 
   // This function is called on a dedicated COM STA thread.
-  void LoadLogo(std::wstring url, HWND progress_hwnd);
+  void LoadLogo(const std::string& app_id, HWND progress_hwnd);
 
   // These functions are called on the UI thread.
   void InitializeUI();
@@ -773,9 +774,14 @@ void AppInstallControllerImpl::StateChange(
   }
 }
 
-// Loads the logo in BMP format if it exists at the provided `url`, and sets the
-// resultant image onto the app bitmap for the progress window.
-void AppInstallControllerImpl::LoadLogo(std::wstring url, HWND progress_hwnd) {
+// Loads the logo in BMP format if it exists for the provided `app_id`, and sets
+// the resultant image onto the app bitmap for the progress window.
+void AppInstallControllerImpl::LoadLogo(const std::string& app_id,
+                                        HWND progress_hwnd) {
+  std::wstring url = base::SysUTF8ToWide(base::StringPrintf(
+      "%s%s.bmp",
+      CreateExternalConstants()->AppLogoURL().possibly_invalid_spec().c_str(),
+      base::EscapeUrlEncodedData(app_id, false).c_str()));
   if (url.empty()) {
     VLOG(1) << __func__ << "No url specified";
     return;
@@ -785,8 +791,8 @@ void AppInstallControllerImpl::LoadLogo(std::wstring url, HWND progress_hwnd) {
   HRESULT hr =
       ::OleLoadPicturePath(&url[0], nullptr, 0, 0, IID_PPV_ARGS(&picture));
   if (FAILED(hr)) {
-    VLOG(1) << __func__ << "::OleLoadPicturePath failed: " << std::hex << hr
-            << ": " << logging::SystemErrorCodeToString(hr);
+    VLOG(1) << __func__ << "::OleLoadPicturePath failed: " << url << ": "
+            << std::hex << hr << ": " << logging::SystemErrorCodeToString(hr);
     return;
   }
 
@@ -829,7 +835,7 @@ void AppInstallControllerImpl::InitializeUI() {
     progress_wnd->Initialize();
     progress_wnd->Show();
 
-    // The app logo is expected to be hosted at `{APP_LOGO_URL}{url escaped
+    // The app logo is expected to be hosted at `{AppLogoURL}{url escaped
     // app_id_}.bmp`. If `{url escaped app_id_}.bmp` exists, a logo is shown in
     // the updater UI for that app install.
     //
@@ -837,15 +843,11 @@ void AppInstallControllerImpl::InitializeUI() {
     // the `{url escaped app_id_}.bmp` is
     // `%7b8A69D345-D564-463C-AFF1-A69D9E530F96%7d.bmp`.
     //
-    // `APP_LOGO_URL` is specified in chrome/updater/branding.gni.
+    // `AppLogoURL` is specified in external constants.
     base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
         ->PostTask(FROM_HERE,
-                   base::BindOnce(
-                       &AppInstallControllerImpl::LoadLogo, this,
-                       base::SysUTF8ToWide(base::StringPrintf(
-                           "%s%s.bmp", APP_LOGO_URL,
-                           base::EscapeUrlEncodedData(app_id_, false).c_str())),
-                       progress_wnd->m_hWnd));
+                   base::BindOnce(&AppInstallControllerImpl::LoadLogo, this,
+                                  app_id_, progress_wnd->m_hWnd));
 
     observer_.reset(progress_wnd.release());
   }
