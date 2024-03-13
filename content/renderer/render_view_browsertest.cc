@@ -25,6 +25,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -32,6 +33,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/bindings_policy.h"
@@ -66,6 +68,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -108,6 +111,7 @@
 #include "third_party/blink/public/web/web_window_features.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -3319,5 +3323,52 @@ TEST_F(RenderViewImplTest, CollapseSelectionNotChangeFocus) {
                                                  &is_body_again));
   EXPECT_EQ(1, is_body_again);
 }
+
+#if BUILDFLAG(IS_WIN)
+class RenderViewImplContrastGammaSettingsTest : public RenderViewImplTest {
+ protected:
+  void SetUp() override {
+    RenderViewImplTest::SetUp();
+    feature_list_.InitAndEnableFeature(
+        features::kUseGammaContrastRegistrySettings);
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(RenderViewImplContrastGammaSettingsTest,
+       ContrastGammaSetRendererPreferences) {
+  LoadHTML(R"HTML(
+      <input id='test' type='text'></input>
+    )HTML");
+
+  // Use non-default values for contrast and gamma.
+  constexpr float test_contrast = 0.95;
+  static_assert(test_contrast != SK_GAMMA_CONTRAST);
+  static_assert(test_contrast >= SkSurfaceProps::kMinContrastInclusive);
+  static_assert(test_contrast <= SkSurfaceProps::kMaxContrastInclusive);
+
+  constexpr float test_gamma = 3.99;
+  static_assert(test_gamma != SK_GAMMA_EXPONENT);
+  static_assert(test_gamma >= SkSurfaceProps::kMinGammaInclusive);
+  static_assert(test_gamma < SkSurfaceProps::kMaxGammaExclusive);
+
+  blink::RendererPreferences renderer_preferences =
+      web_view_->GetRendererPreferences();
+  EXPECT_NE(renderer_preferences.text_contrast, test_contrast);
+  EXPECT_NE(renderer_preferences.text_gamma, test_gamma);
+
+  // Set the non-default values on `RendererPreferences`.
+  renderer_preferences.text_contrast = test_contrast;
+  renderer_preferences.text_gamma = test_gamma;
+  web_view_->SetRendererPreferences(renderer_preferences);
+
+  // `GetSkSurfaceProps` should have the updated contrast and
+  // gamma properties from above.
+  SkSurfaceProps surface_props =
+      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  EXPECT_EQ(surface_props.textContrast(), test_contrast);
+  EXPECT_EQ(surface_props.textGamma(), test_gamma);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

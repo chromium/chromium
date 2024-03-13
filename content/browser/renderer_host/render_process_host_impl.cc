@@ -194,6 +194,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "skia/ext/switches.h"
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -3369,16 +3370,16 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
   // Propagate the following switches to the renderer command line (along
   // with any associated values) if present in the browser command line.
   static const char* const kSwitchNames[] = {
-    switches::kDisableInProcessStackTraces,
-    sandbox::policy::switches::kDisableSeccompFilterSandbox,
-    sandbox::policy::switches::kNoSandbox,
+      switches::kDisableInProcessStackTraces,
+      sandbox::policy::switches::kDisableSeccompFilterSandbox,
+      sandbox::policy::switches::kNoSandbox,
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
-    switches::kDisableDevShmUsage,
+      switches::kDisableDevShmUsage,
 #endif
 #if BUILDFLAG(IS_MAC)
-    // Allow this to be set when invoking the browser and relayed along.
-    sandbox::policy::switches::kEnableSandboxLogging,
+      // Allow this to be set when invoking the browser and relayed along.
+      sandbox::policy::switches::kEnableSandboxLogging,
 #endif
     switches::kAllowCommandLinePlugins,
     switches::kAllowLoopbackInPeerConnection,
@@ -3546,6 +3547,8 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
 #endif
 #if BUILDFLAG(IS_WIN)
       switches::kDisableHighResTimer,
+      switches::kTextContrast,
+      switches::kTextGamma,
       switches::kTrySupportedChannelLayouts,
       switches::kRaiseTimerFrequency,
 #endif

@@ -8,6 +8,7 @@
 #include <wrl/client.h>
 
 #include "base/files/file_path.h"
+#include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "ui/gfx/win/direct_write.h"
 
@@ -29,8 +30,9 @@ TextParameters GetTextParameters() {
       // We only support the primary device currently.
       Microsoft::WRL::ComPtr<IDWriteRenderingParams> textParams;
       if (SUCCEEDED(factory->CreateRenderingParams(&textParams))) {
-        text_parameters.contrast = textParams->GetEnhancedContrast();
-        text_parameters.gamma = textParams->GetGamma();
+        text_parameters.contrast =
+            FontUtilWin::ClampContrast(textParams->GetEnhancedContrast());
+        text_parameters.gamma = FontUtilWin::ClampGamma(textParams->GetGamma());
       } else {
         text_parameters.contrast = SK_GAMMA_CONTRAST;
         text_parameters.gamma = SK_GAMMA_EXPONENT;
@@ -56,6 +58,20 @@ base::win::RegKey FontUtilWin::GetTextSettingsRegistryKey(REGSAM access) {
     }
   }
   return base::win::RegKey{};
+}
+
+// static
+float FontUtilWin::ClampContrast(float value) {
+  return std::clamp(value, SkSurfaceProps::kMinContrastInclusive,
+                    SkSurfaceProps::kMaxContrastInclusive);
+}
+
+// static
+float FontUtilWin::ClampGamma(float value) {
+  // Handle the exclusive max by subtracting espilon.
+  return std::clamp(value, SkSurfaceProps::kMinGammaInclusive,
+                    SkSurfaceProps::kMaxGammaExclusive -
+                        std::numeric_limits<float>::epsilon());
 }
 
 // static

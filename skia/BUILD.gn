@@ -484,11 +484,13 @@ component("skia") {
   deps += [
     ":skcms",
     ":skia_opts",
+    ":skia_switches",
     "//base",
     "//base/third_party/dynamic_annotations",
     "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/libwebp:libwebp_webp",
+    "//ui/base:features",
   ]
   public_deps = [
     ":buildflags",
@@ -604,6 +606,18 @@ component("skia") {
       "SKOTTIE_TRIVIAL_FONTRUN_ITER",
     ]
   }
+}
+
+component("skia_switches") {
+  sources = [
+    "ext/switches.cc",
+    "ext/switches.h",
+    "ext/switches_export.h",
+  ]
+
+  defines = [ "SKIA_SWITCHES_IMPLEMENTATION" ]
+
+  deps = [ "//base" ]
 }
 
 # Template for things that are logically part of :skia, but need to be split out

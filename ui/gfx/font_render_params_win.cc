@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "base/win/registry.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_util_win.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
@@ -95,7 +96,10 @@ class CachedFontRenderParams {
       params_->text_gamma = SK_GAMMA_EXPONENT;
     }
 
-    // TODO(kschmi): set contrast and gamma values via `LegacyDisplayGlobals`.
+    skia::LegacyDisplayGlobals::SetCachedParams(
+        FontRenderParams::SubpixelRenderingToSkiaPixelGeometry(
+            params_->subpixel_rendering),
+        params_->text_contrast, params_->text_gamma);
 
     singleton_hwnd_observer_ =
         std::make_unique<SingletonHwndObserver>(base::BindRepeating(

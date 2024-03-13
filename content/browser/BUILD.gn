@@ -300,6 +300,7 @@ source_set("browser") {
     "//content/browser/indexed_db",
     "//ipc",
     "//media/mojo/mojom:remoting",
+    "//skia:skia_switches",
     "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings",
     "//third_party/leveldatabase",
     "//ui/base/cursor",

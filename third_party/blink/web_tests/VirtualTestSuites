@@ -1048,6 +1048,7 @@
       "virtual/text-antialias/basic/014.html"
     ],
     "args": ["--enable-font-antialiasing", "--enable-features=UseGammaContrastRegistrySettings",
+             "--text-contrast=0.97", "--text-gamma=1.97",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "August 1, 2024"
   },

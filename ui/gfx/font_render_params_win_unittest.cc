@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_util_win.h"
@@ -62,8 +63,13 @@ TEST_F(FontRenderParamsTest, DefaultRegistryState) {
     DWORD gamma;
     ASSERT_EQ(key.ReadValueDW(L"GammaLevel", &gamma), ERROR_SUCCESS);
 
-    EXPECT_FLOAT_EQ(params.text_contrast * kContrastMultiplier, contrast);
-    EXPECT_FLOAT_EQ(params.text_gamma * kGammaMultiplier, gamma);
+    // Registry values are unbounded, however our code will clamp values to be
+    // within Skia's expected range, so we must clamp expected values to match.
+    // Handle the exclusive value by subtracting epsilon.
+    EXPECT_FLOAT_EQ(params.text_contrast * kContrastMultiplier,
+                    FontUtilWin::ClampContrast(contrast));
+    EXPECT_FLOAT_EQ(params.text_gamma * kGammaMultiplier,
+                    FontUtilWin::ClampGamma(contrast));
   } else {
     // If the registry keys aren't set, `IDWriteRenderingParams` defaults
     // to the following hard-coded values:
@@ -72,6 +78,12 @@ TEST_F(FontRenderParamsTest, DefaultRegistryState) {
     EXPECT_FLOAT_EQ(params.text_contrast, default_contrast);
     EXPECT_FLOAT_EQ(params.text_gamma, default_gamma);
   }
+
+  // Values from `LegacyDisplayGlobals` should match `FontRenderParams`.
+  SkSurfaceProps surface_props =
+      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  EXPECT_EQ(surface_props.textContrast(), params.text_contrast);
+  EXPECT_EQ(surface_props.textGamma(), params.text_gamma);
 }
 
 TEST_F(FontRenderParamsTest, OverrideRegistryValues) {

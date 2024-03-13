@@ -38,7 +38,7 @@ const char kHeadless[] = "headless";
 const char kX11Display[] = "display";
 // Disables MIT-SHM extension. In use only with Ozone/X11.
 const char kNoXshm[] = "no-xshm";
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace switches
 
