@@ -918,6 +918,9 @@ public final class ProductionSupportedFlagList {
                 "Include elements from shadow DOM in unassociated listed elements"),
         Flag.baseFeature("ShadowDomSupport", "Improve shadow DOM support in password manager"),
         Flag.baseFeature("StandardCompliantNonSpecialSchemeURLParsing"),
+        Flag.baseFeature(
+                BlinkFeatures.BLINK_SCHEDULER_PRIORITIZE_NAVIGATION_IP_CS,
+                "If enabled, main frame navigation IPCs have higher priority on visible pages"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
