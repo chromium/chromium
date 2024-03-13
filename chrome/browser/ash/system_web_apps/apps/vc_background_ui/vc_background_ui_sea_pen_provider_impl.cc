@@ -6,47 +6,60 @@
 
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/shell.h"
 #include "ash/system/camera/camera_effects_controller.h"
+#include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "components/manta/features.h"
 #include "content/public/browser/web_ui.h"
-#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash::vc_background_ui {
 
 namespace {
 
 CameraEffectsController* GetCameraEffectsController() {
-  return Shell::Get()->camera_effects_controller();
+  auto* controller = Shell::Get()->camera_effects_controller();
+  DCHECK(controller);
+  return controller;
 }
 
-void GetImageSkiaFromBackgroundImageInfo(
-    personalization_app::DecodeImageCallback callback,
-    const std::optional<CameraEffectsController::BackgroundImageInfo>& info) {
-  if (!info.has_value()) {
-    std::move(callback).Run(gfx::ImageSkia(), base::Value::Dict());
+void OnImageDecoded(
+    SeaPenWallpaperManager::GetImageAndMetadataCallback callback,
+    const std::string metadata,
+    const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    LOG(WARNING) << "Failed decoding image";
+    std::move(callback).Run(gfx::ImageSkia(), nullptr);
     return;
   }
-
-  // Deccode the jpeg content.
-  std::unique_ptr<SkBitmap> bitmap = gfx::JPEGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(info->jpeg_bytes.data()),
-      info->jpeg_bytes.size());
-
-  auto image = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
-
-  // TODO(b/325393647): update the value for sea_pen_metadata param.
-  std::move(callback).Run(image, /*sea_pen_metadata=*/base::Value::Dict());
+  const std::string extracted_metadata = ExtractDcDescriptionContents(metadata);
+  DecodeJsonMetadata(extracted_metadata.empty() ? metadata : extracted_metadata,
+                     base::BindOnce(std::move(callback), image));
 }
 
+void OnGetBackgroundImageInfo(
+    SeaPenWallpaperManager::GetImageAndMetadataCallback callback,
+    const std::optional<CameraEffectsController::BackgroundImageInfo>&
+        background_image_info) {
+  if (!background_image_info.has_value()) {
+    std::move(callback).Run(gfx::ImageSkia(), nullptr);
+    return;
+  }
+  image_util::DecodeImageData(
+      base::BindOnce(&OnImageDecoded, std::move(callback),
+                     std::move(background_image_info->metadata)),
+      data_decoder::mojom::ImageCodec::kDefault,
+      background_image_info->jpeg_bytes);
+}
 }  // namespace
 
 VcBackgroundUISeaPenProviderImpl::VcBackgroundUISeaPenProviderImpl(
@@ -84,11 +97,10 @@ void VcBackgroundUISeaPenProviderImpl::GetRecentSeaPenImagesInternal(
 
 void VcBackgroundUISeaPenProviderImpl::GetRecentSeaPenImageThumbnailInternal(
     const uint32_t id,
-    personalization_app::DecodeImageCallback callback) {
+    SeaPenWallpaperManager::GetImageAndMetadataCallback callback) {
   GetCameraEffectsController()->GetBackgroundImageInfo(
       CameraEffectsController::SeaPenIdToRelativePath(id),
-      base::BindOnce(&GetImageSkiaFromBackgroundImageInfo,
-                     std::move(callback)));
+      base::BindOnce(&OnGetBackgroundImageInfo, std::move(callback)));
 }
 
 void VcBackgroundUISeaPenProviderImpl::DeleteRecentSeaPenImage(
@@ -107,9 +119,13 @@ void VcBackgroundUISeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const SeaPenImage& sea_pen_image,
     const ash::personalization_app::mojom::SeaPenQueryPtr& query,
     base::OnceCallback<void(bool success)> callback) {
-  const std::string metadata = QueryDictToXmpString(SeaPenQueryToDict(query));
+  const std::optional<std::string> metadata =
+      base::WriteJson(SeaPenQueryToDict(query));
+  if (!metadata.has_value()) {
+    LOG(WARNING) << "Failed to write json metadata";
+  }
   GetCameraEffectsController()->SetBackgroundImageFromContent(
-      sea_pen_image, metadata, std::move(callback));
+      sea_pen_image, metadata.value_or(std::string()), std::move(callback));
 }
 
 }  // namespace ash::vc_background_ui

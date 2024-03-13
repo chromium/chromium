@@ -11,14 +11,20 @@
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/time_formatting.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -30,10 +36,7 @@ const std::string kUser1 = "user1@test.com";
 const AccountId kAccountId1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
 
 SkBitmap CreateBitmap() {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(1, 1);
-  bitmap.eraseARGB(255, 31, 63, 127);
-  return bitmap;
+  return gfx::test::CreateBitmap(1, SkColorSetARGB(255, 31, 63, 127));
 }
 
 std::string CreateJpgBytes() {
@@ -41,6 +44,28 @@ std::string CreateJpgBytes() {
   std::vector<unsigned char> data;
   gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
   return std::string(data.begin(), data.end());
+}
+
+base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
+  return base::subtle::ScopedTimeClockOverrides(
+      []() -> base::Time {
+        base::Time fake_now;
+        bool success =
+            base::Time::FromString("2023-04-05T01:23:45Z", &fake_now);
+        DCHECK(success);
+        return fake_now;
+      },
+      nullptr, nullptr);
+}
+
+personalization_app::mojom::SeaPenQueryPtr MakeTemplateQuery() {
+  return personalization_app::mojom::SeaPenQuery::NewTemplateQuery(
+      personalization_app::mojom::SeaPenTemplateQuery::New(
+          personalization_app::mojom::SeaPenTemplateId::kFlower,
+          ::base::flat_map<personalization_app::mojom::SeaPenTemplateChip,
+                           personalization_app::mojom::SeaPenTemplateOption>(),
+          personalization_app::mojom::SeaPenUserVisibleQuery::New(
+              "test template query", "test template title")));
 }
 
 class SeaPenWallpaperManagerTest : public AshTestBase {
@@ -279,6 +304,144 @@ TEST_F(SeaPenWallpaperManagerTest, GetFilePathForImageId) {
                 .AddExtension(".jpg"),
             sea_pen_wallpaper_manager()->GetFilePathForImageId(other_account_id,
                                                                22222));
+}
+
+TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataSuccess) {
+  constexpr uint32_t image_id = 88888888;
+  const auto time_override = CreateScopedTimeNowOverride();
+
+  {
+    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+        kAccountId1, {CreateJpgBytes(), image_id}, MakeTemplateQuery(),
+        save_image_future.GetCallback());
+
+    // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
+    // slightly.
+    EXPECT_TRUE(gfx::test::AreBitmapsClose(
+        CreateBitmap(), *save_image_future.Get<gfx::ImageSkia>().bitmap(),
+        /*max_deviation=*/1));
+  }
+
+  {
+    base::test::TestFuture<const gfx::ImageSkia&,
+                           personalization_app::mojom::RecentSeaPenImageInfoPtr>
+        get_image_and_metadata_future;
+    sea_pen_wallpaper_manager()->GetImageAndMetadata(
+        kAccountId1, image_id, get_image_and_metadata_future.GetCallback());
+
+    EXPECT_TRUE(gfx::test::AreBitmapsClose(
+        CreateBitmap(),
+        *get_image_and_metadata_future.Get<gfx::ImageSkia>().bitmap(),
+        /*max_deviation=*/1));
+    EXPECT_EQ("test template query",
+              get_image_and_metadata_future
+                  .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
+                  ->user_visible_query->text);
+    EXPECT_EQ("test template title",
+              get_image_and_metadata_future
+                  .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
+                  ->user_visible_query->template_title);
+    // base::Time::Now is overridden to return a fixed date.
+    EXPECT_EQ(base::TimeFormatShortDate(base::Time::Now()),
+              get_image_and_metadata_future
+                  .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
+                  ->creation_time.value());
+  }
+}
+
+TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataInvalidJson) {
+  constexpr uint32_t image_id = 918273645;
+  const auto time_override = CreateScopedTimeNowOverride();
+
+  {
+    // Create valid metadata dict.
+    base::Value::Dict query_dict = SeaPenQueryToDict(MakeTemplateQuery());
+
+    // Rename a necessary field to cause parsing failure.
+    ASSERT_TRUE(query_dict.contains("user_visible_query_text"));
+    query_dict.Set("user_visible_query_text_bad",
+                   query_dict.Extract("user_visible_query_text").value());
+
+    // Write the jpg with invalid metadata.
+    const base::FilePath target_file_path =
+        sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1,
+                                                           image_id);
+    ASSERT_TRUE(base::CreateDirectory(target_file_path.DirName()));
+    gfx::ImageSkia test_image =
+        gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap());
+    ASSERT_TRUE(ResizeAndSaveWallpaper(
+        test_image, target_file_path,
+        WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, test_image.size(),
+        QueryDictToXmpString(query_dict)));
+  }
+
+  base::test::TestFuture<const gfx::ImageSkia&,
+                         personalization_app::mojom::RecentSeaPenImageInfoPtr>
+      get_image_and_metadata_future;
+  sea_pen_wallpaper_manager()->GetImageAndMetadata(
+      kAccountId1, image_id, get_image_and_metadata_future.GetCallback());
+
+  // Image loading still succeeds.
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(
+      CreateBitmap(),
+      *get_image_and_metadata_future.Get<gfx::ImageSkia>().bitmap(),
+      /*max_deviation=*/1));
+
+  // No metadata loaded.
+  EXPECT_TRUE(get_image_and_metadata_future
+                  .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
+                  .is_null());
+}
+
+TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataNonExistentId) {
+  constexpr uint32_t image_id = 88888888;
+
+  ASSERT_FALSE(
+      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
+          kAccountId1, image_id)));
+
+  base::test::TestFuture<const gfx::ImageSkia&,
+                         personalization_app::mojom::RecentSeaPenImageInfoPtr>
+      get_image_and_metadata_future;
+  sea_pen_wallpaper_manager()->GetImageAndMetadata(
+      kAccountId1, image_id, get_image_and_metadata_future.GetCallback());
+
+  EXPECT_TRUE(get_image_and_metadata_future.Get<gfx::ImageSkia>().isNull());
+  EXPECT_TRUE(get_image_and_metadata_future
+                  .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
+                  .is_null());
+}
+
+TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataOtherAccount) {
+  constexpr uint32_t image_id = 8888;
+  {
+    // Write an image for first account.
+    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
+    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+        kAccountId1, {CreateJpgBytes(), image_id},
+        personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+        save_image_future.GetCallback());
+    ASSERT_TRUE(save_image_future.Wait());
+  }
+
+  {
+    // Try to retrieve the image with another account.
+    const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
+        "other_user@test.com", "other_user@test.com");
+
+    base::test::TestFuture<const gfx::ImageSkia&,
+                           personalization_app::mojom::RecentSeaPenImageInfoPtr>
+        get_image_and_metadata_future;
+    sea_pen_wallpaper_manager()->GetImageAndMetadata(
+        other_account_id, image_id,
+        get_image_and_metadata_future.GetCallback());
+
+    EXPECT_TRUE(get_image_and_metadata_future.Get<gfx::ImageSkia>().isNull());
+    EXPECT_TRUE(get_image_and_metadata_future
+                    .Get<personalization_app::mojom::RecentSeaPenImageInfoPtr>()
+                    .is_null());
+  }
 }
 
 }  // namespace

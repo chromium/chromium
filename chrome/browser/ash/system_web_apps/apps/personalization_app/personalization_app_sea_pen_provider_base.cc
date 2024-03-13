@@ -156,9 +156,10 @@ void PersonalizationAppSeaPenProviderBase::GetRecentSeaPenImageThumbnail(
   }
 
   GetRecentSeaPenImageThumbnailInternal(
-      id, base::BindOnce(&PersonalizationAppSeaPenProviderBase::
-                             OnGetRecentSeaPenImageThumbnail,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      id,
+      base::BindOnce(&PersonalizationAppSeaPenProviderBase::
+                         OnGetRecentSeaPenImageThumbnail,
+                     weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)));
 }
 
 wallpaper_handlers::SeaPenFetcher*
@@ -216,9 +217,10 @@ void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImages(
 }
 
 void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(
+    const uint32_t id,
     GetRecentSeaPenImageThumbnailCallback callback,
     const gfx::ImageSkia& image,
-    std::optional<base::Value::Dict> sea_pen_metadata) {
+    mojom::RecentSeaPenImageInfoPtr image_info) {
   if (image.isNull()) {
     DVLOG(1) << __func__ << " failed to decode image";
     std::move(callback).Run(nullptr);
@@ -229,24 +231,15 @@ void PersonalizationAppSeaPenProviderBase::OnGetRecentSeaPenImageThumbnail(
       *WallpaperResizer::GetResizedImage(image, kSeaPenImageThumbnailSizeDip)
            .bitmap()));
 
-  if (!sea_pen_metadata.has_value()) {
-    DVLOG(1) << __func__ << " the extracted metadata is not in JSON format";
-    std::move(callback).Run(mojom::RecentSeaPenThumbnailData::New(
-        std::move(thumbnail_url), nullptr));
-    return;
-  }
-
-  auto sea_pen_image_info =
-      ash::SeaPenQueryDictToRecentImageInfo(std::move(*sea_pen_metadata));
-  if (!sea_pen_image_info) {
-    DVLOG(1) << __func__ << " invalid extracted metadata";
+  if (!image_info) {
+    DVLOG(1) << __func__ << " Unable to get image info for image " << id;
     std::move(callback).Run(mojom::RecentSeaPenThumbnailData::New(
         std::move(thumbnail_url), nullptr));
     return;
   }
 
   std::move(callback).Run(mojom::RecentSeaPenThumbnailData::New(
-      std::move(thumbnail_url), std::move(sea_pen_image_info)));
+      std::move(thumbnail_url), std::move(image_info)));
 }
 
 void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(

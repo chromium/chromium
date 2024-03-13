@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/mojom/sea_pen_generated.mojom.h"
 #include "base/files/file_path.h"
@@ -18,9 +17,10 @@
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace ash {
 
@@ -37,6 +37,64 @@ std::optional<std::u16string> GetCreationTimeInfo(
     return std::nullopt;
   }
   return base::TimeFormatShortDate(*time);
+}
+
+std::optional<base::Value::Dict> AsOptionalDict(
+    data_decoder::DataDecoder::ValueOrError parsed) {
+  if (!parsed.has_value()) {
+    LOG(WARNING) << "Failed to parse JSON: " << parsed.error();
+    return std::nullopt;
+  }
+  if (!parsed->is_dict()) {
+    LOG(WARNING) << "Parsed JSON is not a dictionary";
+    return std::nullopt;
+  }
+  base::Value::Dict& dict = parsed->GetDict();
+  if (!dict.contains(kSeaPenFreeformQueryKey) &&
+      !dict.contains(kSeaPenTemplateIdKey)) {
+    LOG(WARNING) << "Parsed JSON does not contain required keys";
+    return std::nullopt;
+  }
+  return std::move(dict);
+}
+
+personalization_app::mojom::RecentSeaPenImageInfoPtr
+SeaPenQueryDictToRecentImageInfo(
+    const std::optional<base::Value::Dict> query_dict) {
+  if (!query_dict.has_value()) {
+    DVLOG(2) << __func__ << " query_dict nullopt";
+    return nullptr;
+  }
+  auto* creation_time = query_dict->Find(kSeaPenCreationTimeKey);
+  if (!creation_time) {
+    DVLOG(2) << __func__
+             << " missing creation time information in extracted data";
+    return nullptr;
+  }
+
+  auto* freeform_query = query_dict->FindString(kSeaPenFreeformQueryKey);
+  if (freeform_query) {
+    return personalization_app::mojom::RecentSeaPenImageInfo::New(
+        personalization_app::mojom::SeaPenUserVisibleQuery::New(
+            /*text=*/*freeform_query, /*template_title=*/std::string()),
+        GetCreationTimeInfo(*creation_time));
+  }
+
+  auto* user_visible_query_text =
+      query_dict->FindString(kSeaPenUserVisibleQueryTextKey);
+  auto* user_visible_query_template =
+      query_dict->FindString(kSeaPenUserVisibleQueryTemplateKey);
+
+  if (!user_visible_query_text || !user_visible_query_template) {
+    DVLOG(2) << __func__
+             << " missing user visible query information in extracted data";
+    return nullptr;
+  }
+
+  return personalization_app::mojom::RecentSeaPenImageInfo::New(
+      personalization_app::mojom::SeaPenUserVisibleQuery::New(
+          *user_visible_query_text, *user_visible_query_template),
+      GetCreationTimeInfo(*creation_time));
 }
 
 }  // namespace
@@ -71,6 +129,16 @@ base::Value::Dict SeaPenQueryToDict(
   return query_dict;
 }
 
+std::string ExtractDcDescriptionContents(const std::string_view data) {
+  re2::RE2 tag_pattern("<dc:description>(.*)</dc:description>");
+  std::string result;
+  if (!re2::RE2::PartialMatch(data, tag_pattern, &result)) {
+    VLOG(0) << "Failed to find dc:description tag";
+    return std::string();
+  }
+  return result;
+}
+
 std::string QueryDictToXmpString(const base::Value::Dict& query_dict) {
   static constexpr char kXmpData[] = R"(
             <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 6.0.0">
@@ -80,42 +148,18 @@ std::string QueryDictToXmpString(const base::Value::Dict& query_dict) {
                   </rdf:Description>
                </rdf:RDF>
             </x:xmpmeta>)";
-  return base::StringPrintf(kXmpData,
-                            base::WriteJson(query_dict).value_or("").c_str());
+  return base::StringPrintf(
+      kXmpData, base::WriteJson(query_dict).value_or(std::string()).c_str());
 }
 
-personalization_app::mojom::RecentSeaPenImageInfoPtr
-SeaPenQueryDictToRecentImageInfo(const base::Value::Dict& query_dict) {
-  auto* creation_time = query_dict.Find(kSeaPenCreationTimeKey);
-  if (!creation_time) {
-    DVLOG(2) << __func__
-             << " missing creation time information in extracted data";
-    return nullptr;
-  }
-
-  auto* freeform_query = query_dict.FindString(kSeaPenFreeformQueryKey);
-  if (freeform_query) {
-    return personalization_app::mojom::RecentSeaPenImageInfo::New(
-        personalization_app::mojom::SeaPenUserVisibleQuery::New(
-            /*text=*/*freeform_query, /*template_title=*/std::string()),
-        GetCreationTimeInfo(*creation_time));
-  }
-
-  auto* user_visible_query_text =
-      query_dict.FindString(kSeaPenUserVisibleQueryTextKey);
-  auto* user_visible_query_template =
-      query_dict.FindString(kSeaPenUserVisibleQueryTemplateKey);
-
-  if (!user_visible_query_text || !user_visible_query_template) {
-    DVLOG(2) << __func__
-             << " missing user visible query information in extracted data";
-    return nullptr;
-  }
-
-  return personalization_app::mojom::RecentSeaPenImageInfo::New(
-      personalization_app::mojom::SeaPenUserVisibleQuery::New(
-          *user_visible_query_text, *user_visible_query_template),
-      GetCreationTimeInfo(*creation_time));
+void DecodeJsonMetadata(
+    const std::string& json,
+    base::OnceCallback<
+        void(personalization_app::mojom::RecentSeaPenImageInfoPtr)> callback) {
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      json, base::BindOnce(&AsOptionalDict)
+                .Then(base::BindOnce(&SeaPenQueryDictToRecentImageInfo))
+                .Then(std::move(callback)));
 }
 
 std::optional<uint32_t> GetIdFromFileName(const base::FilePath& file_path) {

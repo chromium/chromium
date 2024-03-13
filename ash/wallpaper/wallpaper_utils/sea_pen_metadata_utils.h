@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 
 namespace ash {
@@ -46,15 +46,26 @@ inline constexpr std::string_view kSeaPenUserVisibleQueryTemplateKey =
 ASH_EXPORT base::Value::Dict SeaPenQueryToDict(
     const personalization_app::mojom::SeaPenQueryPtr& query);
 
-// Constructs the xmp metadata string from the base::Value::Dict query
-// information.
+// Extracts the data between the first <dc:description> tag from `data`. Copies
+// the extracted portion into a new return string. Returns empty string on
+// failure. Note that failure may happen in normal operation, as VC Background
+// metadata should not be wrapped in XML after M124.
+ASH_EXPORT std::string ExtractDcDescriptionContents(
+    const std::string_view data);
+
+// Prepare SeaPen metadata for writing into a jpg file header by wrapping it in
+// XML.
 ASH_EXPORT std::string QueryDictToXmpString(
     const base::Value::Dict& query_dict);
 
-// Converts the extracted Sea Pen metadata base::Value::Dict `query_dict` into
-// RecentSeaPenImageInfo.
-ASH_EXPORT personalization_app::mojom::RecentSeaPenImageInfoPtr
-SeaPenQueryDictToRecentImageInfo(const base::Value::Dict& query_dict);
+// Converts the extracted SeaPen metadata string into
+// RecentSeaPenImageInfo. Calls `callback` with nullptr if `metadata` is invalid
+// or cannot be safely decoded. `json` must not be wrapped in XMP metadata XML
+// tags.
+ASH_EXPORT void DecodeJsonMetadata(
+    const std::string& json,
+    base::OnceCallback<
+        void(personalization_app::mojom::RecentSeaPenImageInfoPtr)> callback);
 
 // Extract the id from a sea pen file name. SeaPen images must be saved to disk
 // as `/path/to/file/{id}.jpg` where id is a positive integer. `file_path` can

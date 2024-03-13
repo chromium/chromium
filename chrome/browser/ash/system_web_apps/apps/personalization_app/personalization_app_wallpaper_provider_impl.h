@@ -17,6 +17,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/files/file.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -272,7 +274,8 @@ class PersonalizationAppWallpaperProviderImpl
 
   void SendSeaPenWallpaperAttribution(
       uint32_t id,
-      std::optional<base::Value::Dict> sea_pen_metadata);
+      const gfx::ImageSkia& image,
+      mojom::RecentSeaPenImageInfoPtr sea_pen_metadata);
 
   void SendGooglePhotosAttribution(
       const ash::WallpaperInfo& info,

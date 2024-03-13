@@ -4,14 +4,12 @@
 
 #include "ash/wallpaper/wallpaper_file_manager.h"
 
-#include <optional>
 #include <string>
 
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -19,9 +17,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
-#include "base/values.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -175,56 +170,6 @@ std::string GetStringContent(const base::FilePath& file_path) {
   }
 
   return result;
-}
-
-// Extracts the data between the first <dc:description> tag from `data`.
-std::string ExtractDcDescriptionContents(const std::string& data) {
-  re2::RE2 tag_pattern("<dc:description>(.*)</dc:description>");
-  std::string result;
-  if (!re2::RE2::PartialMatch(data, tag_pattern, &result)) {
-    LOG(WARNING) << "Failed to find dc:description tag";
-    return std::string();
-  }
-  return result;
-}
-
-// Extracts the data between <dc:description> tags of xmp metadata from a jpg
-// image. Runs on `blocking_task_runner_` thread.
-std::string ExtractSeaPenMetadataFromJpg(const base::FilePath& path) {
-  if (path.Extension() != ".jpg") {
-    return std::string();
-  }
-  return ExtractDcDescriptionContents(GetStringContent(path));
-}
-
-std::optional<base::Value::Dict> AsOptionalDict(
-    data_decoder::DataDecoder::ValueOrError parsed) {
-  if (!parsed.has_value()) {
-    LOG(WARNING) << "Failed to parse JSON: " << parsed.error();
-    return std::nullopt;
-  }
-  if (!parsed->is_dict()) {
-    LOG(WARNING) << "Parsed JSON is not a dictionary";
-    return std::nullopt;
-  }
-  base::Value::Dict& dict = parsed->GetDict();
-  if (!dict.contains(kSeaPenFreeformQueryKey) &&
-      !dict.contains(kSeaPenTemplateIdKey)) {
-    LOG(WARNING) << "Parsed JSON does not contain required keys";
-    return std::nullopt;
-  }
-  return std::move(dict);
-}
-
-void ParseJsonIsolated(WallpaperController::GetSeaPenMetadataCallback callback,
-                       const std::string json) {
-  if (json.empty()) {
-    LOG(WARNING) << "JSON string is empty";
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      json, base::BindOnce(&AsOptionalDict).Then(std::move(callback)));
 }
 
 base::FilePath GetCustomWallpaperDir(const base::FilePath& wallpaper_dir,
@@ -398,15 +343,6 @@ void WallpaperFileManager::SaveWallpaperToDisk(
                      wallpaper_files_id, file_name, layout, deep_copy,
                      image_metadata),
       std::move(callback));
-}
-
-void WallpaperFileManager::GetSeaPenMetadata(
-    const base::FilePath& file_path,
-    WallpaperController::GetSeaPenMetadataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&ExtractSeaPenMetadataFromJpg, file_path),
-      base::BindOnce(&ParseJsonIsolated, std::move(callback)));
 }
 
 void WallpaperFileManager::RemoveImageFromDisk(

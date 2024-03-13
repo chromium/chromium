@@ -6,12 +6,15 @@
 
 #include <string>
 
-#include "ash/test/ash_test_base.h"
+#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
+#include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +78,30 @@ base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
       nullptr, nullptr);
 }
 
-TEST(SeaPenMetadataUtilsTest, SeaPenTextQueryToDict) {
+personalization_app::mojom::RecentSeaPenImageInfoPtr
+SeaPenQueryDictToRecentImageInfo(const base::Value::Dict& dict) {
+  std::string json_string = base::WriteJson(dict).value_or(std::string());
+  base::test::TestFuture<personalization_app::mojom::RecentSeaPenImageInfoPtr>
+      future;
+  DecodeJsonMetadata(json_string, future.GetCallback());
+  return future.Take();
+}
+
+class SeaPenMetadataUtilsTest : public testing::Test {
+ public:
+  SeaPenMetadataUtilsTest() = default;
+
+  SeaPenMetadataUtilsTest(const SeaPenMetadataUtilsTest&) = delete;
+  SeaPenMetadataUtilsTest& operator=(const SeaPenMetadataUtilsTest&) = delete;
+
+  ~SeaPenMetadataUtilsTest() override = default;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  InProcessDataDecoder decoder_;
+};
+
+TEST_F(SeaPenMetadataUtilsTest, SeaPenTextQueryToDict) {
   auto time_override = CreateScopedTimeNowOverride();
 
   ash::personalization_app::mojom::SeaPenQueryPtr search_query =
@@ -87,7 +113,7 @@ TEST(SeaPenMetadataUtilsTest, SeaPenTextQueryToDict) {
   EXPECT_EQ(GetTestFreeformQueryDict(), result);
 }
 
-TEST(SeaPenMetadataUtilsTest, SeaPenTemplateQueryToDict) {
+TEST_F(SeaPenMetadataUtilsTest, SeaPenTemplateQueryToDict) {
   auto time_override = CreateScopedTimeNowOverride();
 
   base::flat_map<ash::personalization_app::mojom::SeaPenTemplateChip,
@@ -112,8 +138,8 @@ TEST(SeaPenMetadataUtilsTest, SeaPenTemplateQueryToDict) {
   EXPECT_EQ(GetTestTemplateQueryDict(), result);
 }
 
-TEST(SeaPenMetadataUtilsTest,
-     SeaPenQueryDictToRecentImageInfoVerifyCreationTime) {
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoVerifyCreationTime) {
   const base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   const base::test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
 
@@ -129,8 +155,8 @@ TEST(SeaPenMetadataUtilsTest,
   EXPECT_EQ(u"Nov 30, 2023", recent_image_info->creation_time);
 }
 
-TEST(SeaPenMetadataUtilsTest,
-     SeaPenQueryDictToRecentImageInfoInvalidCreationTime) {
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoInvalidCreationTime) {
   base::Value::Dict invalid_creation_time_query_dict =
       GetTestFreeformQueryDict().Set("creation_time", "invalid creation time");
   auto recent_image_info =
@@ -139,8 +165,8 @@ TEST(SeaPenMetadataUtilsTest,
   EXPECT_FALSE(recent_image_info->creation_time);
 }
 
-TEST(SeaPenMetadataUtilsTest,
-     SeaPenQueryDictToRecentImageInfoValidTemplateData) {
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoValidTemplateData) {
   auto expected_user_visible_query =
       ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
           user_visible_query_text, user_visible_query_template);
@@ -152,8 +178,8 @@ TEST(SeaPenMetadataUtilsTest,
       expected_user_visible_query));
 }
 
-TEST(SeaPenMetadataUtilsTest,
-     SeaPenQueryDictToRecentImageInfoValidFreeformData) {
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoValidFreeformData) {
   auto expected_user_visible_query =
       ash::personalization_app::mojom::SeaPenUserVisibleQuery::New(
           user_search_query, std::string());
@@ -165,8 +191,8 @@ TEST(SeaPenMetadataUtilsTest,
       expected_user_visible_query));
 }
 
-TEST(SeaPenMetadataUtilsTest,
-     SeaPenQueryDictToRecentImageInfoMissingCreationTime) {
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoMissingCreationTime) {
   base::Value::Dict invalid_template_query_dict =
       GetTestInvalidTemplateQueryDict(/*missing_field=*/"creation_time");
 
@@ -176,8 +202,8 @@ TEST(SeaPenMetadataUtilsTest,
   EXPECT_FALSE(recent_image_info);
 }
 
-TEST(SeaPenMetadataUtilsTest,
-     SeaPenQueryDictToRecentImageInfoMissingUserVisibleQueryText) {
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoMissingUserVisibleQueryText) {
   base::Value::Dict invalid_template_query_dict =
       GetTestInvalidTemplateQueryDict(
           /*missing_field=*/"user_visible_query_text");
@@ -188,8 +214,8 @@ TEST(SeaPenMetadataUtilsTest,
   EXPECT_FALSE(recent_image_info);
 }
 
-TEST(SeaPenMetadataUtilsTest,
-     SeaPenQueryDictToRecentImageInfoMissingUserVisibleQueryTemplate) {
+TEST_F(SeaPenMetadataUtilsTest,
+       SeaPenQueryDictToRecentImageInfoMissingUserVisibleQueryTemplate) {
   base::Value::Dict invalid_template_query_dict =
       GetTestInvalidTemplateQueryDict(
           /*missing_field=*/"user_visible_query_template");
@@ -200,12 +226,10 @@ TEST(SeaPenMetadataUtilsTest,
   EXPECT_FALSE(recent_image_info);
 }
 
-TEST(SeaPenMetadataUtilsTest, GetIdFromValidFilePath) {
+TEST_F(SeaPenMetadataUtilsTest, GetIdFromValidFilePath) {
   std::vector<std::pair<std::string, uint32_t>> cases = {
       {"97531", 97531u},
-      {
-
-          "24680.jpg", 24680},
+      {"24680.jpg", 24680},
       {"abcd/1234.jpg", 1234u},
       {"a/b/c/d/575757.png", 575757u}};
   for (const auto& [path, expected] : cases) {
@@ -213,7 +237,7 @@ TEST(SeaPenMetadataUtilsTest, GetIdFromValidFilePath) {
   }
 }
 
-TEST(SeaPenMetadataUtilsTest, GetIdFromInvalidFilePath) {
+TEST_F(SeaPenMetadataUtilsTest, GetIdFromInvalidFilePath) {
   std::vector<std::string> cases = {"a", "b.jpg", "-21", "a/21.jpg/c"};
   for (const auto& path : cases) {
     EXPECT_FALSE(GetIdFromFileName(base::FilePath(path)).has_value());

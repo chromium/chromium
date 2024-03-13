@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,6 +50,28 @@ std::vector<uint32_t> GetImageIdsImpl(const base::FilePath& storage_directory,
   }
 
   return GetIdsFromFilePaths(jpg_paths);
+}
+
+// Reads the image from the given `file_path` and returns data as string.
+std::string GetStringContent(const base::FilePath& file_path) {
+  if (file_path.empty() || !base::PathExists(file_path)) {
+    LOG(WARNING) << "File path is empty or does not exist";
+    return std::string();
+  }
+
+  std::string result;
+  if (!base::ReadFileToString(file_path, &result)) {
+    LOG(WARNING) << "Failed reading file";
+    result.clear();
+  }
+
+  return result;
+}
+
+gfx::ImageSkia DropImageInfo(
+    const gfx::ImageSkia& image,
+    personalization_app::mojom::RecentSeaPenImageInfoPtr info) {
+  return image;
 }
 
 }  // namespace
@@ -118,6 +141,25 @@ void SeaPenWallpaperManager::GetImageIds(const AccountId& account_id,
       std::move(callback));
 }
 
+void SeaPenWallpaperManager::GetImageAndMetadata(
+    const AccountId& account_id,
+    const uint32_t image_id,
+    GetImageAndMetadataCallback callback) {
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetStringContent,
+                     GetFilePathForImageId(account_id, image_id)),
+      base::BindOnce(&SeaPenWallpaperManager::OnFileRead,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SeaPenWallpaperManager::GetImage(const AccountId& account_id,
+                                      const uint32_t image_id,
+                                      GetImageCallback callback) {
+  GetImageAndMetadata(account_id, image_id,
+                      base::BindOnce(&DropImageInfo).Then(std::move(callback)));
+}
+
 void SeaPenWallpaperManager::SaveSeaPenImage(
     const AccountId& account_id,
     const uint32_t image_id,
@@ -151,6 +193,34 @@ void SeaPenWallpaperManager::OnSeaPenImageSaved(
     return;
   }
   std::move(callback).Run(image_skia);
+}
+
+void SeaPenWallpaperManager::OnFileRead(GetImageAndMetadataCallback callback,
+                                        const std::string data) {
+  if (data.empty()) {
+    LOG(WARNING) << "Unable to read file";
+    std::move(callback).Run(gfx::ImageSkia(), nullptr);
+    return;
+  }
+  image_util::DecodeImageData(
+      base::BindOnce(&SeaPenWallpaperManager::OnDecodeImageData,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     ExtractDcDescriptionContents(data)),
+      data_decoder::mojom::ImageCodec::kDefault, data);
+}
+
+void SeaPenWallpaperManager::OnDecodeImageData(
+    GetImageAndMetadataCallback callback,
+    const std::string json,
+    const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    // Do not bother decoding image metadata if we were unable to decode the
+    // image.
+    LOG(WARNING) << "Unable to decode image";
+    std::move(callback).Run(gfx::ImageSkia(), nullptr);
+    return;
+  }
+  DecodeJsonMetadata(json, base::BindOnce(std::move(callback), image));
 }
 
 }  // namespace ash

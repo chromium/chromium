@@ -14,8 +14,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
+
+class AccountId;
 
 namespace base {
 class SequencedTaskRunner;
@@ -83,6 +84,27 @@ class ASH_EXPORT SeaPenWallpaperManager {
   // SeaPen image ids for `account_id`.
   void GetImageIds(const AccountId& account_id, GetImageIdsCallback callback);
 
+  using GetImageAndMetadataCallback = base::OnceCallback<void(
+      const gfx::ImageSkia& image,
+      personalization_app::mojom::RecentSeaPenImageInfoPtr image_info)>;
+
+  // GetImageWithInfo retrieves a full size version of the image saved to disk
+  // at `id`. Called with empty `ImageSkia` in case `id` does not exist, or
+  // errors reading the file or decoding the data. Also retrieves metadata about
+  // the query used to create the image. Does not attempt to retrieve metadata
+  // if retrieving the image itself fails.
+  void GetImageAndMetadata(const AccountId& account_id,
+                           uint32_t image_id,
+                           GetImageAndMetadataCallback callback);
+
+  using GetImageCallback =
+      base::OnceCallback<void(const gfx::ImageSkia& image)>;
+
+  // GetImage calls GetImageAndMetadata but drops the metadata.
+  void GetImage(const AccountId& account_id,
+                uint32_t image_id,
+                GetImageCallback callback);
+
  private:
   void SaveSeaPenImage(const AccountId& account_id,
                        uint32_t image_id,
@@ -93,6 +115,12 @@ class ASH_EXPORT SeaPenWallpaperManager {
   void OnSeaPenImageSaved(const gfx::ImageSkia& image_skia,
                           DecodeAndSaveSeaPenImageCallback callback,
                           const base::FilePath& file_path);
+
+  void OnFileRead(GetImageAndMetadataCallback callback, std::string data);
+
+  void OnDecodeImageData(GetImageAndMetadataCallback callback,
+                         std::string data,
+                         const gfx::ImageSkia& image);
 
   // The directory where SeaPen images are stored. Initialized as empty
   // FilePath. It is an error to call any method before this directory has been

@@ -2543,57 +2543,6 @@ TEST_P(WallpaperControllerTest, DeleteRecentSeaPenImage) {
   }
 }
 
-TEST_P(WallpaperControllerTest, GetSeaPenMetadata) {
-  SimulateUserLogin(kAccountId1);
-
-  const base::Value::Dict metadata = base::test::ParseJsonDict(
-      R"({"creation_time":"13349580290544213",
-      "user_visible_query_text":"test template query",
-      "user_visible_query_template":"test template title",
-      "options":{"4":"55","5":"64"},
-      "template_id":"2"})");
-  const auto file_path = WriteSeaPenWallpaperMetadata("111.jpg", metadata);
-
-  {
-    base::test::TestFuture<std::optional<base::Value::Dict>>
-        get_sea_pen_metadata_future;
-    controller_->GetSeaPenMetadata(kAccountId1, 111u,
-                                   get_sea_pen_metadata_future.GetCallback());
-
-    EXPECT_EQ(metadata, get_sea_pen_metadata_future.Get());
-  }
-
-  {
-    base::test::TestFuture<std::optional<base::Value::Dict>>
-        get_sea_pen_metadata_future;
-    // Now try an invalid path with known good metadata.
-    const auto invalid_file_path =
-        WriteSeaPenWallpaperMetadata("../333.jpg", metadata);
-    controller_->GetSeaPenMetadata(kAccountId1, 333u,
-                                   get_sea_pen_metadata_future.GetCallback());
-    EXPECT_FALSE(get_sea_pen_metadata_future.Get().has_value());
-  }
-}
-
-TEST_P(WallpaperControllerTest, GetSeaPenMetadataInvalidJson) {
-  SimulateUserLogin(kAccountId1);
-
-  // Missing a required `template_id` key.
-  const base::Value::Dict metadata = base::test::ParseJsonDict(
-      R"({"creation_time":"13349580290544213",
-      "user_visible_query_text":"test template query",
-      "user_visible_query_template":"test template title",
-      "options":{"4":"55","5":"64"}})");
-  const auto file_path = WriteSeaPenWallpaperMetadata("8888.jpg", metadata);
-
-  base::test::TestFuture<std::optional<base::Value::Dict>>
-      get_sea_pen_metadata_future;
-  controller_->GetSeaPenMetadata(kAccountId1, 8888u,
-                                 get_sea_pen_metadata_future.GetCallback());
-
-  EXPECT_FALSE(get_sea_pen_metadata_future.Take().has_value());
-}
-
 TEST_P(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   SimulateUserLogin("kiosk", user_manager::UserType::kKioskApp);

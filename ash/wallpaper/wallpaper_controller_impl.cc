@@ -1127,24 +1127,13 @@ void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
     return;
   }
 
-  const base::FilePath file_path =
-      sea_pen_wallpaper_manager_.GetFilePathForImageId(account_id, id);
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
-  wallpaper_file_manager_->LoadWallpaper(
-      WallpaperType::kSeaPen, file_path.DirName(), file_path.BaseName().value(),
+  sea_pen_wallpaper_manager_.GetImage(
+      account_id, id,
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id, id,
                      std::move(callback)));
-}
-
-void WallpaperControllerImpl::GetSeaPenMetadata(
-    const AccountId& account_id,
-    const uint32_t id,
-    GetSeaPenMetadataCallback callback) {
-  wallpaper_file_manager_->GetSeaPenMetadata(
-      sea_pen_wallpaper_manager_.GetFilePathForImageId(account_id, id),
-      std::move(callback));
 }
 
 void WallpaperControllerImpl::DeleteRecentSeaPenImage(
@@ -2337,12 +2326,17 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
     const std::optional<uint32_t> id =
         GetIdFromFileName(base::FilePath(info.location));
     if (id.has_value()) {
-      const auto path = sea_pen_wallpaper_manager_.GetFilePathForImageId(
-          account_id, id.value());
-      wallpaper_file_manager_->LoadWallpaper(
-          info.type, path.DirName(), path.BaseName().value(),
+      // This is not a real FilePath. This is only used as an in-memory cache
+      // key to help efficiently switch wallpapers when changing users.
+      const base::FilePath cache_file_path =
+          base::FilePath("/sea-pen/")
+              .Append(account_id.GetAccountIdKey())
+              .Append(base::NumberToString(id.value()));
+      sea_pen_wallpaper_manager_.GetImage(
+          account_id, id.value(),
           base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
-                         weak_factory_.GetWeakPtr(), account_id, path, info,
+                         weak_factory_.GetWeakPtr(), account_id,
+                         cache_file_path, info,
                          /*show_wallpaper=*/true));
       return;
     }

@@ -90,13 +90,6 @@ class ASH_EXPORT WallpaperFileManager {
       SaveWallpaperCallback callback = base::DoNothing(),
       const std::string& wallpaper_files_id = std::string());
 
-  // Extracts the data between <dc::description> tags of the XMP metadata from
-  // the image at `file_path`. Calls `callback` with the data if it is
-  // successfully read and parsed as a JSON dictionary.
-  void GetSeaPenMetadata(
-      const base::FilePath& file_path,
-      WallpaperController::GetSeaPenMetadataCallback callback);
-
   using RemoveImageFromDiskCallback = base::OnceCallback<void(bool success)>;
   void RemoveImageFromDisk(RemoveImageFromDiskCallback callback,
                            const base::FilePath& file_path);

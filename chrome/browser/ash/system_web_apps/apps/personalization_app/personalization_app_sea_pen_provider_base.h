@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
+#include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/common/sea_pen_provider.h"
 #include "base/memory/raw_ptr.h"
@@ -32,9 +33,6 @@ class Profile;
 
 namespace ash::personalization_app {
 
-using DecodeImageCallback =
-    base::OnceCallback<void(const gfx::ImageSkia&,
-                            std::optional<base::Value::Dict> sea_pen_metadata)>;
 
 // Base class for PersonalizationApp and VcBackground SeaPen providers.
 // The public functions are the interface required for both PersonalizationApp
@@ -93,7 +91,7 @@ class PersonalizationAppSeaPenProviderBase
 
   virtual void GetRecentSeaPenImageThumbnailInternal(
       uint32_t id,
-      DecodeImageCallback callback) = 0;
+      SeaPenWallpaperManager::GetImageAndMetadataCallback callback) = 0;
 
   virtual void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
@@ -129,9 +127,10 @@ class PersonalizationAppSeaPenProviderBase
                                const std::vector<uint32_t>& ids);
 
   void OnGetRecentSeaPenImageThumbnail(
+      uint32_t id,
       GetRecentSeaPenImageThumbnailCallback callback,
       const gfx::ImageSkia& image,
-      std::optional<base::Value::Dict> sea_pen_metadata);
+      mojom::RecentSeaPenImageInfoPtr image_info);
 
   SelectRecentSeaPenImageCallback pending_select_recent_sea_pen_image_callback_;
 

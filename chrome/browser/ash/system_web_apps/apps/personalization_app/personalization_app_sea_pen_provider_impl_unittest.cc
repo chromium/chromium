@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -233,20 +234,17 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
     return scoped_temp_dir_.GetPath();
   }
 
-  void CreateSeaPenFilesForTesting(
-      const AccountId& account_id,
-      std::vector<uint32_t> sea_pen_ids,
-      const std::string& file_content = CreateJpgBytes()) {
-    base::FilePath sea_pen_dir =
-        sea_pen_wallpaper_manager_.GetFilePathForImageId(account_id, 0u)
-            .DirName();
-    ASSERT_TRUE(base::CreateDirectory(sea_pen_dir));
-
+  void CreateSeaPenFilesForTesting(const AccountId& account_id,
+                                   std::vector<uint32_t> sea_pen_ids) {
     for (const uint32_t& sea_pen_id : sea_pen_ids) {
-      base::FilePath sea_pen_file_path =
-          sea_pen_wallpaper_manager_.GetFilePathForImageId(account_id,
-                                                           sea_pen_id);
-      ASSERT_TRUE(base::WriteFile(sea_pen_file_path, file_content));
+      base::test::TestFuture<const gfx::ImageSkia&>
+          decode_and_save_sea_pen_image_future;
+      sea_pen_wallpaper_manager_.DecodeAndSaveSeaPenImage(
+          account_id, {CreateJpgBytes(), sea_pen_id},
+          personalization_app::mojom::SeaPenQuery::NewTextQuery(
+              "test query " + base::NumberToString(sea_pen_id)),
+          decode_and_save_sea_pen_image_future.GetCallback());
+      ASSERT_FALSE(decode_and_save_sea_pen_image_future.Get().isNull());
     }
   }
 
@@ -528,6 +526,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithValidMetadata) {
+  const auto time_override = CreateScopedTimeNowOverride();
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
   const base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   const base::test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
@@ -542,12 +541,6 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_THAT(recent_images,
               testing::ContainerEq(std::vector<uint32_t>({kSeaPenId1})));
 
-  test_wallpaper_controller()->set_sea_pen_metadata(
-      /*metadata=*/R"({"creation_time":"13349580387513653",
-      "user_visible_query_text":"test template query",
-      "user_visible_query_template":"test template title",
-      "options":{"4":"55","5":"64"},"template_id":"2"})");
-
   base::test::TestFuture<mojom::RecentSeaPenThumbnailDataPtr>
       thumbnail_info_future;
   sea_pen_provider_remote()->GetRecentSeaPenImageThumbnail(
@@ -555,12 +548,10 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
   GURL url(thumbnail_info_future.Get()->url);
   EXPECT_FALSE(url.is_empty());
-  EXPECT_EQ(u"Jan 12, 2024",
-            thumbnail_info_future.Get()->image_info->creation_time);
-  EXPECT_TRUE(
-      thumbnail_info_future.Get()->image_info->user_visible_query.Equals(
-          mojom::SeaPenUserVisibleQuery::New("test template query",
-                                             "test template title")));
+  EXPECT_EQ(base::TimeFormatShortDate(base::Time::Now()),
+            thumbnail_info_future.Get()->image_info->creation_time.value());
+  EXPECT_EQ("test query 111",
+            thumbnail_info_future.Get()->image_info->user_visible_query->text);
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
@@ -591,31 +582,18 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithDecodingFailure) {
   SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
 
-  CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1},
-                              "invalid image data");
-
-  base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
-      recent_images_future.GetCallback());
-
-  std::vector<uint32_t> recent_images = recent_images_future.Take();
-  EXPECT_THAT(recent_images,
-              testing::ContainerEq(std::vector<uint32_t>({kSeaPenId1})));
-
-  base::test::TestFuture<mojom::RecentSeaPenThumbnailDataPtr>
-      thumbnail_info_future;
-  // Try to get thumbnail data for an invalid file path.
-  sea_pen_provider_remote()->GetRecentSeaPenImageThumbnail(
-      recent_images[0], thumbnail_info_future.GetCallback());
-
-  EXPECT_FALSE(thumbnail_info_future.Take());
-}
-
-TEST_F(PersonalizationAppSeaPenProviderImplTest,
-       GetRecentSeaPenImageThumbnailWithInvalidFormatMetadata) {
-  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
-
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
+  {
+    // Mess up the file so it fails decoding.
+    const auto file_path =
+        SeaPenWallpaperManager::GetInstance()->GetFilePathForImageId(
+            GetTestAccountId(), kSeaPenId1);
+    std::string data;
+    ASSERT_TRUE(base::ReadFileToString(file_path, &data));
+    // Cut off the last half of the data.
+    data.erase(data.begin() + data.length() / 2);
+    ASSERT_TRUE(base::WriteFile(file_path, data));
+  }
 
   base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
   sea_pen_provider_remote()->GetRecentSeaPenImages(
@@ -625,44 +603,11 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   EXPECT_THAT(recent_images,
               testing::ContainerEq(std::vector<uint32_t>({kSeaPenId1})));
 
-  test_wallpaper_controller()->set_sea_pen_metadata(
-      /*metadata=*/"invalid format metadata");
-
   base::test::TestFuture<mojom::RecentSeaPenThumbnailDataPtr>
       thumbnail_info_future;
   sea_pen_provider_remote()->GetRecentSeaPenImageThumbnail(
       recent_images[0], thumbnail_info_future.GetCallback());
-
-  GURL url(thumbnail_info_future.Get()->url);
-  EXPECT_FALSE(url.is_empty());
-  EXPECT_FALSE(thumbnail_info_future.Get()->image_info);
-}
-
-TEST_F(PersonalizationAppSeaPenProviderImplTest,
-       GetRecentSeaPenImageThumbnailWithMissingFieldMetadata) {
-  SetUpProfileForTesting(kFakeTestEmail, GetTestAccountId());
-
-  CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
-
-  base::test::TestFuture<const std::vector<uint32_t>&> recent_images_future;
-  sea_pen_provider_remote()->GetRecentSeaPenImages(
-      recent_images_future.GetCallback());
-
-  std::vector<uint32_t> recent_images = recent_images_future.Take();
-  EXPECT_THAT(recent_images,
-              testing::ContainerEq(std::vector<uint32_t>({kSeaPenId1})));
-
-  test_wallpaper_controller()->set_sea_pen_metadata(
-      /*metadata=*/R"({"creation_time":"13349580387513653"})");
-
-  base::test::TestFuture<mojom::RecentSeaPenThumbnailDataPtr>
-      thumbnail_info_future;
-  sea_pen_provider_remote()->GetRecentSeaPenImageThumbnail(
-      recent_images[0], thumbnail_info_future.GetCallback());
-
-  GURL url(thumbnail_info_future.Get()->url);
-  EXPECT_FALSE(url.is_empty());
-  EXPECT_FALSE(thumbnail_info_future.Get()->image_info);
+  EXPECT_TRUE(thumbnail_info_future.Take().is_null());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,

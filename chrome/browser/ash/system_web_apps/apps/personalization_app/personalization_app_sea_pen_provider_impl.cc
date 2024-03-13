@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -59,26 +58,13 @@ void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImagesInternal(
 }
 
 void PersonalizationAppSeaPenProviderImpl::
-    GetRecentSeaPenImageThumbnailInternal(const uint32_t id,
-                                          DecodeImageCallback callback) {
+    GetRecentSeaPenImageThumbnailInternal(
+        const uint32_t id,
+        SeaPenWallpaperManager::GetImageAndMetadataCallback callback) {
   auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
   DCHECK(sea_pen_wallpaper_manager);
-  image_util::DecodeImageFile(
-      base::BindOnce(
-          &PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageInfo,
-          weak_ptr_factory_.GetWeakPtr(), id, std::move(callback)),
-      sea_pen_wallpaper_manager->GetFilePathForImageId(GetAccountId(profile_),
-                                                       id));
-}
-
-void PersonalizationAppSeaPenProviderImpl::GetRecentSeaPenImageInfo(
-    const uint32_t id,
-    DecodeImageCallback callback,
-    const gfx::ImageSkia& image) {
-  ash::WallpaperController* wallpaper_controller = WallpaperController::Get();
-  DCHECK(wallpaper_controller);
-  wallpaper_controller->GetSeaPenMetadata(
-      GetAccountId(profile_), id, base::BindOnce(std::move(callback), image));
+  sea_pen_wallpaper_manager->GetImageAndMetadata(GetAccountId(profile_), id,
+                                                 std::move(callback));
 }
 
 void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(
