@@ -3421,42 +3421,6 @@
           'isolated_scripts': 'wpt_tests_ios',
         },
       },
-      # ios16-beta-sim compiles with xcode version n-1, but
-      # runs testers with xcode n during an xcode roll.
-      'ios16-beta-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_13_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_15_beta',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios16_beta_simulator_tests'
-        },
-      },
-      # ios16-sdk-sim compiles with xcode version n, and runs
-      # testers with xcode n during an xcode roll.
-      'ios16-sdk-simulator': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_14_arm64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_15_beta',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios16_sdk_simulator_tests'
-        },
-      },
       'ios17-beta-simulator': {
         'additional_compile_targets': [
           'all',
@@ -3492,6 +3456,42 @@
         ],
         'test_suites': {
           'isolated_scripts': 'ios17_sdk_simulator_tests'
+        },
+      },
+      # ios18-beta-sim compiles with xcode version n-1, but
+      # runs testers with xcode n during an xcode roll.
+      'ios18-beta-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_13_arm64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_15_beta',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios18_beta_simulator_tests'
+        },
+      },
+      # ios18-sdk-sim compiles with xcode version n, and runs
+      # testers with xcode n during an xcode roll.
+      'ios18-sdk-simulator': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_14_arm64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_15_beta',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios18_sdk_simulator_tests'
         },
       },
       'linux-annotator-rel': {

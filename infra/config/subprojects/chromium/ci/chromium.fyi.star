@@ -2235,7 +2235,7 @@ fyi_ios_builder(
 )
 
 fyi_ios_builder(
-    name = "ios16-beta-simulator",
+    name = "ios18-beta-simulator",
     schedule = "0 0,4,8,12,16,20 * * *",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -2266,13 +2266,13 @@ fyi_ios_builder(
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "iOS|iOS16",
-        short_name = "ios16",
+        category = "iOS|iOS18",
+        short_name = "ios18",
     ),
 )
 
 fyi_ios_builder(
-    name = "ios16-sdk-simulator",
+    name = "ios18-sdk-simulator",
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(
@@ -2303,8 +2303,8 @@ fyi_ios_builder(
     os = os.MAC_14,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "iOS|iOS16",
-        short_name = "sdk16",
+        category = "iOS|iOS18",
+        short_name = "sdk18",
     ),
     xcode = xcode.x15betabots,
 )

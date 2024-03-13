@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/ios16-sdk-simulator/gn-args.json"
+        "infra/config/generated/builders/try/ios18-sdk-simulator/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "ios16-sdk-simulator",
+              "builder": "ios18-sdk-simulator",
               "project": "chromium"
             },
             "builder_spec": {
@@ -36,23 +36,25 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "ios16-sdk-simulator",
+          "builder": "ios18-sdk-simulator",
           "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "ios16-sdk-simulator",
-          "group": "tryserver.chromium.mac"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 250,
+    "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",
     "scandeps_server": true
+  },
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_profiler": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "project": "rbe-chromium-untrusted"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -61,7 +63,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
-  "recipe": "chromium",
+  "builder_group": "tryserver.chromium.mac",
+  "recipe": "chromium_trybot",
   "xcode_build_version": "15e204a"
 }
