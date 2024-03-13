@@ -76,8 +76,7 @@ struct BitField {
 // unrelated to BRP.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
  public:
-  // This class holds an atomic 32 bits field: `count_`. It holds following
-  // values:
+  // This class holds an atomic 32 bits field: `count_`. It holds 4 values:
   //
   // bits   name                   description
   // -----  ---------------------  ----------------------------------------
@@ -89,14 +88,18 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   //                                 `ReleaseFromAllocator()`, and if not we
   //                                 have a double-free.
   //
-  // 1-30   ptr_count              Number of raw_ptr<T>.
+  // 1-29   ptr_count              Number of raw_ptr<T>.
   //                               - Increased in Acquire()
   //                               - Decreased in Release()
   //
+  // 30     request_quarantine     When set, PA will quarantine the memory in
+  //                               Scheduler-Loop quarantine.
+  //                               It also extends quarantine duration when
+  //                               set after being quarantined.
   // 31     needs_mac11_malloc_    Whether malloc_size() return value needs to
   //          size_hack            be adjusted for this allocation.
   //
-  // On `BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)` builds, this holds two more
+  // On `BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)` builds, it holds two more
   // entries in total of 64 bits.
   //
   // bits   name                   description
@@ -107,8 +110,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // 32     dangling_detected      A dangling raw_ptr<> has been detected.
   // 33     needs_mac11_malloc_
   //          size_hack
+  // 34     request_quarantine
   //
-  // 34-63  unprotected_ptr_count  Number of
+  // 35-63  unprotected_ptr_count  Number of
   //                               raw_ptr<T, DisableDanglingPtrDetection>
   //                               - Increased in AcquireFromUnprotectedPtr().
   //                               - Decreased in ReleaseFromUnprotectedPtr().
@@ -127,7 +131,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   using CountType = uint32_t;
   static constexpr CountType kMemoryHeldByAllocatorBit =
       BitField<CountType>::Bit(0);
-  static constexpr CountType kPtrCountMask = BitField<CountType>::Mask(1, 30);
+  static constexpr CountType kPtrCountMask = BitField<CountType>::Mask(1, 29);
+  static constexpr CountType kRequestQuarantineBit =
+      BitField<CountType>::Bit(30);
   static constexpr CountType kNeedsMac11MallocSizeHackBit =
       BitField<CountType>::Bit(31);
   static constexpr CountType kDanglingRawPtrDetectedBit =
@@ -142,14 +148,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
       BitField<CountType>::Bit(32);
   static constexpr auto kNeedsMac11MallocSizeHackBit =
       BitField<CountType>::Bit(33);
+  static constexpr CountType kRequestQuarantineBit =
+      BitField<CountType>::Bit(34);
   static constexpr auto kUnprotectedPtrCountMask =
-      BitField<CountType>::Mask(34, 63);
+      BitField<CountType>::Mask(35, 63);
 #endif  // !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
   // Quick check to assert these masks do not overlap.
   static_assert((kMemoryHeldByAllocatorBit + kPtrCountMask +
                  kUnprotectedPtrCountMask + kDanglingRawPtrDetectedBit +
-                 kNeedsMac11MallocSizeHackBit) ==
+                 kRequestQuarantineBit + kNeedsMac11MallocSizeHackBit) ==
                 std::numeric_limits<CountType>::max());
 
   static constexpr auto kPtrInc =
@@ -298,6 +306,24 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
       partition_alloc::internal::UnretainedDanglingRawPtrDetected(
           reinterpret_cast<uintptr_t>(this));
     }
+  }
+
+  // Request to quarantine this allocation. The request might be ignored if
+  // the allocation is already freed.
+  PA_ALWAYS_INLINE void SetQuarantineRequest() {
+    CountType old_count =
+        count_.fetch_or(kRequestQuarantineBit, std::memory_order_relaxed);
+    // This bit cannot be used after the memory is freed.
+    PA_DCHECK(old_count & kMemoryHeldByAllocatorBit);
+  }
+
+  // Get and clear out quarantine request.
+  PA_ALWAYS_INLINE bool PopQuarantineRequest() {
+    CountType old_count =
+        count_.fetch_and(~kRequestQuarantineBit, std::memory_order_acq_rel);
+    // This bit cannot be used after the memory is freed.
+    PA_DCHECK(old_count & kMemoryHeldByAllocatorBit);
+    return old_count & kRequestQuarantineBit;
   }
 
   // GWP-ASan slots are assigned an extra reference (note `kPtrInc` below) to
