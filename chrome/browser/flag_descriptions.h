@@ -306,8 +306,8 @@ extern const char kAutofillGranularFillingAvailableDescription[];
 extern const char kAutofillForUnclassifiedFieldsAvailableName[];
 extern const char kAutofillForUnclassifiedFieldsAvailableDescription[];
 
-extern const char kAutofillEnableIbanAndroidBottomSheetName[];
-extern const char kAutofillEnableIbanAndroidBottomSheetDescription[];
+extern const char kAutofillEnableLocalIbanName[];
+extern const char kAutofillEnableLocalIbanDescription[];
 
 extern const char kAutofillEnableNewCardArtAndNetworkImagesName[];
 extern const char kAutofillEnableNewCardArtAndNetworkImagesDescription[];

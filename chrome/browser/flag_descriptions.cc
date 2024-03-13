@@ -513,10 +513,11 @@ const char kAutofillForUnclassifiedFieldsAvailableDescription[] =
     "When enabled, address and payments autofill can be triggered on "
     "unclassified fields via the Chrome context menu.";
 
-const char kAutofillEnableIbanAndroidBottomSheetName[] =
-    "Enable Autofill save IBAN bottom sheet";
-const char kAutofillEnableIbanAndroidBottomSheetDescription[] =
-    "When enabled, the bottom sheet for IBAN save will be displayed.";
+const char kAutofillEnableLocalIbanName[] =
+    "Enable local IBAN save and autofilling";
+const char kAutofillEnableLocalIbanDescription[] =
+    "When enabled, saving and autofilling local IBANs (International Bank "
+    "Account Numbers) will be offered.";
 
 const char kAutofillEnableNewCardArtAndNetworkImagesName[] =
     "Enable showing new card art and network images";

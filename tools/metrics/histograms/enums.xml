@@ -21681,6 +21681,7 @@ from previous Chrome versions.
   <int value="383974622" label="CrosPrivacyHubAppPermissionsV2:disabled"/>
   <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
+  <int value="384927690" label="AutofillEnableLocalIban:disabled"/>
   <int value="385339273" label="TextBasedAudioDescription:disabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>
   <int value="386138870" label="DesktopPWAsOmniboxInstall:enabled"/>
@@ -22324,7 +22325,6 @@ from previous Chrome versions.
   <int value="685571935"
       label="FencedFramesCrossOriginAutomaticBeacons:disabled"/>
   <int value="685916283" label="enable-zip-archiver-on-file-manager"/>
-  <int value="686830244" label="AutofillEnableIbanAndroidBottomSheet:disabled"/>
   <int value="686929809" label="BorealisWebUIInstaller:enabled"/>
   <int value="687838135" label="ThirdPartyDoodles:disabled"/>
   <int value="687967510" label="LacrosNonSyncingProfiles:disabled"/>
@@ -23854,6 +23854,7 @@ from previous Chrome versions.
   <int value="1386300777"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:disabled"/>
   <int value="1387356699" label="PolicyAtomicGroup:enabled"/>
+  <int value="1387497264" label="AutofillEnableLocalIban:enabled"/>
   <int value="1387925207" label="MlRelevanceScoring:enabled"/>
   <int value="1388323853" label="ModifierSplit:enabled"/>
   <int value="1388726032" label="ChromeOSAmbientModeThrottleAnimation:enabled"/>
@@ -24910,7 +24911,6 @@ from previous Chrome versions.
   <int value="1855184563"
       label="EarlyDocumentSwapForBackForwardTransitions:disabled"/>
   <int value="1855524566" label="allow-insecure-websocket-from-https-origin"/>
-  <int value="1855558635" label="AutofillEnableIbanAndroidBottomSheet:enabled"/>
   <int value="1855804266" label="ShoppingIconColorVariant:enabled"/>
   <int value="1856270952" label="AutofillAssistantProactiveHelp:disabled"/>
   <int value="1857000695" label="SendWebUIJavaScriptErrorReports:disabled"/>

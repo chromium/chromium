@@ -639,14 +639,14 @@
     "expiry_milestone": 130
   },
   {
-    "name": "autofill-enable-iban-android-bottom-sheet",
-    "owners": [ "jamessun@google.com", "qihuizhao@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "autofill-enable-landmark",
     "owners": [ "sebsg@chromium.org" ],
     "expiry_milestone": 126
+  },
+  {
+    "name": "autofill-enable-local-iban",
+    "owners": [ "qihuizhao@google.com", "averina@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 130
   },
   {
     "name": "autofill-enable-manual-fallback-iph",

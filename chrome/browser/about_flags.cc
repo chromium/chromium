@@ -10837,12 +10837,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-iban-android-bottom-sheet",
-     flag_descriptions::kAutofillEnableIbanAndroidBottomSheetName,
-     flag_descriptions::kAutofillEnableIbanAndroidBottomSheetDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableIbanAndroidBottomSheet)},
+    {"autofill-enable-local-iban",
+     flag_descriptions::kAutofillEnableLocalIbanName,
+     flag_descriptions::kAutofillEnableLocalIbanDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableLocalIban)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

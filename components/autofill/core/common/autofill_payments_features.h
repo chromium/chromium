@@ -26,7 +26,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableFIDOProgressDialog);
 BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kAutofillEnableIbanAndroidBottomSheet);
+BASE_DECLARE_FEATURE(kAutofillEnableLocalIban);
 #endif
 
 BASE_DECLARE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest);

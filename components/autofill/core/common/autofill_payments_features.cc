@@ -105,9 +105,10 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// When enabled, the bottom sheet for IBAN save will be displayed on Android.
-BASE_FEATURE(kAutofillEnableIbanAndroidBottomSheet,
-             "AutofillEnableIbanAndroidBottomSheet",
+// When enabled, saving and autofilling local IBANs (International Bank Account
+// Numbers) will be offered.
+BASE_FEATURE(kAutofillEnableLocalIban,
+             "AutofillEnableLocalIban",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
