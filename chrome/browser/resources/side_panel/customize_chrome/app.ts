@@ -196,7 +196,7 @@ export class AppElement extends AppElementBase {
 
   private onWritingButtonClick_() {
     this.pageHandler_.openChromeWebStoreCollectionPage(
-        ChromeWebStoreCollection.kWrittingEssentials);
+        ChromeWebStoreCollection.kWritingEssentials);
   }
 
   private onProductivityButtonClick_() {

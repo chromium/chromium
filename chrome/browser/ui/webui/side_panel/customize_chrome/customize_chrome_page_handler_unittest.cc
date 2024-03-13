@@ -701,8 +701,8 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCategoryPage) {
       side_panel::mojom::ChromeWebStoreCategory::kWorkflowPlanning);
   ASSERT_EQ(1, browser().tab_strip_model()->count());
   ASSERT_EQ(
-      "https://chromewebstore.google.com/category/extensions/productivity/"
-      "workflow",
+      "https://chromewebstore.google.com/category/extensions/"
+      "productivity/workflow?utm_source=chromeSidebarExtensionCards",
       browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
 
@@ -715,10 +715,12 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCategoryPage) {
 TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreCollectionPage) {
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
   handler().OpenChromeWebStoreCollectionPage(
-      side_panel::mojom::ChromeWebStoreCollection::kWrittingEssentials);
+      side_panel::mojom::ChromeWebStoreCollection::kWritingEssentials);
   ASSERT_EQ(1, browser().tab_strip_model()->count());
-  ASSERT_EQ("https://chromewebstore.google.com/collection/writing_essentials",
-            browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  ASSERT_EQ(
+      "https://chromewebstore.google.com/collection/"
+      "writing_essentials?utm_source=chromeSidebarExtensionCards",
+      browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
 
   ASSERT_EQ(histogram_tester().GetBucketCount(
@@ -731,8 +733,10 @@ TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStoreHomePage) {
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
   handler().OpenChromeWebStoreHomePage();
   ASSERT_EQ(1, browser().tab_strip_model()->count());
-  ASSERT_EQ("https://chromewebstore.google.com/",
-            browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  ASSERT_EQ(
+      "https://"
+      "chromewebstore.google.com/?utm_source=chromeSidebarExtensionCards",
+      browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
   histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
 
   ASSERT_EQ(histogram_tester().GetBucketCount("NewTabPage.ChromeWebStoreOpen",

@@ -94,7 +94,7 @@ enum CustomizeChromeSection {
 };
 
 enum ChromeWebStoreCollection {
-  kWrittingEssentials,
+  kWritingEssentials,
 };
 
 enum ChromeWebStoreCategory {

@@ -330,7 +330,9 @@ void CustomizeChromePageHandler::OpenChromeWebStoreCategoryPage(
   }
 
   NavigateParams navigate_params(
-      profile_, GURL("https://chromewebstore.google.com/category/" + path),
+      profile_,
+      GURL("https://chromewebstore.google.com/category/" + path +
+           "?utm_source=chromeSidebarExtensionCards"),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -343,14 +345,16 @@ void CustomizeChromePageHandler::OpenChromeWebStoreCollectionPage(
   std::string path;
   NtpChromeWebStoreOpen page;
   switch (collection) {
-    case side_panel::mojom::ChromeWebStoreCollection::kWrittingEssentials:
+    case side_panel::mojom::ChromeWebStoreCollection::kWritingEssentials:
       path = "writing_essentials";
       page = NtpChromeWebStoreOpen::kWritingEssentialsCollectionPage;
       break;
   }
 
   NavigateParams navigate_params(
-      profile_, GURL("https://chromewebstore.google.com/collection/" + path),
+      profile_,
+      GURL("https://chromewebstore.google.com/collection/" + path +
+           "?utm_source=chromeSidebarExtensionCards"),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -359,9 +363,11 @@ void CustomizeChromePageHandler::OpenChromeWebStoreCollectionPage(
 }
 
 void CustomizeChromePageHandler::OpenChromeWebStoreHomePage() {
-  NavigateParams navigate_params(profile_,
-                                 GURL("https://chromewebstore.google.com/"),
-                                 ui::PAGE_TRANSITION_LINK);
+  NavigateParams navigate_params(
+      profile_,
+      GURL("https://"
+           "chromewebstore.google.com/?utm_source=chromeSidebarExtensionCards"),
+      ui::PAGE_TRANSITION_LINK);
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
