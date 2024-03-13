@@ -742,6 +742,8 @@ bool V4L2StatefulVideoDecoder::InitializeCAPTUREQueue() {
 
   TryAndEnqueueOUTPUTQueueBuffers();
 
+  RearmCAPTUREQueueMonitoring();
+
   return true;
 }
 
