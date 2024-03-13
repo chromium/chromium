@@ -97,6 +97,7 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_decoration_image_size">36dp</dimen>
     <dimen name="omnibox_suggestion_icon_area_size">56dp</dimen>
     <dimen name="omnibox_suggestion_icon_area_size_modern">52dp</dimen>
+    <dimen name="omnibox_suggestion_icon_area_size_large">72dp</dimen>
 
     <dimen name="omnibox_suggestion_action_button_width">48dp</dimen>
     <dimen name="omnibox_suggestion_start_padding">0dp</dimen>

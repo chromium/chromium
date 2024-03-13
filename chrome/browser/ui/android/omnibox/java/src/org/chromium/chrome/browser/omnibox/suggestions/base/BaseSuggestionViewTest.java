@@ -45,6 +45,7 @@ public class BaseSuggestionViewTest {
     private int mSemicompactSuggestionViewHeight;
     private int mCompactSuggestionViewHeight;
     private int mDecorationIconWidthPx;
+    private int mLargeDecorationIconWidthPx;
 
     private BaseSuggestionViewForTest mView;
     private Activity mActivity;
@@ -116,6 +117,10 @@ public class BaseSuggestionViewTest {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
+        mLargeDecorationIconWidthPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size_large);
     }
 
     /**
@@ -604,5 +609,31 @@ public class BaseSuggestionViewTest {
                 mSemicompactSuggestionViewHeight, suggestionViewForTest.mContentHeightPx);
         Assert.assertEquals(
                 mCompactSuggestionViewHeight, suggestionViewForTest.mCompactContentHeightPx);
+    }
+
+    @Test
+    public void layout_LtrLargeDecoration() {
+        // Expectations (edge to edge):
+        //
+        // +---+-------------------+
+        // | %%% |CONTENT          |
+        // +---+-------------------+
+        // <- giveSuggestionWidth ->
+        //
+
+        final int giveSuggestionWidth = 250;
+        final int giveContentHeight = 15;
+        final int paddingStart = 11;
+
+        mView.setPaddingRelative(paddingStart, 0, 0, 0);
+        View decorationView = mView.getChildAt(0);
+        decorationView.setLayoutParams(SuggestionLayout.LayoutParams.forLargeDecorationIcon());
+        executeLayoutTest(giveSuggestionWidth, giveContentHeight, View.LAYOUT_DIRECTION_LTR);
+        verifyViewLayout(
+                decorationView,
+                paddingStart + mLargeDecorationIconWidthPx / 2,
+                mSemicompactSuggestionViewHeight / 2,
+                paddingStart + mLargeDecorationIconWidthPx / 2,
+                mSemicompactSuggestionViewHeight);
     }
 }
