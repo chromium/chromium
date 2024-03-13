@@ -177,6 +177,11 @@ base::FilePath TestCaptureModeDelegate::GetLinuxFilesPath() const {
   return fake_linux_files_path_.GetPath();
 }
 
+TestCaptureModeDelegate::PolicyCapturePath
+TestCaptureModeDelegate::GetPolicyCapturePath() const {
+  return {base::FilePath(), CapturePathEnforcement::kNone};
+}
+
 std::unique_ptr<RecordingOverlayView>
 TestCaptureModeDelegate::CreateRecordingOverlayView() const {
   return std::make_unique<TestRecordingOverlayView>();

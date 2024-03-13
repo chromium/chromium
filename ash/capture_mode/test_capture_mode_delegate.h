@@ -118,6 +118,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool GetDriveFsMountPointPath(base::FilePath* result) const override;
   base::FilePath GetAndroidFilesPath() const override;
   base::FilePath GetLinuxFilesPath() const override;
+  PolicyCapturePath GetPolicyCapturePath() const override;
   std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
       const override;
   void ConnectToVideoSourceProvider(

@@ -380,6 +380,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kVirtualKeyboardSmartVisibilityEnabled,
                                 true);
 
+  registry->RegisterStringPref(prefs::kCaptureModePolicySavePath,
+                               std::string());
+
   std::string current_timezone_id;
   if (CrosSettings::IsInitialized()) {
     // In unit tests CrosSettings is not always initialized.

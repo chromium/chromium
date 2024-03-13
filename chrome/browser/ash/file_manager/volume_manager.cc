@@ -612,6 +612,11 @@ void VolumeManager::RemoveVolumeForTesting(
                                            file_system_type));
 }
 
+void VolumeManager::RemoveVolumeForTesting(const std::string& volume_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DoUnmountEvent(volume_id);
+}
+
 void VolumeManager::OnFileSystemMounted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

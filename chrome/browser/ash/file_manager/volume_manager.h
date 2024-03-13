@@ -191,6 +191,7 @@ class VolumeManager : public KeyedService,
       const base::FilePath& device_path = base::FilePath(),
       const std::string& drive_label = "",
       const std::string& file_system_type = "");
+  void RemoveVolumeForTesting(const std::string& volume_id);
 
   // DriveIntegrationService::Observer implementation.
   void OnFileSystemMounted() override;

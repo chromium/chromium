@@ -1989,6 +1989,11 @@ inline constexpr char kCaptureModeEducationShownCount[] =
 inline constexpr char kCaptureModeEducationLastShown[] =
     "ash.capture_mode.capture_mode_education_last_shown";
 
+// A string pref that is set by enterprise policy when admin forces or
+// recommends a custom path to save screen captures.
+inline constexpr char kCaptureModePolicySavePath[] =
+    "ash.capture_mode.policy_save_path";
+
 // A dictionary that stores app icons' light vibrant colors.
 inline constexpr char kAshAppIconLightVibrantColorCache[] =
     "ash.app_icon_light_vibrant_color_cache";

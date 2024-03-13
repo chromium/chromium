@@ -7,15 +7,34 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
+
+namespace {
+
+MATCHER_P(PrefNotSet, name, "") {
+  return !arg->GetValue(name, nullptr);
+}
+
+MATCHER_P2(PrefHasValue, name, value, "") {
+  base::Value* pref_value = nullptr;
+  if (arg->GetValue(name, &pref_value) && value == *pref_value) {
+    return true;
+  }
+  *result_listener << *pref_value;
+  return false;
+}
+
+}  // namespace
 
 class ScreenCaptureLocationPolicyHandlerTest : public testing::Test {
  protected:
@@ -28,6 +47,9 @@ TEST_F(ScreenCaptureLocationPolicyHandlerTest, Default) {
   PolicyErrorMap errors;
   EXPECT_TRUE(handler_.CheckPolicySettings(policy_, &errors));
   EXPECT_EQ(0u, errors.size());
+
+  handler_.ApplyPolicySettings(policy_, &prefs_);
+  EXPECT_THAT(&prefs_, PrefNotSet(ash::prefs::kCaptureModePolicySavePath));
 }
 
 TEST_F(ScreenCaptureLocationPolicyHandlerTest, SetPolicyInvalid) {
@@ -38,9 +60,11 @@ TEST_F(ScreenCaptureLocationPolicyHandlerTest, SetPolicyInvalid) {
   PolicyErrorMap errors;
   EXPECT_FALSE(handler_.CheckPolicySettings(policy_, &errors));
   EXPECT_EQ(1u, errors.size());
-
   constexpr char16_t kExpected[] = u"Expected string value.";
   EXPECT_EQ(kExpected, errors.GetErrorMessages(key::kScreenCaptureLocation));
+
+  handler_.ApplyPolicySettings(policy_, &prefs_);
+  EXPECT_THAT(&prefs_, PrefNotSet(ash::prefs::kCaptureModePolicySavePath));
 }
 
 class ScreenCaptureLocationPolicyHandlerTestWithParam
@@ -52,8 +76,13 @@ TEST_P(ScreenCaptureLocationPolicyHandlerTestWithParam, SetPolicyValid) {
   policy_.Set(key::kScreenCaptureLocation, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(in), nullptr);
   PolicyErrorMap errors;
+
   EXPECT_TRUE(handler_.CheckPolicySettings(policy_, &errors));
   EXPECT_EQ(0u, errors.size());
+
+  handler_.ApplyPolicySettings(policy_, &prefs_);
+  EXPECT_THAT(&prefs_,
+              PrefHasValue(ash::prefs::kCaptureModePolicySavePath, in));
 }
 
 INSTANTIATE_TEST_SUITE_P(

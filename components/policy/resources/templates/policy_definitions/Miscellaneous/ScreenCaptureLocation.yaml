@@ -5,7 +5,7 @@ desc: |-
   Otherwise the user can't change it and the captures are always saved to the defined directory.
 
   The policy uses same format as <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME">DownloadDirectory</ph> policy
-  The location could be set to either local filesystem or <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> (with '${google_drive}' prefix) or <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> (with '${onedrive}' prefix).
+  The location could be set to either local filesystem or <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> (with '${google_drive}' prefix) or <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> (with '${microsoft_onedrive}' prefix).
   If the policy is set to empty string, it'll force the screen captures to be stored in the local "Downloads" directory.
   See a list of variables you can use ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).
 

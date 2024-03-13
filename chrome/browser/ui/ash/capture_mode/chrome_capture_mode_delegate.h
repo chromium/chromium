@@ -66,6 +66,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   bool GetDriveFsMountPointPath(base::FilePath* path) const override;
   base::FilePath GetAndroidFilesPath() const override;
   base::FilePath GetLinuxFilesPath() const override;
+  PolicyCapturePath GetPolicyCapturePath() const override;
   std::unique_ptr<ash::RecordingOverlayView> CreateRecordingOverlayView()
       const override;
   void ConnectToVideoSourceProvider(

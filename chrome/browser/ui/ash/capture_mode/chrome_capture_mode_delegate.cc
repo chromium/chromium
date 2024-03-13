@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#include "chrome/browser/ash/policy/local_user_files/file_location_utils.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -243,6 +245,24 @@ base::FilePath ChromeCaptureModeDelegate::GetAndroidFilesPath() const {
 base::FilePath ChromeCaptureModeDelegate::GetLinuxFilesPath() const {
   return file_manager::util::GetCrostiniMountDirectory(
       ProfileManager::GetActiveUserProfile());
+}
+
+ChromeCaptureModeDelegate::PolicyCapturePath
+ChromeCaptureModeDelegate::GetPolicyCapturePath() const {
+  if (auto* profile = ProfileManager::GetActiveUserProfile()) {
+    auto* pref = profile->GetPrefs()->FindPreference(
+        ash::prefs::kCaptureModePolicySavePath);
+    if (pref->IsManaged()) {
+      return {policy::local_user_files::ResolvePath(pref->GetValue()->GetString()),
+              CapturePathEnforcement::kManaged};
+    }
+    if (pref->IsRecommended()) {
+      return {policy::local_user_files::ResolvePath(
+                  pref->GetRecommendedValue()->GetString()),
+              CapturePathEnforcement::kRecommended};
+    }
+  }
+  return {base::FilePath(), CapturePathEnforcement::kNone};
 }
 
 std::unique_ptr<ash::RecordingOverlayView>

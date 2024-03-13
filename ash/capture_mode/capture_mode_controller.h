@@ -220,6 +220,8 @@ class ASH_EXPORT CaptureModeController
   // This can only be called when user is logged in.
   void SetCustomCaptureFolder(const base::FilePath& path);
 
+  // Returns the currently saved custom folder even if it's not being currently
+  // used.
   base::FilePath GetCustomCaptureFolder() const;
 
   // Returns the folder in which all taken screenshots and videos will be saved.

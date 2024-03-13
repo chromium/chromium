@@ -169,6 +169,7 @@ bool IsVideoFileExtensionSupported(const base::FilePath& video_file_path) {
 base::FilePath SelectFilePathForCapturedFile(
     const base::FilePath& current_path,
     const base::FilePath& fallback_path) {
+  // TODO(b/323146997): Revisit the behavior if enforced by policy.
   if (base::PathExists(current_path.DirName()))
     return current_path;
   DCHECK(base::PathExists(fallback_path.DirName()));
@@ -727,8 +728,17 @@ void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
 }
 
 base::FilePath CaptureModeController::GetCustomCaptureFolder() const {
-  const auto custom_path =
+  base::FilePath custom_path =
       GetActiveUserPrefService()->GetFilePath(kCustomCapturePathPrefName);
+  const auto policy_path = delegate_->GetPolicyCapturePath();
+  // If admin forced or recommended and there is no user chosen value - use it.
+  if (policy_path.enforcement ==
+          CaptureModeDelegate::CapturePathEnforcement::kManaged ||
+      (custom_path.empty() &&
+       policy_path.enforcement ==
+           CaptureModeDelegate::CapturePathEnforcement::kRecommended)) {
+    custom_path = policy_path.path;
+  }
   return custom_path != delegate_->GetUserDefaultDownloadsFolder()
              ? custom_path
              : base::FilePath();
@@ -743,6 +753,15 @@ CaptureModeController::GetCurrentCaptureFolder() const {
   auto* pref_service = session_controller->GetActivePrefService();
   const auto default_downloads_folder =
       delegate_->GetUserDefaultDownloadsFolder();
+  const auto policy_path = delegate_->GetPolicyCapturePath();
+  // If admin forced - use it.
+  if (policy_path.enforcement ==
+      CaptureModeDelegate::CapturePathEnforcement::kManaged) {
+    return {policy_path.path,
+            /*is_default_downloads_folder=*/policy_path.path ==
+                default_downloads_folder};
+  }
+  // Otherwise use user chosen custom one, if present.
   if (pref_service &&
       !pref_service->GetBoolean(kUsesDefaultCapturePathPrefName)) {
     const auto custom_path =
@@ -753,7 +772,15 @@ CaptureModeController::GetCurrentCaptureFolder() const {
                   default_downloads_folder};
     }
   }
+  // Otherwise use the recommended by admin.
+  if (policy_path.enforcement ==
+      CaptureModeDelegate::CapturePathEnforcement::kRecommended) {
+    return {policy_path.path,
+            /*is_default_downloads_folder=*/policy_path.path ==
+                default_downloads_folder};
+  }
 
+  // By default - downloads folder.
   return {default_downloads_folder,
           /*is_default_downloads_folder=*/true};
 }
@@ -2232,6 +2259,7 @@ CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
     if (drive_root_path.IsParent(dir_path))
       return CaptureModeSaveToLocation::kDriveFolder;
   }
+  // TODO(b/323146997): Add cases for OneDrive.
   return CaptureModeSaveToLocation::kCustomizedFolder;
 }
 
