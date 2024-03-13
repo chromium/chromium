@@ -83,13 +83,16 @@ void SettingsWindowManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
-                                                     const GURL& gurl,
-                                                     int64_t display_id) {
+void SettingsWindowManager::ShowChromePageForProfile(
+    Profile* profile,
+    const GURL& gurl,
+    int64_t display_id,
+    apps::LaunchCallback callback) {
   // Use the original (non off-the-record) profile for settings unless
   // this is a guest session.
-  if (!profile->IsGuestSession() && profile->IsOffTheRecord())
+  if (!profile->IsGuestSession() && profile->IsOffTheRecord()) {
     profile = profile->GetOriginalProfile();
+  }
 
   // If this profile isn't allowed to create browser windows (e.g. the login
   // screen profile) then bail out. Neither the new SWA code path nor the legacy
@@ -98,6 +101,9 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
       Browser::CreationStatus::kOk) {
     LOG(ERROR) << "Unable to open settings for this profile, url "
                << gurl.spec();
+    if (callback) {
+      std::move(callback).Run(apps::LaunchResult(apps::State::kFailed));
+    }
     return;
   }
 
@@ -107,7 +113,8 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
     params.url = gurl;
     ash::LaunchSystemWebAppAsync(
         profile, ash::SystemWebAppType::SETTINGS, params,
-        std::make_unique<apps::WindowInfo>(display_id));
+        std::make_unique<apps::WindowInfo>(display_id),
+        callback ? std::make_optional(std::move(callback)) : std::nullopt);
     // SWA OS Settings don't use SettingsWindowManager to manage windows, don't
     // notify SettingsWindowObservers.
     return;
@@ -121,6 +128,9 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
         browser->tab_strip_model()->GetWebContentsAt(0);
     if (web_contents && web_contents->GetURL() == gurl) {
       browser->window()->Show();
+      if (callback) {
+        std::move(callback).Run(apps::LaunchResult(apps::State::kSuccess));
+      }
       return;
     }
 
@@ -128,6 +138,9 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
     params.window_action = NavigateParams::SHOW_WINDOW;
     params.user_gesture = true;
     Navigate(&params);
+    if (callback) {
+      std::move(callback).Run(apps::LaunchResult(apps::State::kSuccess));
+    }
     return;
   }
 
@@ -152,8 +165,13 @@ void SettingsWindowManager::ShowChromePageForProfile(Profile* profile,
                       static_cast<int>(ash::AppType::CHROME_APP));
   window->SetProperty(kOverrideWindowIconResourceIdKey, IDR_SETTINGS_LOGO_192);
 
-  for (SettingsWindowManagerObserver& observer : observers_)
+  for (SettingsWindowManagerObserver& observer : observers_) {
     observer.OnNewSettingsWindow(browser);
+  }
+
+  if (callback) {
+    std::move(callback).Run(apps::LaunchResult(apps::State::kSuccess));
+  }
 }
 
 void SettingsWindowManager::ShowOSSettings(Profile* profile,
@@ -165,7 +183,7 @@ void SettingsWindowManager::ShowOSSettings(Profile* profile,
                                            const std::string& sub_page,
                                            int64_t display_id) {
   ShowChromePageForProfile(profile, chrome::GetOSSettingsUrl(sub_page),
-                           display_id);
+                           display_id, /*callback=*/{});
 }
 
 void SettingsWindowManager::ShowOSSettings(

@@ -248,10 +248,11 @@ class TestSettingsWindowManager : public chrome::SettingsWindowManager {
  public:
   void ShowChromePageForProfile(Profile* profile,
                                 const GURL& gurl,
-                                int64_t display_id) override {
+                                int64_t display_id,
+                                apps::LaunchCallback callback) override {
     last_navigation_url_ = gurl;
-    chrome::SettingsWindowManager::ShowChromePageForProfile(profile, gurl,
-                                                            display_id);
+    chrome::SettingsWindowManager::ShowChromePageForProfile(
+        profile, gurl, display_id, std::move(callback));
   }
   const GURL& last_navigation_url() { return last_navigation_url_; }
 
