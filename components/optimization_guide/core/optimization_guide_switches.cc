@@ -323,27 +323,6 @@ bool LogPageContentAnnotationsValidationToConsole() {
   ;
 }
 
-std::optional<std::vector<std::string>>
-PageContentAnnotationsValidationInputForType(AnnotationType type) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
-  std::string value;
-  switch (type) {
-    case AnnotationType::kContentVisibility:
-      value = command_line->GetSwitchValueASCII(
-          kPageContentAnnotationsValidationContentVisibility);
-      break;
-    default:
-      break;
-  }
-  if (value.empty()) {
-    return std::nullopt;
-  }
-
-  return base::SplitString(value, ",", base::KEEP_WHITESPACE,
-                           base::SPLIT_WANT_ALL);
-}
-
 std::optional<base::FilePath> PageContentAnnotationsValidationWriteToFile() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kPageContentAnnotationsValidationWriteToFile)) {

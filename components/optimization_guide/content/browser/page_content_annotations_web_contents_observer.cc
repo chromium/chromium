@@ -9,10 +9,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -45,18 +45,12 @@ PageContentAnnotationsWebContentsObserver::
           *web_contents),
       template_url_service_(template_url_service),
       page_content_annotations_service_(page_content_annotations_service),
-      salient_image_retriever_(
-          page_content_annotations_service_->optimization_guide_logger()),
       no_state_prefetch_manager_(no_state_prefetch_manager) {
   DCHECK(page_content_annotations_service_);
 }
 
 PageContentAnnotationsWebContentsObserver::
     ~PageContentAnnotationsWebContentsObserver() = default;
-
-void PageContentAnnotationsWebContentsObserver::DidStopLoading() {
-  salient_image_retriever_.GetOgImage(web_contents());
-}
 
 void PageContentAnnotationsWebContentsObserver::
     DocumentOnLoadCompletedInPrimaryMainFrame() {

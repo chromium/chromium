@@ -60,6 +60,7 @@ include_rules = [
   "+components/offline_pages/core",
   "+components/omnibox/browser",
   "+components/optimization_guide",
+  "+components/page_content_annotations/core",
   "+components/optimization_guide/content",
   "+components/optimization_guide/core",
   "+components/os_crypt/async",

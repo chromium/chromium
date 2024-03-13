@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/optimization_guide/content/browser/salient_image_retriever.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -50,15 +49,11 @@ class PageContentAnnotationsWebContentsObserver
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
-  void DidStopLoading() override;
-
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<TemplateURLService> template_url_service_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
-
-  SalientImageRetriever salient_image_retriever_;
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<prerender::NoStatePrefetchManager> no_state_prefetch_manager_;

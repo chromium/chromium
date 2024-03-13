@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/optimization_guide/content/browser/test_page_content_annotator.h"
+#include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"

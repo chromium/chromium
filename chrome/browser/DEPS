@@ -234,6 +234,7 @@ include_rules = [
   "+components/omnibox/browser",
   "+components/onc",
   "+components/open_from_clipboard",
+  "+components/page_content_annotations/core",
   "+components/optimization_guide/content",
   "+components/optimization_guide",
   "+components/optimization_guide/optimization_guide_internals",

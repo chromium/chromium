@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 
 #include <utility>
 
@@ -22,7 +22,7 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
+#include "components/page_content_annotations/core/page_content_annotations_validator.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -39,7 +39,7 @@
 #include "third_party/omnibox_proto/types.pb.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
+#include "components/page_content_annotations/core/page_content_annotations_model_manager.h"
 #endif
 
 namespace optimization_guide {

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
 
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "components/optimization_guide/content/browser/page_content_annotator.h"
+#include "components/page_content_annotations/core/page_content_annotator.h"
 #include "components/optimization_guide/core/model_info.h"
-#include "components/optimization_guide/core/page_content_annotation_job.h"
-#include "components/optimization_guide/core/page_content_annotations_common.h"
-#include "components/optimization_guide/core/page_visibility_model_handler.h"
+#include "components/page_content_annotations/core/page_content_annotation_job.h"
+#include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_visibility_model_handler.h"
 #include "net/base/priority_queue.h"
 
 namespace optimization_guide {
@@ -105,4 +105,4 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_

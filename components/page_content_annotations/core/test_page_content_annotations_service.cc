@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/test_page_content_annotations_service.h"
+#include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 
 namespace optimization_guide {

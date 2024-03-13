@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/page_content_annotations_model_manager.h"
+#include "components/page_content_annotations/core/page_content_annotations_model_manager.h"
 
 #include "base/containers/flat_map.h"
 #include "base/path_service.h"
@@ -11,12 +11,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -110,7 +110,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;

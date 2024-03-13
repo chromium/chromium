@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/page_content_annotations_validator.h"
+#include "components/page_content_annotations/core/page_content_annotations_validator.h"
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
+#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
-#include "components/optimization_guide/content/browser/page_content_annotator.h"
+#include "components/page_content_annotations/core/page_content_annotator.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_content_annotations_common.h"
 
 namespace optimization_guide {
 
@@ -59,6 +61,54 @@ void MaybeLogAnnotationResultToFile(
       base::BindOnce(&LogLinesToFileOnBackgroundSequence, *path, lines));
 }
 
+
+// Whether the page content annotation validation feature or command line flag
+// is enabled for the given annotation type.
+bool PageContentAnnotationValidationEnabledForType(AnnotationType type) {
+  if (base::FeatureList::IsEnabled(features::kPageContentAnnotationsValidation)) {
+    if (GetFieldTrialParamByFeatureAsBool(features::kPageContentAnnotationsValidation,
+                                          AnnotationTypeToString(type),
+                                          false)) {
+      return true;
+    }
+  }
+
+  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+  switch (type) {
+    case AnnotationType::kContentVisibility:
+      return cmd->HasSwitch(
+          switches::kPageContentAnnotationsValidationContentVisibility);
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  return false;
+}
+
+// Returns a set on inputs to run the validation on for the given |type|,
+// using comma separated input from the command line.
+std::optional<std::vector<std::string>>
+PageContentAnnotationsValidationInputForType(AnnotationType type) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  std::string value;
+  switch (type) {
+    case AnnotationType::kContentVisibility:
+      value = command_line->GetSwitchValueASCII(
+          switches::kPageContentAnnotationsValidationContentVisibility);
+      break;
+    default:
+      break;
+  }
+  if (value.empty()) {
+    return std::nullopt;
+  }
+
+  return base::SplitString(value, ",", base::KEEP_WHITESPACE,
+                           base::SPLIT_WANT_ALL);
+}
+
 }  // namespace
 
 PageContentAnnotationsValidator::~PageContentAnnotationsValidator() = default;
@@ -69,7 +119,7 @@ PageContentAnnotationsValidator::PageContentAnnotationsValidator(
   for (AnnotationType type : {
            AnnotationType::kContentVisibility,
        }) {
-    if (features::PageContentAnnotationValidationEnabledForType(type)) {
+    if (PageContentAnnotationValidationEnabledForType(type)) {
       enabled_annotation_types_.push_back(type);
       annotator_->RequestAndNotifyWhenModelAvailable(type, base::DoNothing());
     }
@@ -95,7 +145,7 @@ PageContentAnnotationsValidator::MaybeCreateAndStartTimer(
            AnnotationType::kContentVisibility,
        }) {
     enabled_for_any_type |=
-        features::PageContentAnnotationValidationEnabledForType(type);
+        PageContentAnnotationValidationEnabledForType(type);
   }
   if (!enabled_for_any_type) {
     return nullptr;
@@ -116,7 +166,7 @@ void PageContentAnnotationsValidator::Run() {
 std::vector<std::string> PageContentAnnotationsValidator::BuildInputsForType(
     AnnotationType type) {
   std::optional<std::vector<std::string>> cmd_line_input =
-      switches::PageContentAnnotationsValidationInputForType(type);
+      PageContentAnnotationsValidationInputForType(type);
   if (cmd_line_input) {
     return *cmd_line_input;
   }

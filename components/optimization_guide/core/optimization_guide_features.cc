@@ -751,28 +751,6 @@ size_t AnnotateVisitBatchSize() {
                                           "annotate_visit_batch_size", 1));
 }
 
-bool PageContentAnnotationValidationEnabledForType(AnnotationType type) {
-  if (base::FeatureList::IsEnabled(kPageContentAnnotationsValidation)) {
-    if (GetFieldTrialParamByFeatureAsBool(kPageContentAnnotationsValidation,
-                                          AnnotationTypeToString(type),
-                                          false)) {
-      return true;
-    }
-  }
-
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  switch (type) {
-    case AnnotationType::kContentVisibility:
-      return cmd->HasSwitch(
-          switches::kPageContentAnnotationsValidationContentVisibility);
-    default:
-      NOTREACHED();
-      break;
-  }
-
-  return false;
-}
-
 base::TimeDelta PageContentAnnotationValidationStartupDelay() {
   return switches::PageContentAnnotationsValidationStartupDelay().value_or(
       base::Seconds(std::max(

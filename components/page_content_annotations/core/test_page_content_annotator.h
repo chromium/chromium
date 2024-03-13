@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_TEST_PAGE_CONTENT_ANNOTATOR_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_TEST_PAGE_CONTENT_ANNOTATOR_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_TEST_PAGE_CONTENT_ANNOTATOR_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_TEST_PAGE_CONTENT_ANNOTATOR_H_
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "components/optimization_guide/content/browser/page_content_annotator.h"
-#include "components/optimization_guide/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_content_annotator.h"
+#include "components/page_content_annotations/core/page_content_annotations_common.h"
 
 namespace optimization_guide {
 
@@ -64,4 +64,4 @@ class TestPageContentAnnotator : public PageContentAnnotator {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_TEST_PAGE_CONTENT_ANNOTATOR_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_TEST_PAGE_CONTENT_ANNOTATOR_H_

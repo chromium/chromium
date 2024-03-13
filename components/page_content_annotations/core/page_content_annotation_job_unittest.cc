@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_content_annotation_job.h"
+#include "components/page_content_annotations/core/page_content_annotation_job.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"

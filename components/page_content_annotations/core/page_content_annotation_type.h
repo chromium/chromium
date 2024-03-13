@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATION_TYPE_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATION_TYPE_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_TYPE_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_TYPE_H_
 
 #include <string>
-
-#include "base/component_export.h"
 
 namespace optimization_guide {
 
@@ -35,9 +33,8 @@ enum class AnnotationType {
   kDeprecatedTextEmbedding,
 };
 
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string AnnotationTypeToString(AnnotationType type);
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATION_TYPE_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_TYPE_H_

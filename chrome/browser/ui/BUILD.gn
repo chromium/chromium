@@ -565,6 +565,7 @@ static_library("ui") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
+    "//components/page_content_annotations/core",
     "//components/page_image_service",
     "//components/password_manager/content/browser",
     "//components/password_manager/content/common",

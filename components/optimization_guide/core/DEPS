@@ -7,6 +7,7 @@ include_rules = [
   "+crypto",
   "+mojo/public/cpp",
   "+services/metrics/public/cpp",
+  "+components/page_content_annotations/core",
   "+services/on_device_model/public",
   "+third_party/mediapipe",
   "+third_party/tensorflow_models/src",

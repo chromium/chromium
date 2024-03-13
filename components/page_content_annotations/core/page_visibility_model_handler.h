@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_
 
 #include <optional>
 
@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/model_handler.h"
-#include "components/optimization_guide/core/page_content_annotation_job.h"
-#include "components/optimization_guide/core/page_content_annotation_job_executor.h"
-#include "components/optimization_guide/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_content_annotation_job.h"
+#include "components/page_content_annotations/core/page_content_annotation_job_executor.h"
+#include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
@@ -56,4 +56,4 @@ class PageVisibilityModelHandler
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_

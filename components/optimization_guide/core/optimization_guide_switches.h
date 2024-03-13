@@ -13,7 +13,6 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
@@ -186,12 +185,6 @@ std::optional<size_t> PageContentAnnotationsValidationBatchSize();
 // enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool LogPageContentAnnotationsValidationToConsole();
-
-// Returns a set on inputs to run the validation on for the given |type|,
-// using comma separated input from the command line.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::optional<std::vector<std::string>>
-PageContentAnnotationsValidationInputForType(AnnotationType type);
 
 // Returns the file path to write page content annotation validation results to.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

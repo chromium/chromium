@@ -16,7 +16,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
-#include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -400,11 +399,6 @@ bool PageVisibilityBatchAnnotationsEnabled();
 // immediately after requested.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 size_t AnnotateVisitBatchSize();
-
-// Whether the page content annotation validation feature or command line flag
-// is enabled for the given annotation type.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool PageContentAnnotationValidationEnabledForType(AnnotationType type);
 
 // The time period between browser start and running a running page content
 // annotation validation.

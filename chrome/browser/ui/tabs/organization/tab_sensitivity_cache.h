@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_SENSITIVITY_CACHE_H_
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "url/gurl.h"
 
 // In order to have GURL as a key in a hashmap, GURL hashing mechanism is

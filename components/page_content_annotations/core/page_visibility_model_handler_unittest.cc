@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/page_visibility_model_handler.h"
+#include "components/page_content_annotations/core/page_visibility_model_handler.h"
 
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"

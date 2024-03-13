@@ -26,9 +26,9 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -287,148 +287,6 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
       web_contents(), GURL("http://default-engine.com/search?q=a"));
   last_request = service()->last_related_searches_extraction_request();
   EXPECT_FALSE(last_request.has_value());
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest, OgImagePresent) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  auto metadata = blink::mojom::OpenGraphMetadata::New();
-  metadata->image = GURL("http://www.google.com/image.png");
-  FrameRemoteTester frame_remote_tester;
-  frame_remote_tester.set_open_graph_md_response(std::move(metadata));
-
-  main_rfh()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-      blink::mojom::LocalFrame::Name_,
-      base::BindRepeating(&FrameRemoteTester::BindPendingReceiver,
-                          base::Unretained(&frame_remote_tester)));
-
-  auto nav_simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("http://foo.com/bar"), web_contents());
-  nav_simulator->Commit();
-  nav_simulator->StopLoading();
-  task_environment()->RunUntilIdle();
-
-  ASSERT_TRUE(frame_remote_tester.did_get_request());
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability",
-      /*kAvailableFromOgImage=*/3, 1);
-
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
-      ukm_recorder.GetEntriesByName(
-          ukm::builders::SalientImageAvailability::kEntryName);
-  ASSERT_EQ(1u, entries.size());
-
-  ASSERT_EQ(1u, entries[0]->metrics.size());
-  EXPECT_EQ(/*kAvailableFromOgImage=*/3, entries[0]->metrics.begin()->second);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest, OgImageMalformed) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  auto metadata = blink::mojom::OpenGraphMetadata::New();
-  metadata->image = GURL();
-  FrameRemoteTester frame_remote_tester;
-  frame_remote_tester.set_open_graph_md_response(std::move(metadata));
-
-  main_rfh()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-      blink::mojom::LocalFrame::Name_,
-      base::BindRepeating(&FrameRemoteTester::BindPendingReceiver,
-                          base::Unretained(&frame_remote_tester)));
-
-  auto nav_simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("http://foo.com/bar"), web_contents());
-  nav_simulator->Commit();
-  nav_simulator->StopLoading();
-  task_environment()->RunUntilIdle();
-
-  ASSERT_TRUE(frame_remote_tester.did_get_request());
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability",
-      /*kNotAvailable=*/1, 1);
-
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
-      ukm_recorder.GetEntriesByName(
-          ukm::builders::SalientImageAvailability::kEntryName);
-  ASSERT_EQ(1u, entries.size());
-
-  // Malformed URL is also reported as og image unavailable.
-  ASSERT_EQ(1u, entries[0]->metrics.size());
-  EXPECT_EQ(/*kNotAvailable=*/1, entries[0]->metrics.begin()->second);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest, NoOgImage) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  // Image not set on |metadata|.
-  auto metadata = blink::mojom::OpenGraphMetadata::New();
-  FrameRemoteTester frame_remote_tester;
-  frame_remote_tester.set_open_graph_md_response(std::move(metadata));
-
-  main_rfh()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-      blink::mojom::LocalFrame::Name_,
-      base::BindRepeating(&FrameRemoteTester::BindPendingReceiver,
-                          base::Unretained(&frame_remote_tester)));
-
-  auto nav_simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("http://foo.com/bar"), web_contents());
-  nav_simulator->Commit();
-  nav_simulator->StopLoading();
-  task_environment()->RunUntilIdle();
-
-  ASSERT_TRUE(frame_remote_tester.did_get_request());
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability",
-      /*kNotAvailable=*/1, 1);
-
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
-      ukm_recorder.GetEntriesByName(
-          ukm::builders::SalientImageAvailability::kEntryName);
-  ASSERT_EQ(1u, entries.size());
-
-  ASSERT_EQ(1u, entries[0]->metrics.size());
-  EXPECT_EQ(/*kNotAvailable=*/1, entries[0]->metrics.begin()->second);
-}
-
-TEST_F(PageContentAnnotationsWebContentsObserverTest, OgImageIsNotHTTP) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-
-  auto metadata = blink::mojom::OpenGraphMetadata::New();
-  metadata->image = GURL("ftp://foo.com");
-  FrameRemoteTester frame_remote_tester;
-  frame_remote_tester.set_open_graph_md_response(std::move(metadata));
-
-  main_rfh()->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-      blink::mojom::LocalFrame::Name_,
-      base::BindRepeating(&FrameRemoteTester::BindPendingReceiver,
-                          base::Unretained(&frame_remote_tester)));
-
-  auto nav_simulator = content::NavigationSimulator::CreateBrowserInitiated(
-      GURL("http://foo.com/bar"), web_contents());
-  nav_simulator->Commit();
-  nav_simulator->StopLoading();
-  task_environment()->RunUntilIdle();
-
-  ASSERT_TRUE(frame_remote_tester.did_get_request());
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability",
-      /*kNotAvailable=*/1, 1);
-
-  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>> entries =
-      ukm_recorder.GetEntriesByName(
-          ukm::builders::SalientImageAvailability::kEntryName);
-  ASSERT_EQ(1u, entries.size());
-
-  // Non-HTTP URL is also reported as og image unavailable.
-  ASSERT_EQ(1u, entries[0]->metrics.size());
-  EXPECT_EQ(/*kNotAvailable=*/1, entries[0]->metrics.begin()->second);
 }
 
 class PageContentAnnotationsWebContentsObserverRelatedSearchesTest

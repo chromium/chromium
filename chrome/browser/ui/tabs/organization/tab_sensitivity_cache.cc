@@ -7,7 +7,7 @@
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "components/optimization_guide/core/page_content_annotation_type.h"
+#include "components/page_content_annotations/core/page_content_annotation_type.h"
 
 TabSensitivityCache::TabSensitivityCache(Profile* profile) : profile_(profile) {
   optimization_guide::PageContentAnnotationsService* const annotations_service =

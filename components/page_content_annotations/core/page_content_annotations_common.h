@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_COMMON_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_COMMON_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_COMMON_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_COMMON_H_
 
 #include <optional>
 #include <string>
@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "components/optimization_guide/core/page_content_annotation_type.h"
+#include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace optimization_guide {
@@ -122,4 +122,4 @@ class PageContentAnnotationsResult {
 
 }  // namespace optimization_guide
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_PAGE_CONTENT_ANNOTATIONS_COMMON_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_COMMON_H_

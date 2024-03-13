@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
-#include "components/optimization_guide/content/browser/page_content_annotations_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 
 // Client of PersistedTabDataAndroid
 class SensitivityPersistedTabDataAndroid
