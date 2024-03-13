@@ -70,6 +70,13 @@ GURL CreateRedirectURL(const std::string& scheme,
   return GURL(scheme + "://" + host + ":" + base::NumberToString(port));
 }
 
+std::optional<std::string> GetLCPPDatabaseKey(const GURL& url) {
+  if (!ResourcePrefetchPredictor::IsURLValidForLcpp(url)) {
+    return std::nullopt;
+  }
+  return url.host();
+}
+
 }  // namespace
 
 PreconnectRequest::PreconnectRequest(
@@ -405,12 +412,13 @@ std::optional<LcppData> ResourcePrefetchPredictor::GetLcppData(
     return std::nullopt;
   }
 
-  if (!url.is_valid() || url.host().empty() || net::IsLocalhost(url) ||
-      !url.SchemeIsHTTPOrHTTPS()) {
+  const std::optional<std::string> key = GetLCPPDatabaseKey(url);
+  if (!key) {
     return std::nullopt;
   }
+
   LcppData data;
-  if (!lcpp_data_->TryGetData(url.host(), &data)) {
+  if (!lcpp_data_->TryGetData(*key, &data)) {
     return std::nullopt;
   }
   return data;
@@ -643,24 +651,29 @@ void ResourcePrefetchPredictor::LearnOrigins(
     origin_data_->UpdateData(host, data);
 }
 
+bool ResourcePrefetchPredictor::IsURLValidForLcpp(const GURL& url) {
+  return url.is_valid() && !url.host().empty() && !net::IsLocalhost(url) &&
+         url.SchemeIsHTTPOrHTTPS() &&
+         url.host().size() <= ResourcePrefetchPredictorTables::kMaxStringLength;
+}
+
 void ResourcePrefetchPredictor::LearnLcpp(const GURL& url,
                                           const LcppDataInputs& inputs) {
-  const std::string& host = url.host();
   if (!TryEnsureRecordingPrecondition()) {
     return;
   }
 
-  if (host.size() > ResourcePrefetchPredictorTables::kMaxStringLength) {
+  const std::optional<std::string> key = GetLCPPDatabaseKey(url);
+  if (!key) {
     return;
   }
-
   LcppData data;
-  bool exists = lcpp_data_->TryGetData(host, &data);
+  bool exists = lcpp_data_->TryGetData(*key, &data);
   data.set_last_visit_time(
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   if (!exists) {
-    data.set_host(host);
+    data.set_host(*key);
   }
 
   if (!IsValidLcppStat(data.lcpp_stat())) {
@@ -671,7 +684,7 @@ void ResourcePrefetchPredictor::LearnLcpp(const GURL& url,
   bool data_updated = UpdateLcppDataWithLcppDataInputs(config_, inputs, data);
   DCHECK(IsValidLcppStat(data.lcpp_stat()));
   if (data_updated) {
-    lcpp_data_->UpdateData(host, data);
+    lcpp_data_->UpdateData(*key, data);
     if (observer_) {
       observer_->OnLcppLearned();
     }

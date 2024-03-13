@@ -87,7 +87,7 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
   }
 
   commit_url_ = navigation_handle->GetURL();
-  if (net::IsLocalhost(*commit_url_) || !commit_url_->SchemeIsHTTPOrHTTPS()) {
+  if (!predictors::ResourcePrefetchPredictor::IsURLValidForLcpp(*commit_url_)) {
     return STOP_OBSERVING;
   }
   LcpCriticalPathPredictorPageLoadMetricsObserver::PageData::GetOrCreateForPage(
