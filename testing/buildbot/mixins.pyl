@@ -669,6 +669,15 @@
       },
     },
   },
+  'linux_intel_uhd_770_stable': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '8086:4680-23.2.1',
+        'os': 'Ubuntu-22.04.4',
+        'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
   'linux_nvidia_gtx_1660_experimental': {
     'swarming': {
       'dimensions': {

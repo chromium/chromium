@@ -862,6 +862,17 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "linux_intel_uhd_770_stable",
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "8086:4680-23.2.1",
+            "os": "Ubuntu-22.04.4",
+            "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
     name = "linux_nvidia_gtx_1660_experimental",
     swarming = targets.swarming(
         dimensions = {

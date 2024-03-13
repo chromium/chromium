@@ -148,6 +148,35 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Linux FYI Release (Intel UHD 770)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Linux Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Linux FYI Release (NVIDIA)",
               "project": "chromium"
             },
@@ -206,6 +235,11 @@
         },
         {
           "bucket": "ci",
+          "builder": "Linux FYI Release (Intel UHD 770)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Linux FYI Release (NVIDIA)",
           "project": "chromium"
         }
@@ -221,6 +255,10 @@
         },
         {
           "builder": "gpu-fyi-try-linux-intel-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "gpu-fyi-try-linux-intel-uhd770-rel",
           "group": "tryserver.chromium.linux"
         },
         {

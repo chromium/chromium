@@ -756,6 +756,7 @@
     "gpu-fyi-try-linux-amd-rel": "try/gpu-fyi-try-linux-amd-rel/gn-args.json",
     "gpu-fyi-try-linux-intel-exp": "try/gpu-fyi-try-linux-intel-exp/gn-args.json",
     "gpu-fyi-try-linux-intel-rel": "try/gpu-fyi-try-linux-intel-rel/gn-args.json",
+    "gpu-fyi-try-linux-intel-uhd770-rel": "try/gpu-fyi-try-linux-intel-uhd770-rel/gn-args.json",
     "gpu-fyi-try-linux-nvidia-dbg": "try/gpu-fyi-try-linux-nvidia-dbg/gn-args.json",
     "gpu-fyi-try-linux-nvidia-exp": "try/gpu-fyi-try-linux-nvidia-exp/gn-args.json",
     "gpu-fyi-try-linux-nvidia-rel": "try/gpu-fyi-try-linux-nvidia-rel/gn-args.json",

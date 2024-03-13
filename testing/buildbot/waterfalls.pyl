@@ -4312,6 +4312,17 @@
           'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
         },
       },
+      'Linux FYI Release (Intel UHD 770)': {
+        'os_type': 'linux',
+        'browser_config': 'release',
+        'mixins': [
+          'linux_intel_uhd_770_stable',
+        ],
+        'test_suites': {
+          # TODO(crbug.com/329253685): Actually enable tests.
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Linux FYI Release (NVIDIA)': {
         'os_type': 'linux',
         'browser_config': 'release',

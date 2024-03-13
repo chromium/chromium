@@ -37,6 +37,7 @@ ci/Linux FYI Experimental Release (NVIDIA)
 ci/Linux FYI GPU TSAN Release
 ci/Linux FYI Release (AMD RX 5500 XT)
 ci/Linux FYI Release (Intel UHD 630)
+ci/Linux FYI Release (Intel UHD 770)
 ci/Linux FYI Release (NVIDIA)
 ci/Linux Release (NVIDIA)
 ci/Mac FYI ASAN (Intel)

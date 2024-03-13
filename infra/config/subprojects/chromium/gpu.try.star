@@ -218,6 +218,17 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-intel-uhd770-rel",
+    description_html = "Runs GPU tests on 12th gen Intel CPUs with UHD 770 GPUs",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Release (Intel UHD 770)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+    pool = "luci.chromium.gpu.linux.intel.uhd770.try",
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-nvidia-dbg",
     mirrors = [
         "ci/GPU FYI Linux Builder (dbg)",
