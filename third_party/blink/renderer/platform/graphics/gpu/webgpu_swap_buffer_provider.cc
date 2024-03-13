@@ -301,17 +301,20 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   ReleaseWGPUTextureAccessIfNeeded();
 
   // Populate the output resource
-  // On macOS, shared images are backed by IOSurfaces, and the correct texture
-  // target to use depends on whether ANGLE/Metal is being used. Being backed by
-  // IOSurfaces also means that they are overlay candidates. Every other shared
-  // image implementation is implemented on OpenGL via some form of eglSurface
-  // and eglBindTexImage (on ANGLE or system drivers) so they use the 2D texture
-  // target and cannot always be overlay candidates.
+  // NOTE: This call is used to match the previous behavior of hardcoding
+  // GL_TEXTURE_2D for non-MacOS and using the platform-specific texture target
+  // for MacOS.
+  // TODO(crbug.com/41494843): Replace this with calling
+  // the universal ClientSharedImage::GetTextureTarget() once that rolls out
+  // safely.
+  uint32_t texture_target =
+      current_swap_buffer_->shared_image->GetTextureTargetForOverlays();
+
+  // On macOS, shared images are backed by IOSurfaces, meaning that they are
+  // overlay candidates.
 #if BUILDFLAG(IS_MAC)
-  const uint32_t texture_target = gpu::GetPlatformSpecificTextureTarget();
   const bool is_overlay_candidate = true;
 #else
-  const uint32_t texture_target = GL_TEXTURE_2D;
   const bool is_overlay_candidate = false;
 #endif
   *out_resource = viz::TransferableResource::MakeGpu(
@@ -355,16 +358,15 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
   // need to release WebGPU/Dawn's context's access to the texture.
   ReleaseWGPUTextureAccessIfNeeded();
 
-  // On macOS, shared images are backed by IOSurfaces, and the correct texture
-  // target to use depends on whether ANGLE/Metal is being used. Every other
-  // shared image implementation is implemented on OpenGL via some form of
-  // eglSurface and eglBindTexImage (on ANGLE or system drivers) so they use the
-  // 2D texture target.
-#if BUILDFLAG(IS_MAC)
-  const uint32_t texture_target = gpu::GetPlatformSpecificTextureTarget();
-#else
-  const uint32_t texture_target = GL_TEXTURE_2D;
-#endif
+  // NOTE: This call is used to match the previous behavior of hardcoding
+  // GL_TEXTURE_2D for non-MacOS and using the platform-specific texture target
+  // for MacOS.
+  // TODO(crbug.com/41494843): Replace this with calling
+  // the universal ClientSharedImage::GetTextureTarget() once that rolls out
+  // safely.
+  uint32_t texture_target =
+      current_swap_buffer_->shared_image->GetTextureTargetForOverlays();
+
   gpu::MailboxHolder mailbox_holder(
       current_swap_buffer_->shared_image->mailbox(),
       current_swap_buffer_->access_finished_token, texture_target);
