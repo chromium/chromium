@@ -1062,9 +1062,10 @@ class LockStateControllerPineTest : public LockStateControllerTest {
     LockStateControllerTest::TearDown();
   }
 
-  void RequestShutdown() {
+  void RequestShutdownWithoutFailTimer() {
     base::RunLoop run_loop;
     lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+    lock_state_test_api_->disable_screenshot_timeout_for_test(true);
     lock_state_controller_->RequestShutdown(
         ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
     run_loop.Run();
@@ -1092,7 +1093,7 @@ class LockStateControllerPineTest : public LockStateControllerTest {
 TEST_F(LockStateControllerPineTest, ShutdownWithWindows) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
 
-  RequestShutdown();
+  RequestShutdownWithoutFailTimer();
   // The pine image was taken and not empty.
   VerifyPineImageOnDisk();
 
@@ -1112,7 +1113,7 @@ TEST_F(LockStateControllerPineTest, ShutdownWithoutWindows) {
   // Create an empty file to simulate an old pine image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
 
-  RequestShutdown();
+  RequestShutdownWithoutFailTimer();
   // Existing pine image was deleted.
   EXPECT_FALSE(base::PathExists(file_path()));
 }
@@ -1125,7 +1126,7 @@ TEST_F(LockStateControllerPineTest, ShutdownInOverview) {
   CreateTestWindow();
   EnterOverview();
 
-  RequestShutdown();
+  RequestShutdownWithoutFailTimer();
   // The pine image should not be taken if it is in overview when shutting down.
   // The existing pine image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1140,7 +1141,7 @@ TEST_F(LockStateControllerPineTest, ShutdownInLockScreen) {
   GetSessionControllerClient()->LockScreen();
   EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
 
-  RequestShutdown();
+  RequestShutdownWithoutFailTimer();
   // The pine image should not be taken if it is in the lock screen. The
   // existing pine image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1159,7 +1160,7 @@ TEST_F(LockStateControllerPineTest, ShutdownInHomeLauncher) {
   ASSERT_TRUE(app_list_controller->IsHomeScreenVisible());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 
-  RequestShutdown();
+  RequestShutdownWithoutFailTimer();
   // The pine image should not be taken if it is in the home launcher page when
   // shutting down. The existing image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1174,7 +1175,7 @@ TEST_F(LockStateControllerPineTest, AllWindowsMinimized) {
   WindowState::Get(window1.get())->Minimize();
   WindowState::Get(window2.get())->Minimize();
 
-  RequestShutdown();
+  RequestShutdownWithoutFailTimer();
   // The pine image should not be taken if all the windows inside the active
   // desk are minimized. The existing image should be deleted as well.
   EXPECT_FALSE(base::PathExists(file_path()));
@@ -1186,7 +1187,7 @@ TEST_F(LockStateControllerPineTest, ShutdownWithFloatWindow) {
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
 
-  RequestShutdown();
+  RequestShutdownWithoutFailTimer();
   // The pine image was taken and not empty with the float window only.
   VerifyPineImageOnDisk();
 }
@@ -1198,9 +1199,28 @@ TEST_F(LockStateControllerPineTest, ShutdownWithAlwaysOnTopWindow) {
   std::unique_ptr<aura::Window> window_always_on_top(
       aura::test::CreateTestWindowWithId(1, top_container));
 
-  RequestShutdown();
+  RequestShutdownWithoutFailTimer();
   // The pine image was taken and not empty with the always on top window only.
   VerifyPineImageOnDisk();
+}
+
+TEST_F(LockStateControllerPineTest, TakeScreenshotTimeout) {
+  // Create an empty file to simulate an old pine image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_pine_image_callback(run_loop.QuitClosure());
+  lock_state_controller_->RequestShutdown(
+      ShutdownReason::TRAY_SHUT_DOWN_BUTTON);
+
+  // Fire the screenshot timeout before taking the screenshot completes. Then no
+  // screenshot should be saved, the existing one should be deleted as well and
+  // the shutdown process should be triggered directly.
+  lock_state_test_api_->trigger_take_screenshot_timeout();
+  run_loop.Run();
+  EXPECT_FALSE(base::PathExists(file_path()));
+  EXPECT_TRUE(lock_state_test_api_->real_shutdown_timer_is_running());
 }
 
 }  // namespace ash
