@@ -249,11 +249,6 @@ TEST(TelemetryDiagnosticRoutineConvertersTest,
             crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
                 crosapi::TelemetryDiagnosticMemoryRoutineDetail::New()));
 
-  EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewVolumeButton(
-                healthd::VolumeButtonRoutineDetail::New())),
-            crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
-                crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New()));
-
   EXPECT_EQ(ConvertRoutinePtr(healthd::RoutineDetail::NewFan(
                 healthd::FanRoutineDetail::New())),
             crosapi::TelemetryDiagnosticRoutineDetail::NewFan(

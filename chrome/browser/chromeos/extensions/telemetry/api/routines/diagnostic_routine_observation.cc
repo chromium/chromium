@@ -25,10 +25,32 @@ namespace {
 namespace crosapi = ::crosapi::mojom;
 namespace cx_diag = api::os_diagnostics;
 
+std::unique_ptr<extensions::Event> CreateEventForFinishedVolumeButtonRoutine(
+    bool has_passed,
+    base::Uuid uuid,
+    content::BrowserContext* browser_context) {
+  auto finished_info = converters::routines::ConvertPtr(
+      crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New(), uuid,
+      has_passed);
+  return std::make_unique<extensions::Event>(
+      extensions::events::OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED,
+      cx_diag::OnVolumeButtonRoutineFinished::kEventName,
+      base::Value::List().Append(finished_info.ToValue()), browser_context);
+}
+
 std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
     crosapi::TelemetryDiagnosticRoutineStateFinishedPtr finished,
     base::Uuid uuid,
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    crosapi::TelemetryDiagnosticRoutineArgument::Tag
+        argument_tag_for_legacy_finished_events) {
+  // The volume button routine has no detail.
+  if (argument_tag_for_legacy_finished_events ==
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton) {
+    return CreateEventForFinishedVolumeButtonRoutine(finished->has_passed, uuid,
+                                                     browser_context);
+  }
+
   switch (finished->detail->which()) {
     case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kUnrecognizedArgument:
       LOG(WARNING) << "Got unknown routine detail";
@@ -43,13 +65,11 @@ std::unique_ptr<extensions::Event> GetEventForFinishedRoutine(
           base::Value::List().Append(finished_info.ToValue()), browser_context);
     }
     case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kVolumeButton: {
-      auto finished_info = converters::routines::ConvertPtr(
-          std::move(finished->detail->get_volume_button()), uuid,
-          finished->has_passed);
-      return std::make_unique<extensions::Event>(
-          extensions::events::OS_DIAGNOSTICS_ON_VOLUME_BUTTON_ROUTINE_FINISHED,
-          cx_diag::OnVolumeButtonRoutineFinished::kEventName,
-          base::Value::List().Append(finished_info.ToValue()), browser_context);
+      // Though unexpected, we should handle it gracefully because the input is
+      // from another service.
+      LOG(WARNING)
+          << "Got volume button routine detail for non-volume-button routine";
+      return nullptr;
     }
     case crosapi::TelemetryDiagnosticRoutineDetail::Tag::kFan: {
       auto finished_info = converters::routines::ConvertPtr(
@@ -119,7 +139,7 @@ void DiagnosticRoutineObservation::OnRoutineStateChange(
     case crosapi::TelemetryDiagnosticRoutineStateUnion::Tag::kFinished: {
       event = GetEventForFinishedRoutine(
           std::move(state->state_union->get_finished()), info_.uuid,
-          info_.browser_context);
+          info_.browser_context, info_.argument_tag_for_legacy_finished_events);
       if (!event) {
         return;
       }

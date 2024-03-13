@@ -105,6 +105,9 @@ DiagnosticRoutineManager::CreateRoutine(
     app_ui_observers_.emplace(extension_id, std::move(observer.value()));
   }
 
+  crosapi::TelemetryDiagnosticRoutineArgument::Tag routine_argument_tag =
+      routine_argument->which();
+
   mojo::PendingRemote<crosapi::TelemetryDiagnosticRoutineControl>
       control_remote;
   mojo::PendingReceiver<crosapi::TelemetryDiagnosticRoutineObserver>
@@ -116,7 +119,8 @@ DiagnosticRoutineManager::CreateRoutine(
       observer_receiver.InitWithNewPipeAndPassRemote());
 
   auto uuid = base::Uuid::GenerateRandomV4();
-  DiagnosticRoutineInfo routine_info(extension_id, uuid, browser_context_);
+  DiagnosticRoutineInfo routine_info(extension_id, uuid, browser_context_,
+                                     routine_argument_tag);
 
   auto it = routines_per_extension_.find(extension_id);
   if (it == routines_per_extension_.end()) {

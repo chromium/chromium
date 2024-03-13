@@ -66,11 +66,6 @@ class TelemetryExtensionDiagnosticRoutineObserverBrowserTest
  public:
   void SetUpOnMainThread() override {
     BaseTelemetryExtensionBrowserTest::SetUpOnMainThread();
-
-    DiagnosticRoutineInfo info(extension_id(), uuid_, profile());
-    observation_ = std::make_unique<DiagnosticRoutineObservation>(
-        info, on_finished_future_.GetCallback(),
-        remote_.BindNewPipeAndPassReceiver());
   }
 
   void TearDownOnMainThread() override {
@@ -80,6 +75,26 @@ class TelemetryExtensionDiagnosticRoutineObserverBrowserTest
   }
 
  protected:
+  void SetRoutineObservation() {
+    // Use an arbitrary value for `argument_tag_for_legacy_finished_events`.
+    DiagnosticRoutineInfo info(
+        extension_id(), uuid_, profile(),
+        crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
+    observation_ = std::make_unique<DiagnosticRoutineObservation>(
+        info, on_finished_future_.GetCallback(),
+        remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void SetLegacyFinishedEventRoutineObservation(
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag
+          argument_tag_for_legacy_finished_events) {
+    DiagnosticRoutineInfo info(extension_id(), uuid_, profile(),
+                               argument_tag_for_legacy_finished_events);
+    observation_ = std::make_unique<DiagnosticRoutineObservation>(
+        info, on_finished_future_.GetCallback(),
+        remote_.BindNewPipeAndPassReceiver());
+  }
+
   void RegisterEventObserver(std::string event_name,
                              base::OnceClosure on_event_added) {
     registration_observer_ = std::make_unique<EventRegistrationObserver>(
@@ -106,6 +121,7 @@ class TelemetryExtensionDiagnosticRoutineObserverBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
                        CanObserveOnRoutineInitialized) {
+  SetRoutineObservation();
   RegisterEventObserver(
       api::os_diagnostics::OnRoutineInitialized::kEventName,
       base::BindLambdaForTesting([this] {
@@ -137,6 +153,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
                        CanObserveOnRoutineRunning) {
+  SetRoutineObservation();
   RegisterEventObserver(
       api::os_diagnostics::OnRoutineRunning::kEventName,
       base::BindLambdaForTesting([this] {
@@ -169,6 +186,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
                        CanObserveOnRoutineWaiting) {
+  SetRoutineObservation();
   RegisterEventObserver(
       api::os_diagnostics::OnRoutineWaiting::kEventName,
       base::BindLambdaForTesting([this] {
@@ -206,6 +224,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
                        CanObserveOnMemoryRoutineFinished) {
+  SetLegacyFinishedEventRoutineObservation(
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory);
   RegisterEventObserver(
       api::os_diagnostics::OnMemoryRoutineFinished::kEventName,
       base::BindLambdaForTesting([this] {
@@ -270,9 +290,56 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
   EXPECT_EQ(info.uuid, uuid_);
 }
 
+// In newer implementation of healthd, a finished volume button routine does not
+// contain the routine detail.
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
-    CanObserveOnVolumeButtonRoutineFinished) {
+    CanObserveOnVolumeButtonRoutineFinishedWithoutRoutineDetail) {
+  SetLegacyFinishedEventRoutineObservation(
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton);
+  RegisterEventObserver(
+      api::os_diagnostics::OnVolumeButtonRoutineFinished::kEventName,
+      base::BindLambdaForTesting([this] {
+        auto finished_state = crosapi::TelemetryDiagnosticRoutineState::New();
+        finished_state->state_union =
+            crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
+                crosapi::TelemetryDiagnosticRoutineStateFinished::New(
+                    /*has_passed=*/true, /*detail=*/nullptr));
+        finished_state->percentage = 100;
+
+        remote_->OnRoutineStateChange(std::move(finished_state));
+      }));
+
+  CreateExtensionAndRunServiceWorker(
+      base::StringPrintf(R"(
+    chrome.test.runTests([
+      async function canObserveOnVolumeButtonRoutineFinished() {
+        chrome.os.diagnostics.onVolumeButtonRoutineFinished.addListener(
+          (event) => {
+            chrome.test.assertEq(event, {
+              "has_passed": true,
+              "uuid":"%s"
+            });
+
+            chrome.test.succeed();
+        });
+      }
+    ]);
+  )",
+                         uuid_.AsLowercaseString().c_str()));
+
+  auto info = WaitForFinishedReport();
+  EXPECT_EQ(info.extension_id, extension_id());
+  EXPECT_EQ(info.uuid, uuid_);
+}
+
+// In older implementation of healthd, a finished volume button routine contains
+// a routine detail.
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
+    CanObserveOnVolumeButtonRoutineFinishedWithRoutineDetail) {
+  SetLegacyFinishedEventRoutineObservation(
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton);
   RegisterEventObserver(
       api::os_diagnostics::OnVolumeButtonRoutineFinished::kEventName,
       base::BindLambdaForTesting([this] {
@@ -318,6 +385,8 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticRoutineObserverBrowserTest,
                        CanObserveOnFanRoutineFinished) {
+  SetLegacyFinishedEventRoutineObservation(
+      crosapi::TelemetryDiagnosticRoutineArgument::Tag::kFan);
   RegisterEventObserver(
       api::os_diagnostics::OnFanRoutineFinished::kEventName,
       base::BindLambdaForTesting([this] {

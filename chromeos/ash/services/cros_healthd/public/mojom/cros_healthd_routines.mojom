@@ -228,18 +228,16 @@ struct RoutineStateFinished {
 
 // Details about a finished routine.
 //
-// NextMinVersion: 4, NextIndex: 4
+// NextMinVersion: 1, NextIndex: 3
 [Extensible]
 union RoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
   [Default] bool unrecognizedArgument@0;
   // Details of a completed memory routine.
-  [MinVersion=1] MemoryRoutineDetail memory@1;
-  // Details of a completed volume button routine.
-  [MinVersion=2] VolumeButtonRoutineDetail volume_button@2;
+  MemoryRoutineDetail memory@1;
   // Details of a completed fan routine.
-  [MinVersion=3] FanRoutineDetail fan@3;
+  FanRoutineDetail fan@2;
 };
 
 // Details regarding memory routine.
@@ -320,11 +318,6 @@ enum MemtesterTestItemEnum {
   // Test Pattern: 16 bit random words.
   k16BitWrites = 19,
 };
-
-// Details regarding volume button routine.
-//
-// NextMinVersion: 1, NextIndex: 0
-struct VolumeButtonRoutineDetail {};
 
 // Whether the given hardware probed matches the hardware description recorded.
 //

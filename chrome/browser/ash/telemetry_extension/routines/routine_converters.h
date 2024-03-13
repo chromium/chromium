@@ -27,9 +27,6 @@ crosapi::mojom::TelemetryDiagnosticMemtesterResultPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
     cros_healthd::mojom::MemoryRoutineDetailPtr input);
 
-crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineDetailPtr
-UncheckedConvertPtr(cros_healthd::mojom::VolumeButtonRoutineDetailPtr input);
-
 crosapi::mojom::TelemetryDiagnosticFanRoutineDetailPtr UncheckedConvertPtr(
     cros_healthd::mojom::FanRoutineDetailPtr input);
 

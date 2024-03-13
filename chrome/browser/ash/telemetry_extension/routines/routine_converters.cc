@@ -33,11 +33,6 @@ crosapi::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
       input->bytes_tested, ConvertRoutinePtr(std::move(input->result)));
 }
 
-crosapi::TelemetryDiagnosticVolumeButtonRoutineDetailPtr UncheckedConvertPtr(
-    healthd::VolumeButtonRoutineDetailPtr input) {
-  return crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New();
-}
-
 crosapi::TelemetryDiagnosticFanRoutineDetailPtr UncheckedConvertPtr(
     healthd::FanRoutineDetailPtr input) {
   return crosapi::TelemetryDiagnosticFanRoutineDetail::New(
@@ -70,9 +65,6 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kMemory:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
           ConvertRoutinePtr(std::move(input->get_memory())));
-    case healthd::RoutineDetail::Tag::kVolumeButton:
-      return crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
-          ConvertRoutinePtr(std::move(input->get_volume_button())));
     case healthd::RoutineDetail::Tag::kFan:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewFan(
           ConvertRoutinePtr(std::move(input->get_fan())));
