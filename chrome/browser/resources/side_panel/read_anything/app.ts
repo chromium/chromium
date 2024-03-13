@@ -966,7 +966,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     };
 
     message.addEventListener('boundary', (event) => {
-      this.updateBoundary(event.charIndex);
+      // Some voices may give sentence boundaries, but we're only concerned
+      // with word boundaries in boundary event because we're speaking text at
+      // the sentence granularity level, so we'll retrieve these boundaries in message.onEnd
+      // instead.
+      if (event.name === 'word') {
+        this.updateBoundary(event.charIndex);
+      }
     });
 
     message.onend = () => {
