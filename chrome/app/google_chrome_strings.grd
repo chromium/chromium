@@ -667,21 +667,9 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
 
       <!-- Download Bubble Items -->
-      <message name="IDS_DOWNLOAD_BUBBLE_DANGEROUS_FILE"
-               desc="Message shown to the user to validate the download of a dangerous file.">
-        Chrome blocked this file because this type of file is dangerous
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_MALICIOUS_URL_BLOCKED"
-               desc="Message shown to the user to validate the download when the download url is classified to lead to malware by the safebrowsing database.">
-        Chrome blocked this file because it is dangerous
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE"
                desc="Summary of dangerous warning for a file (like an extension) from an unknown source.">
         Extensions, apps, and themes from unknown sources can harm your device. Chrome recommends only installing them from the Chrome Web Store
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_MALWARE"
-               desc="Subpage summary for malware warning for the user.">
-        Chrome blocked this file because it has malware
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK"
                desc="Text for the link to the help page about why Chrome blocks some downloaded files.">
