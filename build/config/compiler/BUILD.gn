@@ -2274,7 +2274,6 @@ config("no_incompatible_pointer_warnings") {
 # IMPORTANT: On Windows "/O1" and "/O2" must go before the common flags.
 if (is_win) {
   common_optimize_on_cflags = [
-    "/Ob2",  # Both explicit and auto inlining.
     "/Oy-",  # Disable omitting frame pointers, must be after /O2.
     "/Zc:inline",  # Remove unreferenced COMDAT (faster links).
   ]
@@ -2392,24 +2391,16 @@ config("default_stack_frames") {
 # Default "optimization on" config.
 config("optimize") {
   if (is_win) {
-    if (chrome_pgo_phase != 2) {
-      # Favor size over speed, /O1 must be before the common flags.
-      # /O1 implies /Os and /GF.
-      cflags = [ "/O1" ] + common_optimize_on_cflags + [ "/Oi" ]
-      rustflags = [ "-Copt-level=s" ]
-    } else {
-      # PGO requires all translation units to be compiled with /O2. The actual
-      # optimization level will be decided based on the profiling data.
-      cflags = [ "/O2" ] + common_optimize_on_cflags + [ "/Oi" ]
+    cflags = [ "/O2" ] + common_optimize_on_cflags
 
-      # https://doc.rust-lang.org/rustc/profile-guided-optimization.html#usage
-      # suggests not using an explicit `-Copt-level` at all, and the default is
-      # to optimize for performance like `/O2` for clang.
-      rustflags = []
-    }
+    # https://doc.rust-lang.org/rustc/profile-guided-optimization.html#usage
+    # suggests not using an explicit `-Copt-level` at all, and the default is
+    # to optimize for performance like `/O2` for clang.
+    rustflags = []
   } else if (optimize_for_size || is_chromeos) {
     # Favor size over speed.
-    # -Os in clang is more of a size-conscious -O2 than "size at any cost" (AKA -Oz).
+    # -Os in clang is more of a size-conscious -O2 than "size at any cost"
+    # (AKA -Oz).
 
     if (is_fuchsia) {
       cflags = [ "-Oz" ] + common_optimize_on_cflags
