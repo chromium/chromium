@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <optional>
+#include <string_view>
 
 #include "base/bits.h"
 #include "base/containers/span.h"
@@ -80,10 +81,10 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
     while (current_section < section_end) {
       current_note = reinterpret_cast<const Nhdr*>(current_section);
       if (current_note->n_type == NT_GNU_BUILD_ID) {
-        StringPiece note_name(current_section + sizeof(Nhdr),
-                              current_note->n_namesz);
+        std::string_view note_name(current_section + sizeof(Nhdr),
+                                   current_note->n_namesz);
         // Explicit constructor is used to include the '\0' character.
-        if (note_name == StringPiece(kGnuNoteName, sizeof(kGnuNoteName))) {
+        if (note_name == std::string_view(kGnuNoteName, sizeof(kGnuNoteName))) {
           found = true;
           break;
         }
@@ -123,7 +124,8 @@ size_t ReadElfBuildId(const void* elf_mapped_base,
   return 0;
 }
 
-std::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
+std::optional<std::string_view> ReadElfLibraryName(
+    const void* elf_mapped_base) {
   // NOTE: Function should use async signal safe calls only.
 
   const Ehdr* elf_header = GetElfHeader(elf_mapped_base);
@@ -161,7 +163,7 @@ std::optional<StringPiece> ReadElfLibraryName(const void* elf_mapped_base) {
       }
     }
     if (soname_strtab_offset && strtab_addr)
-      return StringPiece(strtab_addr + soname_strtab_offset);
+      return std::string_view(strtab_addr + soname_strtab_offset);
   }
 
   return std::nullopt;

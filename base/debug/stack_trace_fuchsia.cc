@@ -18,6 +18,7 @@
 #include <array>
 #include <iomanip>
 #include <iostream>
+#include <string_view>
 #include <type_traits>
 
 #include "base/atomic_sequence_num.h"
@@ -170,14 +171,14 @@ void SymbolMap::Populate() {
 
     // Get the human-readable library name from the ELF header, falling back on
     // using names from the link map for binaries that aren't shared libraries.
-    std::optional<StringPiece> elf_library_name =
+    std::optional<std::string_view> elf_library_name =
         ReadElfLibraryName(next_entry.addr);
     if (elf_library_name) {
       strlcpy(next_entry.name, elf_library_name->data(),
               elf_library_name->size() + 1);
     } else {
-      StringPiece link_map_name(lmap->l_name[0] ? lmap->l_name
-                                                : "<executable>");
+      std::string_view link_map_name(lmap->l_name[0] ? lmap->l_name
+                                                     : "<executable>");
 
       // The "module" stack trace annotation doesn't allow for strings which
       // resemble paths, so extract the filename portion from |link_map_name|.

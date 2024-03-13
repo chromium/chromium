@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
 #include "base/debug/test_elf_image_builder.h"
 #include "base/files/memory_mapped_file.h"
@@ -55,7 +56,7 @@ TEST_P(ElfReaderTest, ReadElfBuildIdUppercase) {
   ElfBuildIdBuffer build_id;
   size_t build_id_size = ReadElfBuildId(image.elf_start(), true, build_id);
   EXPECT_EQ(8u, build_id_size);
-  EXPECT_EQ(kBuildIdHexString, StringPiece(&build_id[0], build_id_size));
+  EXPECT_EQ(kBuildIdHexString, std::string_view(&build_id[0], build_id_size));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdLowercase) {
@@ -69,7 +70,7 @@ TEST_P(ElfReaderTest, ReadElfBuildIdLowercase) {
   size_t build_id_size = ReadElfBuildId(image.elf_start(), false, build_id);
   EXPECT_EQ(8u, build_id_size);
   EXPECT_EQ(ToLowerASCII(kBuildIdHexStringLower),
-            StringPiece(&build_id[0], build_id_size));
+            std::string_view(&build_id[0], build_id_size));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdMultipleNotes) {
@@ -85,7 +86,7 @@ TEST_P(ElfReaderTest, ReadElfBuildIdMultipleNotes) {
   ElfBuildIdBuffer build_id;
   size_t build_id_size = ReadElfBuildId(image.elf_start(), true, build_id);
   EXPECT_EQ(8u, build_id_size);
-  EXPECT_EQ(kBuildIdHexString, StringPiece(&build_id[0], build_id_size));
+  EXPECT_EQ(kBuildIdHexString, std::string_view(&build_id[0], build_id_size));
 }
 
 TEST_P(ElfReaderTest, ReadElfBuildIdWrongName) {
@@ -128,7 +129,7 @@ TEST_P(ElfReaderTest, ReadElfLibraryName) {
                            .AddSoName("mysoname")
                            .Build();
 
-  std::optional<StringPiece> library_name =
+  std::optional<std::string_view> library_name =
       ReadElfLibraryName(image.elf_start());
   ASSERT_NE(std::nullopt, library_name);
   EXPECT_EQ("mysoname", *library_name);
@@ -139,7 +140,7 @@ TEST_P(ElfReaderTest, ReadElfLibraryNameNoSoName) {
                            .AddLoadSegment(PF_R | PF_X, /* size = */ 2000)
                            .Build();
 
-  std::optional<StringPiece> library_name =
+  std::optional<std::string_view> library_name =
       ReadElfLibraryName(image.elf_start());
   EXPECT_EQ(std::nullopt, library_name);
 }

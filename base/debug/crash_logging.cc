@@ -5,8 +5,8 @@
 #include "base/debug/crash_logging.h"
 
 #include <ostream>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 namespace base::debug {
@@ -26,7 +26,7 @@ CrashKeyString* AllocateCrashKeyString(const char name[],
     // could also be enabled on Android, but debugging tryjob failures was a bit
     // difficult... :-/
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_ANDROID)
-  base::StringPiece name_piece = name;
+  std::string_view name_piece = name;
 
   // Some `CrashKeyImplementation`s reserve certain characters and disallow
   // using them in crash key names.  See also https://crbug.com/1341077.
@@ -43,7 +43,7 @@ CrashKeyString* AllocateCrashKeyString(const char name[],
   return g_crash_key_impl->Allocate(name, value_length);
 }
 
-void SetCrashKeyString(CrashKeyString* crash_key, base::StringPiece value) {
+void SetCrashKeyString(CrashKeyString* crash_key, std::string_view value) {
   if (!g_crash_key_impl || !crash_key)
     return;
 
@@ -65,7 +65,7 @@ void OutputCrashKeysToStream(std::ostream& out) {
 }
 
 ScopedCrashKeyString::ScopedCrashKeyString(CrashKeyString* crash_key,
-                                           base::StringPiece value)
+                                           std::string_view value)
     : crash_key_(crash_key) {
   SetCrashKeyString(crash_key_, value);
 }

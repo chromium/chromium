@@ -9,12 +9,12 @@
 
 #include <iosfwd>
 #include <memory>
+#include <string_view>
 #include <type_traits>
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 namespace debug {
@@ -88,7 +88,7 @@ BASE_EXPORT CrashKeyString* AllocateCrashKeyString(const char name[],
 // if AllocateCrashKeyString() returned null. If |value| is longer than the
 // size with which the key was allocated, it will be truncated.
 BASE_EXPORT void SetCrashKeyString(CrashKeyString* crash_key,
-                                   base::StringPiece value);
+                                   std::string_view value);
 
 // Clears any value that was stored in |crash_key|. The |crash_key| may be
 // null.
@@ -101,7 +101,7 @@ BASE_EXPORT void OutputCrashKeysToStream(std::ostream& out);
 // object, and clears it on destruction.
 class BASE_EXPORT [[nodiscard]] ScopedCrashKeyString {
  public:
-  ScopedCrashKeyString(CrashKeyString* crash_key, base::StringPiece value);
+  ScopedCrashKeyString(CrashKeyString* crash_key, std::string_view value);
   ScopedCrashKeyString(ScopedCrashKeyString&& other);
   ~ScopedCrashKeyString();
 
@@ -131,7 +131,7 @@ class BASE_EXPORT [[nodiscard]] ScopedCrashKeyString {
                                           key_size)                     \
   static_assert(::std::size(category "-" name) < 40,                    \
                 "Crash key names must be shorter than 40 characters."); \
-  static_assert(::base::StringPiece(category "-" name).find(':') ==     \
+  static_assert(::std::string_view(category "-" name).find(':') ==      \
                     ::base::StringPiece::npos,                          \
                 "Crash key names must not contain the ':' character."); \
   ::base::debug::ScopedCrashKeyString scoped_crash_key_helper##nonce(   \
@@ -191,7 +191,7 @@ class CrashKeyImplementation {
   virtual ~CrashKeyImplementation() = default;
 
   virtual CrashKeyString* Allocate(const char name[], CrashKeySize size) = 0;
-  virtual void Set(CrashKeyString* crash_key, base::StringPiece value) = 0;
+  virtual void Set(CrashKeyString* crash_key, std::string_view value) = 0;
   virtual void Clear(CrashKeyString* crash_key) = 0;
   virtual void OutputCrashKeysToStream(std::ostream& out) = 0;
 };

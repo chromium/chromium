@@ -5,6 +5,7 @@
 #include "base/debug/test_elf_image_builder.h"
 
 #include <cstring>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -61,7 +62,7 @@ TestElfImageBuilder& TestElfImageBuilder::AddLoadSegment(Word flags,
 
 TestElfImageBuilder& TestElfImageBuilder::AddNoteSegment(
     Word type,
-    StringPiece name,
+    std::string_view name,
     span<const uint8_t> desc) {
   const size_t name_with_null_size = name.size() + 1;
   std::vector<uint8_t> buffer(
@@ -89,7 +90,7 @@ TestElfImageBuilder& TestElfImageBuilder::AddNoteSegment(
   return *this;
 }
 
-TestElfImageBuilder& TestElfImageBuilder::AddSoName(StringPiece soname) {
+TestElfImageBuilder& TestElfImageBuilder::AddSoName(std::string_view soname) {
   DCHECK(!soname_.has_value());
   soname_.emplace(soname);
   return *this;
