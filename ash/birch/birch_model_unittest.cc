@@ -396,6 +396,24 @@ TEST_F(BirchModelTest, FetchWithOnePrefDisabledMarksDataFresh) {
   EXPECT_TRUE(model->IsDataFresh());
 }
 
+// Regression test for missing attachment type check in IsDataFresh().
+TEST_F(BirchModelTest, IsDataFresh_Attachments) {
+  BirchModel* model = Shell::Get()->birch_model();
+  ASSERT_FALSE(model->IsDataFresh());
+
+  // Provide all data types except attachments. Data should not be fresh.
+  model->SetCalendarItems({});
+  model->SetFileSuggestItems({});
+  model->SetRecentTabItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+  EXPECT_FALSE(model->IsDataFresh());
+
+  // Providing attachments finishes the set and the data is fresh.
+  model->SetAttachmentItems({});
+  EXPECT_TRUE(model->IsDataFresh());
+}
+
 // TODO(https://crbug.com/324963992): Fix `BirchModel*Test.DataFetchTimeout`
 // for debug builds.
 #if defined(NDEBUG)

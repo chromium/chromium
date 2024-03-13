@@ -247,6 +247,9 @@ bool BirchModel::IsDataFresh() {
   // disabled pref means the data type won't be fetched.
   bool calendar_fresh =
       is_calendar_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseCalendar);
+  // Calendar attachments use the same provider as calendar events.
+  bool attachments_fresh =
+      is_attachment_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseCalendar);
   bool file_suggest_fresh =
       is_files_data_fresh_ || !prefs->GetBoolean(prefs::kBirchUseFileSuggest);
   bool recent_tabs_fresh =
@@ -254,8 +257,9 @@ bool BirchModel::IsDataFresh() {
   bool release_notes_fresh = is_release_notes_data_fresh_ ||
                              !prefs->GetBoolean(prefs::kBirchUseReleaseNotes);
   bool is_birch_client_fresh =
-      !birch_client_ || (calendar_fresh && file_suggest_fresh &&
-                         recent_tabs_fresh && release_notes_fresh);
+      !birch_client_ ||
+      (calendar_fresh && attachments_fresh && file_suggest_fresh &&
+       recent_tabs_fresh && release_notes_fresh);
 
   // Use the same logic for weather.
   bool is_weather_fresh = !weather_provider_ || is_weather_data_fresh_ ||
