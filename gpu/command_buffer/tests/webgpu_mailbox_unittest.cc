@@ -107,7 +107,7 @@ class WebGPUMailboxTest
     std::vector<WebGPUMailboxTestParams> params;
 
     for (viz::SharedImageFormat format : {
-// TODO(crbug.com/1241369): Handle additional formats.
+// TODO(crbug.com/40823053): Support "rgba8unorm" canvas context format on Mac
 #if !BUILDFLAG(IS_MAC)
            viz::SinglePlaneFormat::kRGBA_8888,
 #endif  // !BUILDFLAG(IS_MAC)

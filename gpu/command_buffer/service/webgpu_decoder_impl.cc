@@ -491,7 +491,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // Include list of formats this is tested to work with.
       // See gpu/command_buffer/tests/webgpu_mailbox_unittest.cc
       if (format != viz::SinglePlaneFormat::kBGRA_8888 &&
-// TODO(crbug.com/1241369): Handle additional formats.
+// TODO(crbug.com/40823053): Support "rgba8unorm" canvas context format on Mac
 #if !BUILDFLAG(IS_MAC)
           format != viz::SinglePlaneFormat::kRGBA_8888 &&
 #endif
