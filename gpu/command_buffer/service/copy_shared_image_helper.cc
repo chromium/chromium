@@ -223,6 +223,12 @@ void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
 void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
                        SharedContextState* context,
                        bool is_drdc_enabled) {
+  if (context->graphite_context()) {
+    CHECK(signal_semaphores.empty());
+    InsertRecordingAndSubmit(context, /*sync_cpu=*/false);
+    return;
+  }
+
   // Note that when DrDc is enabled, we need to call
   // AddVulkanCleanupTaskForSkiaFlush() on gpu main thread and do skia flush.
   // This will ensure that vulkan memory allocated on gpu main thread will be
@@ -256,10 +262,6 @@ void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
   if (need_submit) {
     CHECK(context->gr_context());
     context->gr_context()->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
-  }
-
-  if (context->graphite_context()) {
-    InsertRecordingAndSubmit(context, sync_cpu);
   }
 }
 
