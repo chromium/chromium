@@ -129,7 +129,7 @@
             },
             {
                 "domain": "Storage",
-                "exclude": ["runBounceTrackingMitigations"],
+                "exclude": ["runBounceTrackingMitigations", "getRelatedWebsiteSets"],
                 "async": ["getUsageAndQuota", "clearDataForOrigin", "clearDataForStorageKey", "getCookies", "setCookies", "clearCookies", "overrideQuotaForOrigin", "getTrustTokens", "clearTrustTokens", "getInterestGroupDetails", "getSharedStorageMetadata", "getSharedStorageEntries", "setSharedStorageEntry", "deleteSharedStorageEntry", "clearSharedStorageEntries", "resetSharedStorageBudget", "getStorageBucketList", "setAttributionReportingLocalTestingMode"]
             },
             {

@@ -68,6 +68,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_server_config.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -1253,6 +1254,52 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
   EXPECT_FALSE(
       privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
           net::SchemefulSite(GURL(attestation_url))));
+}
+
+class DevToolsProtocolTest_RelatedWebsiteSets : public DevToolsProtocolTest {
+ protected:
+  const char* kPrimarySite = "https://a.test";
+  const char* kAssociatedSite = "https://b.test";
+  const char* kServiceSite = "https://c.test";
+  const char* kPrimaryCcTLD = "https://a.cctld";
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DevToolsProtocolTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        network::switches::kUseRelatedWebsiteSet,
+        base::StringPrintf(R"({"primary": "%s",)"
+                           R"("associatedSites": ["%s"],)"
+                           R"("serviceSites": ["%s"],)"
+                           R"("ccTLDs": {"%s": ["%s"]}})",
+                           kPrimarySite, kAssociatedSite, kServiceSite,
+                           kPrimarySite, kPrimaryCcTLD));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_RelatedWebsiteSets,
+                       GetRelatedWebsiteSets) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  Attach();
+
+  SendCommandSync("Storage.getRelatedWebsiteSets");
+
+  const base::Value::List* set_list = result()->FindList("sets");
+  ASSERT_TRUE(set_list);
+
+  base::Value::List expected =
+      base::Value::List()  //
+          .Append(base::Value::Dict()
+                      .Set("associatedSites",
+                           base::Value::List().Append(kAssociatedSite))
+                      .Set("primarySites", base::Value::List()
+                                               .Append(kPrimaryCcTLD)
+                                               .Append(kPrimarySite))
+                      .Set("serviceSites",
+                           base::Value::List().Append(kServiceSite)));
+
+  EXPECT_EQ(*set_list, expected);
 }
 
 }  // namespace
