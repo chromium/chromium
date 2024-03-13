@@ -4569,6 +4569,12 @@
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
+  'trace_test 8086:9bc5': {
+    'remove_from': [
+      # TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.
+      'win_optional_gpu_tests_rel',
+    ],
+  },
   'unit_tests': {
     'remove_from': [
       'android-pie-arm64-rel',  # https://crbug.com/1010211
@@ -4907,6 +4913,12 @@
       # Removed from V8 builder since WebGL 1 should provide reasonable
       # upstream test coverage without the capacity hit from WebGL 2.
       'Win V8 FYI Release (NVIDIA)',
+    ],
+  },
+  'webgl2_conformance_d3d11_passthrough_tests 8086:9bc5': {
+    'remove_from': [
+      # TODO(crbug.com/41483572): Re-add this when capacity issues are resolved.
+      'win_optional_gpu_tests_rel',
     ],
   },
   'webgl2_conformance_gl_passthrough_ganesh_tests': {
