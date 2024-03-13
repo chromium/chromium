@@ -217,6 +217,10 @@ bool PopupViewViews::Show(
 
 void PopupViewViews::Hide() {
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
+
+  open_sub_popup_timer_.Stop();
+  no_selection_sub_popup_close_timer_.Stop();
+
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
   DoHide();
@@ -1011,6 +1015,10 @@ bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
 void PopupViewViews::SetRowWithOpenSubPopup(
     std::optional<size_t> row_index,
     AutoselectFirstSuggestion autoselect_first_suggestion) {
+  if (!controller_) {
+    return;
+  }
+
   if (row_with_open_sub_popup_ == row_index) {
     return;
   }

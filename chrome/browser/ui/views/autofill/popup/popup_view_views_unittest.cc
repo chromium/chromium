@@ -1120,6 +1120,23 @@ TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnSelection) {
   EXPECT_NE(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
 }
 
+TEST_F(PopupViewViewsTest, SubPopupHidingIsCanceledOnParentHiding) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+      Suggestion(u"Suggestion #2"),
+  });
+  CreateAndShowView();
+  CellIndex cell{0, CellType::kControl};
+  view().SetSelectedCell(cell, PopupCellSelectionSource::kNonUserInput);
+
+  ASSERT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+
+  view().Hide();
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
+
+  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
+}
+
 TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
   ui::MouseEvent fake_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
                             ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED, 0);
