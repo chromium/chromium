@@ -143,17 +143,48 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
           constraintEqualToAnchor:setUpListItemStackView.trailingAnchor],
     ]];
   }
-  [self.view addSubview:setUpListItemStackView];
+
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  scrollView.showsVerticalScrollIndicator = NO;
+
+  [scrollView addSubview:setUpListItemStackView];
+  [self.view addSubview:scrollView];
+
+  // Set scroll view constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [setUpListItemStackView.leadingAnchor
+    [scrollView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor
                        constant:kSetUpListStackViewLeadingInset],
-    [setUpListItemStackView.trailingAnchor
+    [scrollView.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor
                        constant:-kSetUpListStackViewTrailingInset],
-    [setUpListItemStackView.topAnchor
+    [scrollView.topAnchor
         constraintEqualToAnchor:subtitle.bottomAnchor
                        constant:kSetUpListStackViewDescriptionSpacing],
+    [scrollView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                              .bottomAnchor],
+  ]];
+
+  AddSameConstraints(setUpListItemStackView, scrollView);
+
+  // Scroll view constraints to the height of its content.
+  NSLayoutConstraint* heightConstraint = [scrollView.heightAnchor
+      constraintEqualToAnchor:scrollView.contentLayoutGuide.heightAnchor];
+  // UILayoutPriorityDefaultHigh is the default priority for content
+  // compression. Setting this lower avoids compressing the content of the
+  // scroll view.
+  heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
+  heightConstraint.active = YES;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [setUpListItemStackView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    // Disable horizontal scrolling.
+    [setUpListItemStackView.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.view.layoutMarginsGuide
+                                              .widthAnchor],
   ]];
 }
 
