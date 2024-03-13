@@ -218,9 +218,8 @@ class ArcNotificationContentViewTest : public AshTestBase {
         surface_manager(), surface_.get(), notification_key);
 
     exo::test::ExoTestHelper exo_test_helper;
-    surface_buffer_ =
-        std::make_unique<exo::Buffer>(exo_test_helper.CreateGpuMemoryBuffer(
-            kNotificationSurfaceBounds.size()));
+    surface_buffer_ = exo::test::ExoTestHelper::CreateBuffer(
+        kNotificationSurfaceBounds.size());
     surface_->Attach(surface_buffer_.get());
 
     surface_->Commit();

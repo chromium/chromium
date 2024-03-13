@@ -174,7 +174,7 @@ class ZAuraSurfaceTest : public test::ExoTestBase,
     test::ExoTestBase::SetUp();
 
     gfx::Size buffer_size(10, 10);
-    auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+    auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
 
     surface_ = std::make_unique<Surface>();
     surface_->Attach(buffer.get());
@@ -376,7 +376,7 @@ TEST_F(ZAuraSurfaceTest, OcclusionIncludesOffScreenArea) {
   UpdateDisplay("200x150");
 
   gfx::Size buffer_size(80, 100);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   // This is scaled by 1.5 - set the bounds to (-60, 75, 120, 150) in screen
   // coordinates so 75% of it is outside of the screen.
   surface().window()->SetBounds(gfx::Rect(-40, 50, 80, 100));
@@ -399,7 +399,7 @@ TEST_F(ZAuraSurfaceTest, OcclusionFractionDoesNotDoubleCountOutsideOfScreen) {
 
   // Create a surface which is halfway offscreen.
   gfx::Size buffer1_size(80, 100);
-  auto buffer1 = exo_test_helper()->CreateBuffer(buffer1_size);
+  auto buffer1 = test::ExoTestHelper::CreateBuffer(buffer1_size);
   surface().window()->SetBounds(gfx::Rect(-40, 50, 80, 100));
   surface().Attach(buffer1.get());
   surface().Commit();

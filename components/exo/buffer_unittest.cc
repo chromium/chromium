@@ -88,7 +88,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(BufferTest, ReleaseCallback) {
   gfx::Size buffer_size(256, 256);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto surface_tree_host = std::make_unique<SurfaceTreeHost>("BufferTest");
   LayerTreeFrameSinkHolder* frame_sink_holder =
       surface_tree_host->layer_tree_frame_sink_holder();
@@ -186,7 +186,7 @@ TEST_P(BufferTest, SolidColorReleaseCallback) {
 
 TEST_P(BufferTest, IsLost) {
   gfx::Size buffer_size(256, 256);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto surface_tree_host = std::make_unique<SurfaceTreeHost>("BufferTest");
   LayerTreeFrameSinkHolder* frame_sink_holder =
       surface_tree_host->layer_tree_frame_sink_holder();
@@ -246,7 +246,7 @@ TEST_P(BufferTest, IsLost) {
 TEST_P(BufferTest, OnLostResources) {
   // Create a Buffer and use it to produce a Texture.
   constexpr gfx::Size buffer_size(256, 256);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto surface_tree_host = std::make_unique<SurfaceTreeHost>("BufferTest");
   LayerTreeFrameSinkHolder* frame_sink_holder =
       surface_tree_host->layer_tree_frame_sink_holder();
@@ -281,7 +281,7 @@ TEST_P(BufferTest, SurfaceTreeHostDestruction) {
   LayerTreeFrameSinkHolder* frame_sink_holder =
       shell_surface->layer_tree_frame_sink_holder();
 
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
 
   // Remove wait time for efficiency.
   buffer->set_wait_for_release_delay_for_testing(base::TimeDelta());
@@ -340,7 +340,7 @@ TEST_P(BufferTest, SurfaceTreeHostLastFrame) {
   LayerTreeFrameSinkHolder* frame_sink_holder =
       shell_surface->layer_tree_frame_sink_holder();
 
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
 
   // Remove wait time for efficiency.
   buffer->set_wait_for_release_delay_for_testing(base::TimeDelta());
@@ -472,7 +472,7 @@ TEST_P(ReactiveFrameSubmissionBufferTest,
       static_cast<TestLayerTreeFrameSinkHolder*>(
           shell_surface->layer_tree_frame_sink_holder());
 
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
 
   // Remove wait time for efficiency.
   buffer->set_wait_for_release_delay_for_testing(base::TimeDelta());
@@ -568,7 +568,7 @@ TEST_P(ReactiveFrameSubmissionBufferTest,
   LayerTreeFrameSinkHolder* frame_sink_holder =
       shell_surface->layer_tree_frame_sink_holder();
 
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
 
   // Remove wait time for efficiency.
   buffer->set_wait_for_release_delay_for_testing(base::TimeDelta());
@@ -646,7 +646,7 @@ TEST_P(ReactiveFrameSubmissionBufferTest,
       static_cast<TestLayerTreeFrameSinkHolder*>(
           shell_surface->layer_tree_frame_sink_holder());
 
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
 
   // Remove wait time for efficiency.
   buffer->set_wait_for_release_delay_for_testing(base::TimeDelta());

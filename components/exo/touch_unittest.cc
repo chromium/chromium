@@ -524,7 +524,7 @@ TEST_F(TouchTest, DragDropAbort) {
 
   // Make origin into a real window so the touch can click it
   ShellSurface shell_surface(&origin);
-  auto buffer = exo_test_helper()->CreateBuffer(gfx::Size(10, 10));
+  auto buffer = test::ExoTestHelper::CreateBuffer(gfx::Size(10, 10));
   origin.Attach(buffer.get());
   origin.Commit();
 

@@ -59,6 +59,10 @@ const int kWaitForReleaseDelayMs = 500;
 
 constexpr char kBufferInUse[] = "BufferInUse";
 
+const unsigned kDefaultQueryType = GL_COMMANDS_COMPLETED_CHROMIUM;
+const bool kDefaultUseZeroCopy = true;
+const bool kDefaultYInvert = false;
+
 // Gets the color type of |format| for creating bitmap. If it returns
 // SkColorType::kUnknown_SkColorType, it means with this format, this buffer
 // contents should not be used to create bitmap.
@@ -570,13 +574,16 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     gfx::BufferUsage buffer_usage,
     base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle,
-    base::WaitableEvent* shutdown_event) {
+    base::WaitableEvent* shutdown_event,
+    bool is_overlay_candidate) {
   return std::make_unique<Buffer>(
       aura::Env::GetInstance()
           ->context_factory()
           ->GetGpuMemoryBufferManager()
           ->CreateGpuMemoryBuffer(buffer_size, buffer_format, buffer_usage,
-                                  surface_handle, shutdown_event));
+                                  surface_handle, shutdown_event),
+      kDefaultQueryType, kDefaultUseZeroCopy, is_overlay_candidate,
+      kDefaultYInvert);
 }
 
 bool Buffer::ProduceTransferableResource(

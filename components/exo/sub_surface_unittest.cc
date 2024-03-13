@@ -117,7 +117,7 @@ TEST_F(SubSurfaceTest, PlaceBelow) {
 
 TEST_F(SubSurfaceTest, ParentDamageOnReorder) {
   gfx::Size buffer_size(800, 600);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto surface_tree_host = std::make_unique<SurfaceTreeHost>("SubSurfaceTest");
   LayerTreeFrameSinkHolder* frame_sink_holder =
       surface_tree_host->layer_tree_frame_sink_holder();
@@ -211,7 +211,7 @@ TEST_F(SubSurfaceTest, SetCommitBehavior) {
 
 TEST_F(SubSurfaceTest, SetOnParent) {
   gfx::Size buffer_size(32, 32);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto parent = std::make_unique<Surface>();
   auto shell_surface = std::make_unique<ShellSurface>(parent.get());
   parent->Attach(buffer.get());

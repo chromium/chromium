@@ -63,7 +63,8 @@ class Buffer {
       gfx::BufferUsage buffer_usage,
       base::StringPiece debug_label,
       gpu::SurfaceHandle surface_handle,
-      base::WaitableEvent* shutdown_event);
+      base::WaitableEvent* shutdown_event,
+      bool is_overlay_candidate = false);
 
   // Set the callback to run when the buffer is no longer used by the
   // compositor. The client is free to re-use or destroy this buffer and

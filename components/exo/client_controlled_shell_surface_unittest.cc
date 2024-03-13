@@ -210,7 +210,7 @@ TEST_P(ClientControlledShellSurfaceTest, UpdateModalWindow) {
   std::unique_ptr<Display> display(new Display);
   std::unique_ptr<Surface> child = display->CreateSurface();
   gfx::Size buffer_size(128, 128);
-  auto child_buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto child_buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   child->Attach(child_buffer.get());
   std::unique_ptr<SubSurface> sub_surface(
       display->CreateSubSurface(child.get(), surface));
@@ -323,7 +323,7 @@ TEST_P(ClientControlledShellSurfaceTest, SurfaceShadow) {
 
   // 4) Shadow bounds is independent of the sub surface.
   gfx::Size new_buffer_size(256, 256);
-  auto new_child_buffer = exo_test_helper()->CreateBuffer(new_buffer_size);
+  auto new_child_buffer = test::ExoTestHelper::CreateBuffer(new_buffer_size);
   child->Attach(new_child_buffer.get());
   child->Commit();
   surface->Commit();
@@ -1758,7 +1758,7 @@ TEST_P(ClientControlledShellSurfaceTest,
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
 
   const gfx::Size buffer_size(64, 64);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
 
   constexpr double kOriginalScale = 4.f;
   const gfx::Rect bounds_dp(64, 64, 128, 128);
@@ -2372,7 +2372,7 @@ TEST_F(ClientControlledShellSurfaceScaleTest,
   EXPECT_EQ(0, delegate->bounds_change_count());
 
   const gfx::Size new_buffer_size(10, 10);
-  auto new_buffer = exo_test_helper()->CreateBuffer(new_buffer_size);
+  auto new_buffer = test::ExoTestHelper::CreateBuffer(new_buffer_size);
   surface->Attach(new_buffer.get());
   shell_surface->SetScaleFactor(1.f);
   surface->Commit();
@@ -2583,7 +2583,7 @@ TEST_P(ClientControlledShellSurfaceTest,
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
 
   const gfx::Size buffer_size(64, 64);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   const gfx::Rect bounds_dp(64, 64, 128, 128);
   const gfx::Rect bounds_px_for_2x = gfx::ScaleToRoundedRect(bounds_dp, 2);
   {

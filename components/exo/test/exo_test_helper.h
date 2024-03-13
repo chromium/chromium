@@ -73,21 +73,28 @@ class ExoTestHelper {
   ~ExoTestHelper();
 
   // Creates a GpuMemoryBuffer instance that can be used for tests.
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
+  static std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
 
   // Creates an exo::Buffer that has the size of the given
   // shell surface.
-  std::unique_ptr<Buffer> CreateBuffer(
+  static std::unique_ptr<Buffer> CreateBuffer(
       ShellSurfaceBase* shell_surface,
       gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888);
 
   // Creates an exo::Buffer that will be backed by either GpuMemoryBuffer or
   // MappableSI if enabled.
-  std::unique_ptr<Buffer> CreateBuffer(
+  static std::unique_ptr<Buffer> CreateBuffer(
       gfx::Size buffer_size,
-      gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888);
+      gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888,
+      bool is_overlay_candidate = false);
+
+  // Creates an exo::Buffer from GMBHandle.
+  static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
+      gfx::GpuMemoryBufferHandle handle,
+      gfx::Size buffer_size,
+      gfx::BufferFormat buffer_format);
 
   std::unique_ptr<ClientControlledShellSurface>
   CreateClientControlledShellSurface(Surface* surface,

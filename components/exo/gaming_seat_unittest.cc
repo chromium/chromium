@@ -110,7 +110,7 @@ TEST_F(GamingSeatTest, ConnectionChange) {
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
   gfx::Size buffer_size(10, 10);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   surface->Attach(buffer.get());
   surface->Commit();
 
@@ -197,7 +197,7 @@ TEST_F(GamingSeatTest, Timestamp) {
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
   gfx::Size buffer_size(10, 10);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   surface->Attach(buffer.get());
   surface->Commit();
 

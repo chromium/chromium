@@ -39,13 +39,7 @@ struct Holder {
     auto surface = std::make_unique<exo::Surface>();
     std::unique_ptr<exo::Buffer> buffer;
     if (!size.IsEmpty() && buffer_format) {
-      buffer = std::make_unique<exo::Buffer>(
-          aura::Env::GetInstance()
-              ->context_factory()
-              ->GetGpuMemoryBufferManager()
-              ->CreateGpuMemoryBuffer(size, *buffer_format,
-                                      gfx::BufferUsage::GPU_READ,
-                                      gpu::kNullSurfaceHandle, nullptr));
+      buffer = exo::test::ExoTestHelper::CreateBuffer(size, *buffer_format);
       surface->Attach(buffer.get());
     }
     root_surface = surface.get();
@@ -54,14 +48,7 @@ struct Holder {
   }
 
   exo::Surface* AddChildSurface(exo::Surface* parent, const gfx::Rect& bounds) {
-    auto buffer = std::make_unique<exo::Buffer>(
-        aura::Env::GetInstance()
-            ->context_factory()
-            ->GetGpuMemoryBufferManager()
-            ->CreateGpuMemoryBuffer(bounds.size(), gfx::BufferFormat::RGBA_8888,
-                                    gfx::BufferUsage::GPU_READ,
-                                    gpu::kNullSurfaceHandle, nullptr));
-
+    auto buffer = exo::test::ExoTestHelper::CreateBuffer(bounds.size());
     auto surface = std::make_unique<exo::Surface>();
     surface->Attach(buffer.get());
     auto sub_surface = std::make_unique<exo::SubSurface>(surface.get(), parent);

@@ -161,7 +161,7 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
   }
 
   std::unique_ptr<Buffer> CreateBuffer(gfx::Size size) {
-    return exo_test_helper()->CreateBuffer(size);
+    return test::ExoTestHelper::CreateBuffer(size);
   }
 
   raw_ptr<ash::DragDropController, DanglingUntriaged> drag_drop_controller_ =
@@ -460,7 +460,7 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet_Touch) {
 TEST_F(ExtendedDragSourceTest, DestroyDraggedSurfaceWhileDragging) {
   // Create and map a toplevel shell surface.
   gfx::Size buffer_size(32, 32);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   std::unique_ptr<Surface> surface(new Surface);
   std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
   surface->Attach(buffer.get());

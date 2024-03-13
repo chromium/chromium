@@ -123,7 +123,7 @@ TEST_F(DragDropOperationTest, DeleteDataSourceDuringDragging) {
   ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
 
   gfx::Size buffer_size(100, 100);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -201,7 +201,7 @@ TEST_F(DragDropOperationTestWithWebUITabStripTest,
   auto* origin_surface = shell_surface->surface_for_testing();
 
   gfx::Size buffer_size(100, 100);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -253,7 +253,7 @@ TEST_F(DragDropOperationTest, DragDropFromPopup) {
   origin_surface->Commit();
 
   gfx::Size buffer_size(32, 32);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -316,7 +316,7 @@ TEST_F(DragDropOperationTest, DragDropFromNestedPopup) {
   origin_surface->Commit();
 
   gfx::Size buffer_size(32, 32);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -410,7 +410,7 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromLacros) {
   ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
 
   gfx::Size buffer_size(100, 100);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
@@ -474,7 +474,7 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromNonLacros) {
   ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
 
   gfx::Size buffer_size(100, 100);
-  auto buffer = exo_test_helper()->CreateBuffer(buffer_size);
+  auto buffer = test::ExoTestHelper::CreateBuffer(buffer_size);
   auto icon_surface = std::make_unique<Surface>();
   icon_surface->Attach(buffer.get());
 
