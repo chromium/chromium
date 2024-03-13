@@ -21,6 +21,12 @@ namespace password_manager::features {
 // auto-approved.
 BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 
+#if BUILDFLAG(IS_WIN)
+// OS authentication will use UserConsentVerifier api to trigger Windows Hello
+// authentication.
+BASE_DECLARE_FEATURE(kAuthenticateUsingNewWindowsHelloApi);
+#endif  // BUILDFLAG(IS_WIN)
+
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
 

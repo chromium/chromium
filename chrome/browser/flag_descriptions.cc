@@ -5247,6 +5247,12 @@ const char kNewConfirmationBubbleForGeneratedPasswordsDescription[] =
 
 #if BUILDFLAG(IS_WIN)
 
+const char kAuthenticateUsingNewWindowsHelloApiName[] =
+    "OS authentication will use new Windows Hello if available.";
+const char kAuthenticateUsingNewWindowsHelloApiDescription[] =
+    "If user has Windows Hello configured, OS authentication will use "
+    "UserConsentVerifier api, otherwise Wincred will be used.";
+
 const char kCalculateNativeWinOcclusionName[] =
     "Calculate window occlusion on Windows";
 const char kCalculateNativeWinOcclusionDescription[] =

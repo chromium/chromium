@@ -23,6 +23,17 @@ enum class BiometricAuthenticationStatusWin {
   kMaxValue = kNotConfiguredForUser,
 };
 
+enum class AuthenticationResultStatusWin {
+  kVerified = 0,
+  kDeviceNotPresent = 1,
+  kNotConfiguredForUser = 2,
+  kDisabledByPolicy = 3,
+  kDeviceBusy = 4,
+  kRetriesExhausted = 5,
+  kCanceled = 6,
+  kMaxValue = kCanceled,
+};
+
 // This interface is need to simplify testing as windows authentication happens
 // through free function which is hard to mock.
 class AuthenticatorWinInterface {

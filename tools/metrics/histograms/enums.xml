@@ -23393,6 +23393,7 @@ from previous Chrome versions.
   <int value="1184225265" label="AllowSyncXHRInPageDismissal:enabled"/>
   <int value="1185424279" label="enable-media-router"/>
   <int value="1185669166" label="AlwaysAbandonScheduledTask:disabled"/>
+  <int value="1185701843" label="AuthenticateUsingNewWindowsHelloApi:enabled"/>
   <int value="1187103825" label="OmniboxSuggestionsWrapAround:enabled"/>
   <int value="1187692916" label="TheoraVideoCodec:enabled"/>
   <int value="1187868655" label="FloatingWorkspaceV2:disabled"/>
@@ -23684,6 +23685,7 @@ from previous Chrome versions.
   <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1304791513" label="EnableFakeMouseHeuristic:disabled"/>
+  <int value="1304892658" label="AuthenticateUsingNewWindowsHelloApi:disabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
   <int value="1306412559" label="FastPairPwaCompanion:disabled"/>
   <int value="1306473273" label="BluetoothFlossCoredump:enabled"/>

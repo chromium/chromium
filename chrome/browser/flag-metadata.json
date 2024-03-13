@@ -544,6 +544,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "authenticate-using-new-windows-hello-api",
+    "owners": [ "sygiet@google.com", "vasilii@chromium.org"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "auto-framing-override",
     "owners": [ "kamesan@chromium.org", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116

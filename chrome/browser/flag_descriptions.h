@@ -3036,6 +3036,9 @@ extern const char kNewConfirmationBubbleForGeneratedPasswordsDescription[];
 
 #if BUILDFLAG(IS_WIN)
 
+extern const char kAuthenticateUsingNewWindowsHelloApiName[];
+extern const char kAuthenticateUsingNewWindowsHelloApiDescription[];
+
 extern const char kCalculateNativeWinOcclusionName[];
 extern const char kCalculateNativeWinOcclusionDescription[];
 
