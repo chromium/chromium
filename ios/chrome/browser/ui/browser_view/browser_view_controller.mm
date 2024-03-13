@@ -792,8 +792,8 @@ enum HeaderBehaviour {
   } else {
     [self.legacyTabStripCoordinator stop];
     self.legacyTabStripCoordinator = nil;
-    self.tabStripView = nil;
   }
+  self.tabStripView = nil;
 
   _bubblePresenter = nil;
 
@@ -992,8 +992,8 @@ enum HeaderBehaviour {
     } else {
       [self.legacyTabStripCoordinator stop];
       self.legacyTabStripCoordinator = nil;
-      self.tabStripView = nil;
     }
+    self.tabStripView = nil;
     _sideSwipeMediator = nil;
   }
 }
@@ -1383,24 +1383,6 @@ enum HeaderBehaviour {
   return height + unsafeHeight;
 }
 
-- (void)addConstraintsToTabStrip {
-  if (!IsModernTabStripOrRaccoonEnabled()) {
-    return;
-  }
-
-  self.tabStripView.translatesAutoresizingMaskIntoConstraints = NO;
-  [NSLayoutConstraint activateConstraints:@[
-    [self.view.safeAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor:self.tabStripView.topAnchor],
-    [self.view.safeAreaLayoutGuide.leadingAnchor
-        constraintEqualToAnchor:self.tabStripView.leadingAnchor],
-    [self.view.safeAreaLayoutGuide.trailingAnchor
-        constraintEqualToAnchor:self.tabStripView.trailingAnchor],
-    [self.tabStripView.heightAnchor
-        constraintEqualToConstant:kModernTabStripHeight],
-  ]];
-}
-
 // Sets up the constraints on the toolbar.
 - (void)addConstraintsToPrimaryToolbar {
   NSLayoutYAxisAnchor* topAnchor;
@@ -1509,7 +1491,13 @@ enum HeaderBehaviour {
         self.tabStripView = tabStripViewController.view;
         [self.view addSubview:self.tabStripView];
         [tabStripViewController didMoveToParentViewController:self];
-        [self addConstraintsToTabStrip];
+        CGRect tabStripFrame =
+            CGRectMake(0, self.headerOffset, self.view.bounds.size.width,
+                       kModernTabStripHeight);
+        self.tabStripView.frame = tabStripFrame;
+        self.tabStripView.autoresizingMask =
+            (UIViewAutoresizingFlexibleWidth |
+             UIViewAutoresizingFlexibleBottomMargin);
       }
       [self.view insertSubview:primaryToolbarView
                   belowSubview:self.tabStripView];
