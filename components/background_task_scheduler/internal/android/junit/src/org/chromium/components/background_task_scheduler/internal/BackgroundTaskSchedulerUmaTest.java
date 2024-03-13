@@ -142,7 +142,11 @@ public class BackgroundTaskSchedulerUmaTest {
                 BackgroundTaskSchedulerUma.BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 31);
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
+                        TaskIds.NOTIFICATION_SERVICE_PRE_UNSUBSCRIBE_JOB_ID));
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 32);
     }
 
     @Test

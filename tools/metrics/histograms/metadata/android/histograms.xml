@@ -203,6 +203,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Gcm" summary="Gcm"/>
   <variant name="NotificationScheduler" summary="NotificationScheduler"/>
   <variant name="NotificationService" summary="NotificationService"/>
+  <variant name="NotificationServicePreUnsubscribe"
+      summary="NotificationServicePreUnsubscribe (not used)"/>
   <variant name="NotificationTrigger" summary="NotificationTrigger"/>
   <variant name="OfflinePages" summary="OfflinePages"/>
   <variant name="Omaha" summary="Omaha"/>

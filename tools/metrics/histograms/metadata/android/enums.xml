@@ -804,6 +804,7 @@ chromium-metrics-reviews@google.com.
   <int value="28" label="Attribution Provider flush task"/>
   <int value="29" label="Download auto-resumption unmetered task"/>
   <int value="30" label="Download auto-resumption any network task"/>
+  <int value="31" label="Notification pre-unsubscribe action"/>
 </enum>
 
 <enum name="BackPressConsumer">

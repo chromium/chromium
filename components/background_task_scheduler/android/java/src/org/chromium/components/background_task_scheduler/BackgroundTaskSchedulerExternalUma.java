@@ -42,8 +42,9 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH = 28;
     public static final int BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_UNMETERED = 29;
     public static final int BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK = 30;
+    public static final int BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE = 31;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 31;
+    public static final int BACKGROUND_TASK_COUNT = 32;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -116,6 +117,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_UNMETERED;
             case TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID:
                 return BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK;
+            case TaskIds.NOTIFICATION_SERVICE_PRE_UNSUBSCRIBE_JOB_ID:
+                return BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE;
         }
         // Returning a value that is not expected to ever be reported.
         return BACKGROUND_TASK_NOT_FOUND;
@@ -179,6 +182,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "DownloadAutoResumptionUnmetered";
             case TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID:
                 return "DownloadAutoResumptionAnyNetwork";
+            case TaskIds.NOTIFICATION_SERVICE_PRE_UNSUBSCRIBE_JOB_ID:
+                return "NotificationServicePreUnsubscribe";
         }
         assert false;
         return null;
