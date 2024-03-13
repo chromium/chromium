@@ -2027,16 +2027,11 @@ StyleRulePositionTry* CSSParserImpl::ConsumePositionTryRule(
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kPositionTry, prelude_offset_start);
     observer_->EndRuleHeader(prelude_offset_end);
-    observer_->StartRuleBody(stream.Offset());
   }
 
   ConsumeDeclarationList(stream, StyleRule::kPositionTry, CSSNestingType::kNone,
                          /*parent_rule_for_nesting=*/nullptr,
                          /*child_rules=*/nullptr);
-
-  if (observer_) {
-    observer_->EndRuleBody(stream.Offset());
-  }
 
   return MakeGarbageCollected<StyleRulePositionTry>(
       AtomicString(name),
