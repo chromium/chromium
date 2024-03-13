@@ -248,23 +248,17 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   // Convert the updated capture data ready for encode.
   PrepareImage(frame.get(), &updated_region);
 
-  vpx_active_map_t act_map;
   if (use_active_map_) {
-    if (params.clear_active_map) {
-      active_map_.Clear();
+    if (params.clear_active_map || params.key_frame) {
+      active_map_data_.Clear();
     }
 
-    if (params.key_frame) {
-      updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
-    }
-
-    active_map_.Update(updated_region);
-
-    act_map.rows = active_map_.height();
-    act_map.cols = active_map_.width();
-    act_map.active_map = active_map_.data();
-    if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &act_map)) {
-      LOG(ERROR) << "Unable to apply active map";
+    // VPX codecs do not use an active map for keyframes so skip in that case.
+    if (!params.key_frame) {
+      active_map_data_.Update(updated_region);
+      if (vpx_codec_control(codec_.get(), VP8E_SET_ACTIVEMAP, &active_map_)) {
+        LOG(ERROR) << "Unable to apply active map";
+      }
     }
   }
 
@@ -279,16 +273,6 @@ void WebrtcVideoEncoderVpx::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     // TODO(zijiehe): A more exact error type is preferred.
     std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
     return;
-  }
-
-  if (use_active_map_) {
-    // VP8 doesn't return an active map so we assume it hasn't changed.
-    if (use_vp9_) {
-      ret = vpx_codec_control(codec_.get(), VP9E_GET_ACTIVEMAP, &act_map);
-      DCHECK_EQ(ret, VPX_CODEC_OK)
-          << "Failed to fetch active map: " << vpx_codec_err_to_string(ret)
-          << "\n";
-    }
   }
 
   // Read the encoded data.
@@ -375,7 +359,12 @@ void WebrtcVideoEncoderVpx::Configure(const webrtc::DesktopSize& size) {
   }
 
   if (use_active_map_) {
-    active_map_.Initialize(size);
+    active_map_data_.Initialize(size);
+    active_map_ = {
+        .active_map = active_map_data_.data(),
+        .rows = active_map_data_.height(),
+        .cols = active_map_data_.width(),
+    };
   }
 
   // Fetch a default configuration for the desired codec.

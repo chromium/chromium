@@ -107,7 +107,12 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   DCHECK_NE(codec->name, nullptr);
 
   if (use_active_map_) {
-    active_map_.Initialize(size);
+    active_map_data_.Initialize(size);
+    active_map_ = {
+        .active_map = active_map_data_.data(),
+        .rows = active_map_data_.height(),
+        .cols = active_map_data_.width(),
+    };
   }
 
   error = aom_codec_control(codec.get(), AOME_SET_CPUUSED, av1_encoder_speed_);
@@ -422,24 +427,17 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
   webrtc::DesktopRegion updated_region;
   PrepareImage(frame.get(), updated_region);
 
-  aom_active_map_t act_map;
   if (use_active_map_) {
-    if (params.clear_active_map) {
-      active_map_.Clear();
+    if (params.clear_active_map || params.key_frame) {
+      active_map_data_.Clear();
     }
 
-    if (params.key_frame) {
-      updated_region.SetRect(webrtc::DesktopRect::MakeSize(frame_size));
-    }
-
-    active_map_.Update(updated_region);
-
-    // Apply active map to the encoder.
-    act_map.rows = active_map_.height();
-    act_map.cols = active_map_.width();
-    act_map.active_map = active_map_.data();
-    if (aom_codec_control(codec_.get(), AOME_SET_ACTIVEMAP, &act_map)) {
-      LOG(ERROR) << "Unable to apply active map";
+    // AV1 does not use an active map for keyframes so skip in that case.
+    if (!params.key_frame) {
+      active_map_data_.Update(updated_region);
+      if (aom_codec_control(codec_.get(), AOME_SET_ACTIVEMAP, &active_map_)) {
+        LOG(ERROR) << "Unable to apply active map";
+      }
     }
   }
 
@@ -456,14 +454,6 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
                << (error_detail ? error_detail : "No error details");
     std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
     return;
-  }
-
-  if (use_active_map_) {
-    // Update our active map based on the internal map in the encoder.
-    ret = aom_codec_control(codec_.get(), AV1E_GET_ACTIVEMAP, &act_map);
-    DCHECK_EQ(ret, AOM_CODEC_OK)
-        << "Failed to fetch active map: " << aom_codec_err_to_string(ret)
-        << "\n";
   }
 
   // Read the encoded data.

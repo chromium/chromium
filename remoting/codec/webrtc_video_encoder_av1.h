@@ -59,8 +59,9 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
   bool lossless_color_ = false;
   int av1_encoder_speed_ = -1;
 
-  // Active map used to optimize out processing of unchanged macroblocks.
-  VideoEncoderActiveMap active_map_;
+  // An active map is used to skip processing of unchanged macroblocks.
+  VideoEncoderActiveMap active_map_data_;
+  aom_active_map_t active_map_;
   // Disable |active_map_| by default until we've tuned it.
   bool use_active_map_ = false;
 
