@@ -571,7 +571,7 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
   // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(
           ContentBrowserClient::InterestGroupApiOperation::kSell, seller)) {
-    std::move(callback).Run({}, {}, "Attestation Failed");
+    std::move(callback).Run({}, {}, "API not allowed for this origin");
     return;
   }
 
