@@ -498,12 +498,11 @@ struct Elu {
 // of `-N` (inclusive) to `N` (exclusive), where `N = input.dimensions[axis]`,
 // and negative index means indexing from the end of the `axis` dimension.
 //
-// TODO(crbug.com/1273291): Spec issue, finalize out-of-bounds indices
-// sanitization behavior.
+// Need to finalize out-of-bounds indices sanitization behavior, tracked by spec
+// issue: https://github.com/webmachinelearning/webnn/issues/486
 //
-// TODO(crbug.com/1273291): Add conformance test cases for gather's
-// out-of-bounds access. Tracked by issue
-// https://github.com/webmachinelearning/webnn/issues/244#issuecomment-1820092158
+// TODO(crbug.com/329134204): Add conformance test cases for gather's
+// out-of-bounds access.
 struct Gather {
   // The input operand (referenced by input_operand_id) and the indices operand
   // (referenced by indices_operand_id) must be distinct from the output
@@ -551,18 +550,20 @@ struct Gru {
   uint64? recurrent_bias_operand_id;
   // The id of the initial hidden state operand.
   uint64? initial_hidden_state_operand_id;
-  // Indicates whether to apply the reset gate after or before matrix multiplication.
+  // Indicates whether to apply the reset gate after or before matrix
+  // multiplication.
   bool reset_after;
-  // Indicates whether to also return the entire sequence with every output from each time step.
+  // Indicates whether to also return the entire sequence with every output from
+  // each time step.
   bool return_sequence;
   // The processing direction of the input sequence.
   RecurrentNetworkDirection direction;
   // The ordering of the weight and bias vectors for the internal gates of GRU.
   GruWeightLayout layout;
-  // Specifies a pair of activation functions for the update, reset and new gates.
+  // Specifies a pair of activation functions for the update, reset and new
+  // gates.
   array<Activation, 2> activations;
 };
-
 
 // Represents general matrix multiplication (gemm) operation in the expression
 // `alpha * A * B + beta * C`.
