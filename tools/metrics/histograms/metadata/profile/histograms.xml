@@ -164,8 +164,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Guest.OTR.Lifetime" units="minutes"
-    expires_after="2024-03-17">
-  <owner>rhalavati@chromium.org</owner>
+    expires_after="2024-09-17">
+  <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
     This histogram records the lifetime duration of an off-the-record Guest
