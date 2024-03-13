@@ -248,6 +248,11 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response getLayersForNode(
       int node_id,
       std::unique_ptr<protocol::CSS::CSSLayerData>* root_layer) override;
+  protocol::Response getLocationForSelector(
+      const String& style_sheet_id,
+      const String& selector_text,
+      std::unique_ptr<protocol::Array<protocol::CSS::SourceRange>>* ranges)
+      override;
   protocol::Response setEffectivePropertyValueForNode(
       int node_id,
       const String& property_name,

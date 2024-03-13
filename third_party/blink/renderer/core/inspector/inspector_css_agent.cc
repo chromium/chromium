@@ -1016,6 +1016,63 @@ protocol::Response InspectorCSSAgent::getLayersForNode(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorCSSAgent::getLocationForSelector(
+    const String& style_sheet_id,
+    const String& selector_text,
+    std::unique_ptr<protocol::Array<protocol::CSS::SourceRange>>* ranges) {
+  InspectorStyleSheet* style_sheet = nullptr;
+  protocol::Response response =
+      AssertInspectorStyleSheetForId(style_sheet_id, style_sheet);
+  if (response.IsError()) {
+    return response;
+  }
+
+  *ranges = std::make_unique<protocol::Array<protocol::CSS::SourceRange>>();
+
+  const CSSRuleVector& css_rules = style_sheet->FlatRules();
+  for (auto css_rule : css_rules) {
+    CSSStyleRule* css_style_rule = DynamicTo<CSSStyleRule>(css_rule.Get());
+    if (css_style_rule == nullptr) {
+      continue;
+    }
+
+    const String curr_selector_text = css_style_rule->selectorText();
+    if (selector_text != curr_selector_text) {
+      continue;
+    }
+
+    const CSSRuleSourceData* source_data =
+        style_sheet->SourceDataForRule(css_style_rule);
+    std::unique_ptr<protocol::CSS::SourceRange> range =
+        style_sheet->BuildSourceRangeObject(source_data->rule_header_range);
+
+    const CSSStyleSheet* page_style_sheet = style_sheet->PageStyleSheet();
+    const TextPosition start_position =
+        page_style_sheet->StartPositionInSource();
+    if (range->getStartLine() == 0) {
+      range->setStartColumn(range->getStartColumn() +
+                            start_position.column_.ZeroBasedInt());
+    }
+    if (range->getEndLine() == 0) {
+      range->setEndColumn(range->getEndColumn() +
+                          start_position.column_.ZeroBasedInt());
+    }
+    range->setStartLine(range->getStartLine() +
+                        start_position.line_.ZeroBasedInt());
+    range->setEndLine(range->getEndLine() +
+                      start_position.line_.ZeroBasedInt());
+    (*ranges)->emplace_back(std::move(range));
+  }
+
+  if ((*ranges)->empty()) {
+    String message = "Failed to find selector '" + selector_text +
+                     "' in style sheet " + style_sheet->FinalURL();
+    return protocol::Response::InvalidParams(message.Utf8());
+  }
+
+  return protocol::Response::Success();
+}
+
 protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
     int node_id,
     Maybe<protocol::CSS::CSSStyle>* inline_style,

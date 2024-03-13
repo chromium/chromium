@@ -2165,6 +2165,15 @@ experimental domain CSS
     returns
       CSSLayerData rootLayer
 
+  # Given a CSS selector text and a style sheet ID, getLocationForSelector
+  # returns an array of locations of the CSS selector in the style sheet.
+  experimental command getLocationForSelector
+    parameters
+      StyleSheetId styleSheetId
+      string selectorText
+    returns
+      array of SourceRange ranges
+
   # Starts tracking the given computed styles for updates. The specified array of properties
   # replaces the one previously specified. Pass empty array to disable tracking.
   # Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified.
