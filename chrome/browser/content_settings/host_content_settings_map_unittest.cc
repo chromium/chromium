@@ -2354,3 +2354,23 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
                                ContentSetting::CONTENT_SETTING_ALLOW);
   EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetContentSetting(host, host, type));
 }
+
+TEST_F(HostContentSettingsMapTest, ShutdownDuringExpirationAsanTest) {
+  TestingProfile profile;
+
+  auto host_content_settings_map = base::MakeRefCounted<HostContentSettingsMap>(
+      profile.GetPrefs(), false, true, true, true);
+  ContentSettingsPattern pattern =
+      ContentSettingsPattern::FromString("[*.]example.com");
+
+  base::TimeDelta ttl = base::Seconds(1);
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_lifetime(ttl);
+
+  host_content_settings_map->SetContentSettingCustomScope(
+      pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW, constraints);
+
+  host_content_settings_map->ShutdownOnUIThread();
+  FastForwardTime(ttl);
+}
