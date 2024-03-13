@@ -35,6 +35,14 @@ bool IsAccessibilityPdfOcrForSelectToSpeakEnabled() {
       ::features::kAccessibilityPdfOcrForSelectToSpeak);
 }
 
+BASE_FEATURE(kAccessibilityPruneRedundantInlineText,
+             "AccessibilityPruneRedundantInlineText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityPruneRedundantInlineTextEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityPruneRedundantInlineText);
+}
+
 BASE_FEATURE(kAugmentExistingImageLabels,
              "AugmentExistingImageLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
