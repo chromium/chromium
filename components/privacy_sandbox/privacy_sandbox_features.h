@@ -196,6 +196,10 @@ BASE_DECLARE_FEATURE(kIpProtectionUx);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kCookieSettingsUiAlignment);
 
+// Enables settings UX + behavior for the full Tracking Protection launch.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionSettingsLaunch);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables the trackingProtectionNoticeController to notify the
 // TrackingProtectionOnboardingService when a notice was requested (Message
