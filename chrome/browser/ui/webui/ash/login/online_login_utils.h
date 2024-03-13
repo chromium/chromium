@@ -135,7 +135,7 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
     const std::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
-    const std::optional<ChallengeResponseKey> challenge_response_key);
+    const std::optional<ChallengeResponseKey>& challenge_response_key);
 
 // Returns user canonical e-mail. Finds already used account alias, if
 // user has already signed in.

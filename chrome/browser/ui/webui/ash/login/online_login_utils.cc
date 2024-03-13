@@ -173,7 +173,7 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
     const std::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
-    const std::optional<ChallengeResponseKey> challenge_response_key) {
+    const std::optional<ChallengeResponseKey>& challenge_response_key) {
   std::unique_ptr<UserContext> user_context =
       std::make_unique<UserContext>(user_type, account_id);
 
