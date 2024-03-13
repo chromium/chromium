@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_consumer.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -45,8 +46,12 @@
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());
 
-    _restorationHasFinished =
-        !_webState->GetNavigationManager()->IsRestoreSessionInProgress();
+    _restorationHasFinished = NO;
+    if (!base::FeatureList::IsEnabled(
+            web::features::kRemoveOldWebStateRestoration)) {
+      _restorationHasFinished =
+          !_webState->GetNavigationManager()->IsRestoreSessionInProgress();
+    }
   }
   return self;
 }
