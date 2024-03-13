@@ -2110,7 +2110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskApi.CloseAllUndo" enum="BooleanClicked"
-    expires_after="2024-03-17">
+    expires_after="2025-03-17">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <owner>mclare@google.com</owner>
@@ -2121,7 +2121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskApi.RemoveDeskType" enum="DeskCloseType"
-    expires_after="2024-04-17">
+    expires_after="2025-03-17">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <owner>mclare@google.com</owner>
@@ -2133,7 +2133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskApi.{Method}.Result" enum="BooleanSuccess"
-    expires_after="2024-04-07">
+    expires_after="2025-03-17">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
