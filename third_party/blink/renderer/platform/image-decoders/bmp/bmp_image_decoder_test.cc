@@ -98,6 +98,19 @@ TEST(BMPImageDecoderTest, crbug752898) {
   decoder->DecodeFrameBufferAtIndex(0);
 }
 
+// Verify that decoding an image with an unnecessary EOF marker does not crash.
+TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
+  static constexpr char kBmpFile[] = "/images/resources/unnecessary-eof.bmp";
+  scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
+  ASSERT_TRUE(data.get());
+
+  std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
+  decoder->SetData(data.get(), true);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+}
+
 class BMPImageDecoderCorpusTest : public ImageDecoderBaseTest {
  public:
   BMPImageDecoderCorpusTest() : ImageDecoderBaseTest("bmp") {}
