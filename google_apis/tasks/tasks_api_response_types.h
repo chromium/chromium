@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "google_apis/tasks/tasks_api_task_status.h"
+#include "url/gurl.h"
 
 namespace base {
 template <class StructType>
@@ -127,6 +128,7 @@ class Task {
   const std::vector<std::unique_ptr<TaskLink>>& links() const { return links_; }
   const std::string& notes() const { return notes_; }
   const base::Time& updated() const { return updated_; }
+  const GURL& web_view_link() const { return web_view_link_; }
 
  private:
   // Task identifier.
@@ -157,6 +159,9 @@ class Task {
 
   // When the task was last updated.
   base::Time updated_;
+
+  // Absolute link to the task in the Google Tasks Web UI.
+  GURL web_view_link_;
 };
 
 // Container for multiple `Task`s.

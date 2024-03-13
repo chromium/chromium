@@ -16,6 +16,7 @@
 #include "google_apis/common/parser_util.h"
 #include "google_apis/common/time_util.h"
 #include "google_apis/tasks/tasks_api_task_status.h"
+#include "url/gurl.h"
 
 namespace google_apis::tasks {
 namespace {
@@ -35,6 +36,7 @@ constexpr char kApiResponsePositionKey[] = "position";
 constexpr char kApiResponseStatusKey[] = "status";
 constexpr char kApiResponseTitleKey[] = "title";
 constexpr char kApiResponseUpdatedKey[] = "updated";
+constexpr char kApiResponseWebViewLinkKey[] = "webViewLink";
 
 constexpr char kLinkTypeEmail[] = "email";
 
@@ -56,6 +58,11 @@ bool ConvertTaskDueDate(std::string_view input,
 bool ConvertTaskLinkType(std::string_view input, TaskLink::Type* output) {
   *output = input == kLinkTypeEmail ? TaskLink::Type::kEmail
                                     : TaskLink::Type::kUnknown;
+  return true;
+}
+
+bool ConvertTaskWebViewLink(std::string_view input, GURL* output) {
+  *output = GURL(input);
   return true;
 }
 
@@ -128,6 +135,9 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterStringField(kApiResponseNotesKey, &Task::notes_);
   converter->RegisterCustomField<base::Time>(
       kApiResponseUpdatedKey, &Task::updated_, &util::GetTimeFromString);
+  converter->RegisterCustomField<GURL>(kApiResponseWebViewLinkKey,
+                                       &Task::web_view_link_,
+                                       &ConvertTaskWebViewLink);
 }
 
 // static
