@@ -6,6 +6,7 @@ import("//ash/webui/help_app_ui/help_app_files.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
 assert(is_chromeos_ash, "Help App is ash-chrome only")
@@ -35,7 +36,7 @@ copy("copy_for_tsc") {
   outputs = [ "${ts_root_dir}/{{source_file_part}}" ]
 }
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = ts_root_dir
   in_files = []
   foreach(o, get_target_outputs(":copy_for_tsc")) {

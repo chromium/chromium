@@ -25,7 +25,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//v8/gni/v8.gni")
 
 if (is_android) {
@@ -1161,7 +1161,7 @@ preprocess_if_expr("preprocess_mojo_webui_test") {
   ]
 }
 
-ts_library("web_ui_mojo_test_build_ts") {
+webui_ts_library("web_ui_mojo_test_build_ts") {
   root_dir = "$target_gen_dir/data"
   out_dir = "$target_gen_dir/data/tsc"
   in_files = [

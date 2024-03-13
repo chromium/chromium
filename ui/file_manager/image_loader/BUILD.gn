@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
@@ -52,7 +52,7 @@ dts_files = [
   "//tools/typescript/definitions/runtime.d.ts",
 ]
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = preprocess_folder
   out_dir = tsc_folder
   tsconfig_base = "tsconfig_base.json"

@@ -9,7 +9,7 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_definitions.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
@@ -230,7 +230,7 @@ preprocess_if_expr("preprocess_ts") {
   out_folder = preprocessed_dir
 }
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
   root_dir = preprocessed_dir
   out_dir = preprocessed_dir

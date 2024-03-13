@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 
 preprocess_folder = "preprocessed"
 
@@ -13,7 +13,7 @@ preprocess_if_expr("preprocess_ts") {
   in_files = [ "local_state.ts" ]
 }
 
-ts_library("build") {
+webui_ts_library("build") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   in_files = [ "local_state.ts" ]
   deps = [ "//ui/webui/resources/js:build_ts" ]

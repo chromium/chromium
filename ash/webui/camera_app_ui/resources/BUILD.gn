@@ -6,7 +6,7 @@ import("//ash/webui/camera_app_ui/resources/images/images.gni")
 import("//ash/webui/camera_app_ui/resources/js/js.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 
 assert(is_chromeos_ash)
 
@@ -77,7 +77,7 @@ preprocess_if_expr("copy_mojo_ts") {
   in_files = mojo_files
 }
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   deps = [
     "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:bundle_lit_ts",

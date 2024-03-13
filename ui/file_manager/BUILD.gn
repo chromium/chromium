@@ -11,7 +11,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_definitions.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
@@ -139,7 +139,7 @@ common_path_mappings = [
       rebase_path("$preprocess_folder/file_manager/*", target_gen_dir),
 ]
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = preprocess_folder
   if (enable_webui_inline_sourcemaps) {
     out_dir = "$target_gen_dir/tsc/_tmp"
@@ -216,7 +216,7 @@ if (enable_webui_inline_sourcemaps) {
   }
 }
 
-ts_library("test_build_ts") {
+webui_ts_library("test_build_ts") {
   testonly = true
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"

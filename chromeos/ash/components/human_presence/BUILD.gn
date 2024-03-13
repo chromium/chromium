@@ -4,7 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//chrome/test/base/ash/js2gtest.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 
 assert(is_chromeos_ash)
 
@@ -25,7 +25,7 @@ static_library("human_presence") {
   ]
 }
 
-ts_library("human_presence_internals_ts") {
+webui_ts_library("human_presence_internals_ts") {
   root_dir = "."
   in_files = [ "resources/human_presence_internals.ts" ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

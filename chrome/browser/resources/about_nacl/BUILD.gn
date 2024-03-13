@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 
 import("//components/nacl/features.gni")
-import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_ts_library.gni")
 
 assert(enable_nacl || is_mac)
 
-ts_library("build_ts") {
+webui_ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   in_files = [ "about_nacl.ts" ]
