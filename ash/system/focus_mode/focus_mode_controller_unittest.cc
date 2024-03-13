@@ -21,6 +21,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -200,7 +201,8 @@ TEST_F(FocusModeControllerMultiUserTest, TasksFlow) {
                                   /*has_subtasks=*/false,
                                   /*has_email_link=*/false,
                                   /*has_notes=*/false,
-                                  /*updated=*/base::Time::Now())
+                                  /*updated=*/base::Time::Now(),
+                                  /*web_view_link=*/GURL())
                                   .get());
   EXPECT_TRUE(controller->HasSelectedTask());
   EXPECT_EQ(base::NumberToString(id), controller->selected_task_id());

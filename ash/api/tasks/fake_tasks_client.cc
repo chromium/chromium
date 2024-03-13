@@ -17,9 +17,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "url/gurl.h"
 
 namespace ash::api {
 namespace {
@@ -224,12 +226,15 @@ void FakeTasksClient::AddTaskImpl(const std::string& task_list_id,
   auto task_list_iter = tasks_in_task_lists_.find(task_list_id);
   CHECK(task_list_iter != tasks_in_task_lists_.end());
 
+  const auto new_task_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   auto pending_task = std::make_unique<Task>(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), title,
+      new_task_id, title,
       /*due=*/std::nullopt, /*completed=*/false,
       /*has_subtasks=*/false, /*has_email_link=*/false,
       /*has_notes=*/false,
-      /*updated=*/base::Time::Now());
+      /*updated=*/base::Time::Now(),
+      /*web_view_link=*/
+      GURL(base::StrCat({"https://tasks.google.com/task/", new_task_id})));
 
   const auto* const task = task_list_iter->second->AddAt(
       /*index=*/0, std::move(pending_task));
@@ -277,7 +282,8 @@ void FakeTasksClient::CacheTasks() {
   for (const auto& task : *iter->second) {
     cached_tasks_->Add(std::make_unique<Task>(
         task->id, task->title, task->due, task->completed, task->has_subtasks,
-        task->has_email_link, task->has_notes, task->updated));
+        task->has_email_link, task->has_notes, task->updated,
+        task->web_view_link));
   }
 }
 

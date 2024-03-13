@@ -83,14 +83,16 @@ constexpr char kDefaultTasksResponseContent[] = R"(
           "title": "Parent task, level 1",
           "status": "needsAction",
           "due": "2023-04-19T00:00:00.000Z",
-          "updated": "2023-01-30T22:19:22.812Z"
+          "updated": "2023-01-30T22:19:22.812Z",
+          "webViewLink": "https://tasks.google.com/task/id1"
         },
         {
           "id": "qwe",
           "title": "Child task, level 2",
           "parent": "asd",
           "status": "needsAction",
-          "updated": "2022-12-21T23:38:22.590Z"
+          "updated": "2022-12-21T23:38:22.590Z",
+          "webViewLink": "https://tasks.google.com/task/id2"
         },
         {
           "id": "zxc",
@@ -98,7 +100,8 @@ constexpr char kDefaultTasksResponseContent[] = R"(
           "status": "needsAction",
           "links": [{"type": "email"}],
           "notes": "Lorem ipsum dolor sit amet",
-          "updated": "2022-12-21T23:38:22.590Z"
+          "updated": "2022-12-21T23:38:22.590Z",
+          "webViewLink": "https://tasks.google.com/task/id3"
         }
       ]
     }
@@ -943,6 +946,8 @@ TEST_F(TasksClientImplTest, GetTasks) {
   EXPECT_FALSE(root_tasks->GetItemAt(0)->has_notes);
   EXPECT_EQ(FormatTimeAsString(root_tasks->GetItemAt(0)->updated),
             "2023-01-30T22:19:22.812Z");
+  EXPECT_EQ(root_tasks->GetItemAt(0)->web_view_link,
+            "https://tasks.google.com/task/id1");
 
   EXPECT_EQ(root_tasks->GetItemAt(1)->id, "zxc");
   EXPECT_EQ(root_tasks->GetItemAt(1)->title, "Parent task 2, level 1");
@@ -953,6 +958,8 @@ TEST_F(TasksClientImplTest, GetTasks) {
   EXPECT_TRUE(root_tasks->GetItemAt(1)->has_notes);
   EXPECT_EQ(FormatTimeAsString(root_tasks->GetItemAt(1)->updated),
             "2022-12-21T23:38:22.590Z");
+  EXPECT_EQ(root_tasks->GetItemAt(1)->web_view_link,
+            "https://tasks.google.com/task/id3");
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.GetTasks.Latency", /*expected_count=*/1);

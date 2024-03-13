@@ -29,6 +29,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -66,7 +67,7 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
                                 /*due=*/due, /*completed=*/false,
                                 /*has_subtasks=*/false,
                                 /*has_email_link=*/false, /*has_notes=*/false,
-                                /*updated=*/due);
+                                /*updated=*/due, /*web_view_link=*/GURL());
     const auto view = GlanceablesTaskView(
         &task, /*mark_as_completed_callback=*/base::DoNothing());
 
@@ -84,7 +85,8 @@ TEST_F(GlanceablesTaskViewTest,
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false, /*updated=*/base::Time());
+                              /*has_notes=*/false, /*updated=*/base::Time(),
+                              /*web_view_link=*/GURL());
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
@@ -118,7 +120,8 @@ TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false, /*updated=*/base::Time());
+                              /*has_notes=*/false, /*updated=*/base::Time(),
+                              /*web_view_link=*/GURL());
 
   base::test::TestFuture<const std::string&, bool> future;
 

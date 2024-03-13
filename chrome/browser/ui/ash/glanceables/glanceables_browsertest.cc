@@ -45,6 +45,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -764,7 +765,8 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
           /*id=*/"TaskListItem5", /*title=*/"Task List 1 Item 3 Title",
           /*due=*/base::Time::Now(), /*completed=*/false,
           /*has_subtasks=*/false, /*has_email_link=*/false,
-          /*has_notes=*/false, /*updated=*/base::Time::Now()));
+          /*has_notes=*/false, /*updated=*/base::Time::Now(),
+          /*web_view_link=*/GURL()));
 
   // Open the glanceables again.
   ToggleDateTray();

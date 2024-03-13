@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -92,7 +93,7 @@ std::unique_ptr<api::Task> GetTaskFromDummyTask(
       task_data.completed,
       /*has_subtasks=*/false,
       /*has_email_link=*/false,
-      /*has_notes=*/false, update_date);
+      /*has_notes=*/false, update_date, /*web_view_link=*/GURL());
 }
 
 }  // namespace
@@ -122,7 +123,8 @@ void FocusModeTasksProvider::AddTask(const std::string& title,
       /*id=*/base::NumberToString(task_id_++), title,
       /*due=*/std::nullopt, /*completed=*/false, /*has_subtasks=*/false,
       /*has_email_link=*/false,
-      /*has_notes=*/false, /*updated=*/base::Time::Now());
+      /*has_notes=*/false, /*updated=*/base::Time::Now(),
+      /*web_view_link=*/GURL());
 
   api::Task* task_ptr = task.get();
   InsertTask(std::move(task));

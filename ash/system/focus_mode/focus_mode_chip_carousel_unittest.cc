@@ -15,6 +15,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -59,7 +60,8 @@ class FocusModeChipCarouselTest : public AshTestBase {
         /*id=*/base::NumberToString(task_id_++), title,
         /*due=*/std::nullopt, /*completed=*/false, /*has_subtasks=*/false,
         /*has_email_link=*/false,
-        /*has_notes=*/false, /*updated=*/base::Time::Now());
+        /*has_notes=*/false, /*updated=*/base::Time::Now(),
+        /*web_view_link=*/GURL());
   }
 
   std::vector<std::unique_ptr<const api::Task>> MakeTasks(

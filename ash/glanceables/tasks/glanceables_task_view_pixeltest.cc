@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -40,7 +41,8 @@ class GlanceablesTaskViewPixelTest
         has_due_date() ? std::make_optional(due_date) : std::nullopt,
         /*completed=*/false, has_subtasks(),
         /*has_email_link=*/false,
-        /*has_notes=*/has_notes(), /*updated=*/base::Time());
+        /*has_notes=*/has_notes(), /*updated=*/base::Time(),
+        /*web_view_link=*/GURL());
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetBounds(gfx::Rect(/*width=*/370, /*height=*/50));

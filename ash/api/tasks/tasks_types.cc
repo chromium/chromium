@@ -5,6 +5,10 @@
 #include "ash/api/tasks/tasks_types.h"
 
 #include <optional>
+#include <string>
+
+#include "base/time/time.h"
+#include "url/gurl.h"
 
 namespace ash::api {
 
@@ -28,7 +32,8 @@ Task::Task(const std::string& id,
            bool has_subtasks,
            bool has_email_link,
            bool has_notes,
-           const base::Time& updated)
+           const base::Time& updated,
+           const GURL& web_view_link)
     : id(id),
       title(title),
       due(due),
@@ -36,7 +41,8 @@ Task::Task(const std::string& id,
       has_subtasks(has_subtasks),
       has_email_link(has_email_link),
       has_notes(has_notes),
-      updated(updated) {}
+      updated(updated),
+      web_view_link(web_view_link) {}
 
 Task::~Task() = default;
 

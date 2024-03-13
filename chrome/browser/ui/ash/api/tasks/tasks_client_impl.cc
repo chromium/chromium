@@ -83,7 +83,8 @@ std::vector<std::unique_ptr<Task>> ConvertTasks(
     const bool has_notes = !root_task->notes().empty();
     converted_tasks.push_back(std::make_unique<Task>(
         root_task->id(), root_task->title(), root_task->due(), completed,
-        has_subtasks, has_email_link, has_notes, root_task->updated()));
+        has_subtasks, has_email_link, has_notes, root_task->updated(),
+        root_task->web_view_link()));
   }
 
   return converted_tasks;
@@ -525,7 +526,8 @@ void TasksClientImpl::OnTaskAdded(
                              /*due=*/std::nullopt, /*completed=*/false,
                              /*has_subtasks=*/false,
                              /*has_email_link=*/false, /*has_notes=*/false,
-                             result.value()->updated()));
+                             result.value()->updated(),
+                             result.value()->web_view_link()));
   std::move(callback).Run(/*task=*/task);
 }
 

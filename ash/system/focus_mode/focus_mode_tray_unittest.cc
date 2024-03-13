@@ -29,6 +29,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/image_button.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -192,7 +193,8 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
           /*due=*/std::nullopt, /*completed=*/false, /*has_subtasks=*/false,
           /*has_email_link=*/false,
           /*has_notes=*/false,
-          /*updated=*/base::Time::Now())
+          /*updated=*/base::Time::Now(),
+          /*web_view_link=*/GURL())
           .get());
 
   //  Start focus mode and click the tray to activate the button.
@@ -300,7 +302,8 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
                                   /*has_subtasks=*/false,
                                   /*has_email_link=*/false,
                                   /*has_notes=*/false,
-                                  /*updated=*/base::Time::Now())
+                                  /*updated=*/base::Time::Now(),
+                                  /*web_view_link=*/GURL())
                                   .get());
   controller->ToggleFocusMode();
 

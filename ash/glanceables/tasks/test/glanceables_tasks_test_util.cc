@@ -8,7 +8,9 @@
 
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "url/gurl.h"
 
 namespace ash::glanceables_tasks_test_util {
 
@@ -75,11 +77,14 @@ std::unique_ptr<api::FakeTasksClient> InitializeFakeTasksClient(
   }
 
   for (auto [list_id, task_id, title, completed] : kTaskInitializationData) {
-    tasks_client->AddTask(list_id,
-                          std::make_unique<api::Task>(
-                              task_id, title, /*due=*/tasks_time, completed,
-                              /*has_subtasks=*/false, /*has_email_link=*/false,
-                              /*has_notes=*/false, /*updated=*/tasks_time));
+    tasks_client->AddTask(
+        list_id,
+        std::make_unique<api::Task>(
+            task_id, title, /*due=*/tasks_time, completed,
+            /*has_subtasks=*/false, /*has_email_link=*/false,
+            /*has_notes=*/false, /*updated=*/tasks_time,
+            /*web_view_link=*/
+            GURL(base::StrCat({"https://tasks.google.com/task/", task_id}))));
   }
 
   return tasks_client;
