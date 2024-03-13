@@ -3069,6 +3069,10 @@ if (!is_android) {
       }
     }
 
+    if (enterprise_watermark) {
+      sources += [ "../browser/enterprise/watermark/watermark_browsertest.cc" ]
+    }
+
     if (is_win) {
       sources += [
         "../browser/accessibility/live_caption/live_caption_unavailability_notifier_browsertest.cc",

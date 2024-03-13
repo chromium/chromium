@@ -102,6 +102,8 @@ TabHoverCardBubbleViewDialogBrowserTest.*
 *TailoredSecurityDesktopDialogManagerTest.InvokeUi_*
 TranslateBubbleVisualTest.InvokeUi_*
 UpdateRecommendedDialogTest.*
+*WatermarkBrowserTest.*
+*WatermarkDisabledBrowserTest.*
 WebAppConfirmViewBrowserTest.*
 ZoomBubbleDialogTest.*
 
