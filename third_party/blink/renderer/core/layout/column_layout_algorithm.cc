@@ -1454,13 +1454,12 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   LayoutUnit extent = kIndefiniteSize;
 
   Length block_length = style.LogicalHeight();
-  if (block_length.IsAuto()) {
-    block_length = space.IsBlockAutoBehaviorStretch() ? Length::FillAvailable()
-                                                      : Length::FitContent();
-  }
+  const Length auto_length = space.IsBlockAutoBehaviorStretch()
+                                 ? Length::FillAvailable()
+                                 : Length::FitContent();
 
   extent = ResolveMainBlockLength(space, style, BorderPadding(), block_length,
-                                  kIndefiniteSize);
+                                  &auto_length, kIndefiniteSize);
   // A specified block-size will just constrain the maximum length.
   if (extent != kIndefiniteSize) {
     max = std::min(max, extent);

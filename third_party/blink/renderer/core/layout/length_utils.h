@@ -95,6 +95,7 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     const ComputedStyle&,
     const BoxStrut& border_padding,
     const Length&,
+    const Length* auto_length,
     bool use_intrinsic_size,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
@@ -154,6 +155,7 @@ inline LayoutUnit ResolveMinBlockLength(
   LayoutUnit border_padding_sum = border_padding.BlockSum();
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
+      /* auto_length */ &Length::Auto(),
       /* use_intrinsic_size */ false, override_available_size,
       override_percentage_resolution_size,
       [border_padding_sum]() { return border_padding_sum; });
@@ -171,6 +173,7 @@ inline LayoutUnit ResolveMaxBlockLength(
   // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
+      /* auto_length */ &Length::Auto(),
       /* use_intrinsic_size */ true, override_available_size,
       override_percentage_resolution_size, []() { return LayoutUnit::Max(); });
 }
@@ -181,16 +184,12 @@ inline LayoutUnit ResolveMainBlockLength(
     const ComputedStyle& style,
     const BoxStrut& border_padding,
     const Length& length,
+    const Length* auto_length,
     LayoutUnit intrinsic_size,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr) {
-  // TODO(https://crbug.com/313072): We will need to accept 'auto'
-  // lengths here and handle them in ResolveBlockLengthInternal in
-  // order to support 'auto' values inside of calc-size().
-  DCHECK(!length.IsAuto());
-
   return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length,
+      constraint_space, style, border_padding, length, auto_length,
       /* use_intrinsic_size */ true, override_available_size,
       override_percentage_resolution_size,
       [intrinsic_size]() { return intrinsic_size; });
@@ -201,15 +200,11 @@ inline LayoutUnit ResolveMainBlockLength(
     const ComputedStyle& style,
     const BoxStrut& border_padding,
     const Length& length,
+    const Length* auto_length,
     IntrinsicBlockSizeFunctionRef intrinsic_block_size_func,
     LayoutUnit override_available_size = kIndefiniteSize) {
-  // TODO(https://crbug.com/313072): We will need to accept 'auto'
-  // lengths here and handle them in ResolveBlockLengthInternal in
-  // order to support 'auto' values inside of calc-size().
-  DCHECK(!length.IsAuto());
-
   return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length,
+      constraint_space, style, border_padding, length, auto_length,
       /* use_intrinsic_size */ true, override_available_size,
       /* override_percentage_resolution_size */ nullptr,
       intrinsic_block_size_func);

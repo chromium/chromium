@@ -187,12 +187,18 @@ LayoutUnit ResolveBlockLengthInternal(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const BoxStrut& border_padding,
-    const Length& length,
+    const Length& original_length,
+    const Length* auto_length,
     bool use_intrinsic_size,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
     IntrinsicBlockSizeFunctionRef unresolvable_block_size_func) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
+
+  CHECK(!original_length.IsAuto() || auto_length);
+  // for min-block-size, this might still be 'auto'
+  const Length& length =
+      LIKELY(original_length.IsAuto()) ? *auto_length : original_length;
 
   switch (length.GetType()) {
     case Length::kFillAvailable: {
@@ -224,7 +230,7 @@ LayoutUnit ResolveBlockLengthInternal(
           {.intrinsic_evaluator = [&](const Length& length_to_evaluate) {
             return ResolveBlockLengthInternal(
                 constraint_space, style, border_padding, length_to_evaluate,
-                use_intrinsic_size, override_available_size,
+                auto_length, use_intrinsic_size, override_available_size,
                 override_percentage_resolution_size,
                 unresolvable_block_size_func);
           }});
@@ -369,7 +375,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
                                       /* auto_length */ nullptr)
             : ResolveMainBlockLength(
                   space, style, border_padding, inline_size,
-                  [&]() -> LayoutUnit {
+                  /* auto_length */ nullptr, [&]() -> LayoutUnit {
                     return min_max_sizes_func(inline_size.IsMinIntrinsic()
                                                   ? MinMaxSizesType::kIntrinsic
                                                   : MinMaxSizesType::kContent)
@@ -716,21 +722,20 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
       logical_height.IsAuto() &&
       space.BlockAutoBehavior() == AutoSizeBehavior::kStretchImplicit;
 
-  if (logical_height.IsAuto()) {
-    logical_height = (space.IsBlockAutoBehaviorStretch() &&
-                      space.AvailableSize().block_size != kIndefiniteSize)
-                         ? Length::FillAvailable()
-                         : Length::FitContent();
-  }
+  const Length auto_length =
+      (space.IsBlockAutoBehaviorStretch() &&
+       space.AvailableSize().block_size != kIndefiniteSize)
+          ? Length::FillAvailable()
+          : Length::FitContent();
 
   LayoutUnit extent = kIndefiniteSize;
   if (has_aspect_ratio && inline_size != kIndefiniteSize) {
     DCHECK_GE(inline_size, LayoutUnit());
 
     if (!has_implicit_stretch) {
-      extent =
-          ResolveMainBlockLength(space, style, border_padding, logical_height,
-                                 kIndefiniteSize, override_available_size);
+      extent = ResolveMainBlockLength(space, style, border_padding,
+                                      logical_height, &auto_length,
+                                      kIndefiniteSize, override_available_size);
     }
 
     if (extent == kIndefiniteSize) {
@@ -755,9 +760,9 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   if (extent == kIndefiniteSize) {
     // TODO(cbiesinger): Audit callers of ResolveMainBlockLength to see whether
     // they need to respect aspect ratio.
-    extent =
-        ResolveMainBlockLength(space, style, border_padding, logical_height,
-                               intrinsic_size, override_available_size);
+    extent = ResolveMainBlockLength(space, style, border_padding,
+                                    logical_height, &auto_length,
+                                    intrinsic_size, override_available_size);
   }
 
   if (extent == kIndefiniteSize) {
@@ -934,6 +939,7 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
           space.ReplacedPercentageResolutionBlockSize();
       const LayoutUnit block_size = ResolveMainBlockLength(
           space, style, border_padding, block_length_to_resolve,
+          /* auto_length*/ nullptr,
           /* intrinsic_size */ kIndefiniteSize,
           /* override_available_size */ kIndefiniteSize,
           &main_percentage_resolution_size);

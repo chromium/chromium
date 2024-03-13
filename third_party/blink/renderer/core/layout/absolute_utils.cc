@@ -797,24 +797,22 @@ const LayoutResult* ComputeOofBlockDimensions(
     const bool is_stretch = is_implicit_stretch || is_explicit_stretch;
 
     // Determine how "auto" should resolve.
-    if (main_block_length.IsAuto()) {
-      if (is_table) {
-        // Tables always shrink-to-fit unless explicitly asked to stretch.
-        main_block_length = is_explicit_stretch ? Length::FillAvailable()
-                                                : Length::FitContent();
-      } else if (!style.AspectRatio().IsAuto() &&
-                 dimensions->size.inline_size != kIndefiniteSize &&
-                 !is_explicit_stretch) {
-        main_block_length = Length::FitContent();
-      } else {
-        main_block_length =
-            is_stretch ? Length::FillAvailable() : Length::FitContent();
-      }
+    Length auto_length;
+    if (is_table) {
+      // Tables always shrink-to-fit unless explicitly asked to stretch.
+      auto_length =
+          is_explicit_stretch ? Length::FillAvailable() : Length::FitContent();
+    } else if (!style.AspectRatio().IsAuto() &&
+               dimensions->size.inline_size != kIndefiniteSize &&
+               !is_explicit_stretch) {
+      auto_length = Length::FitContent();
+    } else {
+      auto_length = is_stretch ? Length::FillAvailable() : Length::FitContent();
     }
 
-    LayoutUnit main_block_size =
-        ResolveMainBlockLength(space, style, border_padding, main_block_length,
-                               IntrinsicBlockSizeFunc, imcb.BlockSize());
+    LayoutUnit main_block_size = ResolveMainBlockLength(
+        space, style, border_padding, main_block_length, &auto_length,
+        IntrinsicBlockSizeFunc, imcb.BlockSize());
 
     // Manually resolve any intrinsic/content min/max block-sizes.
     // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.

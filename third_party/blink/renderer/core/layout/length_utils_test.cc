@@ -85,7 +85,8 @@ class LengthUtilsTest : public testing::Test {
     ConstraintSpace constraint_space = ConstructConstraintSpace(200, 300);
     return ::blink::ResolveMainBlockLength(constraint_space, *initial_style_,
                                            /* border_padding */ BoxStrut(),
-                                           length, content_size);
+                                           length, /* auto_length */ nullptr,
+                                           content_size);
   }
 
   Persistent<const ComputedStyle> initial_style_;

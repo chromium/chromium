@@ -777,7 +777,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (MainAxisIsInlineAxis(child)) {
         cross_size = ResolveMainBlockLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            cross_axis_length_to_resolve, kIndefiniteSize);
+            cross_axis_length_to_resolve, /* auto_length */ nullptr,
+            kIndefiniteSize);
       } else {
         // TODO(https://crbug.com/313072): This test should be moved
         // into ResolveInlineLengthInternal so that it works with
@@ -873,6 +874,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         flex_base_border_box = ContentBlockSizeFunc();
       }
     } else {
+      // TODO(https://crbug.com/313072): Rewrite these (and related)
+      // tests for calc-size().
       DCHECK(!flex_basis_length.IsAuto());
       DCHECK(!flex_basis_length.IsContent());
       // Part A of 9.2.3 https://drafts.csswg.org/css-flexbox/#algo-main-item
@@ -885,7 +888,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         // flex basis is in child's block direction.
         flex_base_border_box = ResolveMainBlockLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            flex_basis_length, IntrinsicBlockSizeFunc);
+            flex_basis_length, /* auto_length */ nullptr,
+            IntrinsicBlockSizeFunc);
         if (const auto* table_child = DynamicTo<TableNode>(&child)) {
           // (1) A table interprets forced block size as the height of its
           // captions + rows.
@@ -953,7 +957,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                                           specified_length_in_main_axis)) {
         specified_size_suggestion = ResolveMainBlockLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            specified_length_in_main_axis, IntrinsicBlockSizeFunc);
+            specified_length_in_main_axis, /* auto_length */ nullptr,
+            IntrinsicBlockSizeFunc);
         DCHECK_NE(specified_size_suggestion, kIndefiniteSize);
       }
 
