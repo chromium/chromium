@@ -296,6 +296,10 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
     DispatchSingleInputEvent(std::move(event_with_callback),
                              tick_clock_->NowTicks());
     return;
+  } else if (event_with_callback->event().IsGestureScroll() &&
+             event_with_callback->metrics()) {
+    event_with_callback->metrics()->AsScroll()->set_begin_frame_args(
+        current_begin_frame_args_);
   }
 
   base::ScopedSampleMetadata metadata(
@@ -1449,6 +1453,7 @@ void InputHandlerProxy::UpdateRootLayerStateForSynchronousInputHandler(
 
 void InputHandlerProxy::DeliverInputForBeginFrame(
     const viz::BeginFrameArgs& args) {
+  current_begin_frame_args_ = args;
   if (!scroll_predictor_)
     DispatchQueuedInputEvents(true /* frame_aligned */);
 

@@ -5,6 +5,7 @@
 #include "cc/metrics/compositor_frame_reporter.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <deque>
 #include <memory>
@@ -260,8 +261,8 @@ void TraceScrollJankMetrics(const EventMetrics::List& events_metrics,
 // For measuring the queuing issues with GenerationToBrowserMain we are only
 // looking at scrolling events. So we will not create a histogram that
 // encompasses all EventMetrics::EventType options.
-constexpr int kMaxGenerationToBrowserMainHistogramIndex = 5;
-int GetGenerationToBrowserMainIndex(EventMetrics::EventType type) {
+constexpr int kMaxGestureScrollHistogramIndex = 5;
+int GetGestureScrollIndex(EventMetrics::EventType type) {
   switch (type) {
     case EventMetrics::EventType::kFirstGestureScrollUpdate:
       return 0;
@@ -277,7 +278,51 @@ int GetGenerationToBrowserMainIndex(EventMetrics::EventType type) {
       // We are only interested in 5 categories of EventType for scroll input
       NOTREACHED();
   }
-  return kMaxGenerationToBrowserMainHistogramIndex;
+  return kMaxGestureScrollHistogramIndex;
+}
+
+// For measuring the ratio of scrolling event generation, as well as arrival in
+// the Renderer. Compared to the active VSync at the time of their arrival.
+constexpr int kMaxVSyncRatioHistogramIndex =
+    kMaxGestureScrollHistogramIndex *
+    static_cast<int>(
+        CompositorFrameReporter::VSyncRatioType::kVSyncRatioTypeCount);
+const char* GetVSyncRatioTypeName(
+    CompositorFrameReporter::VSyncRatioType type) {
+  switch (type) {
+    case CompositorFrameReporter::VSyncRatioType::
+        kArrivedInRendererVsVSyncRatioAfterVSync:
+      return "ArrivedInRendererVsVSyncRatio.AfterVSync";
+    case CompositorFrameReporter::VSyncRatioType::
+        kArrivedInRendererVsVSyncRatioBeforeVSync:
+      return "ArrivedInRendererVsVSyncRatio.BeforeVSync";
+    case CompositorFrameReporter::VSyncRatioType::
+        kGenerationVsVsyncRatioAfterVSync:
+      return "GenerationVsVsyncRatio.AfterVSync";
+    case CompositorFrameReporter::VSyncRatioType::
+        kGenerationVsVsyncRatioBeforeVSync:
+      return "GenerationVsVsyncRatio.BeforeVSync";
+    case CompositorFrameReporter::VSyncRatioType::kVSyncRatioTypeCount:
+      NOTREACHED();
+      return "";
+  }
+}
+
+void ReportVSyncRatioMetric(const std::string& base_histogram_name,
+                            int gesture_scroll_index,
+                            CompositorFrameReporter::VSyncRatioType type,
+                            int percentage) {
+  const std::string vsync_ratio_type_name = GetVSyncRatioTypeName(type);
+  const std::string histogram_name =
+      base::JoinString({base_histogram_name, vsync_ratio_type_name}, ".");
+  STATIC_HISTOGRAM_POINTER_GROUP(
+      histogram_name,
+      gesture_scroll_index +
+          static_cast<int>(type) * kMaxGestureScrollHistogramIndex,
+      kMaxVSyncRatioHistogramIndex, Add(percentage),
+      base::LinearHistogram::FactoryGet(
+          histogram_name, 1, 100, 101,
+          base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
 }  // namespace
@@ -1233,9 +1278,12 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
       }
 
       if (scroll_metrics) {
+        auto& original_args = scroll_metrics->begin_frame_args();
         const base::TimeTicks browser_main_timestamp =
             event_metrics->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInBrowserMain);
+        const int gesture_scroll_index =
+            GetGestureScrollIndex(scroll_metrics->type());
         if (!browser_main_timestamp.is_null()) {
           const std::string generation_to_browser_main_name = base::JoinString(
               {histogram_base_name, kGenerationToBrowserMainName}, ".");
@@ -1245,14 +1293,53 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
               event_metrics->GetHistogramBucketing();
           if (bucketing) {
             STATIC_HISTOGRAM_POINTER_GROUP(
-                generation_to_browser_main_name,
-                GetGenerationToBrowserMainIndex(scroll_metrics->type()),
-                kMaxGenerationToBrowserMainHistogramIndex,
+                generation_to_browser_main_name, gesture_scroll_index,
+                kMaxGestureScrollHistogramIndex,
                 AddTimeMicrosecondsGranularity(browser_main_delay),
                 base::Histogram::FactoryMicrosecondsTimeGet(
                     generation_to_browser_main_name, bucketing->min,
                     bucketing->max, bucketing->count,
                     base::HistogramBase::kUmaTargetedHistogramFlag));
+          }
+          if (original_args.IsValid()) {
+            const base::TimeDelta generation_to_vsync_delta =
+                original_args.frame_time - generated_timestamp;
+            const double generation_to_vsync_ratio =
+                100.f * generation_to_vsync_delta / original_args.interval;
+            if (generation_to_vsync_delta.is_negative()) {
+              ReportVSyncRatioMetric(histogram_base_name, gesture_scroll_index,
+                                     CompositorFrameReporter::VSyncRatioType::
+                                         kGenerationVsVsyncRatioBeforeVSync,
+                                     std::ceil(generation_to_vsync_ratio * -1));
+            } else {
+              ReportVSyncRatioMetric(histogram_base_name, gesture_scroll_index,
+                                     CompositorFrameReporter::VSyncRatioType::
+                                         kGenerationVsVsyncRatioAfterVSync,
+                                     std::ceil(generation_to_vsync_ratio));
+            }
+          }
+        }
+
+        const base::TimeTicks arrived_in_renderer_timestamp =
+            event_metrics->GetDispatchStageTimestamp(
+                EventMetrics::DispatchStage::kArrivedInRendererCompositor);
+        if (original_args.IsValid() &&
+            !arrived_in_renderer_timestamp.is_null()) {
+          const base::TimeDelta arrived_after_vsync_delta =
+              arrived_in_renderer_timestamp - original_args.frame_time;
+          const double arrived_after_vsync_ratio =
+              100.f * arrived_after_vsync_delta / original_args.interval;
+          if (arrived_after_vsync_delta.is_negative()) {
+            ReportVSyncRatioMetric(
+                histogram_base_name, gesture_scroll_index,
+                CompositorFrameReporter::VSyncRatioType::
+                    kArrivedInRendererVsVSyncRatioBeforeVSync,
+                std::ceil(arrived_after_vsync_ratio * -1));
+          } else {
+            ReportVSyncRatioMetric(histogram_base_name, gesture_scroll_index,
+                                   CompositorFrameReporter::VSyncRatioType::
+                                       kArrivedInRendererVsVSyncRatioAfterVSync,
+                                   std::ceil(arrived_after_vsync_ratio));
           }
         }
       }

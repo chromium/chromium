@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "cc/cc_export.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/latency/latency_info.h"
@@ -321,6 +322,10 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
 
   std::unique_ptr<EventMetrics> Clone() const override;
 
+  void set_begin_frame_args(const viz::BeginFrameArgs& args) { args_ = args; }
+
+  const viz::BeginFrameArgs& begin_frame_args() const { return args_; }
+
  protected:
   ScrollEventMetrics(EventType type,
                      ScrollType scroll_type,
@@ -342,6 +347,11 @@ class CC_EXPORT ScrollEventMetrics : public EventMetrics {
 
   // Type of the input device for the event.
   ScrollType scroll_type_;
+
+  // The active viz::BeginFrameArgs when the event arrived in the Renderer.
+  // These may not match those of CompositorFrameReporter for which the event
+  // is eventually displayed.
+  viz::BeginFrameArgs args_;
 };
 
 class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {

@@ -418,6 +418,12 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
 
   // Swipe to move cursor feature.
   std::unique_ptr<CursorControlHandler> cursor_control_handler_;
+
+  // The most recent viz::BeginFrameArgs that was received in
+  // DeliverInputForBeginFrame. Which will be the active frame for all
+  // subsequent events arriving in HandleInputEventWithLatencyInfo. If frame
+  // production stops this will be outdated.
+  viz::BeginFrameArgs current_begin_frame_args_;
 };
 
 }  // namespace blink

@@ -153,6 +153,20 @@ class CC_EXPORT CompositorFrameReporter {
     kBreakdownCount
   };
 
+  // These numbers are used for indexing UMA histograms. The order should be
+  // preserved, and entries should not be deleted.
+  //
+  // These represent ratios of stages in EventMetrics::DispatchStage to the
+  // VSync time when the event originally arrived. This can be different than
+  // the frame where this event was eventually presented.
+  enum class VSyncRatioType {
+    kArrivedInRendererVsVSyncRatioAfterVSync = 0,
+    kArrivedInRendererVsVSyncRatioBeforeVSync = 1,
+    kGenerationVsVsyncRatioAfterVSync = 2,
+    kGenerationVsVsyncRatioBeforeVSync = 3,
+    kVSyncRatioTypeCount
+  };
+
   // To distinguish between impl and main reporter
   enum class ReporterType { kImpl = 0, kMain = 1 };
 
