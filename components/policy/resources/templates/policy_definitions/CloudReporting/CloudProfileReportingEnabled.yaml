@@ -14,10 +14,11 @@ features:
   cloud_only: true
   dynamic_refresh: true
   per_profile: true
+supported_on:
+- chrome.*:124-
+- android:124-
 future_on:
-- chrome.*
 - chrome_os
-- android
 - fuchsia
 items:
 - caption: Enable managed profile cloud reporting
