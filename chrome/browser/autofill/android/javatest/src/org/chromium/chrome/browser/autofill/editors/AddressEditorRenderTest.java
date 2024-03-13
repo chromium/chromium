@@ -311,7 +311,10 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                                             mLauncher,
                                             mDelegate,
                                             mProfile,
-                                            new AutofillAddress(getActivity(), sLocalProfile),
+                                            new AutofillAddress(
+                                                    getActivity(),
+                                                    sLocalProfile,
+                                                    mPersonalDataManager),
                                             UPDATE_EXISTING_ADDRESS_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
@@ -337,7 +340,10 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                                             mLauncher,
                                             mDelegate,
                                             mProfile,
-                                            new AutofillAddress(getActivity(), sAccountProfile),
+                                            new AutofillAddress(
+                                                    getActivity(),
+                                                    sAccountProfile,
+                                                    mPersonalDataManager),
                                             SAVE_NEW_ADDRESS_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
@@ -363,7 +369,10 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                                             mLauncher,
                                             mDelegate,
                                             mProfile,
-                                            new AutofillAddress(getActivity(), sLocalProfile),
+                                            new AutofillAddress(
+                                                    getActivity(),
+                                                    sLocalProfile,
+                                                    mPersonalDataManager),
                                             MIGRATE_EXISTING_ADDRESS_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();

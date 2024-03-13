@@ -533,7 +533,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -562,7 +562,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -589,7 +589,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -618,7 +618,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -645,7 +645,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         MIGRATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -680,7 +680,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         MIGRATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -712,7 +712,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sAccountProfile),
+                        new AutofillAddress(mActivity, sAccountProfile, mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -743,7 +743,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sAccountProfile),
+                        new AutofillAddress(mActivity, sAccountProfile, mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -775,7 +775,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -796,7 +796,9 @@ public class AddressEditorTest {
         assertTrue(countryDropdownItem.isFullLine);
 
         PropertyModel countryDropdown = countryDropdownItem.model;
-        assertEquals(countryDropdown.get(VALUE), AutofillAddress.getCountryCode(sLocalProfile));
+        assertEquals(
+                countryDropdown.get(VALUE),
+                AutofillAddress.getCountryCode(sLocalProfile, mPersonalDataManager));
         assertEquals(
                 countryDropdown.get(LABEL),
                 mActivity.getString(R.string.autofill_profile_editor_country));
@@ -832,7 +834,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -896,7 +898,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -918,7 +920,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -940,7 +942,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         MIGRATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -962,7 +964,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sAccountProfile),
+                        new AutofillAddress(mActivity, sAccountProfile, mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -984,7 +986,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sAccountProfile),
+                        new AutofillAddress(mActivity, sAccountProfile, mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1021,7 +1023,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, sLocalProfile),
+                        new AutofillAddress(mActivity, sLocalProfile, mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1117,7 +1119,10 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, new AutofillProfile(sLocalProfile)),
+                        new AutofillAddress(
+                                mActivity,
+                                new AutofillProfile(sLocalProfile),
+                                mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1147,7 +1152,10 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, new AutofillProfile(sLocalProfile)),
+                        new AutofillAddress(
+                                mActivity,
+                                new AutofillProfile(sLocalProfile),
+                                mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1184,7 +1192,10 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, new AutofillProfile(sLocalProfile)),
+                        new AutofillAddress(
+                                mActivity,
+                                new AutofillProfile(sLocalProfile),
+                                mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1264,7 +1275,10 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, new AutofillProfile(sAccountProfile)),
+                        new AutofillAddress(
+                                mActivity,
+                                new AutofillProfile(sAccountProfile),
+                                mPersonalDataManager),
                         SAVE_NEW_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1293,7 +1307,10 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, new AutofillProfile(sLocalProfile)),
+                        new AutofillAddress(
+                                mActivity,
+                                new AutofillProfile(sLocalProfile),
+                                mPersonalDataManager),
                         MIGRATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1322,7 +1339,10 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, new AutofillProfile(sAccountProfile)),
+                        new AutofillAddress(
+                                mActivity,
+                                new AutofillProfile(sAccountProfile),
+                                mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1387,7 +1407,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, accountProfile),
+                        new AutofillAddress(mActivity, accountProfile, mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1411,7 +1431,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, accountProfile),
+                        new AutofillAddress(mActivity, accountProfile, mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
@@ -1435,7 +1455,7 @@ public class AddressEditorTest {
                         mHelpLauncher,
                         mDelegate,
                         mProfile,
-                        new AutofillAddress(mActivity, accountProfile),
+                        new AutofillAddress(mActivity, accountProfile, mPersonalDataManager),
                         UPDATE_EXISTING_ADDRESS_PROFILE,
                         /* saveToDisk= */ false);
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);

@@ -89,7 +89,10 @@ public class AddressEditorCoordinator {
                 helpLauncher,
                 delegate,
                 profile,
-                new AutofillAddress(activity, AutofillProfile.builder().build()),
+                new AutofillAddress(
+                        activity,
+                        AutofillProfile.builder().build(),
+                        PersonalDataManagerFactory.getForProfile(profile)),
                 UserFlow.CREATE_NEW_ADDRESS_PROFILE,
                 saveToDisk);
     }

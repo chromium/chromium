@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.SubKeyRequesterFactory;
@@ -180,7 +179,7 @@ public class AddressEditorTest {
         MockitoAnnotations.initMocks(this);
         Locale.setDefault(Locale.US);
 
-        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
+        // PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
         doAnswer(
@@ -403,9 +402,10 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
+        mAddressEditor.edit(
+                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         assertTrue(mAddressEditor.getEditorModelForTesting().get(SHOW_REQUIRED_INDICATOR));
@@ -423,9 +423,10 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
+        mAddressEditor.edit(
+                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         ListModel<FieldItem> editorFields =
@@ -441,7 +442,9 @@ public class AddressEditorTest {
         assertTrue(countryDropdownItem.isFullLine);
 
         PropertyModel countryDropdown = countryDropdownItem.model;
-        assertEquals(countryDropdown.get(VALUE), AutofillAddress.getCountryCode(sProfile));
+        assertEquals(
+                countryDropdown.get(VALUE),
+                AutofillAddress.getCountryCode(sProfile, mPersonalDataManager));
         assertEquals(
                 countryDropdown.get(LABEL),
                 mActivity.getString(R.string.autofill_profile_editor_country));
@@ -481,9 +484,10 @@ public class AddressEditorTest {
                         })
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
+        mAddressEditor.edit(
+                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         ListModel<FieldItem> editorFields =
@@ -525,7 +529,7 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
@@ -537,7 +541,7 @@ public class AddressEditorTest {
     @SmallTest
     public void validateShownFields_ExistingAddressProfile() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         doAnswer(
                         unused -> {
                             mAddressEditor.onSubKeysReceived(null, null);
@@ -546,7 +550,8 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
+        mAddressEditor.edit(
+                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
 
         validateShownFields(mAddressEditor.getEditorModelForTesting(), sProfile);
     }
@@ -577,7 +582,7 @@ public class AddressEditorTest {
                         })
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
@@ -637,10 +642,10 @@ public class AddressEditorTest {
                         })
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(
-                new AutofillAddress(mActivity, new AutofillProfile(sProfile)),
+                new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
                 mDoneCallback,
                 mCancelCallback);
 
@@ -671,10 +676,10 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(
-                new AutofillAddress(mActivity, new AutofillProfile(sProfile)),
+                new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
                 mDoneCallback,
                 mCancelCallback);
 
@@ -713,10 +718,10 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(
-                new AutofillAddress(mActivity, new AutofillProfile(sProfile)),
+                new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
                 mDoneCallback,
                 mCancelCallback);
 
@@ -756,7 +761,7 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
@@ -776,7 +781,7 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
@@ -806,9 +811,10 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(new AutofillAddress(mActivity, profile), unused -> {});
+        mAddressEditor.edit(
+                new AutofillAddress(mActivity, profile, mPersonalDataManager), unused -> {});
 
         validateErrorMessages(mAddressEditor.getEditorModelForTesting(), /* errorsPresent= */ true);
     }
@@ -832,9 +838,10 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(new AutofillAddress(mActivity, profile), unused -> {});
+        mAddressEditor.edit(
+                new AutofillAddress(mActivity, profile, mPersonalDataManager), unused -> {});
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -855,10 +862,11 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
 
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ false);
+        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(
-                new AutofillAddress(mActivity, new AutofillProfile(sProfile)), unused -> {});
+                new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
+                unused -> {});
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);

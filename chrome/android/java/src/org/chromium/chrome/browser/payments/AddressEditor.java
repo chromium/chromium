@@ -79,6 +79,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         implements GetSubKeysRequestDelegate {
     private final Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
     private final Set<String> mPhoneNumbers = new HashSet<>();
+    private final PersonalDataManager mPersonalDataManager;
     private final boolean mSaveToDisk;
     private final PhoneNumberUtil.CountryAwareFormatTextWatcher mPhoneFormatter;
     @Nullable private AutofillProfileBridge mAutofillProfileBridge;
@@ -112,9 +113,11 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     /**
      * Builds an address editor.
      *
+     * @param personalDataManager
      * @param saveToDisk Whether to save changes to disk after editing.
      */
-    public AddressEditor(boolean saveToDisk) {
+    public AddressEditor(PersonalDataManager personalDataManager, boolean saveToDisk) {
+        mPersonalDataManager = personalDataManager;
         mSaveToDisk = saveToDisk;
         mPhoneFormatter = new PhoneNumberUtil.CountryAwareFormatTextWatcher();
     }
@@ -202,7 +205,9 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         final String editTitle;
         mAddressNew = toEdit == null;
         if (mAddressNew) {
-            mAddress = new AutofillAddress(mContext, AutofillProfile.builder().build());
+            mAddress =
+                    new AutofillAddress(
+                            mContext, AutofillProfile.builder().build(), mPersonalDataManager);
             editTitle = mContext.getString(R.string.autofill_create_profile);
         } else {
             mAddress = toEdit;
@@ -244,7 +249,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
 
         // Country dropdown is cached, so the selected item needs to be updated for the new profile
         // that's being edited. This will not fire the dropdown callback.
-        mCountryField.set(VALUE, AutofillAddress.getCountryCode(mProfile));
+        mCountryField.set(VALUE, AutofillAddress.getCountryCode(mProfile, mPersonalDataManager));
 
         // Phone number validator and formatter are cached, so their contry code needs to be updated
         // for the new profile that's being edited.
@@ -361,7 +366,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
 
         // Save the edited autofill profile locally.
         if (mSaveToDisk) {
-            profile.setGUID(PersonalDataManager.getInstance().setProfileToLocal(mProfile));
+            profile.setGUID(mPersonalDataManager.setProfileToLocal(mProfile));
         }
 
         if (profile.getGUID().isEmpty()) {

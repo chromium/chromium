@@ -270,12 +270,13 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (guid == null) {
             return null;
         }
-        AutofillProfile profile =
-                PersonalDataManagerFactory.getForProfile(getProfile()).getProfile(guid);
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(getProfile());
+        AutofillProfile profile = personalDataManager.getProfile(guid);
         if (profile == null) {
             return null;
         }
-        return new AutofillAddress(getActivity(), profile);
+        return new AutofillAddress(getActivity(), profile, personalDataManager);
     }
 
     private boolean shouldShowLocalProfileIcon(AutofillProfile profile) {

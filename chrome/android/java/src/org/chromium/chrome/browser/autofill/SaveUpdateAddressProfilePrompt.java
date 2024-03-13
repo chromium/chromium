@@ -105,7 +105,10 @@ public class SaveUpdateAddressProfilePrompt {
                         HelpAndFeedbackLauncherImpl.getForProfile(browserProfile),
                         delegate,
                         browserProfile,
-                        new AutofillAddress(activity, autofillProfile),
+                        new AutofillAddress(
+                                activity,
+                                autofillProfile,
+                                PersonalDataManagerFactory.getForProfile(browserProfile)),
                         userFlow,
                         /* saveToDisk= */ false);
         mAddressEditor.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);

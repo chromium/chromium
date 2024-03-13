@@ -16,6 +16,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AddressNormalizerFactory;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -288,7 +289,11 @@ public class PaymentUiService
         mParams = params;
 
         // Do not persist changes on disk in OffTheRecord mode.
-        mAddressEditor = new AddressEditor(/* saveToDisk= */ !isOffTheRecord);
+        mAddressEditor =
+                new AddressEditor(
+                        PersonalDataManagerFactory.getForProfile(
+                                Profile.fromWebContents(webContents)),
+                        /* saveToDisk= */ !isOffTheRecord);
         mJourneyLogger = journeyLogger;
         mWebContents = webContents;
         mTopLevelOriginFormattedForDisplay = topLevelOrigin;
@@ -480,17 +485,20 @@ public class PaymentUiService
         assert !mParams.hasClosed();
         updateDetailsOnPaymentRequestUI(details);
 
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(Profile.fromWebContents(mWebContents));
         if (PaymentOptionsUtils.requestAnyInformation(mParams.getPaymentOptions())) {
             mAutofillProfiles =
                     Collections.unmodifiableList(
-                            PersonalDataManager.getInstance()
-                                    .getProfilesToSuggest(/* includeNameInLabel= */ false));
+                            personalDataManager.getProfilesToSuggest(
+                                    /* includeNameInLabel= */ false));
         }
 
         if (mParams.getPaymentOptions().requestShipping) {
             boolean haveCompleteShippingAddress = false;
             for (int i = 0; i < mAutofillProfiles.size(); i++) {
-                if (AutofillAddress.checkAddressCompletionStatus(mAutofillProfiles.get(i))
+                if (AutofillAddress.checkAddressCompletionStatus(
+                                mAutofillProfiles.get(i), personalDataManager)
                         == AutofillAddress.CompletionStatus.COMPLETE) {
                     haveCompleteShippingAddress = true;
                     break;
@@ -1187,14 +1195,15 @@ public class PaymentUiService
     /** Create a shipping section for PaymentRequest UI. */
     private void createShippingSectionForPaymentRequestUI(Context context) {
         List<AutofillAddress> addresses = new ArrayList<>();
-
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(Profile.fromWebContents(mWebContents));
         for (int i = 0; i < mAutofillProfiles.size(); i++) {
             AutofillProfile profile = mAutofillProfiles.get(i);
             mAddressEditor.addPhoneNumberIfValid(profile.getPhoneNumber());
 
             // Only suggest addresses that have a street address.
             if (!TextUtils.isEmpty(profile.getStreetAddress())) {
-                addresses.add(new AutofillAddress(context, profile));
+                addresses.add(new AutofillAddress(context, profile, personalDataManager));
             }
         }
 
@@ -1207,7 +1216,9 @@ public class PaymentUiService
         // Load the validation rules for each unique region code.
         Set<String> uniqueCountryCodes = new HashSet<>();
         for (int i = 0; i < addresses.size(); ++i) {
-            String countryCode = AutofillAddress.getCountryCode(addresses.get(i).getProfile());
+            String countryCode =
+                    AutofillAddress.getCountryCode(
+                            addresses.get(i).getProfile(), personalDataManager);
             if (!uniqueCountryCodes.contains(countryCode)) {
                 uniqueCountryCodes.add(countryCode);
                 AddressNormalizerFactory.getInstance()
@@ -1511,7 +1522,12 @@ public class PaymentUiService
         }
 
         // Don't reuse the selected address because it is formatted for display.
-        AutofillAddress shippingAddress = new AutofillAddress(context, profile);
+        AutofillAddress shippingAddress =
+                new AutofillAddress(
+                        context,
+                        profile,
+                        PersonalDataManagerFactory.getForProfile(
+                                Profile.fromWebContents(mWebContents)));
         mDelegate.onShippingAddressChange(shippingAddress.toPaymentAddress());
     }
 

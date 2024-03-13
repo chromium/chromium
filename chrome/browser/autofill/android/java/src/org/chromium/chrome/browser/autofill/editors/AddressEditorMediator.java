@@ -160,7 +160,10 @@ class AddressEditorMediator {
                                         isAccountAddressProfile()
                                                 && mUserFlow != CREATE_NEW_ADDRESS_PROFILE))
                         .with(IS_REQUIRED, false)
-                        .with(VALUE, AutofillAddress.getCountryCode(mProfileToEdit))
+                        .with(
+                                VALUE,
+                                AutofillAddress.getCountryCode(
+                                        mProfileToEdit, mPersonalDataManager))
                         .build();
 
         // Phone number is present for all countries.
@@ -242,7 +245,8 @@ class AddressEditorMediator {
                         .with(
                                 EDITOR_FIELDS,
                                 buildEditorFieldList(
-                                        AutofillAddress.getCountryCode(mProfileToEdit),
+                                        AutofillAddress.getCountryCode(
+                                                mProfileToEdit, mPersonalDataManager),
                                         mProfileToEdit.getLanguageCode()))
                         .with(DONE_RUNNABLE, this::onCommitChanges)
                         // If the user clicks [Cancel], send |toEdit| address back to the caller,
