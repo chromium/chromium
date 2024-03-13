@@ -29,9 +29,11 @@ TEST_F('SwitchAccessTabNodeTest', 'FindCloseButton', function() {
 });
 
 TEST_F('SwitchAccessTabNodeTest', 'Construction', function() {
-  this.runWithLoadedDesktop(desktop => {
-    Navigator.byItem.moveTo_(
-        desktop.find({role: chrome.automation.RoleType.TAB}));
+  this.runWithLoadedTree('', _root => {
+    const tabAutomationNode = navigator.byItem.desktopNode.find(
+        {role: chrome.automation.RoleType.TAB});
+    assertNotNullNorUndefined(tabAutomationNode);
+    Navigator.byItem.moveTo_(tabAutomationNode);
 
     const tab = Navigator.byItem.node_;
     assertEquals(
