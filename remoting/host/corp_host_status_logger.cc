@@ -55,20 +55,21 @@ void CorpHostStatusLogger::OnSessionStateChange(
             << "Disconnect event not logged.";
     return;
   }
-  const protocol::SessionAuthzReauthorizer* reauthorizer =
+  const auto& authenticator =
       static_cast<const protocol::SessionAuthzAuthenticator&>(
-          session.authenticator().implementing_authenticator())
-          .reauthorizer();
-  if (!reauthorizer) {
-    // TODO: b/328138087 - add |session_authz_id| to the request so that we can
-    // still log the disconnect event explicitly, in case SessionAuthz has
-    // failed.
-    LOG(WARNING) << "Current session does not have a reauthorizer. "
-                 << "Disconnect event not logged.";
+          session.authenticator().implementing_authenticator());
+  const std::string& session_id = authenticator.session_id();
+  if (session_id.empty()) {
+    LOG(WARNING) << "SessionAuthz ID is not known. Disconnect event not "
+                 << "logged.";
     return;
   }
   internal::ReportSessionDisconnectedRequestStruct request{
-      .session_authz_reauth_token = reauthorizer->session_reauth_token(),
+      .session_authz_id = session_id,
+      .session_authz_reauth_token =
+          authenticator.reauthorizer()
+              ? authenticator.reauthorizer()->session_reauth_token()
+              : "",
       .error_code = session.error(),
   };
   service_client_->ReportSessionDisconnected(

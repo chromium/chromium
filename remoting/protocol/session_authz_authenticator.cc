@@ -134,6 +134,11 @@ void SessionAuthzAuthenticator::SetReauthorizerForTesting(
   reauthorizer_ = std::move(reauthorizer);
 }
 
+void SessionAuthzAuthenticator::SetSessionIdForTesting(
+    std::string_view session_id) {
+  session_id_ = session_id;
+}
+
 void SessionAuthzAuthenticator::GenerateHostToken(
     base::OnceClosure resume_callback) {
   session_authz_state_ = SessionAuthzState::GENERATING_HOST_TOKEN;

@@ -27,6 +27,7 @@ using testing::_;
 using testing::Return;
 using testing::ReturnRef;
 
+constexpr char kFakeSessionId[] = "fake_session_id";
 constexpr char kFakeReauthToken[] = "fake_reauth_token";
 
 class MockLoggingServiceClient final : public LoggingServiceClient {
@@ -51,7 +52,7 @@ class CorpHostStatusLoggerTest : public testing::Test {
   ~CorpHostStatusLoggerTest() override;
 
  protected:
-  void SetUpSessionAuthzAuthenticator(bool has_reauthorizer);
+  void SetUpSessionAuthzAuthenticator();
 
   raw_ptr<MockLoggingServiceClient> service_client_;
   std::unique_ptr<CorpHostStatusLogger> logger_;
@@ -86,19 +87,17 @@ CorpHostStatusLoggerTest::~CorpHostStatusLoggerTest() {
   logger_.reset();
 }
 
-void CorpHostStatusLoggerTest::SetUpSessionAuthzAuthenticator(
-    bool has_reauthorizer) {
+void CorpHostStatusLoggerTest::SetUpSessionAuthzAuthenticator() {
   EXPECT_CALL(authenticator_, credentials_type())
       .WillOnce(Return(session_authz_authenticator_.credentials_type()));
   EXPECT_CALL(authenticator_, implementing_authenticator())
       .WillOnce(
           ReturnRef(session_authz_authenticator_.implementing_authenticator()));
-  if (has_reauthorizer) {
-    session_authz_authenticator_.SetReauthorizerForTesting(
-        std::make_unique<protocol::SessionAuthzReauthorizer>(
-            nullptr, "fake_session_id", kFakeReauthToken, base::Minutes(5),
-            base::DoNothing()));
-  }
+  session_authz_authenticator_.SetSessionIdForTesting(kFakeSessionId);
+  session_authz_authenticator_.SetReauthorizerForTesting(
+      std::make_unique<protocol::SessionAuthzReauthorizer>(
+          nullptr, kFakeSessionId, kFakeReauthToken, base::Minutes(5),
+          base::DoNothing()));
 }
 
 TEST_F(CorpHostStatusLoggerTest, UnsubscribeOnceDestroyed) {
@@ -121,22 +120,39 @@ TEST_F(CorpHostStatusLoggerTest, IgnoreNonSessionAuthzSession) {
                                             protocol::Session::State::CLOSED);
 }
 
-TEST_F(CorpHostStatusLoggerTest, IgnoreSessionWithoutReauthorizer) {
+TEST_F(CorpHostStatusLoggerTest, IgnoreSessionWithoutSessionAuthzId) {
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(_, _)).Times(0);
-  SetUpSessionAuthzAuthenticator(/* has_reauthorizer= */ false);
+  SetUpSessionAuthzAuthenticator();
+  session_authz_authenticator_.SetSessionIdForTesting("");
 
   logger_as_observer_->OnSessionStateChange(session_,
                                             protocol::Session::State::CLOSED);
 }
 
+TEST_F(CorpHostStatusLoggerTest,
+       ReportsSessionDisconnectedForSessionWithoutReauthorizer) {
+  EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::PEER_IS_OFFLINE));
+  internal::ReportSessionDisconnectedRequestStruct expected_request{
+      .session_authz_id = kFakeSessionId,
+      .error_code = ErrorCode::PEER_IS_OFFLINE,
+  };
+  EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
+  SetUpSessionAuthzAuthenticator();
+  session_authz_authenticator_.SetReauthorizerForTesting(nullptr);
+
+  logger_as_observer_->OnSessionStateChange(session_,
+                                            protocol::Session::State::FAILED);
+}
+
 TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForClosed) {
   EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::OK));
   internal::ReportSessionDisconnectedRequestStruct expected_request{
+      .session_authz_id = kFakeSessionId,
       .session_authz_reauth_token = kFakeReauthToken,
       .error_code = ErrorCode::OK,
   };
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
-  SetUpSessionAuthzAuthenticator(/* has_reauthorizer= */ true);
+  SetUpSessionAuthzAuthenticator();
 
   logger_as_observer_->OnSessionStateChange(session_,
                                             protocol::Session::State::CLOSED);
@@ -145,11 +161,12 @@ TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForClosed) {
 TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForFailed) {
   EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::PEER_IS_OFFLINE));
   internal::ReportSessionDisconnectedRequestStruct expected_request{
+      .session_authz_id = kFakeSessionId,
       .session_authz_reauth_token = kFakeReauthToken,
       .error_code = ErrorCode::PEER_IS_OFFLINE,
   };
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
-  SetUpSessionAuthzAuthenticator(/* has_reauthorizer= */ true);
+  SetUpSessionAuthzAuthenticator();
 
   logger_as_observer_->OnSessionStateChange(session_,
                                             protocol::Session::State::FAILED);
