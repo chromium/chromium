@@ -58,6 +58,8 @@ TEST(ProcessMitigationsWin32kTest, CheckWin8LockDownSuccess) {
 // SetFakeGdiInit() interceptions that allow gdi32.dll and user32.dll to load.
 TEST(ProcessMitigationsWin32kTest,
      CheckWin32kLockDownSuccessWithoutFakeGdiInit) {
+  // Component build dlls statically link in gdi32 and user32 for convenience.
+#if !defined(COMPONENT_BUILD)
   std::wstring test_policy_command = L"CheckPolicy ";
   test_policy_command += std::to_wstring(TESTPOLICY_WIN32K_NOFAKEGDI);
 
@@ -68,6 +70,7 @@ TEST(ProcessMitigationsWin32kTest,
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_WIN32K_DISABLE),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
+#endif
 }
 
 }  // namespace sandbox
