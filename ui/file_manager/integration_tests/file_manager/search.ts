@@ -1024,9 +1024,14 @@ export async function searchDocumentsProviderWithTypeOptions() {
 export async function searchDocumentsProviderWithRecencyOptions() {
   const recentHellos = [];
   for (let i = 0; i < 10; ++i) {
+    // The lastModifiedTime is set so that we cannot hit days close to current
+    // date. These often are rephrased as Today, Yesterday. We use 6, so that at
+    // most we get something that is 4 days old. This way, we avoid phrases
+    // such as Today, Yesterday, or Two Days Ago (which exist in Japanese,
+    // Polish and other languages).
     recentHellos.push(ENTRIES.hello.cloneWith({
       nameText: `hello-recent-${i}.txt`,
-      lastModifiedTime: getDateWithDayDiff(4 - (i % 3)),
+      lastModifiedTime: getDateWithDayDiff(6 - (i % 3)),
       targetPath: `hello-recent-${i}.txt`,
     }));
   }
