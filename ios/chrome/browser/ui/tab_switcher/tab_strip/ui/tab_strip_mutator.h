@@ -22,6 +22,9 @@
 /// Tells the receiver to close all items except `item`.
 - (void)closeAllItemsExcept:(TabSwitcherItem*)item;
 
+/// Tells the receiver to create a new group containing `item`.
+- (void)createNewGroupWithItem:(TabSwitcherItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_MUTATOR_H_

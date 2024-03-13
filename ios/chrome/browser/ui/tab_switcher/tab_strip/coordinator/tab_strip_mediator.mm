@@ -8,6 +8,8 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/tab_groups/tab_group_color.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_util.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
@@ -285,6 +287,20 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
       self.webStateList,
       GetWebStateIndex(self.webStateList, indexToKeepSearchCriteria),
       WebStateList::CLOSE_USER_ACTION);
+}
+
+- (void)createNewGroupWithItem:(TabSwitcherItem*)item {
+  if (!self.webStateList) {
+    return;
+  }
+  const WebStateSearchCriteria indexToAddToNewGroupSearchCriteria(
+      item.identifier);
+  const int indexToAddToNewGroup =
+      GetWebStateIndex(self.webStateList, indexToAddToNewGroupSearchCriteria);
+  self.webStateList->CreateGroup(
+      {indexToAddToNewGroup},
+      tab_groups::TabGroupVisualData{u"Temporary Group Name",
+                                     tab_groups::TabGroupColorId::kGrey});
 }
 
 #pragma mark - CRWWebStateObserver

@@ -448,26 +448,40 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   {
     let selectedItem = tabSwitcherItem
     let actionFactory = ActionFactory(scenario: kMenuScenarioHistogramTabStripEntry)
+    var menuElements: [UIMenuElement?] = []
     weak var weakSelf = self
 
-    let close = actionFactory?.actionToCloseRegularTab {
-      weakSelf?.mutator?.close(selectedItem)
+    /// Action to add tab to new group.
+    if TabStripFeaturesUtils.isModernTabStripWithTabGroups() {
+      let addToNewGroup = actionFactory?.actionToAddTabsToNewGroup(
+        withTabsNumber: 1
+      ) {
+        weakSelf?.mutator?.createNewGroup(with: tabSwitcherItem)
+      }
+      menuElements.append(addToNewGroup)
     }
-    let closeOthers = actionFactory?.actionToCloseAllOtherTabs {
-      weakSelf?.mutator?.closeAllItemsExcept(selectedItem)
-    }
+
+    /// Action to share tab.
     let share = actionFactory?.actionToShare {
       let cell = weakSelf?.collectionView.cellForItem(at: indexPath)
       weakSelf?.delegate?.tabStrip(weakSelf, shareItem: selectedItem, originView: cell)
     }
+    menuElements.append(share)
 
-    guard let close = close, let closeOthers = closeOthers, let share = share else {
-      return UIMenu()
+    /// Actions to close this tab or other tabs.
+    var closeMenuElements: [UIMenuElement?] = []
+    let close = actionFactory?.actionToCloseRegularTab {
+      weakSelf?.mutator?.close(selectedItem)
     }
+    closeMenuElements.append(close)
+    let closeOthers = actionFactory?.actionToCloseAllOtherTabs {
+      weakSelf?.mutator?.closeAllItemsExcept(selectedItem)
+    }
+    closeMenuElements.append(closeOthers)
+    let closeMenu = UIMenu(options: .displayInline, children: closeMenuElements.compactMap { $0 })
+    menuElements.append(closeMenu)
 
-    let closeActions = UIMenu(options: .displayInline, children: [close, closeOthers])
-
-    return UIMenu(children: [share, closeActions])
+    return UIMenu(children: menuElements.compactMap { $0 })
   }
 
   /// Returns a UIMenu for the context menu to be displayed at `indexPath` for a group item.
