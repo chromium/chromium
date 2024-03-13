@@ -63,4 +63,10 @@ TestPaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return payments_network_interface_.get();
 }
 
+void TestPaymentsAutofillClient::ShowAutofillErrorDialog(
+    AutofillErrorDialogContext context) {
+  autofill_error_dialog_shown_ = true;
+  autofill_error_dialog_context_ = std::move(context);
+}
+
 }  // namespace autofill::payments

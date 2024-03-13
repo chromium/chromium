@@ -236,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   EXPECT_EQ(response->card->expiration_year(), expiration_year);
   EXPECT_EQ(response->card->record_type(),
             CreditCard::RecordType::kVirtualCard);
-  EXPECT_FALSE(client()->autofill_error_dialog_shown());
+  EXPECT_FALSE(
+      client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
 
 // Test that the VCN 3DS pop-up is shown correctly, and on close an
@@ -269,7 +270,8 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
-  EXPECT_TRUE(client()->autofill_error_dialog_shown());
+  EXPECT_TRUE(
+      client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
 
 // Test that the VCN 3DS pop-up is shown correctly, and on close an
@@ -293,7 +295,8 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
-  EXPECT_FALSE(client()->autofill_error_dialog_shown());
+  EXPECT_FALSE(
+      client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
 
 // Test that the VCN 3DS pop-up is shown correctly, and on close an
@@ -325,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       authentication_response();
   ASSERT_TRUE(response.has_value());
   EXPECT_FALSE(response->card.has_value());
-  EXPECT_TRUE(client()->autofill_error_dialog_shown());
+  EXPECT_TRUE(
+      client()->GetPaymentsAutofillClient()->autofill_error_dialog_shown());
 }
 
 // Test that the VCN 3DS pop-up is shown correctly, and when the user cancels

@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -47,7 +46,6 @@
 
 namespace autofill {
 
-struct AutofillErrorDialogContext;
 class AutofillOptimizationGuide;
 class AutofillPopupControllerImpl;
 #if BUILDFLAG(IS_ANDROID)
@@ -245,7 +243,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void DismissOfferNotification() override;
   void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options) override;
-  void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
   void TriggerUserPerceptionOfAutofillSurvey(
       const std::map<std::string, std::string>& field_filling_stats_data)
       override;
@@ -333,8 +330,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       autofill_cvc_save_message_delegate_;
 #endif
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
-  std::unique_ptr<AutofillErrorDialogControllerImpl>
-      autofill_error_dialog_controller_;
   std::unique_ptr<CardUnmaskOtpInputDialogControllerImpl>
       card_unmask_otp_input_dialog_controller_;
 };

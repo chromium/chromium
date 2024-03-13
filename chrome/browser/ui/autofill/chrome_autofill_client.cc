@@ -70,7 +70,6 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -79,7 +78,6 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
-#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
@@ -590,12 +588,12 @@ void ChromeAutofillClient::OnUnmaskVerificationResult(
   // updating the CVC unmask prompt with the error message.
   switch (result) {
     case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
-      ShowAutofillErrorDialog(
+      GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
           AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/true));
       break;
     case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
-      ShowAutofillErrorDialog(
+      GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
           AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/false));
       break;
@@ -1154,16 +1152,6 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
           web_contents());
   controller->ShowBubble(options);
 #endif
-}
-
-void ChromeAutofillClient::ShowAutofillErrorDialog(
-    AutofillErrorDialogContext context) {
-  autofill_error_dialog_controller_ =
-      std::make_unique<AutofillErrorDialogControllerImpl>(std::move(context));
-  autofill_error_dialog_controller_->Show(
-      base::BindOnce(&CreateAndShowAutofillErrorDialog,
-                     base::Unretained(autofill_error_dialog_controller_.get()),
-                     base::Unretained(web_contents())));
 }
 
 void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(

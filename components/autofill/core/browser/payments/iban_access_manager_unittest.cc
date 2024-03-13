@@ -207,7 +207,8 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Success) {
 
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
-  EXPECT_FALSE(autofill_client_.autofill_error_dialog_shown());
+  EXPECT_FALSE(autofill_client_.GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
 }
 
 // Verify that there will be a progress dialog when unmasking a server IBAN,
@@ -226,7 +227,8 @@ TEST_F(IbanAccessManagerTest, FetchValue_ServerIban_ProgressDialog_Failure) {
 
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
-  EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
 }
 
 // Verify that local IBAN metadata has been recorded correctly.

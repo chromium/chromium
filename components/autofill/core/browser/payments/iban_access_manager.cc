@@ -151,7 +151,7 @@ void IbanAccessManager::OnUnmaskResponseReceived(
   AutofillErrorDialogContext error_context;
   error_context.type =
       AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError;
-  client_->ShowAutofillErrorDialog(error_context);
+  client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(error_context);
 }
 
 void IbanAccessManager::OnServerIbanUnmaskCancelled() {

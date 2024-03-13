@@ -20,7 +20,6 @@
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
-#import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
@@ -513,18 +512,6 @@ void ChromeAutofillClientIOS::UpdatePopup(
 
 void ChromeAutofillClientIOS::HideAutofillPopup(PopupHidingReason reason) {
   [bridge_ hideAutofillPopup];
-}
-
-void ChromeAutofillClientIOS::ShowAutofillErrorDialog(
-    AutofillErrorDialogContext context) {
-  // TODO(b/324609813): Move this function from ChromeAutofillClientIOS to
-  // IOSChromePaymentsAutofillClient to avoid this call.
-  if (!payments_autofill_client_) {
-    payments_autofill_client_ =
-        std::make_unique<payments::IOSChromePaymentsAutofillClient>(
-            this, browser_state_);
-  }
-  payments_autofill_client_->ShowAutofillErrorDialog(std::move(context));
 }
 
 bool ChromeAutofillClientIOS::IsAutocompleteEnabled() const {

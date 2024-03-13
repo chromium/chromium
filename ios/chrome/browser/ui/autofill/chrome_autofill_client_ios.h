@@ -43,11 +43,9 @@ class WebState;
 
 namespace autofill {
 
-struct AutofillErrorDialogContext;
-
 namespace payments {
 class IOSChromePaymentsAutofillClient;
-}
+}  // namespace payments
 
 // Chrome iOS implementation of AutofillClient.
 class ChromeAutofillClientIOS : public AutofillClient {
@@ -154,7 +152,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
-  void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,

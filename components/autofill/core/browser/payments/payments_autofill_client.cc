@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 
 namespace autofill::payments {
 
@@ -50,5 +51,8 @@ PaymentsNetworkInterface*
 PaymentsAutofillClient::GetPaymentsNetworkInterface() {
   return nullptr;
 }
+
+void PaymentsAutofillClient::ShowAutofillErrorDialog(
+    AutofillErrorDialogContext context) {}
 
 }  // namespace autofill::payments

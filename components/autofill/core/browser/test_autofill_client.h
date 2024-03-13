@@ -32,7 +32,6 @@
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
-#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -457,11 +456,6 @@ class TestAutofillClientTemplate : public T {
 
   PopupHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
 
-  void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override {
-    autofill_error_dialog_shown_ = true;
-    autofill_error_dialog_context_ = std::move(context);
-  }
-
   bool IsAutocompleteEnabled() const override { return true; }
 
   bool IsPasswordManagerEnabled() override { return true; }
@@ -636,29 +630,14 @@ class TestAutofillClientTemplate : public T {
     return offer_to_save_credit_card_bubble_was_shown_.value();
   }
 
-  void set_autofill_error_dialog_shown(bool autofill_error_dialog_shown) {
-    autofill_error_dialog_shown_ = autofill_error_dialog_shown;
-  }
-
-  bool autofill_error_dialog_shown() { return autofill_error_dialog_shown_; }
-
   void set_format_for_large_keyboard_accessory(
       bool format_for_large_keyboard_accessory) {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
   }
 
-  bool virtual_card_error_dialog_is_permanent_error() {
-    return autofill_error_dialog_context().type ==
-           AutofillErrorDialogType::kVirtualCardPermanentError;
-  }
-
   bool risk_based_authentication_invoked() {
     return risk_based_authenticator_ &&
            risk_based_authenticator_->authenticate_invoked();
-  }
-
-  AutofillErrorDialogContext autofill_error_dialog_context() {
-    return autofill_error_dialog_context_;
   }
 
   AutofillClient::SaveCreditCardOptions get_save_credit_card_options() {
@@ -794,18 +773,7 @@ class TestAutofillClientTemplate : public T {
   bool confirm_upload_iban_to_cloud_called_ = false;
   LegalMessageLines legal_message_lines_;
 
-  bool autofill_error_dialog_shown_ = false;
-
   bool format_for_large_keyboard_accessory_ = false;
-
-  // Context parameters that are used to display an error dialog during card
-  // number retrieval. This context will have information that the autofill
-  // error dialog uses to display a dialog specific to the error that occurred.
-  // An example of where this dialog is used is if an error occurs during
-  // virtual card number retrieval, as this context is then filled with fields
-  // specific to the type of error that occurred, and then based on the contents
-  // of this context the dialog is shown.
-  AutofillErrorDialogContext autofill_error_dialog_context_;
 
   // Populated if save was offered. True if bubble was shown, false otherwise.
   std::optional<bool> offer_to_save_credit_card_bubble_was_shown_;

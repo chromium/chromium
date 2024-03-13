@@ -77,7 +77,6 @@ class AutofillAblationStudy;
 class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
 class AutofillDriver;
-struct AutofillErrorDialogContext;
 class AutofillMlPredictionModelHandler;
 class AutofillOfferData;
 class AutofillOfferManager;
@@ -780,13 +779,6 @@ class AutofillClient {
   // necessary information in `options` to show the manual fallback bubble.
   virtual void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options);
-
-  // Shows an error dialog when card retrieval errors happen. The type of error
-  // dialog that is shown will match the `type` in `context`. If the
-  // `server_returned_title` and `server_returned_description` in `context` are
-  // both set, the error dialog that is displayed will have these fields
-  // displayed for the title and description, respectively.
-  virtual void ShowAutofillErrorDialog(AutofillErrorDialogContext context);
 
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill. When triggering happens, the survey dialog will be displayed with

@@ -225,7 +225,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
       /*context_token=*/"context_token_from_previous_unmask_response",
       kTestBillingCustomerNumber);
   // Verify error dialog is shown.
-  EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
   ASSERT_TRUE(requester_->did_succeed().has_value());
@@ -265,7 +266,8 @@ TEST_P(CreditCardOtpAuthenticatorTest,
       /*context_token=*/"context_token_from_previous_unmask_response",
       kTestBillingCustomerNumber);
   // Verify error dialog is shown.
-  EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
   ASSERT_TRUE(requester_->did_succeed().has_value());
@@ -310,10 +312,12 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
         AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
         /*real_pan=*/"", server_returned_decline_details);
     // Verify error dialog is shown.
-    EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+    EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                    ->autofill_error_dialog_shown());
     if (server_returned_decline_details) {
       AutofillErrorDialogContext context =
-          autofill_client_.autofill_error_dialog_context();
+          autofill_client_.GetPaymentsAutofillClient()
+              ->autofill_error_dialog_context();
       EXPECT_EQ(context.type,
                 AutofillErrorDialogType::kVirtualCardTemporaryError);
       EXPECT_EQ(*context.server_returned_title, "test_server_returned_title");
@@ -367,7 +371,8 @@ TEST_P(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kTryAgainFailure,
                   /*real_pan=*/"");
   // Verify error dialog is shown.
-  EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
   ASSERT_TRUE(requester_->did_succeed().has_value());

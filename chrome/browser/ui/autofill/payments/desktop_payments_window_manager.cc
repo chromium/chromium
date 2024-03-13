@@ -83,7 +83,7 @@ void DesktopPaymentsWindowManager::CreatePopup(const GURL& url) {
           Navigate(&params)) {
     content::WebContentsObserver::Observe(navigation_handle->GetWebContents());
   } else {
-    client_->ShowAutofillErrorDialog(
+    client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/false));
   }
@@ -103,7 +103,7 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForVcn3ds() {
   switch (result.error()) {
     case Vcn3dsAuthenticationPopupErrorType::kAuthenticationFailed:
     case Vcn3dsAuthenticationPopupErrorType::kInvalidQueryParams:
-      client_->ShowAutofillErrorDialog(
+      client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
           AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/true));
       break;
@@ -145,7 +145,7 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
       /*show_confirmation_before_closing=*/response.card.has_value(),
       /*no_interactive_authentication_callback=*/base::OnceClosure());
   if (!response.card.has_value()) {
-    client_->ShowAutofillErrorDialog(
+    client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/true));
   }

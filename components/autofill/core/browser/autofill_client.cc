@@ -258,9 +258,6 @@ void AutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {
 }
 
-void AutofillClient::ShowAutofillErrorDialog(
-    AutofillErrorDialogContext context) {}
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }

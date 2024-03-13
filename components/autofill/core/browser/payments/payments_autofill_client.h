@@ -14,6 +14,7 @@
 
 namespace autofill {
 
+struct AutofillErrorDialogContext;
 enum class AutofillProgressDialogType;
 class MigratableCreditCard;
 
@@ -100,6 +101,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Gets the payments::PaymentsNetworkInterface instance owned by the client.
   virtual PaymentsNetworkInterface* GetPaymentsNetworkInterface();
+
+  // Shows an error dialog when card retrieval errors happen. The type of error
+  // dialog that is shown will match the `type` in `context`. If the
+  // `server_returned_title` and `server_returned_description` in `context` are
+  // both set, the error dialog that is displayed will have these fields
+  // displayed for the title and description, respectively.
+  virtual void ShowAutofillErrorDialog(AutofillErrorDialogContext context);
 };
 
 }  // namespace payments

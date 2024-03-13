@@ -10,8 +10,10 @@
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
@@ -159,6 +161,16 @@ ChromePaymentsAutofillClient::GetPaymentsNetworkInterface() {
                 ->IsOffTheRecord());
   }
   return payments_network_interface_.get();
+}
+
+void ChromePaymentsAutofillClient::ShowAutofillErrorDialog(
+    AutofillErrorDialogContext context) {
+  autofill_error_dialog_controller_ =
+      std::make_unique<AutofillErrorDialogControllerImpl>(std::move(context));
+  autofill_error_dialog_controller_->Show(
+      base::BindOnce(&CreateAndShowAutofillErrorDialog,
+                     base::Unretained(autofill_error_dialog_controller_.get()),
+                     base::Unretained(web_contents())));
 }
 
 }  // namespace autofill::payments

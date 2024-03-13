@@ -10,6 +10,8 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -19,14 +21,15 @@
 
 namespace autofill {
 
+class AutofillErrorDialogControllerImpl;
 class ContentAutofillClient;
 
 namespace payments {
 
-// Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop and
-// Clank. Owned by the ChromeAutofillClient. Created lazily in the
-// ChromeAutofillClient when it is needed, and it observes the same WebContents
-// as its owning ChromeAutofillClient.
+// Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop
+// and Clank. Owned by the ChromeAutofillClient. Created lazily in the
+// ChromeAutofillClient when it is needed, and it observes the same
+// WebContents as its owning ChromeAutofillClient.
 class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
                                      public content::WebContentsObserver {
  public:
@@ -66,6 +69,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback) override;
   payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+  void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
@@ -75,11 +79,14 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
  private:
   const raw_ref<ContentAutofillClient> client_;
 
+  std::unique_ptr<payments::PaymentsNetworkInterface>
+      payments_network_interface_;
+
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;
 
-  std::unique_ptr<payments::PaymentsNetworkInterface>
-      payments_network_interface_;
+  std::unique_ptr<AutofillErrorDialogControllerImpl>
+      autofill_error_dialog_controller_;
 };
 
 }  // namespace payments

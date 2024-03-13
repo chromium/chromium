@@ -38,8 +38,8 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   // PaymentsAutofillClient:
   void CreditCardUploadCompleted(bool card_saved) override;
-
-  void ShowAutofillErrorDialog(AutofillErrorDialogContext error_context);
+  void ShowAutofillErrorDialog(
+      AutofillErrorDialogContext error_context) override;
 
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
 
