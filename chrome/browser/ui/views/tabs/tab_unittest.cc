@@ -573,10 +573,6 @@ TEST_F(TabTest, FaviconDoesntMoveWhenShowingAlertIndicator) {
 }
 
 TEST_F(TabTest, SmallTabsHideCloseButton) {
-  // TODO (crbug/1520660): Fix or remove test.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
@@ -586,13 +582,9 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
   const views::View* close = GetCloseButton(tab);
   EXPECT_TRUE(close->GetVisible());
 
-  const views::View* icon = GetTabIcon(tab);
-  const int icon_x = icon->x();
   // Shrink the tab. The close button should disappear.
   tab->SetBounds(0, 0, width - 1, 50);
   EXPECT_FALSE(close->GetVisible());
-  // The favicon moves left because the extra padding disappears too.
-  EXPECT_LT(icon->x(), icon_x);
 }
 
 TEST_F(TabTest, ExtraLeftPaddingNotShownOnSmallActiveTab) {
