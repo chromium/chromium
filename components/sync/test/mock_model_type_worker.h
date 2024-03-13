@@ -112,6 +112,13 @@ class MockModelTypeWorker : public CommitQueue {
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics);
 
+  // Mostly same as GenerateUpdateData above but also sets the given
+  // `collaboration_id`.
+  syncer::UpdateResponseData GenerateSharedUpdateData(
+      const ClientTagHash& tag_hash,
+      const sync_pb::EntitySpecifics& specifics,
+      const std::string& collaboration_id);
+
   // Returns an UpdateResponseData representing an update received from
   // the server for a type root node.
   syncer::UpdateResponseData GenerateTypeRootUpdateData(

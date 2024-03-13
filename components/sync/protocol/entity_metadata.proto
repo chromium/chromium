@@ -89,4 +89,13 @@ message EntityMetadata {
   // If the entity is deleted, this field will record the chromium version
   // (e.g. 117.0.5875.1) that originated the deletion. Introduced in M117.
   optional string deleted_by_version = 14;
+
+  // Metadata used for shared data types. Must not be present for regular data
+  // types.
+  // Introduced in M124.
+  message CollaborationMetadata {
+    // Collaboration ID which the current entity belongs to.
+    optional string collaboration_id = 1;
+  }
+  optional CollaborationMetadata collaboration = 15;
 }

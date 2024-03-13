@@ -15,6 +15,7 @@
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace sync_pb {
 class ModelTypeState;
@@ -37,7 +38,8 @@ class ClientTagBasedRemoteUpdateHandler {
   // Processes incremental updates from the sync server.
   std::optional<ModelError> ProcessIncrementalUpdate(
       const sync_pb::ModelTypeState& model_type_state,
-      UpdateResponseDataList updates);
+      UpdateResponseDataList updates,
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
   ClientTagBasedRemoteUpdateHandler(const ClientTagBasedRemoteUpdateHandler&) =
       delete;

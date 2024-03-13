@@ -65,6 +65,17 @@ sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
   return entity;
 }
 
+sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
+    int64_t version_offset,
+    const ClientTagHash& tag_hash,
+    const sync_pb::EntitySpecifics& specifics,
+    const std::string& collaboration_id) {
+  sync_pb::SyncEntity entity =
+      UpdateFromServer(version_offset, tag_hash, specifics);
+  entity.mutable_collaboration()->set_collaboration_id(collaboration_id);
+  return entity;
+}
+
 sync_pb::SyncEntity SingleTypeMockServer::TombstoneFromServer(
     int64_t version_offset,
     const ClientTagHash& tag_hash) {
@@ -149,11 +160,21 @@ sync_pb::DataTypeProgressMarker SingleTypeMockServer::GetProgress() const {
   sync_pb::DataTypeProgressMarker progress;
   progress.set_data_type_id(type_);
   progress.set_token(progress_marker_token_);
-  if (return_gc_directive_) {
+  if (return_gc_directive_version_watermark_) {
     progress.mutable_gc_directive()->set_type(
         sync_pb::GarbageCollectionDirective::VERSION_WATERMARK);
     // The value of version watermark is not used, so just provide some number.
     progress.mutable_gc_directive()->set_version_watermark(123);
+  }
+  if (SharedTypes().Has(type_)) {
+    // Always provide gc_directive for active collaborations for the shared
+    // types.
+    sync_pb::GarbageCollectionDirective::CollaborationGarbageCollection*
+        collaboration_gc =
+            progress.mutable_gc_directive()->mutable_collaboration_gc();
+    for (const std::string& collaboration_id : active_collaborations_) {
+      collaboration_gc->add_active_collaboration_ids(collaboration_id);
+    }
   }
   return progress;
 }
@@ -185,8 +206,21 @@ void SingleTypeMockServer::SetServerVersion(const ClientTagHash& tag_hash,
   server_versions_[tag_hash] = version;
 }
 
-void SingleTypeMockServer::SetReturnGcDirective(bool return_gc_directive) {
-  return_gc_directive_ = return_gc_directive;
+void SingleTypeMockServer::SetReturnGcDirectiveVersionWatermark(
+    bool return_gc_directive) {
+  return_gc_directive_version_watermark_ = return_gc_directive;
+}
+
+void SingleTypeMockServer::AddCollaboration(
+    const std::string& collaboration_id) {
+  // Should be used for the shared types only.
+  CHECK(SharedTypes().Has(type_));
+  active_collaborations_.insert(collaboration_id);
+}
+
+void SingleTypeMockServer::RemoveCollaboration(
+    const std::string& collaboration_id) {
+  active_collaborations_.erase(collaboration_id);
 }
 
 }  // namespace syncer

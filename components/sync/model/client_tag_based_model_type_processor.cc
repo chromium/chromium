@@ -804,7 +804,8 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
     error = OnFullUpdateReceived(model_type_state, std::move(updates),
                                  std::move(gc_directive));
   } else {
-    error = OnIncrementalUpdateReceived(model_type_state, std::move(updates));
+    error = OnIncrementalUpdateReceived(model_type_state, std::move(updates),
+                                        std::move(gc_directive));
   }
 
   if (error) {
@@ -1015,7 +1016,8 @@ ClientTagBasedModelTypeProcessor::OnFullUpdateReceived(
 std::optional<ModelError>
 ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
     const sync_pb::ModelTypeState& model_type_state,
-    UpdateResponseDataList updates) {
+    UpdateResponseDataList updates,
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK(model_ready_to_sync_);
   DCHECK(IsInitialSyncDone(model_type_state.initial_sync_state()) ||
          (ApplyUpdatesImmediatelyTypes().Has(type_) &&
@@ -1027,8 +1029,8 @@ ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
                                                     entity_tracker_.get());
   base::AutoReset<bool> auto_reset_processing_updates(
       &processing_incremental_updates_, true);
-  return updates_handler.ProcessIncrementalUpdate(model_type_state,
-                                                  std::move(updates));
+  return updates_handler.ProcessIncrementalUpdate(
+      model_type_state, std::move(updates), std::move(gc_directive));
 }
 
 void ClientTagBasedModelTypeProcessor::OnPendingDataLoaded(

@@ -497,10 +497,34 @@ void ModelTypeWorker::ProcessGetUpdatesResponse(
   *model_type_state_.mutable_type_context() = mutated_context;
 
   if (progress_marker.has_gc_directive()) {
-    // Clean up all the pending updates because a new GC directive has been
-    // received which means that all existing data should be cleaned up.
-    pending_updates_.clear();
-    entries_pending_decryption_.clear();
+    if (progress_marker.gc_directive().has_version_watermark()) {
+      // Clean up all the pending updates because a new GC directive has been
+      // received which means that all existing data should be cleaned up.
+      pending_updates_.clear();
+      entries_pending_decryption_.clear();
+    }
+
+    // Ignore collaboration GC for non-shared types.
+    if (progress_marker.gc_directive().has_collaboration_gc() &&
+        SharedTypes().Has(type_)) {
+      // Clean up all the pending updates related to inactive collaborations for
+      // the shared types.
+      auto active_collaborations =
+          base::MakeFlatSet<std::string>(progress_marker.gc_directive()
+                                             .collaboration_gc()
+                                             .active_collaboration_ids());
+      std::erase_if(pending_updates_, [&active_collaborations](
+                                          const UpdateResponseData& update) {
+        return !active_collaborations.contains(update.entity.collaboration_id);
+      });
+      std::erase_if(entries_pending_decryption_,
+                    [&active_collaborations](const auto& pending_decryption) {
+                      const sync_pb::SyncEntity& entity =
+                          pending_decryption.second;
+                      return !active_collaborations.contains(
+                          entity.collaboration().collaboration_id());
+                    });
+    }
   }
 
   *model_type_state_.mutable_progress_marker() = progress_marker;
@@ -663,6 +687,11 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   data.name = update_entity.name();
   data.legacy_parent_id = update_entity.parent_id_string();
   data.server_defined_unique_tag = update_entity.server_defined_unique_tag();
+
+  // Populate shared type fields.
+  if (SharedTypes().Has(model_type)) {
+    data.collaboration_id = update_entity.collaboration().collaboration_id();
+  }
 
   // Populate |originator_cache_guid| and |originator_client_item_id|. This is
   // currently relevant only for bookmarks.
@@ -1208,6 +1237,11 @@ void ModelTypeWorker::ExtractGcDirective() {
 
   if (model_type_state_.progress_marker().has_gc_directive()) {
     // Keep a new GC directive if received.
+    // TODO(b/325917757): cover the case when a collaboration was removed and
+    // then added in the next GetUpdates request again. All the previous
+    // entities should be removed from the tracker (it's expected that the
+    // server returns all the entities anyway and some entities could be removed
+    // in the meantime).
     pending_gc_directive_ = model_type_state_.progress_marker().gc_directive();
     model_type_state_.mutable_progress_marker()->clear_gc_directive();
     return;

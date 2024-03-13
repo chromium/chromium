@@ -329,6 +329,8 @@ std::string FakeModelTypeSyncBridge::GetStorageKeyInternal(
     case USER_EVENTS:
       return base::NumberToString(
           entity_data.specifics.user_event().event_time_usec());
+    case SHARED_TAB_GROUP_DATA:
+      return entity_data.specifics.shared_tab_group_data().guid();
     default:
       // If you need support for more types, add them here.
       NOTREACHED();

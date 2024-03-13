@@ -129,6 +129,32 @@ void ProcessorEntityTracker::RemoveEntityForStorageKey(
   storage_key_to_tag_hash_.erase(iter);
 }
 
+std::vector<std::string> ProcessorEntityTracker::RemoveInactiveCollaborations(
+    const base::flat_set<std::string>& active_collaborations) {
+  CHECK(IsInitialSyncAtLeastPartiallyDone(
+      model_type_state_.initial_sync_state()));
+  std::vector<std::string> removed_storage_keys;
+  std::erase_if(entities_, [&removed_storage_keys,
+                            &active_collaborations](const auto& item) {
+    const std::unique_ptr<ProcessorEntity>& entity = item.second;
+    if (!active_collaborations.contains(
+            entity->metadata().collaboration().collaboration_id())) {
+      // The storage key should never be empty because there shouldn't be
+      // updates for inactive collaborations (ModelTypeWorker would filter them
+      // out).
+      CHECK(!entity->storage_key().empty());
+      removed_storage_keys.push_back(entity->storage_key());
+      return true;
+    }
+    return false;
+  });
+
+  for (const std::string& storage_key : removed_storage_keys) {
+    storage_key_to_tag_hash_.erase(storage_key);
+  }
+  return removed_storage_keys;
+}
+
 void ProcessorEntityTracker::ClearStorageKey(const std::string& storage_key) {
   DCHECK(!storage_key.empty());
 

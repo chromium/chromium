@@ -379,6 +379,13 @@ constexpr ModelTypeSet ApplyUpdatesImmediatelyTypes() {
   return {HISTORY};
 }
 
+// Types for which `collaboration_id` field in SyncEntity should be provided.
+// These types also support `gc_directive` for collaborations to track active
+// collaboratons.
+constexpr ModelTypeSet SharedTypes() {
+  return {SHARED_TAB_GROUP_DATA};
+}
+
 // User types that can be encrypted, which is a subset of UserTypes() and a
 // superset of AlwaysEncryptedUserTypes();
 ModelTypeSet EncryptableUserTypes();

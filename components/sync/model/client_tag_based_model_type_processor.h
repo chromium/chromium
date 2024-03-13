@@ -186,7 +186,8 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // enabled.
   std::optional<ModelError> OnIncrementalUpdateReceived(
       const sync_pb::ModelTypeState& type_state,
-      UpdateResponseDataList updates);
+      UpdateResponseDataList updates,
+      std::optional<sync_pb::GarbageCollectionDirective> gc_directive);
 
   // ModelTypeSyncBridge::GetData() callback for pending loading data upon
   // GetLocalChanges call.

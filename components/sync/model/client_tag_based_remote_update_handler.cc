@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/time.h"
@@ -32,7 +33,8 @@ ClientTagBasedRemoteUpdateHandler::ClientTagBasedRemoteUpdateHandler(
 std::optional<ModelError>
 ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
     const sync_pb::ModelTypeState& model_type_state,
-    UpdateResponseDataList updates) {
+    UpdateResponseDataList updates,
+    std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge_->CreateMetadataChangeList();
   EntityChangeList entity_changes;
@@ -100,6 +102,21 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
     } else {
       metadata_changes->UpdateMetadata(entity->storage_key(),
                                        entity->metadata());
+    }
+  }
+
+  if (gc_directive && gc_directive->has_collaboration_gc()) {
+    auto active_collaborations = base::MakeFlatSet<std::string>(
+        gc_directive->collaboration_gc().active_collaboration_ids());
+    std::vector<std::string> removed_storage_keys =
+        entity_tracker_->RemoveInactiveCollaborations(active_collaborations);
+    DVLOG(2) << "Storage keys to remove for inactive collaborations: "
+             << removed_storage_keys.size();
+    for (const std::string& removed_storage_key : removed_storage_keys) {
+      metadata_changes->ClearMetadata(removed_storage_key);
+      // TODO(b/325917757): Add a separate change type for removed
+      // collaborations.
+      entity_changes.push_back(EntityChange::CreateDelete(removed_storage_key));
     }
   }
 

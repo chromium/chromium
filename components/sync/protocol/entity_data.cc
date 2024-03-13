@@ -45,7 +45,8 @@ base::Value::Dict EntityData::ToDictionaryValue() const {
       .Set("CTIME", GetTimeDebugString(creation_time))
       .Set("MTIME", GetTimeDebugString(modification_time))
       .Set("RECIPIENT_PUBLIC_KEY",
-           CrossUserSharingPublicKeyToValue(recipient_public_key));
+           CrossUserSharingPublicKeyToValue(recipient_public_key))
+      .Set("COLLABORATION_ID", collaboration_id);
 }
 
 size_t EntityData::EstimateMemoryUsage() const {
@@ -60,6 +61,7 @@ size_t EntityData::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(specifics);
   memory_usage += EstimateMemoryUsage(legacy_parent_id);
   memory_usage += EstimateMemoryUsage(recipient_public_key);
+  memory_usage += EstimateMemoryUsage(collaboration_id);
   return memory_usage;
 }
 
@@ -71,8 +73,8 @@ void PrintTo(const EntityData& entity_data, std::ostream* os) {
   *os << "{ id: '" << entity_data.id << "', client_tag_hash: '"
       << entity_data.client_tag_hash << "', originator_cache_guid: '"
       << entity_data.originator_cache_guid << "', originator_client_item_id: '"
-      << entity_data.originator_client_item_id
-      << "', server_defined_unique_tag: '"
+      << entity_data.originator_client_item_id << "', collaboration_id: '"
+      << entity_data.collaboration_id << "', server_defined_unique_tag: '"
       << entity_data.server_defined_unique_tag << "', specifics: " << specifics
       << "}";
 }

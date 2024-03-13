@@ -609,6 +609,12 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
   VISIT(base_specifics_hash);
   VISIT(possibly_trimmed_base_specifics);
   VISIT(deleted_by_version);
+  VISIT(collaboration);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::EntityMetadata::CollaborationMetadata& proto) {
+  VISIT(collaboration_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {

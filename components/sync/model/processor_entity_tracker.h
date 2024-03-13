@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -66,6 +67,11 @@ class ProcessorEntityTracker {
   // not exist, does nothing.
   void RemoveEntityForClientTagHash(const ClientTagHash& client_tag_hash);
   void RemoveEntityForStorageKey(const std::string& storage_key);
+
+  // Removes items from |entities_| which are associated with a collaboration
+  // which is not active anymore. Returns storage keys for the deleted entities.
+  std::vector<std::string> RemoveInactiveCollaborations(
+      const base::flat_set<std::string>& active_collaborations);
 
   // Removes |storage_key| from |storage_key_to_tag_hash_| and clears it for
   // the corresponding entity. Does not remove the entity from |entities_|.

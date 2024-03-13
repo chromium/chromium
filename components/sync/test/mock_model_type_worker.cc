@@ -223,6 +223,16 @@ syncer::UpdateResponseData MockModelTypeWorker::GenerateUpdateData(
                             model_type_state_.encryption_key_name());
 }
 
+syncer::UpdateResponseData MockModelTypeWorker::GenerateSharedUpdateData(
+    const ClientTagHash& tag_hash,
+    const sync_pb::EntitySpecifics& specifics,
+    const std::string& collaboration_id) {
+  syncer::UpdateResponseData response_data =
+      GenerateUpdateData(tag_hash, specifics);
+  response_data.entity.collaboration_id = collaboration_id;
+  return response_data;
+}
+
 syncer::UpdateResponseData MockModelTypeWorker::GenerateTypeRootUpdateData(
     const ModelType& model_type) {
   syncer::EntityData data;

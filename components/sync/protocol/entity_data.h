@@ -85,6 +85,10 @@ struct EntityData {
   // true. Relevant only for bookmarks.
   bool is_bookmark_unique_position_in_specifics_preprocessed = false;
 
+  // Collaboration with which the current entity is associated. Empty for
+  // non-shared types.
+  std::string collaboration_id;
+
   // True if EntityData represents deleted entity; otherwise false.
   // Note that EntityData would be considered to represent a deletion if its
   // specifics hasn't been set.
