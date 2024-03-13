@@ -468,6 +468,32 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     ASSERT_EQ(responses.size(), 1u);
   }
 
+  bool Register() {
+    BoolCallback register_callback;
+    manager_.RegisterIfNeeded(register_callback.callback());
+    register_callback.WaitForCallback();
+    return std::get<0>(register_callback.result().value());
+  }
+
+  void ConfigureVaultResponses() {
+    url_loader_factory_.AddResponse(
+        std::string(EnclaveManager::recovery_key_store_cert_url_for_testing()),
+        std::string(kSampleRecoverableKeyStoreCertXML));
+    url_loader_factory_.AddResponse(
+        std::string(EnclaveManager::recovery_key_store_sig_url_for_testing()),
+        std::string(kSampleRecoverableKeyStoreSigXML));
+    url_loader_factory_.AddResponse(
+        std::string(EnclaveManager::recovery_key_store_url_for_testing()) +
+            "?alt=proto",
+        MakeVaultResponse());
+  }
+
+  void CorruptDeviceId() {
+    webauthn_pb::EnclaveLocalState& state = manager_.local_state_for_testing();
+    ASSERT_EQ(state.users().size(), 1u);
+    state.mutable_users()->begin()->second.set_device_id("corrupted value");
+  }
+
   base::test::TaskEnvironment task_env_;
   unsigned stored_count_ = 0;
   const TempDir temp_dir_;
@@ -737,17 +763,7 @@ TEST_F(EnclaveManagerTest, InvalidWrappedPIN) {
 
 TEST_F(EnclaveManagerTest, SetupWithPIN) {
   const std::string pin = "123456";
-
-  url_loader_factory_.AddResponse(
-      std::string(EnclaveManager::recovery_key_store_cert_url_for_testing()),
-      std::string(kSampleRecoverableKeyStoreCertXML));
-  url_loader_factory_.AddResponse(
-      std::string(EnclaveManager::recovery_key_store_sig_url_for_testing()),
-      std::string(kSampleRecoverableKeyStoreSigXML));
-  url_loader_factory_.AddResponse(
-      std::string(EnclaveManager::recovery_key_store_url_for_testing()) +
-          "?alt=proto",
-      MakeVaultResponse());
+  ConfigureVaultResponses();
 
   BoolCallback setup_callback;
   manager_.SetupWithPIN(pin, setup_callback.callback());
@@ -800,18 +816,8 @@ TEST_F(EnclaveManagerTest, SetupWithPIN_SigXMLFailure) {
 
 TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   security_domain_service_->pretend_there_are_members();
+  ConfigureVaultResponses();
   const std::string pin = "pin";
-
-  url_loader_factory_.AddResponse(
-      std::string(EnclaveManager::recovery_key_store_cert_url_for_testing()),
-      std::string(kSampleRecoverableKeyStoreCertXML));
-  url_loader_factory_.AddResponse(
-      std::string(EnclaveManager::recovery_key_store_sig_url_for_testing()),
-      std::string(kSampleRecoverableKeyStoreSigXML));
-  url_loader_factory_.AddResponse(
-      std::string(EnclaveManager::recovery_key_store_url_for_testing()) +
-          "?alt=proto",
-      MakeVaultResponse());
 
   std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
   ASSERT_FALSE(manager_.has_pending_keys());
@@ -834,6 +840,48 @@ TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> entity;
   DoCreate(/*claimed_pin=*/nullptr, &entity);
   DoAssertion(std::move(entity), std::move(claimed_pin));
+}
+
+TEST_F(EnclaveManagerTest, EnclaveForgetsClient_SetupWithPIN) {
+  ASSERT_TRUE(Register());
+  CorruptDeviceId();
+  ConfigureVaultResponses();
+
+  BoolCallback setup_callback;
+  manager_.SetupWithPIN("1234", setup_callback.callback());
+  setup_callback.WaitForCallback();
+  EXPECT_FALSE(std::get<0>(setup_callback.result().value()));
+}
+
+TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceToAccount) {
+  ASSERT_TRUE(Register());
+  CorruptDeviceId();
+  security_domain_service_->pretend_there_are_members();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
+  BoolCallback add_callback;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/GetTestWrappedPIN().SerializeAsString(),
+      add_callback.callback()));
+  add_callback.WaitForCallback();
+  EXPECT_FALSE(std::get<0>(add_callback.result().value()));
+}
+
+TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
+  ASSERT_TRUE(Register());
+  CorruptDeviceId();
+  ConfigureVaultResponses();
+  security_domain_service_->pretend_there_are_members();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/417);
+  BoolCallback add_callback;
+  manager_.AddDeviceAndPINToAccount("1234", add_callback.callback());
+  add_callback.WaitForCallback();
+  EXPECT_FALSE(std::get<0>(add_callback.result().value()));
 }
 
 }  // namespace

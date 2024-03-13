@@ -189,7 +189,7 @@ class EnclaveManager : public KeyedService {
   // `on_stop` when stopped. Otherwise return false.
   bool RunWhenStoppedForTesting(base::OnceClosure on_stop);
 
-  const webauthn_pb::EnclaveLocalState& local_state_for_testing() const;
+  webauthn_pb::EnclaveLocalState& local_state_for_testing() const;
 
   // These methods get internal URLs so that tests can reply when they're
   // fetched.

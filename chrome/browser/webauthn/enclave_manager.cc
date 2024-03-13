@@ -1459,6 +1459,11 @@ class EnclaveManager::StateMachine {
   void DoWrappingPIN(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    if (absl::holds_alternative<Failure>(event)) {
+      state_ = State::kStop;
+      return;
+    }
+
     cbor::Value response =
         std::move(absl::get_if<EnclaveResponse>(&event)->value());
     if (!IsAllOk(response, 2)) {
@@ -2244,7 +2249,7 @@ bool EnclaveManager::RunWhenStoppedForTesting(base::OnceClosure on_stop) {
   return true;
 }
 
-const EnclaveLocalState& EnclaveManager::local_state_for_testing() const {
+EnclaveLocalState& EnclaveManager::local_state_for_testing() const {
   return *local_state_;
 }
 
