@@ -68,6 +68,7 @@ class KioskAppServiceLauncher :
                               AppLaunchedCallback app_launched_callback,
                               base::OnceClosure app_visible_callback);
 #endif
+  void SetLaunchUrl(const GURL& launch_url);
 
  private:
   void LaunchAppInternal();
@@ -98,6 +99,7 @@ class KioskAppServiceLauncher :
   std::optional<base::OnceClosure> app_type_initialized_callback_;
 
   std::optional<AppLaunchedCallback> app_launched_callback_;
+  std::optional<GURL> launch_url_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

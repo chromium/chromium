@@ -79,6 +79,12 @@ void WebKioskAppServiceLauncher::Initialize() {
       apps::AppType::kWeb,
       base::BindOnce(&WebKioskAppServiceLauncher::OnWebAppInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // By default the app service will try to launch the start_url as defined by
+  // the web app's manifest. This is generally not what we want, so we need to
+  // set the complete url as override url.
+  app_service_launcher_->SetLaunchUrl(GetCurrentApp()->install_url());
+
   profile_->GetExtensionSpecialStoragePolicy()->AddOriginWithUnlimitedStorage(
       url::Origin::Create(GetCurrentApp()->install_url()));
 }

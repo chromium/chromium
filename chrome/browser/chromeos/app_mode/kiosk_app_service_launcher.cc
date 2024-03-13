@@ -18,6 +18,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/instance.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
@@ -147,12 +148,15 @@ void KioskAppServiceLauncher::OnInstanceRegistryWillBeDestroyed(
 
 void KioskAppServiceLauncher::LaunchAppInternal() {
   SYSLOG(INFO) << "Kiosk app is ready to launch with App Service";
+
+  auto params = apps::AppLaunchParams(
+      app_id_, apps::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_POPUP, apps::LaunchSource::kFromKiosk);
+  params.override_url = launch_url_.value_or(GURL());
+
   app_service_->LaunchAppWithParams(
-      apps::AppLaunchParams(
-          app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::NEW_POPUP, apps::LaunchSource::kFromKiosk),
-      base::BindOnce(&KioskAppServiceLauncher::OnAppLaunched,
-                     weak_ptr_factory_.GetWeakPtr()));
+      std::move(params), base::BindOnce(&KioskAppServiceLauncher::OnAppLaunched,
+                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
 void KioskAppServiceLauncher::OnAppLaunched(apps::LaunchResult&& result) {
@@ -161,6 +165,10 @@ void KioskAppServiceLauncher::OnAppLaunched(apps::LaunchResult&& result) {
   if (app_launched_callback_.has_value()) {
     std::move(app_launched_callback_.value()).Run(true);
   }
+}
+
+void KioskAppServiceLauncher::SetLaunchUrl(const GURL& launch_url) {
+  launch_url_ = launch_url;
 }
 
 }  // namespace chromeos
