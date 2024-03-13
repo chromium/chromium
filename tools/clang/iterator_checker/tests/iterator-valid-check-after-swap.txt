@@ -1,0 +1,7 @@
+iterator-valid-check-after-swap.cpp:29:12: error: [iterator-checker] Potentially invalid iterator comparison.
+  PassBool(it1 != v2.end());
+           ^
+iterator-valid-check-after-swap.cpp:30:12: error: [iterator-checker] Potentially invalid iterator comparison.
+  PassBool(it2 != v1.end());
+           ^
+2 errors generated.
