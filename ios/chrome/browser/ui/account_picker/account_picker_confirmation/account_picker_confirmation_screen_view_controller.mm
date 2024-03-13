@@ -131,9 +131,16 @@ CGFloat GetPixelLength() {
   __weak __typeof(_identityButtonControl) weakIdentityButton =
       _identityButtonControl;
   [UIView animateWithDuration:kIdentityButtonAnimationDuration
-                   animations:^{
-                     weakIdentityButton.hidden = hidden;
-                   }];
+      animations:^{
+        weakIdentityButton.hidden = hidden;
+      }
+      completion:^(BOOL finished) {
+        // Without this completion, it appears there is some form of race
+        // condition which leads to the animation getting stuck in a state where
+        // the button is visible, but its superview lays itself out without
+        // making enough space. See https://crbug.com/329387878 for details.
+        weakIdentityButton.hidden = hidden;
+      }];
 }
 
 #pragma mark - UIViewController
