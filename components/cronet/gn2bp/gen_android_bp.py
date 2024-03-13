@@ -391,6 +391,8 @@ _builtin_deps = {
     add_android_test_base_java_deps,
     '//third_party/accessibility_test_framework:accessibility_test_framework_java':
     add_accessibility_test_framework_java_deps,
+    '//third_party/accessibility_test_framework:accessibility_core_java':
+    add_accessibility_test_framework_java_deps,
     '//third_party/android_deps:espresso_java':
     add_espresso_java_deps,
     '//third_party/android_sdk:android_test_mock_java':
