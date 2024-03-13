@@ -443,7 +443,7 @@ export class NetworkRequest {
       event = getEvent();
     } catch (error) {
       this.#logger?.(LogType.debugError, error);
-      throw error;
+      return;
     }
 
     if (this.#isIgnoredEvent() || this.#emittedEvents[event.method]) {
