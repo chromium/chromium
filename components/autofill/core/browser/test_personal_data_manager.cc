@@ -74,78 +74,10 @@ std::string TestPersonalDataManager::SaveImportedCreditCard(
   return imported_credit_card.guid();
 }
 
-void TestPersonalDataManager::RemoveByGUID(const std::string& guid) {
-  RemoveByGuidWithoutNotifications(guid);
-  NotifyPersonalDataObserver();
-}
-
-void TestPersonalDataManager::RemoveByGuidWithoutNotifications(
-    const std::string& guid) {
-  if (CreditCard* credit_card = GetCreditCardByGUID(guid)) {
-    payments_data_manager_->local_credit_cards_.erase(
-        base::ranges::find(payments_data_manager_->local_credit_cards_,
-                           credit_card, &std::unique_ptr<CreditCard>::get));
-  } else if (GetProfileByGUID(guid)) {
-    address_data_manager_->RemoveProfile(guid);
-  } else if (const Iban* iban = payments_data_manager().GetIbanByGUID(guid)) {
-    payments_data_manager_->local_ibans_.erase(
-        base::ranges::find(payments_data_manager_->local_ibans_, iban,
-                           &std::unique_ptr<Iban>::get));
-  }
-}
-
 bool TestPersonalDataManager::IsEligibleForAddressAccountStorage() const {
   return eligible_for_account_storage_.has_value()
              ? *eligible_for_account_storage_
              : PersonalDataManager::IsEligibleForAddressAccountStorage();
-}
-
-void TestPersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
-  std::unique_ptr<CreditCard> local_credit_card =
-      std::make_unique<CreditCard>(credit_card);
-  payments_data_manager_->local_credit_cards_.push_back(
-      std::move(local_credit_card));
-  NotifyPersonalDataObserver();
-}
-
-std::string TestPersonalDataManager::AddAsLocalIban(Iban iban) {
-  CHECK_EQ(iban.record_type(), Iban::kUnknown);
-  iban.set_record_type(Iban::kLocalIban);
-  iban.set_identifier(
-      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  std::unique_ptr<Iban> local_iban = std::make_unique<Iban>(iban);
-  payments_data_manager_->local_ibans_.push_back(std::move(local_iban));
-  NotifyPersonalDataObserver();
-  return iban.guid();
-}
-
-std::string TestPersonalDataManager::UpdateIban(const Iban& iban) {
-  const Iban* old_iban = payments_data_manager().GetIbanByGUID(iban.guid());
-  CHECK(old_iban);
-  payments_data_manager_->local_ibans_.push_back(std::make_unique<Iban>(iban));
-  RemoveByGUID(old_iban->guid());
-  return iban.guid();
-}
-
-void TestPersonalDataManager::DeleteLocalCreditCards(
-    const std::vector<CreditCard>& cards) {
-  for (const auto& card : cards)
-    // Removed the cards silently and trigger a single notification to match the
-    // behavior of PersonalDataManager.
-    RemoveByGuidWithoutNotifications(card.guid());
-
-  NotifyPersonalDataObserver();
-}
-
-void TestPersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
-  CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());
-  if (existing_credit_card) {
-    // AddCreditCard will trigger a notification to observers. We remove the old
-    // card without notification so that exactly one notification is sent, which
-    // matches the behavior of the PersonalDataManager.
-    RemoveByGuidWithoutNotifications(existing_credit_card->guid());
-    AddCreditCard(credit_card);
-  }
 }
 
 const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
@@ -221,36 +153,6 @@ bool TestPersonalDataManager::IsPaymentCvcStorageEnabled() {
     return payments_cvc_storage_enabled_.value();
   }
   return PersonalDataManager::IsPaymentCvcStorageEnabled();
-}
-
-void TestPersonalDataManager::AddServerCvc(int64_t instrument_id,
-                                           const std::u16string& cvc) {
-  auto card_iterator =
-      std::find_if(payments_data_manager_->server_credit_cards_.begin(),
-                   payments_data_manager_->server_credit_cards_.end(),
-                   [instrument_id](auto& card) {
-                     return card->instrument_id() == instrument_id;
-                   });
-
-  if (card_iterator != payments_data_manager_->server_credit_cards_.end()) {
-    card_iterator->get()->set_cvc(cvc);
-  }
-}
-
-void TestPersonalDataManager::ClearServerCvcs() {
-  for (CreditCard* card : PersonalDataManager::GetServerCreditCards()) {
-    if (!card->cvc().empty()) {
-      card->clear_cvc();
-    }
-  }
-}
-
-void TestPersonalDataManager::ClearLocalCvcs() {
-  for (CreditCard* card : PersonalDataManager::GetLocalCreditCards()) {
-    if (!card->cvc().empty()) {
-      card->clear_cvc();
-    }
-  }
 }
 
 void TestPersonalDataManager::ClearProfiles() {

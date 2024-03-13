@@ -340,6 +340,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // True if personal data has been loaded from the web database.
   bool is_payments_data_loaded_ = false;
 
+  // TODO(b/322170538): Remove dependency.
+  raw_ptr<PersonalDataManager> pdm_;
+
  private:
   // Returns if there are any pending queries to the web database.
   bool HasPendingPaymentQueries() const;
@@ -394,9 +397,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   WebDataServiceBase::Handle pending_offer_data_query_ = 0;
   WebDataServiceBase::Handle pending_virtual_card_usage_data_query_ = 0;
   WebDataServiceBase::Handle pending_credit_card_benefit_query_ = 0;
-
-  // TODO(b/322170538): Remove dependency.
-  raw_ptr<PersonalDataManager> pdm_;
 
   // The image fetcher to fetch customized images for Autofill data.
   raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;

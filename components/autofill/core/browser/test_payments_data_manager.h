@@ -33,6 +33,15 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;
   void LoadIbans() override;
+  bool RemoveByGUID(const std::string& guid) override;
+  void AddCreditCard(const CreditCard& credit_card) override;
+  std::string AddAsLocalIban(const Iban iban) override;
+  std::string UpdateIban(const Iban& iban) override;
+  void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
+  void UpdateCreditCard(const CreditCard& credit_card) override;
+  void AddServerCvc(int64_t instrument_id, const std::u16string& cvc) override;
+  void ClearServerCvcs() override;
+  void ClearLocalCvcs() override;
   bool IsAutofillPaymentMethodsEnabled() const override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
@@ -46,6 +55,8 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   }
 
  private:
+  void RemoveCardWithoutNotification(const CreditCard& card);
+
   std::optional<bool> autofill_payment_methods_enabled_;
 };
 

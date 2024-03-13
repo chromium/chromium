@@ -41,6 +41,7 @@ void TestAddressDataManager::RemoveProfile(const std::string& guid) {
       GetProfileStorage(profile->source());
   profiles.erase(base::ranges::find(profiles, profile,
                                     &std::unique_ptr<AutofillProfile>::get));
+  notify_pdm_observers_.Run();
 }
 
 void TestAddressDataManager::LoadProfiles() {

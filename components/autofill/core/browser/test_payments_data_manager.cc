@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 
+#include "base/uuid.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
+
 namespace autofill {
 
 TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale,
@@ -75,6 +78,96 @@ void TestPaymentsDataManager::LoadIbans() {
   }
 }
 
+bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
+  if (CreditCard* credit_card = GetCreditCardByGUID(guid)) {
+    local_credit_cards_.erase(base::ranges::find(
+        local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
+    pdm_->NotifyPersonalDataObserver();
+    return true;
+  } else if (const Iban* iban = GetIbanByGUID(guid)) {
+    local_ibans_.erase(
+        base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
+    pdm_->NotifyPersonalDataObserver();
+    return true;
+  }
+  return false;
+}
+
+void TestPaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
+  std::unique_ptr<CreditCard> local_credit_card =
+      std::make_unique<CreditCard>(credit_card);
+  local_credit_cards_.push_back(std::move(local_credit_card));
+  pdm_->NotifyPersonalDataObserver();
+}
+
+std::string TestPaymentsDataManager::AddAsLocalIban(Iban iban) {
+  CHECK_EQ(iban.record_type(), Iban::kUnknown);
+  iban.set_record_type(Iban::kLocalIban);
+  iban.set_identifier(
+      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  std::unique_ptr<Iban> local_iban = std::make_unique<Iban>(iban);
+  local_ibans_.push_back(std::move(local_iban));
+  pdm_->NotifyPersonalDataObserver();
+  return iban.guid();
+}
+
+std::string TestPaymentsDataManager::UpdateIban(const Iban& iban) {
+  const Iban* old_iban = GetIbanByGUID(iban.guid());
+  CHECK(old_iban);
+  local_ibans_.push_back(std::make_unique<Iban>(iban));
+  RemoveByGUID(iban.guid());
+  return iban.guid();
+}
+
+void TestPaymentsDataManager::DeleteLocalCreditCards(
+    const std::vector<CreditCard>& cards) {
+  for (const auto& card : cards) {
+    // Removed the cards silently and trigger a single notification to match the
+    // behavior of PersonalDataManager.
+    RemoveCardWithoutNotification(card);
+  }
+  pdm_->NotifyPersonalDataObserver();
+}
+
+void TestPaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
+  if (GetCreditCardByGUID(credit_card.guid())) {
+    // AddCreditCard will trigger a notification to observers. We remove the old
+    // card without notification so that exactly one notification is sent, which
+    // matches the behavior of the PersonalDataManager.
+    RemoveCardWithoutNotification(credit_card);
+    AddCreditCard(credit_card);
+  }
+}
+
+void TestPaymentsDataManager::AddServerCvc(int64_t instrument_id,
+                                           const std::u16string& cvc) {
+  auto card_iterator =
+      std::find_if(server_credit_cards_.begin(), server_credit_cards_.end(),
+                   [instrument_id](auto& card) {
+                     return card->instrument_id() == instrument_id;
+                   });
+
+  if (card_iterator != server_credit_cards_.end()) {
+    card_iterator->get()->set_cvc(cvc);
+  }
+}
+
+void TestPaymentsDataManager::ClearServerCvcs() {
+  for (CreditCard* card : GetServerCreditCards()) {
+    if (!card->cvc().empty()) {
+      card->clear_cvc();
+    }
+  }
+}
+
+void TestPaymentsDataManager::ClearLocalCvcs() {
+  for (CreditCard* card : GetLocalCreditCards()) {
+    if (!card->cvc().empty()) {
+      card->clear_cvc();
+    }
+  }
+}
+
 bool TestPaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
   // Return the value of autofill_payment_methods_enabled_ if it has been set,
   // otherwise fall back to the normal behavior of checking the pref_service.
@@ -91,6 +184,15 @@ void TestPaymentsDataManager::ClearCreditCards() {
 
 void TestPaymentsDataManager::ClearCreditCardOfferData() {
   autofill_offer_data_.clear();
+}
+
+void TestPaymentsDataManager::RemoveCardWithoutNotification(
+    const CreditCard& card) {
+  if (CreditCard* existing_credit_card = GetCreditCardByGUID(card.guid())) {
+    local_credit_cards_.erase(
+        base::ranges::find(local_credit_cards_, existing_credit_card,
+                           &std::unique_ptr<CreditCard>::get));
+  }
 }
 
 }  // namespace autofill

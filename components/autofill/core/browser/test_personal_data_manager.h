@@ -59,13 +59,7 @@ class TestPersonalDataManager : public PersonalDataManager {
   void RecordUseOfIban(Iban& iban) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
-  void RemoveByGUID(const std::string& guid) override;
   bool IsEligibleForAddressAccountStorage() const override;
-  void AddCreditCard(const CreditCard& credit_card) override;
-  std::string AddAsLocalIban(const Iban iban) override;
-  std::string UpdateIban(const Iban& iban) override;
-  void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
-  void UpdateCreditCard(const CreditCard& credit_card) override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
   bool IsAutofillWalletImportEnabled() const override;
   bool ShouldSuggestServerPaymentMethods() const override;
@@ -82,9 +76,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsPaymentMethodsMandatoryReauthEnabled() override;
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
   bool IsPaymentCvcStorageEnabled() override;
-  void AddServerCvc(int64_t instrument_id, const std::u16string& cvc) override;
-  void ClearServerCvcs() override;
-  void ClearLocalCvcs() override;
 
   // Unique to TestPersonalDataManager:
 
@@ -166,10 +157,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   }
 
  private:
-  // This should be called when you just want to delete the element via `guid`
-  // and not trigger `NotifyPersonalDataObserver()`.
-  void RemoveByGuidWithoutNotifications(const std::string& guid);
-
   std::string default_country_code_;
   int num_times_save_imported_credit_card_called_ = 0;
   std::optional<bool> autofill_wallet_import_enabled_;
