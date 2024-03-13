@@ -76,6 +76,17 @@ GURL GetManageInstrumentsUrl() {
                                   : kSandboxPaymentsManageCardsUrl));
 }
 
+GURL GetManageInstrumentUrl(int64_t instrument_id) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kAutofillUpdateChromeSettingsLinkToGPayWeb));
+  GURL url = GetManageInstrumentsUrl();
+  std::string new_query =
+      base::StrCat({url.query(), "&id=", base::NumberToString(instrument_id)});
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(new_query);
+  return url.ReplaceComponents(replacements);
+}
+
 GURL GetManageAddressesUrl() {
   // Billing addresses are now managed as a part of the payment instrument.
   return GetManageInstrumentsUrl();

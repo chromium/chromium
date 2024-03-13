@@ -78,5 +78,17 @@ TEST(PaymentsServiceSandboxUrl,
   EXPECT_EQ(kExpectedURL, GetManageAddressesUrl().spec());
 }
 
+TEST(PaymentsServiceUrl, UrlWithInstrumentId) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillUpdateChromeSettingsLinkToGPayWeb);
+
+  const char kExpectedURL[] =
+      "https://pay.google.com/"
+      "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
+      "payment_methods&id=123";
+
+  EXPECT_EQ(kExpectedURL, GetManageInstrumentUrl(/*instrument_id=*/123).spec());
+}
+
 }  // namespace payments
 }  // namespace autofill

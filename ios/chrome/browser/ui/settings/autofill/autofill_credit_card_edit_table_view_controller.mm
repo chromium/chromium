@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_edit_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/format_macros.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
@@ -93,7 +94,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // In the case of server cards, open the Payments editing page instead.
   if (_creditCard.record_type() ==
           autofill::CreditCard::RecordType::kMaskedServerCard) {
-    GURL paymentsURL = autofill::payments::GetManageInstrumentsUrl();
+    GURL paymentsURL =
+        base::FeatureList::IsEnabled(
+            autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)
+            ? autofill::payments::GetManageInstrumentUrl(
+                  _creditCard.instrument_id())
+            : autofill::payments::GetManageInstrumentsUrl();
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
     [self.applicationHandler closeSettingsUIAndOpenURL:command];
