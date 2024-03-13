@@ -28,6 +28,10 @@ class ExtensionsRendererClient {
   ExtensionsRendererClient();
   virtual ~ExtensionsRendererClient();
 
+  // Notifies that the main render thread has started. Used to finalize any
+  // setup. Mirrors the ContentRendererClient method of the same name.
+  virtual void RenderThreadStarted() = 0;
+
   // Returns true if the current render process was launched incognito.
   virtual bool IsIncognitoProcess() const = 0;
 

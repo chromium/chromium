@@ -14,6 +14,8 @@ TestExtensionsRendererClient::~TestExtensionsRendererClient() {
   ExtensionsRendererClient::Set(nullptr);
 }
 
+void TestExtensionsRendererClient::RenderThreadStarted() {}
+
 bool TestExtensionsRendererClient::IsIncognitoProcess() const {
   return false;
 }

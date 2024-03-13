@@ -13,15 +13,16 @@
 
 namespace extensions {
 
-ShellExtensionsRendererClient::ShellExtensionsRendererClient()
-    : dispatcher_(std::make_unique<Dispatcher>(
-          std::make_unique<DispatcherDelegate>(),
-          std::vector<
-              std::unique_ptr<const ExtensionsRendererAPIProvider>>())) {
-  dispatcher_->OnRenderThreadStarted(content::RenderThread::Get());
-}
+ShellExtensionsRendererClient::ShellExtensionsRendererClient() = default;
 
 ShellExtensionsRendererClient::~ShellExtensionsRendererClient() = default;
+
+void ShellExtensionsRendererClient::RenderThreadStarted() {
+  dispatcher_ = std::make_unique<Dispatcher>(
+      std::make_unique<DispatcherDelegate>(), std::move(api_providers_));
+
+  dispatcher_->OnRenderThreadStarted(content::RenderThread::Get());
+}
 
 bool ShellExtensionsRendererClient::IsIncognitoProcess() const {
   // app_shell doesn't support off-the-record contexts.

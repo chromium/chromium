@@ -69,6 +69,7 @@ class ChromeExtensionsRendererClient
   static ChromeExtensionsRendererClient* GetInstance();
 
   // extensions::ExtensionsRendererClient implementation.
+  void RenderThreadStarted() override;
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
   extensions::Dispatcher* GetDispatcher() override;
@@ -81,7 +82,6 @@ class ChromeExtensionsRendererClient
       const GURL& script_url) const override;
 
   // See ChromeContentRendererClient methods with the same names.
-  void RenderThreadStarted();
   void WebViewCreated(blink::WebView* web_view,
                       const url::Origin* outermost_origin);
   void RenderFrameCreated(content::RenderFrame* render_frame,

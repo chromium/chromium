@@ -198,13 +198,6 @@ class Dispatcher : public content::RenderThreadObserver,
                    mojom::LocalFrame::ExecuteCodeCallback callback,
                    content::RenderFrame* render_frame);
 
-  struct JsResourceInfo {
-    const char* name = nullptr;
-    int id = 0;
-  };
-  // Returns a list of resources for the JS modules to add to the source map.
-  static std::vector<JsResourceInfo> GetJsResources();
-
   NativeExtensionBindingsSystem* bindings_system() {
     return bindings_system_.get();
   }

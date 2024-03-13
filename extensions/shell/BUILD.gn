@@ -421,6 +421,7 @@ source_set("browser_tests") {
     "//extensions/browser",
     "//extensions/browser:test_support",
     "//extensions/common",
+    "//extensions/renderer",
     "//ui/base",
   ]
 

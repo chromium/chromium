@@ -13,6 +13,7 @@
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/shell/common/shell_extensions_client.h"
@@ -41,7 +42,10 @@ void ShellContentRendererClient::RenderThreadStarted() {
 
   extensions_renderer_client_ =
       std::make_unique<ShellExtensionsRendererClient>();
+  extensions_renderer_client_->AddAPIProvider(
+      std::make_unique<extensions::CoreExtensionsRendererAPIProvider>());
   ExtensionsRendererClient::Set(extensions_renderer_client_.get());
+  extensions_renderer_client_->RenderThreadStarted();
 
   thread->AddObserver(extensions_renderer_client_->GetDispatcher());
 }

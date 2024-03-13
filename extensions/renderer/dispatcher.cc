@@ -107,7 +107,6 @@
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "extensions/renderer/worker_thread_util.h"
 #include "gin/converter.h"
-#include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
@@ -815,84 +814,6 @@ void Dispatcher::ExecuteCode(mojom::ExecuteCodeParamsPtr param,
       std::move(param), std::move(callback), render_frame);
 }
 
-// static
-std::vector<Dispatcher::JsResourceInfo> Dispatcher::GetJsResources() {
-  // Libraries.
-  std::vector<JsResourceInfo> resources = {
-      {"appView", IDR_APP_VIEW_JS},
-      {"appViewElement", IDR_APP_VIEW_ELEMENT_JS},
-      {"appViewDeny", IDR_APP_VIEW_DENY_JS},
-      {"entryIdManager", IDR_ENTRY_ID_MANAGER},
-      {"extensionOptions", IDR_EXTENSION_OPTIONS_JS},
-      {"extensionOptionsElement", IDR_EXTENSION_OPTIONS_ELEMENT_JS},
-      {"extensionOptionsAttributes", IDR_EXTENSION_OPTIONS_ATTRIBUTES_JS},
-      {"extensionOptionsConstants", IDR_EXTENSION_OPTIONS_CONSTANTS_JS},
-      {"extensionOptionsEvents", IDR_EXTENSION_OPTIONS_EVENTS_JS},
-      {"feedbackPrivate", IDR_FEEDBACK_PRIVATE_CUSTOM_BINDINGS_JS},
-      {"fileEntryBindingUtil", IDR_FILE_ENTRY_BINDING_UTIL_JS},
-      {"fileSystem", IDR_FILE_SYSTEM_CUSTOM_BINDINGS_JS},
-      {"guestView", IDR_GUEST_VIEW_JS},
-      {"guestViewAttributes", IDR_GUEST_VIEW_ATTRIBUTES_JS},
-      {"guestViewContainer", IDR_GUEST_VIEW_CONTAINER_JS},
-      {"guestViewContainerElement", IDR_GUEST_VIEW_CONTAINER_ELEMENT_JS},
-      {"guestViewDeny", IDR_GUEST_VIEW_DENY_JS},
-      {"guestViewEvents", IDR_GUEST_VIEW_EVENTS_JS},
-      {"safeMethods", IDR_SAFE_METHODS_JS},
-      {"imageUtil", IDR_IMAGE_UTIL_JS},
-      {"setIcon", IDR_SET_ICON_JS},
-      {"test", IDR_TEST_CUSTOM_BINDINGS_JS},
-      {"test_environment_specific_bindings",
-       IDR_BROWSER_TEST_ENVIRONMENT_SPECIFIC_BINDINGS_JS},
-      {"uncaught_exception_handler", IDR_UNCAUGHT_EXCEPTION_HANDLER_JS},
-      {"utils", IDR_UTILS_JS},
-      {"webRequest", IDR_WEB_REQUEST_CUSTOM_BINDINGS_JS},
-      {"webRequestEvent", IDR_WEB_REQUEST_EVENT_JS},
-      // Note: webView not webview so that this doesn't interfere with the
-      // chrome.webview API bindings.
-      {"webView", IDR_WEB_VIEW_JS},
-      {"webViewElement", IDR_WEB_VIEW_ELEMENT_JS},
-      {"extensionsWebViewElement", IDR_EXTENSIONS_WEB_VIEW_ELEMENT_JS},
-      {"webViewDeny", IDR_WEB_VIEW_DENY_JS},
-      {"webViewActionRequests", IDR_WEB_VIEW_ACTION_REQUESTS_JS},
-      {"webViewApiMethods", IDR_WEB_VIEW_API_METHODS_JS},
-      {"webViewAttributes", IDR_WEB_VIEW_ATTRIBUTES_JS},
-      {"webViewConstants", IDR_WEB_VIEW_CONSTANTS_JS},
-      {"webViewEvents", IDR_WEB_VIEW_EVENTS_JS},
-      {"webViewInternal", IDR_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS},
-
-      {"keep_alive", IDR_KEEP_ALIVE_JS},
-      {"mojo_bindings", IDR_MOJO_MOJO_BINDINGS_JS},
-
-#if BUILDFLAG(IS_CHROMEOS)
-      {"mojo_bindings_lite", IDR_MOJO_MOJO_BINDINGS_LITE_JS},
-#endif
-
-      {"extensions/common/mojom/keep_alive.mojom", IDR_KEEP_ALIVE_MOJOM_JS},
-
-      // Custom bindings.
-      {"automation", IDR_AUTOMATION_CUSTOM_BINDINGS_JS},
-      {"automationEvent", IDR_AUTOMATION_EVENT_JS},
-      {"automationNode", IDR_AUTOMATION_NODE_JS},
-      {"automationTreeCache", IDR_AUTOMATION_TREE_CACHE_JS},
-      {"app.runtime", IDR_APP_RUNTIME_CUSTOM_BINDINGS_JS},
-      {"app.window", IDR_APP_WINDOW_CUSTOM_BINDINGS_JS},
-      {"declarativeWebRequest", IDR_DECLARATIVE_WEBREQUEST_CUSTOM_BINDINGS_JS},
-      {"contextMenus", IDR_CONTEXT_MENUS_CUSTOM_BINDINGS_JS},
-      {"contextMenusHandlers", IDR_CONTEXT_MENUS_HANDLERS_JS},
-      {"mimeHandlerPrivate", IDR_MIME_HANDLER_PRIVATE_CUSTOM_BINDINGS_JS},
-      {"extensions/common/api/mime_handler.mojom", IDR_MIME_HANDLER_MOJOM_JS},
-      {"mojoPrivate", IDR_MOJO_PRIVATE_CUSTOM_BINDINGS_JS},
-      {"permissions", IDR_PERMISSIONS_CUSTOM_BINDINGS_JS},
-      {"printerProvider", IDR_PRINTER_PROVIDER_CUSTOM_BINDINGS_JS},
-      {"webViewRequest", IDR_WEB_VIEW_REQUEST_CUSTOM_BINDINGS_JS},
-
-      // Platform app sources that are not API-specific..
-      {"platformApp", IDR_PLATFORM_APP_JS},
-  };
-
-  return resources;
-}
-
 void Dispatcher::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
   // This base::Unretained() is safe, because:
@@ -1448,9 +1369,6 @@ void Dispatcher::RegisterNativeHandlers(
 }
 
 void Dispatcher::PopulateSourceMap() {
-  const std::vector<JsResourceInfo> resources = GetJsResources();
-  for (const auto& resource : resources)
-    source_map_.RegisterSource(resource.name, resource.id);
   for (const auto& api_provider : api_providers_) {
     api_provider->PopulateSourceMap(&source_map_);
   }

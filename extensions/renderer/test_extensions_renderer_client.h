@@ -18,6 +18,7 @@ class TestExtensionsRendererClient : public ExtensionsRendererClient {
   ~TestExtensionsRendererClient() override;
 
   // ExtensionsRendererClient implementation.
+  void RenderThreadStarted() override;
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
   Dispatcher* GetDispatcher() override;

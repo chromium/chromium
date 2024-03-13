@@ -209,6 +209,7 @@
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/switches.h"
+#include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
@@ -444,10 +445,12 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   ChromeExtensionsRendererClient* chrome_extensions_renderer_client =
       ChromeExtensionsRendererClient::GetInstance();
   chrome_extensions_renderer_client->AddAPIProvider(
-      std::make_unique<
-          controlled_frame::ControlledFrameExtensionsRendererAPIProvider>());
+      std::make_unique<extensions::CoreExtensionsRendererAPIProvider>());
   chrome_extensions_renderer_client->AddAPIProvider(
       std::make_unique<extensions::ChromeExtensionsRendererAPIProvider>());
+  chrome_extensions_renderer_client->AddAPIProvider(
+      std::make_unique<
+          controlled_frame::ControlledFrameExtensionsRendererAPIProvider>());
   chrome_extensions_renderer_client->RenderThreadStarted();
   WebSecurityPolicy::RegisterURLSchemeAsExtension(
       WebString::FromASCII(extensions::kExtensionScheme));

@@ -19,6 +19,8 @@ source_set("renderer") {
     "api/automation/automation_internal_custom_bindings.h",
     "api/context_menus_custom_bindings.cc",
     "api/context_menus_custom_bindings.h",
+    "api/core_extensions_renderer_api_provider.cc",
+    "api/core_extensions_renderer_api_provider.h",
     "api/declarative_content_hooks_delegate.cc",
     "api/declarative_content_hooks_delegate.h",
     "api/dom_hooks_delegate.cc",

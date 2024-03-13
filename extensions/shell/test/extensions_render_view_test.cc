@@ -7,6 +7,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 #include "extensions/shell/browser/shell_content_browser_client.h"
 #include "extensions/shell/common/shell_content_client.h"
 #include "extensions/shell/common/shell_extensions_client.h"
@@ -50,13 +51,19 @@ ExtensionsRenderViewTest::CreateContentBrowserClient() {
 content::ContentRendererClient*
 ExtensionsRenderViewTest::CreateContentRendererClient() {
   ShellContentRendererClient* client = new ShellContentRendererClient();
+
+  auto extensions_client = std::make_unique<ShellExtensionsRendererClient>();
+  extensions_client->AddAPIProvider(
+      std::make_unique<CoreExtensionsRendererAPIProvider>());
+  extensions_client->RenderThreadStarted();
+
   // Note that creation order is important here. The Dispatcher needs to be
   // created after our base class creates the fake RenderThread, but before it
   // creates the test frame. Since `client` would not have observed
   // RenderThreadStarted, we create the extensions clients here.
-  client->SetClientsForTesting(
-      std::make_unique<ShellExtensionsClient>(),
-      std::make_unique<ShellExtensionsRendererClient>());
+  client->SetClientsForTesting(std::make_unique<ShellExtensionsClient>(),
+                               std::move(extensions_client));
+
   return client;
 }
 
