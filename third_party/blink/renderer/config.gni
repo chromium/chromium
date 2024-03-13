@@ -44,6 +44,17 @@ declare_args() {
 
   # If true, the experimental renderer extensions library will be used.
   use_blink_extensions_chromeos = is_chromeos
+
+  # If true, the WebView renderer extensions library will be used.
+  #
+  # Android WebView and Chrome on Android both use the same build configuration
+  # for Blink, and may use a common installation of the Blink libraries on a
+  # device. There is no precise concept of "is_webview". As such, Chrome on
+  # Android technically has the WebView extensions available in its version of
+  # Blink; however, the extensions are default-disabled. Chrome (and any other
+  # non-WebView products) should never attempt to enable the extensions at
+  # runtime.
+  use_blink_extensions_webview = is_android
 }
 
 # feature_defines_list ---------------------------------------------------------
@@ -52,6 +63,10 @@ feature_defines_list = []
 
 if (use_blink_extensions_chromeos) {
   feature_defines_list += [ "USE_BLINK_EXTENSIONS_CHROMEOS=1" ]
+}
+
+if (use_blink_extensions_webview) {
+  feature_defines_list += [ "USE_BLINK_EXTENSIONS_WEBVIEW=1" ]
 }
 
 if (use_low_quality_image_interpolation) {

@@ -18,7 +18,7 @@ from bind_gen.path_manager import PathManager
 
 def parse_output_reldirs(reldirs):
     required = ["core", "modules"]
-    valid = required + ["extensions_chromeos"]
+    valid = required + ["extensions_chromeos", "extensions_webview"]
     result = {}
     for key_value_pair in reldirs:
         key, value = key_value_pair.split("=", 1)

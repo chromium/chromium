@@ -186,6 +186,8 @@ def component_export_header(component, for_testing):
         return "third_party/blink/renderer/modules/modules_export.h"
     elif component == "extensions_chromeos":
         return "third_party/blink/renderer/extensions/chromeos/extensions_chromeos_export.h"
+    elif component == "extensions_webview":
+        return "third_party/blink/renderer/extensions/webview/extensions_webview_export.h"
     else:
         assert False
 

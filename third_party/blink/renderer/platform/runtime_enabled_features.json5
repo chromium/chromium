@@ -467,6 +467,10 @@
       base_feature: "none",
     },
     {
+      name: "BlinkExtensionWebView",
+      public: true,
+    },
+    {
       name: "BlinkLifecycleScriptForbidden",
     },
     {

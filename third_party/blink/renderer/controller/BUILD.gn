@@ -33,6 +33,9 @@ component("controller") {
   if (use_blink_extensions_chromeos) {
     deps += [ "//third_party/blink/renderer/extensions/chromeos" ]
   }
+  if (use_blink_extensions_webview) {
+    deps += [ "//third_party/blink/renderer/extensions/webview" ]
+  }
 
   configs += [
     "//third_party/blink/renderer:config",

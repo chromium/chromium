@@ -8,9 +8,12 @@ import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/bindings/generated_in_core.gni")
 import(
     "//third_party/blink/renderer/bindings/generated_in_extensions_chromeos.gni")
+import(
+    "//third_party/blink/renderer/bindings/generated_in_extensions_webview.gni")
 import("//third_party/blink/renderer/bindings/generated_in_modules.gni")
 import("//third_party/blink/renderer/bindings/idl_in_core.gni")
 import("//third_party/blink/renderer/bindings/idl_in_extensions_chromeos.gni")
+import("//third_party/blink/renderer/bindings/idl_in_extensions_webview.gni")
 import("//third_party/blink/renderer/bindings/idl_in_modules.gni")
 
 visibility = [ "//third_party/blink/renderer/*" ]
@@ -79,6 +82,14 @@ collect_idl_files("web_idl_in_extensions_chromeos") {
   output = "${bindings_gen_dir}/web_idl_in_extensions_chromeos.pickle"
 }
 
+collect_idl_files("web_idl_in_extensions_webview") {
+  component = "extensions_webview"
+
+  inputs = static_idl_files_in_extensions_webview
+
+  output = "${bindings_gen_dir}/web_idl_in_extensions_webview.pickle"
+}
+
 collect_idl_files("web_idl_in_modules") {
   component = "modules"
 
@@ -116,6 +127,10 @@ action_with_pydeps("web_idl_database") {
   if (use_blink_extensions_chromeos) {
     input_data_files += get_target_outputs(":web_idl_in_extensions_chromeos")
     deps += [ ":web_idl_in_extensions_chromeos" ]
+  }
+  if (use_blink_extensions_webview) {
+    input_data_files += get_target_outputs(":web_idl_in_extensions_webview")
+    deps += [ ":web_idl_in_extensions_webview" ]
   }
   inputs = input_data_files + [ runtime_enabled_features_file ]
   outputs = [ web_idl_database_filepath ]
@@ -167,6 +182,14 @@ template("generate_bindings") {
                         root_gen_dir),
       ]
     }
+    if (use_blink_extensions_webview) {
+      args += [
+        "--output_reldir",
+        "extensions_webview=" +
+            rebase_path("${bindings_gen_dir}/extensions_webview/v8/",
+                        root_gen_dir),
+      ]
+    }
     if (blink_enable_generated_code_formatting) {
       args += [ "--format_generated_files" ]
     }
@@ -199,6 +222,9 @@ generate_bindings("generate_bindings_all") {
   if (use_blink_extensions_chromeos) {
     outputs += generated_dictionary_sources_in_extensions_chromeos
   }
+  if (use_blink_extensions_webview) {
+    outputs += generated_dictionary_sources_in_extensions_webview
+  }
   targets += [ "enumeration" ]
   outputs += generated_enumeration_sources_in_core +
              generated_enumeration_sources_in_modules +
@@ -206,6 +232,9 @@ generate_bindings("generate_bindings_all") {
              generated_enumeration_sources_for_testing_in_modules
   if (use_blink_extensions_chromeos) {
     outputs += generated_enumeration_sources_in_extensions_chromeos
+  }
+  if (use_blink_extensions_webview) {
+    outputs += generated_enumeration_sources_in_extensions_webview
   }
   targets += [ "interface" ]
   outputs += generated_interface_sources_in_core +
@@ -216,6 +245,9 @@ generate_bindings("generate_bindings_all") {
              generated_interface_extra_sources_for_testing_in_modules
   if (use_blink_extensions_chromeos) {
     outputs += generated_interface_sources_in_extensions_chromeos
+  }
+  if (use_blink_extensions_webview) {
+    outputs += generated_interface_sources_in_extensions_webview
   }
   targets += [ "namespace" ]
   outputs += generated_namespace_sources_in_core +
@@ -246,9 +278,11 @@ action_with_pydeps("check_generated_file_list") {
     web_idl_database,
     "//third_party/blink/renderer/bindings/generated_in_core.gni",
     "//third_party/blink/renderer/bindings/generated_in_extensions_chromeos.gni",
+    "//third_party/blink/renderer/bindings/generated_in_extensions_webview.gni",
     "//third_party/blink/renderer/bindings/generated_in_modules.gni",
     "//third_party/blink/renderer/bindings/idl_in_core.gni",
     "//third_party/blink/renderer/bindings/idl_in_extensions_chromeos.gni",
+    "//third_party/blink/renderer/bindings/idl_in_extensions_webview.gni",
     "//third_party/blink/renderer/bindings/idl_in_modules.gni",
   ]
   outputs = [ result_file ]
@@ -282,6 +316,9 @@ action_with_pydeps("check_generated_file_list") {
   if (use_blink_extensions_chromeos) {
     file_list += generated_dictionary_sources_in_extensions_chromeos
   }
+  if (use_blink_extensions_webview) {
+    file_list += generated_dictionary_sources_in_extensions_webview
+  }
   file_list += [
     "--kind",
     "enumeration",
@@ -291,6 +328,9 @@ action_with_pydeps("check_generated_file_list") {
   if (use_blink_extensions_chromeos) {
     file_list += generated_enumeration_sources_in_extensions_chromeos
   }
+  if (use_blink_extensions_webview) {
+    file_list += generated_enumeration_sources_in_extensions_webview
+  }
   file_list += [
     "--kind",
     "interface",
@@ -299,6 +339,9 @@ action_with_pydeps("check_generated_file_list") {
                generated_interface_sources_in_modules
   if (use_blink_extensions_chromeos) {
     file_list += generated_interface_sources_in_extensions_chromeos
+  }
+  if (use_blink_extensions_webview) {
+    file_list += generated_interface_sources_in_extensions_webview
   }
   file_list += [
     "--kind",
@@ -377,6 +420,14 @@ action_with_pydeps("check_generated_file_list") {
       "--output_reldir",
       "extensions_chromeos=" +
           rebase_path("${bindings_gen_dir}/extensions_chromeos/v8/",
+                      root_gen_dir),
+    ]
+  }
+  if (use_blink_extensions_webview) {
+    args += [
+      "--output_reldir",
+      "extensions_webview=" +
+          rebase_path("${bindings_gen_dir}/extensions_webview/v8/",
                       root_gen_dir),
     ]
   }

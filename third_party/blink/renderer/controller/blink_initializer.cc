@@ -69,6 +69,10 @@
 #include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
 #endif
 
+#if defined(USE_BLINK_EXTENSIONS_WEBVIEW)
+#include "third_party/blink/renderer/extensions/webview/webview_extensions.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/controller/crash_memory_metrics_reporter_impl.h"
 #include "third_party/blink/renderer/controller/oom_intervention_impl.h"
@@ -131,11 +135,14 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
 #endif  // !defined(ARCH_CPU_X86_64) && !defined(ARCH_CPU_ARM64) &&
         // BUILDFLAG(IS_WIN)
 
+  // These Initialize() methods for renderer extensions initialize strings which
+  // must be done before calling CoreInitializer::Initialize() which is called
+  // by GetBlinkInitializer().Initialize() below.
 #if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
-  // ChromeOSExtensions::Initialize() initializes strings which must be done
-  // before calling CoreInitializer::Initialize() which is called by
-  // GetBlinkInitializer().Initialize() below.
   ChromeOSExtensions::Initialize();
+#endif
+#if defined(USE_BLINK_EXTENSIONS_WEBVIEW)
+  WebViewExtensions::Initialize();
 #endif
 
   // BlinkInitializer::Initialize() must be called before InitializeMainThread
