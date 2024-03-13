@@ -13,7 +13,8 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 
-@interface GeolocationManagerDelegate : NSObject <CLLocationManagerDelegate> {
+@interface GeolocationSystemPermissionManagerDelegate
+    : NSObject <CLLocationManagerDelegate> {
   BOOL _permissionInitialized;
   BOOL _hasPermission;
   base::WeakPtr<device::SystemGeolocationSourceMac> _manager;
@@ -38,7 +39,7 @@ SystemGeolocationSourceMac::SystemGeolocationSourceMac()
     : location_manager_([[CLLocationManager alloc] init]),
       permission_update_callback_(base::DoNothing()),
       position_observers_(base::MakeRefCounted<PositionObserverList>()) {
-  delegate_ = [[GeolocationManagerDelegate alloc]
+  delegate_ = [[GeolocationSystemPermissionManagerDelegate alloc]
       initWithManager:weak_ptr_factory_.GetWeakPtr()];
   location_manager_.delegate = delegate_;
 }
@@ -46,9 +47,9 @@ SystemGeolocationSourceMac::SystemGeolocationSourceMac()
 SystemGeolocationSourceMac::~SystemGeolocationSourceMac() = default;
 
 // static
-std::unique_ptr<GeolocationManager>
-SystemGeolocationSourceMac::CreateGeolocationManagerOnMac() {
-  return std::make_unique<GeolocationManager>(
+std::unique_ptr<GeolocationSystemPermissionManager>
+SystemGeolocationSourceMac::CreateGeolocationSystemPermissionManagerOnMac() {
+  return std::make_unique<GeolocationSystemPermissionManager>(
       std::make_unique<SystemGeolocationSourceMac>());
 }
 
@@ -125,7 +126,7 @@ void SystemGeolocationSourceMac::RemovePositionUpdateObserver(
 
 }  // namespace device
 
-@implementation GeolocationManagerDelegate
+@implementation GeolocationSystemPermissionManagerDelegate
 
 - (instancetype)initWithManager:
     (base::WeakPtr<device::SystemGeolocationSourceMac>)manager {

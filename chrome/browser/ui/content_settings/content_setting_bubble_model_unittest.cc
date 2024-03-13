@@ -55,9 +55,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -529,11 +529,13 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
 
 TEST_F(ContentSettingBubbleModelTest, Geolocation) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  auto fake_geolocation_manager =
-      std::make_unique<device::FakeGeolocationManager>();
-  device::FakeGeolocationManager* geolocation_manager =
-      fake_geolocation_manager.get();
-  device::GeolocationManager::SetInstance(std::move(fake_geolocation_manager));
+  auto fake_geolocation_system_permission_manager =
+      std::make_unique<device::FakeGeolocationSystemPermissionManager>();
+  device::FakeGeolocationSystemPermissionManager*
+      geolocation_system_permission_manager =
+          fake_geolocation_system_permission_manager.get();
+  device::GeolocationSystemPermissionManager::SetInstance(
+      std::move(fake_geolocation_system_permission_manager));
 #endif  // BUILDFLAG(IS_MAC)
 
   WebContentsTester::For(web_contents())
@@ -583,7 +585,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
-    geolocation_manager->SetSystemPermission(
+    geolocation_system_permission_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
 
 #if BUILDFLAG(IS_MAC)

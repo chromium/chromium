@@ -22,7 +22,7 @@
 #include "build/build_config.h"
 #include "services/device/geolocation/network_location_request.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -30,10 +30,11 @@
 namespace device {
 class PositionCache;
 
-class NetworkLocationProvider : public LocationProvider
+class NetworkLocationProvider
+    : public LocationProvider
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
     ,
-                                public GeolocationManager::PermissionObserver
+      public GeolocationSystemPermissionManager::PermissionObserver
 #endif
 {
  public:
@@ -44,7 +45,7 @@ class NetworkLocationProvider : public LocationProvider
 
   NetworkLocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      GeolocationManager* geolocation_manager,
+      GeolocationSystemPermissionManager* geolocation_system_permission_manager,
       const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       const std::string& api_key,
       PositionCache* position_cache,
@@ -98,13 +99,15 @@ class NetworkLocationProvider : public LocationProvider
   WifiDataProviderHandle::WifiDataUpdateCallback wifi_data_update_callback_;
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  // Used to keep track of macOS System Permission changes. Also, ensures
-  // lifetime of PermissionObserverList as the BrowserProcess may destroy its
-  // reference on the UI Thread before we destroy this provider.
-  scoped_refptr<GeolocationManager::PermissionObserverList>
+  // Used to keep track of system permission changes on supported operating
+  // systems. Also, ensures lifetime of PermissionObserverList as the
+  // BrowserProcess may destroy its reference on the UI Thread before we destroy
+  // this provider.
+  scoped_refptr<GeolocationSystemPermissionManager::PermissionObserverList>
       permission_observers_;
 
-  raw_ptr<GeolocationManager, DanglingUntriaged> geolocation_manager_;
+  raw_ptr<GeolocationSystemPermissionManager, DanglingUntriaged>
+      geolocation_system_permission_manager_;
 #endif
 
   // The  wifi data and a flag to indicate if the data set is complete.

@@ -53,9 +53,9 @@
 #include "ui/gfx/paint_vector_icon.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #endif
 
 using content_settings::PageSpecificContentSettings;
@@ -304,11 +304,13 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
 // Test the correct ContentSettingImageModel for various permutations of site
 // and system level Geolocation permissions
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
-  auto test_geolocation_manager =
-      std::make_unique<device::FakeGeolocationManager>();
-  device::FakeGeolocationManager* geolocation_manager =
-      test_geolocation_manager.get();
-  device::GeolocationManager::SetInstance(std::move(test_geolocation_manager));
+  auto test_geolocation_system_permission_manager =
+      std::make_unique<device::FakeGeolocationSystemPermissionManager>();
+  device::FakeGeolocationSystemPermissionManager*
+      geolocation_system_permission_manager =
+          test_geolocation_system_permission_manager.get();
+  device::GeolocationSystemPermissionManager::SetInstance(
+      std::move(test_geolocation_system_permission_manager));
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
@@ -328,7 +330,7 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 
-  geolocation_manager->SetSystemPermission(
+  geolocation_system_permission_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
 
   settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
@@ -347,7 +349,7 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
       /* tooltip_empty = */ false, IDS_BLOCKED_GEOLOCATION_MESSAGE,
       /* explanatory_string_id = */ 0);
 
-  geolocation_manager->SetSystemPermission(
+  geolocation_system_permission_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kDenied);
   UpdateModelAndVerifyStates(
       content_setting_image_model.get(), /* is_visible = */ true,
@@ -362,11 +364,12 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {
 }
 
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
-  auto test_geolocation_manager =
-      std::make_unique<device::FakeGeolocationManager>();
-  test_geolocation_manager->SetSystemPermission(
+  auto test_geolocation_system_permission_manager =
+      std::make_unique<device::FakeGeolocationSystemPermissionManager>();
+  test_geolocation_system_permission_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kNotDetermined);
-  device::GeolocationManager::SetInstance(std::move(test_geolocation_manager));
+  device::GeolocationSystemPermissionManager::SetInstance(
+      std::move(test_geolocation_system_permission_manager));
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
@@ -409,11 +412,13 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsUndetermined) {
 TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kLocationPermissionsExperiment}, {});
-  auto test_geolocation_manager =
-      std::make_unique<device::FakeGeolocationManager>();
-  device::FakeGeolocationManager* geolocation_manager =
-      test_geolocation_manager.get();
-  device::GeolocationManager::SetInstance(std::move(test_geolocation_manager));
+  auto test_geolocation_system_permission_manager =
+      std::make_unique<device::FakeGeolocationSystemPermissionManager>();
+  device::FakeGeolocationSystemPermissionManager*
+      geolocation_system_permission_manager =
+          test_geolocation_system_permission_manager.get();
+  device::GeolocationSystemPermissionManager::SetInstance(
+      std::move(test_geolocation_system_permission_manager));
 
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
@@ -431,7 +436,7 @@ TEST_F(ContentSettingImageModelTest, GeolocationAccessDeniedExperiment) {
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
 
-  geolocation_manager->SetSystemPermission(
+  geolocation_system_permission_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kDenied);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
 

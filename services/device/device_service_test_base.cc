@@ -12,7 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "services/device/device_service.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -40,7 +40,8 @@ std::unique_ptr<DeviceService> CreateTestDeviceService(
   params->geolocation_api_key = kTestGeolocationApiKey;
   params->custom_location_provider_callback =
       base::BindRepeating(&GetCustomLocationProviderForTest);
-  params->geolocation_manager = device::GeolocationManager::GetInstance();
+  params->geolocation_system_permission_manager =
+      device::GeolocationSystemPermissionManager::GetInstance();
 
   return CreateDeviceService(std::move(params), std::move(receiver));
 }
@@ -59,9 +60,12 @@ DeviceServiceTestBase::~DeviceServiceTestBase() = default;
 
 void DeviceServiceTestBase::SetUp() {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  auto geolocation_manager = std::make_unique<FakeGeolocationManager>();
-  fake_geolocation_manager_ = geolocation_manager.get();
-  device::GeolocationManager::SetInstance(std::move(geolocation_manager));
+  auto geolocation_system_permission_manager =
+      std::make_unique<FakeGeolocationSystemPermissionManager>();
+  fake_geolocation_system_permission_manager_ =
+      geolocation_system_permission_manager.get();
+  device::GeolocationSystemPermissionManager::SetInstance(
+      std::move(geolocation_system_permission_manager));
 #endif
   service_ = CreateTestDeviceService(
       file_task_runner_, io_task_runner_,

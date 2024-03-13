@@ -41,7 +41,8 @@ base::LazyInstance<CustomLocationProviderCallback>::Leaky
 base::LazyInstance<std::unique_ptr<network::PendingSharedURLLoaderFactory>>::
     Leaky g_pending_url_loader_factory = LAZY_INSTANCE_INITIALIZER;
 base::LazyInstance<std::string>::Leaky g_api_key = LAZY_INSTANCE_INITIALIZER;
-GeolocationManager* g_geolocation_manager = nullptr;
+GeolocationSystemPermissionManager* g_geolocation_system_permission_manager =
+    nullptr;
 }  // namespace
 
 // static
@@ -66,13 +67,14 @@ void GeolocationProviderImpl::SetGeolocationConfiguration(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& api_key,
     const CustomLocationProviderCallback& custom_location_provider_getter,
-    GeolocationManager* geolocation_manager,
+    GeolocationSystemPermissionManager* geolocation_system_permission_manager,
     bool use_gms_core_location_provider) {
   if (url_loader_factory)
     g_pending_url_loader_factory.Get() = url_loader_factory->Clone();
   g_api_key.Get() = api_key;
   g_custom_location_provider_callback.Get() = custom_location_provider_getter;
-  g_geolocation_manager = geolocation_manager;
+  g_geolocation_system_permission_manager =
+      geolocation_system_permission_manager;
   if (use_gms_core_location_provider) {
 #if BUILDFLAG(IS_ANDROID)
     JNIEnv* env = base::android::AttachCurrentThread();
@@ -359,8 +361,9 @@ void GeolocationProviderImpl::Init() {
   DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded())
       << "PositionCacheImpl needs a global NetworkChangeNotifier";
   arbitrator_ = std::make_unique<LocationArbitrator>(
-      g_custom_location_provider_callback.Get(), g_geolocation_manager,
-      main_task_runner_, std::move(url_loader_factory), g_api_key.Get(),
+      g_custom_location_provider_callback.Get(),
+      g_geolocation_system_permission_manager, main_task_runner_,
+      std::move(url_loader_factory), g_api_key.Get(),
       std::make_unique<PositionCacheImpl>(
           base::DefaultTickClock::GetInstance()),
       base::BindRepeating(&GeolocationProviderImpl::OnInternalsUpdated,

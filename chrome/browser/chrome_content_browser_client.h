@@ -397,7 +397,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::string GetGeolocationApiKey() override;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  device::GeolocationManager* GetGeolocationManager() override;
+  device::GeolocationSystemPermissionManager*
+  GetGeolocationSystemPermissionManager() override;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #endif
 
 namespace device {
@@ -56,7 +56,8 @@ class DeviceServiceTestBase : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<FakeGeolocationManager> fake_geolocation_manager_;
+  raw_ptr<FakeGeolocationSystemPermissionManager>
+      fake_geolocation_system_permission_manager_;
 #endif
 
   network::TestURLLoaderFactory test_url_loader_factory_;

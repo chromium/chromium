@@ -14,10 +14,13 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+#endif
 
 namespace content {
 
@@ -71,10 +74,11 @@ void GeolocationServiceImpl::Bind(
   receiver_set_.Add(this, std::move(receiver),
                     std::make_unique<GeolocationServiceImplContext>());
 #if BUILDFLAG(IS_IOS)
-  if (device::GeolocationManager* geolocation_manager =
-          device::GeolocationManager::GetInstance();
-      geolocation_manager) {
-    geolocation_manager->RequestSystemPermission();
+  device::GeolocationSystemPermissionManager*
+      geolocation_system_permission_manager =
+          device::GeolocationSystemPermissionManager::GetInstance();
+  if (geolocation_system_permission_manager) {
+    geolocation_system_permission_manager->RequestSystemPermission();
   }
 #endif
 }

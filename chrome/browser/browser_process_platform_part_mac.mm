@@ -65,9 +65,10 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   DCHECK(!app_shim_listener_.get());
   app_shim_listener_ = new AppShimListener;
 
-  if (!device::GeolocationManager::GetInstance()) {
-    device::GeolocationManager::SetInstance(
-        device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac());
+  if (!device::GeolocationSystemPermissionManager::GetInstance()) {
+    device::GeolocationSystemPermissionManager::SetInstance(
+        device::SystemGeolocationSourceMac::
+            CreateGeolocationSystemPermissionManagerOnMac());
   }
 }
 

@@ -8,12 +8,14 @@
 
 namespace content {
 
-device::GeolocationManager* ShellBrowserMainParts::GetGeolocationManager() {
-  if (!device::GeolocationManager::GetInstance()) {
-    device::GeolocationManager::SetInstance(
-        device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac());
+device::GeolocationSystemPermissionManager*
+ShellBrowserMainParts::GetGeolocationSystemPermissionManager() {
+  if (!device::GeolocationSystemPermissionManager::GetInstance()) {
+    device::GeolocationSystemPermissionManager::SetInstance(
+        device::SystemGeolocationSourceMac::
+            CreateGeolocationSystemPermissionManagerOnMac());
   }
-  return device::GeolocationManager::GetInstance();
+  return device::GeolocationSystemPermissionManager::GetInstance();
 }
 
 }  // namespace content

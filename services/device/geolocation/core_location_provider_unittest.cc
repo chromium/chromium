@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/test/fake_system_geolocation_source.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +26,8 @@ class CoreLocationProviderTest : public testing::Test {
   std::unique_ptr<CoreLocationProvider> provider_;
 
   void SetUp() override {
-    fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
+    fake_geolocation_manager_ =
+        std::make_unique<FakeGeolocationSystemPermissionManager>();
     provider_ = std::make_unique<CoreLocationProvider>(
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         fake_geolocation_manager_.get());
@@ -61,7 +62,8 @@ class CoreLocationProviderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   const LocationProvider::LocationProviderUpdateCallback callback_;
-  std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
+  std::unique_ptr<FakeGeolocationSystemPermissionManager>
+      fake_geolocation_manager_;
   raw_ptr<SystemGeolocationSource> fake_system_geolocation_source_ = nullptr;
 };
 

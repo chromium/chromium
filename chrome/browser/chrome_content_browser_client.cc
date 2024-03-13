@@ -361,7 +361,7 @@
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -3507,9 +3507,9 @@ std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-device::GeolocationManager*
-ChromeContentBrowserClient::GetGeolocationManager() {
-  return device::GeolocationManager::GetInstance();
+device::GeolocationSystemPermissionManager*
+ChromeContentBrowserClient::GetGeolocationSystemPermissionManager() {
+  return device::GeolocationSystemPermissionManager::GetInstance();
 }
 #endif
 

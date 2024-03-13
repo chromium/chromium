@@ -71,7 +71,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/common/features/feature_session_type.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "ui/views/controls/views_text_services_context_menu_chromeos.h"
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -175,9 +175,10 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
         std::make_unique<DeviceLocalAccountExtensionInstallerLacros>();
   }
 
-  DCHECK(!device::GeolocationManager::GetInstance());
-  device::GeolocationManager::SetInstance(
-      SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
+  DCHECK(!device::GeolocationSystemPermissionManager::GetInstance());
+  device::GeolocationSystemPermissionManager::SetInstance(
+      SystemGeolocationSourceLacros::
+          CreateGeolocationSystemPermissionManagerOnLacros());
 
 #if BUILDFLAG(ENABLE_NACL)
   // Ash ships PNaCl as part of rootfs, but Lacros doesn't ship it at all.
@@ -402,5 +403,5 @@ void ChromeBrowserMainExtraPartsLacros::PostMainMessageLoopRun() {
   force_installed_tracker_.reset();
 
   // Initialized in PreProfileInit.
-  device::GeolocationManager::SetInstance(nullptr);
+  device::GeolocationSystemPermissionManager::SetInstance(nullptr);
 }

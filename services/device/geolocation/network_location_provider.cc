@@ -21,7 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -45,7 +45,7 @@ const int kLastPositionMaxAgeSeconds = 10 * 60;  // 10 minutes
 // NetworkLocationProvider
 NetworkLocationProvider::NetworkLocationProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    GeolocationManager* geolocation_manager,
+    GeolocationSystemPermissionManager* geolocation_system_permission_manager,
     const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     const std::string& api_key,
     PositionCache* position_cache,
@@ -72,14 +72,16 @@ NetworkLocationProvider::NetworkLocationProvider(
   CHECK(network_request_callback_);
   CHECK(network_response_callback_);
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  DCHECK(geolocation_manager);
-  geolocation_manager_ = geolocation_manager;
-  permission_observers_ = geolocation_manager->GetObserverList();
+  DCHECK(geolocation_system_permission_manager);
+  geolocation_system_permission_manager_ =
+      geolocation_system_permission_manager;
+  permission_observers_ =
+      geolocation_system_permission_manager->GetObserverList();
   permission_observers_->AddObserver(this);
   main_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&GeolocationManager::GetSystemPermission,
-                     base::Unretained(geolocation_manager)),
+      base::BindOnce(&GeolocationSystemPermissionManager::GetSystemPermission,
+                     base::Unretained(geolocation_system_permission_manager)),
       base::BindOnce(&NetworkLocationProvider::OnSystemPermissionUpdated,
                      weak_factory_.GetWeakPtr()));
 #endif

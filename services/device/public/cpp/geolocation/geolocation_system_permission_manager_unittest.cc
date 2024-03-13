@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,7 +15,8 @@ using testing::_;
 
 namespace {
 
-class MockObserver : public device::GeolocationManager::PermissionObserver {
+class MockObserver
+    : public device::GeolocationSystemPermissionManager::PermissionObserver {
  public:
   MOCK_METHOD(void,
               OnSystemPermissionUpdated,
@@ -52,9 +53,11 @@ class SourceImpl : public device::SystemGeolocationSource {
 
 }  // namespace
 
-class GeolocationPermissionTests : public testing::Test {
+class GeolocationSystemPermissionTests : public testing::Test {
  public:
-  ~GeolocationPermissionTests() override { task_environment_.RunUntilIdle(); }
+  ~GeolocationSystemPermissionTests() override {
+    task_environment_.RunUntilIdle();
+  }
 
   MockObserver& CreateMockObserver() {
     observers_.push_back(
@@ -67,7 +70,7 @@ class GeolocationPermissionTests : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(GeolocationPermissionTests, TestAddObserver) {
+TEST_F(GeolocationSystemPermissionTests, TestAddObserver) {
   auto& observer1 = CreateMockObserver();
   auto& observer2 = CreateMockObserver();
 
@@ -80,7 +83,7 @@ TEST_F(GeolocationPermissionTests, TestAddObserver) {
 
   auto source_pointer = std::make_unique<SourceImpl>();
   SourceImpl& source = *source_pointer;
-  device::GeolocationManager manager(std::move(source_pointer));
+  device::GeolocationSystemPermissionManager manager(std::move(source_pointer));
 
   // Test adding observers
   manager.AddObserver(&observer1);
@@ -89,7 +92,7 @@ TEST_F(GeolocationPermissionTests, TestAddObserver) {
   source.Update(device::LocationSystemPermissionStatus::kAllowed);
 }
 
-TEST_F(GeolocationPermissionTests, TestRemoveObserver) {
+TEST_F(GeolocationSystemPermissionTests, TestRemoveObserver) {
   auto& observer1 = CreateMockObserver();
   auto& observer2 = CreateMockObserver();
 
@@ -102,7 +105,7 @@ TEST_F(GeolocationPermissionTests, TestRemoveObserver) {
 
   auto source_pointer = std::make_unique<SourceImpl>();
   SourceImpl& source = *source_pointer;
-  device::GeolocationManager manager(std::move(source_pointer));
+  device::GeolocationSystemPermissionManager manager(std::move(source_pointer));
 
   manager.AddObserver(&observer1);
   manager.AddObserver(&observer2);

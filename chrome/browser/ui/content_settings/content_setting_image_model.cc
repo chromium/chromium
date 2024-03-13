@@ -47,8 +47,6 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
-#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -64,7 +62,8 @@
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
+#include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #endif
 
 using content::WebContents;
@@ -735,7 +734,8 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
           set_should_auto_open_bubble(true);
         } else {
           // Ask the system to display a permission prompt for location access.
-          device::GeolocationManager::GetInstance()->RequestSystemPermission();
+          device::GeolocationSystemPermissionManager::GetInstance()
+              ->RequestSystemPermission();
         }
 #else
         set_should_auto_open_bubble(true);
@@ -797,11 +797,12 @@ bool ContentSettingGeolocationImageModel::IsGeolocationAllowedOnASystemLevel() {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
-  device::GeolocationManager* geolocation_manager =
-      device::GeolocationManager::GetInstance();
-  CHECK(geolocation_manager);
+  device::GeolocationSystemPermissionManager*
+      geolocation_system_permission_manager =
+          device::GeolocationSystemPermissionManager::GetInstance();
+  CHECK(geolocation_system_permission_manager);
   device::LocationSystemPermissionStatus permission =
-      geolocation_manager->GetSystemPermission();
+      geolocation_system_permission_manager->GetSystemPermission();
 
   return permission == device::LocationSystemPermissionStatus::kAllowed;
 #endif
@@ -812,11 +813,12 @@ bool ContentSettingGeolocationImageModel::IsGeolocationPermissionDetermined() {
   return true;
 #else
 
-  device::GeolocationManager* geolocation_manager =
-      device::GeolocationManager::GetInstance();
-  CHECK(geolocation_manager);
+  device::GeolocationSystemPermissionManager*
+      geolocation_system_permission_manager =
+          device::GeolocationSystemPermissionManager::GetInstance();
+  CHECK(geolocation_system_permission_manager);
   device::LocationSystemPermissionStatus permission =
-      geolocation_manager->GetSystemPermission();
+      geolocation_system_permission_manager->GetSystemPermission();
 
   return permission != device::LocationSystemPermissionStatus::kNotDetermined;
 #endif

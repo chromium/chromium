@@ -75,7 +75,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -1313,10 +1313,12 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
       HostContentSettingsMapFactory::GetForProfile(GetProfile())
           ->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION);
   if (content_setting == CONTENT_SETTING_ALLOW &&
-      device::GeolocationManager::GetInstance()->GetSystemPermission() !=
+      device::GeolocationSystemPermissionManager::GetInstance()
+              ->GetSystemPermission() !=
           LocationSystemPermissionStatus::kAllowed) {
-    // If the permission is turned off in MacOS system preferences, overwrite
-    // the bubble to enable the user to trigger the system dialog.
+    // If the permission is turned off in supported operating systems
+    // preferences, overwrite the bubble to enable the user to trigger the
+    // system dialog.
     InitializeSystemGeolocationPermissionBubble();
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
@@ -1331,9 +1333,10 @@ void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
     base::RecordAction(UserMetricsAction(
         "ContentSettings.GeolocationDialog.OpenPreferencesClicked"));
 
-    auto* geolocation_manager = device::GeolocationManager::GetInstance();
-    DCHECK(geolocation_manager);
-    geolocation_manager->OpenSystemPermissionSetting();
+    auto* geolocation_system_permission_manager =
+        device::GeolocationSystemPermissionManager::GetInstance();
+    DCHECK(geolocation_system_permission_manager);
+    geolocation_system_permission_manager->OpenSystemPermissionSetting();
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 }

@@ -28,7 +28,7 @@ const base::TimeDelta LocationArbitrator::kFixStaleTimeoutTimeDelta =
 
 LocationArbitrator::LocationArbitrator(
     CustomLocationProviderCallback custom_location_provider_getter,
-    GeolocationManager* geolocation_manager,
+    GeolocationSystemPermissionManager* geolocation_system_permission_manager,
     const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const std::string& api_key,
@@ -38,7 +38,8 @@ LocationArbitrator::LocationArbitrator(
     NetworkLocationProvider::NetworkResponseCallback network_response_callback)
     : custom_location_provider_getter_(
           std::move(custom_location_provider_getter)),
-      geolocation_manager_(geolocation_manager),
+      geolocation_system_permission_manager_(
+          geolocation_system_permission_manager),
       main_task_runner_(main_task_runner),
       url_loader_factory_(url_loader_factory),
       api_key_(api_key),
@@ -186,9 +187,10 @@ LocationArbitrator::NewNetworkLocationProvider(
   return nullptr;
 #else
   return std::make_unique<NetworkLocationProvider>(
-      std::move(url_loader_factory), geolocation_manager_, main_task_runner_,
-      api_key, position_cache_.get(), internals_updated_closure_,
-      network_request_callback_, network_response_callback_);
+      std::move(url_loader_factory), geolocation_system_permission_manager_,
+      main_task_runner_, api_key, position_cache_.get(),
+      internals_updated_closure_, network_request_callback_,
+      network_response_callback_);
 #endif
 }
 
@@ -197,8 +199,8 @@ LocationArbitrator::NewSystemLocationProvider() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   return nullptr;
 #else
-  return device::NewSystemLocationProvider(main_task_runner_,
-                                           geolocation_manager_);
+  return device::NewSystemLocationProvider(
+      main_task_runner_, geolocation_system_permission_manager_);
 #endif
 }
 

@@ -339,10 +339,10 @@ bool HeadlessContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
       switches::kUserDataDir);
 }
 
-device::GeolocationManager*
-HeadlessContentBrowserClient::GetGeolocationManager() {
+device::GeolocationSystemPermissionManager*
+HeadlessContentBrowserClient::GetGeolocationSystemPermissionManager() {
 #if BUILDFLAG(IS_MAC)
-  return browser_->GetGeolocationManager();
+  return browser_->GetGeolocationSystemPermissionManager();
 #else
   return nullptr;
 #endif

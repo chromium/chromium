@@ -98,7 +98,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "chrome/test/base/scoped_bundle_swizzler_mac.h"
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -207,17 +207,17 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
 
   // ChromeBrowserMainExtraParts implementation
   void PreCreateMainMessageLoop() override {
-    // The real GeolocationManager initializes a CLLocationManager. It has
-    // been observed that when thousands of instances of this object are
-    // created, as happens when running browser tests, the CoreLocationAgent
-    // process uses lots of CPU. This makes test execution slower and causes
-    // jobs to time out. We therefore insert a fake.
-    auto fake_geolocation_manager =
-        std::make_unique<device::FakeGeolocationManager>();
-    fake_geolocation_manager->SetSystemPermission(
+    // The real GeolocationSystemPermissionManager initializes a
+    // CLLocationManager. It has been observed that when thousands of instances
+    // of this object are created, as happens when running browser tests, the
+    // CoreLocationAgent process uses lots of CPU. This makes test execution
+    // slower and causes jobs to time out. We therefore insert a fake.
+    auto fake_geolocation_system_permission_manager =
+        std::make_unique<device::FakeGeolocationSystemPermissionManager>();
+    fake_geolocation_system_permission_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
-    device::GeolocationManager::SetInstance(
-        std::move(fake_geolocation_manager));
+    device::GeolocationSystemPermissionManager::SetInstance(
+        std::move(fake_geolocation_system_permission_manager));
   }
 
   ChromeBrowserMainExtraPartsBrowserProcessInjection(

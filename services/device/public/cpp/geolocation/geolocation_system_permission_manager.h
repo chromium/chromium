@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_MANAGER_H_
-#define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_MANAGER_H_
+#ifndef SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_SYSTEM_PERMISSION_MANAGER_H_
+#define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_SYSTEM_PERMISSION_MANAGER_H_
 
 #include <memory>
 #include <string>
@@ -28,12 +28,13 @@
 namespace device {
 
 // This class provides access to location information on the supported OSs.
-class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
+class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
  public:
-  // Retrieves the global instance of the Geolocation Manager.
-  static GeolocationManager* GetInstance();
-  // Sets the global instance of the Geolocation Manager.
-  static void SetInstance(std::unique_ptr<GeolocationManager> manager);
+  // Retrieves the global instance of the GeolocationSystemPermissionManager.
+  static GeolocationSystemPermissionManager* GetInstance();
+  // Sets the global instance of the GeolocationSystemPermissionManager.
+  static void SetInstance(
+      std::unique_ptr<GeolocationSystemPermissionManager> manager);
 
   void RequestSystemPermission();
   // Opens appropriate system preferences/setting page.
@@ -41,11 +42,11 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
 
 #if !BUILDFLAG(IS_APPLE) && \
     !BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  // Default empty implementation of Geolocation Manager. It is used on
-  // operation systems for which we don't support system-level geolocation. A
-  // separate class (as opposed to nullptr) makes sure no unsupported calls are
-  // made in such context.
-};  // class GeolocationManager
+  // Default empty implementation of GeolocationSystemPermissionManager.
+  // It is used on operation systems for which we don't support system-level
+  // geolocation. A separate class (as opposed to nullptr) makes sure no
+  // unsupported calls are made in such context.
+};  // class GeolocationSystemPermissionManager
 
 #else
 
@@ -58,11 +59,13 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   using PermissionObserverList =
       base::ObserverListThreadSafe<PermissionObserver>;
 
-  explicit GeolocationManager(
+  explicit GeolocationSystemPermissionManager(
       std::unique_ptr<SystemGeolocationSource> system_geolocation_source);
-  GeolocationManager(const GeolocationManager&) = delete;
-  GeolocationManager& operator=(const GeolocationManager&) = delete;
-  virtual ~GeolocationManager();
+  GeolocationSystemPermissionManager(
+      const GeolocationSystemPermissionManager&) = delete;
+  GeolocationSystemPermissionManager& operator=(
+      const GeolocationSystemPermissionManager&) = delete;
+  virtual ~GeolocationSystemPermissionManager();
 
   // Synchronously retrieves the current system permission status.
   LocationSystemPermissionStatus GetSystemPermission() const;
@@ -98,11 +101,11 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   scoped_refptr<PermissionObserverList> observers_;
   LocationSystemPermissionStatus permission_cache_ =
       LocationSystemPermissionStatus::kNotDetermined;
-  base::WeakPtrFactory<GeolocationManager> weak_factory_{this};
+  base::WeakPtrFactory<GeolocationSystemPermissionManager> weak_factory_{this};
 };
 
 #endif
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_MANAGER_H_
+#endif  // SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_SYSTEM_PERMISSION_MANAGER_H_

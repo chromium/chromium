@@ -96,7 +96,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 
   bool CanAcceptUntrustedExchangesIfNeeded() override;
-  device::GeolocationManager* GetGeolocationManager() override;
+  device::GeolocationSystemPermissionManager*
+  GetGeolocationSystemPermissionManager() override;
 #if BUILDFLAG(IS_WIN)
   void SessionEnding(std::optional<DWORD> control_type) override;
 #endif

@@ -18,7 +18,7 @@ class BrowserContext;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 namespace device {
-class GeolocationManager;
+class GeolocationSystemPermissionManager;
 }  // namespace device
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -41,7 +41,8 @@ struct PermissionContextDelegates {
   std::unique_ptr<permissions::GeolocationPermissionContext::Delegate>
       geolocation_permission_context_delegate;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<device::GeolocationManager> geolocation_manager;
+  raw_ptr<device::GeolocationSystemPermissionManager>
+      geolocation_system_permission_manager;
 #endif
   raw_ptr<webrtc::MediaStreamDeviceEnumerator> media_stream_device_enumerator;
   std::unique_ptr<permissions::NfcPermissionContext::Delegate>

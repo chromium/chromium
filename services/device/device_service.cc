@@ -92,7 +92,8 @@ std::unique_ptr<DeviceService> CreateDeviceService(
     mojo::PendingReceiver<mojom::DeviceService> receiver) {
   GeolocationProviderImpl::SetGeolocationConfiguration(
       params->url_loader_factory, params->geolocation_api_key,
-      params->custom_location_provider_callback, params->geolocation_manager,
+      params->custom_location_provider_callback,
+      params->geolocation_system_permission_manager,
       params->use_gms_core_location_provider);
   return std::make_unique<DeviceService>(std::move(params),
                                          std::move(receiver));

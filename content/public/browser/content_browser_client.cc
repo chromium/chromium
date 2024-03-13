@@ -60,7 +60,6 @@
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
@@ -688,7 +687,8 @@ std::string ContentBrowserClient::GetGeolocationApiKey() {
   return std::string();
 }
 
-device::GeolocationManager* ContentBrowserClient::GetGeolocationManager() {
+device::GeolocationSystemPermissionManager*
+ContentBrowserClient::GetGeolocationSystemPermissionManager() {
   return nullptr;
 }
 

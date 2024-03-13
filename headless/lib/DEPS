@@ -1,6 +1,6 @@
 specific_include_rules = {
   "headless_browser_main_parts.cc": [
-    "+services/device/public/cpp/geolocation/geolocation_manager.h",
+    "+services/device/public/cpp/geolocation/geolocation_system_permission_manager.h",
   ],
   "headless_browser_main_parts_linux.cc": [
     "+device/bluetooth",

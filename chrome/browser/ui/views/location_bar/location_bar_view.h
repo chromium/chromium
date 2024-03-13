@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/security_state/core/security_state.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -64,18 +64,19 @@ class Label;
 //   of the URL bar strip and contains its content.
 //
 /////////////////////////////////////////////////////////////////////////////
-class LocationBarView : public LocationBar,
-                        public LocationBarTesting,
-                        public views::View,
-                        public views::DragController,
-                        public views::AnimationDelegateViews,
-                        public IconLabelBubbleView::Delegate,
-                        public LocationIconView::Delegate,
-                        public ContentSettingImageView::Delegate,
+class LocationBarView
+    : public LocationBar,
+      public LocationBarTesting,
+      public views::View,
+      public views::DragController,
+      public views::AnimationDelegateViews,
+      public IconLabelBubbleView::Delegate,
+      public LocationIconView::Delegate,
+      public ContentSettingImageView::Delegate,
 #if BUILDFLAG(IS_MAC)
-                        public device::GeolocationManager::PermissionObserver,
+      public device::GeolocationSystemPermissionManager::PermissionObserver,
 #endif
-                        public PageActionIconView::Delegate {
+      public PageActionIconView::Delegate {
   METADATA_HEADER(LocationBarView, views::View)
 
  public:
@@ -209,7 +210,7 @@ class LocationBarView : public LocationBar,
       override;
 
 #if BUILDFLAG(IS_MAC)
-  // GeolocationManager::PermissionObserver:
+  // GeolocationSystemPermissionManager::PermissionObserver:
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override;
 #endif
@@ -267,10 +268,11 @@ class LocationBarView : public LocationBar,
       std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>;
 
 #if BUILDFLAG(IS_MAC)
-  // Manage a subscription to GeolocationManager, which may
+  // Manage a subscription to GeolocationSystemPermissionManager, which may
   // outlive this object.
-  base::ScopedObservation<device::GeolocationManager,
-                          device::GeolocationManager::PermissionObserver>
+  base::ScopedObservation<
+      device::GeolocationSystemPermissionManager,
+      device::GeolocationSystemPermissionManager::PermissionObserver>
       geolocation_permission_observation_{this};
 #endif
 

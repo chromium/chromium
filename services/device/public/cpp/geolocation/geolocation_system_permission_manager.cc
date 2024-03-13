@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
@@ -20,86 +20,93 @@ class CheckedAccessWrapper {
     return *wrapper;
   }
 
-  void SetManager(std::unique_ptr<GeolocationManager> manager) {
+  void SetManager(std::unique_ptr<GeolocationSystemPermissionManager> manager) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
     manager_ = std::move(manager);
   }
 
-  GeolocationManager* GetManager() {
+  GeolocationSystemPermissionManager* GetManager() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return manager_.get();
   }
 
  private:
-  std::unique_ptr<GeolocationManager> manager_;
+  std::unique_ptr<GeolocationSystemPermissionManager> manager_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace
 
-GeolocationManager* GeolocationManager::GetInstance() {
+GeolocationSystemPermissionManager*
+GeolocationSystemPermissionManager::GetInstance() {
   return CheckedAccessWrapper::GetInstance().GetManager();
 }
 
-void GeolocationManager::SetInstance(
-    std::unique_ptr<GeolocationManager> manager) {
+void GeolocationSystemPermissionManager::SetInstance(
+    std::unique_ptr<GeolocationSystemPermissionManager> manager) {
   CheckedAccessWrapper::GetInstance().SetManager(std::move(manager));
 }
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-GeolocationManager::GeolocationManager(
+GeolocationSystemPermissionManager::GeolocationSystemPermissionManager(
     std::unique_ptr<SystemGeolocationSource> system_geolocation_source)
     : system_geolocation_source_(std::move(system_geolocation_source)),
       observers_(base::MakeRefCounted<PermissionObserverList>()) {
   DCHECK(system_geolocation_source_);
   system_geolocation_source_->RegisterPermissionUpdateCallback(
-      base::BindRepeating(&GeolocationManager::UpdateSystemPermission,
-                          weak_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &GeolocationSystemPermissionManager::UpdateSystemPermission,
+          weak_factory_.GetWeakPtr()));
 }
 
-GeolocationManager::~GeolocationManager() = default;
+GeolocationSystemPermissionManager::~GeolocationSystemPermissionManager() =
+    default;
 
-void GeolocationManager::AddObserver(PermissionObserver* observer) {
+void GeolocationSystemPermissionManager::AddObserver(
+    PermissionObserver* observer) {
   observers_->AddObserver(observer);
 }
 
-void GeolocationManager::RemoveObserver(PermissionObserver* observer) {
+void GeolocationSystemPermissionManager::RemoveObserver(
+    PermissionObserver* observer) {
   observers_->RemoveObserver(observer);
 }
 
-LocationSystemPermissionStatus GeolocationManager::GetSystemPermission() const {
+LocationSystemPermissionStatus
+GeolocationSystemPermissionManager::GetSystemPermission() const {
   return permission_cache_;
 }
 
-void GeolocationManager::UpdateSystemPermission(
+void GeolocationSystemPermissionManager::UpdateSystemPermission(
     LocationSystemPermissionStatus status) {
   permission_cache_ = status;
   NotifyPermissionObservers();
 }
 
-void GeolocationManager::NotifyPermissionObservers() {
+void GeolocationSystemPermissionManager::NotifyPermissionObservers() {
   observers_->Notify(FROM_HERE, &PermissionObserver::OnSystemPermissionUpdated,
                      GetSystemPermission());
 }
 
-scoped_refptr<GeolocationManager::PermissionObserverList>
-GeolocationManager::GetObserverList() const {
+scoped_refptr<GeolocationSystemPermissionManager::PermissionObserverList>
+GeolocationSystemPermissionManager::GetObserverList() const {
   return observers_;
 }
 
-SystemGeolocationSource& GeolocationManager::SystemGeolocationSourceForTest() {
+SystemGeolocationSource&
+GeolocationSystemPermissionManager::SystemGeolocationSourceForTest() {
   return *system_geolocation_source_;
 }
 
 #endif
 
-void GeolocationManager::RequestSystemPermission() {
+void GeolocationSystemPermissionManager::RequestSystemPermission() {
 #if BUILDFLAG(IS_APPLE)
   system_geolocation_source_->RequestPermission();
 #endif
 }
 
-void GeolocationManager::OpenSystemPermissionSetting() {
+void GeolocationSystemPermissionManager::OpenSystemPermissionSetting() {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   system_geolocation_source_->OpenSystemPermissionSetting();
 #endif

@@ -33,7 +33,7 @@ specific_include_rules = {
   ],
   "headless_browser_impl.*": [
     "+services/device/public/cpp/geolocation/system_geolocation_source_mac.h",
-    "+services/device/public/cpp/geolocation/geolocation_manager.h",
+    "+services/device/public/cpp/geolocation/geolocation_system_permission_manager.h",
     "+components/policy",
     "+components/prefs",
     "+components/pref_registry",

@@ -77,8 +77,8 @@ source_set("test_support") {
 
   if (is_apple || is_chromeos) {
     sources += [
-      "test/fake_geolocation_manager.cc",
-      "test/fake_geolocation_manager.h",
+      "test/fake_geolocation_system_permission_manager.cc",
+      "test/fake_geolocation_system_permission_manager.h",
       "test/fake_system_geolocation_source.cc",
       "test/fake_system_geolocation_source.h",
     ]

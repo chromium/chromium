@@ -14,17 +14,20 @@ GeolocationPermissionContextSystem::GeolocationPermissionContextSystem(
     std::unique_ptr<Delegate> delegate)
     : GeolocationPermissionContext(browser_context, std::move(delegate)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* geolocation_manager = device::GeolocationManager::GetInstance();
-  DCHECK(geolocation_manager);
-  geolocation_manager->AddObserver(this);
-  system_permission_ = geolocation_manager->GetSystemPermission();
+  auto* geolocation_system_permission_manager =
+      device::GeolocationSystemPermissionManager::GetInstance();
+  DCHECK(geolocation_system_permission_manager);
+  geolocation_system_permission_manager->AddObserver(this);
+  system_permission_ =
+      geolocation_system_permission_manager->GetSystemPermission();
 }
 
 GeolocationPermissionContextSystem::~GeolocationPermissionContextSystem() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto* geolocation_manager = device::GeolocationManager::GetInstance();
-  if (geolocation_manager) {
-    geolocation_manager->RemoveObserver(this);
+  auto* geolocation_system_permission_manager =
+      device::GeolocationSystemPermissionManager::GetInstance();
+  if (geolocation_system_permission_manager) {
+    geolocation_system_permission_manager->RemoveObserver(this);
   }
 }
 

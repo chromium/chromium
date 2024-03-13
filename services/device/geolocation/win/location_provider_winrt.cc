@@ -21,7 +21,7 @@
 
 namespace device {
 
-class GeolocationManager;
+class GeolocationSystemPermissionManager;
 
 namespace {
 using ABI::Windows::Devices::Enumeration::DeviceAccessStatus;
@@ -458,7 +458,7 @@ HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {
 
 std::unique_ptr<LocationProvider> NewSystemLocationProvider(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    GeolocationManager* geolocation_manager) {
+    GeolocationSystemPermissionManager* geolocation_system_permission_manager) {
   if (!base::FeatureList::IsEnabled(
           features::kWinrtGeolocationImplementation) ||
       !IsSystemLocationSettingEnabled()) {

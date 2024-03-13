@@ -69,9 +69,10 @@ const NSActivityOptions kActivityOptions =
 }  // namespace
 
 void HeadlessBrowserImpl::PlatformInitialize() {
-  if (!geolocation_manager_) {
-    geolocation_manager_ =
-        device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac();
+  if (!geolocation_system_permission_manager_) {
+    geolocation_system_permission_manager_ =
+        device::SystemGeolocationSourceMac::
+            CreateGeolocationSystemPermissionManagerOnMac();
   }
   screen_ = std::make_unique<display::ScopedNativeScreen>();
   HeadlessPopUpMethods::Init();
@@ -125,13 +126,16 @@ ui::Compositor* HeadlessBrowserImpl::PlatformGetCompositor(
   return nullptr;
 }
 
-device::GeolocationManager* HeadlessBrowserImpl::GetGeolocationManager() {
-  return geolocation_manager_.get();
+device::GeolocationSystemPermissionManager*
+HeadlessBrowserImpl::GetGeolocationSystemPermissionManager() {
+  return geolocation_system_permission_manager_.get();
 }
 
-void HeadlessBrowserImpl::SetGeolocationManagerForTesting(
-    std::unique_ptr<device::GeolocationManager> fake_geolocation_manager) {
-  geolocation_manager_ = std::move(fake_geolocation_manager);
+void HeadlessBrowserImpl::SetGeolocationSystemPermissionManagerForTesting(
+    std::unique_ptr<device::GeolocationSystemPermissionManager>
+        fake_geolocation_system_permission_manager) {
+  geolocation_system_permission_manager_ =
+      std::move(fake_geolocation_system_permission_manager);
 }
 
 }  // namespace headless

@@ -29,7 +29,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #endif
 
 namespace headless {
@@ -96,12 +96,13 @@ void HeadlessBrowserTest::PostRunTestOnMainThread() {
 #if BUILDFLAG(IS_MAC)
 void HeadlessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
-  auto fake_geolocation_manager =
-      std::make_unique<device::FakeGeolocationManager>();
-  fake_geolocation_manager->SetSystemPermission(
+  auto fake_geolocation_system_permission_manager =
+      std::make_unique<device::FakeGeolocationSystemPermissionManager>();
+  fake_geolocation_system_permission_manager->SetSystemPermission(
       device::LocationSystemPermissionStatus::kAllowed);
-  static_cast<HeadlessBrowserImpl*>(browser())->SetGeolocationManagerForTesting(
-      std::move(fake_geolocation_manager));
+  static_cast<HeadlessBrowserImpl*>(browser())
+      ->SetGeolocationSystemPermissionManagerForTesting(
+          std::move(fake_geolocation_system_permission_manager));
 }
 #endif
 

@@ -23,11 +23,11 @@ namespace device {
   (i.e. platforms where we support system-based geolocation permissions)
 #endif
 
-// This interface is used by the Geolocation Manager. It encapsulates the
-// OS-specific logic that provides the geolocation data on the supported OSs. It
-// is supposed to be injected into the Geolocation Manager so that the
-// GeolocationManager implementation can be OS-agnostic, delegating all
-// OS-specific details to the SystemGeolocationSource.
+// This interface is used by the GeolocationSystemPermissionManager (GSPM). It
+// encapsulates the OS-specific logic that provides the geolocation data on the
+// supported OSs. It is supposed to be injected into the GSPM so that the GSPM
+// implementation can be OS-agnostic, delegating all OS-specific details to the
+// SystemGeolocationSource.
 class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSource {
  public:
   using PermissionUpdateCallback =

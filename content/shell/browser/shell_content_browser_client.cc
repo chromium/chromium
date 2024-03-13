@@ -108,7 +108,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/test/fake_geolocation_manager.h"
+#include "services/device/public/cpp/test/fake_geolocation_system_permission_manager.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -260,14 +260,16 @@ base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
 struct SharedState {
   SharedState() {
 #if BUILDFLAG(IS_MAC)
-    location_manager = std::make_unique<device::FakeGeolocationManager>();
+    location_manager =
+        std::make_unique<device::FakeGeolocationSystemPermissionManager>();
     location_manager->SetSystemPermission(
         device::LocationSystemPermissionStatus::kAllowed);
 #endif
   }
 
 #if BUILDFLAG(IS_MAC)
-  std::unique_ptr<device::FakeGeolocationManager> location_manager;
+  std::unique_ptr<device::FakeGeolocationSystemPermissionManager>
+      location_manager;
 #endif
 
   // Owned by content::BrowserMainLoop.
@@ -450,13 +452,16 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 }
 
-device::GeolocationManager* ShellContentBrowserClient::GetGeolocationManager() {
+device::GeolocationSystemPermissionManager*
+ShellContentBrowserClient::GetGeolocationSystemPermissionManager() {
 #if BUILDFLAG(IS_MAC)
   return GetSharedState().location_manager.get();
 #elif BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/1431447, 1411704): Unify this to FakeGeolocationManager once
-  // exploring browser features in ContentShell on iOS is done.
-  return GetSharedState().shell_browser_main_parts->GetGeolocationManager();
+  // TODO(crbug.com/1431447, 1411704): Unify this to
+  // FakeGeolocationSystemPermissionManager once exploring browser features in
+  // ContentShell on iOS is done.
+  return GetSharedState()
+      .shell_browser_main_parts->GetGeolocationSystemPermissionManager();
 #else
   return nullptr;
 #endif

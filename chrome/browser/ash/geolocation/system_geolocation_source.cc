@@ -22,7 +22,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -42,9 +42,9 @@ SystemGeolocationSource::SystemGeolocationSource()
 SystemGeolocationSource::~SystemGeolocationSource() = default;
 
 // static
-std::unique_ptr<device::GeolocationManager>
-SystemGeolocationSource::CreateGeolocationManagerOnAsh() {
-  return std::make_unique<device::GeolocationManager>(
+std::unique_ptr<device::GeolocationSystemPermissionManager>
+SystemGeolocationSource::CreateGeolocationSystemPermissionManagerOnAsh() {
+  return std::make_unique<device::GeolocationSystemPermissionManager>(
       std::make_unique<SystemGeolocationSource>());
 }
 

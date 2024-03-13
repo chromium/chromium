@@ -34,7 +34,7 @@ class PrefService;
 #include "ui/display/screen.h"
 
 namespace device {
-class GeolocationManager;
+class GeolocationSystemPermissionManager;
 }  // namespace device
 #endif
 
@@ -121,9 +121,11 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  device::GeolocationManager* GetGeolocationManager();
-  void SetGeolocationManagerForTesting(
-      std::unique_ptr<device::GeolocationManager> geolocation_manager);
+  device::GeolocationSystemPermissionManager*
+  GetGeolocationSystemPermissionManager();
+  void SetGeolocationSystemPermissionManagerForTesting(
+      std::unique_ptr<device::GeolocationSystemPermissionManager>
+          geolocation_system_permission_manager);
 #endif
 
  private:
@@ -147,7 +149,8 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<display::ScopedNativeScreen> screen_;
-  std::unique_ptr<device::GeolocationManager> geolocation_manager_;
+  std::unique_ptr<device::GeolocationSystemPermissionManager>
+      geolocation_system_permission_manager_;
 #endif
 
 #if defined(HEADLESS_USE_PREFS)

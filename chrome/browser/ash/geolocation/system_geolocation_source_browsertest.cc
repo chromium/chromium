@@ -17,13 +17,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 
 namespace {
-class Observer : public device::GeolocationManager::PermissionObserver {
+class Observer
+    : public device::GeolocationSystemPermissionManager::PermissionObserver {
  public:
-  // device::GeolocationManager::PermissionObserver:
+  // device::GeolocationSystemPermissionManager::PermissionObserver:
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus status) override {
     status_.GetRepeatingCallback().Run(std::move(status));
@@ -75,8 +76,8 @@ class SystemGeolocationSourceTestsGeolocationOff
 
 IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceTestsGeolocationOn,
                        ObservationInBrowser) {
-  device::GeolocationManager* manager =
-      device::GeolocationManager::GetInstance();
+  device::GeolocationSystemPermissionManager* manager =
+      device::GeolocationSystemPermissionManager::GetInstance();
   ASSERT_TRUE(manager);
 
   Observer observer;
@@ -117,8 +118,8 @@ IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceTestsGeolocationOn,
 
 IN_PROC_BROWSER_TEST_F(SystemGeolocationSourceTestsGeolocationOff,
                        ObservationInBrowser) {
-  device::GeolocationManager* manager =
-      device::GeolocationManager::GetInstance();
+  device::GeolocationSystemPermissionManager* manager =
+      device::GeolocationSystemPermissionManager::GetInstance();
   ASSERT_TRUE(manager);
 
   Observer observer;

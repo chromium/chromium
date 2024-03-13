@@ -206,8 +206,7 @@ source_set("tests") {
   }
 
   if (is_chromeos || is_mac) {
-    sources +=
-        [ "public/cpp/geolocation/geolocation_system_permissions_unittest.cc" ]
+    sources += [ "public/cpp/geolocation/geolocation_system_permission_manager_unittest.cc" ]
   }
 
   if (is_chromeos) {

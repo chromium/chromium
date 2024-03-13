@@ -142,7 +142,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       content::PosixFileDescriptorInfo* mappings) override;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
-  device::GeolocationManager* GetGeolocationManager() override;
+  device::GeolocationSystemPermissionManager*
+  GetGeolocationSystemPermissionManager() override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
   void ConfigureNetworkContextParams(

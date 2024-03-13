@@ -6,10 +6,10 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_MAC_H_
 
 #include "base/memory/weak_ptr.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
 
-@class GeolocationManagerDelegate;
+@class GeolocationSystemPermissionManagerDelegate;
 @class CLLocationManager;
 
 namespace device {
@@ -17,7 +17,8 @@ namespace device {
 class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
     : public SystemGeolocationSource {
  public:
-  static std::unique_ptr<GeolocationManager> CreateGeolocationManagerOnMac();
+  static std::unique_ptr<GeolocationSystemPermissionManager>
+  CreateGeolocationSystemPermissionManagerOnMac();
 
   SystemGeolocationSourceMac();
   ~SystemGeolocationSourceMac() override;
@@ -45,7 +46,7 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
 
  private:
   LocationSystemPermissionStatus GetSystemPermission() const;
-  GeolocationManagerDelegate* __strong delegate_;
+  GeolocationSystemPermissionManagerDelegate* __strong delegate_;
   CLLocationManager* __strong location_manager_;
   SEQUENCE_CHECKER(sequence_checker_);
   PermissionUpdateCallback permission_update_callback_;

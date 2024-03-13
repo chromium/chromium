@@ -28,7 +28,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #endif
 
 #if defined(HEADLESS_USE_PREFS)

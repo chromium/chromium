@@ -95,7 +95,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ozone/evdev/heatmap_palm_detector.h"
@@ -332,9 +332,10 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   ash::bluetooth_config::Initialize(delegate);
 
-  // Create geolocation manager
-  device::GeolocationManager::SetInstance(
-      ash::SystemGeolocationSource::CreateGeolocationManagerOnAsh());
+  // Create GeolocationSystemPermissionManager.
+  device::GeolocationSystemPermissionManager::SetInstance(
+      ash::SystemGeolocationSource::
+          CreateGeolocationSystemPermissionManagerOnAsh());
 
   ui::HeatmapPalmDetector::SetInstance(
       std::make_unique<ash::HeatmapPalmDetectorImpl>());
@@ -458,7 +459,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   app_access_notifier_.reset();
 
   // Initialized in PreProfileInit (which may not get called in some tests).
-  device::GeolocationManager::SetInstance(nullptr);
+  device::GeolocationSystemPermissionManager::SetInstance(nullptr);
   system_tray_client_.reset();
   session_controller_client_.reset();
   ime_controller_client_.reset();

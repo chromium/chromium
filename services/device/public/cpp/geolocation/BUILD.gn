@@ -11,8 +11,8 @@ buildflag_header("buildflags") {
 
 component("geolocation") {
   sources = [
-    "geolocation_manager.cc",
-    "geolocation_manager.h",
+    "geolocation_system_permission_manager.cc",
+    "geolocation_system_permission_manager.h",
     "geoposition.cc",
     "geoposition.h",
     "location_provider.h",

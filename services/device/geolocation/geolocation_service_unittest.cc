@@ -109,9 +109,10 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
 #else
 TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
 // To align with user expectation we do not make Network Location Requests
-// on macOS unless the browser has Location Permission from the OS.
+// unless the browser has location system permission from the supported
+// operating systems.
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-  fake_geolocation_manager_->SetSystemPermission(
+  fake_geolocation_system_permission_manager_->SetSystemPermission(
       LocationSystemPermissionStatus::kAllowed);
 #endif
 
