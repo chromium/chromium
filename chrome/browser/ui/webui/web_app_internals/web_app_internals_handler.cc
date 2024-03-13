@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -546,9 +549,9 @@ void WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxy(
 
   auto& manager = provider->isolated_web_app_installation_manager();
   manager.InstallIsolatedWebAppFromDevModeProxy(
-      url, base::BindOnce(
-               &WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy,
-               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      url, web_app::IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      base::BindOnce(&WebAppInternalsHandler::OnInstallIsolatedWebAppInDevMode,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebAppInternalsHandler::SelectFileAndInstallIsolatedWebAppFromDevBundle(
@@ -588,10 +591,9 @@ void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
 
   auto& manager = provider->isolated_web_app_installation_manager();
   manager.InstallIsolatedWebAppFromDevModeBundle(
-      *path,
-      base::BindOnce(
-          &WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      *path, web_app::IsolatedWebAppInstallationManager::InstallSurface::kDevUi,
+      base::BindOnce(&WebAppInternalsHandler::OnInstallIsolatedWebAppInDevMode,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebAppInternalsHandler::SelectFileAndUpdateIsolatedWebAppFromDevBundle(
@@ -626,13 +628,14 @@ void WebAppInternalsHandler::OnIsolatedWebAppDevModeBundleSelectedForUpdate(
     return;
   }
 
-  web_app::IsolatedWebAppStorageLocation location(
-      web_app::IwaStorageUnownedBundle{*path});
-  ApplyDevModeUpdate(app_id, std::move(location), std::move(callback));
+  web_app::IwaSourceDevModeWithFileOp source(
+      web_app::IwaSourceBundleDevModeWithFileOp(
+          *path, web_app::kDefaultBundleDevFileOp));
+  ApplyDevModeUpdate(app_id, source, std::move(callback));
 }
 
-void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
-    WebAppInternalsHandler::InstallIsolatedWebAppFromDevProxyCallback callback,
+void WebAppInternalsHandler::OnInstallIsolatedWebAppInDevMode(
+    base::OnceCallback<void(mojom::InstallIsolatedWebAppResultPtr)> callback,
     web_app::IsolatedWebAppInstallationManager::
         MaybeInstallIsolatedWebAppCommandSuccess result) {
   auto mojo_result = mojom::InstallIsolatedWebAppResult::New();
@@ -696,26 +699,29 @@ void WebAppInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
     if (!app.isolation_data().has_value()) {
       continue;
     }
-    if (!app.isolation_data()->location.dev_mode()) {
+
+    base::expected<web_app::IwaSourceDevMode, absl::monostate> source =
+        web_app::IwaSourceDevMode::FromStorageLocation(
+            profile_->GetPath(), app.isolation_data()->location);
+    if (!source.has_value()) {
       continue;
     }
-
-    app.isolation_data()->location.visitSourceDeprecated(
-        profile_->GetPath(),
+    absl::visit(
         base::Overloaded{
-            [&](const web_app::IwaSourceBundle& location) {
+            [&](const web_app::IwaSourceBundleDevMode& source) {
               dev_mode_apps.emplace_back(mojom::IwaDevModeAppInfo::New(
                   app.app_id(), app.untranslated_name(),
-                  mojom::IwaDevModeLocation::NewBundlePath(location.path),
+                  mojom::IwaDevModeLocation::NewBundlePath(source.path()),
                   app.isolation_data()->version.GetString()));
             },
-            [&](const web_app::IwaSourceProxy& location) {
+            [&](const web_app::IwaSourceProxy& source) {
               dev_mode_apps.emplace_back(mojom::IwaDevModeAppInfo::New(
                   app.app_id(), app.untranslated_name(),
-                  mojom::IwaDevModeLocation::NewProxyOrigin(location.proxy_url),
+                  mojom::IwaDevModeLocation::NewProxyOrigin(source.proxy_url()),
                   app.isolation_data()->version.GetString()));
             },
-        });
+        },
+        source->variant());
   }
 
   std::move(callback).Run(std::move(dev_mode_apps));
@@ -732,7 +738,7 @@ void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
 
 void WebAppInternalsHandler::ApplyDevModeUpdate(
     const webapps::AppId& app_id,
-    base::optional_ref<const web_app::IsolatedWebAppStorageLocation> location,
+    base::optional_ref<const web_app::IwaSourceDevModeWithFileOp> location,
     base::OnceCallback<void(const std::string&)> callback) {
   if (!web_app::IsIwaDevModeEnabled(&*profile_)) {
     std::move(callback).Run("IWA dev mode is not enabled");
@@ -750,10 +756,13 @@ void WebAppInternalsHandler::ApplyDevModeUpdate(
     std::move(callback).Run("could not find installed IWA");
     return;
   }
-  if (!app->isolation_data()->location.dev_mode()) {
-    std::move(callback).Run("can only update dev-mode apps");
-    return;
-  }
+  ASSIGN_OR_RETURN(web_app::IwaSourceDevMode source,
+                   web_app::IwaSourceDevMode::FromStorageLocation(
+                       profile_->GetPath(), app->isolation_data()->location),
+                   [&](auto error) {
+                     std::move(callback).Run("can only update dev-mode apps");
+                   });
+
   auto url_info = web_app::IsolatedWebAppUrlInfo::Create(app->manifest_id());
   if (!url_info.has_value()) {
     std::move(callback).Run("unable to create UrlInfo from start url");
@@ -762,7 +771,10 @@ void WebAppInternalsHandler::ApplyDevModeUpdate(
 
   auto& manager = provider->iwa_update_manager();
   manager.DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-      location.has_value() ? *location : app->isolation_data()->location,
+      location.has_value()
+          ? *location
+          : web_app::IwaSourceDevModeWithFileOp(
+                source.WithFileOp(web_app::kDefaultBundleDevFileOp)),
       *url_info,
       base::BindOnce([](base::expected<base::Version, std::string> result) {
         if (result.has_value()) {

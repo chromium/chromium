@@ -10,7 +10,6 @@
 
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"

@@ -10,7 +10,6 @@
 #include "base/functional/overloaded.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -82,27 +81,6 @@ IsolatedWebAppStorageLocation::~IsolatedWebAppStorageLocation() = default;
 bool IsolatedWebAppStorageLocation::operator==(
     const IsolatedWebAppStorageLocation& other) const = default;
 
-IsolatedWebAppLocation IsolatedWebAppStorageLocation::ToLocationDeprecated(
-    const base::FilePath& profile_dir) const {
-  return absl::visit(
-      base::Overloaded{
-          [&](const IwaStorageOwnedBundle& bundle) -> IsolatedWebAppLocation {
-            base::FilePath path = bundle.GetPath(profile_dir);
-            if (bundle.dev_mode()) {
-              return DevModeBundle{.path = path};
-            }
-            return InstalledBundle{.path = path};
-          },
-          [&](const IwaStorageUnownedBundle& bundle) -> IsolatedWebAppLocation {
-            return DevModeBundle{.path = bundle.path()};
-          },
-          [&](const IwaStorageProxy& proxy) -> IsolatedWebAppLocation {
-            return DevModeProxy{.proxy_url = proxy.proxy_url()};
-          },
-      },
-      variant_);
-}
-
 bool IsolatedWebAppStorageLocation::dev_mode() const {
   return absl::visit(base::Overloaded{[](const auto& location) {
                        return location.dev_mode();
@@ -125,27 +103,6 @@ base::Value IsolatedWebAppStorageLocation::ToDebugValue() const {
               },
               variant_);
   return base::Value(std::move(value));
-}
-
-absl::variant<IwaSourceBundle, IwaSourceProxy>
-IsolatedWebAppStorageLocation::ToSource(
-    const base::FilePath& profile_dir) const {
-  return absl::visit(
-      base::Overloaded{
-          [&profile_dir](const OwnedBundle& location)
-              -> absl::variant<IwaSourceBundle, IwaSourceProxy> {
-            return IwaSourceBundle{.path = location.GetPath(profile_dir)};
-          },
-          [](const UnownedBundle& location)
-              -> absl::variant<IwaSourceBundle, IwaSourceProxy> {
-            return IwaSourceBundle{.path = location.path()};
-          },
-          [](const Proxy& location)
-              -> absl::variant<IwaSourceBundle, IwaSourceProxy> {
-            return IwaSourceProxy{.proxy_url = location.proxy_url()};
-          },
-      },
-      variant_);
 }
 
 std::ostream& operator<<(std::ostream& os,

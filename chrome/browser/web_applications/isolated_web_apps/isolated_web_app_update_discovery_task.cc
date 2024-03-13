@@ -284,7 +284,9 @@ void IsolatedWebAppUpdateDiscoveryTask::OnWebBundleDownloaded(
 
   command_scheduler_->PrepareAndStoreIsolatedWebAppUpdate(
       IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-          InstalledBundle({.path = download_path}), expected_version),
+          IwaSourceBundleProdModeWithFileOp(download_path,
+                                            IwaSourceBundleProdFileOp::kMove),
+          expected_version),
       url_info_,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr,

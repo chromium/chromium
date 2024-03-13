@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -56,27 +56,27 @@ IsolatedWebAppPendingInstallInfo::FromWebContents(
 }
 
 // static
-bool IsolatedWebAppPendingInstallInfo::HasPendingInstallLocation(
+bool IsolatedWebAppPendingInstallInfo::HasPendingInstallSource(
     content::WebContents& web_contents) {
   auto* holder = PendingInstallInfoHolder::FromWebContents(&web_contents);
-  return holder && holder->pending_install_info().location().has_value();
+  return holder && holder->pending_install_info().source().has_value();
 }
 
 IsolatedWebAppPendingInstallInfo::IsolatedWebAppPendingInstallInfo() = default;
 IsolatedWebAppPendingInstallInfo::~IsolatedWebAppPendingInstallInfo() = default;
 
-void IsolatedWebAppPendingInstallInfo::set_location(
-    const IsolatedWebAppStorageLocation& location) {
-  location_ = location;
+void IsolatedWebAppPendingInstallInfo::set_source(
+    const IwaSourceWithMode& source) {
+  source_ = source;
 }
 
-const std::optional<IsolatedWebAppStorageLocation>&
-IsolatedWebAppPendingInstallInfo::location() const {
-  return location_;
+const std::optional<IwaSourceWithMode>&
+IsolatedWebAppPendingInstallInfo::source() const {
+  return source_;
 }
 
-void IsolatedWebAppPendingInstallInfo::ResetLocation() {
-  location_ = std::nullopt;
+void IsolatedWebAppPendingInstallInfo::ResetSource() {
+  source_ = std::nullopt;
 }
 
 }  // namespace web_app

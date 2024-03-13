@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -35,6 +34,8 @@ enum class IconsDownloadedResult;
 class IsolatedWebAppResponseReader;
 class IsolatedWebAppStorageLocation;
 class IsolatedWebAppResponseReaderFactory;
+class IwaSourceWithMode;
+class IwaSourceWithModeAndFileOp;
 class UnusableSwbnFileError;
 class WebAppDataRetriever;
 class WebAppUrlLoader;
@@ -42,9 +43,9 @@ enum class WebAppUrlLoaderResult;
 
 // Copies the file being installed to the profile directory.
 // On success returns a new owned location in the callback.
-void CopyLocationToProfileDirectory(
+void UpdateBundlePathAndCreateStorageLocation(
     const base::FilePath& profile_dir,
-    const IsolatedWebAppLocation& location,
+    const IwaSourceWithModeAndFileOp& source,
     base::OnceCallback<void(
         base::expected<IsolatedWebAppStorageLocation, std::string>)> callback);
 
@@ -77,14 +78,14 @@ class IsolatedWebAppInstallCommandHelper {
       const IsolatedWebAppInstallCommandHelper&) = delete;
 
   void CheckTrustAndSignatures(
-      const IsolatedWebAppLocation& location,
+      const IwaSourceWithMode& location,
       Profile* profile,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);
 
   void CreateStoragePartitionIfNotPresent(Profile& profile);
 
   void LoadInstallUrl(
-      const IsolatedWebAppStorageLocation& location,
+      const IwaSourceWithMode& source,
       content::WebContents& web_contents,
       WebAppUrlLoader& url_loader,
       base::OnceCallback<void(base::expected<void, std::string>)> callback);

@@ -20,7 +20,8 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
@@ -178,7 +179,7 @@ class TestIwaInstallCommandWrapper
  public:
   TestIwaInstallCommandWrapper() = default;
   void Install(
-      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppInstallSource& install_source,
       const IsolatedWebAppUrlInfo& url_info,
       const base::Version& expected_version,
       WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) override {
@@ -451,7 +452,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
 
   void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
-      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppInstallSource& install_source,
       const std::optional<base::Version>& expected_version,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,

@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -161,7 +161,9 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
         .InstallIsolatedWebApp(
             web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                 bundle.id),
-            web_app::InstalledBundle{.path = bundle_path},
+            web_app::IsolatedWebAppInstallSource::FromGraphicalInstaller(
+                web_app::IwaSourceBundleProdModeWithFileOp(
+                    bundle_path, web_app::IwaSourceBundleProdFileOp::kCopy)),
             /*expected_version=*/std::nullopt,
             /*optional_keep_alive=*/nullptr,
             /*optional_profile_keep_alive=*/nullptr, future.GetCallback());

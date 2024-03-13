@@ -25,7 +25,7 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -73,7 +73,7 @@ std::ostream& operator<<(std::ostream& os,
 
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppUrlInfo& url_info,
-    const IsolatedWebAppLocation& location,
+    const IsolatedWebAppInstallSource& install_source,
     const std::optional<base::Version>& expected_version,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
@@ -99,7 +99,8 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
       command_helper_(std::move(command_helper)),
       url_info_(url_info),
       expected_version_(expected_version),
-      source_location_(location),
+      install_surface_(install_source.install_surface()),
+      install_source_(install_source.source()),
       web_contents_(std::move(web_contents)),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
@@ -113,8 +114,9 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
   GetMutableDebugValue().Set("bundle_id", url_info_.web_bundle_id().id());
   GetMutableDebugValue().Set(
       "bundle_type", static_cast<int>(url_info_.web_bundle_id().type()));
-  GetMutableDebugValue().Set(
-      "source_location", IsolatedWebAppLocationAsDebugValue(*source_location_));
+  GetMutableDebugValue().Set("install_surface",
+                             base::ToString(install_surface_));
+  GetMutableDebugValue().Set("install_source", install_source_->ToDebugValue());
   GetMutableDebugValue().Set("expected_version",
                              expected_version_.has_value()
                                  ? expected_version_->GetString()
@@ -157,8 +159,8 @@ void InstallIsolatedWebAppCommand::StartWithLock(
 
 void InstallIsolatedWebAppCommand::CopyToProfileDirectory(
     base::OnceClosure next_step_callback) {
-  CopyLocationToProfileDirectory(
-      profile().GetPath(), *source_location_,
+  UpdateBundlePathAndCreateStorageLocation(
+      profile().GetPath(), *install_source_,
       base::BindOnce(&InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
@@ -169,15 +171,14 @@ void InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory(
     base::expected<IsolatedWebAppStorageLocation, std::string> new_location) {
   ASSIGN_OR_RETURN(destination_storage_location_, new_location,
                    &InstallIsolatedWebAppCommand::ReportFailure, this);
-  destination_location_ =
-      destination_storage_location_->ToLocationDeprecated(profile().GetPath());
-  // Make sure that `source_location_`, which is now outdated, can no longer be
+  destination_source_ = IwaSourceWithMode::FromStorageLocation(
+      profile().GetPath(), *destination_storage_location_);
+  // Make sure that `install_source_`, which is now outdated, can no longer be
   // accessed.
-  source_location_.reset();
+  install_source_.reset();
 
-  GetMutableDebugValue().Set(
-      "destination_location",
-      IsolatedWebAppLocationAsDebugValue(*destination_location_));
+  GetMutableDebugValue().Set("destination_source",
+                             destination_source_->ToDebugValue());
   GetMutableDebugValue().Set("destination_storage_location",
                              destination_storage_location_->ToDebugValue());
   std::move(next_step_callback).Run();
@@ -186,7 +187,7 @@ void InstallIsolatedWebAppCommand::OnCopiedToProfileDirectory(
 void InstallIsolatedWebAppCommand::CheckTrustAndSignatures(
     base::OnceClosure next_step_callback) {
   command_helper_->CheckTrustAndSignatures(
-      *destination_location_, &profile(),
+      *destination_source_, &profile(),
       base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<void>,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
@@ -201,7 +202,7 @@ void InstallIsolatedWebAppCommand::CreateStoragePartition(
 void InstallIsolatedWebAppCommand::LoadInstallUrl(
     base::OnceClosure next_step_callback) {
   command_helper_->LoadInstallUrl(
-      *destination_storage_location_, *web_contents_.get(), *url_loader_.get(),
+      *destination_source_, *web_contents_.get(), *url_loader_.get(),
       base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<void>,
                      weak_factory_.GetWeakPtr(),
                      std::move(next_step_callback)));
@@ -244,8 +245,7 @@ void InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo(
 }
 
 void InstallIsolatedWebAppCommand::FinalizeInstall(WebAppInstallInfo info) {
-  WebAppInstallFinalizer::FinalizeOptions options(
-      webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
+  WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
   options.isolated_web_app_location = *destination_storage_location_;
 
   lock_->install_finalizer().FinalizeInstall(

@@ -22,8 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
@@ -417,12 +415,12 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                       std::move(loader_client));
       return;
     }
-    std::optional<IsolatedWebAppStorageLocation> pending_install_app_location =
+    std::optional<IwaSourceWithMode> pending_install_app_source =
         IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
-            .location();
+            .source();
 
-    if (pending_install_app_location.has_value()) {
-      HandleRequest(url_info, *pending_install_app_location,
+    if (pending_install_app_source.has_value()) {
+      HandleRequest(url_info, *pending_install_app_source,
                     /*is_pending_install=*/true, std::move(loader_receiver),
                     resource_request, std::move(loader_client),
                     traffic_annotation);
@@ -435,8 +433,8 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                      LogErrorAndFail(std::move(error),
                                      std::move(loader_client));
                    });
-  const IsolatedWebAppStorageLocation& location =
-      iwa.isolation_data()->location;
+  auto location = IwaSourceWithMode::FromStorageLocation(
+      profile_->GetPath(), iwa.isolation_data()->location);
 
   if (iwa.isolation_data()->location.dev_mode() &&
       !IsIwaDevModeEnabled(&*profile_)) {
@@ -472,7 +470,7 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
 
 void IsolatedWebAppURLLoaderFactory::HandleRequest(
     const IsolatedWebAppUrlInfo& url_info,
-    const IsolatedWebAppStorageLocation& location,
+    const IwaSourceWithMode& source,
     bool is_pending_install,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     const network::ResourceRequest& resource_request,
@@ -501,30 +499,22 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
 
   absl::visit(
       base::Overloaded{
-          [&](const IwaStorageOwnedBundle& location) {
+          [&](const IwaSourceBundleWithMode& source) {
             CHECK_EQ(url_info.web_bundle_id().type(),
                      web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            HandleSignedBundle(location.GetPath(profile_->GetPath()),
-                               location.dev_mode(), url_info.web_bundle_id(),
-                               std::move(loader_receiver), resource_request,
-                               std::move(loader_client));
-          },
-          [&](const IwaStorageUnownedBundle& location) {
-            CHECK_EQ(url_info.web_bundle_id().type(),
-                     web_package::SignedWebBundleId::Type::kEd25519PublicKey);
-            HandleSignedBundle(location.path(), location.dev_mode(),
+            HandleSignedBundle(source.path(), source.dev_mode(),
                                url_info.web_bundle_id(),
                                std::move(loader_receiver), resource_request,
                                std::move(loader_client));
           },
-          [&](const IwaStorageProxy& location) {
+          [&](const IwaSourceProxy& source) {
             CHECK_EQ(url_info.web_bundle_id().type(),
                      web_package::SignedWebBundleId::Type::kDevelopment);
-            HandleProxy(url_info, location, std::move(loader_receiver),
+            HandleProxy(url_info, source, std::move(loader_receiver),
                         resource_request, std::move(loader_client),
                         traffic_annotation);
           }},
-      location.variant());
+      source.variant());
 }
 
 void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(
@@ -562,7 +552,7 @@ void IsolatedWebAppURLLoaderFactory::HandleSignedBundle(
 
 void IsolatedWebAppURLLoaderFactory::HandleProxy(
     const IsolatedWebAppUrlInfo& url_info,
-    const IwaStorageProxy& proxy,
+    const IwaSourceProxy& proxy,
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     const network::ResourceRequest& resource_request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,

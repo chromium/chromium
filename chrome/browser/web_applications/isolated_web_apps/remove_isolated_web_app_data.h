@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_REMOVE_ISOLATED_WEB_APP_DATA_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/web_app.h"
 
 class Profile;
@@ -16,6 +15,8 @@ class Origin;
 }  // namespace url
 
 namespace web_app {
+
+class IsolatedWebAppStorageLocation;
 
 // Removes all browsing data associated with the Isolated Web App with the
 // given origin.

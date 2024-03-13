@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
@@ -86,7 +86,7 @@ class BulkIwaInstaller {
         delete;
     virtual ~IwaInstallCommandWrapper() = default;
     virtual void Install(
-        const IsolatedWebAppLocation& location,
+        const IsolatedWebAppInstallSource& install_source,
         const IsolatedWebAppUrlInfo& url_info,
         const base::Version& expected_version,
         WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) = 0;
@@ -95,7 +95,7 @@ class BulkIwaInstaller {
   class IwaInstallCommandWrapperImpl : public IwaInstallCommandWrapper {
    public:
     explicit IwaInstallCommandWrapperImpl(web_app::WebAppProvider* provider);
-    void Install(const IsolatedWebAppLocation& location,
+    void Install(const IsolatedWebAppInstallSource& install_source,
                  const IsolatedWebAppUrlInfo& url_info,
                  const base::Version& expected_version,
                  WebAppCommandScheduler::InstallIsolatedWebAppCallback callback)

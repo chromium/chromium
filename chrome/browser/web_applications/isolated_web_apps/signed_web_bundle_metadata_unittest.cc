@@ -9,7 +9,6 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -79,8 +78,8 @@ class SignedWebBundleMetadataTest : public WebAppTest {
     return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle.id);
   }
 
-  IwaSourceBundle bundle_source() const {
-    return IwaSourceBundle{.path = location_.GetPath(profile()->GetPath())};
+  IwaSourceBundleProdMode bundle_source() const {
+    return IwaSourceBundleProdMode(location_.GetPath(profile()->GetPath()));
   }
 
   void MockIconAndPageState(FakeWebContentsManager& fake_web_contents_manager,

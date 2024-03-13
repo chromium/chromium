@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
@@ -16,7 +17,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -59,19 +61,21 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
 
     installed_bundle_path_ = scoped_temp_dir_.GetPath().Append(
         base::FilePath::FromASCII("installed-bundle.swbn"));
-    installed_location_input_ =
-        is_dev_mode_ ? IsolatedWebAppLocation(
-                           DevModeBundle{.path = installed_bundle_path_})
-                     : IsolatedWebAppLocation(
-                           InstalledBundle{.path = installed_bundle_path_});
+    install_source_ =
+        is_dev_mode_ ? IsolatedWebAppInstallSource::FromDevUi(
+                           IwaSourceBundleDevModeWithFileOp(
+                               installed_bundle_path_, kDefaultBundleDevFileOp))
+                     : IsolatedWebAppInstallSource::FromGraphicalInstaller(
+                           IwaSourceBundleProdModeWithFileOp(
+                               installed_bundle_path_,
+                               IwaSourceBundleProdFileOp::kCopy));
 
     update_bundle_path_ = scoped_temp_dir_.GetPath().Append(
         base::FilePath::FromASCII("update-bundle.swbn"));
-    update_location_input_ =
-        is_dev_mode_
-            ? IsolatedWebAppLocation(DevModeBundle{.path = update_bundle_path_})
-            : IsolatedWebAppLocation(
-                  InstalledBundle{.path = update_bundle_path_});
+    update_source_ = IwaSourceBundleWithModeAndFileOp(
+        update_bundle_path_,
+        is_dev_mode_ ? IwaSourceBundleModeAndFileOp::kDevModeReference
+                     : IwaSourceBundleModeAndFileOp::kProdModeMove);
 
     IsolatedWebAppBrowserTestHarness::SetUp();
   }
@@ -92,7 +96,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
     base::test::TestFuture<InstallResult> future;
     SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
     provider()->scheduler().InstallIsolatedWebApp(
-        url_info_, installed_location_input_,
+        url_info_, *install_source_,
         /*expected_version=*/installed_version_,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
@@ -137,11 +141,11 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest
           *web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId));
 
   base::FilePath installed_bundle_path_;
-  IsolatedWebAppLocation installed_location_input_;
+  std::optional<IsolatedWebAppInstallSource> install_source_;
   base::Version installed_version_ = base::Version("1.0.0");
 
   base::FilePath update_bundle_path_;
-  IsolatedWebAppLocation update_location_input_;
+  std::optional<IwaSourceWithModeAndFileOp> update_source_;
   base::Version update_version_ = base::Version("2.0.0");
 };
 
@@ -155,8 +159,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUpdatePrepareAndStoreCommandBrowserTest,
   IsolatedWebAppStorageLocation final_install_location = Install().location;
 
   PrepareAndStoreUpdateResult result = PrepareAndStoreUpdateInfo(
-      IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-          update_location_input_, update_version_));
+      IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(*update_source_,
+                                                             update_version_));
   EXPECT_THAT(
       result,
       ValueIs(Field(

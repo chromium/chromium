@@ -120,7 +120,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   // (as opposed to an update discovered through the Update Manifest of a
   // production app), and prioritizes applying it.
   void DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-      const IsolatedWebAppStorageLocation& location,
+      const IwaSourceDevModeWithFileOp& location,
       const IsolatedWebAppUrlInfo& url_info,
       base::OnceCallback<void(base::expected<base::Version, std::string>)>
           callback);

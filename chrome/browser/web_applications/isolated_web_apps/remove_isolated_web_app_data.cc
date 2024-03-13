@@ -12,9 +12,9 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -48,10 +48,9 @@ class RemovalObserver : public content::BrowsingDataRemover::Observer {
 };
 
 void CloseBundle(Profile* profile,
-                 const IsolatedWebAppStorageLocation& location,
+                 const IwaSource& source,
                  base::OnceClosure callback) {
-  location.visitSourceDeprecated(
-      profile->GetPath(),
+  absl::visit(
       base::Overloaded{
           [&](const IwaSourceBundle& bundle) {
             auto* reader_registry =
@@ -60,11 +59,12 @@ void CloseBundle(Profile* profile,
               std::move(callback).Run();
               return;
             }
-            reader_registry->ClearCacheForPath(bundle.path,
+            reader_registry->ClearCacheForPath(bundle.path(),
                                                std::move(callback));
           },
           [&](const IwaSourceProxy& proxy) { std::move(callback).Run(); },
-      });
+      },
+      source.variant());
 }
 
 }  // namespace
@@ -110,9 +110,11 @@ void RemoveIsolatedWebAppBrowsingData(Profile* profile,
 void CloseAndDeleteBundle(Profile* profile,
                           const IsolatedWebAppStorageLocation& location,
                           base::OnceClosure callback) {
-  CloseBundle(profile, location,
-              base::BindOnce(CleanupLocationIfOwned, profile->GetPath(),
-                             location, std::move(callback)));
+  CloseBundle(
+      profile,
+      IwaSourceWithMode::FromStorageLocation(profile->GetPath(), location),
+      base::BindOnce(CleanupLocationIfOwned, profile->GetPath(), location,
+                     std::move(callback)));
 }
 
 }  // namespace web_app

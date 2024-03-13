@@ -12,7 +12,6 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
@@ -161,7 +160,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
   TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault();
   ASSERT_TRUE(base::WriteFile(path, bundle.data));
 
-  IwaSourceBundle source{.path = path};
+  IwaSource source{IwaSourceBundle(path)};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
@@ -177,7 +176,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path = temp_dir.GetPath().Append(
       base::FilePath::FromASCII("file_not_exist.swbn"));
-  IwaSourceBundle source{.path = path};
+  IwaSource source{IwaSourceBundle(path)};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
 
@@ -197,7 +196,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
       temp_dir.GetPath().Append(base::FilePath::FromASCII("invalid_file.swbn"));
   ASSERT_TRUE(
       base::WriteFile(path, "clearly, this is not a valid signed web bundle"));
-  IwaSourceBundle source{.path = path};
+  IwaSource source{IwaSourceBundle(path)};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
 
@@ -211,7 +210,7 @@ TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
 
 TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
        GetIsolatedWebAppUrlInfoSucceedsWhenProxy) {
-  IwaSourceProxy source{};
+  IwaSource source(IwaSourceProxy{url::Origin()});
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
 

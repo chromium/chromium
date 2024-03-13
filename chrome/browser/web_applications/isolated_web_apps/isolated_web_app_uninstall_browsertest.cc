@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/overloaded.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -33,7 +36,7 @@ namespace {
 
 class IsolatedWebAppUninstallBrowserTest
     : public IsolatedWebAppBrowserTestHarness,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<IwaSourceBundleModeAndFileOp> {
  protected:
   using InstallResult = base::expected<InstallIsolatedWebAppCommandSuccess,
                                        InstallIsolatedWebAppCommandError>;
@@ -43,10 +46,33 @@ class IsolatedWebAppUninstallBrowserTest
 
     src_bundle_path_ = scoped_temp_dir_.GetPath().Append(
         base::FilePath::FromASCII("bundle.swbn"));
-    src_location_ =
-        is_dev_mode_
-            ? IsolatedWebAppLocation(DevModeBundle{.path = src_bundle_path_})
-            : IsolatedWebAppLocation(InstalledBundle{.path = src_bundle_path_});
+    switch (mode_and_file_op_) {
+      case IwaSourceBundleModeAndFileOp::kDevModeCopy:
+        src_source_ = IsolatedWebAppInstallSource::FromDevUi(
+            IwaSourceBundleDevModeWithFileOp(src_bundle_path_,
+                                             IwaSourceBundleDevFileOp::kCopy));
+        break;
+      case IwaSourceBundleModeAndFileOp::kDevModeMove:
+        src_source_ = IsolatedWebAppInstallSource::FromDevUi(
+            IwaSourceBundleDevModeWithFileOp(src_bundle_path_,
+                                             IwaSourceBundleDevFileOp::kMove));
+        break;
+      case IwaSourceBundleModeAndFileOp::kDevModeReference:
+        src_source_ = IsolatedWebAppInstallSource::FromDevUi(
+            IwaSourceBundleDevModeWithFileOp(
+                src_bundle_path_, IwaSourceBundleDevFileOp::kReference));
+        break;
+      case IwaSourceBundleModeAndFileOp::kProdModeCopy:
+        src_source_ = IsolatedWebAppInstallSource::FromGraphicalInstaller(
+            IwaSourceBundleProdModeWithFileOp(
+                src_bundle_path_, IwaSourceBundleProdFileOp::kCopy));
+        break;
+      case IwaSourceBundleModeAndFileOp::kProdModeMove:
+        src_source_ = IsolatedWebAppInstallSource::FromGraphicalInstaller(
+            IwaSourceBundleProdModeWithFileOp(
+                src_bundle_path_, IwaSourceBundleProdFileOp::kMove));
+        break;
+    }
 
     IsolatedWebAppBrowserTestHarness::SetUp();
   }
@@ -64,7 +90,7 @@ class IsolatedWebAppUninstallBrowserTest
     base::test::TestFuture<InstallResult> future;
     SetTrustedWebBundleIdsForTesting({url_info_.web_bundle_id()});
     provider()->scheduler().InstallIsolatedWebApp(
-        url_info_, src_location_,
+        url_info_, *src_source_,
         /*expected_version=*/std::nullopt,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
@@ -100,7 +126,7 @@ class IsolatedWebAppUninstallBrowserTest
     return WebAppProvider::GetForWebApps(profile());
   }
 
-  bool is_dev_mode_ = GetParam();
+  IwaSourceBundleModeAndFileOp mode_and_file_op_ = GetParam();
 
   base::ScopedTempDir scoped_temp_dir_;
 
@@ -113,7 +139,7 @@ class IsolatedWebAppUninstallBrowserTest
               key_pair_.public_key));
 
   base::FilePath src_bundle_path_;
-  IsolatedWebAppLocation src_location_;
+  std::optional<IsolatedWebAppInstallSource> src_source_;
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
@@ -151,30 +177,46 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
   const WebApp* web_app_after =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   ASSERT_FALSE(web_app_after);
-  absl::visit(
-      base::Overloaded{
-          [&](const InstalledBundle&) {
-            // Verify that the random directory was removed.
-            base::ScopedAllowBlockingForTesting allow_blocking;
-            EXPECT_FALSE(base::PathExists(path_to_iwa_in_profile.value()));
-            EXPECT_FALSE(
-                base::PathExists(path_to_iwa_in_profile.value().DirName()));
-          },
-          [&](const DevModeBundle&) {
-            // Dev mode bundle is not owned by Chrome and should not be removed.
-            base::ScopedAllowBlockingForTesting allow_blocking;
-            EXPECT_TRUE(base::PathExists(src_bundle_path_));
-          },
-          [&](const DevModeProxy&) {}},
-      src_location_);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  switch (mode_and_file_op_) {
+    case IwaSourceBundleModeAndFileOp::kDevModeCopy:
+    case IwaSourceBundleModeAndFileOp::kProdModeCopy:
+    case IwaSourceBundleModeAndFileOp::kDevModeReference:
+      EXPECT_TRUE(base::PathExists(src_bundle_path_));
+      break;
+    case IwaSourceBundleModeAndFileOp::kDevModeMove:
+    case IwaSourceBundleModeAndFileOp::kProdModeMove:
+      EXPECT_FALSE(base::PathExists(src_bundle_path_));
+      break;
+  }
+  switch (mode_and_file_op_) {
+    case IwaSourceBundleModeAndFileOp::kDevModeMove:
+    case IwaSourceBundleModeAndFileOp::kProdModeMove:
+    case IwaSourceBundleModeAndFileOp::kDevModeCopy:
+    case IwaSourceBundleModeAndFileOp::kProdModeCopy:
+      // Verify that the random directory was removed.
+      EXPECT_FALSE(base::PathExists(path_to_iwa_in_profile.value()));
+      EXPECT_FALSE(base::PathExists(path_to_iwa_in_profile.value().DirName()));
+      break;
+    case IwaSourceBundleModeAndFileOp::kDevModeReference:
+      // Referenced bundles are not owned by Chrome and should not be
+      // removed.
+      EXPECT_TRUE(base::PathExists(src_bundle_path_));
+      break;
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IsolatedWebAppUninstallBrowserTest,
-    ::testing::Bool(),
-    [](::testing::TestParamInfo<bool> info) {
-      return info.param ? "DevModeBundle" : "InstalledBundle";
+    ::testing::Values(IwaSourceBundleModeAndFileOp::kDevModeCopy,
+                      IwaSourceBundleModeAndFileOp::kDevModeMove,
+                      IwaSourceBundleModeAndFileOp::kDevModeReference,
+                      IwaSourceBundleModeAndFileOp::kProdModeCopy,
+                      IwaSourceBundleModeAndFileOp::kProdModeMove),
+    [](::testing::TestParamInfo<IwaSourceBundleModeAndFileOp> info) {
+      return base::ToString(info.param);
     });
 
 }  // namespace

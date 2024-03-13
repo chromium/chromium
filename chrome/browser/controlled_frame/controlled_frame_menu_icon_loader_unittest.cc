@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -68,7 +69,8 @@ class ControlledFrameMenuIconLoaderTest : public WebAppTest {
         future;
     fake_provider().scheduler().InstallIsolatedWebApp(
         *url_info,
-        web_app::DevModeProxy{.proxy_url = url::Origin::Create(GURL(url))},
+        web_app::IsolatedWebAppInstallSource::FromDevUi(
+            web_app::IwaSourceProxy(url::Origin::Create(GURL(url)))),
         /*expected_version=*/base::Version("1.0.0"),
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());

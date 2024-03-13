@@ -20,7 +20,7 @@ class WebUI;
 }
 
 namespace web_app {
-class IsolatedWebAppStorageLocation;
+class IwaSourceDevModeWithFileOp;
 }
 
 // Handles API requests from chrome://web-app-internals page by implementing
@@ -74,8 +74,9 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
       const webapps::AppId& app_id,
       SelectFileAndUpdateIsolatedWebAppFromDevBundleCallback callback,
       std::optional<base::FilePath> path);
-  void OnInstallIsolatedWebAppFromDevModeProxy(
-      InstallIsolatedWebAppFromDevProxyCallback callback,
+
+  void OnInstallIsolatedWebAppInDevMode(
+      base::OnceCallback<void(mojom::InstallIsolatedWebAppResultPtr)> callback,
       web_app::IsolatedWebAppInstallationManager::
           MaybeInstallIsolatedWebAppCommandSuccess result);
 
@@ -84,7 +85,7 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   // provided location, otherwise the existing location will be used.
   void ApplyDevModeUpdate(
       const webapps::AppId& app_id,
-      base::optional_ref<const web_app::IsolatedWebAppStorageLocation> location,
+      base::optional_ref<const web_app::IwaSourceDevModeWithFileOp> location,
       base::OnceCallback<void(const std::string&)> callback);
 
   const raw_ref<content::WebUI> web_ui_;

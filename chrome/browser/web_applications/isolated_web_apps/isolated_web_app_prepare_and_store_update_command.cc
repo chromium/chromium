@@ -29,8 +29,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -95,7 +93,7 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
       command_helper_(std::move(command_helper)),
       url_info_(std::move(url_info)),
       expected_version_(update_info.expected_version()),
-      source_location_(update_info.location()),
+      update_source_(update_info.source()),
       web_contents_(std::move(web_contents)),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)) {
@@ -110,8 +108,7 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
   GetMutableDebugValue().Set("bundle_id", url_info_.web_bundle_id().id());
   GetMutableDebugValue().Set(
       "bundle_type", static_cast<int>(url_info_.web_bundle_id().type()));
-  GetMutableDebugValue().Set(
-      "source_location", IsolatedWebAppLocationAsDebugValue(*source_location_));
+  GetMutableDebugValue().Set("update_source", update_source_->ToDebugValue());
   GetMutableDebugValue().Set("expected_version",
                              expected_version_.has_value()
                                  ? expected_version_->GetString()
@@ -188,20 +185,13 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     return;
   }
 
-  bool source_is_dev_mode =
-      absl::visit(base::Overloaded{
-                      [](const InstalledBundle&) { return false; },
-                      [](const DevModeBundle&) { return true; },
-                      [](const DevModeProxy&) { return true; },
-                  },
-                  *source_location_);
   if (installed_app->isolation_data()->location.dev_mode() !=
-      source_is_dev_mode) {
+      update_source_->dev_mode()) {
     std::stringstream s;
     s << "Unable to update between dev-mode and non-dev-mode storage location "
          "types ("
-      << installed_app->isolation_data()->location << " to "
-      << IsolatedWebAppLocationAsDebugValue(*source_location_) << ").";
+      << installed_app->isolation_data()->location << " to " << *update_source_
+      << ").";
     ReportFailure(s.str());
     return;
   }
@@ -211,8 +201,8 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::CopyToProfileDirectory(
     base::OnceClosure next_step_callback) {
-  CopyLocationToProfileDirectory(
-      profile().GetPath(), *source_location_,
+  UpdateBundlePathAndCreateStorageLocation(
+      profile().GetPath(), *update_source_,
       base::BindOnce(&IsolatedWebAppUpdatePrepareAndStoreCommand::
                          OnCopiedToProfileDirectory,
                      weak_factory_.GetWeakPtr(),
@@ -225,14 +215,14 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::OnCopiedToProfileDirectory(
   ASSIGN_OR_RETURN(destination_storage_location_, new_location,
                    &IsolatedWebAppUpdatePrepareAndStoreCommand::ReportFailure,
                    this);
-  destination_location_ =
-      destination_storage_location_->ToLocationDeprecated(profile().GetPath());
-  // Make sure that `source_location_`, which is now outdated, can no longer
+  destination_location_ = IwaSourceWithMode::FromStorageLocation(
+      profile().GetPath(), *destination_storage_location_);
+  // Make sure that `update_source_`, which is now outdated, can no longer
   // be accessed.
-  source_location_.reset();
-  GetMutableDebugValue().Set(
-      "destination_location",
-      IsolatedWebAppLocationAsDebugValue(*destination_location_));
+  update_source_.reset();
+
+  GetMutableDebugValue().Set("destination_location",
+                             destination_location_->ToDebugValue());
   GetMutableDebugValue().Set("destination_storage_location",
                              destination_storage_location_->ToDebugValue());
   std::move(next_step_callback).Run();
@@ -265,7 +255,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::LoadInstallUrl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->LoadInstallUrl(
-      *destination_storage_location_, *web_contents_.get(), *url_loader_.get(),
+      *destination_location_, *web_contents_.get(), *url_loader_.get(),
       base::BindOnce(
           &IsolatedWebAppUpdatePrepareAndStoreCommand::RunNextStepOnSuccess<
               void>,
@@ -382,9 +372,9 @@ Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {
 }
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::UpdateInfo(
-    IsolatedWebAppLocation location,
+    IwaSourceWithModeAndFileOp source,
     std::optional<base::Version> expected_version)
-    : location_(std::move(location)),
+    : source_(std::move(source)),
       expected_version_(std::move(expected_version)) {}
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::~UpdateInfo() = default;
@@ -400,7 +390,7 @@ base::Value
 IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo::AsDebugValue() const {
   return base::Value(
       base::Value::Dict()
-          .Set("location", IsolatedWebAppLocationAsDebugValue(location_))
+          .Set("source", source_.ToDebugValue())
           .Set("expected_version", expected_version_.has_value()
                                        ? expected_version_->GetString()
                                        : "<any>"));

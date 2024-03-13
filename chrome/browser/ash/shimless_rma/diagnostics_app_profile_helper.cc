@@ -25,7 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -195,11 +195,12 @@ void InstallIsolatedWebApp(
 
   auto url_info = web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       state->iwa_id.value());
-  web_app::IsolatedWebAppLocation location =
-      web_app::InstalledBundle{.path = state->swbn_path};
+  auto install_source = web_app::IsolatedWebAppInstallSource::FromShimlessRma(
+      web_app::IwaSourceBundleProdModeWithFileOp(
+          state->swbn_path, web_app::IwaSourceBundleProdFileOp::kCopy));
   state->delegate->GetWebAppCommandScheduler(state->context)
       ->InstallIsolatedWebApp(
-          url_info, location,
+          url_info, install_source,
           /*expected_version=*/std::nullopt, /*optional_keep_alive=*/nullptr,
           /*optional_profile_keep_alive=*/nullptr,
           base::BindOnce(&OnIsolatedWebAppInstalled, std::move(state)));

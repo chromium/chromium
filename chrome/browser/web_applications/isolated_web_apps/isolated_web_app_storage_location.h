@@ -10,8 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
@@ -46,7 +44,8 @@ class IwaStorageOwnedBundle {
 std::ostream& operator<<(std::ostream& os, IwaStorageOwnedBundle location);
 
 // An IWA that is stored as a bundle that is not owned by the browser. It must
-// never be touched and is always located outside of the profile directory.
+// never be touched (even when uninstalling) and is always located outside of
+// the profile directory.
 class IwaStorageUnownedBundle {
  public:
   explicit IwaStorageUnownedBundle(base::FilePath path);
@@ -65,7 +64,7 @@ class IwaStorageUnownedBundle {
 
 std::ostream& operator<<(std::ostream& os, IwaStorageUnownedBundle location);
 
-// An IWA whose source is a virtual bundle served through a proxy.
+// An IWA whose source is a virtual bundle served through an HTTP proxy.
 //
 // The proxy origin must never be opaque.
 class IwaStorageProxy {
@@ -88,10 +87,10 @@ std::ostream& operator<<(std::ostream& os, IwaStorageProxy location);
 
 // Represents how the IWA is stored, and is persisted to the Web App database.
 // As such, this class should strive to remain a simple wrapper around the
-// storage representation in the database. After crbug.com/326044349 is fixed,
-// only code directly related to install, update, and serving from a
-// bundle/proxy should have to deal with this. All other code should use
-// higher-level abstractions.
+// storage representation in the database. Only code directly related to
+// install, update, and serving from a bundle/proxy should have to deal with
+// this. All other code should use the higher-level abstractions defined in
+// `isolated_web_app_source.h`.
 class IsolatedWebAppStorageLocation {
  public:
   using OwnedBundle = IwaStorageOwnedBundle;
@@ -121,27 +120,11 @@ class IsolatedWebAppStorageLocation {
   bool operator==(const IsolatedWebAppStorageLocation& other) const;
 
   const Variant& variant() const { return variant_; }
-
-  // TODO(crbug.com/326044349): Remove this.
-  template <class Visitor>
-  auto visitSourceDeprecated(const base::FilePath& profile_dir,
-                             Visitor&& visitor) const {
-    return absl::visit(visitor, ToSource(profile_dir));
-  }
-
-  // TODO(crbug.com/326044349): Remove this.
-  IsolatedWebAppLocation ToLocationDeprecated(
-      const base::FilePath& profile_dir) const;
-
   bool dev_mode() const;
 
   base::Value ToDebugValue() const;
 
  private:
-  // TODO(crbug.com/326044349): Remove this.
-  absl::variant<IwaSourceBundle, IwaSourceProxy> ToSource(
-      const base::FilePath& profile_dir) const;
-
   Variant variant_;
 };
 

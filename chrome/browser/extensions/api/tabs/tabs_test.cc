@@ -52,7 +52,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
@@ -1204,7 +1204,9 @@ class ExtensionWindowCreateIwaTest
         .InstallIsolatedWebApp(
             web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                 bundle.id),
-            web_app::InstalledBundle{.path = bundle_path},
+            web_app::IsolatedWebAppInstallSource::FromGraphicalInstaller(
+                web_app::IwaSourceBundleProdModeWithFileOp(
+                    bundle_path, web_app::IwaSourceBundleProdFileOp::kCopy)),
             /*expected_version=*/std::nullopt,
             /*optional_keep_alive=*/nullptr,
             /*optional_profile_keep_alive=*/nullptr, future.GetCallback());

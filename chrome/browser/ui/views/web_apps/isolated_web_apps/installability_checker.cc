@@ -25,12 +25,12 @@ namespace web_app {
 std::unique_ptr<InstallabilityChecker> InstallabilityChecker::CreateAndStart(
     Profile* profile,
     WebAppProvider* web_app_provider,
-    const base::FilePath& bundle_path,
+    IwaSourceBundleWithMode source,
     base::OnceCallback<void(Result)> callback) {
   std::unique_ptr<InstallabilityChecker> checker =
       base::WrapUnique(new InstallabilityChecker(profile, web_app_provider,
                                                  std::move(callback)));
-  checker->Start(bundle_path);
+  checker->Start(std::move(source));
   return checker;
 }
 
@@ -47,22 +47,21 @@ InstallabilityChecker::InstallabilityChecker(
   CHECK(web_app_provider_);
 }
 
-void InstallabilityChecker::Start(const base::FilePath& bundle_path) {
-  IwaSourceBundle location{.path = bundle_path};
+void InstallabilityChecker::Start(IwaSourceBundleWithMode source) {
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
-      location, base::BindOnce(&InstallabilityChecker::OnLoadedUrlInfo,
-                               weak_ptr_factory_.GetWeakPtr(), location));
+      source, base::BindOnce(&InstallabilityChecker::OnLoadedUrlInfo,
+                             weak_ptr_factory_.GetWeakPtr(), source));
 }
 
 void InstallabilityChecker::OnLoadedUrlInfo(
-    IwaSourceBundle location,
+    IwaSourceBundleWithMode source,
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info) {
   if (!url_info.has_value()) {
     std::move(callback_).Run(BundleInvalid{url_info.error()});
     return;
   }
   SignedWebBundleMetadata::Create(
-      profile_, web_app_provider_, url_info.value(), location,
+      profile_, web_app_provider_, url_info.value(), source,
       base::BindOnce(&InstallabilityChecker::OnLoadedMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 }

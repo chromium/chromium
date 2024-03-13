@@ -33,7 +33,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
@@ -71,7 +71,7 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
   LocalDevModeUpdateDiscoverer(Profile& profile, WebAppProvider& provider)
       : profile_(profile), provider_(provider) {}
 
-  void DiscoverLocalUpdate(const IsolatedWebAppStorageLocation& location,
+  void DiscoverLocalUpdate(const IwaSourceDevModeWithFileOp& location,
                            const IsolatedWebAppUrlInfo& url_info,
                            Callback callback) {
     const WebApp* installed_app =
@@ -95,16 +95,7 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
 
     provider_->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
         IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            location.visitSourceDeprecated(
-                profile_->GetPath(),
-                base::Overloaded{
-                    [](const IwaSourceBundle& bundle)
-                        -> IsolatedWebAppLocation {
-                      return DevModeBundle{.path = bundle.path};
-                    },
-                    [](const IwaSourceProxy& proxy) -> IsolatedWebAppLocation {
-                      return DevModeProxy{.proxy_url = proxy.proxy_url};
-                    }}),
+            location,
             /*expected_version=*/std::nullopt),
         url_info, /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr,
@@ -324,7 +315,7 @@ size_t IsolatedWebAppUpdateManager::DiscoverUpdatesNow() {
 }
 
 void IsolatedWebAppUpdateManager::DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-    const IsolatedWebAppStorageLocation& location,
+    const IwaSourceDevModeWithFileOp& location,
     const IsolatedWebAppUrlInfo& url_info,
     base::OnceCallback<void(base::expected<base::Version, std::string>)>
         callback) {

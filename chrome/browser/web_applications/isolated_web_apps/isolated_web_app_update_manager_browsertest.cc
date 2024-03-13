@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
@@ -232,7 +232,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
         future;
     provider().scheduler().InstallIsolatedWebApp(
         url_info_.value(),
-        InstalledBundle{.path = temp_dir_.Append(kBundle304FileName)},
+        IsolatedWebAppInstallSource::FromGraphicalInstaller(
+            IwaSourceBundleProdModeWithFileOp(
+                temp_dir_.Append(kBundle304FileName),
+                IwaSourceBundleProdFileOp::kCopy)),
         base::Version("3.0.4"), /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     EXPECT_THAT(future.Take(), HasValue());
@@ -276,7 +279,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
         future;
     provider().scheduler().InstallIsolatedWebApp(
         url_info_.value(),
-        InstalledBundle{.path = temp_dir_.Append(kBundle304FileName)},
+        IsolatedWebAppInstallSource::FromGraphicalInstaller(
+            IwaSourceBundleProdModeWithFileOp(
+                temp_dir_.Append(kBundle304FileName),
+                IwaSourceBundleProdFileOp::kCopy)),
         base::Version("3.0.4"), /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     EXPECT_THAT(future.Take(), HasValue());
@@ -353,7 +359,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
         future;
     provider().scheduler().InstallIsolatedWebApp(
         url_info_.value(),
-        InstalledBundle{.path = temp_dir_.Append(kBundle304FileName)},
+        IsolatedWebAppInstallSource::FromGraphicalInstaller(
+            IwaSourceBundleProdModeWithFileOp(
+                temp_dir_.Append(kBundle304FileName),
+                IwaSourceBundleProdFileOp::kCopy)),
         base::Version("3.0.4"), /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     EXPECT_THAT(future.Take(), HasValue());

@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 
 namespace content {
 class WebContents;
@@ -23,7 +23,7 @@ class IsolatedWebAppPendingInstallInfo {
   static IsolatedWebAppPendingInstallInfo& FromWebContents(
       content::WebContents& web_contents);
 
-  static bool HasPendingInstallLocation(content::WebContents& web_contents);
+  static bool HasPendingInstallSource(content::WebContents& web_contents);
 
   IsolatedWebAppPendingInstallInfo(const IsolatedWebAppPendingInstallInfo&) =
       delete;
@@ -35,16 +35,16 @@ class IsolatedWebAppPendingInstallInfo {
 
   ~IsolatedWebAppPendingInstallInfo();
 
-  void set_location(const IsolatedWebAppStorageLocation& location);
+  void set_source(const IwaSourceWithMode& source);
 
-  const std::optional<IsolatedWebAppStorageLocation>& location() const;
+  const std::optional<IwaSourceWithMode>& source() const;
 
-  void ResetLocation();
+  void ResetSource();
 
  private:
   IsolatedWebAppPendingInstallInfo();
 
-  std::optional<IsolatedWebAppStorageLocation> location_ = std::nullopt;
+  std::optional<IwaSourceWithMode> source_ = std::nullopt;
 };
 
 }  // namespace web_app

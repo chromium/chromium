@@ -14,7 +14,6 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -64,7 +63,7 @@ class CheckIsolatedWebAppBundleInstallabilityCommandTest : public WebAppTest {
     base::test::TestFuture<base::expected<SignedWebBundleMetadata, std::string>>
         metadata_future;
     SignedWebBundleMetadata::Create(profile(), &fake_provider(), url_info,
-                                    IwaSourceBundle{.path = app.path()},
+                                    IwaSourceBundleProdMode(app.path()),
                                     metadata_future.GetCallback());
     return metadata_future.Take();
   }

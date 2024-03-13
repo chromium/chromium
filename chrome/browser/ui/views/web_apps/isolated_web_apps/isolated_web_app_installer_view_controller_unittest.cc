@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -110,7 +109,7 @@ SignedWebBundleMetadata CreateMetadata(const std::u16string& app_name,
   auto url_info = IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   return SignedWebBundleMetadata::CreateForTesting(
-      url_info, IwaSourceBundle{.path = base::FilePath()}, app_name,
+      url_info, IwaSourceBundleProdMode(base::FilePath()), app_name,
       base::Version(version), IconBitmaps());
 }
 
@@ -287,7 +286,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
-  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto pref_observer =
       std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true);
   IsolatedWebAppInstallerViewController controller(
@@ -318,7 +317,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
       web_package::SignedWebBundleId::CreateRandomForDevelopment());
   MockIconAndPageState(url_info);
 
-  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto pref_observer =
       std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true);
   IsolatedWebAppInstallerViewController controller(
@@ -352,7 +351,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
           IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
           base::Version("2.0")));
 
-  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   model.SetStep(Step::kGetMetadata);
 
   auto pref_observer =
@@ -389,7 +388,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
           IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
           base::Version("1.0")));
 
-  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   model.SetStep(Step::kGetMetadata);
 
   auto pref_observer =
@@ -415,7 +414,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
        InstallButtonLaunchesConfirmationDialog) {
-  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
@@ -440,7 +440,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
        ConfirmationDialogMovesToInstallScreen) {
-  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
@@ -469,9 +470,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
-  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
-      url_info, IwaSourceBundle{.path = bundle_path}, u"app name",
+      url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
       base::Version("1.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
@@ -503,9 +504,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
-  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
-      url_info, IwaSourceBundle{.path = bundle_path}, u"app name",
+      url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
       base::Version("1.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
@@ -545,9 +546,9 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info, "1.0");
 
-  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto metadata = SignedWebBundleMetadata::CreateForTesting(
-      url_info, IwaSourceBundle{.path = bundle_path}, u"app name",
+      url_info, IwaSourceBundleProdMode(bundle_path), u"app name",
       base::Version("2.0"), IconBitmaps());
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kShowMetadata);
@@ -578,7 +579,8 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
 TEST_F(IsolatedWebAppInstallerViewControllerTest,
        InstallationErrorRetryRestartsFlow) {
-  IsolatedWebAppInstallerModel model(CreateBundlePath("test_bundle.swbn"));
+  base::FilePath bundle_path = CreateBundlePath("test_bundle.swbn");
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   SignedWebBundleMetadata metadata = CreateMetadata(u"Test App", "0.0.1");
   model.SetSignedWebBundleMetadata(metadata);
   model.SetStep(Step::kInstall);
@@ -610,7 +612,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
-  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto pref_observer =
       std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(true);
   FakeIsolatedWebAppsEnabledPrefObserver* raw_pref_observer =
@@ -645,7 +647,7 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
   SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
   MockIconAndPageState(url_info);
 
-  IsolatedWebAppInstallerModel model(bundle_path);
+  IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   auto pref_observer =
       std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>(false);
   FakeIsolatedWebAppsEnabledPrefObserver* raw_pref_observer =

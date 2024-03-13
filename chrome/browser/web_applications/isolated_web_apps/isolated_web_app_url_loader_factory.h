@@ -37,8 +37,8 @@ class SignedWebBundleId;
 
 namespace web_app {
 
-class IwaStorageProxy;
-class IsolatedWebAppStorageLocation;
+class IwaSourceProxy;
+class IwaSourceWithMode;
 class IsolatedWebAppUrlInfo;
 
 // A URLLoaderFactory used for the isolated-app:// scheme.
@@ -84,7 +84,7 @@ class IsolatedWebAppURLLoaderFactory
 
   void HandleProxy(
       const IsolatedWebAppUrlInfo& url_info,
-      const IwaStorageProxy& proxy,
+      const IwaSourceProxy& proxy,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       const network::ResourceRequest& resource_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> loader_client,
@@ -107,7 +107,7 @@ class IsolatedWebAppURLLoaderFactory
 
   void HandleRequest(
       const IsolatedWebAppUrlInfo& url_info,
-      const IsolatedWebAppStorageLocation& location,
+      const IwaSourceWithMode& source,
       bool is_pending_install,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       const network::ResourceRequest& resource_request,

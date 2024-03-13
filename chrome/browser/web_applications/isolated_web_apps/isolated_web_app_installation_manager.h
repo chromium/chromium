@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 
 namespace base {
@@ -49,8 +49,8 @@ class IsolatedWebAppInstallationManager {
  public:
   using MaybeInstallIsolatedWebAppCommandSuccess =
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>;
-  using MaybeIwaLocation =
-      base::expected<std::optional<IsolatedWebAppLocation>, std::string>;
+  using MaybeIwaInstallSource =
+      base::expected<std::optional<IsolatedWebAppInstallSource>, std::string>;
 
   explicit IsolatedWebAppInstallationManager(Profile& profile);
   ~IsolatedWebAppInstallationManager();
@@ -59,13 +59,19 @@ class IsolatedWebAppInstallationManager {
 
   void Start();
 
+  enum class InstallSurface {
+    kDevUi,
+  };
+
   void InstallIsolatedWebAppFromDevModeProxy(
       const GURL& gurl,
+      InstallSurface install_surface,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
 
   void InstallIsolatedWebAppFromDevModeBundle(
       const base::FilePath& path,
+      InstallSurface install_surface,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
 
@@ -83,12 +89,12 @@ class IsolatedWebAppInstallationManager {
   // - missing `WebAppProvider`
   // - browser shutting down
   static void MaybeInstallIwaFromCommandLine(
-      const base::CommandLine& command_line_,
+      const base::CommandLine& command_line,
       Profile& profile);
 
-  static void GetIsolatedWebAppLocationFromCommandLine(
+  static void GetIsolatedWebAppInstallSourceFromCommandLine(
       const base::CommandLine& command_line,
-      base::OnceCallback<void(MaybeIwaLocation)> callback);
+      base::OnceCallback<void(MaybeIwaInstallSource)> callback);
 
   const base::OneShotEvent&
   on_garbage_collect_storage_partitions_done_for_testing() {
@@ -103,6 +109,10 @@ class IsolatedWebAppInstallationManager {
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallationManagerTest,
                            NoInstallationWhenDevModePolicyDisabled);
 
+  static IsolatedWebAppInstallSource CreateInstallSource(
+      absl::variant<base::FilePath, url::Origin> source,
+      InstallSurface surface);
+
   // Install an IWA from command line, if the command line specifies the
   // appropriate switches.
   void InstallFromCommandLine(
@@ -111,28 +121,27 @@ class IsolatedWebAppInstallationManager {
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       base::TaskPriority task_priority);
 
-  void InstallIsolatedWebAppFromLocation(
-      MaybeIwaLocation location,
+  void InstallIsolatedWebAppFromInstallSource(
+      MaybeIwaInstallSource install_source,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
 
-  void InstallIsolatedWebAppFromLocation(
+  void InstallIsolatedWebAppFromInstallSource(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      MaybeIwaLocation location,
+      MaybeIwaInstallSource install_source,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback);
 
-  void OnGetIsolatedWebAppLocationFromCommandLine(
+  void OnGetIsolatedWebAppInstallSourceFromCommandLine(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      base::expected<std::optional<IsolatedWebAppLocation>, std::string>
-          location);
+      MaybeIwaInstallSource install_source);
 
   void OnGetIsolatedWebAppUrlInfo(
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppInstallSource& install_source,
       base::OnceCallback<void(MaybeInstallIsolatedWebAppCommandSuccess)>
           callback,
       base::expected<IsolatedWebAppUrlInfo, std::string> url_info);

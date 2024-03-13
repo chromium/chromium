@@ -17,7 +17,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -383,7 +383,7 @@ TEST_F(
                             base::Version("1.0.0")}));
 
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_location(IwaStorageProxy{
+      .set_source(IwaSourceProxy{
           url::Origin::Create(GURL("http://pending-install-proxy-url.com"))});
 
   CreateFactory();
@@ -640,9 +640,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        ReturnGeneratedPageWhenInstallingApplication) {
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_location(IwaStorageProxy{
+      .set_source(IwaSourceProxy{
           url::Origin::Create(GURL("http://some-proxy-url.com"))});
-
   RegisterWebApp(CreateIsolatedWebApp(
       kDevAppStartUrl,
       WebApp::IsolationData{
@@ -667,7 +666,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
        RequestsRedirectedToPendingInstallIsolationDataWhenAppIsInstalled) {
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_location(IwaStorageProxy{
+      .set_source(IwaSourceProxy{
           url::Origin::Create(GURL("http://some-proxy-url.com"))});
 
   RegisterWebApp(CreateIsolatedWebApp(
@@ -695,7 +694,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   CreateStoragePartitionForUrl(GURL("isolated-app://" + kDevWebBundleId));
 
   IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_location(IwaStorageProxy{
+      .set_source(IwaSourceProxy{
           url::Origin::Create(GURL("http://some-proxy-url.com"))});
 
   CreateFactory();

@@ -21,7 +21,8 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -97,7 +98,7 @@ class InstallIsolatedWebAppCommand
   // `IsolatedWebAppResponseReader` for the Web Bundle.
   InstallIsolatedWebAppCommand(
       const IsolatedWebAppUrlInfo& url_info,
-      const IsolatedWebAppLocation& location,
+      const IsolatedWebAppInstallSource& install_source,
       const std::optional<base::Version>& expected_version,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
@@ -188,9 +189,10 @@ class InstallIsolatedWebAppCommand
 
   const IsolatedWebAppUrlInfo url_info_;
   const std::optional<base::Version> expected_version_;
+  const webapps::WebappInstallSource install_surface_;
 
-  std::optional<IsolatedWebAppLocation> source_location_;
-  std::optional<IsolatedWebAppLocation> destination_location_;
+  std::optional<IwaSourceWithModeAndFileOp> install_source_;
+  std::optional<IwaSourceWithMode> destination_source_;
   std::optional<IsolatedWebAppStorageLocation> destination_storage_location_;
   std::optional<base::Version> actual_version_;
 

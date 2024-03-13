@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
@@ -107,7 +108,7 @@ BulkIwaInstaller::IwaInstallCommandWrapperImpl::IwaInstallCommandWrapperImpl(
     : provider_(provider) {}
 
 void BulkIwaInstaller::IwaInstallCommandWrapperImpl::Install(
-    const IsolatedWebAppLocation& location,
+    const IsolatedWebAppInstallSource& install_source,
     const IsolatedWebAppUrlInfo& url_info,
     const base::Version& expected_version,
     WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
@@ -116,7 +117,7 @@ void BulkIwaInstaller::IwaInstallCommandWrapperImpl::Install(
   // will be re-attempted the next time they start, assuming that the policy is
   // still set.
   provider_->scheduler().InstallIsolatedWebApp(
-      url_info, location, expected_version,
+      url_info, install_source, expected_version,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, std::move(callback));
 }
@@ -347,12 +348,14 @@ void BulkIwaInstaller::OnWebBundleDownloaded(const base::FilePath& path,
     return;
   }
 
-  IsolatedWebAppLocation location = InstalledBundle{.path = path};
   IsolatedWebAppUrlInfo url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           current_app_->web_bundle_id());
 
-  installer_->Install(location, url_info, current_app_->expected_version(),
+  installer_->Install(IsolatedWebAppInstallSource::FromExternalPolicy(
+                          IwaSourceBundleProdModeWithFileOp(
+                              path, IwaSourceBundleProdFileOp::kMove)),
+                      url_info, current_app_->expected_version(),
                       base::BindOnce(&BulkIwaInstaller::OnIwaInstalled,
                                      weak_factory_.GetWeakPtr()));
 }

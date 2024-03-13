@@ -171,7 +171,8 @@ void IsolatedWebAppApplyUpdateCommand::CheckTrustAndSignatures(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   command_helper_->CheckTrustAndSignatures(
-      pending_update_info_->location.ToLocationDeprecated(profile().GetPath()),
+      IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
+                                             pending_update_info_->location),
       &profile(),
       base::BindOnce(
           &IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<void>,
@@ -192,7 +193,9 @@ void IsolatedWebAppApplyUpdateCommand::LoadInstallUrl(
     base::OnceClosure next_step_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   command_helper_->LoadInstallUrl(
-      pending_update_info_->location, *web_contents_.get(), *url_loader_.get(),
+      IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
+                                             pending_update_info_->location),
+      *web_contents_.get(), *url_loader_.get(),
       base::BindOnce(
           &IsolatedWebAppApplyUpdateCommand::RunNextStepOnSuccess<void>,
           weak_factory_.GetWeakPtr(), std::move(next_step_callback)));

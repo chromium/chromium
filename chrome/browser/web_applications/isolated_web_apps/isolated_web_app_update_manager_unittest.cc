@@ -31,7 +31,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -283,8 +283,9 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
   base::test::TestFuture<base::expected<base::Version, std::string>> future;
   fake_provider()
       .iwa_update_manager()
-      .DiscoverApplyAndPrioritizeLocalDevModeUpdate(location, url_info,
-                                                    future.GetCallback());
+      .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+          IwaSourceBundleDevModeWithFileOp(path, kDefaultBundleDevFileOp),
+          url_info, future.GetCallback());
 
   EXPECT_THAT(future.Get(), ValueIs(Eq(base::Version("2.0.0"))));
   EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(url_info.app_id()),

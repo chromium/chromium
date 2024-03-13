@@ -17,14 +17,13 @@
 class Profile;
 
 namespace base {
-class FilePath;
 class Version;
 }  // namespace base
 
 namespace web_app {
 
 class IsolatedWebAppUrlInfo;
-struct IwaSourceBundle;
+class IwaSourceBundleWithMode;
 class SignedWebBundleMetadata;
 class WebAppProvider;
 
@@ -54,7 +53,7 @@ class InstallabilityChecker {
   static std::unique_ptr<InstallabilityChecker> CreateAndStart(
       Profile* profile,
       WebAppProvider* web_app_provider,
-      const base::FilePath& bundle_path,
+      IwaSourceBundleWithMode source,
       base::OnceCallback<void(Result)> callback);
 
   ~InstallabilityChecker();
@@ -64,9 +63,9 @@ class InstallabilityChecker {
                         WebAppProvider* web_app_provider,
                         base::OnceCallback<void(Result)> callback);
 
-  void Start(const base::FilePath& bundle_path);
+  void Start(IwaSourceBundleWithMode source);
   void OnLoadedUrlInfo(
-      IwaSourceBundle location,
+      IwaSourceBundleWithMode source,
       base::expected<IsolatedWebAppUrlInfo, std::string> url_info);
   void OnLoadedMetadata(
       base::expected<SignedWebBundleMetadata, std::string> metadata);

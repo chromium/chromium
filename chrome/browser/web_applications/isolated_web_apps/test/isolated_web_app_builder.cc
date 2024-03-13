@@ -21,7 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -97,7 +97,7 @@ void FakeInstallPageState(Profile* profile,
 base::expected<IsolatedWebAppUrlInfo, std::string> Install(
     Profile* profile,
     const web_package::SignedWebBundleId& web_bundle_id,
-    const IsolatedWebAppLocation& location) {
+    const IsolatedWebAppInstallSource& install_source) {
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
   if (FakeWebAppProvider* fake_provider = GetFakeWebAppProvider(profile)) {
@@ -121,7 +121,7 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
 
   base::test::TestFuture<InstallResult> future;
   WebAppProvider::GetForWebApps(profile)->scheduler().InstallIsolatedWebApp(
-      url_info, location,
+      url_info, install_source,
       /*expected_version=*/std::nullopt,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
@@ -162,8 +162,11 @@ IsolatedWebAppUrlInfo BundledIsolatedWebApp::InstallChecked(Profile* profile) {
 
 base::expected<IsolatedWebAppUrlInfo, std::string>
 BundledIsolatedWebApp::Install(Profile* profile) {
-  return ::web_app::Install(profile, web_bundle_id_,
-                            InstalledBundle{.path = path()});
+  return ::web_app::Install(
+      profile, web_bundle_id_,
+      IsolatedWebAppInstallSource::FromGraphicalInstaller(
+          web_app::IwaSourceBundleProdModeWithFileOp(
+              path(), web_app::IwaSourceBundleProdFileOp::kCopy)));
 }
 
 void BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
@@ -240,9 +243,9 @@ base::expected<IsolatedWebAppUrlInfo, std::string>
 ScopedProxyIsolatedWebApp::Install(
     Profile* profile,
     const web_package::SignedWebBundleId& web_bundle_id) {
-  return ::web_app::Install(
-      profile, web_bundle_id,
-      DevModeProxy{.proxy_url = proxy_server_->GetOrigin()});
+  return ::web_app::Install(profile, web_bundle_id,
+                            IsolatedWebAppInstallSource::FromDevUi(
+                                IwaSourceProxy(proxy_server_->GetOrigin())));
 }
 
 ManifestBuilder::ManifestBuilder()

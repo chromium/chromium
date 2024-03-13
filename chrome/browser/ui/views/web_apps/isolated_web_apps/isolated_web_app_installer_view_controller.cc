@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -392,7 +392,7 @@ void IsolatedWebAppInstallerViewController::OnPrefChanged(bool enabled) {
                                   OnGetMetadataProgressUpdated,
                               weak_ptr_factory_.GetWeakPtr()));
       installability_checker_ = InstallabilityChecker::CreateAndStart(
-          profile_, web_app_provider_, model_->bundle_path(),
+          profile_, web_app_provider_, model_->source(),
           callback_delayer_->StartDelayingCallback(base::BindOnce(
               &IsolatedWebAppInstallerViewController::OnInstallabilityChecked,
               weak_ptr_factory_.GetWeakPtr())));
@@ -483,7 +483,9 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
               weak_ptr_factory_.GetWeakPtr()));
       const SignedWebBundleMetadata& metadata = model_->bundle_metadata();
       web_app_provider_->scheduler().InstallIsolatedWebApp(
-          metadata.url_info(), DevModeBundle{.path = metadata.location().path},
+          metadata.url_info(),
+          IsolatedWebAppInstallSource::FromGraphicalInstaller(
+              model_->source().WithFileOp(IwaSourceBundleProdFileOp::kCopy)),
           metadata.version(),
           /*optional_keep_alive=*/nullptr,
           /*optional_profile_keep_alive=*/nullptr,

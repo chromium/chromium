@@ -16,7 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/url_constants.h"
@@ -95,12 +95,12 @@ IsolatedWebAppUrlInfo IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
 
 // static
 void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
-    const absl::variant<IwaSourceBundle, IwaSourceProxy>& source,
+    const IwaSource& source,
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
         callback) {
   absl::visit(base::Overloaded{
-                  [&](const IwaSourceBundle& installed_bundle) {
-                    GetSignedWebBundleIdByPath(installed_bundle.path,
+                  [&](const IwaSourceBundle& bundle) {
+                    GetSignedWebBundleIdByPath(bundle.path(),
                                                std::move(callback));
                   },
                   [&](const IwaSourceProxy&) {
@@ -109,7 +109,7 @@ void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
                             web_package::SignedWebBundleId::
                                 CreateRandomForDevelopment()));
                   }},
-              source);
+              source.variant());
 }
 
 IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(

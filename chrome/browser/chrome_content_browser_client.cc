@@ -2247,7 +2247,7 @@ ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     return std::nullopt;
   }
   CHECK(web_contents);
-  if (web_app::IsolatedWebAppPendingInstallInfo::HasPendingInstallLocation(
+  if (web_app::IsolatedWebAppPendingInstallInfo::HasPendingInstallSource(
           *web_contents)) {
     // We allow sync-xhr for apps that are being installed or updated to
     // allow synchronous requests from the generated install page, which is

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
@@ -108,7 +109,8 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
     CHECK(url_info.has_value());
 
     WebAppProvider::GetForWebApps(profile())->scheduler().InstallIsolatedWebApp(
-        url_info.value(), DevModeProxy{.proxy_url = proxy_origin},
+        url_info.value(),
+        IsolatedWebAppInstallSource::FromDevUi(IwaSourceProxy(proxy_origin)),
         /*expected_version=*/std::nullopt,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
