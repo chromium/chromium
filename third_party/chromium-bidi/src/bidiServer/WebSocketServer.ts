@@ -45,7 +45,6 @@ type ChromeOptions = {
   readonly chromeArgs: string[];
   readonly chromeBinary?: string;
   readonly channel: ChromeReleaseChannel;
-  readonly headless: boolean;
 };
 
 type SessionOptions = {
@@ -58,21 +57,14 @@ export class WebSocketServer {
   #sessions = new Map<string, Session>();
   #port: number;
   #channel: ChromeReleaseChannel;
-  #headless: boolean;
   #verbose: boolean;
 
   #server: http.Server;
   #wsServer: websocket.server;
 
-  constructor(
-    port: number,
-    channel: ChromeReleaseChannel,
-    headless: boolean,
-    verbose: boolean
-  ) {
+  constructor(port: number, channel: ChromeReleaseChannel, verbose: boolean) {
     this.#port = port;
     this.#channel = channel;
-    this.#headless = headless;
     this.#verbose = verbose;
 
     this.#server = http.createServer(this.#onRequest.bind(this));
@@ -135,6 +127,8 @@ export class WebSocketServer {
         });
       });
 
+      debugInternal(`Creating session by HTTP request ${body.toString()}`);
+
       // https://w3c.github.io/webdriver-bidi/#transport, step 3.
       const jsonBody = JSON.parse(body.toString());
       response.writeHead(200, {
@@ -150,8 +144,7 @@ export class WebSocketServer {
         sessionOptions: {
           chromeOptions: this.#getChromeOptions(
             jsonBody.capabilities,
-            this.#channel,
-            this.#headless
+            this.#channel
           ),
           mapperOptions: this.#getMapperOptions(jsonBody.capabilities),
           verbose: this.#verbose,
@@ -307,8 +300,7 @@ export class WebSocketServer {
           const sessionOptions = {
             chromeOptions: this.#getChromeOptions(
               parsedCommandData.params?.capabilities,
-              this.#channel,
-              this.#headless
+              this.#channel
             ),
             mapperOptions: this.#getMapperOptions(
               parsedCommandData.params?.capabilities
@@ -427,15 +419,13 @@ export class WebSocketServer {
 
   #getChromeOptions(
     capabilities: any,
-    channel: ChromeReleaseChannel,
-    headless: boolean
+    channel: ChromeReleaseChannel
   ): ChromeOptions {
     const chromeCapabilities =
       capabilities?.alwaysMatch?.['goog:chromeOptions'];
     return {
       chromeArgs: chromeCapabilities?.args ?? [],
       channel,
-      headless,
       chromeBinary: chromeCapabilities?.binary ?? undefined,
     };
   }

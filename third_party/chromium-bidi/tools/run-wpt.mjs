@@ -36,7 +36,7 @@ function usage() {
     `Usage:
       [BROWSER_BIN=<path, default: download pinned chrome>]
       [CHROMEDRIVER=<true | default: false>]
-      [HEADLESS=<true | default: false>]
+      [HEADLESS=<default: true | false>]
       [MANIFEST=<default: 'MANIFEST.json'>]
       [RUN_TESTS=<default: true | false>]
       [TIMEOUT_MULTIPLIER=<number, default: 1>]
@@ -155,20 +155,34 @@ if (RUN_TESTS === 'true') {
     );
   }
 
+  if (HEADLESS === 'true') {
+    if (CHROMEDRIVER === 'true') {
+      // For chroemdriver use new headless.
+      wptRunArgs.push('--binary-arg=--headless=new');
+    } else {
+      // TODO: switch to new headless.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/949.
+      // For nodejs mapper runner supports only old headless.
+      wptRunArgs.push('--binary-arg=--headless');
+      wptRunArgs.push('--binary-arg=--hide-scrollbars');
+      wptRunArgs.push('--binary-arg=--mute-audio');
+    }
+  } else {
+    // Pass `--no-headless` to the WPT runner to enable headful mode.
+    wptRunArgs.push('--no-headless');
+  }
+
   if (CHROMEDRIVER === 'true') {
     if (!existsSync(join('logs'))) {
       mkdirSync(join('logs'));
     }
 
-    let chromeDriverLogs = join('logs', 'chromedriver.log');
+    const chromeDriverLogs = join(
+      'logs',
+      HEADLESS === 'true' ? 'chromedriver-headless.log' : 'chromedriver.log'
+    );
 
     log('Using chromedriver with mapper...');
-    if (HEADLESS === 'true') {
-      chromeDriverLogs = join('logs', 'chromedriver-headless.log');
-      wptRunArgs.push('--binary-arg=--headless=new');
-    } else {
-      wptRunArgs.push('--no-headless');
-    }
     wptRunArgs.push(
       '--install-webdriver',
       `--webdriver-arg=--bidi-mapper-path=${join(
@@ -181,12 +195,8 @@ if (RUN_TESTS === 'true') {
       '--yes'
     );
   } else {
-    wptRunArgs.push(
-      `--webdriver-arg=--headless=${HEADLESS}`, // only used by bidi-server.mjs.
-      '--webdriver-binary',
-      join('tools', 'run-bidi-server.mjs')
-    );
     log('Using pure mapper...');
+    wptRunArgs.push('--webdriver-binary', join('tools', 'run-bidi-server.mjs'));
   }
 
   const restArgs = process.argv.slice(2);

@@ -22,7 +22,6 @@ import {debugInfo, WebSocketServer} from './WebSocketServer.js';
 
 function parseArguments(): {
   channel: ChromeReleaseChannel;
-  headless: string;
   port: number;
   verbose: boolean;
 } {
@@ -37,11 +36,6 @@ function parseArguments(): {
       'instead of one pointed by Puppeteer version',
     choices: Object.values(ChromeReleaseChannel),
     default: ChromeReleaseChannel.DEV,
-  });
-
-  parser.add_argument('--headless', {
-    help: 'Sets if browser should run in headless or headful mode. Default is true.',
-    default: true,
   });
 
   parser.add_argument('-p', '--port', {
@@ -63,12 +57,11 @@ function parseArguments(): {
   try {
     const args = parseArguments();
     const {channel, port} = args;
-    const headless = args.headless !== 'false';
     const verbose = args.verbose === true;
 
     debugInfo('Launching BiDi server...');
 
-    new WebSocketServer(port, channel, headless, verbose);
+    new WebSocketServer(port, channel, verbose);
     debugInfo('BiDi server launched');
   } catch (e) {
     debugInfo('Error launching BiDi server', e);

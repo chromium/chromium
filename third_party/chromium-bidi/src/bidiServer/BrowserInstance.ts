@@ -45,7 +45,6 @@ type ChromeOptions = {
   chromeArgs: string[];
   chromeBinary?: string;
   channel: ChromeReleaseChannel;
-  headless: boolean;
 };
 
 /**
@@ -71,9 +70,6 @@ export class BrowserInstance {
     );
     // See https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
     const chromeArguments = [
-      ...(chromeOptions.headless
-        ? ['--headless', '--hide-scrollbars', '--mute-audio']
-        : []),
       // keep-sorted start
       '--allow-browser-signin=false',
       '--disable-component-update',
@@ -91,9 +87,7 @@ export class BrowserInstance {
       '--use-mock-keychain',
       `--user-data-dir=${profileDir}`,
       // keep-sorted end
-      ...chromeOptions.chromeArgs.filter(
-        (arg) => !arg.startsWith('--headless')
-      ),
+      ...chromeOptions.chromeArgs,
       'about:blank',
     ];
 
@@ -109,11 +103,15 @@ export class BrowserInstance {
       throw new Error('Could not find Chrome binary');
     }
 
-    const browserProcess = launch({
+    const launchArguments = {
       executablePath,
       args: chromeArguments,
       env: process.env,
-    });
+    };
+
+    debugInternal(`Launching browser`, launchArguments);
+
+    const browserProcess = launch(launchArguments);
 
     const cdpEndpoint = await browserProcess.waitForLineOutput(
       CDP_WEBSOCKET_ENDPOINT_REGEX

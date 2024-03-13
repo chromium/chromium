@@ -15,9 +15,7 @@
     "pre-commit": "pre-commit run --hook-stage manual --all-files",
     "prepare": "wireit",
     "rollup": "wireit",
-    "server": "npm run server:headless --",
-    "server:headful": "wireit",
-    "server:headless": "wireit",
+    "server": "wireit",
     "test": "wireit",
     "tsc": "wireit",
     "unit": "wireit",
@@ -46,7 +44,10 @@
       ],
       "dependencies": [
         "build"
-      ]
+      ],
+      "env": {
+        "HEADLESS": "false"
+      }
     },
     "e2e:headless": {
       "command": "tools/run-e2e.mjs",
@@ -77,19 +78,8 @@
         "lib/iife/mapperTab.js"
       ]
     },
-    "server:headful": {
-      "command": "npm run server:headless -- --headless=false",
-      "service": {
-        "readyWhen": {
-          "lineMatches": "BiDi server is listening on port \\d+"
-        }
-      },
-      "dependencies": [
-        "rollup"
-      ]
-    },
-    "server:headless": {
-      "command": "tools/run-bidi-server.mjs --headless=true",
+    "server": {
+      "command": "tools/run-bidi-server.mjs",
       "files": [
         "tools/run-bidi-server.mjs"
       ],
