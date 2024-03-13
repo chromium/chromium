@@ -247,13 +247,22 @@ void TabOrganizationSession::PopulateAndCreate(
 void TabOrganizationSession::PopulateOrganizations(
     TabOrganizationResponse* response) {
   feedback_id_ = response->feedback_id;
+  const std::optional<TabData::TabID> base_tab_id = request()->base_tab_id();
   // for each of the organizations, make sure that the TabData is valid for
   // grouping.
   for (TabOrganizationResponse::Organization& response_organization :
        response->organizations) {
-    std::vector<std::unique_ptr<TabData>> tab_datas_for_org;
+    // Don't include organizations that don't involve the base tab, if one
+    // exists.
+    const std::vector<TabData::TabID> tab_ids = response_organization.tab_ids;
+    if (base_tab_id.has_value() &&
+        std::find(tab_ids.begin(), tab_ids.end(), base_tab_id.value()) ==
+            tab_ids.end()) {
+      continue;
+    }
 
-    for (const TabData::TabID& tab_id : response_organization.tab_ids) {
+    std::vector<std::unique_ptr<TabData>> tab_datas_for_org;
+    for (const TabData::TabID& tab_id : tab_ids) {
       // TODO for now we can't use the TabID directly, we instead need to use
       // the webcontents ptr to refer to the tab.
       const auto matching_tab = std::find_if(
