@@ -239,8 +239,6 @@ ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme) {
     return ProxyServer::SCHEME_SOCKS5;
   if (base::EqualsCaseInsensitiveASCII(scheme, "https"))
     return ProxyServer::SCHEME_HTTPS;
-  if (base::EqualsCaseInsensitiveASCII(scheme, "quic"))
-    return ProxyServer::SCHEME_QUIC;
   return ProxyServer::SCHEME_INVALID;
 }
 
