@@ -457,7 +457,7 @@ BASE_FEATURE(kAutofillPopupDisablePaintChecks,
 // Controls whether the autofill popup is hidden when the context menu is open.
 BASE_FEATURE(kAutofillPopupDoesNotOverlapWithContextMenu,
              "AutofillPopupDoesNotOverlapWithContextMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If the feature is enabled, then the time when the Autofill popup is
 // considered to have been shown is measured only once the UI thread has become
