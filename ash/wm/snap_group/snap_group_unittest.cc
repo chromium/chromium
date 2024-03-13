@@ -3980,6 +3980,15 @@ TEST_F(SnapGroupTest, FeedbackButtonTest) {
   event_generator->MoveMouseTo(hover_location);
   EXPECT_TRUE(feedback_button->GetVisible());
 
+  // Test that the feedback button will be invisible when drag starts.
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(10, 0);
+  EXPECT_FALSE(feedback_button->GetVisible());
+
+  // Test that the feedback button will be visible again when drag ends.
+  event_generator->ReleaseLeftButton();
+  EXPECT_TRUE(feedback_button->GetVisible());
+
   // Test that open feedback dialog callback will be triggered.
   event_generator->MoveMouseTo(
       feedback_button->GetBoundsInScreen().CenterPoint());

@@ -166,6 +166,7 @@ bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
+  RefreshFeedbackButton(/*visible=*/false);
   if (!mouse_move_started_) {
     // If this is the first mouse drag event, start the resize and reset
     // `mouse_move_started_`.
@@ -174,6 +175,7 @@ bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
     StartResizing(initial_mouse_event_location_);
     return true;
   }
+
   // Else continue with the resize.
   gfx::Point location(event.location());
   views::View::ConvertPointToScreen(this, &location);
@@ -187,6 +189,8 @@ void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
   initial_mouse_event_location_ = gfx::Point();
   mouse_move_started_ = false;
   EndResizing(location, /*swap_windows=*/event.GetClickCount() == 2);
+
+  RefreshFeedbackButton(/*visible=*/true);
 }
 
 void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
