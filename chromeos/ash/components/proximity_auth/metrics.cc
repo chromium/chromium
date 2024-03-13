@@ -13,7 +13,7 @@
 #include "base/hash/md5.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace proximity_auth {
 namespace metrics {
@@ -22,18 +22,8 @@ namespace {
 
 // Converts the 4-byte prefix of an MD5 hash into a int32_t value.
 int32_t DigestToInt32(const base::MD5Digest& digest) {
-  // First, copy to a uint32_t, since byte swapping and endianness conversions
-  // expect unsigned integers.
-  uint32_t unsigned_value;
-  DCHECK_GE(std::size(digest.a), sizeof(unsigned_value));
-  memcpy(&unsigned_value, digest.a, sizeof(unsigned_value));
-  unsigned_value = base::ByteSwap(base::HostToNet32(unsigned_value));
-
-  // Then copy the resulting bit pattern to an int32_t to match the datatype
-  // that histograms expect.
-  int32_t value;
-  memcpy(&value, &unsigned_value, sizeof(value));
-  return value;
+  return static_cast<int32_t>(
+      base::numerics::U32FromLittleEndian(base::span(digest.a).first<4u>()));
 }
 
 // Returns a hash of the given |name|, encoded as a 32-bit signed integer.

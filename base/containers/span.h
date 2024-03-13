@@ -1090,6 +1090,25 @@ auto as_chars(span<T, X> s) noexcept {
       reinterpret_cast<const char*>(s.data()), s.size_bytes()));
 }
 
+// as_string_view() converts a span over byte-sized primitives (holding chars or
+// uint8_t) into a std::string_view, where each byte is represented as a char.
+//
+// If you want to view an arbitrary span type as a string, first explicitly
+// convert it to bytes via `base::as_bytes()`.
+//
+// For spans over byte-sized primitives, this is sugar for:
+// ```
+// std::string_view(as_chars(span).begin(), as_chars(span).end())
+// ```
+constexpr std::string_view as_string_view(span<const char> s) noexcept {
+  return std::string_view(s.begin(), s.end());
+}
+constexpr std::string_view as_string_view(
+    span<const unsigned char> s) noexcept {
+  const auto c = as_chars(s);
+  return std::string_view(c.begin(), c.end());
+}
+
 // as_writable_chars() is the equivalent of as_writable_bytes(), except that
 // it returns a span of char rather than uint8_t. This non-std function is
 // added since chrome still represents many things as char arrays which

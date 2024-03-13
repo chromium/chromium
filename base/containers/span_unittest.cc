@@ -1500,6 +1500,37 @@ TEST(SpanTest, AsWritableByteSpan) {
   }
 }
 
+TEST(SpanTest, AsStringView) {
+  {
+    constexpr uint8_t kArray[] = {'h', 'e', 'l', 'l', 'o'};
+    // Fixed size span.
+    auto s = as_string_view(kArray);
+    static_assert(std::is_same_v<decltype(s), std::string_view>);
+    EXPECT_EQ(s.data(), reinterpret_cast<const char*>(&kArray[0u]));
+    EXPECT_EQ(s.size(), std::size(kArray));
+
+    // Dynamic size span.
+    auto s2 = as_string_view(base::span<const uint8_t>(kArray));
+    static_assert(std::is_same_v<decltype(s2), std::string_view>);
+    EXPECT_EQ(s2.data(), reinterpret_cast<const char*>(&kArray[0u]));
+    EXPECT_EQ(s2.size(), std::size(kArray));
+  }
+  {
+    constexpr char kArray[] = {'h', 'e', 'l', 'l', 'o'};
+    // Fixed size span.
+    auto s = as_string_view(kArray);
+    static_assert(std::is_same_v<decltype(s), std::string_view>);
+    EXPECT_EQ(s.data(), &kArray[0u]);
+    EXPECT_EQ(s.size(), std::size(kArray));
+
+    // Dynamic size span.
+    auto s2 = as_string_view(base::span<const char>(kArray));
+    static_assert(std::is_same_v<decltype(s2), std::string_view>);
+    EXPECT_EQ(s2.data(), &kArray[0u]);
+    EXPECT_EQ(s2.size(), std::size(kArray));
+  }
+}
+
 TEST(SpanTest, MakeSpanFromDataAndSize) {
   int* nullint = nullptr;
   auto empty_span = make_span(nullint, 0u);

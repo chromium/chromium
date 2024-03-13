@@ -49,15 +49,14 @@ namespace {
 // will ever reach.
 constexpr uint32_t kMaxSequence = (1 << 24) - 1;
 
-bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
+bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12u> out_nonce) {
   if (counter > kMaxSequence) {
     return false;
   }
 
-  std::fill(out_nonce.begin(), out_nonce.end(), 0);
-  counter = base::ByteSwap(counter);
-  memcpy(out_nonce.data() + out_nonce.size() - sizeof(counter), &counter,
-         sizeof(counter));
+  auto [zeros, counter_span] = out_nonce.split_at<12u - 4u>();
+  std::ranges::fill(zeros, uint8_t{0});
+  counter_span.copy_from(base::numerics::U32ToBigEndian(counter));
   return true;
 }
 

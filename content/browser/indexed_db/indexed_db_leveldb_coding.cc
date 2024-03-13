@@ -11,13 +11,12 @@
 #include <string_view>
 #include <utility>
 
-#include "base/big_endian.h"
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/sys_byteorder.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -29,14 +28,8 @@ using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 
 namespace content {
+
 namespace {
-inline uint64_t ByteSwapToBE64(uint64_t x) {
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return base::ByteSwap(x);
-#else
-  return x;
-#endif
-}
 
 // As most of the IndexedDBKeys and encoded values are short, we
 // initialize some std::vectors with a default inline buffer size to reduce
@@ -154,9 +147,9 @@ void EncodeSortableDouble(double value, std::string* into) {
     modified_bits = kSignBit | double_bits;
   }
 
-  uint64_t big_endian_bits = base::HostToNet64(modified_bits);
-  const char* p = reinterpret_cast<char*>(&big_endian_bits);
-  into->insert(into->end(), p, p + sizeof(big_endian_bits));
+  std::array<uint8_t, 8u> chars;
+  base::span(chars).copy_from(base::numerics::U64ToBigEndian(modified_bits));
+  into->insert(into->end(), chars.begin(), chars.end());
 }
 
 }  // namespace
@@ -1349,10 +1342,13 @@ PartitionedLockId GetObjectStoreLockId(int64_t database_id,
   // These keys used to attempt to be bytewise-comparable, which is why
   // it uses big-endian encoding here. There was a goal to match the
   // existing leveldb key scheme used by IndexedDB. This is no longer a goal.
-  uint64_t key[2] = {ByteSwapToBE64(static_cast<uint64_t>(database_id)),
-                     ByteSwapToBE64(static_cast<uint64_t>(object_store_id))};
-  return {kObjectStoreLockPartition,
-          std::string(reinterpret_cast<char*>(&key), sizeof(key))};
+  std::array<uint8_t, 16u> chars;
+  auto [db, obj] = base::span(chars).split_at<8u>();
+  db.copy_from(
+      base::numerics::U64ToBigEndian(static_cast<uint64_t>(database_id)));
+  obj.copy_from(
+      base::numerics::U64ToBigEndian(static_cast<uint64_t>(object_store_id)));
+  return {kObjectStoreLockPartition, std::string(chars.begin(), chars.end())};
 }
 
 KeyPrefix::KeyPrefix()

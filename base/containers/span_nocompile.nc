@@ -271,4 +271,9 @@ void CompareNotComparable() {
   (void)(span(non_arr) == span(non_arr));  // expected-error@*:* {{invalid operands to binary expression}}
 }
 
+void AsStringViewNotBytes() {
+  const int arr[] = {1, 2, 3};
+  as_string_view(base::span(arr));  // expected-error@*:* {{no matching function for call to 'as_string_view'}}
+}
+
 }  // namespace base
