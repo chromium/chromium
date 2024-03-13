@@ -141,8 +141,13 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/content/test/content_browsertests/render_frame_host_impl_browsertest.o",
         "./obj/content/test/content_browsertests/site_per_process_browsertest.o",
         "./obj/content/test/content_browsertests/web_contents_impl_browsertest.o",
+        "./obj/content/test/content_unittests/ad_auction_service_impl_unittest.o",
+        "./obj/content/test/content_unittests/auction_runner_unittest.o",
+        "./obj/content/test/content_unittests/authenticator_impl_unittest.o",
         "./obj/net/third_party/quiche/quiche_tests/quic_connection_test.o",
         "./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o",
+        "./obj/third_party/blink/renderer/core/unit_tests/web_frame_test.o",
+        "./obj/third_party/blink/renderer/core/unit_tests/web_media_player_impl_unittest.o",
         "./obj/third_party/perfetto/protos/perfetto/trace/merged_trace_lite/perfetto_trace.pb.o",
     ]
     if runtime.os == "windows":
