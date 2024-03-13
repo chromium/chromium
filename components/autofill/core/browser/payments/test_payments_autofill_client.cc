@@ -58,4 +58,9 @@ void TestPaymentsAutofillClient::CloseAutofillProgressDialog(
   }
 }
 
+TestPaymentsNetworkInterface*
+TestPaymentsAutofillClient::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
+}
+
 }  // namespace autofill::payments

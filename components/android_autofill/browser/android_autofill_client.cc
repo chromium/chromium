@@ -134,11 +134,6 @@ autofill::FormDataImporter* AndroidAutofillClient::GetFormDataImporter() {
   return nullptr;
 }
 
-autofill::payments::PaymentsNetworkInterface*
-AndroidAutofillClient::GetPaymentsNetworkInterface() {
-  return nullptr;
-}
-
 autofill::StrikeDatabase* AndroidAutofillClient::GetStrikeDatabase() {
   return nullptr;
 }

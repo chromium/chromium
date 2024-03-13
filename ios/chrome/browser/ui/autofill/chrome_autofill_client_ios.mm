@@ -108,13 +108,6 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       bridge_(bridge),
       identity_manager_(IdentityManagerFactory::GetForBrowserState(
           browser_state->GetOriginalChromeBrowserState())),
-      payments_network_interface_(
-          std::make_unique<payments::PaymentsNetworkInterface>(
-              base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                  browser_state_->GetURLLoaderFactory()),
-              identity_manager_,
-              personal_data_manager_,
-              browser_state_->IsOffTheRecord())),
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
           personal_data_manager_,
@@ -218,15 +211,11 @@ payments::PaymentsAutofillClient*
 ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
-        std::make_unique<payments::IOSChromePaymentsAutofillClient>(this);
+        std::make_unique<payments::IOSChromePaymentsAutofillClient>(
+            this, browser_state_);
   }
 
   return payments_autofill_client_.get();
-}
-
-payments::PaymentsNetworkInterface*
-ChromeAutofillClientIOS::GetPaymentsNetworkInterface() {
-  return payments_network_interface_.get();
 }
 
 StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
@@ -532,7 +521,8 @@ void ChromeAutofillClientIOS::ShowAutofillErrorDialog(
   // IOSChromePaymentsAutofillClient to avoid this call.
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
-        std::make_unique<payments::IOSChromePaymentsAutofillClient>(this);
+        std::make_unique<payments::IOSChromePaymentsAutofillClient>(
+            this, browser_state_);
   }
   payments_autofill_client_->ShowAutofillErrorDialog(std::move(context));
 }

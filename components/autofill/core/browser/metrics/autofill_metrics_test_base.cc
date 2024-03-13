@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -61,9 +62,10 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       new payments::TestPaymentsNetworkInterface(
           autofill_client_->GetURLLoaderFactory(),
           autofill_client_->GetIdentityManager(), &personal_data());
-  autofill_client_->set_test_payments_network_interface(
-      std::unique_ptr<payments::TestPaymentsNetworkInterface>(
-          payments_network_interface));
+  autofill_client_->GetPaymentsAutofillClient()
+      ->set_test_payments_network_interface(
+          std::unique_ptr<payments::TestPaymentsNetworkInterface>(
+              payments_network_interface));
   auto credit_card_save_manager = std::make_unique<TestCreditCardSaveManager>(
       autofill_driver_.get(), autofill_client_.get(), &personal_data());
   autofill_client_->set_test_form_data_importer(
@@ -140,8 +142,8 @@ void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
       access_manager.GetOrCreateFidoAuthenticator())
       ->SetUserVerifiable(is_verifiable);
 #endif
-  static_cast<payments::TestPaymentsNetworkInterface*>(
-      autofill_client_->GetPaymentsNetworkInterface())
+  autofill_client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
       ->AllowFidoRegistration(true);
   test_api(access_manager).set_is_authentication_in_progress(false);
   test_api(access_manager).set_can_fetch_unmask_details(true);

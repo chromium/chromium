@@ -19,7 +19,8 @@ CreditCardOtpAuthenticator::OtpAuthenticationResponse::
 
 CreditCardOtpAuthenticator::CreditCardOtpAuthenticator(AutofillClient* client)
     : autofill_client_(client),
-      payments_network_interface_(client->GetPaymentsNetworkInterface()) {}
+      payments_network_interface_(
+          client->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface()) {}
 
 CreditCardOtpAuthenticator::~CreditCardOtpAuthenticator() = default;
 

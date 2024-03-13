@@ -19,6 +19,8 @@ class MigratableCreditCard;
 
 namespace payments {
 
+class PaymentsNetworkInterface;
+
 // A payments-specific client interface that handles dependency injection, and
 // its implementations serve as the integration for platform-specific code. One
 // per WebContents, owned by the AutofillClient. Created lazily in the
@@ -95,6 +97,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback);
+
+  // Gets the payments::PaymentsNetworkInterface instance owned by the client.
+  virtual PaymentsNetworkInterface* GetPaymentsNetworkInterface();
 };
 
 }  // namespace payments

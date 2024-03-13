@@ -216,11 +216,6 @@ class TestAutofillClientTemplate : public T {
     return payments_autofill_client_.get();
   }
 
-  payments::TestPaymentsNetworkInterface* GetPaymentsNetworkInterface()
-      override {
-    return payments_network_interface_.get();
-  }
-
   payments::PaymentsWindowManager* GetPaymentsWindowManager() override {
     return payments_window_manager_.get();
   }
@@ -571,11 +566,6 @@ class TestAutofillClientTemplate : public T {
     test_strike_database_ = std::move(test_strike_database);
   }
 
-  void set_test_payments_network_interface(
-      std::unique_ptr<payments::TestPaymentsNetworkInterface>
-          payments_network_interface) {
-    payments_network_interface_ = std::move(payments_network_interface);
-  }
 
   void set_payments_window_manager(
       std::unique_ptr<payments::PaymentsWindowManager>
@@ -776,8 +766,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   std::unique_ptr<payments::TestPaymentsAutofillClient>
       payments_autofill_client_;
-  std::unique_ptr<payments::TestPaymentsNetworkInterface>
-      payments_network_interface_;
   std::unique_ptr<payments::PaymentsWindowManager> payments_window_manager_;
   std::unique_ptr<testing::NiceMock<MockIbanManager>> mock_iban_manager_;
 

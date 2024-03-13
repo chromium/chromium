@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -188,13 +189,15 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
       autofill_metrics::UploadIbanActionMetric::kOffered);
   bool show_save_prompt = !GetIbanSaveStrikeDatabase()->ShouldBlockFeature(
       GetPartialIbanHashString(base::UTF16ToUTF8(import_candidate.value())));
-  client_->GetPaymentsNetworkInterface()->GetIbanUploadDetails(
-      personal_data_manager_->app_locale(),
-      payments::GetBillingCustomerId(personal_data_manager_),
-      payments::kUploadPaymentMethodBillableServiceNumber,
-      base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
-                     weak_ptr_factory_.GetWeakPtr(), show_save_prompt,
-                     import_candidate));
+  client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->GetIbanUploadDetails(
+          personal_data_manager_->app_locale(),
+          payments::GetBillingCustomerId(personal_data_manager_),
+          payments::kUploadPaymentMethodBillableServiceNumber,
+          base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
+                         weak_ptr_factory_.GetWeakPtr(), show_save_prompt,
+                         import_candidate));
   return show_save_prompt;
 }
 
@@ -334,10 +337,11 @@ void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
   details.context_token = context_token_;
   details.value = import_candidate.value();
   details.nickname = import_candidate.nickname();
-  client_->GetPaymentsNetworkInterface()->UploadIban(
-      details, base::BindOnce(&IbanSaveManager::OnDidUploadIban,
-                              weak_ptr_factory_.GetWeakPtr(), import_candidate,
-                              show_save_prompt));
+  client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->UploadIban(details, base::BindOnce(&IbanSaveManager::OnDidUploadIban,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           import_candidate, show_save_prompt));
 }
 
 void IbanSaveManager::OnDidUploadIban(

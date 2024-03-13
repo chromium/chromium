@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -16,7 +17,11 @@
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-namespace autofill::payments {
+namespace autofill {
+
+class ContentAutofillClient;
+
+namespace payments {
 
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop and
 // Clank. Owned by the ChromeAutofillClient. Created lazily in the
@@ -25,7 +30,7 @@ namespace autofill::payments {
 class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
                                      public content::WebContentsObserver {
  public:
-  explicit ChromePaymentsAutofillClient(content::WebContents* web_contents);
+  explicit ChromePaymentsAutofillClient(ContentAutofillClient* client);
   ChromePaymentsAutofillClient(const ChromePaymentsAutofillClient&) = delete;
   ChromePaymentsAutofillClient& operator=(const ChromePaymentsAutofillClient&) =
       delete;
@@ -60,6 +65,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback) override;
+  payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
@@ -67,10 +73,17 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   }
 
  private:
+  const raw_ref<ContentAutofillClient> client_;
+
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;
+
+  std::unique_ptr<payments::PaymentsNetworkInterface>
+      payments_network_interface_;
 };
 
-}  // namespace autofill::payments
+}  // namespace payments
+
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_

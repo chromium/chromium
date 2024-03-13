@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -183,7 +184,8 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
       virtual_card_enrollment_manager_(
           std::make_unique<VirtualCardEnrollmentManager>(
               personal_data_manager,
-              client->GetPaymentsNetworkInterface(),
+              client->GetPaymentsAutofillClient()
+                  ->GetPaymentsNetworkInterface(),
               client)),
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {

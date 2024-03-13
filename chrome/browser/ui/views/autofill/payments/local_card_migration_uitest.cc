@@ -206,8 +206,9 @@ class LocalCardMigrationBrowserTest
             &test_url_loader_factory_);
     ContentAutofillClient* client =
         ContentAutofillClient::FromWebContents(GetActiveWebContents());
-    client->GetPaymentsNetworkInterface()->set_url_loader_factory_for_testing(
-        test_shared_loader_factory_);
+    client->GetPaymentsAutofillClient()
+        ->GetPaymentsNetworkInterface()
+        ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
 
     // Set up this class as the ObserverForTest implementation.
     client->GetFormDataImporter()

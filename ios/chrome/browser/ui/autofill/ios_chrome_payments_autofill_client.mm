@@ -8,15 +8,26 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#import "components/autofill/core/browser/payments/payments_network_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 namespace autofill::payments {
 
 IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
-    autofill::ChromeAutofillClientIOS* client)
-    : client_(CHECK_DEREF(client)) {}
+    autofill::ChromeAutofillClientIOS* client,
+    ChromeBrowserState* browser_state)
+    : client_(CHECK_DEREF(client)),
+      payments_network_interface_(
+          std::make_unique<payments::PaymentsNetworkInterface>(
+              base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                  browser_state->GetURLLoaderFactory()),
+              client->GetIdentityManager(),
+              client->GetPersonalDataManager(),
+              browser_state->IsOffTheRecord())) {}
 
 IOSChromePaymentsAutofillClient::~IOSChromePaymentsAutofillClient() = default;
 
@@ -35,6 +46,11 @@ void IOSChromePaymentsAutofillClient::ShowAutofillErrorDialog(
     AutofillErrorDialogContext error_context) {
   [client_->commands_handler()
       showAutofillErrorDialog:std::move(error_context)];
+}
+
+PaymentsNetworkInterface*
+IOSChromePaymentsAutofillClient::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
 }
 
 }  // namespace autofill::payments

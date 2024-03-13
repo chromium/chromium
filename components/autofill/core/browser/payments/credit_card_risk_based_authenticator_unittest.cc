@@ -37,10 +37,12 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
 
   void SetUp() override {
     requester_ = std::make_unique<TestAuthenticationRequester>();
-    autofill_client_.set_test_payments_network_interface(
-        std::make_unique<payments::TestPaymentsNetworkInterface>(
-            autofill_client_.GetURLLoaderFactory(),
-            autofill_client_.GetIdentityManager(), &personal_data_manager_));
+    autofill_client_.GetPaymentsAutofillClient()
+        ->set_test_payments_network_interface(
+            std::make_unique<payments::TestPaymentsNetworkInterface>(
+                autofill_client_.GetURLLoaderFactory(),
+                autofill_client_.GetIdentityManager(),
+                &personal_data_manager_));
     authenticator_ =
         std::make_unique<CreditCardRiskBasedAuthenticator>(&autofill_client_);
     card_ = test::GetMaskedServerCard();
@@ -60,8 +62,8 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
 
  protected:
   payments::TestPaymentsNetworkInterface* payments_network_interface() {
-    return static_cast<payments::TestPaymentsNetworkInterface*>(
-        autofill_client_.GetPaymentsNetworkInterface());
+    return autofill_client_.GetPaymentsAutofillClient()
+        ->GetPaymentsNetworkInterface();
   }
 
   base::test::TaskEnvironment task_environment_{

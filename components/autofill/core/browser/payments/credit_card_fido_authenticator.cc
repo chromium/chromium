@@ -59,7 +59,8 @@ CreditCardFidoAuthenticator::CreditCardFidoAuthenticator(AutofillDriver* driver,
                                                          AutofillClient* client)
     : autofill_driver_(driver),
       autofill_client_(client),
-      payments_network_interface_(client->GetPaymentsNetworkInterface()),
+      payments_network_interface_(
+          client->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface()),
       user_is_verifiable_callback_received_(
           base::WaitableEvent::ResetPolicy::AUTOMATIC,
           base::WaitableEvent::InitialState::NOT_SIGNALED) {
@@ -752,7 +753,9 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
       base::Value::Dict response =
           ParseAssertionResponse(std::move(assertion_response));
       full_card_request_ = std::make_unique<payments::FullCardRequest>(
-          autofill_client_, autofill_client_->GetPaymentsNetworkInterface(),
+          autofill_client_,
+          autofill_client_->GetPaymentsAutofillClient()
+              ->GetPaymentsNetworkInterface(),
           autofill_client_->GetPersonalDataManager());
 
       std::optional<GURL> last_committed_primary_main_frame_origin;

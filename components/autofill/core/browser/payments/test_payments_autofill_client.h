@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 
 namespace autofill::payments {
 
@@ -23,10 +24,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   void LoadRiskData(
       base::OnceCallback<void(const std::string&)> callback) override;
 
+  // PaymentsAutofillClient:
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
-
   void ConfirmMigrateLocalCardToCloud(
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,
@@ -34,6 +35,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       payments::PaymentsAutofillClient::LocalCardMigrationCallback
           start_migrating_cards_callback) override;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  TestPaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
 
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
@@ -51,10 +53,17 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return autofill_progress_dialog_shown_;
   }
 
+  void set_test_payments_network_interface(
+      std::unique_ptr<TestPaymentsNetworkInterface>
+          payments_network_interface) {
+    payments_network_interface_ = std::move(payments_network_interface);
+  }
+
  private:
   std::vector<std::string> migration_card_selection_;
 
   bool autofill_progress_dialog_shown_ = false;
+  std::unique_ptr<TestPaymentsNetworkInterface> payments_network_interface_;
 };
 
 }  // namespace autofill::payments

@@ -97,11 +97,13 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
       payments::GetBillingCustomerId(client_->GetPersonalDataManager());
   request_details.instrument_id = instrument_id;
   base::TimeTicks unmask_request_timestamp = base::TimeTicks::Now();
-  client_->GetPaymentsNetworkInterface()->UnmaskIban(
-      request_details,
-      base::BindOnce(&IbanAccessManager::OnUnmaskResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched),
-                     unmask_request_timestamp));
+  client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->UnmaskIban(
+          request_details,
+          base::BindOnce(&IbanAccessManager::OnUnmaskResponseReceived,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         std::move(on_iban_fetched), unmask_request_timestamp));
 }
 
 void IbanAccessManager::OnUnmaskResponseReceived(

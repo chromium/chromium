@@ -126,12 +126,14 @@ void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
       base::BindOnce(&DesktopPaymentsWindowManager::
                          OnVcn3dsAuthenticationProgressDialogCancelled,
                      weak_ptr_factory_.GetWeakPtr()));
-  client_->GetPaymentsNetworkInterface()->UnmaskCard(
-      CreateUnmaskRequestDetailsForVcn3ds(*client_, vcn_3ds_context_.value(),
-                                          std::move(redirect_completion_proof)),
-      base::BindOnce(
-          &DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived,
-          weak_ptr_factory_.GetWeakPtr()));
+  client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->UnmaskCard(CreateUnmaskRequestDetailsForVcn3ds(
+                       *client_, vcn_3ds_context_.value(),
+                       std::move(redirect_completion_proof)),
+                   base::BindOnce(&DesktopPaymentsWindowManager::
+                                      OnVcn3dsAuthenticationResponseReceived,
+                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
@@ -154,7 +156,9 @@ void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
 
 void DesktopPaymentsWindowManager::
     OnVcn3dsAuthenticationProgressDialogCancelled() {
-  client_->GetPaymentsNetworkInterface()->CancelRequest();
+  client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->CancelRequest();
   vcn_3ds_context_.reset();
 }
 

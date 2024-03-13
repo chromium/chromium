@@ -54,10 +54,12 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     autofill_client_->SetPrefs(test::PrefServiceForTesting());
     personal_data_manager().SetPrefService(autofill_client_->GetPrefs());
     personal_data_manager().SetSyncServiceForTest(&sync_service_);
-    autofill_client_->set_test_payments_network_interface(
-        std::make_unique<payments::TestPaymentsNetworkInterface>(
-            autofill_client_->GetURLLoaderFactory(),
-            autofill_client_->GetIdentityManager(), &personal_data_manager()));
+    autofill_client_->GetPaymentsAutofillClient()
+        ->set_test_payments_network_interface(
+            std::make_unique<payments::TestPaymentsNetworkInterface>(
+                autofill_client_->GetURLLoaderFactory(),
+                autofill_client_->GetIdentityManager(),
+                &personal_data_manager()));
     autofill_client_->set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     virtual_card_enrollment_manager_ =
@@ -144,8 +146,8 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
 
  protected:
   payments::TestPaymentsNetworkInterface& payments_network_interface() {
-    return *static_cast<payments::TestPaymentsNetworkInterface*>(
-        autofill_client_->GetPaymentsNetworkInterface());
+    return *autofill_client_->GetPaymentsAutofillClient()
+                ->GetPaymentsNetworkInterface();
   }
   TestPersonalDataManager& personal_data_manager() {
     return *autofill_client_->GetPersonalDataManager();

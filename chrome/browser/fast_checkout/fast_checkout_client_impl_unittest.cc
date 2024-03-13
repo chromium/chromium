@@ -272,11 +272,13 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     test_client_->InjectFastCheckoutController(
         std::move(fast_checkout_controller));
 
-    autofill_client()->set_test_payments_network_interface(
-        std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
-            autofill_client()->GetURLLoaderFactory(),
-            autofill_client()->GetIdentityManager(),
-            autofill_client()->GetPersonalDataManager()));
+    autofill_client()
+        ->GetPaymentsAutofillClient()
+        ->set_test_payments_network_interface(
+            std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
+                autofill_client()->GetURLLoaderFactory(),
+                autofill_client()->GetIdentityManager(),
+                autofill_client()->GetPersonalDataManager()));
     auto trigger_validator =
         std::make_unique<NiceMock<MockFastCheckoutTriggerValidator>>();
     validator_ = trigger_validator.get();

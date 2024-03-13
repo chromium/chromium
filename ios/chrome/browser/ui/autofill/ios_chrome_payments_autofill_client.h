@@ -5,10 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_IOS_CHROME_PAYMENTS_AUTOFILL_CLIENT_H_
 
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "components/autofill/core/browser/payments/payments_autofill_client.h"
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#import "base/memory/raw_ref.h"
+
+class ChromeBrowserState;
 
 namespace autofill {
 
@@ -23,7 +24,8 @@ namespace payments {
 class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
  public:
   explicit IOSChromePaymentsAutofillClient(
-      autofill::ChromeAutofillClientIOS* client);
+      autofill::ChromeAutofillClientIOS* client,
+      ChromeBrowserState* browser_state);
   IOSChromePaymentsAutofillClient(const IOSChromePaymentsAutofillClient&) =
       delete;
   IOSChromePaymentsAutofillClient& operator=(
@@ -39,8 +41,12 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
 
   void ShowAutofillErrorDialog(AutofillErrorDialogContext error_context);
 
+  PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+
  private:
   const raw_ref<autofill::ChromeAutofillClientIOS> client_;
+
+  std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
 };
 
 }  // namespace payments

@@ -46,4 +46,9 @@ void PaymentsAutofillClient::CloseAutofillProgressDialog(
     bool show_confirmation_before_closing,
     base::OnceClosure no_interactive_authentication_callback) {}
 
+PaymentsNetworkInterface*
+PaymentsAutofillClient::GetPaymentsNetworkInterface() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

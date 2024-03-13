@@ -114,7 +114,6 @@ enum class WebauthnDialogState;
 namespace payments {
 class MandatoryReauthManager;
 class PaymentsAutofillClient;
-class PaymentsNetworkInterface;
 class PaymentsWindowManager;
 }
 
@@ -464,9 +463,6 @@ class AutofillClient {
 
   // Gets the payments::PaymentsAutofillClient instance owned by the client.
   virtual payments::PaymentsAutofillClient* GetPaymentsAutofillClient();
-
-  // Gets the payments::PaymentsNetworkInterface instance owned by the client.
-  virtual payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface() = 0;
 
   // Gets the payments::PaymentsWindowManager owned by the client.
   virtual payments::PaymentsWindowManager* GetPaymentsWindowManager();

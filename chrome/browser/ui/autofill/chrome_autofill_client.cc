@@ -379,24 +379,9 @@ payments::PaymentsAutofillClient*
 ChromeAutofillClient::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
-        std::make_unique<payments::ChromePaymentsAutofillClient>(
-            web_contents());
+        std::make_unique<payments::ChromePaymentsAutofillClient>(this);
   }
   return payments_autofill_client_.get();
-}
-
-payments::PaymentsNetworkInterface*
-ChromeAutofillClient::GetPaymentsNetworkInterface() {
-  if (!payments_network_interface_) {
-    payments_network_interface_ =
-        std::make_unique<payments::PaymentsNetworkInterface>(
-            Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-                ->GetURLLoaderFactory(),
-            GetIdentityManager(), GetPersonalDataManager(),
-            Profile::FromBrowserContext(web_contents()->GetBrowserContext())
-                ->IsOffTheRecord());
-  }
-  return payments_network_interface_.get();
 }
 
 payments::PaymentsWindowManager*

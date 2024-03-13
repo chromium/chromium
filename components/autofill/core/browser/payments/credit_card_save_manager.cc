@@ -219,7 +219,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     const CreditCard& card,
     const bool uploading_local_card) {
   payments::PaymentsNetworkInterface* payments_network_interface =
-      client_->GetPaymentsNetworkInterface();
+      client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface();
   // Abort the uploading if `payments_network_interface` is nullptr.
   if (!payments_network_interface) {
     return;
@@ -629,9 +629,10 @@ void CreditCardSaveManager::OnDidGetUploadDetails(
       return;
     }
 
-    // Do *not* call `client_->GetPaymentsNetworkInterface()->Prepare()` here.
-    // We shouldn't send credentials until the user has explicitly accepted a
-    // prompt to upload.
+    // Do *not* call
+    // `client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface()->Prepare()`
+    // here. We shouldn't send credentials until the user has explicitly
+    // accepted a prompt to upload.
     if (!supported_card_bin_ranges.empty() &&
         !payments::IsCreditCardNumberSupported(upload_request_.card.number(),
                                                supported_card_bin_ranges)) {
@@ -1268,9 +1269,11 @@ void CreditCardSaveManager::SendUploadCardRequest() {
       uploading_local_card_
           ? AutofillMetrics::USER_ACCEPTED_UPLOAD_OF_LOCAL_CARD
           : AutofillMetrics::USER_ACCEPTED_UPLOAD_OF_NEW_CARD);
-  client_->GetPaymentsNetworkInterface()->UploadCard(
-      upload_request_, base::BindOnce(&CreditCardSaveManager::OnDidUploadCard,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  client_->GetPaymentsAutofillClient()
+      ->GetPaymentsNetworkInterface()
+      ->UploadCard(upload_request_,
+                   base::BindOnce(&CreditCardSaveManager::OnDidUploadCard,
+                                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CreditCardSaveManager::OnUserDidIgnoreOrDeclineSave(

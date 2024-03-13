@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
@@ -39,7 +40,9 @@ void CreditCardCvcAuthenticator::Authenticate(
         payments::FullCardRequest::FailureType::GENERIC_FAILURE);
   }
   full_card_request_ = std::make_unique<payments::FullCardRequest>(
-      client_, client_->GetPaymentsNetworkInterface(), personal_data_manager);
+      client_,
+      client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface(),
+      personal_data_manager);
 
   CreditCard::RecordType card_record_type = card->record_type();
   autofill_metrics::LogCvcAuthAttempt(card_record_type);
@@ -166,7 +169,8 @@ payments::FullCardRequest* CreditCardCvcAuthenticator::GetFullCardRequest() {
   // this function directly.
   if (!full_card_request_) {
     full_card_request_ = std::make_unique<payments::FullCardRequest>(
-        client_, client_->GetPaymentsNetworkInterface(),
+        client_,
+        client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface(),
         client_->GetPersonalDataManager());
   }
   return full_card_request_.get();
