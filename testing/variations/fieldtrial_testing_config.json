@@ -3723,6 +3723,47 @@
             ]
         }
     ],
+    "ChromeWallpaperSearchEntrypoints": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "BothEntrypointsAndAnimation",
+                    "enable_features": [
+                        "CustomizeChromeWallpaperSearchButton",
+                        "NtpWallpaperSearchButton",
+                        "NtpWallpaperSearchButtonAnimation"
+                    ]
+                },
+                {
+                    "name": "BothEntrypointsNoAnimation",
+                    "enable_features": [
+                        "CustomizeChromeWallpaperSearchButton",
+                        "NtpWallpaperSearchButton"
+                    ],
+                    "disable_features": [
+                        "NtpWallpaperSearchButtonAnimation"
+                    ]
+                },
+                {
+                    "name": "PanoramaButtonOnlyNoAnimation",
+                    "enable_features": [
+                        "CustomizeChromeWallpaperSearchButton"
+                    ],
+                    "disable_features": [
+                        "NtpWallpaperSearchButton",
+                        "NtpWallpaperSearchButtonAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeWallpaperSearchHaTS": [
         {
             "platforms": [
