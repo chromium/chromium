@@ -12,9 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -39,6 +42,7 @@ public class QuickDeleteController {
     private final @NonNull QuickDeleteTabsFilter mDeleteTabsFilter;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull LayoutManager mLayoutManager;
+    private final @NonNull Profile mProfile;
     private final QuickDeleteBridge mQuickDeleteBridge;
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
@@ -69,8 +73,8 @@ public class QuickDeleteController {
 
         mDeleteTabsFilter =
                 new QuickDeleteTabsFilter(tabModelSelector.getModel(/* incognito= */ false));
-        Profile profile = tabModelSelector.getCurrentModel().getProfile();
-        mQuickDeleteBridge = new QuickDeleteBridge(profile);
+        mProfile = tabModelSelector.getCurrentModel().getProfile();
+        mQuickDeleteBridge = new QuickDeleteBridge(mProfile);
 
         // MVC setup.
         View quickDeleteView =
@@ -84,7 +88,7 @@ public class QuickDeleteController {
                         mPropertyModel, quickDeleteView, QuickDeleteViewBinder::bind);
         mQuickDeleteMediator =
                 new QuickDeleteMediator(
-                        mPropertyModel, profile, mQuickDeleteBridge, mDeleteTabsFilter);
+                        mPropertyModel, mProfile, mQuickDeleteBridge, mDeleteTabsFilter);
 
         QuickDeleteDialogDelegate dialogDelegate =
                 new QuickDeleteDialogDelegate(
@@ -139,23 +143,34 @@ public class QuickDeleteController {
     }
 
     private void onBrowsingDataDeletionFinished(@TimePeriod int timePeriod) {
-        navigateToTabSwitcher(() -> maybeShowQuickDeleteAnimation(timePeriod));
+        // Ensure that no in-product help is triggered during tab closure and the post-deletion
+        // experience.
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
+        Tracker.DisplayLockHandle trackerLock = tracker.acquireDisplayLock();
+
+        navigateToTabSwitcher(() -> maybeShowQuickDeleteAnimation(timePeriod, trackerLock));
     }
 
-    private void maybeShowQuickDeleteAnimation(@TimePeriod int timePeriod) {
+    private void maybeShowQuickDeleteAnimation(
+            @TimePeriod int timePeriod, @Nullable Tracker.DisplayLockHandle trackerLock) {
         mDeleteTabsFilter.prepareListOfTabsToBeClosed(timePeriod);
         if (isQuickDeleteFollowupEnabled()) {
             List<Tab> tabs = mDeleteTabsFilter.getListOfTabsFilteredToBeClosed();
-            mDelegate.showQuickDeleteAnimation(() -> showPostDeleteFeedback(timePeriod), tabs);
+            mDelegate.showQuickDeleteAnimation(
+                    () -> showPostDeleteFeedback(timePeriod, trackerLock), tabs);
         } else {
-            showPostDeleteFeedback(timePeriod);
+            showPostDeleteFeedback(timePeriod, trackerLock);
         }
     }
 
-    private void showPostDeleteFeedback(@TimePeriod int timePeriod) {
+    private void showPostDeleteFeedback(
+            @TimePeriod int timePeriod, @Nullable Tracker.DisplayLockHandle trackerLock) {
         mDeleteTabsFilter.closeTabsFilteredForQuickDelete();
         triggerHapticFeedback();
         showSnackbar(timePeriod);
+
+        if (trackerLock == null) return;
+        trackerLock.release();
     }
 
     /** A method to navigate to tab switcher. */
