@@ -311,7 +311,6 @@ class SubmittableExecutor;
 namespace media {
 class AudioInputDevice;
 class AudioOutputDevice;
-class GLImageProcessorBackend;
 class BlockingUrlProtocol;
 template <class WorkerInterface,
           class WorkerImpl,
@@ -767,7 +766,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class nearby::chrome::ScheduledExecutor;
   friend class nearby::chrome::SubmittableExecutor;
   friend class media::AudioOutputDevice;
-  friend class media::GLImageProcessorBackend;
   friend class media::BlockingUrlProtocol;
   template <class WorkerInterface,
             class WorkerImpl,
@@ -857,7 +855,6 @@ class BASE_EXPORT
   friend class content::SynchronousCompositorSyncCallBridge;
   friend class media::AudioInputDevice;
   friend class media::AudioOutputDevice;
-  friend class media::GLImageProcessorBackend;
   friend class media::PaintCanvasVideoRenderer;
   friend class media::V4L2DevicePoller;  // TODO(1513721): remove this.
   friend class mojo::SyncCallRestrictions;

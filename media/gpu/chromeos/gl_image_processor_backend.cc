@@ -10,7 +10,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/frame_resource.h"
@@ -249,9 +248,6 @@ std::unique_ptr<ImageProcessorBackend> GLImageProcessorBackend::Create(
       base::BindOnce(&GLImageProcessorBackend::InitializeTask,
                      base::Unretained(image_processor.get()),
                      base::Unretained(&done), base::Unretained(&success)));
-  // The thread local nature of GL context forces us to use |PostTask()|,
-  // which in turn forces us to use synchronization primitives.
-  base::ScopedAllowBaseSyncPrimitives allow_wait;
   done.Wait();
   if (!success) {
     return nullptr;
