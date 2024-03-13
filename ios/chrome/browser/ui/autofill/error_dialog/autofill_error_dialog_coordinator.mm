@@ -67,17 +67,27 @@
       [UIAlertController alertControllerWithTitle:title
                                           message:message
                                    preferredStyle:UIAlertControllerStyleAlert];
-  // TODO(b/324613367): For button action handler, call mediator OnDismissed.
+  __weak __typeof__(self) weakSelf = self;
   UIAlertAction* buttonAction =
       [UIAlertAction actionWithTitle:buttonLabel
                                style:UIAlertActionStyleCancel
-                             handler:nil];
+                             handler:^(UIAlertAction* action) {
+                               [weakSelf dismissViewController];
+                             }];
   [alertController addAction:buttonAction];
   alertController.modalPresentationStyle = UIModalPresentationOverFullScreen;
   [self.baseViewController presentViewController:alertController
                                         animated:YES
                                       completion:nil];
   _alertController = alertController;
+}
+
+#pragma mark - Private
+
+- (void)dismissViewController {
+  // Terminate everything via the browser command. `_modelController` will get
+  // notified when the AutofillErrorDialogMediator is being destroyed.
+  [_autofillCommandsHandler dismissAutofillErrorDialog];
 }
 
 @end
