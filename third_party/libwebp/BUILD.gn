@@ -79,13 +79,13 @@ static_library("libwebp_dec") {
     ":libwebp_utils",
     ":libwebp_webp",
   ]
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
   allow_circular_includes_from = [ ":libwebp_dsp_headers" ]
 }
 
 static_library("libwebp_demux") {
   sources = [ "src/src/demux/demux.c" ]
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
   configs += [ ":libwebp_config_internal" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -104,7 +104,7 @@ static_library("libwebp_mux") {
     "src/src/mux/muxinternal.c",
     "src/src/mux/muxread.c",
   ]
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
   configs += [ ":libwebp_config_internal" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -176,7 +176,7 @@ static_library("libwebp_dsp") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
   deps = [
     ":libwebp_dec",
     ":libwebp_dsp_sse2",
@@ -221,7 +221,7 @@ static_library("libwebp_dsp_sse41") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
   if (!is_msan) {
     if ((current_cpu == "x86" || current_cpu == "x64") &&
         (!is_win || is_clang)) {
@@ -254,7 +254,7 @@ static_library("libwebp_dsp_sse2") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
   if (!is_msan) {
     if ((current_cpu == "x86" || current_cpu == "x64") &&
         (!is_win || is_clang)) {
@@ -348,7 +348,7 @@ static_library("libwebp_enc") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
 
   deps = [
     ":libwebp_dec",
@@ -392,8 +392,10 @@ static_library("libwebp_sharpyuv") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  all_dependent_configs = [ ":libwebp_config" ]
-  public_configs = [ ":libwebp_sharpyuv_public_config" ]
+  public_configs = [
+    ":libwebp_config",
+    ":libwebp_sharpyuv_public_config",
+  ]
 
   deps = [
     ":libwebp_dsp_cpu_c",
@@ -418,7 +420,7 @@ static_library("libwebp_sharpyuv_dsp") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
 
   deps = [
     ":libwebp_dsp_headers",
@@ -467,7 +469,7 @@ static_library("libwebp_sharpyuv_sse2") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
   if (!is_msan) {
     if ((current_cpu == "x86" || current_cpu == "x64") &&
         (!is_win || is_clang)) {
@@ -517,7 +519,7 @@ static_library("libwebp_utils") {
     configs += [ "//build/config/compiler:optimize_max" ]
   }
 
-  all_dependent_configs = [ ":libwebp_config" ]
+  public_configs = [ ":libwebp_config" ]
 
   deps = [
     ":libwebp_dsp_headers",
