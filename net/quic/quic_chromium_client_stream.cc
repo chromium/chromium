@@ -348,6 +348,19 @@ void QuicChromiumClientStream::Handle::Reset(
     stream_->Reset(error_code);
 }
 
+void QuicChromiumClientStream::Handle::RegisterHttp3DatagramVisitor(
+    Http3DatagramVisitor* visitor) {
+  if (stream_) {
+    stream_->RegisterHttp3DatagramVisitor(visitor);
+  }
+}
+
+void QuicChromiumClientStream::Handle::UnregisterHttp3DatagramVisitor() {
+  if (stream_) {
+    stream_->UnregisterHttp3DatagramVisitor();
+  }
+}
+
 quic::QuicStreamId QuicChromiumClientStream::Handle::id() const {
   if (!stream_)
     return id_;

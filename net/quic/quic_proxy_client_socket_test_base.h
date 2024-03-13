@@ -76,6 +76,9 @@ inline constexpr int kLen33 = kLen3 + kLen3;
 inline constexpr char kMsg333[] = "bye!bye!bye!";
 inline constexpr int kLen333 = kLen3 + kLen3 + kLen3;
 
+inline constexpr char kDatagramPayload[] = "youveGotMail";
+inline constexpr int kDatagramLen = 12;
+
 static inline constexpr int k0ByteConnectionId = 0;
 static inline constexpr int k8ByteConnectionId = 8;
 
@@ -183,6 +186,10 @@ class QuicProxyClientSocketTestBase
       quic::QuicRstStreamErrorCode error_code);
 
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataPacket(
+      uint64_t packet_number,
+      std::string_view data);
+
+  std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDatagramPacket(
       uint64_t packet_number,
       std::string_view data);
 

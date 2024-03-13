@@ -123,6 +123,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     // Sends a RST_STREAM frame to the peer and closes the streams.
     void Reset(quic::QuicRstStreamErrorCode error_code);
 
+    // Registers |visitor| to receive HTTP/3 datagrams on the stream.
+    void RegisterHttp3DatagramVisitor(Http3DatagramVisitor* visitor);
+
+    // Unregisters an HTTP/3 datagram visitor.
+    void UnregisterHttp3DatagramVisitor();
+
     quic::QuicStreamId id() const;
     quic::QuicErrorCode connection_error() const;
     quic::QuicRstStreamErrorCode stream_error() const;

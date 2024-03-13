@@ -362,6 +362,13 @@ QuicProxyClientSocketTestBase::ConstructServerDataPacket(
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
+QuicProxyClientSocketTestBase::ConstructServerDatagramPacket(
+    uint64_t packet_number,
+    std::string_view data) {
+  return server_maker_.MakeDatagramPacket(packet_number, data);
+}
+
+std::unique_ptr<quic::QuicReceivedPacket>
 QuicProxyClientSocketTestBase::ConstructServerDataFinPacket(
     uint64_t packet_number,
     std::string_view data) {

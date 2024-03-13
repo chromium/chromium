@@ -51,7 +51,7 @@ const HttpResponseInfo* QuicProxyDatagramClientSocket::GetConnectResponseInfo()
 }
 
 bool QuicProxyDatagramClientSocket::IsConnected() const {
-  return next_state_ == STATE_CONNECT_COMPLETE && stream_->IsOpen();
+  return next_state_ == STATE_CONNECT_COMPLETE && stream_handle_->IsOpen();
 }
 
 int QuicProxyDatagramClientSocket::ConnectViaStream(
@@ -63,11 +63,15 @@ int QuicProxyDatagramClientSocket::ConnectViaStream(
 
   local_address_ = local_address;
   proxy_peer_address_ = proxy_peer_address;
-  stream_ = std::move(stream);
+  stream_handle_ = std::move(stream);
 
-  if (!stream_->IsOpen()) {
+  if (!stream_handle_->IsOpen()) {
     return ERR_CONNECTION_CLOSED;
   }
+
+  // Register stream to receive HTTP/3 datagrams.
+  stream_handle_->RegisterHttp3DatagramVisitor(this);
+  datagram_visitor_registered_ = true;
 
   DCHECK_EQ(STATE_DISCONNECTED, next_state_);
   next_state_ = STATE_SEND_REQUEST;
@@ -121,9 +125,17 @@ int QuicProxyDatagramClientSocket::ConnectUsingNetworkAsync(
 
 void QuicProxyDatagramClientSocket::Close() {
   connect_callback_.Reset();
+  read_callback_.Reset();
+  read_buf_len_ = 0;
+  read_buf_ = nullptr;
+
   next_state_ = STATE_DISCONNECTED;
 
-  stream_->Reset(quic::QUIC_STREAM_CANCELLED);
+  if (datagram_visitor_registered_) {
+    stream_handle_->UnregisterHttp3DatagramVisitor();
+    datagram_visitor_registered_ = false;
+  }
+  stream_handle_->Reset(quic::QUIC_STREAM_CANCELLED);
 }
 
 int QuicProxyDatagramClientSocket::SetReceiveBufferSize(int32_t size) {
@@ -133,6 +145,62 @@ int QuicProxyDatagramClientSocket::SetReceiveBufferSize(int32_t size) {
 int QuicProxyDatagramClientSocket::SetSendBufferSize(int32_t size) {
   return OK;
 }
+
+void QuicProxyDatagramClientSocket::OnHttp3Datagram(
+    quic::QuicStreamId stream_id,
+    absl::string_view payload) {
+  DCHECK_EQ(stream_id, stream_handle_->id())
+      << "Received datagram for unexpected stream.";
+
+  quic::QuicDataReader reader(payload);
+  uint64_t context_id;
+  if (!reader.ReadVarInt62(&context_id)) {
+    DLOG(WARNING)
+        << "Ignoring HTTP Datagram payload. Failed to read context ID";
+    return;
+  }
+  if (context_id != 0) {
+    DLOG(WARNING) << "Ignoring HTTP Datagram with unrecognized context ID "
+                  << context_id;
+    return;
+  }
+  absl::string_view http_payload = reader.ReadRemainingPayload();
+
+  // If there's a read callback, process the payload immediately.
+  if (read_callback_) {
+    int result;
+    int bytes_read = http_payload.size();
+    if (http_payload.size() > static_cast<std::size_t>(read_buf_len_)) {
+      result = ERR_MSG_TOO_BIG;
+    } else {
+      CHECK(read_buf_ != nullptr);
+      CHECK(read_buf_len_ > 0);
+
+      std::memcpy(read_buf_->data(), http_payload.data(), http_payload.size());
+      result = bytes_read;
+    }
+
+    read_buf_ = nullptr;
+    read_buf_len_ = 0;
+    std::move(read_callback_).Run(result);
+
+  } else {
+    // TODO(b/41497362): Add histogram for metrics on how often we reach
+    // datagram queue limit.
+    if (datagrams_.size() >= kMaxDatagramQueueSize) {
+      DLOG(WARNING) << "Dropping datagram because queue is full";
+      return;
+    }
+
+    // If no read callback, store the payload in the queue.
+    datagrams_.emplace(http_payload.data(), http_payload.size());
+  }
+}
+
+// Silently ignore unknown capsules.
+void QuicProxyDatagramClientSocket::OnUnknownCapsule(
+    quic::QuicStreamId stream_id,
+    const quiche::UnknownCapsule& capsule) {}
 
 // TODO(crbug.com/1524411) Implement method.
 handles::NetworkHandle QuicProxyDatagramClientSocket::GetBoundNetwork() const {
@@ -192,11 +260,45 @@ net::DscpAndEcn QuicProxyDatagramClientSocket::GetLastTos() const {
   return {net::DSCP_DEFAULT, net::ECN_DEFAULT};
 }
 
-// TODO(crbug.com/1524411): Implement method.
 int QuicProxyDatagramClientSocket::Read(IOBuffer* buf,
                                         int buf_len,
                                         CompletionOnceCallback callback) {
-  return ERR_NOT_IMPLEMENTED;
+  CHECK(connect_callback_.is_null());
+  CHECK(read_callback_.is_null());
+  CHECK(!read_buf_);
+  CHECK(read_buf_len_ == 0);
+
+  if (next_state_ == STATE_DISCONNECTED) {
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+
+  // Return 0 if stream closed, signaling end-of-file or no more data.
+  if (!stream_handle_->IsOpen()) {
+    return 0;
+  }
+
+  // If there are datagrams available, attempt to read the first one into the
+  // buffer.
+  if (!datagrams_.empty()) {
+    auto& datagram = datagrams_.front();
+    int result;
+    int bytes_read = datagram.size();
+
+    if (datagram.size() > static_cast<std::size_t>(buf_len)) {
+      result = ERR_MSG_TOO_BIG;
+    } else {
+      std::memcpy(buf->data(), datagram.data(), datagram.size());
+      result = bytes_read;
+    }
+    datagrams_.pop();
+    return result;
+  }
+
+  // Save read callback so we can call it next time we receive a datagram.
+  read_callback_ = std::move(callback);
+  read_buf_ = buf;
+  read_buf_len_ = buf_len;
+  return ERR_IO_PENDING;
 }
 
 int QuicProxyDatagramClientSocket::Write(
@@ -214,7 +316,7 @@ int QuicProxyDatagramClientSocket::Write(
                                 buf->data());
 
   absl::string_view packet(buf->data(), buf_len);
-  int rv = stream_->WriteConnectUdpPayload(packet);
+  int rv = stream_handle_->WriteConnectUdpPayload(packet);
   if (rv == OK) {
     return buf_len;
   }
@@ -312,7 +414,7 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
       request_, /*priority=*/std::nullopt, "connect-udp",
       request_.extra_headers, &headers);
 
-  return stream_->WriteHeaders(std::move(headers), false, nullptr);
+  return stream_handle_->WriteHeaders(std::move(headers), false, nullptr);
 }
 
 int QuicProxyDatagramClientSocket::DoSendRequestComplete(int result) {
@@ -333,7 +435,7 @@ int QuicProxyDatagramClientSocket::DoSendRequestComplete(int result) {
 int QuicProxyDatagramClientSocket::DoReadReply() {
   next_state_ = STATE_READ_REPLY_COMPLETE;
 
-  int rv = stream_->ReadInitialHeaders(
+  int rv = stream_handle_->ReadInitialHeaders(
       &response_header_block_,
       base::BindOnce(
           &QuicProxyDatagramClientSocket::OnReadResponseHeadersComplete,

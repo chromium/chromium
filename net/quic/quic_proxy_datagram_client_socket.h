@@ -11,6 +11,7 @@
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_stream.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/udp_socket.h"
@@ -29,7 +30,8 @@ class ProxyDelegate;
 // ConnectViaStream is used to connect this socket over the provided QUIC stream
 // to send and receive datagrams.
 class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
-    : public DatagramClientSocket {
+    : public DatagramClientSocket,
+      public quic::QuicSpdyStream::Http3DatagramVisitor {
  public:
   // Initializes a QuicProxyDatagramClientSocket with the provided network
   // log (source_net_log) and destination URL. The destination URL is
@@ -104,8 +106,16 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
 
+  // Http3DatagramVisitor implementation.
+  void OnHttp3Datagram(quic::QuicStreamId stream_id,
+                       absl::string_view payload) override;
+  void OnUnknownCapsule(quic::QuicStreamId stream_id,
+                        const quiche::UnknownCapsule& capsule) override;
+
   const HttpResponseInfo* GetConnectResponseInfo() const;
   bool IsConnected() const;
+
+  const std::queue<std::string>& GetDatagramsForTesting() { return datagrams_; }
 
  private:
   enum State {
@@ -141,9 +151,24 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
 
   // Stores the callback for Connect().
   CompletionOnceCallback connect_callback_;
+  // Stores the callback for Read().
+  CompletionOnceCallback read_callback_;
+  // Stores the buffer pointer for Read().
+  raw_ptr<IOBuffer> read_buf_ = nullptr;
+  // Stores the buffer length for Read().
+  int read_buf_len_ = 0;
 
-  // Pointer to the QUIC Stream that this sits on top of.
-  std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
+  // Handle to the QUIC Stream that this sits on top of.
+  std::unique_ptr<QuicChromiumClientStream::Handle> stream_handle_;
+
+  // Queue for storing incoming datagrams received over QUIC. This queue acts as
+  // a buffer, allowing datagrams to be stored when received and processed
+  // asynchronously at a later time.
+  std::queue<std::string> datagrams_;
+  // Upper bound for datagrams in queue.
+  static constexpr size_t kMaxDatagramQueueSize = 16;
+  // Visitor on stream is registered to receive HTTP/3 datagrams.
+  bool datagram_visitor_registered_ = false;
 
   // CONNECT request and response.
   HttpRequestInfo request_;

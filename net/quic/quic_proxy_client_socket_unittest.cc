@@ -101,7 +101,7 @@ class QuicProxyClientSocketTest : public QuicProxyClientSocketTestBase {
     TestCompletionCallback callback;
     ASSERT_THAT(sock_->Connect(callback.callback()),
                 test::IsError(ERR_IO_PENDING));
-    ASSERT_EQ(result, callback.WaitForResult());
+    EXPECT_EQ(result, callback.WaitForResult());
   }
 
   void AssertWriteReturns(const char* data, int len, int rv) override {
@@ -122,8 +122,8 @@ class QuicProxyClientSocketTest : public QuicProxyClientSocketTestBase {
 
   void AssertSyncReadEquals(const char* data, int len) override {
     auto buf = base::MakeRefCounted<IOBufferWithSize>(len);
-    ASSERT_EQ(len, sock_->Read(buf.get(), len, CompletionOnceCallback()));
-    ASSERT_EQ(std::string(data, len), std::string(buf->data(), len));
+    EXPECT_EQ(len, sock_->Read(buf.get(), len, CompletionOnceCallback()));
+    EXPECT_EQ(std::string(data, len), std::string(buf->data(), len));
     ASSERT_TRUE(sock_->IsConnected());
   }
 
@@ -137,7 +137,7 @@ class QuicProxyClientSocketTest : public QuicProxyClientSocketTestBase {
 
     EXPECT_EQ(len, read_callback_.WaitForResult());
     EXPECT_TRUE(sock_->IsConnected());
-    ASSERT_EQ(std::string(data, len), std::string(buf->data(), len));
+    EXPECT_EQ(std::string(data, len), std::string(buf->data(), len));
   }
 
   void AssertReadStarts(const char* data, int len) override {
@@ -153,7 +153,7 @@ class QuicProxyClientSocketTest : public QuicProxyClientSocketTestBase {
 
     // Now the read will return.
     EXPECT_EQ(len, read_callback_.WaitForResult());
-    ASSERT_EQ(std::string(data, len), std::string(read_buf_->data(), len));
+    EXPECT_EQ(std::string(data, len), std::string(read_buf_->data(), len));
   }
 
  protected:
