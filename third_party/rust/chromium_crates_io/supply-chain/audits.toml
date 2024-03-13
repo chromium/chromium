@@ -860,6 +860,14 @@ Version 0.1.4 of the crate was added to Chromium in
 https://crrev.com/c/3511416.
 """
 
+[[audits.serde_json_lenient]]
+who = "danakj@chromium.org"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.1.8 -> 0.2.0"
+notes = """
+Reviewed in https://crrev.com/c/5361256
+"""
+
 [[audits.skrifa]]
 who = "drott@chromium.org"
 criteria = ["ub-risk-1", "safe-to-deploy", "does-not-implement-crypto"]
