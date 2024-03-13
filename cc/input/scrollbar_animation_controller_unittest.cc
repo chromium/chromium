@@ -1873,8 +1873,6 @@ TEST_F(ScrollbarAnimationControllerAndroidTest,
   did_request_animate_ = false;
   EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
 
-  EXPECT_FLOAT_EQ(2.0f / 3.0f, scrollbar_layer_->Opacity());
-
   time += base::Seconds(1);
   scrollbar_controller_->Animate(time);
   EXPECT_TRUE(did_request_animate_);
