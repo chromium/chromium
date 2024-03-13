@@ -5884,6 +5884,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FirstPartySets.Database.TransactionFailed" enum="BooleanError"
+    expires_after="M129">
+  <owner>shuuran@google.com</owner>
+  <owner>kaustubhag@google.com</owner>
+  <summary>
+    Records how often First-Party Sets database gets poisoned due to transaction
+    failure. Recorded when a subquery within a transaction happens.
+  </summary>
+</histogram>
+
 <histogram name="FirstPartySets.Initialization.ClearSiteDataOutcome"
     enum="BooleanSuccess" expires_after="2024-07-14">
   <owner>shuuran@google.com</owner>

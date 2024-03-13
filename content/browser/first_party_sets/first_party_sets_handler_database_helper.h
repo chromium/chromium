@@ -66,7 +66,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // compute the list of sites to clear, stores the sites into DB, then reads
   // the final list of sites to be cleared from DB, which can include sites
   // stored during previous browser runs that did not have state cleared.
-  std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+  std::optional<std::pair<std::vector<net::SchemefulSite>,
+                          net::FirstPartySetsCacheFilter>>
   UpdateAndGetSitesToClearForContext(
       const std::string& browser_context_id,
       const net::GlobalFirstPartySets& current_sets,
@@ -82,7 +83,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
                    const net::GlobalFirstPartySets& sets,
                    const net::FirstPartySetsContextConfig& config);
 
-  std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
+  std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
   GetGlobalSetsAndConfigForTesting(const std::string& browser_context_id);
 
   // Wraps FirstPartySetsDatabase::HasEntryInBrowserContextClearedForTesting.

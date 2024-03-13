@@ -474,17 +474,19 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
         net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
-  std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+  std::optional<std::pair<std::vector<net::SchemefulSite>,
+                          net::FirstPartySetsCacheFilter>>
       res = db_helper_->UpdateAndGetSitesToClearForContext(
           browser_context_id, current_sets,
           /*current_config=*/net::FirstPartySetsContextConfig());
 
   // Expected diff: "https://foo.test", "https://member2.test" and
   // "https://member3.test" left FPSs.
-  EXPECT_THAT(res.first, UnorderedElementsAre(foo, member2, member3));
-  EXPECT_EQ(res.second, net::FirstPartySetsCacheFilter(
-                            /*filter=*/{{foo, 1}, {member2, 1}, {member3, 1}},
-                            /*browser_run_id=*/1));
+  EXPECT_TRUE(res.has_value());
+  EXPECT_THAT(res->first, UnorderedElementsAre(foo, member2, member3));
+  EXPECT_EQ(res->second, net::FirstPartySetsCacheFilter(
+                             /*filter=*/{{foo, 1}, {member2, 1}, {member3, 1}},
+                             /*browser_run_id=*/1));
 }
 
 }  // namespace content

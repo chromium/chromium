@@ -87,13 +87,10 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool InsertBrowserContextCleared(
       const std::string& browser_context_id);
 
-  // TODO(crbug.com/1219656): Consider returning std::nullopt for all the
-  // fetching methods when having query errors
-
   // Gets the global First-Party Sets and the config used by
   // `browser_context_id`.
-  [[nodiscard]] std::pair<net::GlobalFirstPartySets,
-                          net::FirstPartySetsContextConfig>
+  [[nodiscard]] std::optional<
+      std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
   GetGlobalSetsAndConfig(const std::string& browser_context_id);
 
   // Gets the sites to clear filters. The first filter holds the list of sites
@@ -101,8 +98,8 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // cache filter that holds the current `run_count_` and a map of sites to
   // their `marked_at_run`, containing all the sites that were added into DB to
   // be cleared in a certain browser run, for the `browser_context_id`.
-  [[nodiscard]] std::pair<std::vector<net::SchemefulSite>,
-                          net::FirstPartySetsCacheFilter>
+  [[nodiscard]] std::optional<std::pair<std::vector<net::SchemefulSite>,
+                                        net::FirstPartySetsCacheFilter>>
   GetSitesToClearFilters(const std::string& browser_context_id);
 
   // Check whether the `browser_context_id`  has performed clearing.

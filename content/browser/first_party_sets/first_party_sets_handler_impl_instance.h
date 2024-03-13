@@ -163,8 +163,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       net::FirstPartySetsContextConfig context_config,
       base::OnceCallback<void(net::FirstPartySetsContextConfig,
                               net::FirstPartySetsCacheFilter)> callback,
-      std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
-          sites_to_clear) const;
+      std::optional<std::pair<std::vector<net::SchemefulSite>,
+                              net::FirstPartySetsCacheFilter>> sites_to_clear)
+      const;
 
   // `failed_data_types` is a bitmask used to indicate data types from
   // BrowsingDataRemover::DataType enum that were failed to remove. 0 indicates

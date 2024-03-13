@@ -369,32 +369,33 @@ bool FirstPartySetsDatabase::InsertManualConfiguration(
   return !TransactionFailed();
 }
 
-std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>
+std::optional<
+    std::pair<net::GlobalFirstPartySets, net::FirstPartySetsContextConfig>>
 FirstPartySetsDatabase::GetGlobalSetsAndConfig(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!browser_context_id.empty());
   if (!LazyInit())
-    return {};
+    return std::nullopt;
 
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return {};
+    return std::nullopt;
 
   std::optional<net::GlobalFirstPartySets> global_sets =
       GetGlobalSets(browser_context_id);
   if (!global_sets.has_value()) {
-    return {};
+    return std::nullopt;
   }
 
   std::optional<net::FirstPartySetsContextConfig> config =
       FetchPolicyConfigurations(browser_context_id);
   if (!config.has_value()) {
-    return {};
+    return std::nullopt;
   }
 
   if (!transaction.Commit())
-    return {};
+    return std::nullopt;
 
   return std::make_pair(std::move(global_sets).value(),
                         std::move(config).value());
@@ -472,30 +473,31 @@ std::optional<net::GlobalFirstPartySets> FirstPartySetsDatabase::GetGlobalSets(
   return global_sets;
 }
 
-std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+std::optional<
+    std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>>
 FirstPartySetsDatabase::GetSitesToClearFilters(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!browser_context_id.empty());
   if (!LazyInit())
-    return {};
+    return std::nullopt;
 
   CHECK_GT(run_count_, 0);
 
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return {};
+    return std::nullopt;
 
   std::optional<std::vector<net::SchemefulSite>> sites_to_clear =
       FetchSitesToClear(browser_context_id);
   if (!sites_to_clear.has_value()) {
-    return {};
+    return std::nullopt;
   }
 
   std::optional<base::flat_map<net::SchemefulSite, int64_t>>
       all_sites_to_clear = FetchAllSitesToClearFilter(browser_context_id);
   if (!all_sites_to_clear.has_value()) {
-    return {};
+    return std::nullopt;
   }
 
   net::FirstPartySetsCacheFilter cache_filter =
@@ -505,7 +507,7 @@ FirstPartySetsDatabase::GetSitesToClearFilters(
                 std::move(all_sites_to_clear).value(), run_count_);
 
   if (!transaction.Commit())
-    return {};
+    return std::nullopt;
 
   return std::make_pair(std::move(sites_to_clear).value(),
                         std::move(cache_filter));
@@ -938,7 +940,12 @@ bool FirstPartySetsDatabase::Destroy() {
 
 bool FirstPartySetsDatabase::TransactionFailed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !db_->HasActiveTransactions() || db_status_ != InitStatus::kSuccess;
+  bool failed =
+      !db_->HasActiveTransactions() || db_status_ != InitStatus::kSuccess;
+
+  base::UmaHistogramBoolean("FirstPartySets.Database.TransactionFailed",
+                            failed);
+  return failed;
 }
 
 }  // namespace content
