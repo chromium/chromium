@@ -13,6 +13,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -110,6 +111,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                             public ui::NativeThemeObserver,
                             public ui::ColorProviderSource,
                             public ui::metadata::MetaDataProvider {
+  // Do not remove this macro!
+  // The macro is maintained by the memory safety team.
+  // `Widget` is used extensively and has a complicated lifetime. This macro
+  // enables additional lifetime checks.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   METADATA_HEADER_BASE(Widget);
   using Widgets = std::set<raw_ptr<Widget, SetExperimental>>;
