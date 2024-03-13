@@ -54,7 +54,8 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     kNeedsRelayoutWithNoForcedTruncateAtLineClamp = 4,
     kDisableFragmentation = 5,
     kNeedsRelayoutWithNoChildScrollbarChanges = 6,
-    kAlgorithmSpecific1 = 7,  // Save bits by using the same value for mutually
+    kTextBoxTrimEndDidNotApply = 7,
+    kAlgorithmSpecific1 = 8,  // Save bits by using the same value for mutually
                               // exclusive results.
     kNeedsRelayoutWithRowCrossSizeChanges = kAlgorithmSpecific1,
     kNeedsRelayoutAsLastTableBox = kAlgorithmSpecific1,
@@ -996,7 +997,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     unsigned initial_break_before : 4;  // EBreakBetween
     unsigned final_break_after : 4;     // EBreakBetween
 
-    unsigned status : 3;  // EStatus
+    unsigned status : 4;  // EStatus
     unsigned is_truncated_by_fragmentation_line : 1;
     unsigned has_orthogonal_fallback_size_descendant : 1;
   };

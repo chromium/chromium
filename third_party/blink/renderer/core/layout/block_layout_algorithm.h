@@ -85,6 +85,7 @@ class CORE_EXPORT BlockLayoutAlgorithm
       const InlineNode& child);
 
   NOINLINE const LayoutResult* RelayoutIgnoringLineClamp();
+  NOINLINE const LayoutResult* RelayoutForTextBoxTrimEnd();
 
   inline const LayoutResult* Layout(
       InlineChildLayoutContext* inline_child_layout_context);
@@ -395,6 +396,14 @@ class CORE_EXPORT BlockLayoutAlgorithm
   const LayoutResult* previous_result_ = nullptr;
 
   const ColumnSpannerPath* column_spanner_path_ = nullptr;
+
+  // The last non-empty inflow child. Currently this is used only when
+  // `should_text_box_trim_end_` and when the last child was empty. Thus this is
+  // updated only in that case.
+  LayoutInputNode last_non_empty_inflow_child_ = nullptr;
+
+  // `text-box-trim: end` should be applied to this child.
+  LayoutInputNode override_text_box_trim_end_child_ = nullptr;
 
   // Intrinsic block size based on child layout and containment.
   LayoutUnit intrinsic_block_size_;

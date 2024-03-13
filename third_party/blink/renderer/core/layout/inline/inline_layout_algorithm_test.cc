@@ -23,6 +23,21 @@
 namespace blink {
 namespace {
 
+// Compute the result of the effects of the `text-box-trim` property.
+struct TextBoxTrimResult {
+  explicit TextBoxTrimResult(const LayoutBox& layout_object) {
+    const LayoutResult* result = layout_object.GetCachedLayoutResult(nullptr);
+    const ConstraintSpace& space = result->GetConstraintSpaceForCaching();
+    should_trim_start = space.ShouldTextBoxTrimStart();
+    should_trim_end = space.ShouldTextBoxTrimEnd();
+    is_trimmed = result->IsTextBoxTrimApplied();
+  }
+
+  bool should_trim_start = false;
+  bool should_trim_end = false;
+  bool is_trimmed = false;
+};
+
 const PhysicalLineBoxFragment* FindBlockInInlineLineBoxFragment(
     Element* container) {
   InlineCursor cursor(*To<LayoutBlockFlow>(container->GetLayoutObject()));
@@ -860,58 +875,122 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpace) {
     <div id="parent" style="text-box-trim: both; position: relative">
       <div id="abs1" style="position: absolute">abs1</div>
       <div id="float1" style="float: left">float1</div>
-      <div id="empty1"></div>
-      <div id="first">first<br>first L2</div>
+      <div id="empty_before"> </div>
+      <div id="nested_empty_before">
+        <div id="nested_empty_before_child"> </div>
+      </div>
+      <div>
+        <div id="first">first<br>first L2</div>
+      </div>
       <div id="middle">middle</div>
-      <div id="last">last<br>last L2</div>
+      <div>
+        <div id="last">last<br>last L2</div>
+      </div>
+      <div id="nested_empty_after">
+        <div id="nested_empty_after_child"> </div>
+      </div>
+      <div id="empty_after"> </div>
       <div id="abs2" style="position: absolute">abs1</div>
       <div id="float2" style="float: left">float1</div>
     </div>
   )HTML");
 
-  struct Result {
-    explicit Result(const LayoutBox& layout_object) {
-      const LayoutResult* result = layout_object.GetCachedLayoutResult(nullptr);
-      const ConstraintSpace& space = result->GetConstraintSpaceForCaching();
-      should_trim_start = space.ShouldTextBoxTrimStart();
-      should_trim_end = space.ShouldTextBoxTrimEnd();
-      is_trimmed = result->IsTextBoxTrimApplied();
-    }
-
-    bool should_trim_start = false;
-    bool should_trim_end = false;
-    bool is_trimmed = false;
-  };
-
-  const Result parent{*GetLayoutBlockFlowByElementId("parent")};
+  const TextBoxTrimResult parent{*GetLayoutBlockFlowByElementId("parent")};
   EXPECT_FALSE(parent.should_trim_start);
   EXPECT_FALSE(parent.should_trim_end);
   EXPECT_TRUE(parent.is_trimmed);
 
   // `ShouldTextBoxTrim*` should be set only to in-flow children.
-  for (const char* id : {"abs1", "abs2", "float1", "float2", "middle"}) {
-    const Result result{*GetLayoutBlockFlowByElementId(id)};
+  for (const char* id :
+       {"abs1", "abs2", "float1", "float2", "middle", "empty_after",
+        "nested_empty_after", "nested_empty_after_child"}) {
+    const TextBoxTrimResult result{*GetLayoutBlockFlowByElementId(id)};
     EXPECT_FALSE(result.should_trim_start) << id;
     EXPECT_FALSE(result.should_trim_end) << id;
     EXPECT_FALSE(result.is_trimmed) << id;
   }
 
-  const Result empty1{*GetLayoutBlockFlowByElementId("empty1")};
-  EXPECT_TRUE(empty1.should_trim_start);
-  EXPECT_FALSE(empty1.should_trim_end);
-  EXPECT_FALSE(empty1.is_trimmed);
+  for (const char* id :
+       {"empty_before", "nested_empty_before", "nested_empty_before_child"}) {
+    const TextBoxTrimResult result{*GetLayoutBlockFlowByElementId(id)};
+    EXPECT_TRUE(result.should_trim_start) << id;
+    EXPECT_FALSE(result.should_trim_end) << id;
+    EXPECT_FALSE(result.is_trimmed) << id;
+  }
 
-  const Result first{*GetLayoutBlockFlowByElementId("first")};
+  const TextBoxTrimResult first{*GetLayoutBlockFlowByElementId("first")};
   EXPECT_TRUE(first.should_trim_start);
   EXPECT_FALSE(first.should_trim_end);
   EXPECT_TRUE(first.is_trimmed);
 
-  const Result last{*GetLayoutBlockFlowByElementId("last")};
+  const TextBoxTrimResult last{*GetLayoutBlockFlowByElementId("last")};
   EXPECT_FALSE(last.should_trim_start);
   EXPECT_TRUE(last.should_trim_end);
   EXPECT_TRUE(last.is_trimmed);
+}
 
-  // TODO(crbug.com/40254880): Empty after "last" isn't implemented yet.
+TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceSingle) {
+  ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="parent" style="text-box-trim: both">
+      <div id="single">single<br>single L2</div>
+      <div id="empty_after"> </div>
+    </div>
+  )HTML");
+
+  const TextBoxTrimResult parent{*GetLayoutBlockFlowByElementId("parent")};
+  EXPECT_FALSE(parent.should_trim_start);
+  EXPECT_FALSE(parent.should_trim_end);
+  EXPECT_TRUE(parent.is_trimmed);
+
+  const TextBoxTrimResult single{*GetLayoutBlockFlowByElementId("single")};
+  EXPECT_TRUE(single.should_trim_start);
+  EXPECT_TRUE(single.should_trim_end);
+  EXPECT_TRUE(single.is_trimmed);
+
+  const TextBoxTrimResult empty_after{
+      *GetLayoutBlockFlowByElementId("empty_after")};
+  EXPECT_FALSE(empty_after.should_trim_start);
+  EXPECT_FALSE(empty_after.should_trim_end);
+  EXPECT_FALSE(empty_after.is_trimmed);
+}
+
+TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceEmptyOnly) {
+  ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="parent" style="text-box-trim: both">
+      <div id="empty"> </div>
+    </div>
+  )HTML");
+
+  const TextBoxTrimResult parent{*GetLayoutBlockFlowByElementId("parent")};
+  EXPECT_FALSE(parent.should_trim_start);
+  EXPECT_FALSE(parent.should_trim_end);
+  EXPECT_FALSE(parent.is_trimmed);
+
+  // Note: the current implementation sets `should_trim_start` to `true` even if
+  // it knows `empty` is empty. It can be either `true` or `false`. `EXPECT`
+  // exists just to verify the current implementation works as intended.
+  const TextBoxTrimResult empty{*GetLayoutBlockFlowByElementId("empty")};
+  EXPECT_TRUE(empty.should_trim_start);
+  EXPECT_FALSE(empty.should_trim_end);
+  EXPECT_FALSE(empty.is_trimmed);
+}
+
+TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceNone) {
+  ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div id="parent" style="text-box-trim: both">
+    </div>
+  )HTML");
+
+  const TextBoxTrimResult parent{*GetLayoutBlockFlowByElementId("parent")};
+  EXPECT_FALSE(parent.should_trim_start);
+  EXPECT_FALSE(parent.should_trim_end);
+  EXPECT_FALSE(parent.is_trimmed);
 }
 
 #undef MAYBE_VerticalAlignBottomReplaced

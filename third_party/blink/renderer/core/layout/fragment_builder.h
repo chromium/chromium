@@ -141,6 +141,7 @@ class CORE_EXPORT FragmentBuilder {
     lines_until_clamp_ = value;
   }
 
+  bool IsTextBoxTrimApplied() const { return is_text_box_trim_applied_; }
   void SetIsTextBoxTrimApplied() { is_text_box_trim_applied_ = true; }
 
   const UnpositionedListMarker& GetUnpositionedListMarker() const {
