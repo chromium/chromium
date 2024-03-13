@@ -36,8 +36,10 @@ class AppsCollectionSectionViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        app_list_features::kAppsCollections);
+    scoped_feature_list_.InitWithFeatures(
+        {app_list_features::kAppsCollections,
+         app_list_features::kForceShowAppsCollections},
+        {});
     AshTestBase::SetUp();
   }
 

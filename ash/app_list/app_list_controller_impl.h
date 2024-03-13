@@ -62,6 +62,7 @@ class AppListModel;
 class AppListModelProvider;
 class AppListPresenterImpl;
 enum class AppListSortOrder;
+class AppsCollectionsController;
 
 // Ash's AppListController owns the AppListModel and implements interface
 // functions that allow Chrome to modify and observe the Shelf and AppListModel
@@ -537,6 +538,9 @@ class ASH_EXPORT AppListControllerImpl
   // Responsible for recording smoothness related UMA stats for home screen
   // animations.
   std::optional<ui::ThroughputTracker> smoothness_tracker_;
+
+  // Sub-controller to handle app collections page.
+  std::unique_ptr<AppsCollectionsController> apps_collections_controller_;
 
   // Used for closing the Assistant ui in the asynchronous way.
   base::ScopedClosureRunner close_assistant_ui_runner_;

@@ -42,6 +42,11 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDragAndDropRefactor);
 // different categories filled with predefined apps.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kAppsCollections);
 
+// Forces the user elegibility of the AppsCollections feature. When this is
+// enabled, the regular checks for the account are ignored and AppsCollection
+// show by default.
+ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kForceShowAppsCollections);
+
 ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
@@ -53,6 +58,7 @@ ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsDragAndDropRefactorEnabled();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabled();
+ASH_PUBLIC_EXPORT bool IsForceShowAppsCollectionsEnabled();
 
 }  // namespace app_list_features
 
