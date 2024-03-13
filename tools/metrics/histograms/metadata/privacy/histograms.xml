@@ -29,8 +29,8 @@ reviewer.
 
 <variants name="DIPSDatabaseOperation">
   <variant name="ClearTimestamps" summary="ClearTimestamps"/>
-  <variant name="FilterSitesWithInteractionOrWaa"
-      summary="FilterSitesWithInteractionOrWaa"/>
+  <variant name="FilterSitesWithProtectiveEvent"
+      summary="FilterSitesWithProtectiveEvent"/>
   <variant name="GetSitesThatBounced" summary="GetSitesThatBounced"/>
   <variant name="GetSitesThatBouncedWithState"
       summary="GetSitesThatBouncedWithState"/>

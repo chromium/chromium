@@ -100,18 +100,17 @@ class DIPSDatabase {
   // the other database querying methods.
   std::vector<std::string> GetAllSitesForTesting(const DIPSDatabaseTable table);
 
-  // Returns the subset of sites in |sites| WITH user interaction or successful
-  // web authn assertion recorded.
+  // Returns the subset of sites in |sites| WITH a protective event recorded.
+  // A protective event is a user interaction or successful WebAuthn assertion.
   //
   // NOTE: This method's main procedure is performed after calling
   // `ClearExpiredRows()`.
   //
-  // TODO(njeunje): Consider making this FilterSites(set<string> sites,
-  // FilterType filter) where FilterType lets us specify if we want to filter
-  // out interactions, web authn assertions, or both. There may be other
-  // criteria that we want to filter for in the future & this name might get
-  // even longer.
-  std::set<std::string> FilterSitesWithInteractionOrWaa(
+  // TODO(njeunje): Consider making a method FilterSites(set<string> sites,
+  // FilterType filter) that we call from this method, where FilterType lets us
+  // specify if we want to filter out interactions, WebAuthn assertions, or
+  // both. There may be other criteria that we want to filter for in the future.
+  std::set<std::string> FilterSitesWithProtectiveEvent(
       const std::set<std::string>& sites);
 
   // Returns all sites which bounced the user and aren't protected from DIPS.

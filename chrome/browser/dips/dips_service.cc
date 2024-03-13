@@ -392,9 +392,9 @@ void DIPSService::RecordBounce(
     }
 
     const std::set<std::string> site_to_clear{GetSiteForDIPS(url)};
-    // Don't clear the row if the tracker has interaction history, since we
+    // Don't clear the row if the tracker has history indicating that we
     // should preserve that context for future bounces.
-    storage_.AsyncCall(&DIPSStorage::RemoveRowsWithoutInteractionOrWaa)
+    storage_.AsyncCall(&DIPSStorage::RemoveRowsWithoutProtectiveEvent)
         .WithArgs(site_to_clear);
 
     return;

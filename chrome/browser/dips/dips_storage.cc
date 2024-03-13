@@ -160,13 +160,13 @@ void DIPSStorage::RemoveRows(const std::vector<std::string>& sites) {
   db_->RemoveRows(DIPSDatabaseTable::kBounces, sites);
 }
 
-void DIPSStorage::RemoveRowsWithoutInteractionOrWaa(
+void DIPSStorage::RemoveRowsWithoutProtectiveEvent(
     const std::set<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
   std::set<std::string> filtered_sites =
-      FilterSitesWithoutInteractionOrWaa(sites);
+      FilterSitesWithoutProtectiveEvent(sites);
 
   RemoveRows(
       std::vector<std::string>(filtered_sites.begin(), filtered_sites.end()));
@@ -216,13 +216,13 @@ void DIPSStorage::RecordBounce(const GURL& url,
   }
 }
 
-std::set<std::string> DIPSStorage::FilterSitesWithoutInteractionOrWaa(
+std::set<std::string> DIPSStorage::FilterSitesWithoutProtectiveEvent(
     std::set<std::string> sites) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
   std::set<std::string> interacted_sites =
-      db_->FilterSitesWithInteractionOrWaa(sites);
+      db_->FilterSitesWithProtectiveEvent(sites);
 
   for (const auto& site : interacted_sites) {
     if (sites.count(site)) {

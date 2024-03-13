@@ -908,7 +908,7 @@ std::vector<std::string> DIPSDatabase::GetSitesThatUsedStorage(
   return sites;
 }
 
-std::set<std::string> DIPSDatabase::FilterSitesWithInteractionOrWaa(
+std::set<std::string> DIPSDatabase::FilterSitesWithProtectiveEvent(
     const std::set<std::string>& sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!CheckDBInit()) {
@@ -916,7 +916,7 @@ std::set<std::string> DIPSDatabase::FilterSitesWithInteractionOrWaa(
   }
 
   SCOPED_UMA_HISTOGRAM_TIMER(
-      "Privacy.DIPS.Database.Operation.FilterSitesWithInteractionOrWaaTime");
+      "Privacy.DIPS.Database.Operation.FilterSitesWithProtectiveEventTime");
 
   ClearExpiredRows();
 
@@ -935,7 +935,7 @@ std::set<std::string> DIPSDatabase::FilterSitesWithInteractionOrWaa(
     i++;
   }
 
-  std::set<std::string> interacted_sites;
+  std::set<std::string> sites_with_protective_event;
   while (statement.Step()) {
     std::optional<base::Time> last_user_interaction =
         ColumnOptionalTime(&statement, 1);
@@ -944,10 +944,10 @@ std::set<std::string> DIPSDatabase::FilterSitesWithInteractionOrWaa(
 
     if (last_user_interaction.has_value() ||
         last_web_authn_assertion_time.has_value()) {
-      interacted_sites.insert(statement.ColumnString(0));
+      sites_with_protective_event.insert(statement.ColumnString(0));
     }
   }
-  return interacted_sites;
+  return sites_with_protective_event;
 }
 
 size_t DIPSDatabase::ClearExpiredRows() {

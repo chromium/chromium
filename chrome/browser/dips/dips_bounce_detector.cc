@@ -474,7 +474,7 @@ void RedirectChainDetector::ReportRedirectors(std::set<std::string> sites) {
 void DIPSWebContentsObserver::ReportRedirectors(
     const std::set<std::string>& sites) {
   dips_service_->storage()
-      ->AsyncCall(&DIPSStorage::FilterSitesWithoutInteractionOrWaa)
+      ->AsyncCall(&DIPSStorage::FilterSitesWithoutProtectiveEvent)
       .WithArgs(sites)
       .Then(issue_reporting_callback_);
 }
