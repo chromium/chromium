@@ -97,13 +97,12 @@ bool LegacyBookmarkModelWithDedicatedUnderlyingModel::HasBookmarks() const {
   return underlying_model()->HasBookmarks();
 }
 
-void LegacyBookmarkModelWithDedicatedUnderlyingModel::
-    GetBookmarksMatchingProperties(
-        const bookmarks::QueryFields& query,
-        size_t max_count,
-        std::vector<const bookmarks::BookmarkNode*>* nodes) {
-  bookmarks::GetBookmarksMatchingProperties(underlying_model(), query,
-                                            max_count, nodes);
+std::vector<const bookmarks::BookmarkNode*>
+LegacyBookmarkModelWithDedicatedUnderlyingModel::GetBookmarksMatchingProperties(
+    const bookmarks::QueryFields& query,
+    size_t max_count) {
+  return bookmarks::GetBookmarksMatchingProperties(underlying_model(), query,
+                                                   max_count);
 }
 
 const bookmarks::BookmarkNode*

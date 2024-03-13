@@ -161,13 +161,13 @@ GURL GetUrlFromClipboard(bool notify_if_restricted) {
 }
 
 template <class type>
-void GetBookmarksMatchingPropertiesImpl(
+std::vector<const BookmarkNode*> GetBookmarksMatchingPropertiesImpl(
     type& iterator,
     BookmarkModel* model,
     const QueryFields& query,
     const std::vector<std::u16string>& query_words,
-    size_t max_count,
-    std::vector<const BookmarkNode*>* nodes) {
+    size_t max_count) {
+  std::vector<const BookmarkNode*> nodes;
   while (iterator.has_next()) {
     const BookmarkNode* node = iterator.Next();
     if ((!query_words.empty() &&
@@ -179,10 +179,12 @@ void GetBookmarksMatchingPropertiesImpl(
     if (query.title && node->GetTitle() != *query.title)
       continue;
 
-    nodes->push_back(node);
-    if (nodes->size() == max_count)
-      return;
+    nodes.push_back(node);
+    if (nodes.size() == max_count) {
+      break;
+    }
   }
+  return nodes;
 }
 
 template <class Comparator>
@@ -433,13 +435,14 @@ void GetMostRecentlyUsedEntries(BookmarkModel* model,
   std::move(nodes_set.begin(), nodes_set.end(), std::back_inserter(*nodes));
 }
 
-void GetBookmarksMatchingProperties(BookmarkModel* model,
-                                    const QueryFields& query,
-                                    size_t max_count,
-                                    std::vector<const BookmarkNode*>* nodes) {
+std::vector<const BookmarkNode*> GetBookmarksMatchingProperties(
+    BookmarkModel* model,
+    const QueryFields& query,
+    size_t max_count) {
   std::vector<std::u16string> query_words = ParseBookmarkQuery(query);
-  if (query.word_phrase_query && query_words.empty())
-    return;
+  if (query.word_phrase_query && query_words.empty()) {
+    return {};
+  }
 
   if (query.url) {
     // Shortcut into the BookmarkModel if searching for URL.
@@ -450,14 +453,14 @@ void GetBookmarksMatchingProperties(BookmarkModel* model,
       url_matched_nodes = model->GetNodesByURL(url);
     }
     VectorIterator iterator(&url_matched_nodes);
-    GetBookmarksMatchingPropertiesImpl<VectorIterator>(
-        iterator, model, query, query_words, max_count, nodes);
-  } else {
-    ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
-    GetBookmarksMatchingPropertiesImpl<
-        ui::TreeNodeIterator<const BookmarkNode>>(
-        iterator, model, query, query_words, max_count, nodes);
+    return GetBookmarksMatchingPropertiesImpl<VectorIterator>(
+        iterator, model, query, query_words, max_count);
   }
+
+  ui::TreeNodeIterator<const BookmarkNode> iterator(model->root_node());
+  return GetBookmarksMatchingPropertiesImpl<
+      ui::TreeNodeIterator<const BookmarkNode>>(iterator, model, query,
+                                                query_words, max_count);
 }
 
 // Parses the provided query and returns a vector of query words.

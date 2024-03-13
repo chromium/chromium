@@ -997,9 +997,9 @@ void BookmarkBridge::SearchBookmarks(JNIEnv* env,
 std::vector<const BookmarkNode*> BookmarkBridge::SearchBookmarksImpl(
     power_bookmarks::PowerBookmarkQueryFields& query,
     int max_results) {
-  std::vector<const BookmarkNode*> results;
-  power_bookmarks::GetBookmarksMatchingProperties(bookmark_model_, query,
-                                                  max_results, &results);
+  std::vector<const BookmarkNode*> results =
+      power_bookmarks::GetBookmarksMatchingProperties(bookmark_model_, query,
+                                                      max_results);
 
   local_or_syncable_reading_list_manager_->GetMatchingNodes(query, max_results,
                                                             &results);
@@ -1023,11 +1023,11 @@ void BookmarkBridge::GetBookmarksOfType(
     const base::android::JavaParamRef<jobject>& j_list,
     jint type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<const BookmarkNode*> results;
   power_bookmarks::PowerBookmarkQueryFields query;
   query.type = static_cast<power_bookmarks::PowerBookmarkType>(type);
-  power_bookmarks::GetBookmarksMatchingProperties(bookmark_model_, query, -1,
-                                                  &results);
+  std::vector<const BookmarkNode*> results =
+      power_bookmarks::GetBookmarksMatchingProperties(bookmark_model_, query,
+                                                      -1);
 
   FilterUnreachableBookmarks(&results);
   AddBookmarkNodesToBookmarkIdList(env, j_list, results);

@@ -40,11 +40,10 @@ void UpdateBookmarksForSubscriptionsResult(
     uint64_t cluster_id,
     bool success) {
   if (success) {
-    std::vector<const bookmarks::BookmarkNode*> results;
     power_bookmarks::PowerBookmarkQueryFields query;
     query.type = power_bookmarks::PowerBookmarkType::SHOPPING;
-    power_bookmarks::GetBookmarksMatchingProperties(model.get(), query, -1,
-                                                    &results);
+    std::vector<const bookmarks::BookmarkNode*> results =
+        power_bookmarks::GetBookmarksMatchingProperties(model.get(), query, -1);
 
     for (const auto* node : results) {
       std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
@@ -311,12 +310,9 @@ std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks(
     bookmarks::BookmarkModel* model) {
   CHECK(model);
 
-  std::vector<const bookmarks::BookmarkNode*> results;
   power_bookmarks::PowerBookmarkQueryFields query;
   query.type = power_bookmarks::PowerBookmarkType::SHOPPING;
-  power_bookmarks::GetBookmarksMatchingProperties(model, query, -1, &results);
-
-  return results;
+  return power_bookmarks::GetBookmarksMatchingProperties(model, query, -1);
 }
 
 bool PopulateOrUpdateBookmarkMetaIfNeeded(

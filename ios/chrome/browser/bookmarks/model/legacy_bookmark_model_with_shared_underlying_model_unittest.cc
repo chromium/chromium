@@ -213,24 +213,20 @@ TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,
   bookmarks::QueryFields query1;
   query1.title = std::make_unique<std::u16string>(kLocalTitle1);
 
-  std::vector<const bookmarks::BookmarkNode*> nodes;
-  local_view_.GetBookmarksMatchingProperties(query1, kMaxCount, &nodes);
-  EXPECT_THAT(nodes, SizeIs(1));
+  EXPECT_THAT(local_view_.GetBookmarksMatchingProperties(query1, kMaxCount),
+              SizeIs(1));
 
-  nodes.clear();
-  account_view_.GetBookmarksMatchingProperties(query1, kMaxCount, &nodes);
-  EXPECT_THAT(nodes, SizeIs(0));
+  EXPECT_THAT(account_view_.GetBookmarksMatchingProperties(query1, kMaxCount),
+              SizeIs(0));
 
   bookmarks::QueryFields query2;
   query2.title = std::make_unique<std::u16string>(kAccountTitle1);
 
-  nodes.clear();
-  local_view_.GetBookmarksMatchingProperties(query2, kMaxCount, &nodes);
-  EXPECT_THAT(nodes, SizeIs(0));
+  EXPECT_THAT(local_view_.GetBookmarksMatchingProperties(query2, kMaxCount),
+              SizeIs(0));
 
-  nodes.clear();
-  account_view_.GetBookmarksMatchingProperties(query2, kMaxCount, &nodes);
-  EXPECT_THAT(nodes, SizeIs(1));
+  EXPECT_THAT(account_view_.GetBookmarksMatchingProperties(query2, kMaxCount),
+              SizeIs(1));
 }
 
 TEST_F(LegacyBookmarkModelWithSharedUnderlyingModelTest,

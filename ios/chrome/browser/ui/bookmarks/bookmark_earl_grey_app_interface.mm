@@ -42,10 +42,8 @@ std::vector<const bookmarks::BookmarkNode*> GetBookmarksWithTitle(
   query.title =
       std::make_unique<std::u16string>(base::SysNSStringToUTF16(title));
 
-  std::vector<const bookmarks::BookmarkNode*> nodes;
-  bookmark_model->GetBookmarksMatchingProperties(query, kMaxCountOfBookmarks,
-                                                 &nodes);
-  return nodes;
+  return bookmark_model->GetBookmarksMatchingProperties(query,
+                                                        kMaxCountOfBookmarks);
 }
 
 const bookmarks::BookmarkNode* GetFirstBookmarkWithTitle(

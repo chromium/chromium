@@ -24,15 +24,17 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
-using base::ASCIIToUTF16;
-using std::string;
-
 namespace bookmarks {
 namespace {
+
+using base::ASCIIToUTF16;
+using std::string;
+using testing::UnorderedElementsAre;
 
 class BookmarkUtilsTest : public testing::Test,
                           public BaseBookmarkModelObserver {
@@ -117,48 +119,34 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesWordPhraseQuery) {
                                             GURL("http://www.cnn.com"));
   const BookmarkNode* folder1 =
       model->AddFolder(model->other_node(), 0, u"foo");
-  std::vector<const BookmarkNode*> nodes;
   QueryFields query;
   query.word_phrase_query = std::make_unique<std::u16string>();
   // No nodes are returned for empty string.
   *query.word_phrase_query = u"";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  EXPECT_TRUE(nodes.empty());
-  nodes.clear();
+  EXPECT_TRUE(GetBookmarksMatchingProperties(model.get(), query, 100).empty());
 
   // No nodes are returned for space-only string.
   *query.word_phrase_query = u"   ";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  EXPECT_TRUE(nodes.empty());
-  nodes.clear();
+  EXPECT_TRUE(GetBookmarksMatchingProperties(model.get(), query, 100).empty());
 
   // Node "foo bar" and folder "foo" are returned in search results.
   *query.word_phrase_query = u"foo";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(2U, nodes.size());
-  EXPECT_TRUE(nodes[0] == folder1);
-  EXPECT_TRUE(nodes[1] == node1);
-  nodes.clear();
+  EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
+              UnorderedElementsAre(folder1, node1));
 
   // Ensure url matches return in search results.
   *query.word_phrase_query = u"cnn";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(1U, nodes.size());
-  EXPECT_TRUE(nodes[0] == node2);
-  nodes.clear();
+  EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
+              UnorderedElementsAre(node2));
 
   // Ensure folder "foo" is not returned in more specific search.
   *query.word_phrase_query = u"foo bar";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(1U, nodes.size());
-  EXPECT_TRUE(nodes[0] == node1);
-  nodes.clear();
+  EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
+              UnorderedElementsAre(node1));
 
   // Bookmark Bar and Other Bookmarks are not returned in search results.
   *query.word_phrase_query = u"Bookmark";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(0U, nodes.size());
-  nodes.clear();
+  EXPECT_TRUE(GetBookmarksMatchingProperties(model.get(), query, 100).empty());
 }
 
 // Check exact matching against a URL query.
@@ -171,25 +159,18 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesUrl) {
 
   model->AddFolder(model->other_node(), 0, u"Folder");
 
-  std::vector<const BookmarkNode*> nodes;
   QueryFields query;
   query.url = std::make_unique<std::u16string>();
   *query.url = u"https://www.google.com/";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(1U, nodes.size());
-  EXPECT_TRUE(nodes[0] == node1);
-  nodes.clear();
+  EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
+              UnorderedElementsAre(node1));
 
   *query.url = u"calendar";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(0U, nodes.size());
-  nodes.clear();
+  EXPECT_TRUE(GetBookmarksMatchingProperties(model.get(), query, 100).empty());
 
   // Empty URL should not match folders.
   *query.url = u"";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(0U, nodes.size());
-  nodes.clear();
+  EXPECT_TRUE(GetBookmarksMatchingProperties(model.get(), query, 100).empty());
 }
 
 // Check exact matching against a title query.
@@ -203,26 +184,19 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesTitle) {
   const BookmarkNode* folder1 =
       model->AddFolder(model->other_node(), 0, u"Folder");
 
-  std::vector<const BookmarkNode*> nodes;
   QueryFields query;
   query.title = std::make_unique<std::u16string>();
   *query.title = u"Google";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(1U, nodes.size());
-  EXPECT_TRUE(nodes[0] == node1);
-  nodes.clear();
+  EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
+              UnorderedElementsAre(node1));
 
   *query.title = u"Calendar";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(0U, nodes.size());
-  nodes.clear();
+  EXPECT_TRUE(GetBookmarksMatchingProperties(model.get(), query, 100).empty());
 
   // Title should match folders.
   *query.title = u"Folder";
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(1U, nodes.size());
-  EXPECT_TRUE(nodes[0] == folder1);
-  nodes.clear();
+  EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
+              UnorderedElementsAre(folder1));
 }
 
 // Check matching against a query with multiple predicates.
@@ -235,17 +209,14 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
 
   model->AddFolder(model->other_node(), 0, u"Folder");
 
-  std::vector<const BookmarkNode*> nodes;
   QueryFields query;
 
   // Test all fields matching.
   query.word_phrase_query = std::make_unique<std::u16string>(u"www");
   query.url = std::make_unique<std::u16string>(u"https://www.google.com/");
   query.title = std::make_unique<std::u16string>(u"Google");
-  GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-  ASSERT_EQ(1U, nodes.size());
-  EXPECT_TRUE(nodes[0] == node1);
-  nodes.clear();
+  EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
+              UnorderedElementsAre(node1));
 
   std::unique_ptr<std::u16string>* fields[] = {&query.word_phrase_query,
                                                &query.url, &query.title};
@@ -253,10 +224,8 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   // Test two fields matching.
   for (size_t i = 0; i < std::size(fields); i++) {
     std::unique_ptr<std::u16string> original_value(fields[i]->release());
-    GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-    ASSERT_EQ(1U, nodes.size());
-    EXPECT_TRUE(nodes[0] == node1);
-    nodes.clear();
+    EXPECT_THAT(GetBookmarksMatchingProperties(model.get(), query, 100),
+                UnorderedElementsAre(node1));
     *fields[i] = std::move(original_value);
   }
 
@@ -264,9 +233,8 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   for (size_t i = 0; i < std::size(fields); i++) {
     std::unique_ptr<std::u16string> original_value(fields[i]->release());
     *fields[i] = std::make_unique<std::u16string>(u"fjdkslafjkldsa");
-    GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
-    ASSERT_EQ(0U, nodes.size());
-    nodes.clear();
+    EXPECT_TRUE(
+        GetBookmarksMatchingProperties(model.get(), query, 100).empty());
     *fields[i] = std::move(original_value);
   }
 }

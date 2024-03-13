@@ -482,9 +482,9 @@ ExtensionFunction::ResponseValue BookmarksSearchFunction::RunOnReady() {
     bookmarks::QueryFields query;
     query.word_phrase_query = std::make_unique<std::u16string>(
         base::UTF8ToUTF16(*params->query.as_string));
-    bookmarks::GetBookmarksMatchingProperties(
+    nodes = bookmarks::GetBookmarksMatchingProperties(
         BookmarkModelFactory::GetForBrowserContext(GetProfile()), query,
-        std::numeric_limits<int>::max(), &nodes);
+        std::numeric_limits<int>::max());
   } else {
     DCHECK(params->query.as_object);
     const api::bookmarks::Search::Params::Query::Object& object =
@@ -500,9 +500,9 @@ ExtensionFunction::ResponseValue BookmarksSearchFunction::RunOnReady() {
     if (object.title)
       query.title =
           std::make_unique<std::u16string>(base::UTF8ToUTF16(*object.title));
-    bookmarks::GetBookmarksMatchingProperties(
+    nodes = bookmarks::GetBookmarksMatchingProperties(
         BookmarkModelFactory::GetForBrowserContext(GetProfile()), query,
-        std::numeric_limits<int>::max(), &nodes);
+        std::numeric_limits<int>::max());
   }
 
   std::vector<BookmarkTreeNode> tree_nodes;

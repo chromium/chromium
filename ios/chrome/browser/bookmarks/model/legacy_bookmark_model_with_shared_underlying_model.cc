@@ -192,14 +192,15 @@ bool LegacyBookmarkModelWithSharedUnderlyingModel::HasBookmarks() const {
   return false;
 }
 
-void LegacyBookmarkModelWithSharedUnderlyingModel::
-    GetBookmarksMatchingProperties(
-        const bookmarks::QueryFields& query,
-        size_t max_count,
-        std::vector<const bookmarks::BookmarkNode*>* nodes) {
-  bookmarks::GetBookmarksMatchingProperties(underlying_model(), query,
-                                            max_count, nodes);
-  std::erase_if(*nodes, GetNodeExcludedFromViewPredicate());
+std::vector<const bookmarks::BookmarkNode*>
+LegacyBookmarkModelWithSharedUnderlyingModel::GetBookmarksMatchingProperties(
+    const bookmarks::QueryFields& query,
+    size_t max_count) {
+  std::vector<const bookmarks::BookmarkNode*> nodes =
+      bookmarks::GetBookmarksMatchingProperties(underlying_model(), query,
+                                                max_count);
+  std::erase_if(nodes, GetNodeExcludedFromViewPredicate());
+  return nodes;
 }
 
 const bookmarks::BookmarkNode*

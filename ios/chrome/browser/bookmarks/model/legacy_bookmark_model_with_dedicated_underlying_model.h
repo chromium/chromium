@@ -58,10 +58,9 @@ class LegacyBookmarkModelWithDedicatedUnderlyingModel
   const bookmarks::BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
       const GURL& url) const override;
   bool HasBookmarks() const override;
-  void GetBookmarksMatchingProperties(
+  std::vector<const bookmarks::BookmarkNode*> GetBookmarksMatchingProperties(
       const bookmarks::QueryFields& query,
-      size_t max_count,
-      std::vector<const bookmarks::BookmarkNode*>* nodes) override;
+      size_t max_count) override;
   const bookmarks::BookmarkNode* GetNodeById(int64_t id) override;
   bool IsNodePartOfModel(const bookmarks::BookmarkNode* node) const override;
   base::WeakPtr<LegacyBookmarkModel> AsWeakPtr() override;

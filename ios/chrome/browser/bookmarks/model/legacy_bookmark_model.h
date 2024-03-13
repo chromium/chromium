@@ -121,10 +121,9 @@ class LegacyBookmarkModel : public KeyedService {
 
   // Functions that aren't present in BookmarkModel but in utility libraries
   // that require a subclass-specific implementation.
-  virtual void GetBookmarksMatchingProperties(
-      const bookmarks::QueryFields& query,
-      size_t max_count,
-      std::vector<const bookmarks::BookmarkNode*>* nodes) = 0;
+  virtual std::vector<const bookmarks::BookmarkNode*>
+  GetBookmarksMatchingProperties(const bookmarks::QueryFields& query,
+                                 size_t max_count) = 0;
   virtual const bookmarks::BookmarkNode* GetNodeById(int64_t id) = 0;
   // Returns whether `node` is part of, or relevant, in the scope of `this`.
   virtual bool IsNodePartOfModel(const bookmarks::BookmarkNode* node) const = 0;
