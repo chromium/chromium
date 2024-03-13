@@ -560,6 +560,7 @@ if (current_toolchain == default_toolchain) {
       "//components/embedder_support/android:web_contents_delegate_java",
       "//components/external_intents/android:java",
       "//components/externalauth/android:java",
+      "//components/facilitated_payments/android/java",
       "//components/favicon/android:java",
       "//components/feature_engagement:feature_engagement_java",
       "//components/feed/core/proto:proto_java_v2",

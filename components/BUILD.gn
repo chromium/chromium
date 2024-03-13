@@ -1216,6 +1216,7 @@ if (is_android) {
       "//components/data_sharing/internal:data_sharing_junit_tests",
       "//components/download/network:junit",
       "//components/embedder_support/android:components_embedder_support_junit_tests",
+      "//components/facilitated_payments/android/junit",
       "//components/gcm_driver/android:components_gcm_driver_junit_tests",
       "//components/image_fetcher:junit",
       "//components/installedapp/android:junit",
