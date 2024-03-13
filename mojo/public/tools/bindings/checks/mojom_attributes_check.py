@@ -44,6 +44,7 @@ _INTERFACE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
 
 _METHOD_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'AllowedContext',
+    'EstimateSize',
     'MinVersion',
     'NoInterrupt',
     'RuntimeFeature',

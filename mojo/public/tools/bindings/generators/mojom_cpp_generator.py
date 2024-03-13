@@ -405,6 +405,7 @@ class Generator(generator.Generator):
         "has_packed_method_ordinals": HasPackedMethodOrdinals,
         "get_sync_method_ordinals": mojom.GetSyncMethodOrdinals,
         "has_uninterruptable_methods": mojom.HasUninterruptableMethods,
+        "has_estimate_size_methods": self._HasEstimateSizeMethods,
         "method_supports_lazy_serialization":
         self._MethodSupportsLazySerialization,
         "requires_context_for_data_view": RequiresContextForDataView,
@@ -746,6 +747,9 @@ class Generator(generator.Generator):
     if kind.is_nullable:
       return _AddOptional(_kind_to_cpp_type[kind.MakeUnnullableKind()])
     return _kind_to_cpp_type[kind]
+
+  def _HasEstimateSizeMethods(self, interface):
+    return any(method.estimate_message_size for method in interface.methods)
 
   def _IsDefaultConstructible(self, kind):
     if self._IsTypemappedKind(kind):

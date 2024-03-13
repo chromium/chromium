@@ -389,6 +389,7 @@ PRIMITIVES = (
 
 ATTRIBUTE_MIN_VERSION = 'MinVersion'
 ATTRIBUTE_DEFAULT = 'Default'
+ATTRIBUTE_ESTIMATE_SIZE = 'EstimateSize'
 ATTRIBUTE_EXTENSIBLE = 'Extensible'
 ATTRIBUTE_NO_INTERRUPT = 'NoInterrupt'
 ATTRIBUTE_STABLE = 'Stable'
@@ -1022,6 +1023,11 @@ class Method:
   def allow_interrupt(self):
     return not self.attributes.get(ATTRIBUTE_NO_INTERRUPT) \
         if self.attributes else True
+
+  @property
+  def estimate_message_size(self):
+    return self.attributes.get(ATTRIBUTE_ESTIMATE_SIZE) \
+        if self.attributes else False
 
   @property
   def unlimited_message_size(self):
