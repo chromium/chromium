@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
+#include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/summary_outlines_section.h"
@@ -25,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPoint.h"
@@ -66,6 +68,11 @@ constexpr int kPanelChildSpacing = 8;
 constexpr int kHeaderRowSpacing = 8;
 constexpr gfx::Insets kSourceRowPadding = gfx::Insets::TLBR(6, 12, 6, 14);
 constexpr int kSourceRowSpacing = 8;
+
+// Ask Question container constants.
+constexpr gfx::Insets kAskQuestionContainerInteriorMargin = gfx::Insets(2);
+constexpr int kAskQuestionContainerCornerRadius = 8;
+constexpr int kAskQuestionContainerSpacing = 8;
 
 // The below constants for the feedback buttons and cutout dimensions refer to
 // the following spec, where an order is designated for the first, second, and
@@ -390,6 +397,45 @@ MahiPanelView::MahiPanelView() {
                                    CreateFeedbackButton(THUMBS_DOWN))),
               views::Builder<views::View>(
                   std::make_unique<ContentScrollView>()))
+          .Build());
+
+  auto* ask_question_container = AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              cros_tokens::kCrosSysSystemOnBase,
+              gfx::RoundedCornersF(kAskQuestionContainerCornerRadius)))
+          .SetInteriorMargin(kAskQuestionContainerInteriorMargin)
+          .SetIgnoreDefaultMainAxisMargins(true)
+          .SetCollapseMargins(true)
+          .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
+            layout->SetDefault(
+                views::kMarginsKey,
+                gfx::Insets::VH(0, kAskQuestionContainerSpacing));
+          }))
+          .Build());
+
+  auto* text_field = ask_question_container->AddChildView(
+      std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium));
+  text_field->SetBackgroundEnabled(false);
+  // TODO(b/319264190): Replace string.
+  text_field->SetPlaceholderText(u"Ask a question.");
+  text_field->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+      TypographyToken::kCrosAnnotation1));
+  text_field->SetTextColorId(cros_tokens::kCrosSysSecondary);
+  text_field->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width=*/true));
+
+  ask_question_container->AddChildView(
+      IconButton::Builder()
+          .SetViewId(mahi_constants::ViewId::kAskQuestionSendButton)
+          .SetType(IconButton::Type::kSmallFloating)
+          .SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase1)
+          .SetVectorIcon(&vector_icons::kSendIcon)
+          // TODO(b/319264190): Replace string.
+          .SetAccessibleName(u"Send")
           .Build());
 
   auto footer_row = std::make_unique<views::BoxLayoutView>();

@@ -20,6 +20,7 @@ enum ViewId {
   kLearnMoreLink,
   kRefreshView,
   kMahiPanelView,
+  kAskQuestionSendButton,
   kBackButton,
 };
 
