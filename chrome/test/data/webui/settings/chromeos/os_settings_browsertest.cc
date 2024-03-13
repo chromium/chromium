@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
   RunSettingsTest("os_printing_page/printing_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceTestPeripheralAndSplitEnabled,
                        DevicePageInputSettings) {
   RunSettingsTest("device_page/device_page_input_settings_test.js");
 }

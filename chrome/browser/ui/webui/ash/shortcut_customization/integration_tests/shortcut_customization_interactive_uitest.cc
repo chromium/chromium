@@ -4,6 +4,7 @@
 
 #include "ash/accelerators/accelerator_lookup.h"
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/shell.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
@@ -48,7 +49,9 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShortcutAppWebContentsId);
     webcontents_id_ = kShortcutAppWebContentsId;
 
-    feature_list_.InitWithFeatures({::features::kShortcutCustomization}, {});
+    feature_list_.InitWithFeatures({::features::kShortcutCustomization,
+                                    ash::features::kInputDeviceSettingsSplit},
+                                   {});
   }
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
