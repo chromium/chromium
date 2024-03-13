@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu/recent_tabs_builder_test_helper.h"
 #include "base/memory/raw_ptr.h"
 
 #include <stddef.h>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
+#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu/recent_tabs_sub_menu_model.h"
 
 #include <memory>
 #include <string>
@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
-#include "chrome/browser/ui/toolbar/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/browser_with_test_window_test.h"

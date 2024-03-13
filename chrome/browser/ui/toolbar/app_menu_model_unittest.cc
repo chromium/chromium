@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
-#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
+#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
