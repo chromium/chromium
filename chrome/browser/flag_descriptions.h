@@ -273,9 +273,6 @@ extern const char kAutofillEnableManuallFallbackIPHDescription[];
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[];
 
-extern const char kAutofillEnableUserAvatarInSaveCardFooterName[];
-extern const char kAutofillEnableUserAvatarInSaveCardFooterDescription[];
-
 extern const char kAutofillEnableCardArtImageName[];
 extern const char kAutofillEnableCardArtImageDescription[];
 

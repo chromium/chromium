@@ -10776,13 +10776,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kCloudGamingDevice)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"autofill-enable-user-avatar-in-save-card-footer",
-     flag_descriptions::kAutofillEnableUserAvatarInSaveCardFooterName,
-     flag_descriptions::kAutofillEnableUserAvatarInSaveCardFooterDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableUserAvatarInSaveCardFooter)},
-
     {"content-settings-partitioning",
      flag_descriptions::kContentSettingsPartitioningName,
      flag_descriptions::kContentSettingsPartitioningDescription, kOsAll,

@@ -453,13 +453,6 @@ const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =
     "merchant_domain parameter populated with the last origin of the main "
     "frame.";
 
-const char kAutofillEnableUserAvatarInSaveCardFooterName[] =
-    "Show the user's account information in the upload save card bubble footer";
-const char kAutofillEnableUserAvatarInSaveCardFooterDescription[] =
-    "When enabled, the user's avatar and email will appear in the bottom "
-    "footer of the upload save card bubble. This will provide users with more "
-    "context about which account the card is being saved to.";
-
 const char kAutofillEnableCardArtImageName[] = "Enable showing card art images";
 const char kAutofillEnableCardArtImageDescription[] =
     "When enabled, card product images (instead of network icons) will be "

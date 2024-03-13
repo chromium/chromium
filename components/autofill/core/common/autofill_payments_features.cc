@@ -118,13 +118,6 @@ BASE_FEATURE(kAutofillEnableMerchantDomainInUnmaskCardRequest,
              "AutofillEnableMerchantDomainInUnmaskCardRequest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the user's avatar and email will appear in the bottom
-// footer of the upload card save bubble. This will provide users with more
-// context about which account the card is being saved to.
-BASE_FEATURE(kAutofillEnableUserAvatarInSaveCardFooter,
-             "AutofillEnableUserAvatarInSaveCardFooter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the GPay logo will be moved to the right side in payments
 // autofill dialogs and bubbles on desktop.
 BASE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnDesktop,
