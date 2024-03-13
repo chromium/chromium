@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "gpu/config/gpu_feature_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -23,7 +22,7 @@ class WebNNContextImpl;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     : public mojom::WebNNContextProvider {
  public:
-  explicit WebNNContextProviderImpl(gpu::GpuFeatureInfo gpu_feature_info);
+  explicit WebNNContextProviderImpl(bool is_gpu_supported);
 
   WebNNContextProviderImpl(const WebNNContextProviderImpl&) = delete;
   WebNNContextProviderImpl& operator=(const WebNNContextProviderImpl&) = delete;
@@ -32,7 +31,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   static void Create(
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-      gpu::GpuFeatureInfo gpu_feature_info = gpu::GpuFeatureInfo());
+      bool is_gpu_supported = true);
 
   // Called when a WebNNContextImpl has a connection error. After this call, it
   // is no longer safe to access |impl|.
@@ -58,7 +57,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   std::vector<std::unique_ptr<WebNNContextImpl>> impls_;
 
-  const gpu::GpuFeatureInfo gpu_feature_info_;
+  const bool is_gpu_supported_;
 };
 
 }  // namespace webnn

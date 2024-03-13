@@ -51,7 +51,6 @@ component("webnn_service") {
   deps = [
     "//base",
     "//components/ml/webnn",
-    "//gpu/config",
     "//mojo/public/cpp/bindings",
     "//services/webnn/public/mojom",
   ]
