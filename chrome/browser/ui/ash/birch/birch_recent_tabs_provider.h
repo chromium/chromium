@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/birch/birch_data_provider.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/crosapi/mojom/suggestion_service.mojom.h"
 
 class Profile;
 
@@ -24,6 +25,8 @@ class ASH_EXPORT BirchRecentTabsProvider : public BirchDataProvider {
 
   // BirchDataProvider:
   void RequestBirchDataFetch() override;
+
+  void OnTabsRetrieved(std::vector<crosapi::mojom::TabSuggestionItemPtr> items);
 
  private:
   raw_ptr<Profile> profile_ = nullptr;

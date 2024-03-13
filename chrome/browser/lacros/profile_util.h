@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 
 // Computes a stable profile identifier based on the profile path. `CityHash64`
@@ -19,5 +20,8 @@ uint64_t HashProfilePathToProfileId(const base::FilePath& profile_path);
 // cached because the profile entry may be deleted at any time, then using
 // this value would cause use-after-free.
 ProfileAttributesEntry* GetProfileAttributesWithProfileId(uint64_t profile_id);
+
+// Returns the single main profile, or nullptr if none is found.
+Profile* GetMainProfile();
 
 #endif  // CHROME_BROWSER_LACROS_PROFILE_UTIL_H_

@@ -8,6 +8,10 @@
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -32,6 +36,18 @@ BirchTabItem::DeviceFormFactor GetTabItemFormFactor(
   }
 }
 
+BirchTabItem::DeviceFormFactor FromMojomFormFactor(
+    crosapi::mojom::SuggestionDeviceFormFactor form_factor) {
+  switch (form_factor) {
+    case crosapi::mojom::SuggestionDeviceFormFactor::kDesktop:
+      return BirchTabItem::DeviceFormFactor::kDesktop;
+    case crosapi::mojom::SuggestionDeviceFormFactor::kPhone:
+      return BirchTabItem::DeviceFormFactor::kPhone;
+    case crosapi::mojom::SuggestionDeviceFormFactor::kTablet:
+      return BirchTabItem::DeviceFormFactor::kTablet;
+  }
+}
+
 }  // namespace
 
 BirchRecentTabsProvider::BirchRecentTabsProvider(Profile* profile)
@@ -40,6 +56,15 @@ BirchRecentTabsProvider::BirchRecentTabsProvider(Profile* profile)
 BirchRecentTabsProvider::~BirchRecentTabsProvider() = default;
 
 void BirchRecentTabsProvider::RequestBirchDataFetch() {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->suggestion_service_ash()
+        ->GetTabSuggestionItems(base::BindOnce(
+            &BirchRecentTabsProvider::OnTabsRetrieved, base::Unretained(this)));
+    return;
+  }
+
   auto* session_sync_service =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
 
@@ -73,6 +98,18 @@ void BirchRecentTabsProvider::RequestBirchDataFetch() {
   }
 
   Shell::Get()->birch_model()->SetRecentTabItems(std::move(items));
+}
+
+void BirchRecentTabsProvider::OnTabsRetrieved(
+    std::vector<crosapi::mojom::TabSuggestionItemPtr> items) {
+  std::vector<BirchTabItem> tab_items;
+  for (auto& item : items) {
+    tab_items.emplace_back(base::UTF8ToUTF16(item->title), item->url,
+                           item->timestamp, item->favicon_url,
+                           item->session_name,
+                           FromMojomFormFactor(item->form_factor));
+  }
+  Shell::Get()->birch_model()->SetRecentTabItems(std::move(tab_items));
 }
 
 }  // namespace ash

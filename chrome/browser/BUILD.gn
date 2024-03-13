@@ -5637,6 +5637,8 @@ static_library("browser") {
       "lacros/remote_apps/remote_apps_proxy_lacros_factory.h",
       "lacros/screen_orientation_delegate_lacros.cc",
       "lacros/screen_orientation_delegate_lacros.h",
+      "lacros/suggestion_service_lacros.cc",
+      "lacros/suggestion_service_lacros.h",
       "lacros/sync/crosapi_session_sync_favicon_delegate.cc",
       "lacros/sync/crosapi_session_sync_favicon_delegate.h",
       "lacros/sync/crosapi_session_sync_notifier.cc",

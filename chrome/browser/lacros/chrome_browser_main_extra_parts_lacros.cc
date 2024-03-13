@@ -47,6 +47,7 @@
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 #include "chrome/browser/lacros/net/network_settings_observer.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
+#include "chrome/browser/lacros/suggestion_service_lacros.h"
 #include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/ui_metric_recorder_lacros.h"
@@ -310,6 +311,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
           ->IsAvailable<crosapi::mojom::MahiBrowserDelegate>()) {
     mahi::MahiWebContentsManager::Get()->Initialize();
   }
+
+  suggestion_service_ = std::make_unique<SuggestionServiceLacros>();
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(

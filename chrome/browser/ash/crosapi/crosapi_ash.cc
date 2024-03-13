@@ -104,6 +104,7 @@
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 #include "chrome/browser/ash/crosapi/speech_recognition_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
+#include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
@@ -329,6 +330,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       speech_recognition_ash_(std::make_unique<SpeechRecognitionAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
+      suggestion_service_ash_(std::make_unique<SuggestionServiceAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       time_zone_service_ash_(std::make_unique<TimeZoneServiceAsh>()),
       tts_ash_(std::make_unique<TtsAsh>(g_browser_process->profile_manager())),
@@ -994,6 +996,11 @@ void CrosapiAsh::BindStableVideoDecoderFactory(
 void CrosapiAsh::BindStructuredMetricsService(
     mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver) {
   structured_metrics_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindSuggestionService(
+    mojo::PendingReceiver<crosapi::mojom::SuggestionService> receiver) {
+  suggestion_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSyncService(

@@ -33,3 +33,13 @@ ProfileAttributesEntry* GetProfileAttributesWithProfileId(uint64_t profile_id) {
 
   return nullptr;
 }
+
+// Returns the single main profile, or nullptr if none is found.
+Profile* GetMainProfile() {
+  auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
+  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
+  if (main_it == profiles.end()) {
+    return nullptr;
+  }
+  return *main_it;
+}

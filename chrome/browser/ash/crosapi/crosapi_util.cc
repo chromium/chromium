@@ -144,6 +144,7 @@
 #include "chromeos/crosapi/mojom/smart_reader.mojom.h"
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
+#include "chromeos/crosapi/mojom/suggestion_service.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "chromeos/crosapi/mojom/system_display.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
@@ -382,7 +383,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 133,
+static_assert(crosapi::mojom::Crosapi::Version_ == 134,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -497,6 +498,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::SmartReaderClient>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SpeechRecognition>(),
     MakeInterfaceVersionEntry<crosapi::mojom::StructuredMetricsService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::SuggestionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SnapshotCapturer>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SyncService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SystemDisplayDeprecated>(),

@@ -107,6 +107,7 @@ mojom("mojom") {
     "smart_reader.mojom",
     "speech_recognition.mojom",
     "structured_metrics_service.mojom",
+    "suggestion_service.mojom",
     "sync.mojom",
     "synced_session_client.mojom",
     "system_display.mojom",

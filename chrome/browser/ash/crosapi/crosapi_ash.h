@@ -132,6 +132,7 @@ class SelectFileAsh;
 class SharesheetAsh;
 class SpeechRecognitionAsh;
 class StructuredMetricsServiceAsh;
+class SuggestionServiceAsh;
 class TaskManagerAsh;
 class TimeZoneServiceAsh;
 class TtsAsh;
@@ -387,6 +388,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindStructuredMetricsService(
       ::mojo::PendingReceiver<::crosapi::mojom::StructuredMetricsService>
           receiver) override;
+  void BindSuggestionService(
+      mojo::PendingReceiver<mojom::SuggestionService> receiver) override;
   void BindSyncService(
       mojo::PendingReceiver<mojom::SyncService> receiver) override;
   void BindTaskManager(
@@ -596,6 +599,10 @@ class CrosapiAsh : public mojom::Crosapi {
     return structured_metrics_service_ash_.get();
   }
 
+  SuggestionServiceAsh* suggestion_service_ash() {
+    return suggestion_service_ash_.get();
+  }
+
   TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
 
   TtsAsh* tts_ash() { return tts_ash_.get(); }
@@ -738,6 +745,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ash::SmartReaderManagerAsh> smart_reader_manager_ash_;
   std::unique_ptr<SpeechRecognitionAsh> speech_recognition_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
+  std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
   std::unique_ptr<TtsAsh> tts_ash_;

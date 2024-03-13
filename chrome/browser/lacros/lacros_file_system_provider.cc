@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
+#include "chrome/browser/lacros/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
@@ -24,15 +25,6 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace {
-// Returns the single main profile, or nullptr if none is found.
-Profile* GetMainProfile() {
-  auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
-  if (main_it == profiles.end()) {
-    return nullptr;
-  }
-  return *main_it;
-}
 
 const extensions::Extension* GetEnabledExtension(
     content::BrowserContext* browser_context,
