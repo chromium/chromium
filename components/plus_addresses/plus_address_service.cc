@@ -23,6 +23,7 @@
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
@@ -53,26 +54,6 @@ std::string GetEtldPlusOne(const url::Origin origin) {
 }  // namespace
 
 PlusAddressService::PlusAddressService(
-    signin::IdentityManager* identity_manager)
-    : PlusAddressService(identity_manager,
-                         /*pref_service=*/nullptr,
-                         std::make_unique<PlusAddressHttpClientImpl>(
-                             identity_manager,
-                             /*url_loader_factory=*/nullptr),
-                         /*webdata_service=*/nullptr) {}
-
-PlusAddressService::PlusAddressService()
-    : PlusAddressService(
-          /*identity_manager=*/nullptr,
-          /*pref_service=*/nullptr,
-          std::make_unique<PlusAddressHttpClientImpl>(
-              /*identity_manager=*/nullptr,
-              /*url_loader_factory=*/nullptr),
-          /*webdata_service=*/nullptr) {}
-
-PlusAddressService::~PlusAddressService() = default;
-
-PlusAddressService::PlusAddressService(
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
@@ -92,6 +73,8 @@ PlusAddressService::PlusAddressService(
     webdata_service_->GetPlusProfiles(this);
   }
 }
+
+PlusAddressService::~PlusAddressService() = default;
 
 bool PlusAddressService::SupportsPlusAddresses(const url::Origin& origin,
                                                bool is_off_the_record) const {

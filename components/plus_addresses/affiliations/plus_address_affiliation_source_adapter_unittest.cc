@@ -4,9 +4,12 @@
 
 #include "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 
+#include <memory>
+
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/affiliations/core/browser/mock_affiliation_source.h"
+#include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,12 +27,14 @@ using ::testing::UnorderedElementsAreArray;
 
 class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
-  void SetUp() override {
-    mock_source_observer_ =
-        std::make_unique<testing::StrictMock<MockAffiliationSourceObserver>>();
-    adapter_ = std::make_unique<PlusAddressAffiliationSourceAdapter>(
-        service(), mock_source_observer());
-  }
+  PlusAddressAffiliationSourceAdapterTest()
+      : service_(/*identity_manager=*/nullptr,
+                 /*pref_service=*/nullptr,
+                 /*plus_address_http_client=*/nullptr,
+                 /*webdata_service=*/nullptr),
+        adapter_(std::make_unique<PlusAddressAffiliationSourceAdapter>(
+            &service_,
+            &mock_source_observer_)) {}
 
   testing::AssertionResult ExpectAdapterToReturnFacets(
       const std::vector<FacetURI>& expected_facets) {
@@ -44,10 +49,10 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
                       : (AssertionFailure() << "Error fetching facets.");
   }
 
-  PlusAddressService* service() { return service_.get(); }
+  PlusAddressService& service() { return service_; }
 
-  affiliations::MockAffiliationSourceObserver* mock_source_observer() {
-    return mock_source_observer_.get();
+  affiliations::MockAffiliationSourceObserver& mock_source_observer() {
+    return mock_source_observer_;
   }
 
   PlusAddressAffiliationSourceAdapter* adapter() { return adapter_.get(); }
@@ -57,9 +62,8 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<MockAffiliationSourceObserver> mock_source_observer_;
-  std::unique_ptr<PlusAddressService> service_ =
-      std::make_unique<PlusAddressService>();
+  PlusAddressService service_;
+  testing::StrictMock<MockAffiliationSourceObserver> mock_source_observer_;
   std::unique_ptr<PlusAddressAffiliationSourceAdapter> adapter_;
 };
 
@@ -70,10 +74,10 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacetsEmpty) {
 
 // Verifies that facets for plus addresses are available via GetFacets.
 TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacets) {
-  service()->SavePlusAddress(url::Origin::Create(GURL("https://foo.com")),
-                             "plus+foo@plus.plus");
-  service()->SavePlusAddress(url::Origin::Create(GURL("https://bar.com")),
-                             "plus+bar@plus.plus");
+  service().SavePlusAddress(url::Origin::Create(GURL("https://foo.com")),
+                            "plus+foo@plus.plus");
+  service().SavePlusAddress(url::Origin::Create(GURL("https://bar.com")),
+                            "plus+bar@plus.plus");
 
   EXPECT_TRUE(ExpectAdapterToReturnFacets(
       {FacetURI::FromCanonicalSpec("https://foo.com"),

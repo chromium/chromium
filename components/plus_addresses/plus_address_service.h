@@ -48,20 +48,12 @@ class PlusAddressService : public KeyedService,
   // call, this limit no longer applies.
   static constexpr int kMaxHttpForbiddenResponses = 1;
 
-  // Used to simplify testing in cases where calls depending on external classes
-  // can be mocked out.
-  PlusAddressService();
-  // Used to simplify testing in cases where calls depend on just the
-  // `IdentityManager`.
-  explicit PlusAddressService(signin::IdentityManager* identity_manager);
-  ~PlusAddressService() override;
-
-  // Initialize the PlusAddressService with its dependencies.
   PlusAddressService(
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
       scoped_refptr<PlusAddressWebDataService> webdata_service);
+  ~PlusAddressService() override;
 
   // autofill::AutofillPlusAddressDelegate:
   // Checks whether the passed-in string is a known plus address.
@@ -139,8 +131,7 @@ class PlusAddressService : public KeyedService,
   // integration has finished, it can be removed entirely.
   void UpdatePlusAddressMap(const PlusAddressMap& map);
 
-  // TODO(b/322279583): Make this private.
- protected:
+ private:
   // Creates and starts a timer to keep `plus_address_by_site_` and
   // `plus_addresses` in sync with a remote plus address server.
   // This has no effect if this service is not enabled or the timer is already
