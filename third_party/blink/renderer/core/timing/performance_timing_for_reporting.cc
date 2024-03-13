@@ -35,7 +35,7 @@ std::optional<base::TimeTicks> MergeLargestContentfulPaintValues(
   const base::TimeTicks largest_image_paint = timing.largest_image_paint_time;
 
   if (text_paint_size == image_paint_size) {
-    return std::max(largest_text_paint, largest_image_paint);
+    return std::min(largest_text_paint, largest_image_paint);
   }
   return text_paint_size > image_paint_size ? largest_text_paint
                                             : largest_image_paint;
