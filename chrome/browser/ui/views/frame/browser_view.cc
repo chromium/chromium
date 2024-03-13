@@ -1052,6 +1052,12 @@ BrowserView::~BrowserView() {
     tabstrip->parent()->RemoveChildViewT(tabstrip);
   }
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  // `watermark_view_` is a raw pointer to a child view, so it needs to be set
+  // to null before `RemoveAllChildViews()` is called to avoid dangling.
+  watermark_view_ = nullptr;
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
   RemoveAllChildViews();
