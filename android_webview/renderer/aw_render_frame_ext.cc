@@ -5,6 +5,7 @@
 #include "android_webview/renderer/aw_render_frame_ext.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "android_webview/common/aw_features.h"
@@ -86,10 +87,10 @@ GURL GetChildImageUrlFromElement(const blink::WebElement& element) {
   return GetAbsoluteSrcUrl(child_img);
 }
 
-bool RemovePrefixAndAssignIfMatches(const base::StringPiece& prefix,
+bool RemovePrefixAndAssignIfMatches(std::string_view prefix,
                                     const GURL& url,
                                     std::string* dest) {
-  const base::StringPiece spec(url.possibly_invalid_spec());
+  const std::string_view spec(url.possibly_invalid_spec());
 
   if (base::StartsWith(spec, prefix)) {
     url::RawCanonOutputW<1024> output;

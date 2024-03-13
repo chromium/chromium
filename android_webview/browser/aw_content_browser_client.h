@@ -6,8 +6,10 @@
 #define ANDROID_WEBVIEW_BROWSER_AW_CONTENT_BROWSER_CLIENT_H_
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -177,7 +179,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
                                 bool is_outermost_main_frame,
                                 ui::PageTransition transition,
                                 bool* ignore_navigation) override;
-  bool CreateThreadPool(base::StringPiece name) override;
+  bool CreateThreadPool(std::string_view name) override;
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,

@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_contents_client_bridge.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "android_webview/browser_jni_headers/AwContentsClientBridge_jni.h"
@@ -126,7 +127,7 @@ void AwContentsClientBridge::AllowCertificateError(int cert_error,
   if (!obj)
     return;
 
-  base::StringPiece der_string =
+  std::string_view der_string =
       net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer());
   ScopedJavaLocalRef<jbyteArray> jcert =
       base::android::ToJavaByteArray(env, base::as_byte_span(der_string));
@@ -234,7 +235,7 @@ void AwContentsClientBridge::ProvideClientCertificateResponse(
                                                       &encoded_chain_strings);
   }
 
-  std::vector<base::StringPiece> encoded_chain;
+  std::vector<std::string_view> encoded_chain;
   for (size_t i = 0; i < encoded_chain_strings.size(); ++i)
     encoded_chain.push_back(encoded_chain_strings[i]);
 

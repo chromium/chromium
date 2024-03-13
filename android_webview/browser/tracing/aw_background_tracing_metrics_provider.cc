@@ -4,11 +4,12 @@
 
 #include "android_webview/browser/tracing/aw_background_tracing_metrics_provider.h"
 
+#include <string_view>
+
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_features.h"
@@ -36,7 +37,7 @@ void AwBackgroundTracingMetricsProvider::DoInit() {
 
   system_profile_providers_.emplace_back(
       std::make_unique<variations::FieldTrialsProvider>(
-          metrics->GetSyntheticTrialRegistry(), base::StringPiece()));
+          metrics->GetSyntheticTrialRegistry(), std::string_view()));
 }
 
 base::OnceCallback<bool(metrics::ChromeUserMetricsExtension*, std::string&&)>

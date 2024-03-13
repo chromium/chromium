@@ -6,12 +6,12 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -62,7 +62,7 @@ struct TrieNode {
 
 namespace {
 
-void InsertRuleToTrie(const std::vector<base::StringPiece>& components,
+void InsertRuleToTrie(const std::vector<std::string_view>& components,
                       TrieNode* root,
                       bool match_prefix) {
   TrieNode* node = root;
@@ -93,8 +93,8 @@ void InsertRuleToTrie(const std::vector<base::StringPiece>& components,
   node->is_terminal = true;
 }
 
-std::vector<base::StringPiece> SplitHost(const GURL& url) {
-  std::vector<base::StringPiece> components;
+std::vector<std::string_view> SplitHost(const GURL& url) {
+  std::vector<std::string_view> components;
   if (url.HostIsIPAddress()) {
     components.push_back(url.host_piece());
   } else {
@@ -107,7 +107,7 @@ std::vector<base::StringPiece> SplitHost(const GURL& url) {
 }
 
 // Rule is a UTF-8 wide string.
-bool AddRuleToAllowlist(base::StringPiece rule, TrieNode* root) {
+bool AddRuleToAllowlist(std::string_view rule, TrieNode* root) {
   if (rule.empty()) {
     return false;
   }
@@ -157,8 +157,8 @@ bool AddRules(const std::vector<std::string>& rules, TrieNode* root) {
 }
 
 bool IsAllowed(const GURL& url, const TrieNode* node) {
-  std::vector<base::StringPiece> components = SplitHost(url);
-  for (const base::StringPiece& component : base::Reversed(components)) {
+  std::vector<std::string_view> components = SplitHost(url);
+  for (std::string_view component : base::Reversed(components)) {
     if (node->match_prefix) {
       return true;
     }

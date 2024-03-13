@@ -5,11 +5,12 @@
 #ifndef ANDROID_WEBVIEW_COMMON_AW_CONTENT_CLIENT_H_
 #define ANDROID_WEBVIEW_COMMON_AW_CONTENT_CLIENT_H_
 
-#include "base/synchronization/lock.h"
-#include "content/public/common/content_client.h"
+#include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "content/public/common/content_client.h"
 
 namespace embedder_support {
 class OriginTrialPolicyImpl;
@@ -28,7 +29,7 @@ class AwContentClient : public content::ContentClient {
   // ContentClient implementation.
   void AddAdditionalSchemes(Schemes* schemes) override;
   std::u16string GetLocalizedString(int message_id) override;
-  base::StringPiece GetDataResource(
+  std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;

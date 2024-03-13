@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -764,7 +765,7 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
       ignore_navigation);
 }
 
-bool AwContentBrowserClient::CreateThreadPool(base::StringPiece name) {
+bool AwContentBrowserClient::CreateThreadPool(std::string_view name) {
   if (g_should_create_thread_pool) {
     base::ThreadPoolInstance::Create(name);
     return true;

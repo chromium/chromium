@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
 #include "android_webview/js_sandbox/service/js_sandbox_array_buffer_allocator.h"
@@ -32,7 +33,6 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -66,7 +66,7 @@ namespace {
 
 // TODO(crbug.com/1297672): This is what shows up as filename in errors. Revisit
 // this once error handling is in place.
-constexpr base::StringPiece resource_name = "<expression>";
+constexpr std::string_view resource_name = "<expression>";
 constexpr jlong kUnknownAssetFileDescriptorLength = -1;
 constexpr int64_t kDefaultChunkSize = 1 << 16;
 
@@ -204,12 +204,12 @@ base::android::ScopedJavaLocalRef<jstring> StringViewToJavaString(
     const v8_inspector::StringView& string_view) {
   if (string_view.is8Bit()) {
     return base::android::ConvertUTF8ToJavaString(
-        env, base::StringPiece(
+        env, std::string_view(
                  reinterpret_cast<const char*>(string_view.characters8()),
                  string_view.length()));
   } else {
     return base::android::ConvertUTF16ToJavaString(
-        env, base::StringPiece16(
+        env, std::u16string_view(
                  reinterpret_cast<const char16_t*>(string_view.characters16()),
                  string_view.length()));
   }

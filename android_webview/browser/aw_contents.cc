@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "android_webview/browser/aw_browser_context.h"
@@ -871,7 +872,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
   }
 
   // Convert the certificate and return it
-  base::StringPiece der_string = net::x509_util::CryptoBufferAsStringPiece(
+  std::string_view der_string = net::x509_util::CryptoBufferAsStringPiece(
       entry->GetSSL().certificate->cert_buffer());
   return base::android::ToJavaByteArray(env, base::as_byte_span(der_string));
 }

@@ -5,6 +5,7 @@
 #include "android_webview/browser/aw_crash_keys.h"
 
 #include <deque>
+#include <string_view>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,7 +29,7 @@ class CrashKeyWithName {
   ~CrashKeyWithName() = delete;
 
   void Clear() { crash_key_.Clear(); }
-  void Set(base::StringPiece value) { crash_key_.Set(value); }
+  void Set(std::string_view value) { crash_key_.Set(value); }
 
  private:
   std::string name_;

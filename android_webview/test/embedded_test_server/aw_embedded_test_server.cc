@@ -4,6 +4,8 @@
 
 #include <jni.h>
 
+#include <string_view>
+
 #include "android_webview/test/embedded_test_server/aw_net_jni_headers/AwEmbeddedTestServerImpl_jni.h"
 #include "base/android/jni_array.h"
 #include "base/base64.h"
@@ -242,8 +244,8 @@ std::unique_ptr<HttpResponse> HandleImageOnloadHtml(
 
 std::unique_ptr<HttpResponse> HandleClientHintsHeaderResponseHelper(
     const HttpRequest& request,
-    const base::StringPiece& accept_ch,
-    const base::StringPiece& critical_ch) {
+    std::string_view accept_ch,
+    std::string_view critical_ch) {
   // Setup basic response.
   std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse);
   http_response->set_content_type("text/html");
