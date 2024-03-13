@@ -177,8 +177,9 @@ class LensOverlayController : public TabStripModelObserver,
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>
       results_side_panel_coordinator_;
 
-  // Observer for the WebContents of the associated tab.
-  std::unique_ptr<UnderlyingWebContentsObserver> web_contents_observer_;
+  // Observer for the WebContents of the associated tab. Only valid while the
+  // overlay widget is showing.
+  std::unique_ptr<UnderlyingWebContentsObserver> tab_contents_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};

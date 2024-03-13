@@ -138,6 +138,7 @@ void LensOverlayController::CloseUI() {
     overlay_widget_->SetContentsView(std::make_unique<views::View>());
   }
   overlay_widget_.reset();
+  tab_contents_observer_.reset();
 
   receiver_.reset();
   page_.reset();
@@ -227,6 +228,13 @@ void LensOverlayController::DidCaptureScreenshot(int attempt_id,
     return;
   }
 
+  // It is not possible to show the overlay UI if the tab is not associated with
+  // a tab strip.
+  if (!tab_model_->owning_model()) {
+    CloseUI();
+    return;
+  }
+
   // Need to store the current screenshot before creating the WebUI, since the
   // WebUI is dependent on the screenshot.
   current_screenshot_ = bitmap;
@@ -243,20 +251,16 @@ void LensOverlayController::ShowOverlayWidget() {
   overlay_widget_->SetContentsView(CreateViewForOverlay());
 
   content::WebContents* active_web_contents = tab_model_->contents();
-  web_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
+  tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
       active_web_contents, this);
 
   // Stack widget at top.
-#if BUILDFLAG(IS_MAC)
-  const gfx::NativeView web_contents_view =
-      active_web_contents->GetContentNativeView();
-  overlay_widget_->StackAbove(web_contents_view);
-#else
-  auto* overlay_window = overlay_widget_->GetNativeWindow();
-  auto* parent = overlay_window->parent();
-  CHECK(parent);
-  parent->StackChildAtTop(overlay_window);
-#endif
+  gfx::NativeWindow top_level_native_window =
+      active_web_contents->GetTopLevelNativeWindow();
+  views::Widget* top_level_widget =
+      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
+  overlay_widget_->StackAboveWidget(top_level_widget);
+
   overlay_widget_->Show();
 }
 
@@ -266,16 +270,15 @@ views::Widget::InitParams LensOverlayController::CreateWidgetInitParams() {
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "LensOverlayWidget";
   params.child = true;
-#if BUILDFLAG(IS_MAC)
-  const gfx::NativeView web_contents_view =
-      active_web_contents->GetContentNativeView();
-  params.parent = web_contents_view;
-#else
-  const gfx::NativeWindow& native_window =
+
+  gfx::NativeWindow top_level_native_window =
       active_web_contents->GetTopLevelNativeWindow();
-  params.parent = native_window;
+  views::Widget* top_level_widget =
+      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
+  gfx::NativeView top_level_native_view = top_level_widget->GetNativeView();
+  params.parent = top_level_native_view;
   params.layer_type = ui::LAYER_NOT_DRAWN;
-#endif
+
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.bounds = active_web_contents->GetContainerBounds();
   return params;
