@@ -8,6 +8,8 @@ source_set("webdata") {
   sources = [
     "plus_address_sync_bridge.cc",
     "plus_address_sync_bridge.h",
+    "plus_address_sync_util.cc",
+    "plus_address_sync_util.h",
     "plus_address_table.cc",
     "plus_address_table.h",
     "plus_address_webdata_service.cc",
@@ -25,6 +27,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "plus_address_sync_bridge_unittest.cc",
+    "plus_address_sync_util_unittest.cc",
     "plus_address_table_unittest.cc",
   ]
   deps = [
