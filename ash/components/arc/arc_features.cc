@@ -38,6 +38,27 @@ BASE_FEATURE(kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
              "DeferArcActivationUntilUserSessionStartUpTaskCompletion",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// We decide whether to defer ARC activation by taking a look at recent
+// user activities. If the user activates ARC soon after user session start
+// recently, ARC will be immediately activated when ready in following
+// sessions.
+// The details are configured by these two variables; history_window and
+// history_threshold. If the user activates ARC soon after the user session
+// starts more than or equal to `history_threshold` sessions in recent
+// `history_window` sessions, ARC will be launched immediately.
+// Note: if `history_threshold` > `history_window`, as it will never be
+// satisfied, ARC will be always deferred.
+const base::FeatureParam<int> kDeferArcActivationHistoryWindow{
+    &kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
+    "history_window",
+    5,
+};
+const base::FeatureParam<int> kDeferArcActivationHistoryThreshold{
+    &kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
+    "history_threshold",
+    3,
+};
+
 // Controls whether to handle files with unknown size.
 BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
              "ArcDocumentsProviderUnknownSize",

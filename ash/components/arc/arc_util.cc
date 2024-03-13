@@ -61,10 +61,6 @@ constexpr char kReadahead[] = "readahead";
 constexpr char kGenerate[] = "generate";
 constexpr char kDisabled[] = "disabled";
 
-// TODO(b/326065955): make these configurable for future experiments.
-constexpr int kFirstActivationDuringUserSessionStartUpWindow = 5;
-constexpr int kFirstActivationDuringUserSessionStartUpThreshold = 3;
-
 // Decodes a job name that may have "_2d" e.g. |kArcCreateDataJobName|
 // and returns a decoded string.
 std::string DecodeJobName(const std::string& raw_job_name) {
@@ -694,14 +690,26 @@ bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
     return false;
   }
 
+  const int max_window_size = kDeferArcActivationHistoryWindow.Get();
+  const int threshold = kDeferArcActivationHistoryThreshold.Get();
+  if (max_window_size < 0 || threshold < 0) {
+    LOG(ERROR) << "Unexpected negative value(s): " << max_window_size << ", "
+               << threshold;
+    return false;
+  }
+
+  // Look at recent (at most) `histogram_window` sessions, and if ARC is
+  // activated during user session start up tasks more than or equals to
+  // `history_threshold` times, we'll immediately activate ARC.
+  // I.e., if ARC is activated during user session start up tasks less than
+  // `history_threshold` times, we'll defer the ARC activation until
+  // the user session start up task completion.
   const auto& history =
       prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
-  size_t window_size = std::min<size_t>(
-      history.size(), kFirstActivationDuringUserSessionStartUpWindow);
-  base::span<const base::Value> history_window(history.begin(),
-                                               history.begin() + window_size);
-  return base::ranges::count(history_window, base::Value(true)) <
-         kFirstActivationDuringUserSessionStartUpThreshold;
+  const size_t window_size = std::min<size_t>(history.size(), max_window_size);
+  base::span<const base::Value> history_window(history.end() - window_size,
+                                               history.end());
+  return base::ranges::count(history_window, base::Value(true)) < threshold;
 }
 
 void RecordFirstActivationDuringUserSessionStartUp(PrefService* prefs,
@@ -711,14 +719,20 @@ void RecordFirstActivationDuringUserSessionStartUp(PrefService* prefs,
     return;
   }
 
+  const int window_size = kDeferArcActivationHistoryWindow.Get();
+  if (window_size < 0) {
+    LOG(ERROR) << "Unexpected negative window_size: " << window_size;
+    return;
+  }
+
   ScopedListPrefUpdate update(
       prefs, prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
   auto& history = update.Get();
   // Limit the size up to the history_window.
-  if (history.size() >= kFirstActivationDuringUserSessionStartUpWindow) {
-    history.erase(history.begin());
-  }
   history.Append(value);
+  if (history.size() >= static_cast<size_t>(window_size)) {
+    history.erase(history.begin(), history.end() - window_size);
+  }
 }
 
 }  // namespace arc

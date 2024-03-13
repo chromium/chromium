@@ -807,6 +807,47 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_Success) {
 }
 
 TEST_F(ArcUtilTest,
+       ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletionDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+
+  EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), true);
+  EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), false);
+  EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+}
+
+TEST_F(ArcUtilTest,
+       ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletionAlways) {
+  std::map<std::string, std::string> params = {
+      {"history_window", "0"},
+      {"history_threshold", "1"},
+  };
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion, params);
+
+  // ARC should be deferred always.
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), true);
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), false);
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+}
+
+TEST_F(ArcUtilTest,
        ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletionEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
