@@ -330,8 +330,7 @@ class MacNotificationServiceUNTest : public testing::Test {
             mojom::RequestPermissionResult::kPermissionPreviouslyGranted) {
       bool granted =
           result == mojom::RequestPermissionResult::kPermissionGranted;
-      id error = (result == mojom::RequestPermissionResult::kRequestFailed ||
-                  result == mojom::RequestPermissionResult::kPermissionDenied)
+      id error = result == mojom::RequestPermissionResult::kRequestFailed
                      ? [NSError errorWithDomain:@"" code:0 userInfo:nil]
                      : NSNull.null;
       OCMExpect(
@@ -683,10 +682,9 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForAlerts) {
     @"NSUserNotificationAlertStyle" : @"alert"
   });
 
-  // Test does not include kRequestFailed, as currently there is no code path
-  // that would result in that error.
   for (auto result :
-       {mojom::RequestPermissionResult::kPermissionDenied,
+       {mojom::RequestPermissionResult::kRequestFailed,
+        mojom::RequestPermissionResult::kPermissionDenied,
         mojom::RequestPermissionResult::kPermissionGranted,
         mojom::RequestPermissionResult::kPermissionPreviouslyDenied,
         mojom::RequestPermissionResult::kPermissionPreviouslyGranted}) {
@@ -709,10 +707,9 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForBanners) {
     @"NSUserNotificationAlertStyle" : @"banner"
   });
 
-  // Test does not include kRequestFailed, as currently there is no code path
-  // that would result in that error.
   for (auto result :
-       {mojom::RequestPermissionResult::kPermissionDenied,
+       {mojom::RequestPermissionResult::kRequestFailed,
+        mojom::RequestPermissionResult::kPermissionDenied,
         mojom::RequestPermissionResult::kPermissionGranted,
         mojom::RequestPermissionResult::kPermissionPreviouslyDenied,
         mojom::RequestPermissionResult::kPermissionPreviouslyGranted}) {

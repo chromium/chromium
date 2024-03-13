@@ -324,7 +324,7 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
       reason = QuietUiReason::kServicePredictedVeryUnlikelyGrant;
     }
     TriggerQuietNotificationPermissionRequest(reason);
-    ShowDialogBubble(ImageType::NOTIFICATIONS);
+    ShowDialogBubble(ImageType::NOTIFICATIONS_QUIET_PROMPT);
     return;
   }
 

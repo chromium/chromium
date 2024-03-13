@@ -48,11 +48,10 @@ class ContentSettingImageModel {
     FRAMEBUST = 14,
     // CLIPBOARD_READ = 15, // Replaced by CLIPBOARD_READ_WRITE in M81.
     SENSORS = 16,
-    // NOTIFICATIONS_QUIET_PROMPT = 17, // Replaced by NOTIFICATIONS in M124
+    NOTIFICATIONS_QUIET_PROMPT = 17,
     CLIPBOARD_READ_WRITE = 18,
     STORAGE_ACCESS = 19,
     // MIDI = 20, // Deprecated.
-    NOTIFICATIONS = 21,
 
     NUM_IMAGE_TYPES
   };

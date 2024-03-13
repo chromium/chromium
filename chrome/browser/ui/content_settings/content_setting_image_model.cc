@@ -61,8 +61,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
-#include "chrome/browser/web_applications/app_shim_registry_mac.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
@@ -511,10 +509,10 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
       return std::make_unique<ContentSettingClipboardReadWriteImageModel>();
     case ImageType::SENSORS:
       return std::make_unique<ContentSettingSensorsImageModel>();
+    case ImageType::NOTIFICATIONS_QUIET_PROMPT:
+      return std::make_unique<ContentSettingNotificationsImageModel>();
     case ImageType::STORAGE_ACCESS:
       return std::make_unique<ContentSettingStorageAccessImageModel>();
-    case ImageType::NOTIFICATIONS:
-      return std::make_unique<ContentSettingNotificationsImageModel>();
 
     case ImageType::NUM_IMAGE_TYPES:
       break;
@@ -1261,7 +1259,7 @@ bool ContentSettingStorageAccessImageModel::UpdateAndGetVisibility(
 
 ContentSettingNotificationsImageModel::ContentSettingNotificationsImageModel()
     : ContentSettingSimpleImageModel(
-          ImageType::NOTIFICATIONS,
+          ImageType::NOTIFICATIONS_QUIET_PROMPT,
           ContentSettingsType::NOTIFICATIONS,
           true /* image_type_should_notify_accessibility */) {
   SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/false);
@@ -1271,47 +1269,6 @@ ContentSettingNotificationsImageModel::ContentSettingNotificationsImageModel()
 
 bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
-  set_should_auto_open_bubble(false);
-  set_blocked_on_system_level(false);
-  set_should_show_promo(false);
-
-#if BUILDFLAG(IS_MAC)
-  if (std::optional<webapps::AppId> app_id =
-          web_app::WebAppTabHelper::GetAppIdForNotificationAttribution(
-              web_contents);
-      app_id.has_value()) {
-    PageSpecificContentSettings* content_settings =
-        PageSpecificContentSettings::GetForFrame(
-            web_contents->GetPrimaryMainFrame());
-
-    const bool is_allowed =
-        content_settings &&
-        content_settings->IsContentAllowed(ContentSettingsType::NOTIFICATIONS);
-    const bool was_denied_because_of_system_permission =
-        content_settings &&
-        content_settings
-            ->notifications_was_denied_because_of_system_permission();
-
-    const mac_notifications::mojom::PermissionStatus system_permission_status =
-        AppShimRegistry::Get()->GetNotificationPermissionStatusForApp(*app_id);
-
-    // If the system level permission for this app is currently "denied", and
-    // either the chrome level permission was granted (and notifications have
-    // been attempted to be used in this page) or the chrome level permission
-    // just switched from "ask" to "blocked", show the indicator icon.
-    if ((was_denied_because_of_system_permission || is_allowed) &&
-        system_permission_status ==
-            mac_notifications::mojom::PermissionStatus::kDenied) {
-      SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/true);
-      // If the chrome level permission was just auto-denied, also popup the
-      // bubble.
-      set_should_auto_open_bubble(was_denied_because_of_system_permission);
-      set_blocked_on_system_level(true);
-      return true;
-    }
-  }
-#endif
-
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   auto* profile =
@@ -1330,7 +1287,6 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
 
   // |manager| may be null in tests.
   // Show promo the first time a quiet prompt is shown to the user.
-  SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/false);
   set_should_show_promo(
       QuietNotificationPermissionUiState::ShouldShowPromo(profile));
   if (permissions::PermissionUiSelector::ShouldSuppressAnimation(
@@ -1356,18 +1312,8 @@ std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
     WebContents* web_contents) {
-  if (blocked_on_system_level()) {
-#if BUILDFLAG(IS_MAC)
-    return std::make_unique<ContentSettingNotificationsBubbleModel>(
-        delegate, web_contents);
-#else
-    NOTREACHED();
-    return nullptr;
-#endif
-  } else {
-    return std::make_unique<ContentSettingQuietRequestBubbleModel>(
-        delegate, web_contents);
-  }
+  return std::make_unique<ContentSettingQuietRequestBubbleModel>(delegate,
+                                                                 web_contents);
 }
 
 // Base class ------------------------------------------------------------------
@@ -1428,7 +1374,7 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
       ImageType::SOUND,
       ImageType::FRAMEBUST,
       ImageType::CLIPBOARD_READ_WRITE,
-      ImageType::NOTIFICATIONS,
+      ImageType::NOTIFICATIONS_QUIET_PROMPT,
       ImageType::STORAGE_ACCESS,
   };
 

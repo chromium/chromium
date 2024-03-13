@@ -29,10 +29,6 @@ FilePath MainBundlePath() {
   return apple::NSStringToFilePath(MainBundle().bundlePath);
 }
 
-std::string MainBundleIdentifier() {
-  return base::SysNSStringToUTF8(MainBundle().bundleIdentifier);
-}
-
 NSBundle* OuterBundle() {
   if (g_override_outer_bundle) {
     return g_override_outer_bundle;

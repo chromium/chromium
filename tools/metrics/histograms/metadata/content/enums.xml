@@ -110,8 +110,6 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="FRAMEBUST"/>
   <int value="16" label="SENSORS"/>
   <int value="18" label="CLIPBOARD_READ_WRITE"/>
-  <int value="19" label="STORAGE_ACCESS"/>
-  <int value="21" label="NOTIFICATIONS"/>
 </enum>
 
 <enum name="ContentSettingPopupAction">
