@@ -122,6 +122,9 @@ void ActiveDevicesMediaCoordinator::GotDeviceIdsOpenedForWebContents(
   }
 
   if (active_device_ids.empty()) {
+    if (media_coordinators_.contains(kMutableCoordinatorId)) {
+      return;
+    }
     media_coordinators_.clear();
     separators_.clear();
     // RemoveAllChildViews() is called to delete all separators.
