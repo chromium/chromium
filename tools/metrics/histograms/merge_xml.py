@@ -206,28 +206,37 @@ def _BuildDOMTreeWithComponentMetadata(filename_or_file):
   return tree
 
 
-def MergeFiles(filenames=[], files=[], should_expand_owners=False):
+def MergeFiles(filenames=[],
+               files=[],
+               expand_owners_and_extract_components=False):
   """Merges a list of histograms.xml files.
 
   Args:
     filenames: A list of histograms.xml filenames.
     files: A list of histograms.xml file-like objects.
-    should_expand_owners: Whether we want to expand owners. By default, it's
-      false because most of the callers don't care about the owners for each
-      metadata.
+    expand_owners_and_extract_components: Whether we want to expand owners and
+      extract components. By default, it's false because most of the callers
+      don't care about the owners or components for each metadata.
 
   Returns:
     A merged DOM tree.
   """
   # minidom.parse() takes both files and filenames:
   all_files = files + filenames
-  trees = [_BuildDOMTreeWithComponentMetadata(f) for f in all_files]
-  return MergeTrees(trees, should_expand_owners)
+  trees = [
+      _BuildDOMTreeWithComponentMetadata(f)
+      if expand_owners_and_extract_components else xml.dom.minidom.parse(f)
+      for f in all_files
+  ]
+  return MergeTrees(trees,
+                    should_expand_owners=expand_owners_and_extract_components)
 
 
 def PrettyPrintMergedFiles(filenames=[], files=[]):
   return histogram_configuration_model.PrettifyTree(
-      MergeFiles(filenames=filenames, files=files, should_expand_owners=True))
+      MergeFiles(filenames=filenames,
+                 files=files,
+                 expand_owners_and_extract_components=True))
 
 
 def main():

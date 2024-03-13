@@ -54,7 +54,7 @@ def main(args):
 
   # Extract all histograms into a dict.
   doc = merge_xml.MergeFiles(filenames=histogram_paths.ALL_XMLS,
-                             should_expand_owners=True)
+                             expand_owners_and_extract_components=True)
   histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
   if had_errors:
     raise ValueError("Error parsing inputs.")

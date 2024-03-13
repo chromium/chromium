@@ -70,7 +70,8 @@ def main():
   """
   if len(sys.argv) == 1:
     merged_xml_string = merge_xml.MergeFiles(
-        histogram_paths.ALL_XMLS, should_expand_owners=True).toxml()
+        histogram_paths.ALL_XMLS,
+        expand_owners_and_extract_components=True).toxml()
     root = ET.fromstring(merged_xml_string)
   else:
     rel_path = path_util.GetInputFile(
