@@ -36,6 +36,11 @@ declare_args() {
   # for official builds, and "false" for all other builds.
   swift_whole_module_optimization = -1
 
+  # If true, the intermediate build products of swift module compilation will
+  # be kept after the invocation of the swiftc compiler. Otherwise they will
+  # deleted between each invocation.
+  swift_keep_intermediate_files = false
+
   # If unspecified, will use the toolchain downloaded via deps.
   swift_toolchain_path = -1
 }
@@ -76,16 +81,17 @@ if (swift_whole_module_optimization == -1) {
 # but it will cause edges to be marked as dirty if the ninja files are
 # regenerated. See https://crbug.com/619083 for details. A proper fix
 # would be to have inputs to tools (https://crbug.com/621119).
-tool_versions =
-    exec_script("get_tool_mtime.py",
-                rebase_path([
-                              "//build/toolchain/apple/filter_libtool.py",
-                              "//build/toolchain/apple/linker_driver.py",
-                              "//build/toolchain/ios/compile_xcassets.py",
-                              "//build/toolchain/ios/swiftc.py",
-                            ],
-                            root_build_dir),
-                "trim scope")
+tool_versions = exec_script(
+        "get_tool_mtime.py",
+        rebase_path([
+                      "//build/toolchain/apple/filter_libtool.py",
+                      "//build/toolchain/apple/linker_driver.py",
+                      "//build/toolchain/ios/compile_xcassets.py",
+                      "//build/toolchain/ios/const_extract_protocols.json",
+                      "//build/toolchain/ios/swiftc.py",
+                    ],
+                    root_build_dir),
+        "trim scope")
 
 # Shared toolchain definition. Invocations should set current_os to set the
 # build args in this definition. This is titled "single_apple_toolchain"
@@ -645,73 +651,64 @@ template("single_apple_toolchain") {
         depfile = "{{target_out_dir}}/{{module_name}}.d"
         depsformat = "gcc"
 
-        outputs = [
-          # The module needs to be the first output listed. The blank line after
-          # the module is required to prevent `gn format` from changing the file
-          # order.
-          "{{target_gen_dir}}/{{module_name}}.swiftmodule",
+        _header_path = "{{target_gen_dir}}/{{target_output_name}}.h"
+        _output_dir = "{{target_out_dir}}/{{label_name}}"
 
-          "{{target_gen_dir}}/{{target_output_name}}.h",
-          "{{target_gen_dir}}/{{module_name}}.swiftdoc",
-          "{{target_gen_dir}}/{{module_name}}.swiftsourceinfo",
+        outputs = [
+          _header_path,
+          "$_output_dir/{{module_name}}-OutputFileMap.json",
+          "$_output_dir/{{module_name}}.SwiftFileList",
+          "$_output_dir/{{module_name}}.abi.json",
+          "$_output_dir/{{module_name}}.d",
+          "$_output_dir/{{module_name}}.dia",
+          "$_output_dir/{{module_name}}.swiftdoc",
+          "$_output_dir/{{module_name}}.swiftmodule",
+          "$_output_dir/{{module_name}}.swiftsourceinfo",
         ]
+
+        partial_outputs = [ "$_output_dir/{{source_name_part}}.o" ]
+
+        # The list of outputs and partial_outputs change whether the whole
+        # module optimization is enabled or not.
+        if (swift_whole_module_optimization) {
+          outputs += [
+            "$_output_dir/{{module_name}}.swiftconstvalues",
+            "$_output_dir/{{module_name}}.swiftdeps",
+          ]
+        } else {
+          outputs += [ "$_output_dir/{{module_name}}.priors" ]
+          partial_outputs += [
+            "$_output_dir/{{source_name_part}}.d",
+            "$_output_dir/{{source_name_part}}.dia",
+            "$_output_dir/{{source_name_part}}.swiftdeps",
+            "$_output_dir/{{source_name_part}}.swiftconstvalues",
+          ]
+        }
+
+        # If configured to keep the intermediate build files, pass the flag
+        # to the script and inform gn of the stamp file only (as the other
+        # files have names that cannot be predicted without invoking swiftc).
+        if (swift_keep_intermediate_files) {
+          _derived_data_dir = "$_output_dir/DerivedData"
+          outputs += [ "$_derived_data_dir/{{module_name}}.stamp" ]
+        }
 
         # Additional flags passed to the wrapper script but that are only
         # set conditionally.
         _extra_flags = ""
 
-        if (swift_whole_module_optimization) {
-          _extra_flags += " -whole-module-optimization"
-          _objects_dir = "{{target_out_dir}}"
-
-          outputs += [ "$_objects_dir/{{module_name}}.o" ]
-        } else {
-          _objects_dir = "{{target_out_dir}}/{{label_name}}"
-
-          partial_outputs = [ "$_objects_dir/{{source_name_part}}.o" ]
-        }
-
-        _env_vars = "TOOL_VERSION=${tool_versions.swiftc}"
-        if (invoker.sdk_developer_dir != "") {
-          _env_vars += " DEVELOPER_DIR=${toolchain_args.sdk_developer_dir}"
-        }
-
-        # Starting with version 5.6, the Swift compiler will always
-        # generates precompiled headers. In anterior version, it was
-        # used when bridging headers and whole module optimisation
-        # where enabled, and it could be disabled with the parameter
-        # `-disable-bridging-pch`.
-        #
-        # The precompiled headers are binary files (i.e. they are not
-        # regular Objective-C header files and cannot be loaded as such).
-        #
-        # There is an hidden requirements that the compiler needs to
-        # be told where to save those .pch files (via the parameter
-        # `-pch-output-dir $dir`). If this parameter is not passed, the
-        # compiler will silently write them at an incorrect location,
-        # leading later pass to try to load those .pch files as either
-        # regular header files (.h) or object files (.o) and causing
-        # to compilation failures.
-        #
-        # List the directory where the precompiled header is generated
-        # as an output, but do not list the .pch file itself. This is
-        # because the names includes two hashes (one corresponding to
-        # the compiler revision, and the other probably derived from
-        # the module itself) that are difficult to generate.
-        #
-        # Still we want to avoid creating a directory that has the same
-        # name as a file generated by another rule, so explicitly list
-        # the directory in `outputs` so that gn can warn it is conflicts
-        # with another output file.
-
-        _pch_output_dir = "{{target_out_dir}}/{{module_name}}:pch/"
-        outputs += [ "$_pch_output_dir/{{module_name}}.stamp" ]
+        # Environment variables passed to the wrapper script. Considered
+        # part of the command-line by ninja (and thus cause the build to
+        # be considered dirty if they change) without having to be parsed
+        # by the script.
+        _env_vars = "TOOL_VERSION=${tool_versions.swiftc} " +
+                    "JSON_VERSION=${tool_versions.const_extract_protocols}"
 
         # Include the version of the compiler on the command-line. This causes
         # `ninja` to consider all the compilation output to be dirty when the
         # version changes.
         if (defined(swiftc_version)) {
-          _extra_flags += " -swiftc-version $swiftc_version"
+          _env_vars += " SWIFTC_VERSION=$swiftc_version"
         }
 
         # Include the version of Xcode on the command-line (if specified via
@@ -724,12 +721,24 @@ template("single_apple_toolchain") {
         # changes, they may encode dependency on now non-existing frameworks
         # causing linker failures ultimately.
         if (defined(toolchain_args.xcode_build)) {
-          _extra_flags += " -xcode-version ${toolchain_args.xcode_build}"
+          _env_vars += " XCODE_VERSION=${toolchain_args.xcode_build}"
+        }
+
+        if (invoker.sdk_developer_dir != "") {
+          _env_vars += " DEVELOPER_DIR=${toolchain_args.sdk_developer_dir}"
         }
 
         if (swift_toolchain_path != "") {
           _extra_flags += " -swift-toolchain-path " +
                           rebase_path(swift_toolchain_path, root_build_dir)
+        }
+
+        if (swift_whole_module_optimization) {
+          _extra_flags += " -whole-module-optimization"
+        }
+
+        if (swift_keep_intermediate_files) {
+          _extra_flags += " -derived-data-dir $_derived_data_dir"
         }
 
         # The Swift compiler assumes that the generated header will be used by
@@ -758,16 +767,20 @@ template("single_apple_toolchain") {
         # around those two issues.
         _extra_flags += " -fix-module-imports"
 
+        _src_dir = rebase_path("//", root_build_dir)
+        _const_gather_protocols_file =
+            rebase_path("//build/toolchain/ios/const_extract_protocols.json",
+                        root_build_dir)
+
         command =
             "$_env_vars $python_path $_tool -module-name {{module_name}} " +
-            "-root-dir " + rebase_path("//", root_build_dir) + " " +
-            "-object-dir $_objects_dir -pch-output-dir $_pch_output_dir " +
-            "-module-path {{target_gen_dir}}/{{module_name}}.swiftmodule " +
-            "-header-path {{target_gen_dir}}/{{target_output_name}}.h " +
-            "-depfile {{target_out_dir}}/{{module_name}}.d " +
-            "-bridge-header {{bridge_header}} $_extra_flags " +
-            "{{swiftflags}} {{include_dirs}} {{module_dirs}} {{inputs}}"
-        description = "SWIFT {{output}}"
+            "-header-path $_header_path -target-out-dir $_output_dir " +
+            "-const-gather-protocols-file $_const_gather_protocols_file " +
+            "-depfile-path $depfile -src-dir $_src_dir -bridge-header " +
+            "{{bridge_header}} {{include_dirs}} {{module_dirs}} " +
+            "{{swiftflags}} {{inputs}}$_extra_flags"
+
+        description = "SWIFT $_output_dir/{{module_name}}.swiftmodule"
       }
     }
 
