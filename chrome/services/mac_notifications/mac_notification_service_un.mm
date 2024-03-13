@@ -474,11 +474,11 @@ void MacNotificationServiceUN::DoRequestPermission() {
                                        UNAuthorizationOptionBadge;
 
   auto resultHandler = ^(BOOL granted, NSError* _Nullable error) {
-    auto result = mojom::RequestPermissionResult::kRequestFailed;
-    if (!error) {
-      result = granted ? mojom::RequestPermissionResult::kPermissionGranted
-                       : mojom::RequestPermissionResult::kPermissionDenied;
-    }
+    // The presence or absence of `error` doesn't say anything about whether the
+    // request itself failed. So assume the request always succeeds and only
+    // look at `granted` to determine the result.
+    auto result = granted ? mojom::RequestPermissionResult::kPermissionGranted
+                          : mojom::RequestPermissionResult::kPermissionDenied;
     std::move(block_callback).Run(result);
   };
 

@@ -91,8 +91,11 @@
 #include "ui/resources/grit/ui_resources.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/apple/bundle_locations.h"
 #include "base/mac/mac_util.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif
 
 using base::UserMetricsAction;
@@ -1386,6 +1389,41 @@ void ContentSettingGeolocationBubbleModel::SetCustomLink() {
     set_custom_link(l10n_util::GetStringUTF16(IDS_GEOLOCATION_WILL_ASK_AGAIN));
   }
 }
+
+// ContentSettingNotificationsBubbleModel ------------------------------------
+
+#if BUILDFLAG(IS_MAC)
+ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
+    Delegate* delegate,
+    content::WebContents* web_contents)
+    : ContentSettingSimpleBubbleModel(delegate,
+                                      web_contents,
+                                      ContentSettingsType::NOTIFICATIONS) {
+  set_title(l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
+  AddListItem(ContentSettingBubbleModel::ListItem(
+      &vector_icons::kNotificationsOffChromeRefreshIcon,
+      l10n_util::GetStringUTF16(IDS_NOTIFICATIONS),
+      l10n_util::GetStringUTF16(IDS_TURNED_OFF), /*has_link=*/false,
+      /*has_blocked_badge=*/false, 0));
+  set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
+  set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
+}
+
+ContentSettingNotificationsBubbleModel::
+    ~ContentSettingNotificationsBubbleModel() = default;
+
+void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
+  std::string bundle_identifier = base::apple::MainBundleIdentifier();
+  if (std::optional<webapps::AppId> app_id =
+          web_app::WebAppTabHelper::GetAppIdForNotificationAttribution(
+              web_contents());
+      app_id.has_value()) {
+    bundle_identifier = web_app::GetBundleIdentifierForShim(*app_id);
+  }
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kNotifications, bundle_identifier);
+}
+#endif
 
 // ContentSettingSubresourceFilterBubbleModel ----------------------------------
 

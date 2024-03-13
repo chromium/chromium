@@ -13358,6 +13358,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Notifications from this site may be disruptive
         </message>
       </if>
+      <if expr="is_macosx">
+        <message name="IDS_NOTIFICATIONS" desc="Description text next to the notifications icon inside the pop-up bubble which describes that the notification permission is blocked on an OS level.">
+          Notifications
+        </message>
+        <message name="IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS" desc="Title for the notifications status bubble that is used when a PWA requests notifications access, but notifications for that app are blocked on an OS level in macOS.">
+          Notifications are turned off in Mac System Settings
+        </message>
+      </if>
+
 
       <!-- Mac AppleScript -->
       <if expr="is_macosx">

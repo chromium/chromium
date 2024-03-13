@@ -604,6 +604,28 @@ class ContentSettingGeolocationBubbleModel
   bool show_system_geolocation_bubble_ = false;
 };
 
+#if BUILDFLAG(IS_MAC)
+// The bubble that informs users that the app does not have access to
+// Notifications and guides them to the system settings to fix that problem
+// if they wish.
+class ContentSettingNotificationsBubbleModel
+    : public ContentSettingSimpleBubbleModel {
+ public:
+  ContentSettingNotificationsBubbleModel(Delegate* delegate,
+                                         content::WebContents* web_contents);
+
+  ContentSettingNotificationsBubbleModel(
+      const ContentSettingNotificationsBubbleModel&) = delete;
+  ContentSettingNotificationsBubbleModel& operator=(
+      const ContentSettingNotificationsBubbleModel&) = delete;
+
+  ~ContentSettingNotificationsBubbleModel() override;
+
+  // ContentSettingBubbleModel:
+  void OnDoneButtonClicked() override;
+};
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 // The model for the blocked Framebust bubble.
 class ContentSettingFramebustBlockBubbleModel
