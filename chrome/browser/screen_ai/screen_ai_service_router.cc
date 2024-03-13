@@ -8,8 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -266,10 +264,9 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
     return;
   }
 
-  // TODO(crbug.com/1520814): Remove after crash root cause is fixed.
+  // TODO(crbug.com/41493789): Remove when Reading Mode does not enable OCR
+  // without checking component availability.
   if (install_state != screen_ai::ScreenAIInstallState::State::kDownloaded) {
-    base::debug::Alias(&install_state);
-    base::debug::DumpWithoutCrashing();
     return;
   }
 
