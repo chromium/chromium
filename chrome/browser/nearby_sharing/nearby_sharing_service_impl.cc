@@ -1465,6 +1465,16 @@ void NearbySharingServiceImpl::OnBandwidthUpgrade(
   }
 }
 
+void NearbySharingServiceImpl::OnBandwidthUpgradeV3(
+    const ash::nearby::presence::NearbyPresenceService::PresenceDevice
+        remote_device,
+    const Medium medium) {
+  // Because `NearbySharingServiceImpl` is currently only consuming V1 APIs from
+  // `NearbyConnections`, this function is to be left as `NOTIMPLEMENTED()` as
+  // only Nearby Presence is using V3 APIs.
+  NOTIMPLEMENTED();
+}
+
 void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
   CD_LOG(VERBOSE, Feature::NS)
       << __func__ << ": Screen lock state changed. (" << locked << ")";

@@ -50,6 +50,7 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-shared.h"
@@ -197,6 +198,10 @@ class NearbySharingServiceImpl
   // NearbyConnectionsManager::BandwidthUpgradeListener:
   void OnBandwidthUpgrade(const std::string& endpoint_id,
                           const Medium medium) override;
+  void OnBandwidthUpgradeV3(
+      const ash::nearby::presence::NearbyPresenceService::PresenceDevice
+          remote_device,
+      const Medium medium) override;
 
   // ash::SessionObserver:
   void OnLockStateChanged(bool locked) override;

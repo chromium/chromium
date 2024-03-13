@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -109,6 +110,7 @@ class NearbyConnectionsManagerImpl
   using InitialConnectionInfoV3Ptr =
       nearby::connections::mojom::InitialConnectionInfoV3Ptr;
   using PayloadListenerV3 = nearby::connections::mojom::PayloadListenerV3;
+  using BandwidthInfoPtr = nearby::connections::mojom::BandwidthInfoPtr;
   using Status = nearby::connections::mojom::Status;
   using Medium = nearby::connections::mojom::Medium;
 
@@ -142,6 +144,8 @@ class NearbyConnectionsManagerImpl
   void OnConnectionResult(PresenceDevicePtr remote_device,
                           Status status) override;
   void OnDisconnected(PresenceDevicePtr remote_device) override;
+  void OnBandwidthChanged(PresenceDevicePtr remote_device,
+                          BandwidthInfoPtr bandwidth_info) override;
 
   void OnConnectionTimedOut(const std::string& endpoint_id);
   void OnConnectionRequested(const std::string& endpoint_id,
@@ -199,6 +203,12 @@ class NearbyConnectionsManagerImpl
   base::flat_set<std::string> on_bandwidth_changed_endpoint_ids_;
   // For metrics. A map of endpoint_id to current upgraded medium.
   base::flat_map<std::string, Medium> current_upgraded_mediums_;
+  // For metrics. A set of endpoint_ids for which we have received the first
+  // OnBandwidthChanged V3 event.
+  base::flat_set<std::string> on_bandwidth_changed_endpoint_ids_v3_;
+  // For metrics. A map of endpoint_id to current upgraded medium for V3
+  // connections.
+  base::flat_map<std::string, Medium> current_upgraded_mediums_v3_;
 
   const std::string service_id_;
 

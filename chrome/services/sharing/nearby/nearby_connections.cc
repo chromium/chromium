@@ -157,10 +157,12 @@ v3::ConnectionListener CreateConnectionListenerV3(
               return;
             }
 
-            // TODO(b/308178927): Change out the `NOTIMPLEMENTED()` macro call
-            // to `remote->OnBandwidthChanged()` when the logic is fully
-            // implemented.
-            NOTIMPLEMENTED();
+            remote->OnBandwidthChanged(
+                ash::nearby::presence::BuildPresenceMojomDevice(
+                    presence::PresenceDevice(remote_device.GetEndpointId())),
+                mojom::BandwidthInfo::New(
+                    BandwidthQualityToMojom(bandwidth_info.quality),
+                    MediumToMojom(bandwidth_info.medium)));
           },
   };
 }

@@ -22,6 +22,10 @@ NearbyPresenceService::PresenceDevice::PresenceDevice(
       rssi_(rssi) {}
 
 NearbyPresenceService::PresenceDevice::PresenceDevice(
+    const std::string& endpoint_id)
+    : endpoint_id_(endpoint_id) {}
+
+NearbyPresenceService::PresenceDevice::PresenceDevice(
     const PresenceDevice& presence_device) = default;
 NearbyPresenceService::PresenceDevice&
 NearbyPresenceService::PresenceDevice::operator=(

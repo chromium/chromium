@@ -1042,6 +1042,49 @@ void NearbyConnectionsManagerImpl::OnDisconnected(
   // TODO(b/325534442): Emit to V3 version of the metric
   // RequestedBandwidthUpgradeResult, and updated BWU-related maps. See older
   // OnDisconnected() method.
+
+  on_bandwidth_changed_endpoint_ids_.erase(endpoint_id);
+  current_upgraded_mediums_v3_.erase(endpoint_id);
+}
+
+void NearbyConnectionsManagerImpl::OnBandwidthChanged(
+    PresenceDevicePtr remote_device,
+    BandwidthInfoPtr bandwidth_info) {
+  const std::string& endpoint_id = remote_device->endpoint_id;
+
+  // `OnBandwidthChanged` is always called for the first Medium we connected to.
+  // This is not guaranteed to be a specific Medium, but is usually Bluetooth.
+  // This may or may not be preceded by a call to `UpgradeBandwidth`. It's not
+  // useful to record this first Medium since no Bandwidth Upgrade occurred, so
+  // we ignore it.
+  if (!base::Contains(on_bandwidth_changed_endpoint_ids_v3_, endpoint_id)) {
+    CD_LOG(VERBOSE, Feature::NC)
+        << __func__
+        << ": (V3) Initial call with medium=" << bandwidth_info->medium
+        << " , quality=" << bandwidth_info->quality
+        << "; endpoint_id=" << endpoint_id;
+    on_bandwidth_changed_endpoint_ids_v3_.emplace(endpoint_id);
+  } else {
+    // TODO(b/325534442): Emit to a metric in the same that v1
+    // `NearbyConnectionsManagerImpl::OnBandwidthChanged()` emits
+    // "Nearby.Share.Medium.ChangedToMedium".
+    CD_LOG(VERBOSE, Feature::NC)
+        << __func__ << ": (V3) Changed to medium=" << bandwidth_info->medium
+        << " , quality=" << bandwidth_info->quality
+        << "; endpoint_id=" << endpoint_id;
+    current_upgraded_mediums_v3_.insert_or_assign(endpoint_id,
+                                                  bandwidth_info->medium);
+
+    // TODO(b/328296135): When NearbyConnectionsManagerImpl begins maintaining
+    // a `PresenceDevice` map, we will send that back as opposed to a just a
+    // `PresenceDevice` with only an `endpoint_id`.
+    if (bandwidth_upgrade_listener_) {
+      bandwidth_upgrade_listener_->OnBandwidthUpgradeV3(
+          ash::nearby::presence::NearbyPresenceService::PresenceDevice(
+              endpoint_id),
+          bandwidth_info->medium);
+    }
+  }
 }
 
 nearby::connections::mojom::NearbyConnections*
@@ -1094,7 +1137,9 @@ void NearbyConnectionsManagerImpl::Reset() {
   connect_timeout_timers_.clear();
   requested_bwu_endpoint_ids_.clear();
   on_bandwidth_changed_endpoint_ids_.clear();
+  on_bandwidth_changed_endpoint_ids_v3_.clear();
   current_upgraded_mediums_.clear();
+  current_upgraded_mediums_v3_.clear();
 
   for (auto& entry : pending_outgoing_connections_) {
     std::move(entry.second).Run(/*connection=*/nullptr);

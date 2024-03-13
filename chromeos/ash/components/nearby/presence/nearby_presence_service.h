@@ -71,8 +71,8 @@ class NearbyPresenceService {
     kFailedToStartProcess = 17,
   };
 
-  // TODO(b/276642472): Move PresenceDevice into its own class and file, to
-  // inherit from the upcoming Nearby Connections Device class.
+  // TODO(b/327278661): Remove this class and migrate `PresenceDevice` to
+  // //third_party/nearby/src/presence/presence_device.h.
   class PresenceDevice {
    public:
     PresenceDevice(::nearby::internal::Metadata metadata,
@@ -80,6 +80,7 @@ class NearbyPresenceService {
                    std::string endpoint_id,
                    std::vector<Action> actions,
                    int rssi);
+    PresenceDevice(const std::string& endpoint_id);
 
     PresenceDevice(const PresenceDevice&);
     PresenceDevice& operator=(const PresenceDevice&);

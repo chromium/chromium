@@ -164,6 +164,7 @@ using DiscoveredEndpointInfo =
     nearby::connections::mojom::DiscoveredEndpointInfo;
 using ConnectionInfo = nearby::connections::mojom::ConnectionInfo;
 using Medium = nearby::connections::mojom::Medium;
+using BandwidthQuality = nearby::connections::mojom::BandwidthQuality;
 using MediumSelection = nearby::connections::mojom::MediumSelection;
 using PayloadContent = nearby::connections::mojom::PayloadContent;
 using PayloadStatus = nearby::connections::mojom::PayloadStatus;
@@ -211,6 +212,27 @@ class MockPayloadStatusListener
               (PayloadTransferUpdatePtr update,
                std::optional<Medium> upgraded_medium),
               (override));
+};
+
+class MockBandwidthUpgradeListener
+    : public NearbyConnectionsManager::BandwidthUpgradeListener {
+ public:
+  MOCK_METHOD(void,
+              OnBandwidthUpgrade,
+              (const std::string& endpoint_id, const Medium medium),
+              (override));
+
+  MOCK_METHOD(void,
+              OnBandwidthUpgradeV3,
+              (NearbyPresenceService::PresenceDevice, const Medium medium),
+              (override));
+
+  base::WeakPtr<MockBandwidthUpgradeListener> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockBandwidthUpgradeListener> weak_ptr_factory_{this};
 };
 
 class NearbyConnectionsManagerImplTest : public testing::Test {
@@ -2148,4 +2170,76 @@ TEST_F(NearbyConnectionsManagerImplTest, OnConnectionRequestedV3) {
   nearby_connections_manager_->ConnectV3(presence_device, DataUsage::kOffline,
                                          base::DoNothing());
   request_connection_run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsManagerImplTest, OnBandwidthChanged) {
+  mojo::Remote<ConnectionListenerV3> connection_listener_v3_remote;
+  mojo::Remote<PayloadListenerV3> payload_listener_v3_remote;
+
+  nearby::internal::Metadata metadata;
+  metadata.set_device_type(nearby::internal::DeviceType::DEVICE_TYPE_PHONE);
+  metadata.set_account_name(kAccountName);
+  metadata.set_user_name(kUserName);
+  metadata.set_device_name(kDeviceName);
+  metadata.set_device_profile_url(kDeviceProfileUrl);
+  metadata.set_bluetooth_mac_address((char*)kBluetoothMacAddress);
+
+  std::vector<NearbyPresenceService::Action> actions;
+  actions.push_back(NearbyPresenceService::Action::kPresenceManager);
+
+  NearbyPresenceService::PresenceDevice presence_device(
+      metadata, kStableDeviceId, kRemoteEndpointId, std::move(actions), kRssi);
+
+  base::RunLoop request_connection_run_loop;
+  EXPECT_CALL(nearby_connections_, RequestConnectionV3)
+      .WillOnce(
+          [&](const std::string& service_id,
+              ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
+              ConnectionOptionsPtr options,
+              mojo::PendingRemote<ConnectionListenerV3> listener,
+              NearbyConnectionsMojom::RequestConnectionV3Callback callback) {
+            EXPECT_EQ(kServiceId, service_id);
+            EXPECT_EQ(remote_device->endpoint_id, kRemoteEndpointId);
+
+            connection_listener_v3_remote.Bind(std::move(listener));
+            std::move(callback).Run(Status::kSuccess);
+            request_connection_run_loop.Quit();
+          });
+
+  ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
+      BuildPresenceMojomFromServiceDevice(presence_device);
+  nearby_connections_manager_->ConnectV3(presence_device, DataUsage::kOffline,
+                                         base::DoNothing());
+  request_connection_run_loop.Run();
+
+  testing::NiceMock<MockBandwidthUpgradeListener> bandwidth_listener;
+  nearby_connections_manager_->RegisterBandwidthUpgradeListener(
+      bandwidth_listener.GetWeakPtr());
+
+  base::RunLoop bandwidth_run_loop;
+  EXPECT_CALL(
+      bandwidth_listener,
+      OnBandwidthUpgradeV3(testing::An<NearbyPresenceService::PresenceDevice>(),
+                           testing::_))
+      .WillOnce([&](NearbyPresenceService::PresenceDevice remote_device,
+                    const Medium medium) {
+        EXPECT_EQ(remote_device.GetEndpointId(), kRemoteEndpointId);
+        EXPECT_EQ(medium, Medium::kWebRtc);
+
+        bandwidth_run_loop.Quit();
+      });
+
+  // `OnBandwidthChanged()` needs to be called twice. The first one is always
+  // called for the first Medium connected to and does not propagate to the
+  // listener. The second call is when the bandwidth truly changed and is
+  // propagated through to the listener.
+  connection_listener_v3_remote->OnBandwidthChanged(
+      BuildPresenceMojomFromServiceDevice(presence_device),
+      nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kMedium,
+                                                     Medium::kBluetooth));
+  connection_listener_v3_remote->OnBandwidthChanged(
+      BuildPresenceMojomFromServiceDevice(presence_device),
+      nearby::connections::mojom::BandwidthInfo::New(BandwidthQuality::kHigh,
+                                                     Medium::kWebRtc));
+  bandwidth_run_loop.Run();
 }
