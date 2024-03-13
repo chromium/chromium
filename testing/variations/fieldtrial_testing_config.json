@@ -14825,21 +14825,6 @@
             ]
         }
     ],
-    "RelatedSearchesAllLanguage": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RelatedSearchesAllLanguage"
-                    ]
-                }
-            ]
-        }
-    ],
     "RemotePageMetadataAndroid": [
         {
             "platforms": [
