@@ -7647,6 +7647,7 @@ test("unit_tests") {
       "../browser/devtools/serialize_host_descriptions_unittest.cc",
       "../browser/diagnostics/diagnostics_controller_unittest.cc",
       "../browser/diagnostics/diagnostics_model_unittest.cc",
+      "../browser/download/bubble/download_bubble_accessible_alerts_map_unittest.cc",
       "../browser/download/bubble/download_bubble_prefs_unittest.cc",
       "../browser/download/bubble/download_bubble_ui_controller_unittest.cc",
       "../browser/download/bubble/download_bubble_update_service_unittest.cc",

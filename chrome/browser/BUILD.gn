@@ -3737,6 +3737,8 @@ static_library("browser") {
       "diagnostics/sqlite_diagnostics.h",
       "direct_sockets/chrome_direct_sockets_delegate.cc",
       "direct_sockets/chrome_direct_sockets_delegate.h",
+      "download/bubble/download_bubble_accessible_alerts_map.cc",
+      "download/bubble/download_bubble_accessible_alerts_map.h",
       "download/bubble/download_bubble_display_info.cc",
       "download/bubble/download_bubble_display_info.h",
       "download/bubble/download_bubble_prefs.cc",
