@@ -223,7 +223,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 
 #if BUILDFLAG(IS_ANDROID)
   // Let client control whether it wants `DidCompleteSwapWithSize`.
-  bool enable_swap_competion_callback_ = false;
+  bool enable_swap_completion_callback_ = false;
 #endif
 };
 
