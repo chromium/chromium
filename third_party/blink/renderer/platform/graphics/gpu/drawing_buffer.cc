@@ -2037,11 +2037,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
           }
 #endif
           back_buffer_shared_image = std::move(client_shared_image);
-#if BUILDFLAG(IS_MAC)
-          // A CHROMIUM_image backed texture requires a specialized set of
-          // parameters on OSX.
-          texture_target = gpu::GetPlatformSpecificTextureTarget();
-#endif
+          texture_target =
+              back_buffer_shared_image->GetTextureTargetForOverlays();
         }
       }
     }
