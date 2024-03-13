@@ -10,6 +10,7 @@
 #include <sstream>
 
 #include "base/check_op.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -163,6 +164,18 @@ void* LinkStackFrames(void* fpp, void* parent_fp) {
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
+// True if an OverrideSuppressedOutputForTesting instance is alive to force
+// generation of symbolized stack traces in death tests.
+bool g_override_suppression = false;
+
+// Returns true if generation of symbolized stack traces is to be suppressed.
+bool ShouldSuppressOutput() {
+  // Backtraces are not visible in death test children, so do not waste
+  // resources by generating any unless an OverrideSuppressedOutputForTesting
+  // instance is alive.
+  return !g_override_suppression && ::base::internal::InDeathTestChild();
+}
+
 }  // namespace
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
@@ -266,6 +279,10 @@ void StackTrace::Print() const {
 }
 
 void StackTrace::OutputToStream(std::ostream* os) const {
+  if (ShouldSuppressOutput()) {
+    (*os) << "Backtrace suppressed.";
+    return;
+  }
   OutputToStreamWithPrefix(os, nullptr);
 }
 
@@ -275,6 +292,9 @@ std::string StackTrace::ToString() const {
 std::string StackTrace::ToStringWithPrefix(const char* prefix_string) const {
   std::stringstream stream;
 #if !defined(__UCLIBC__) && !defined(_AIX)
+  if (ShouldSuppressOutput()) {
+    return "Backtrace suppressed.";
+  }
   OutputToStreamWithPrefix(&stream, prefix_string);
 #endif
   return stream.str();
@@ -287,6 +307,16 @@ std::ostream& operator<<(std::ostream& os, const StackTrace& s) {
   os << "StackTrace::OutputToStream not implemented.";
 #endif
   return os;
+}
+
+OverrideSuppressedOutputForTesting::OverrideSuppressedOutputForTesting() {
+  CHECK(!g_override_suppression);  // Nesting not supported.
+  g_override_suppression = true;
+}
+
+OverrideSuppressedOutputForTesting::~OverrideSuppressedOutputForTesting() {
+  CHECK(g_override_suppression);  // Nesting not supported.
+  g_override_suppression = false;
 }
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)

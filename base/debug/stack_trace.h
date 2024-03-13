@@ -152,6 +152,18 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os, const StackTrace& s);
 // number of frames read.
 BASE_EXPORT size_t CollectStackTrace(const void** trace, size_t count);
 
+// A helper for death tests that must override the default suppression of
+// symbolized stack traces.
+class BASE_EXPORT OverrideSuppressedOutputForTesting {
+ public:
+  OverrideSuppressedOutputForTesting();
+  ~OverrideSuppressedOutputForTesting();
+  OverrideSuppressedOutputForTesting(
+      const OverrideSuppressedOutputForTesting&) = delete;
+  OverrideSuppressedOutputForTesting& operator=(
+      const OverrideSuppressedOutputForTesting&) = delete;
+};
+
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 // For stack scanning to be efficient it's very important for the thread to

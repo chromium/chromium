@@ -181,6 +181,7 @@ TEST_F(ThreadRestrictionsTest, DisallowUnresponsiveTasks) {
     defined(GTEST_HAS_DEATH_TEST)
 
 TEST_F(ThreadRestrictionsTest, BlockingCheckEmitsStack) {
+  debug::OverrideSuppressedOutputForTesting enable_stacks_in_death_tests;
   ScopedDisallowBlocking scoped_disallow_blocking;
   // The above ScopedDisallowBlocking should be on the blame list for who set
   // the ban.
@@ -204,6 +205,7 @@ class TestCustomDisallow {
 };
 
 TEST_F(ThreadRestrictionsTest, NestedAllowRestoresPreviousStack) {
+  debug::OverrideSuppressedOutputForTesting enable_stacks_in_death_tests;
   TestCustomDisallow custom_disallow;
   {
     ScopedAllowBlocking scoped_allow;
