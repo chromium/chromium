@@ -219,7 +219,6 @@ suite('ambient mode disallowed', () => {
   });
 });
 
-
 suite('wallpaper subpage', () => {
   function clickWallpaperPreviewLink() {
     assertEquals(
@@ -291,147 +290,6 @@ suite('wallpaper subpage', () => {
     assertGT(
         collections.offsetHeight, 0,
         'wallpaper-collections grid should have visible height');
-  });
-
-  suite('sea pen', function() {
-    setup(() => {
-      // Disables transition animation for tests.
-      setTransitionsEnabled(false);
-    });
-
-    test('has selected wallpaper on root page', async () => {
-      const subpage = getWallpaperSubpage();
-
-      const seaPenTile = await waitUntil(
-          () => subpage.shadowRoot?.querySelector('wallpaper-collections')
-                    ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
-                        `wallpaper-grid-item[aria-disabled='false']` +
-                        `[data-sea-pen]`),
-          'waiting for sea-pen-tile');
-      seaPenTile.click();
-
-      const wallpaperSelected = await waitUntil(
-          () => getRouter().shadowRoot?.getElementById('wallpaperSelected')!,
-          'waiting for sea-pen-router wallpaper-selected');
-      assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
-    });
-
-    test('hides selected wallpaper on non root page', async () => {
-      const subpage = getWallpaperSubpage();
-
-      const seaPenTile = await waitUntil(
-          () => subpage.shadowRoot?.querySelector('wallpaper-collections')
-                    ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
-                        `wallpaper-grid-item[aria-disabled='false']` +
-                        `[data-sea-pen]`),
-          'waiting for sea-pen-tile');
-      seaPenTile.click();
-
-      const seaPenRouter = await waitUntil(
-          () => getRouter().shadowRoot?.querySelector<SeaPenRouterElement>(
-              'sea-pen-router')!,
-          'waiting for sea-pen-router');
-
-      let wallpaperSelected =
-          getRouter().shadowRoot?.getElementById('wallpaperSelected')!;
-      assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
-      assertNotEquals(getComputedStyle(wallpaperSelected).display, 'none');
-
-      const templates = await waitUntil(
-          () => seaPenRouter.shadowRoot?.querySelector('sea-pen-templates')
-                    ?.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
-                        `wallpaper-grid-item[data-sea-pen-image]`),
-          'waiting for sea-pen-tile');
-      templates[0]!.click();
-
-      const seaPenTemplateQuery = await waitUntil(
-          () => seaPenRouter.shadowRoot
-                    ?.querySelector<SeaPenTemplateQueryElement>(
-                        'sea-pen-template-query')!,
-          'waiting for sea-pen-template-query');
-      assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query should exist');
-
-      wallpaperSelected =
-          getRouter().shadowRoot?.getElementById('wallpaperSelected')!;
-      assertFalse(!!wallpaperSelected, 'wallpaper-selected should not exist');
-    });
-
-    test('show more option chips', async () => {
-      const subpage = getWallpaperSubpage();
-
-      const seaPenTile = await waitUntil(
-          () => subpage.shadowRoot?.querySelector('wallpaper-collections')
-                    ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
-                        `wallpaper-grid-item[aria-disabled='false']` +
-                        `[data-sea-pen]`),
-          'waiting for sea-pen-tile');
-      seaPenTile.click();
-
-      const seaPenRouter = await waitUntil(
-          () => getRouter().shadowRoot?.querySelector<SeaPenRouterElement>(
-              'sea-pen-router')!,
-          'waiting for sea-pen-router');
-
-      const acceptTermsButton = await waitUntil(
-          () => seaPenRouter.shadowRoot
-                    ?.querySelector('sea-pen-terms-of-service-dialog')
-                    ?.shadowRoot?.querySelector<HTMLElement>('#accept'),
-          'wait for accept button to load');
-      acceptTermsButton.click();
-
-      const templates = await waitUntil(
-          () => seaPenRouter.shadowRoot?.querySelector('sea-pen-templates')
-                    ?.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
-                        `wallpaper-grid-item[data-sea-pen-image]`),
-          'waiting for sea-pen-tile');
-      templates[6]!.click();
-
-      const seaPenTemplateQuery = await waitUntil(
-          () => seaPenRouter.shadowRoot
-                    ?.querySelector<SeaPenTemplateQueryElement>(
-                        'sea-pen-template-query')!,
-          'waiting for Characters template');
-      assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
-
-      const seaPenChips = await waitUntil(
-          () =>
-              seaPenTemplateQuery.shadowRoot?.querySelectorAll<HTMLDivElement>(
-                  '#template > .chip-container > .chip-text'),
-          'waiting for chips');
-      assertEquals(
-          3, seaPenChips.length,
-          'there should be 3 chips in the Characters template');
-      seaPenChips[1]!.click();
-
-      const seaPenOptions = await waitUntil(
-          () =>
-              seaPenTemplateQuery.shadowRoot?.querySelector('sea-pen-options'),
-          'waiting for sea-pen-options to load');
-
-      let options = await waitUntil(
-          () => seaPenOptions.shadowRoot?.querySelector<HTMLDivElement>(
-              '#options'),
-          'waiting for options to load');
-      assertTrue(!!options, 'options should show up');
-      assertTrue(
-          options.clientHeight < options.scrollHeight,
-          'some options should be hidden');
-
-      const expandButton = await waitUntil(
-          () => seaPenOptions.shadowRoot?.querySelector<HTMLSpanElement>(
-              '#expand > span.clickable'),
-          'wait for expand button');
-      assertTrue(!!expandButton, 'expand button should show up');
-
-      expandButton.click();
-      options = await waitUntil(
-          () => seaPenOptions.shadowRoot?.querySelector<HTMLDivElement>(
-              '#options'),
-          'waiting for options to load');
-      assertTrue(
-          options.clientHeight >= options.scrollHeight,
-          'all options should show up');
-    });
   });
 
   suite('backdrop', function() {
@@ -629,6 +487,178 @@ suite('wallpaper subpage', () => {
           null, getSharedAlbumDialog(),
           'google photos shared album dialog is gone');
     });
+  });
+});
+
+
+suite('sea pen', () => {
+  function clickWallpaperPreviewLink() {
+    assertEquals(
+        ROOT_PAGE, window.location.href,
+        'wallpaper preview link only present on root page');
+    getRouter()
+        .shadowRoot?.querySelector('personalization-main')
+        ?.shadowRoot?.querySelector('wallpaper-preview')
+        ?.shadowRoot?.querySelector('cr-icon-button')
+        ?.click();
+    assertEquals(
+        ROOT_PAGE + 'wallpaper', window.location.href,
+        'should have navigated to wallpaper');
+  }
+
+  function getWallpaperSubpage() {
+    const router = getRouter();
+    assertTrue(!!router, 'personalization-router should be top level element');
+
+    const wallpaperSubpage =
+        router.shadowRoot?.querySelector('wallpaper-subpage');
+    assertTrue(
+        !!wallpaperSubpage,
+        'wallpaper-subpage should be found under personalization-router');
+
+    return wallpaperSubpage;
+  }
+
+  setup(async () => {
+    // Reset to default state before each test to reduce order dependencies.
+    await window.personalizationTestApi.reset();
+
+    // Disables transition animation for tests.
+    setTransitionsEnabled(false);
+
+    clickWallpaperPreviewLink();
+  });
+
+  test('has selected wallpaper on root page', async () => {
+    const subpage = getWallpaperSubpage();
+
+    const seaPenTile = await waitUntil(
+        () => subpage.shadowRoot?.querySelector('wallpaper-collections')
+                  ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
+                      `wallpaper-grid-item[aria-disabled='false']` +
+                      `[data-sea-pen]`),
+        'waiting for sea-pen-tile');
+    seaPenTile.click();
+
+    const wallpaperSelected = await waitUntil(
+        () => getRouter().shadowRoot?.getElementById('wallpaperSelected')!,
+        'waiting for sea-pen-router wallpaper-selected');
+    assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
+  });
+
+  test('hides selected wallpaper on non root page', async () => {
+    const subpage = getWallpaperSubpage();
+
+    const seaPenTile = await waitUntil(
+        () => subpage.shadowRoot?.querySelector('wallpaper-collections')
+                  ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
+                      `wallpaper-grid-item[aria-disabled='false']` +
+                      `[data-sea-pen]`),
+        'waiting for sea-pen-tile');
+    seaPenTile.click();
+
+    const seaPenRouter = await waitUntil(
+        () => getRouter().shadowRoot?.querySelector<SeaPenRouterElement>(
+            'sea-pen-router')!,
+        'waiting for sea-pen-router');
+
+    let wallpaperSelected =
+        getRouter().shadowRoot?.getElementById('wallpaperSelected')!;
+    assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
+    assertNotEquals(getComputedStyle(wallpaperSelected).display, 'none');
+
+    const templates = await waitUntil(
+        () => seaPenRouter.shadowRoot?.querySelector('sea-pen-templates')
+                  ?.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
+                      `wallpaper-grid-item[data-sea-pen-image]`),
+        'waiting for sea-pen-tile');
+    templates[0]!.click();
+
+    const seaPenTemplateQuery = await waitUntil(
+        () =>
+            seaPenRouter.shadowRoot?.querySelector<SeaPenTemplateQueryElement>(
+                'sea-pen-template-query')!,
+        'waiting for sea-pen-template-query');
+    assertTrue(!!seaPenTemplateQuery, 'sea-pen-template-query should exist');
+
+    wallpaperSelected =
+        getRouter().shadowRoot?.getElementById('wallpaperSelected')!;
+    assertFalse(!!wallpaperSelected, 'wallpaper-selected should not exist');
+  });
+
+  test('show more option chips', async () => {
+    const subpage = getWallpaperSubpage();
+
+    const seaPenTile = await waitUntil(
+        () => subpage.shadowRoot?.querySelector('wallpaper-collections')
+                  ?.shadowRoot?.querySelector<WallpaperGridItemElement>(
+                      `wallpaper-grid-item[aria-disabled='false']` +
+                      `[data-sea-pen]`),
+        'waiting for sea-pen-tile');
+    seaPenTile.click();
+
+    const seaPenRouter = await waitUntil(
+        () => getRouter().shadowRoot?.querySelector<SeaPenRouterElement>(
+            'sea-pen-router')!,
+        'waiting for sea-pen-router');
+
+    const acceptTermsButton = await waitUntil(
+        () => seaPenRouter.shadowRoot
+                  ?.querySelector('sea-pen-terms-of-service-dialog')
+                  ?.shadowRoot?.querySelector<HTMLElement>('#accept'),
+        'wait for accept button to load');
+    acceptTermsButton.click();
+
+    const templates = await waitUntil(
+        () => seaPenRouter.shadowRoot?.querySelector('sea-pen-templates')
+                  ?.shadowRoot?.querySelectorAll<WallpaperGridItemElement>(
+                      `wallpaper-grid-item[data-sea-pen-image]`),
+        'waiting for sea-pen-tile');
+    templates[6]!.click();
+
+    const seaPenTemplateQuery = await waitUntil(
+        () =>
+            seaPenRouter.shadowRoot?.querySelector<SeaPenTemplateQueryElement>(
+                'sea-pen-template-query')!,
+        'waiting for Characters template');
+    assertTrue(!!seaPenTemplateQuery, 'Characters template should show up');
+
+    const seaPenChips = await waitUntil(
+        () => seaPenTemplateQuery.shadowRoot?.querySelectorAll<HTMLDivElement>(
+            '#template > .chip-container > .chip-text'),
+        'waiting for chips');
+    assertEquals(
+        3, seaPenChips.length,
+        'there should be 3 chips in the Characters template');
+    seaPenChips[1]!.click();
+
+    const seaPenOptions = await waitUntil(
+        () => seaPenTemplateQuery.shadowRoot?.querySelector('sea-pen-options'),
+        'waiting for sea-pen-options to load');
+
+    let options = await waitUntil(
+        () =>
+            seaPenOptions.shadowRoot?.querySelector<HTMLDivElement>('#options'),
+        'waiting for options to load');
+    assertTrue(!!options, 'options should show up');
+    assertTrue(
+        options.clientHeight < options.scrollHeight,
+        'some options should be hidden');
+
+    const expandButton = await waitUntil(
+        () => seaPenOptions.shadowRoot?.querySelector<HTMLSpanElement>(
+            '#expand > span.clickable'),
+        'wait for expand button');
+    assertTrue(!!expandButton, 'expand button should show up');
+
+    expandButton.click();
+    options = await waitUntil(
+        () =>
+            seaPenOptions.shadowRoot?.querySelector<HTMLDivElement>('#options'),
+        'waiting for options to load');
+    assertTrue(
+        options.clientHeight >= options.scrollHeight,
+        'all options should show up');
   });
 });
 
