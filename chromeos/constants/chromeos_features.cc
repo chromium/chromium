@@ -296,6 +296,15 @@ bool IsCrosShortstandEnabled() {
 #endif
 }
 
+bool IsCrosWebAppInstallDialogEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()
+      ->IsCrosWebAppInstallDialogEnabled();
+#else
+  return base::FeatureList::IsEnabled(kCrosWebAppInstallDialog);
+#endif
+}
+
 bool IsCrosWebAppShortcutUiUpdateEnabled() {
   if (IsCrosShortstandEnabled()) {
     return true;

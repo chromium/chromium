@@ -137,6 +137,20 @@ ui::PageTransition LinkCapturingNavigationThrottle::MaskOutPageTransition(
   return ui::PageTransitionFromInt(page_transition & ~mask);
 }
 
+// static
+bool LinkCapturingNavigationThrottle::
+    IsEmptyDanglingWebContentsAfterLinkCapture(
+        content::NavigationHandle* handle) {
+  const GURL& last_committed_url =
+      handle->GetWebContents()->GetLastCommittedURL();
+  return !last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
+         // Some navigations are via JavaScript `location.href = url;`.
+         // This can be used for user clicked buttons as well as redirects.
+         // Check whether the action was in the context of a user activation to
+         // distinguish redirects from click event handlers.
+         !IsNavigationUserInitiated(handle);
+}
+
 LinkCapturingNavigationThrottle::Delegate::~Delegate() = default;
 
 // static
@@ -305,13 +319,7 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   bool closed_web_contents = false;
   std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
-  const GURL& last_committed_url = web_contents->GetLastCommittedURL();
-  if (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank() ||
-      // Some navigations are via JavaScript `location.href = url;`.
-      // This can be used for user clicked buttons as well as redirects.
-      // Check whether the action was in the context of a user activation to
-      // distinguish redirects from click event handlers.
-      !IsNavigationUserInitiated(handle)) {
+  if (IsEmptyDanglingWebContentsAfterLinkCapture(handle)) {
     browser_keep_alive = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::APP_LAUNCH, KeepAliveRestartOption::ENABLED);
     if (!profile->IsOffTheRecord()) {

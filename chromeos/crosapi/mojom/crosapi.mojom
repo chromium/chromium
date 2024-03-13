@@ -1158,8 +1158,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 79
-// Next id: 79
+// Next version: 80
+// Next id: 80
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1620,6 +1620,10 @@ struct BrowserInitParams {
   [MinVersion=78]
   bool is_file_system_provider_cloud_file_system_enabled@78;
 
+  // Set to true when the `chromeos::features::kCrosWebAppInstallDialog` flag is
+  // enabled in Ash.
+  [MinVersion=79]
+  bool is_cros_web_app_install_dialog_enabled@79;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

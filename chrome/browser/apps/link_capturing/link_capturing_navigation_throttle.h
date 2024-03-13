@@ -37,6 +37,13 @@ class LinkCapturingNavigationThrottle : public content::NavigationThrottle {
       ui::PageTransition page_transition,
       ui::PageTransition mask);
 
+  // Inspects the WebContents of the navigation to determine whether, after
+  // successful link capturing, it is a redundant dangling empty browser tab
+  // that should be cleaned up. These dangling tabs result from e.g.
+  // window.open(url) or target="_blank" navigations.
+  static bool IsEmptyDanglingWebContentsAfterLinkCapture(
+      content::NavigationHandle* handle);
+
   using LaunchCallback =
       base::OnceCallback<void(base::OnceClosure on_launch_complete)>;
 

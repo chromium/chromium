@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
@@ -18,6 +19,7 @@
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -105,11 +107,11 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThottleBrowserTest,
   web_app::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/true);
 
   // Open GIOC URI.
-  NavigateParams params(browser(),
-                        GURL(base::StrCat({"almanac://install-app?package_id=",
-                                           package_id.ToString()})),
-                        ui::PAGE_TRANSITION_LINK);
-  ui_test_utils::NavigateToURL(&params);
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      base::StringPrintf("window.open('almanac://install-app?package_id=%s');",
+                         package_id.ToString().c_str())));
 
   // This should trigger the sequence:
   // - AppInstallNavigationThrottle
@@ -119,6 +121,11 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThottleBrowserTest,
   // Await install to complete.
   web_app::WebAppTestInstallObserver(browser()->profile())
       .BeginListeningAndWait({app_id});
+
+  // Check that window.open() didn't leave an extra about:blank tab lying
+  // around, there should only be the original about:blank tab and the install
+  // page tab.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
 }
 
 }  // namespace apps

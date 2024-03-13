@@ -812,6 +812,9 @@ void InjectBrowserInitParams(
 
   params->is_file_system_provider_cloud_file_system_enabled =
       chromeos::features::IsFileSystemProviderCloudFileSystemEnabled();
+
+  params->is_cros_web_app_install_dialog_enabled =
+      chromeos::features::IsCrosWebAppInstallDialogEnabled();
 }
 
 template <typename BrowserParams>

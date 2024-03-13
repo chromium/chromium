@@ -91,6 +91,7 @@ source_set("navigation_throttle") {
     ":app_install",
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/link_capturing",
     "//chrome/browser/profiles:profile",
     "//chromeos/constants",
     "//components/services/app_service",
