@@ -670,11 +670,9 @@ bool Animation::PreCommit(
       }
 
       compositor_property_animations_have_no_effect_ =
-          failure_reasons &
-          CompositorAnimations::kCompositorPropertyAnimationsHaveNoEffect;
+          failure_reasons & CompositorAnimations::kAnimationHasNoVisibleChange;
       animation_has_no_effect_ =
-          failure_reasons ==
-          CompositorAnimations::kCompositorPropertyAnimationsHaveNoEffect;
+          failure_reasons == CompositorAnimations::kAnimationHasNoVisibleChange;
 
       DCHECK_EQ(kRunning, CalculateAnimationPlayState());
       TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(

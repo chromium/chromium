@@ -68,14 +68,22 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
       return keyframes_;
     }
 
+    bool IsStatic() const { return has_static_value_; }
+
     void Trace(Visitor* visitor) const { visitor->Trace(keyframes_); }
 
    private:
     void RemoveRedundantKeyframes();
+    void CheckIfStatic();
     bool AddSyntheticKeyframeIfRequired(
         scoped_refptr<TimingFunction> zero_offset_easing);
 
     PropertySpecificKeyframeVector keyframes_;
+
+    // TODO(kevers): Store CSS value if static in order to short-circuit
+    // applying the effect if set as we don't need to determine the bounding
+    // keyframes.
+    bool has_static_value_ = false;
 
     friend class KeyframeEffectModelBase;
   };
@@ -84,6 +92,8 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   bool IsReplaceOnly() const;
 
   PropertyHandleSet Properties() const;
+
+  PropertyHandleSet DynamicProperties() const;
 
   using KeyframeVector = HeapVector<Member<Keyframe>>;
   const KeyframeVector& GetFrames() const { return keyframes_; }
