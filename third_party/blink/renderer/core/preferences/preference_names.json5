@@ -1,0 +1,14 @@
+{
+  metadata: {
+    namespace: "preference_names",
+    export: "CORE_EXPORT",
+  },
+
+  data: [
+    "colorScheme",
+    "contrast",
+    "reducedData",
+    "reducedMotion",
+    "reducedTransparency",
+  ],
+}

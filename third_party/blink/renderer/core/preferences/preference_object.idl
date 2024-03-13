@@ -8,11 +8,13 @@
     SecureContext,
     RuntimeEnabled=WebPreferences
 ]
-interface PreferenceObject {
+interface PreferenceObject : EventTarget {
   [CallWith=ScriptState] readonly attribute DOMString? override;
   [CallWith=ScriptState] readonly attribute DOMString value;
   readonly attribute FrozenArray<DOMString> validValues;
 
   [CallWith=ScriptState] undefined clearOverride();
   [CallWith=ScriptState] Promise<undefined> requestOverride(DOMString? value);
+
+  attribute EventHandler onchange;
 };

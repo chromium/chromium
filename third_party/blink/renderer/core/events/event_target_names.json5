@@ -54,5 +54,6 @@
     "XMLHttpRequest",
     "XMLHttpRequestUpload",
     "CloseWatcher",
+    "PreferenceObject"
   ],
 }

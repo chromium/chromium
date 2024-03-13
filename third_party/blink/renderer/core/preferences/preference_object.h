@@ -7,18 +7,22 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
+class Document;
+class ExecutionContext;
 template <typename IDLType>
 class FrozenArray;
 class MediaValues;
 
 // Spec: https://wicg.github.io/web-preferences-api/#preferenceobject-interface
-class PreferenceObject final : public ScriptWrappable {
+class CORE_EXPORT PreferenceObject final
+    : public EventTarget,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -37,7 +41,15 @@ class PreferenceObject final : public ScriptWrappable {
 
   const FrozenArray<IDLString>& validValues();
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
+
   void Trace(Visitor* visitor) const override;
+
+  // From ExecutionContextLifecycleObserver
+  void ContextDestroyed() override;
+
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
 
  private:
   AtomicString name_;

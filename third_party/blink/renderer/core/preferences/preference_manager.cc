@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/preferences/preference_manager.h"
+#include "third_party/blink/renderer/core/preferences/preference_names.h"
 #include "third_party/blink/renderer/core/preferences/preference_object.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -10,15 +11,15 @@ namespace blink {
 
 PreferenceManager::PreferenceManager(ExecutionContext* executionContext) {
   color_scheme_ = MakeGarbageCollected<PreferenceObject>(
-      executionContext, AtomicString("colorScheme"));
-  contrast_ = MakeGarbageCollected<PreferenceObject>(executionContext,
-                                                     AtomicString("contrast"));
+      executionContext, preference_names::kColorScheme);
+  contrast_ = MakeGarbageCollected<PreferenceObject>(
+      executionContext, preference_names::kContrast);
   reduced_motion_ = MakeGarbageCollected<PreferenceObject>(
-      executionContext, AtomicString("reducedMotion"));
+      executionContext, preference_names::kReducedMotion);
   reduced_transparency_ = MakeGarbageCollected<PreferenceObject>(
-      executionContext, AtomicString("reducedTransparency"));
+      executionContext, preference_names::kReducedTransparency);
   reduced_data_ = MakeGarbageCollected<PreferenceObject>(
-      executionContext, AtomicString("reducedData"));
+      executionContext, preference_names::kReducedData);
 }
 
 PreferenceManager::~PreferenceManager() = default;

@@ -7433,14 +7433,16 @@ interface PreferenceManager
     getter reducedMotion
     getter reducedTransparency
     method constructor
-interface PreferenceObject
+interface PreferenceObject : EventTarget
     attribute @@toStringTag
+    getter onchange
     getter override
     getter validValues
     getter value
     method clearOverride
     method constructor
     method requestOverride
+    setter onchange
 interface Presentation
     attribute @@toStringTag
     getter defaultRequest

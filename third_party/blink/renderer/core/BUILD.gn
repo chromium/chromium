@@ -997,6 +997,32 @@ make_names("make_core_generated_pointer_type_names") {
   output_dir = blink_core_output_dir
 }
 
+code_generator("make_core_generated_preference_names") {
+  script = "../build/scripts/make_names.py"
+  json_inputs = [ "preferences/preference_names.json5" ]
+  templates = [
+    "../build/scripts/templates/make_names.cc.tmpl",
+    "../build/scripts/templates/make_names.h.tmpl",
+  ]
+  outputs = [
+    "$blink_core_output_dir/preferences/preference_names.cc",
+    "$blink_core_output_dir/preferences/preference_names.h",
+  ]
+}
+
+code_generator("make_core_generated_preference_values") {
+  script = "../build/scripts/make_names.py"
+  json_inputs = [ "preferences/preference_values.json5" ]
+  templates = [
+    "../build/scripts/templates/make_names.cc.tmpl",
+    "../build/scripts/templates/make_names.h.tmpl",
+  ]
+  outputs = [
+    "$blink_core_output_dir/preferences/preference_values.cc",
+    "$blink_core_output_dir/preferences/preference_values.h",
+  ]
+}
+
 make_names("make_core_generated_script_type_names") {
   in_files = [ "script/script_type_names.json5" ]
   output_dir = blink_core_output_dir
@@ -1200,6 +1226,8 @@ targets_generating_sources = [
   ":make_core_generated_performance_entry_names",
   ":make_core_generated_permissions_policy_helper",
   ":make_core_generated_pointer_type_names",
+  ":make_core_generated_preference_names",
+  ":make_core_generated_preference_values",
   ":make_core_generated_property_bitsets",
   ":make_core_generated_script_type_names",
   ":make_core_generated_securitypolicyviolation_disposition_names",

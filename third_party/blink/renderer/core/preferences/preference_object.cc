@@ -9,11 +9,15 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/preferences/preference_names.h"
 #include "third_party/blink/renderer/core/preferences/preference_overrides.h"
+#include "third_party/blink/renderer/core/preferences/preference_values.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -24,9 +28,9 @@ AtomicString ColorSchemeToString(
     mojom::blink::PreferredColorScheme colorScheme) {
   switch (colorScheme) {
     case mojom::PreferredColorScheme::kLight:
-      return AtomicString("light");
+      return preference_values::kLight;
     case mojom::PreferredColorScheme::kDark:
-      return AtomicString("dark");
+      return preference_values::kDark;
     default:
       NOTREACHED();
       return g_empty_atom;
@@ -36,13 +40,13 @@ AtomicString ColorSchemeToString(
 AtomicString ContrastToString(mojom::blink::PreferredContrast contrast) {
   switch (contrast) {
     case mojom::PreferredContrast::kMore:
-      return AtomicString("more");
+      return preference_values::kMore;
     case mojom::PreferredContrast::kLess:
-      return AtomicString("less");
+      return preference_values::kLess;
     case mojom::PreferredContrast::kCustom:
-      return AtomicString("custom");
+      return preference_values::kCustom;
     case mojom::PreferredContrast::kNoPreference:
-      return AtomicString("no-preference");
+      return preference_values::kNoPreference;
     default:
       NOTREACHED();
       return g_empty_atom;
@@ -51,7 +55,7 @@ AtomicString ContrastToString(mojom::blink::PreferredContrast contrast) {
 
 PreferenceObject::PreferenceObject(ExecutionContext* executionContext,
                                    AtomicString name)
-    : name_(name) {
+    : ExecutionContextLifecycleObserver(executionContext), name_(name) {
   LocalFrame* frame = nullptr;
   if (executionContext && !executionContext->IsContextDestroyed()) {
     frame = DynamicTo<LocalDOMWindow>(executionContext)->GetFrame();
@@ -63,6 +67,7 @@ PreferenceObject::~PreferenceObject() = default;
 
 std::optional<AtomicString> PreferenceObject::override(
     ScriptState* script_state) {
+  CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
   if (!script_state || !script_state->ContextIsValid()) {
     return std::nullopt;
   }
@@ -82,7 +87,7 @@ std::optional<AtomicString> PreferenceObject::override(
     return std::nullopt;
   }
 
-  if (name_ == "colorScheme") {
+  if (name_ == preference_names::kColorScheme) {
     std::optional<mojom::blink::PreferredColorScheme> color_scheme =
         overrides->GetPreferredColorScheme();
     if (!color_scheme.has_value()) {
@@ -90,7 +95,7 @@ std::optional<AtomicString> PreferenceObject::override(
     }
 
     return std::make_optional(ColorSchemeToString(color_scheme.value()));
-  } else if (name_ == "contrast") {
+  } else if (name_ == preference_names::kContrast) {
     std::optional<mojom::blink::PreferredContrast> contrast =
         overrides->GetPreferredContrast();
     if (!contrast.has_value()) {
@@ -98,31 +103,33 @@ std::optional<AtomicString> PreferenceObject::override(
     }
 
     return std::make_optional(ContrastToString(contrast.value()));
-  } else if (name_ == "reducedMotion") {
+  } else if (name_ == preference_names::kReducedMotion) {
     std::optional<bool> reduced_motion = overrides->GetPrefersReducedMotion();
     if (!reduced_motion.has_value()) {
       return std::nullopt;
     }
 
-    return std::make_optional(
-        AtomicString(reduced_motion.value() ? "reduce" : "no-preference"));
-  } else if (name_ == "reducedTransparency") {
+    return std::make_optional(reduced_motion.value()
+                                  ? preference_values::kReduce
+                                  : preference_values::kNoPreference);
+  } else if (name_ == preference_names::kReducedTransparency) {
     std::optional<bool> reduced_transparency =
         overrides->GetPrefersReducedTransparency();
     if (!reduced_transparency.has_value()) {
       return std::nullopt;
     }
 
-    return std::make_optional(AtomicString(
-        reduced_transparency.value() ? "reduce" : "no-preference"));
-  } else if (name_ == "reducedData") {
+    return std::make_optional(reduced_transparency.value()
+                                  ? preference_values::kReduce
+                                  : preference_values::kNoPreference);
+  } else if (name_ == preference_names::kReducedData) {
     std::optional<bool> reduced_data = overrides->GetPrefersReducedData();
     if (!reduced_data.has_value()) {
       return std::nullopt;
     }
 
-    return std::make_optional(
-        AtomicString(reduced_data.value() ? "reduce" : "no-preference"));
+    return std::make_optional(reduced_data ? preference_values::kReduce
+                                           : preference_values::kNoPreference);
   } else {
     NOTREACHED();
     return std::nullopt;
@@ -130,6 +137,7 @@ std::optional<AtomicString> PreferenceObject::override(
 }
 
 AtomicString PreferenceObject::value(ScriptState* script_state) {
+  CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
   if (!script_state || !script_state->ContextIsValid()) {
     return g_empty_atom;
   }
@@ -142,23 +150,26 @@ AtomicString PreferenceObject::value(ScriptState* script_state) {
     return g_empty_atom;
   }
 
-  if (name_ == "colorScheme") {
+  if (name_ == preference_names::kColorScheme) {
     mojom::blink::PreferredColorScheme color_scheme =
         media_values_->GetPreferredColorScheme();
     return ColorSchemeToString(color_scheme);
-  } else if (name_ == "contrast") {
+  } else if (name_ == preference_names::kContrast) {
     mojom::blink::PreferredContrast contrast =
         media_values_->GetPreferredContrast();
     return ContrastToString(contrast);
-  } else if (name_ == "reducedMotion") {
-    bool reduced_motion = media_values_->PrefersReducedMotion();
-    return AtomicString(reduced_motion ? "reduce" : "no-preference");
-  } else if (name_ == "reducedTransparency") {
-    bool reduced_transparency = media_values_->PrefersReducedTransparency();
-    return AtomicString(reduced_transparency ? "reduce" : "no-preference");
-  } else if (name_ == "reducedData") {
-    bool reduced_data = media_values_->PrefersReducedData();
-    return AtomicString(reduced_data ? "reduce" : "no-preference");
+  } else if (name_ == preference_names::kReducedMotion) {
+    return media_values_->PrefersReducedMotion()
+               ? preference_values::kReduce
+               : preference_values::kNoPreference;
+  } else if (name_ == preference_names::kReducedTransparency) {
+    return media_values_->PrefersReducedTransparency()
+               ? preference_values::kReduce
+               : preference_values::kNoPreference;
+  } else if (name_ == preference_names::kReducedData) {
+    return media_values_->PrefersReducedData()
+               ? preference_values::kReduce
+               : preference_values::kNoPreference;
   } else {
     NOTREACHED();
     return g_empty_atom;
@@ -166,6 +177,7 @@ AtomicString PreferenceObject::value(ScriptState* script_state) {
 }
 
 void PreferenceObject::clearOverride(ScriptState* script_state) {
+  CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
   if (!script_state || !script_state->ContextIsValid()) {
     return;
   }
@@ -185,54 +197,76 @@ void PreferenceObject::clearOverride(ScriptState* script_state) {
     return;
   }
 
-  AtomicString featureName;
-  if (name_ == "colorScheme") {
+  bool value_unchanged;
+  if (name_ == preference_names::kColorScheme) {
     std::optional<mojom::blink::PreferredColorScheme> color_scheme =
         overrides->GetPreferredColorScheme();
     if (!color_scheme.has_value()) {
       return;
     }
 
-    featureName = AtomicString("prefers-color-scheme");
-  } else if (name_ == "contrast") {
+    window->GetFrame()->GetPage()->SetPreferenceOverride(
+        media_feature_names::kPrefersColorSchemeMediaFeature, String());
+    mojom::blink::PreferredColorScheme new_color_scheme =
+        media_values_->GetPreferredColorScheme();
+    value_unchanged = (color_scheme.value() == new_color_scheme);
+  } else if (name_ == preference_names::kContrast) {
     std::optional<mojom::blink::PreferredContrast> contrast =
         overrides->GetPreferredContrast();
     if (!contrast.has_value()) {
       return;
     }
 
-    featureName = AtomicString("prefers-contrast");
-  } else if (name_ == "reducedMotion") {
+    window->GetFrame()->GetPage()->SetPreferenceOverride(
+        media_feature_names::kPrefersContrastMediaFeature, String());
+    mojom::blink::PreferredContrast new_contrast =
+        media_values_->GetPreferredContrast();
+    value_unchanged = (contrast.value() == new_contrast);
+  } else if (name_ == preference_names::kReducedMotion) {
     std::optional<bool> reduced_motion = overrides->GetPrefersReducedMotion();
     if (!reduced_motion.has_value()) {
       return;
     }
 
-    featureName = AtomicString("prefers-reduced-motion");
-  } else if (name_ == "reducedTransparency") {
+    window->GetFrame()->GetPage()->SetPreferenceOverride(
+        media_feature_names::kPrefersReducedMotionMediaFeature, String());
+    bool new_reduced_motion = media_values_->PrefersReducedMotion();
+    value_unchanged = (reduced_motion.value() == new_reduced_motion);
+  } else if (name_ == preference_names::kReducedTransparency) {
     std::optional<bool> reduced_transparency =
         overrides->GetPrefersReducedTransparency();
     if (!reduced_transparency.has_value()) {
       return;
     }
 
-    featureName = AtomicString("prefers-reduced-transparency");
-  } else if (name_ == "reducedData") {
+    window->GetFrame()->GetPage()->SetPreferenceOverride(
+        media_feature_names::kPrefersReducedTransparencyMediaFeature, String());
+    bool new_reduced_transparency = media_values_->PrefersReducedTransparency();
+    value_unchanged =
+        (reduced_transparency.value() == new_reduced_transparency);
+  } else if (name_ == preference_names::kReducedData) {
     std::optional<bool> reduced_data = overrides->GetPrefersReducedData();
     if (!reduced_data.has_value()) {
       return;
     }
 
-    featureName = AtomicString("prefers-reduced-data");
+    window->GetFrame()->GetPage()->SetPreferenceOverride(
+        media_feature_names::kPrefersReducedDataMediaFeature, String());
+    bool new_reduced_data = media_values_->PrefersReducedData();
+    value_unchanged = (reduced_data.value() == new_reduced_data);
   } else {
     NOTREACHED();
+    return;
   }
-  window->GetFrame()->GetPage()->SetPreferenceOverride(featureName, String());
+  if (value_unchanged) {
+    DispatchEvent(*Event::Create(event_type_names::kChange));
+  }
 }
 
 ScriptPromiseTyped<IDLUndefined> PreferenceObject::requestOverride(
     ScriptState* script_state,
     std::optional<AtomicString> value) {
+  CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
   if (!script_state || !script_state->ContextIsValid()) {
     return ScriptPromiseTyped<IDLUndefined>();
   }
@@ -245,95 +279,151 @@ ScriptPromiseTyped<IDLUndefined> PreferenceObject::requestOverride(
     return ScriptPromiseTyped<IDLUndefined>();
   }
 
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
   if (!value.has_value() || value.value().empty()) {
     clearOverride(script_state);
     return ToResolvedUndefinedPromise(script_state);
   }
 
-  // TODO add equality check before overriding
+  AtomicString feature_name;
+  AtomicString new_value;
+  bool has_existing_override = false;
+  bool value_same_as_existing_override = false;
 
-  AtomicString featureName;
-  String newValue;
+  AtomicString existing_value;
 
-  if (name_ == "colorScheme") {
-    featureName = AtomicString("prefers-color-scheme");
+  if (validValues().AsVector().Contains(value.value())) {
+    new_value = value.value();
+  }
 
-    if (value == "light") {
-      newValue = "light";
-    } else if (value == "dark") {
-      newValue = "dark";
+  const PreferenceOverrides* overrides =
+      window->GetFrame()->GetPage()->GetPreferenceOverrides();
+  if (name_ == preference_names::kColorScheme) {
+    feature_name = media_feature_names::kPrefersColorSchemeMediaFeature;
+
+    if (overrides) {
+      auto override = overrides->GetPreferredColorScheme();
+      if (override.has_value()) {
+        has_existing_override = true;
+        if (new_value == ColorSchemeToString(override.value()).GetString()) {
+          value_same_as_existing_override = true;
+        }
+      }
     }
-  } else if (name_ == "contrast") {
-    featureName = AtomicString("prefers-contrast");
+    existing_value =
+        ColorSchemeToString(media_values_->GetPreferredColorScheme());
+  } else if (name_ == preference_names::kContrast) {
+    feature_name = media_feature_names::kPrefersContrastMediaFeature;
 
-    if (value == "more") {
-      newValue = "more";
-    } else if (value == "less") {
-      newValue = "less";
-    } else if (value == "no-preference") {
-      newValue = "no-preference";
+    if (overrides) {
+      auto override = overrides->GetPreferredContrast();
+      if (override.has_value()) {
+        has_existing_override = true;
+        if (new_value == ContrastToString(override.value()).GetString()) {
+          value_same_as_existing_override = true;
+        }
+      }
     }
-  } else if (name_ == "reducedMotion") {
-    featureName = AtomicString("prefers-reduced-motion");
+    existing_value = ContrastToString(media_values_->GetPreferredContrast());
+  } else if (name_ == preference_names::kReducedMotion) {
+    feature_name = media_feature_names::kPrefersReducedMotionMediaFeature;
 
-    if (value == "reduce") {
-      newValue = "reduce";
-    } else if (value == "no-preference") {
-      newValue = "no-preference";
+    if (overrides) {
+      auto override = overrides->GetPrefersReducedMotion();
+      if (override.has_value()) {
+        has_existing_override = true;
+        if ((new_value == preference_values::kReduce && override.value()) ||
+            (new_value == preference_values::kNoPreference &&
+             !override.value())) {
+          value_same_as_existing_override = true;
+        }
+      }
     }
-  } else if (name_ == "reducedTransparency") {
-    featureName = AtomicString("prefers-reduced-transparency");
+    existing_value = media_values_->PrefersReducedMotion()
+                         ? preference_values::kReduce
+                         : preference_values::kNoPreference;
+  } else if (name_ == preference_names::kReducedTransparency) {
+    feature_name = media_feature_names::kPrefersReducedTransparencyMediaFeature;
 
-    if (value == "reduce") {
-      newValue = "reduce";
-    } else if (value == "no-preference") {
-      newValue = "no-preference";
+    if (overrides) {
+      auto override = overrides->GetPrefersReducedTransparency();
+      if (override.has_value()) {
+        has_existing_override = true;
+        if ((new_value == preference_values::kReduce && override.value()) ||
+            (new_value == preference_values::kNoPreference &&
+             !override.value())) {
+          value_same_as_existing_override = true;
+        }
+      }
     }
-  } else if (name_ == "reducedData") {
-    featureName = AtomicString("prefers-reduced-data");
+    existing_value = media_values_->PrefersReducedTransparency()
+                         ? preference_values::kReduce
+                         : preference_values::kNoPreference;
+  } else if (name_ == preference_names::kReducedData) {
+    feature_name = media_feature_names::kPrefersReducedDataMediaFeature;
 
-    if (value == "reduce") {
-      newValue = "reduce";
-    } else if (value == "no-preference") {
-      newValue = "no-preference";
+    if (overrides) {
+      auto override = overrides->GetPrefersReducedData();
+      if (override.has_value()) {
+        has_existing_override = true;
+        if ((new_value == preference_values::kReduce && override.value()) ||
+            (new_value == preference_values::kNoPreference &&
+             !override.value())) {
+          value_same_as_existing_override = true;
+        }
+      }
     }
+    existing_value = media_values_->PrefersReducedData()
+                         ? preference_values::kReduce
+                         : preference_values::kNoPreference;
   } else {
     NOTREACHED();
   }
 
-  if (newValue.empty()) {
+  if (new_value.empty()) {
     return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kTypeMismatchError,
-                          value.value() + " is not a valid value."));
+            DOMExceptionCode::kTypeMismatchError,
+            value.value() + " is not a valid value."));
   }
 
-  window->GetFrame()->GetPage()->SetPreferenceOverride(featureName, newValue);
+  if (!value_same_as_existing_override) {
+    window->GetFrame()->GetPage()->SetPreferenceOverride(feature_name,
+                                                         new_value.GetString());
+  }
+
+  if (!has_existing_override && new_value == existing_value) {
+    DispatchEvent(*Event::Create(event_type_names::kChange));
+  }
+
   return ToResolvedUndefinedPromise(script_state);
 }
 
 const FrozenArray<IDLString>& PreferenceObject::validValues() {
+  CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
   if (LIKELY(valid_values_)) {
     return *valid_values_.Get();
   }
 
   FrozenArray<IDLString>::VectorType valid_values;
-  if (name_ == "colorScheme") {
-    valid_values.push_back("light");
-    valid_values.push_back("dark");
-  } else if (name_ == "contrast") {
-    valid_values.push_back("more");
-    valid_values.push_back("less");
-    valid_values.push_back("no-preference");
-  } else if (name_ == "reducedMotion") {
-    valid_values.push_back("reduce");
-    valid_values.push_back("no-preference");
-  } else if (name_ == "reducedTransparency") {
-    valid_values.push_back("reduce");
-    valid_values.push_back("no-preference");
-  } else if (name_ == "reducedData") {
-    valid_values.push_back("reduce");
-    valid_values.push_back("no-preference");
+  if (name_ == preference_names::kColorScheme) {
+    valid_values.push_back(preference_values::kLight);
+    valid_values.push_back(preference_values::kDark);
+  } else if (name_ == preference_names::kContrast) {
+    valid_values.push_back(preference_values::kMore);
+    valid_values.push_back(preference_values::kLess);
+    valid_values.push_back(preference_values::kNoPreference);
+  } else if (name_ == preference_names::kReducedMotion) {
+    valid_values.push_back(preference_values::kReduce);
+    valid_values.push_back(preference_values::kNoPreference);
+  } else if (name_ == preference_names::kReducedTransparency) {
+    valid_values.push_back(preference_values::kReduce);
+    valid_values.push_back(preference_values::kNoPreference);
+  } else if (name_ == preference_names::kReducedData) {
+    valid_values.push_back(preference_values::kReduce);
+    valid_values.push_back(preference_values::kNoPreference);
   } else {
     NOTREACHED();
   }
@@ -343,9 +433,22 @@ const FrozenArray<IDLString>& PreferenceObject::validValues() {
 }
 
 void PreferenceObject::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
+  EventTarget::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(valid_values_);
   visitor->Trace(media_values_);
+}
+
+const AtomicString& PreferenceObject::InterfaceName() const {
+  return event_target_names::kPreferenceObject;
+}
+
+void PreferenceObject::ContextDestroyed() {
+  RemoveAllEventListeners();
+}
+
+ExecutionContext* PreferenceObject::GetExecutionContext() const {
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
 }  // namespace blink
