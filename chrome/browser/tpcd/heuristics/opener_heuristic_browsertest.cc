@@ -141,9 +141,7 @@ class OpenerHeuristicBrowserTest
           tpcd_heuristics_grants_params_},
          {network::features::kSkipTpcdMitigationsForAds,
           {{"SkipTpcdMitigationsForAdsHeuristics", "true"}}}},
-        // Disable tracking protection by default to test third-party cookie
-        // behavior for PostPopupCookieAccess events.
-        {content_settings::features::kTrackingProtection3pcd});
+        {});
 
     OpenerHeuristicTabHelper::SetClockForTesting(&clock_);
     PlatformBrowserTest::SetUp();
@@ -709,6 +707,8 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetThirdPartyCookieSetting(opener_url, CONTENT_SETTING_ALLOW);
 
   // Initialize interaction and popup.
   RecordInteraction(popup_url, clock_.Now() - base::Hours(3));
@@ -971,6 +971,8 @@ IN_PROC_BROWSER_TEST_F(
   GURL popup_url_2 =
       embedded_test_server()->GetURL("b.test", "/server-redirect?title1.html");
   GURL popup_url_3 = embedded_test_server()->GetURL("b.test", "/title1.html");
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetThirdPartyCookieSetting(opener_url, CONTENT_SETTING_ALLOW);
 
   // Initialize popup and interaction.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));

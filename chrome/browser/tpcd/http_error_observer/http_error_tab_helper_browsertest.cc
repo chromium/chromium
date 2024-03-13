@@ -128,23 +128,15 @@ IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, NoErr) {
             0u);
 }
 
-class HTTPErrProcPre3pcdBrowserTest : public HTTPErrProcBrowserTest {
- public:
-  HTTPErrProcPre3pcdBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        content_settings::features::kTrackingProtection3pcd);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Check that the ThirdPartyCookieBreakageIndicator UKM is sent on HTTP Error
 // without cookies blocked
-IN_PROC_BROWSER_TEST_F(HTTPErrProcPre3pcdBrowserTest, WithCookiesWithErr) {
+IN_PROC_BROWSER_TEST_F(HTTPErrProcBrowserTest, WithCookiesWithErr) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  SetThirdPartyCookieBlocking(false);
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetThirdPartyCookieSetting(
+          https_server()->GetURL(kHostB, "/page404.html"),
+          CONTENT_SETTING_ALLOW);
   NavigateToURLAndIFrame(
       /*host=*/kHostA,
       /*iframe_url=*/https_server()->GetURL(kHostB, "/page404.html"));
