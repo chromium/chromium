@@ -28,6 +28,7 @@
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -1345,27 +1346,34 @@ void PrefetchContainer::MakeResourceRequest(
 
   request->devtools_request_id = RequestId();
 
-  // This may seem inverted (surely eager prefetches would be higher priority),
-  // but the fact that we're doing this at all for more conservative candidates
-  // suggests a strong engagement signal.
-  //
-  // TODO(crbug.com/1467928): Ideally, we would actually use a combination of
-  // the actual engagement seen (rather than the minimum required to trigger the
-  // candidate) and the declared eagerness, and update them as the prefetch
-  // becomes increasingly likely.
-  blink::mojom::SpeculationEagerness eagerness =
-      GetPrefetchType().GetEagerness();
-  switch (eagerness) {
-    case blink::mojom::SpeculationEagerness::kConservative:
-      request->priority = net::RequestPriority::MEDIUM;
-      break;
-    case blink::mojom::SpeculationEagerness::kModerate:
-      request->priority = net::RequestPriority::LOW;
-      break;
-    case blink::mojom::SpeculationEagerness::kEager:
-      request->priority = net::RequestPriority::IDLE;
-      break;
-  }
+  request->priority = [&] {
+    if (IsSpeculationRuleType(prefetch_type_.trigger_type())) {
+      // This may seem inverted (surely eager prefetches would be higher
+      // priority), but the fact that we're doing this at all for more
+      // conservative candidates suggests a strong engagement signal.
+      //
+      // TODO(crbug.com/1467928): Ideally, we would actually use a combination
+      // of the actual engagement seen (rather than the minimum required to
+      // trigger the candidate) and the declared eagerness, and update them as
+      // the prefetch becomes increasingly likely.
+      blink::mojom::SpeculationEagerness eagerness =
+          prefetch_type_.GetEagerness();
+      switch (eagerness) {
+        case blink::mojom::SpeculationEagerness::kConservative:
+          return net::RequestPriority::MEDIUM;
+        case blink::mojom::SpeculationEagerness::kModerate:
+          return net::RequestPriority::LOW;
+        case blink::mojom::SpeculationEagerness::kEager:
+          return net::RequestPriority::IDLE;
+      }
+    } else {
+      // TODO(crbug.com/40946257): Revisit and update after each embedder
+      // trigger is introduced, as the appropriate value may differ based on its
+      // property and triggering condition. For now, it is set to IDLE as a safe
+      // default value.
+      return net::RequestPriority::IDLE;
+    }
+  }();
 
   AddClientHintsHeaders(origin, &request->headers);
 
