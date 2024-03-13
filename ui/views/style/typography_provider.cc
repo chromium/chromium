@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -83,6 +84,7 @@ const TypographyProvider& TypographyProvider::Get() {
 }
 
 const gfx::FontList& TypographyProvider::GetFont(int context, int style) const {
+  TRACE_EVENT0("ui", "TypographyProvider::GetFont");
   return GetFontForDetails(GetFontDetails(context, style));
 }
 
