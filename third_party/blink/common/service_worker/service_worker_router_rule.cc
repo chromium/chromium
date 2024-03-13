@@ -18,6 +18,32 @@ bool ServiceWorkerRouterOrCondition::operator==(
   return conditions == other.conditions;
 }
 
+ServiceWorkerRouterNotCondition::ServiceWorkerRouterNotCondition() = default;
+ServiceWorkerRouterNotCondition::~ServiceWorkerRouterNotCondition() = default;
+ServiceWorkerRouterNotCondition::ServiceWorkerRouterNotCondition(
+    const ServiceWorkerRouterNotCondition& other) {
+  *this = other;
+}
+ServiceWorkerRouterNotCondition::ServiceWorkerRouterNotCondition(
+    ServiceWorkerRouterNotCondition&&) = default;
+
+ServiceWorkerRouterNotCondition& ServiceWorkerRouterNotCondition::operator=(
+    const ServiceWorkerRouterNotCondition& other) {
+  if (other.condition) {
+    condition =
+        std::make_unique<ServiceWorkerRouterCondition>(*other.condition);
+  }
+  return *this;
+}
+ServiceWorkerRouterNotCondition& ServiceWorkerRouterNotCondition::operator=(
+    ServiceWorkerRouterNotCondition&&) = default;
+
+bool ServiceWorkerRouterNotCondition::operator==(
+    const ServiceWorkerRouterNotCondition& other) const {
+  // Returns false unless both have their value.
+  return condition && other.condition && *condition == *other.condition;
+}
+
 bool ServiceWorkerRouterCondition::operator==(
     const ServiceWorkerRouterCondition& other) const {
   return get() == other.get();

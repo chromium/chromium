@@ -1232,7 +1232,8 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
             blink::ServiceWorkerRouterRunningStatusCondition::
                 RunningStatusEnum::kRunning;
       }
-      rule.condition = {url_pattern, request, running_status, std::nullopt};
+      rule.condition = {url_pattern, request, running_status, std::nullopt,
+                        std::nullopt};
     }
     {
       blink::ServiceWorkerRouterSource source;

@@ -200,7 +200,7 @@ std::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
     }
   }
   blink::ServiceWorkerRouterCondition ret(url_pattern, request, running_status,
-                                          or_condition);
+                                          or_condition, std::nullopt);
   if (ret.IsEmpty()) {
     // At least one condition should exist per rule.
     exception_state.ThrowTypeError(

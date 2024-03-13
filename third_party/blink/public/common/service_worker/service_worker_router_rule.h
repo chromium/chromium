@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_RULE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_RULE_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -28,7 +29,7 @@ static constexpr int kServiceWorkerRouterConditionMaxRecursionDepth = 10;
 // TODO(crbug.com/1503017): set this value by discussing in spec proposal.
 static constexpr size_t kServiceWorkerMaxRouterSize = 256;
 
-struct ServiceWorkerRouterRequestCondition {
+struct BLINK_COMMON_EXPORT ServiceWorkerRouterRequestCondition {
   // https://fetch.spec.whatwg.org/#concept-request-method
   // Technically, it can be an arbitrary string, but Chromium would set
   // k*Method in net/http/http_request_headers.h
@@ -41,7 +42,7 @@ struct ServiceWorkerRouterRequestCondition {
   bool operator==(const ServiceWorkerRouterRequestCondition& other) const;
 };
 
-struct ServiceWorkerRouterRunningStatusCondition {
+struct BLINK_COMMON_EXPORT ServiceWorkerRouterRunningStatusCondition {
   enum class RunningStatusEnum {
     kRunning = 0,
     // This includes kStarting and kStopping in addition to kStopped.
@@ -58,10 +59,24 @@ struct ServiceWorkerRouterRunningStatusCondition {
   }
 };
 
-struct ServiceWorkerRouterOrCondition {
+struct BLINK_COMMON_EXPORT ServiceWorkerRouterOrCondition {
   std::vector<ServiceWorkerRouterCondition> conditions;
 
   bool operator==(const ServiceWorkerRouterOrCondition& other) const;
+};
+
+struct BLINK_COMMON_EXPORT ServiceWorkerRouterNotCondition {
+  std::unique_ptr<ServiceWorkerRouterCondition> condition;
+
+  ServiceWorkerRouterNotCondition();
+  ~ServiceWorkerRouterNotCondition();
+  ServiceWorkerRouterNotCondition(const ServiceWorkerRouterNotCondition&);
+  ServiceWorkerRouterNotCondition& operator=(
+      const ServiceWorkerRouterNotCondition&);
+  ServiceWorkerRouterNotCondition(ServiceWorkerRouterNotCondition&&);
+  ServiceWorkerRouterNotCondition& operator=(ServiceWorkerRouterNotCondition&&);
+
+  bool operator==(const ServiceWorkerRouterNotCondition& other) const;
 };
 
 // TODO(crbug.com/1371756): implement other conditions in the proposal.
@@ -73,12 +88,14 @@ class BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
       std::tuple<std::optional<SafeUrlPattern>&,
                  std::optional<ServiceWorkerRouterRequestCondition>&,
                  std::optional<ServiceWorkerRouterRunningStatusCondition>&,
-                 std::optional<ServiceWorkerRouterOrCondition>&>;
+                 std::optional<ServiceWorkerRouterOrCondition>&,
+                 std::optional<ServiceWorkerRouterNotCondition>&>;
   using MemberConstRef = std::tuple<
       const std::optional<SafeUrlPattern>&,
       const std::optional<ServiceWorkerRouterRequestCondition>&,
       const std::optional<ServiceWorkerRouterRunningStatusCondition>&,
-      const std::optional<ServiceWorkerRouterOrCondition>&>;
+      const std::optional<ServiceWorkerRouterOrCondition>&,
+      const std::optional<ServiceWorkerRouterNotCondition>&>;
 
   ServiceWorkerRouterCondition() = default;
   ServiceWorkerRouterCondition(const ServiceWorkerRouterCondition&) = default;
@@ -93,48 +110,67 @@ class BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
       const std::optional<ServiceWorkerRouterRequestCondition>& request,
       const std::optional<ServiceWorkerRouterRunningStatusCondition>&
           running_status,
-      const std::optional<ServiceWorkerRouterOrCondition>& or_condition)
+      const std::optional<ServiceWorkerRouterOrCondition>& or_condition,
+      const std::optional<ServiceWorkerRouterNotCondition>& not_condition)
       : url_pattern_(url_pattern),
         request_(request),
         running_status_(running_status),
-        or_condition_(or_condition) {}
+        or_condition_(or_condition),
+        not_condition_(not_condition) {}
 
   // Returns tuple: suggest using structured bindings on the caller side.
   MemberRef get() {
-    return {url_pattern_, request_, running_status_, or_condition_};
+    return {url_pattern_, request_, running_status_, or_condition_,
+            not_condition_};
   }
   MemberConstRef get() const {
-    return {url_pattern_, request_, running_status_, or_condition_};
+    return {url_pattern_, request_, running_status_, or_condition_,
+            not_condition_};
   }
 
   bool IsEmpty() const {
-    return !(url_pattern_ || request_ || running_status_ || or_condition_);
+    return !(url_pattern_ || request_ || running_status_ || or_condition_ ||
+             not_condition_);
   }
 
   bool IsOrConditionExclusive() const {
     return or_condition_.has_value() !=
-           (url_pattern_ || request_ || running_status_);
+           (url_pattern_ || request_ || running_status_ || not_condition_);
+  }
+  bool IsNotConditionExclusive() const {
+    return not_condition_.has_value() !=
+           (url_pattern_ || request_ || running_status_ || or_condition_);
   }
 
-  bool IsValid() const { return !IsEmpty() && IsOrConditionExclusive(); }
+  bool IsValid() const {
+    return !IsEmpty() && IsOrConditionExclusive() && IsNotConditionExclusive();
+  }
 
   bool operator==(const ServiceWorkerRouterCondition& other) const;
 
   static ServiceWorkerRouterCondition WithUrlPattern(
       const SafeUrlPattern& url_pattern) {
-    return {url_pattern, std::nullopt, std::nullopt, std::nullopt};
+    return {url_pattern, std::nullopt, std::nullopt, std::nullopt,
+            std::nullopt};
   }
   static ServiceWorkerRouterCondition WithRequest(
       const ServiceWorkerRouterRequestCondition& request) {
-    return {std::nullopt, request, std::nullopt, std::nullopt};
+    return {std::nullopt, request, std::nullopt, std::nullopt, std::nullopt};
   }
   static ServiceWorkerRouterCondition WithRunningStatus(
       const ServiceWorkerRouterRunningStatusCondition& running_status) {
-    return {std::nullopt, std::nullopt, running_status, std::nullopt};
+    return {std::nullopt, std::nullopt, running_status, std::nullopt,
+            std::nullopt};
   }
   static ServiceWorkerRouterCondition WithOrCondition(
       const ServiceWorkerRouterOrCondition& or_condition) {
-    return {std::nullopt, std::nullopt, std::nullopt, or_condition};
+    return {std::nullopt, std::nullopt, std::nullopt, or_condition,
+            std::nullopt};
+  }
+  static ServiceWorkerRouterCondition WithNotCondition(
+      const ServiceWorkerRouterNotCondition& not_condition) {
+    return {std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+            not_condition};
   }
 
  private:
@@ -150,6 +186,10 @@ class BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
   // `Or` condition to be used for matching
   // We need `_condition` suffix to avoid conflict with reserved keywords in C++
   std::optional<ServiceWorkerRouterOrCondition> or_condition_;
+
+  // `Not` condition to be used for matching
+  // We need `_condition` suffix to avoid conflict with reserved keywords in C++
+  std::optional<ServiceWorkerRouterNotCondition> not_condition_;
 };
 
 // Network source structure.

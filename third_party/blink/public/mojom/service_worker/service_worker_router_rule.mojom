@@ -58,6 +58,13 @@ struct ServiceWorkerRouterOrCondition {
   array<ServiceWorkerRouterCondition> conditions;
 };
 
+// This represents a not condition to match.
+// See:
+// https://github.com/WICG/service-worker-static-routing-api/blob/main/final-form.md
+struct ServiceWorkerRouterNotCondition {
+  ServiceWorkerRouterCondition condition;
+};
+
 // This represents a condition of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement other conditions in the full picture.
@@ -67,6 +74,7 @@ struct ServiceWorkerRouterCondition {
   ServiceWorkerRouterRequestCondition? request;
   ServiceWorkerRouterRunningStatusCondition? running_status;
   ServiceWorkerRouterOrCondition? or_condition;
+  ServiceWorkerRouterNotCondition? not_condition;
 };
 
 // This is used for specifying the source is network.

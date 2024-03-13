@@ -185,6 +185,9 @@ message ServiceWorkerRegistrationData {
         message OrCondition {
           repeated ConditionObject objects = 1;
         }
+        message NotCondition {
+          required ConditionObject object = 1;
+        }
         // TODO(crbug.com/1492871): Make this a `message` to fit WebIDL
         oneof condition {
           // Used for representing URLPattern.
@@ -196,6 +199,9 @@ message ServiceWorkerRegistrationData {
           // Used for representing 'or' condition.
           // The `_condition` suffix is to avoid conflicts with keywords in C++
           OrCondition or_condition = 4;
+          // Used for representing 'not' condition.
+          // The `_condition` suffix is to avoid conflicts with keywords in C++
+          NotCondition not_condition = 5;
         }
       }
       message Source {

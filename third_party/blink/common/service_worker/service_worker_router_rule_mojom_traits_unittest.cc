@@ -59,7 +59,14 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
         or_condition.conditions = std::vector(
             3, blink::ServiceWorkerRouterCondition::WithRequest({}));
       }
-      rule.condition = {url_pattern, request, running_status, or_condition};
+      blink::ServiceWorkerRouterNotCondition not_condition;
+      {
+        not_condition.condition =
+            std::make_unique<blink::ServiceWorkerRouterCondition>(
+                blink::ServiceWorkerRouterCondition::WithRequest({}));
+      }
+      rule.condition = {url_pattern, request, running_status, or_condition,
+                        not_condition};
     }
     {
       blink::ServiceWorkerRouterSource source;

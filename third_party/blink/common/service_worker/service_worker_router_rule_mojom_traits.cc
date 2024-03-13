@@ -30,6 +30,19 @@ bool StructTraits<blink::mojom::ServiceWorkerRouterOrConditionDataView,
   return true;
 }
 
+bool StructTraits<blink::mojom::ServiceWorkerRouterNotConditionDataView,
+                  blink::ServiceWorkerRouterNotCondition>::
+    Read(blink::mojom::ServiceWorkerRouterNotConditionDataView data,
+         blink::ServiceWorkerRouterNotCondition* out) {
+  blink::ServiceWorkerRouterCondition condition;
+  if (!data.ReadCondition(&condition)) {
+    return false;
+  }
+  out->condition = std::make_unique<blink::ServiceWorkerRouterCondition>(
+      std::move(condition));
+  return true;
+}
+
 bool StructTraits<blink::mojom::ServiceWorkerRouterRequestConditionDataView,
                   blink::ServiceWorkerRouterRequestCondition>::
     Read(blink::mojom::ServiceWorkerRouterRequestConditionDataView data,
@@ -50,7 +63,8 @@ bool StructTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
                   blink::ServiceWorkerRouterCondition>::
     Read(blink::mojom::ServiceWorkerRouterConditionDataView data,
          blink::ServiceWorkerRouterCondition* out) {
-  auto&& [url_pattern, request, running_status, or_condition] = out->get();
+  auto&& [url_pattern, request, running_status, or_condition, not_condition] =
+      out->get();
   if (!data.ReadUrlPattern(&url_pattern)) {
     return false;
   }
@@ -61,6 +75,9 @@ bool StructTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
     return false;
   }
   if (!data.ReadOrCondition(&or_condition)) {
+    return false;
+  }
+  if (!data.ReadNotCondition(&not_condition)) {
     return false;
   }
   return true;

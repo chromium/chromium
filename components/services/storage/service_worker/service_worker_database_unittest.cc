@@ -3649,6 +3649,28 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     store_and_restore(router_rules);
   }
 
+  // `not` condition
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterNotCondition not_condition;
+    {
+      not_condition.condition =
+          std::make_unique<blink::ServiceWorkerRouterCondition>(
+              blink::ServiceWorkerRouterCondition::WithRequest({}));
+    }
+    rule.condition =
+        blink::ServiceWorkerRouterCondition::WithNotCondition(not_condition);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    router_rules.rules.emplace_back(rule);
+
+    store_and_restore(router_rules);
+  }
+
   // empty request
   {
     blink::ServiceWorkerRouterRules router_rules;
@@ -3711,7 +3733,8 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
             blink::ServiceWorkerRouterRunningStatusCondition::
                 RunningStatusEnum::kRunning;
       }
-      rule.condition = {url_pattern, request, running_status, std::nullopt};
+      rule.condition = {url_pattern, request, running_status, std::nullopt,
+                        std::nullopt};
     }
 
     blink::ServiceWorkerRouterSource source;

@@ -196,8 +196,8 @@ base::Value OrConditionToValue(
 base::Value ConditionToValue(
     const blink::ServiceWorkerRouterCondition& condition) {
   base::Value::Dict out_c;
-  const auto& [url_pattern, request, running_status, or_condition] =
-      condition.get();
+  const auto& [url_pattern, request, running_status, or_condition,
+               not_condition] = condition.get();
   if (url_pattern) {
     base::Value::Dict url_pattern_value;
 #define TO_VALUE(type, type_name)                            \
@@ -360,13 +360,14 @@ bool BaseCondition::Set(const blink::ServiceWorkerRouterCondition& condition) {
     RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kEmptyCondition);
     return false;
   }
-  const auto& [url_pattern, request, running_status, or_condition] =
-      condition.get();
+  const auto& [url_pattern, request, running_status, or_condition,
+               not_condition] = condition.get();
 
   CHECK(!or_condition);
+  CHECK(!not_condition);
 
   non_url_pattern_condition_ = {std::nullopt, request, running_status,
-                                std::nullopt};
+                                std::nullopt, std::nullopt};
   if (running_status) {
     need_running_status_ = true;
   }
@@ -437,9 +438,10 @@ bool BaseCondition::MatchNonUrlPatternConditions(
     const network::ResourceRequest& request,
     std::optional<blink::EmbeddedWorkerStatus> running_status) const {
   const auto& [url_pattern, request_pattern, running_status_pattern,
-               or_condition] = non_url_pattern_condition_.get();
+               or_condition, not_condition] = non_url_pattern_condition_.get();
   CHECK(!url_pattern);
   CHECK(!or_condition);
+  CHECK(!not_condition);
   if (request_pattern && !MatchRequestCondition(*request_pattern, request)) {
     return false;
   }
