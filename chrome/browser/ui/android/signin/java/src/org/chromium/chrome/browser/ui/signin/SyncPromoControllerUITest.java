@@ -46,6 +46,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,6 +69,7 @@ import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -267,6 +269,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoContinueButtonLaunchesSyncFlowIfSyncDataLeft()
             throws Throwable {
@@ -329,6 +332,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSyncFlow() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
