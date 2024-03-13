@@ -65,7 +65,7 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
   };
 
   HostResolverDnsTask(DnsClient* client,
-                      HostResolver::Host host,
+                      absl::variant<url::SchemeHostPort, std::string> host,
                       NetworkAnonymizationKey anonymization_key,
                       DnsQueryTypeSet query_types,
                       ResolveContext* resolve_context,
@@ -196,7 +196,7 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
 
   const raw_ptr<DnsClient> client_;
 
-  HostResolver::Host host_;
+  absl::variant<url::SchemeHostPort, std::string> host_;
   NetworkAnonymizationKey anonymization_key_;
 
   base::SafeRef<ResolveContext> resolve_context_;

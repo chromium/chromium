@@ -35,7 +35,7 @@ class HostResolverNat64Task;
 
 // Key used to identify a HostResolverManager::Job.
 struct HostResolverManager::JobKey {
-  JobKey(HostResolver::Host host, ResolveContext* resolve_context);
+  explicit JobKey(ResolveContext* resolve_context);
   ~JobKey();
 
   JobKey(const JobKey& other);
@@ -44,7 +44,7 @@ struct HostResolverManager::JobKey {
   bool operator<(const JobKey& other) const;
   bool operator==(const JobKey& other) const;
 
-  HostResolver::Host host;
+  absl::variant<url::SchemeHostPort, std::string> host;
   NetworkAnonymizationKey network_anonymization_key;
   DnsQueryTypeSet query_types;
   HostResolverFlags flags;

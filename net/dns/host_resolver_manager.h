@@ -304,6 +304,7 @@ class NET_EXPORT HostResolverManager
   // reachability. These job key and IP address are used to call
   // ResolveLocally() and CreateAndStartJob().
   void InitializeJobKeyAndIPAddress(
+      const HostResolver::Host& host,
       const NetworkAnonymizationKey& network_anonymization_key,
       const ResolveHostParameters& parameters,
       const NetLogWithSource& source_net_log,

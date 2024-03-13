@@ -281,6 +281,21 @@ int GetPortForGloballyReachableCheck() {
   return features::kAlternativePortForGloballyReachableCheck.Get();
 }
 
+// Only use scheme/port in JobKey if `https_svcb_options_enabled` is true
+// (or the query is explicitly for HTTPS). Otherwise DNS will not give different
+// results for the same hostname.
+absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
+    const HostResolver::Host& input,
+    DnsQueryType query_type,
+    bool https_svcb_options_enabled) {
+  if ((https_svcb_options_enabled || query_type == DnsQueryType::HTTPS) &&
+      input.HasScheme()) {
+    return input.AsSchemeHostPort();
+  }
+
+  return std::string(input.GetHostnameWithoutBrackets());
+}
+
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -678,16 +693,19 @@ bool HostResolverManager::IsLocalTask(TaskType task) {
 }
 
 void HostResolverManager::InitializeJobKeyAndIPAddress(
+    const HostResolver::Host& host,
     const NetworkAnonymizationKey& network_anonymization_key,
     const ResolveHostParameters& parameters,
     const NetLogWithSource& source_net_log,
     JobKey& out_job_key,
     IPAddress& out_ip_address) {
+  out_job_key.host = CreateHostForJobKey(host, parameters.dns_query_type,
+                                         https_svcb_options_.enable);
   out_job_key.network_anonymization_key = network_anonymization_key;
   out_job_key.source = parameters.source;
 
   const bool is_ip = out_ip_address.AssignFromIPLiteral(
-      out_job_key.host.GetHostnameWithoutBrackets());
+      HostResolver::GetHostname(out_job_key.host));
 
   out_job_key.secure_dns_mode =
       GetEffectiveSecureDnsMode(parameters.secure_dns_policy);
@@ -725,10 +743,10 @@ void HostResolverManager::InitializeJobKeyAndIPAddress(
 
   // `https_svcb_options_.enable` has precedence, so if enabled, ignore any
   // other related features.
-  if (https_svcb_options_.enable && out_job_key.host.HasScheme()) {
+  if (https_svcb_options_.enable && host.HasScheme()) {
     static const char* const kSchemesForHttpsQuery[] = {
         url::kHttpScheme, url::kHttpsScheme, url::kWsScheme, url::kWssScheme};
-    if (base::Contains(kSchemesForHttpsQuery, out_job_key.host.GetScheme())) {
+    if (base::Contains(kSchemesForHttpsQuery, host.GetScheme())) {
       effective_types.Put(DnsQueryType::HTTPS);
     }
   }
@@ -759,8 +777,10 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     // than implicitly based on |source|.
     const bool is_valid_hostname =
         job_key.source == HostResolverSource::MULTICAST_DNS
-            ? dns_names_util::IsValidDnsName(job_key.host.GetHostname())
-            : IsCanonicalizedHostCompliant(job_key.host.GetHostname());
+            ? dns_names_util::IsValidDnsName(
+                  HostResolver::GetHostname(job_key.host))
+            : IsCanonicalizedHostCompliant(
+                  HostResolver::GetHostname(job_key.host));
     if (!is_valid_hostname) {
       return HostCache::Entry(ERR_NAME_NOT_RESOLVED,
                               HostCache::Entry::SOURCE_UNKNOWN);
@@ -774,8 +794,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   // The result of |getaddrinfo| for empty hosts is inconsistent across systems.
   // On Windows it gives the default interface's address, whereas on Linux it
   // gives an error. We will make it fail on all platforms for consistency.
-  if (job_key.host.GetHostname().empty() ||
-      job_key.host.GetHostname().size() > kMaxHostLength) {
+  if (HostResolver::GetHostname(job_key.host).empty() ||
+      HostResolver::GetHostname(job_key.host).size() > kMaxHostLength) {
     return HostCache::Entry(ERR_NAME_NOT_RESOLVED,
                             HostCache::Entry::SOURCE_UNKNOWN);
   }
@@ -796,8 +816,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
   // Special-case localhost names, as per the recommendations in
   // https://tools.ietf.org/html/draft-west-let-localhost-be-localhost.
   std::optional<HostCache::Entry> resolved =
-      ServeLocalhost(job_key.host.GetHostname(), job_key.query_types,
-                     default_family_due_to_no_ipv6);
+      ServeLocalhost(HostResolver::GetHostname(job_key.host),
+                     job_key.query_types, default_family_due_to_no_ipv6);
   if (resolved)
     return resolved.value();
 
@@ -838,7 +858,8 @@ HostCache::Entry HostResolverManager::ResolveLocally(
         return resolved.value();
       }
     } else if (task == TaskType::HOSTS) {
-      resolved = ServeFromHosts(job_key.host.GetHostname(), job_key.query_types,
+      resolved = ServeFromHosts(HostResolver::GetHostname(job_key.host),
+                                job_key.query_types,
                                 default_family_due_to_no_ipv6, *out_tasks);
       if (resolved) {
         source_net_log.AddEvent(
@@ -961,11 +982,10 @@ std::optional<HostCache::Entry> HostResolverManager::MaybeServeFromCache(
 std::optional<HostCache::Entry> HostResolverManager::MaybeReadFromConfig(
     const JobKey& key) {
   DCHECK(HasAddressType(key.query_types));
-  if (!key.host.HasScheme()) {
+  if (!absl::holds_alternative<url::SchemeHostPort>(key.host))
     return std::nullopt;
-  }
   std::optional<std::vector<IPEndPoint>> preset_addrs =
-      dns_client_->GetPresetAddrs(key.host.AsSchemeHostPort());
+      dns_client_->GetPresetAddrs(absl::get<url::SchemeHostPort>(key.host));
   if (!preset_addrs)
     return std::nullopt;
 
@@ -1256,7 +1276,8 @@ void HostResolverManager::CreateTaskSequence(
       // address queries and MdnsTask for non- address queries.
       if ((job_key.flags & HOST_RESOLVER_CANONNAME) && has_address_type) {
         out_tasks->push_back(TaskType::SYSTEM);
-      } else if (!ResemblesMulticastDNSName(job_key.host.GetHostname())) {
+      } else if (!ResemblesMulticastDNSName(
+                     HostResolver::GetHostname(job_key.host))) {
         bool system_task_allowed =
             has_address_type &&
             job_key.secure_dns_mode != SecureDnsMode::kSecure;
