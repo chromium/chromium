@@ -37,6 +37,9 @@ drivefs::mojom::QueryParametersPtr CreateRecentlyModifiedQuery(
   query->modified_time = base::Time::Now() - max_recency;
   query->modified_time_operator =
       drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
+  query->viewed_time = base::Time::Now() - max_recency;
+  query->viewed_time_operator =
+      drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
   query->page_size = 15;
   query->query_source =
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
