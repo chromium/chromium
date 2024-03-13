@@ -1468,7 +1468,7 @@ void AutofillAgent::JavaScriptChangedValue(const WebFormControlElement& element,
       form_util::GetFormRendererId(form_util::GetOwningForm(element)) ==
           last_interacted_.form_id.GetId() &&
       base::FeatureList::IsEnabled(
-          features::kAutofillImproveSubmissionDetection)) {
+          features::kAutofillReplaceFormElementObserver)) {
     // Ideally, we re-extract the form at this moment, but to avoid performance
     // regression, we just update what JS updated on the Blink side.
     if (auto it = base::ranges::find(last_interacted_.saved_state->fields,
@@ -1655,7 +1655,7 @@ void AutofillAgent::UpdateStateForTextChange(
 
 std::optional<FormData> AutofillAgent::GetSubmittedForm() const {
   if (base::FeatureList::IsEnabled(
-          features::kAutofillImproveSubmissionDetection)) {
+          features::kAutofillReplaceFormElementObserver)) {
     return last_interacted_.saved_state;
   }
   auto has_been_user_edited = [this](const FormFieldData& field) {

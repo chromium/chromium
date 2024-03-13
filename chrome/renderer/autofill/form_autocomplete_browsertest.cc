@@ -710,7 +710,7 @@ TEST_F(FormAutocompleteTest, SelectControlChanged) {
 }
 
 // Parameterized test for submission detection. The parameter dictates whether
-// the tests run with `kAutofillImproveSubmissionDetection` enabled or not.
+// the tests run with `kAutofillReplaceFormElementObserver` enabled or not.
 class FormAutocompleteSubmissionTest
     : public FormAutocompleteTest,
       public testing::WithParamInterface<bool> {
@@ -720,11 +720,11 @@ class FormAutocompleteSubmissionTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
           {features::kAutofillReplaceCachedWebElementsByRendererIds,
-           features::kAutofillImproveSubmissionDetection},
+           features::kAutofillReplaceFormElementObserver},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kAutofillImproveSubmissionDetection);
+          features::kAutofillReplaceFormElementObserver);
     }
   }
 

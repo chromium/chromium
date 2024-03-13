@@ -105,7 +105,7 @@ BASE_DECLARE_FEATURE(kAutofillSuggestionNStrikeModel);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int> kSuggestionStrikeLimit;
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillImproveSubmissionDetection);
+BASE_DECLARE_FEATURE(kAutofillReplaceFormElementObserver);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillDetectRemovedFormControls);
 COMPONENT_EXPORT(AUTOFILL)

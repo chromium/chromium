@@ -37,11 +37,11 @@ class FormTrackerTest : public test::AutofillRendererTest,
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
           {features::kAutofillReplaceCachedWebElementsByRendererIds,
-           features::kAutofillImproveSubmissionDetection},
+           features::kAutofillReplaceFormElementObserver},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          features::kAutofillImproveSubmissionDetection);
+          features::kAutofillReplaceFormElementObserver);
     }
   }
   blink::WebFormControlElement GetFormControlById(const std::string& id) {

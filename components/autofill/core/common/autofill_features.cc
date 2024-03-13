@@ -309,10 +309,11 @@ BASE_FEATURE(kAutofillSuggestionNStrikeModel,
 const base::FeatureParam<int> kSuggestionStrikeLimit{
     &kAutofillSuggestionNStrikeModel, "strike-limit", 5};
 
-// Changes the mechanisms of FormTracker and the requirements for firing
-// submission on formless elements.
-BASE_FEATURE(kAutofillImproveSubmissionDetection,
-             "AutofillImproveSubmissionDetection",
+// Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
+// for tracking the disappearance of forms as well as other submission
+// triggering events.
+BASE_FEATURE(kAutofillReplaceFormElementObserver,
+             "AutofillReplaceFormElementObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, FormFieldData::is_visible is a heuristic for actual visibility.

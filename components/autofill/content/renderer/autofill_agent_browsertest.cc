@@ -660,11 +660,11 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
     if (improved_submission_detection()) {
       scoped_feature_list.InitWithFeatures(
           {features::kAutofillReplaceCachedWebElementsByRendererIds,
-           features::kAutofillImproveSubmissionDetection},
+           features::kAutofillReplaceFormElementObserver},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list.InitAndDisableFeature(
-          features::kAutofillImproveSubmissionDetection);
+          features::kAutofillReplaceFormElementObserver);
     }
   }
 
@@ -683,7 +683,7 @@ INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
 TEST_P(AutofillAgentSubmissionTest,
        JavaScriptChangedValueUpdatesLastInteractedSavedState) {
   base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillImproveSubmissionDetection};
+      features::kAutofillReplaceFormElementObserver};
   LoadHTML(R"(<form id="form_id"><input id="text_id"></form>)");
 
   blink::WebFormElement form = GetMainFrame()

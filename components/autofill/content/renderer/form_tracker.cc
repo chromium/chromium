@@ -205,7 +205,7 @@ void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
 void FormTracker::ElementDisappeared(const blink::WebElement& element) {
   // Signal is discarded altogether when the feature is disabled.
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillImproveSubmissionDetection)) {
+          features::kAutofillReplaceFormElementObserver)) {
     return;
   }
   if (element.DynamicTo<WebFormElement>().IsNull() &&
@@ -391,7 +391,7 @@ void FormTracker::FireSubmissionIfFormDisappear(SubmissionSource source) {
   if (CanInferFormSubmitted() ||
       (submission_triggering_events_.tracked_element_disappeared &&
        base::FeatureList::IsEnabled(
-           features::kAutofillImproveSubmissionDetection))) {
+           features::kAutofillReplaceFormElementObserver))) {
     FireInferredFormSubmission(source);
     return;
   }
@@ -419,7 +419,7 @@ bool FormTracker::CanInferFormSubmitted() {
 
 void FormTracker::TrackElement(mojom::SubmissionSource source) {
   if (base::FeatureList::IsEnabled(
-          features::kAutofillImproveSubmissionDetection)) {
+          features::kAutofillReplaceFormElementObserver)) {
     // Do not use WebFormElementObserver. Instead, rely on the signal
     // `FormTracker::ElementDisappeared` coming from blink.
     return;
