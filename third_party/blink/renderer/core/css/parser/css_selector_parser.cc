@@ -952,11 +952,9 @@ AtomicString ParsePseudoElementArgument(const String& selector_string) {
 // static
 PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
                                                const Node* parent,
-                                               AtomicString& argument,
-                                               PseudoElementParseMode mode) {
+                                               AtomicString& argument) {
   if (!RuntimeEnabledFeatures::
-          CSSComputedStyleFullPseudoElementParserEnabled() ||
-      mode == PseudoElementParseMode::kLegacy) {
+          CSSComputedStyleFullPseudoElementParserEnabled()) {
     PseudoId pseudo_id = ParsePseudoElementLegacy(selector_string, parent);
     if (PseudoElementHasArguments(pseudo_id)) {
       argument = ParsePseudoElementArgument(selector_string);

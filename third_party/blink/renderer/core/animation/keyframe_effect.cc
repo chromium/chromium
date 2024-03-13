@@ -176,8 +176,7 @@ KeyframeEffect* KeyframeEffect::Create(
       AtomicString pseudo_argument = WTF::g_null_atom;
 
       PseudoId pseudo_id = CSSSelectorParser::ParsePseudoElement(
-          pseudo, element, pseudo_argument,
-          CSSSelectorParser::PseudoElementParseMode::kLegacy);
+          pseudo, element, pseudo_argument);
       effect->effect_target_ =
           element->GetNestedPseudoElement(pseudo_id, pseudo_argument);
     }
@@ -271,8 +270,7 @@ void KeyframeEffect::RefreshTarget() {
         target_element_, DocumentUpdateReason::kWebAnimation);
     AtomicString argument;
     PseudoId pseudoId = CSSSelectorParser::ParsePseudoElement(
-        target_pseudo_, target_element_, argument,
-        CSSSelectorParser::PseudoElementParseMode::kLegacy);
+        target_pseudo_, target_element_, argument);
     new_target = target_element_->GetPseudoElement(pseudoId, argument);
   }
 

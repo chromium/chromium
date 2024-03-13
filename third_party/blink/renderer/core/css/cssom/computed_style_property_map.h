@@ -28,11 +28,9 @@ class CORE_EXPORT ComputedStylePropertyMap
  public:
   explicit ComputedStylePropertyMap(Element* element,
                                     const String& pseudo_element = String())
-      : pseudo_id_(CSSSelectorParser::ParsePseudoElement(
-            pseudo_element,
-            element,
-            pseudo_argument_,
-            CSSSelectorParser::PseudoElementParseMode::kStandard)),
+      : pseudo_id_(CSSSelectorParser::ParsePseudoElement(pseudo_element,
+                                                         element,
+                                                         pseudo_argument_)),
         element_(element) {}
   ComputedStylePropertyMap(const ComputedStylePropertyMap&) = delete;
   ComputedStylePropertyMap& operator=(const ComputedStylePropertyMap&) = delete;

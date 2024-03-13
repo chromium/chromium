@@ -52,8 +52,6 @@ class CORE_EXPORT CSSSelectorParser {
   STACK_ALLOCATED();
 
  public:
-  enum class PseudoElementParseMode { kStandard, kLegacy };
-
   // Both ParseSelector() and ConsumeSelector() return an empty list
   // on error. The HeapVector is used for allocating CSSSelectors;
   // the return value points into a slice at the end of the vector
@@ -90,12 +88,9 @@ class CORE_EXPORT CSSSelectorParser {
                                                  bool has_arguments,
                                                  const Document*);
 
-  // TODO(crbug.com/328681375) apply this to web animations and remove
-  // PseudoElementParseMode.
   static PseudoId ParsePseudoElement(const String&,
                                      const Node*,
-                                     AtomicString& argument,
-                                     PseudoElementParseMode mode);
+                                     AtomicString& argument);
 
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end

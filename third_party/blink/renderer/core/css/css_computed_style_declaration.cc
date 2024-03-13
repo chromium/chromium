@@ -119,8 +119,7 @@ CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(
       allow_visited_style_(allow_visited_style),
       guaranteed_style_clean_(false) {
   pseudo_element_specifier_ = CSSSelectorParser::ParsePseudoElement(
-      pseudo_element_name, element, pseudo_argument_,
-      CSSSelectorParser::PseudoElementParseMode::kStandard);
+      pseudo_element_name, element, pseudo_argument_);
 }
 CSSComputedStyleDeclaration::~CSSComputedStyleDeclaration() = default;
 
