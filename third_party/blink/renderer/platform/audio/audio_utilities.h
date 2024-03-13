@@ -28,9 +28,10 @@
 
 #include <cstddef>
 
+#include "base/time/time.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
-#include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
+#include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink::audio_utilities {
@@ -61,6 +62,10 @@ PLATFORM_EXPORT size_t
 TimeToSampleFrame(double time,
                   double sample_rate,
                   enum SampleFrameRounding rounding = kRoundToNearest);
+
+// Calculate a buffer duration given the number of frames and a sample rate.
+PLATFORM_EXPORT
+base::TimeDelta FramesToTime(uint32_t frames_per_buffer, float sample_rate);
 
 // Check that |sampleRate| is a valid rate for AudioBuffers.
 PLATFORM_EXPORT bool IsValidAudioBufferSampleRate(float sample_rate);

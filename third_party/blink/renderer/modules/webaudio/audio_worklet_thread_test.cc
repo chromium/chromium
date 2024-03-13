@@ -28,9 +28,9 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
-#include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
+#include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -64,11 +65,15 @@ class AudioWorkletThreadTest : public PageTestBase, public ModuleTestBase {
   }
 
   std::unique_ptr<WorkerThread> CreateAudioWorkletThread(
-      bool has_realtime_constraint, bool is_top_level_frame) {
+      bool has_realtime_constraint,
+      bool is_top_level_frame,
+      base::TimeDelta realtime_buffer_duration = base::Milliseconds(3)) {
     std::unique_ptr<WorkerThread> thread =
         AudioWorkletMessagingProxy::CreateWorkletThreadWithConstraints(
             *reporting_proxy_,
-            has_realtime_constraint,
+            has_realtime_constraint
+                ? std::optional<base::TimeDelta>(realtime_buffer_duration)
+                : std::nullopt,
             is_top_level_frame);
     StartBackingThreadAndWaitUntilInit(thread.get());
     return thread;
@@ -487,3 +492,91 @@ INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadPriorityTestGroup,
                          testing::ValuesIn(kThreadPriorityTestParams));
 
 }  // namespace blink
+
+#if BUILDFLAG(IS_APPLE)
+
+namespace WTF {
+template <>
+struct CrossThreadCopier<base::TimeDelta>
+    : public CrossThreadCopierPassThrough<base::TimeDelta> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+}  // namespace WTF
+
+namespace blink {
+
+class AudioWorkletRealtimePeriodTestMac : public AudioWorkletThreadTest {
+ public:
+  std::unique_ptr<WorkerThread> CreateThreadAndCheckRealtimePeriod(
+      base::TimeDelta realtime_buffer_duration,
+      base::TimeDelta expected_realtime_period) {
+    std::unique_ptr<WorkerThread> audio_worklet_thread =
+        CreateAudioWorkletThread(/*has_realtime_constraint=*/true,
+                                 /*is_top_level_frame=*/true,
+                                 realtime_buffer_duration);
+    WorkerThread* thread = audio_worklet_thread.get();
+    base::WaitableEvent wait_event;
+    PostCrossThreadTask(
+        *thread->GetWorkerBackingThread().BackingThread().GetTaskRunner(),
+        FROM_HERE,
+        CrossThreadBindOnce(
+            &AudioWorkletRealtimePeriodTestMac::
+                CheckThreadRealtimePeriodOnWorkerThread,
+            CrossThreadUnretained(this), CrossThreadUnretained(thread),
+            expected_realtime_period, CrossThreadUnretained(&wait_event)));
+    wait_event.Wait();
+    return audio_worklet_thread;
+  }
+
+ private:
+  void CheckThreadRealtimePeriodOnWorkerThread(
+      WorkerThread* thread,
+      base::TimeDelta expected_realtime_period,
+      base::WaitableEvent* wait_event) {
+    ASSERT_TRUE(thread->IsCurrentThread());
+
+    base::ThreadPriorityForTest actual_priority =
+        base::PlatformThread::GetCurrentThreadPriorityForTest();
+
+    base::TimeDelta actual_realtime_period =
+        base::PlatformThread::GetCurrentThreadRealtimePeriodForTest();
+
+    EXPECT_EQ(actual_priority, base::ThreadPriorityForTest::kRealtimeAudio);
+    EXPECT_EQ(actual_realtime_period, expected_realtime_period);
+
+    wait_event->Signal();
+  }
+};
+
+TEST_F(AudioWorkletRealtimePeriodTestMac, CheckRealtimePeriod) {
+  // Creates 5 realtime AudioWorkletThreads with different realtime buffer
+  // durations; the last two will be sharing the same backing thread.
+  base::TimeDelta realtime_buffer_durations[] = {
+      base::Milliseconds(10), base::Milliseconds(20), base::Milliseconds(30),
+      base::Milliseconds(40), base::Milliseconds(50)};
+
+  std::vector<std::unique_ptr<WorkerThread>> worklet_threads;
+  worklet_threads.push_back(CreateThreadAndCheckRealtimePeriod(
+      realtime_buffer_durations[0], realtime_buffer_durations[0]));
+  worklet_threads.push_back(CreateThreadAndCheckRealtimePeriod(
+      realtime_buffer_durations[1], realtime_buffer_durations[1]));
+  worklet_threads.push_back(CreateThreadAndCheckRealtimePeriod(
+      realtime_buffer_durations[2], realtime_buffer_durations[2]));
+  worklet_threads.push_back(CreateThreadAndCheckRealtimePeriod(
+      realtime_buffer_durations[3], realtime_buffer_durations[3]));
+  // Note: we expect that the last two worklets share the same backng thread, so
+  // the should have the same realtime period.
+  worklet_threads.push_back(CreateThreadAndCheckRealtimePeriod(
+      realtime_buffer_durations[4], realtime_buffer_durations[3]));
+
+  for (auto& worklet_thread : worklet_threads) {
+    if (worklet_thread.get()) {
+      worklet_thread->Terminate();
+      worklet_thread->WaitForShutdownForTesting();
+    }
+  }
+}
+
+}  // namespace blink
+
+#endif  // BUILDFLAG(IS_APPLE)

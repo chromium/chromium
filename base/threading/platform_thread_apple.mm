@@ -288,6 +288,11 @@ void SetPriorityRealtimeAudio(TimeDelta realtime_period) {
 }  // anonymous namespace
 
 // static
+TimeDelta PlatformThreadApple::GetCurrentThreadRealtimePeriodForTest() {
+  return GetCurrentThreadRealtimePeriod();
+}
+
+// static
 bool PlatformThreadBase::CanChangeThreadType(ThreadType from, ThreadType to) {
   return true;
 }

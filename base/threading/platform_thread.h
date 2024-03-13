@@ -284,6 +284,8 @@ class BASE_EXPORT PlatformThreadApple : public PlatformThreadBase {
   // Stores the period value in TLS.
   static void SetCurrentThreadRealtimePeriodValue(TimeDelta realtime_period);
 
+  static TimeDelta GetCurrentThreadRealtimePeriodForTest();
+
   // Signals that the feature list has been initialized which allows to check
   // the feature's value now and initialize state. This prevents race
   // conditions where the feature is being checked while it is being

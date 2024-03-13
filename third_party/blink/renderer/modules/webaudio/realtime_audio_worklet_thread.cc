@@ -37,7 +37,8 @@ int shared_backing_thread_ref_count = 0;
 template class WorkletThreadHolder<RealtimeAudioWorkletThread>;
 
 RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
-    WorkerReportingProxy& worker_reporting_proxy)
+    WorkerReportingProxy& worker_reporting_proxy,
+    base::TimeDelta realtime_buffer_duration)
     : WorkerThread(worker_reporting_proxy) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
                "RealtimeAudioWorkletThread()");
@@ -56,6 +57,15 @@ RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
     params.base_thread_type = base::ThreadType::kRealtimeAudio;
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
                  "RealtimeAudioWorkletThread() - kRealtimeAudio");
+#if BUILDFLAG(IS_APPLE)
+    if (base::FeatureList::IsEnabled(
+            features::kAudioWorkletThreadRealtimePeriodMac)) {
+      params.realtime_period = realtime_buffer_duration;
+      TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
+                   "RealtimeAudioWorkletThread()", "realtime period",
+                   realtime_buffer_duration);
+    }
+#endif
   } else {
     params.base_thread_type = base::ThreadType::kDefault;
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),

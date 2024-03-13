@@ -113,6 +113,12 @@ size_t TimeToSampleFrame(double time,
   return static_cast<size_t>(frame);
 }
 
+base::TimeDelta FramesToTime(uint32_t frames_per_buffer, float sample_rate) {
+  return base::Microseconds(
+      static_cast<int64_t>(static_cast<int64_t>(frames_per_buffer) *
+                           base::Time::kMicrosecondsPerSecond / sample_rate));
+}
+
 bool IsValidAudioBufferSampleRate(float sample_rate) {
   return sample_rate >= MinAudioBufferSampleRate() &&
          sample_rate <= MaxAudioBufferSampleRate();

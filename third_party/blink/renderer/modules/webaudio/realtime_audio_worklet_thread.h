@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_REALTIME_AUDIO_WORKLET_THREAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_REALTIME_AUDIO_WORKLET_THREAD_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worklet_thread_holder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -20,7 +21,8 @@ class WorkerReportingProxy;
 // backing thread managed with reference counting.
 class MODULES_EXPORT RealtimeAudioWorkletThread final : public WorkerThread {
  public:
-  explicit RealtimeAudioWorkletThread(WorkerReportingProxy&);
+  RealtimeAudioWorkletThread(WorkerReportingProxy& worker_reporting_proxy,
+                             base::TimeDelta realtime_buffer_duration);
   ~RealtimeAudioWorkletThread() final;
 
   WorkerBackingThread& GetWorkerBackingThread() final;

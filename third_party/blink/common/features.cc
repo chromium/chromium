@@ -162,6 +162,15 @@ BASE_FEATURE(kAudioWorkletThreadRealtimePriority,
              "AudioWorkletThreadRealtimePriority",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_APPLE)
+// When enabled, RealtimeAudioWorkletThread scheduling is optimized taking into
+// account how often the worklet logic is executed (which is determined by the
+// AudioContext buffer duration).
+BASE_FEATURE(kAudioWorkletThreadRealtimePeriodMac,
+             "AudioWorkletThreadRealtimePeriodMac",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // A thread pool system for effective usage of RealtimeAudioWorkletThread
 // instances.
 BASE_FEATURE(kAudioWorkletThreadPool, "AudioWorkletThreadPool",
