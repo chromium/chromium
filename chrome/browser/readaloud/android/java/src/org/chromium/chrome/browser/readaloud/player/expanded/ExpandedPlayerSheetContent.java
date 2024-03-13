@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -93,6 +94,24 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mErrorLayout = (LinearLayout) mContentView.findViewById(R.id.error_layout);
         mSeekBar = (SeekBar) mContentView.findViewById(R.id.readaloud_expanded_player_seek_bar);
         mScrollView = (ScrollView) mContentView.findViewById(R.id.scroll_view);
+
+        View publisherButton = mContentView.findViewById(R.id.readaloud_player_publisher_button);
+        publisherButton.addOnLayoutChangeListener(
+                new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        TouchDelegateUtil.setBiggerTouchTarget(publisherButton);
+                    }
+                });
 
         mSeekBar.setAccessibilityDelegate(
                 new View.AccessibilityDelegate() {

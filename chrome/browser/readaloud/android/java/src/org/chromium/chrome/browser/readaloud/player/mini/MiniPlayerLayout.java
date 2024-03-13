@@ -15,9 +15,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
@@ -31,6 +29,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
+import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -124,16 +123,7 @@ public class MiniPlayerLayout extends LinearLayout {
         }
 
         // Make the close button touch target bigger.
-        View closeButton = findViewById(R.id.close_button);
-        Rect target = new Rect();
-        closeButton.getHitRect(target);
-        int halfWidth = target.width() / 2;
-        int halfHeight = target.height() / 2;
-        target.left -= halfWidth;
-        target.top -= halfHeight;
-        target.right += halfWidth;
-        target.bottom += halfHeight;
-        ((View) closeButton.getParent()).setTouchDelegate(new TouchDelegate(target, closeButton));
+        TouchDelegateUtil.setBiggerTouchTarget(findViewById(R.id.close_button));
     }
 
     void changeOpacity(float startValue, float endValue) {

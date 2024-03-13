@@ -247,6 +247,7 @@ android_library("player_java") {
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerCoordinator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerMediator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/PlayerProperties.java",
+    "java/src/org/chromium/chrome/browser/readaloud/player/TouchDelegateUtil.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/VisibilityState.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/ExpandedPlayerCoordinator.java",
     "java/src/org/chromium/chrome/browser/readaloud/player/expanded/ExpandedPlayerMediator.java",
