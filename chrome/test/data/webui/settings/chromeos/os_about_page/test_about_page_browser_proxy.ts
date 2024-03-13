@@ -67,6 +67,7 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
       'isManagedAutoUpdateEnabled',
       'isConsumerAutoUpdateEnabled',
       'setConsumerAutoUpdate',
+      'openExtendedUpdatesDialog',
     ]);
   }
 
@@ -246,6 +247,10 @@ export class TestAboutPageBrowserProxy extends TestBrowserProxy implements
   setConsumerAutoUpdate(enable: boolean): void {
     this.consumerAutoUpdateEnabled_ = enable;
     this.methodCalled('setConsumerAutoUpdate');
+  }
+
+  openExtendedUpdatesDialog(): void {
+    this.methodCalled('openExtendedUpdatesDialog');
   }
 
   applyDeferredUpdate(): void {

@@ -231,6 +231,11 @@ export interface AboutPageBrowserProxy {
   isConsumerAutoUpdateEnabled(): Promise<boolean>;
 
   setConsumerAutoUpdate(enable: boolean): void;
+
+  /**
+   * Opens the extended updates opt-in dialog.
+   */
+  openExtendedUpdatesDialog(): void;
 }
 
 let instance: AboutPageBrowserProxy|null = null;
@@ -340,5 +345,9 @@ export class AboutPageBrowserProxyImpl implements AboutPageBrowserProxy {
 
   setConsumerAutoUpdate(enable: boolean): void {
     chrome.send('setConsumerAutoUpdate', [enable]);
+  }
+
+  openExtendedUpdatesDialog(): void {
+    chrome.send('openExtendedUpdatesDialog');
   }
 }

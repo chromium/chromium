@@ -126,20 +126,21 @@ suite('<os-about-page> AllBuilds', () => {
         const expectedIcon =
             isDarkMode ? SPINNER_ICON_DARK_MODE : SPINNER_ICON_LIGHT_MODE;
 
-        const icon = page.shadowRoot!.querySelector('iron-icon');
-        assertTrue(!!icon);
+        const updateRowIcon =
+            page.shadowRoot!.querySelector<IronIconElement>('#updateRowIcon');
+        assertTrue(!!updateRowIcon);
         const statusMessageEl = page.$.updateStatusMessageInner;
         let previousMessageText = statusMessageEl.innerText;
 
         fireStatusChanged(UpdateStatus.CHECKING);
-        assertEquals(expectedIcon, icon.src);
-        assertNull(icon.getAttribute('icon'));
+        assertEquals(expectedIcon, updateRowIcon.src);
+        assertNull(updateRowIcon.getAttribute('icon'));
         assertNotEquals(previousMessageText, statusMessageEl.innerText);
         previousMessageText = statusMessageEl.innerText;
 
         fireStatusChanged(UpdateStatus.UPDATING, {progress: 0});
-        assertEquals(expectedIcon, icon.src);
-        assertNull(icon.getAttribute('icon'));
+        assertEquals(expectedIcon, updateRowIcon.src);
+        assertNull(updateRowIcon.getAttribute('icon'));
         assertFalse(statusMessageEl.innerText.includes('%'));
         assertNotEquals(previousMessageText, statusMessageEl.innerText);
         previousMessageText = statusMessageEl.innerText;
@@ -150,30 +151,30 @@ suite('<os-about-page> AllBuilds', () => {
         previousMessageText = statusMessageEl.innerText;
 
         fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
-        assertNull(icon.src);
+        assertNull(updateRowIcon.src);
         assertEquals(
             isRevampWayfindingEnabled ? 'os-settings:about-update-complete' :
                                         'settings:check-circle',
-            icon.icon);
+            updateRowIcon.icon);
         assertNotEquals(previousMessageText, statusMessageEl.innerText);
         previousMessageText = statusMessageEl.innerText;
 
         fireStatusChanged(UpdateStatus.DISABLED_BY_ADMIN);
-        assertNull(icon.src);
-        assertEquals('cr20:domain', icon.icon);
+        assertNull(updateRowIcon.src);
+        assertEquals('cr20:domain', updateRowIcon.icon);
         assertNotEquals(previousMessageText, statusMessageEl.innerText);
 
         fireStatusChanged(UpdateStatus.FAILED);
-        assertNull(icon.src);
+        assertNull(updateRowIcon.src);
         assertEquals(
             isRevampWayfindingEnabled ? 'os-settings:about-update-error' :
                                         'cr:error-outline',
-            icon.icon);
+            updateRowIcon.icon);
         assertEquals(0, statusMessageEl.innerText.trim().length);
 
         fireStatusChanged(UpdateStatus.DISABLED);
-        assertNull(icon.src);
-        assertNull(icon.getAttribute('icon'));
+        assertNull(updateRowIcon.src);
+        assertNull(updateRowIcon.getAttribute('icon'));
         assertEquals(0, statusMessageEl.innerText.trim().length);
       });
     });
@@ -554,10 +555,11 @@ suite('<os-about-page> AllBuilds', () => {
       assertEquals(isShowing, !isVisible(statusMessageEl));
 
       if (isShowing) {
-        const icon = page.shadowRoot!.querySelector('iron-icon');
-        assertTrue(!!icon);
-        assertNull(icon.src);
-        assertEquals('os-settings:end-of-life', icon.icon);
+        const updateRowIcon =
+            page.shadowRoot!.querySelector<IronIconElement>('#updateRowIcon');
+        assertTrue(!!updateRowIcon);
+        assertNull(updateRowIcon.src);
+        assertEquals('os-settings:end-of-life', updateRowIcon.icon);
 
         const {checkForUpdatesButton} = page.$;
         assertTrue(!!checkForUpdatesButton);
@@ -779,6 +781,53 @@ suite('<os-about-page> AllBuilds', () => {
       assertEquals(
           deepLinkElement, page.shadowRoot!.activeElement,
           `Firmware updates should be focused for settingId=${setting}.`);
+    });
+  });
+
+  // TODO(b/322418004): Update and expand tests when adding actual logic.
+  suite('Extended Updates', () => {
+    const EXTENDED_UPDATES_ICON = 'os-settings:about-update-complete';
+
+    function getExtendedUpdatesButton(): HTMLElement|null {
+      return page.shadowRoot!.querySelector<HTMLElement>(
+          '#extendedUpdatesButton');
+    }
+
+    function assertExtendedUpdatesVisibility(visible: boolean) {
+      const mainMessage = page.shadowRoot!.querySelector<HTMLElement>(
+          '#extendedUpdatesMainMessage');
+      const secondaryMessage = page.shadowRoot!.querySelector<HTMLElement>(
+          '#extendedUpdatesSecondaryMessage');
+      const button = getExtendedUpdatesButton();
+
+      assertEquals(visible, isVisible(mainMessage));
+      assertEquals(visible, isVisible(secondaryMessage));
+      assertEquals(visible, isVisible(button));
+    }
+
+    test('is not shown by default', async () => {
+      await initPage();
+      assertExtendedUpdatesVisibility(false);
+      assertTrue(isVisible(page.$.checkForUpdatesButton));
+    });
+
+    test('is shown when enabled', async () => {
+      await initPage();
+      page.set('showExtendedUpdatesOption_', true);
+      assertExtendedUpdatesVisibility(true);
+      assertFalse(isVisible(page.$.checkForUpdatesButton));
+
+      const updateRowIcon =
+          page.shadowRoot!.querySelector<IronIconElement>('#updateRowIcon');
+      assertTrue(!!updateRowIcon);
+      assertNull(updateRowIcon.src);
+      assertEquals(EXTENDED_UPDATES_ICON, updateRowIcon.icon);
+
+      const extendedUpdatesButton = getExtendedUpdatesButton();
+      assertTrue(!!extendedUpdatesButton);
+      assertTrue(isVisible(extendedUpdatesButton));
+      extendedUpdatesButton.click();
+      await aboutBrowserProxy.whenCalled('openExtendedUpdatesDialog');
     });
   });
 });

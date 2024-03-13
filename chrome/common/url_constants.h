@@ -803,6 +803,12 @@ inline constexpr char kFingerprintLearnMoreURL[] =
 // devices.
 inline constexpr char kRecoveryLearnMoreURL[] =
     "https://support.google.com/chrome?p=local_data_recovery";
+
+// The URL for the learn more link about extended automatic updates for
+// ChromeOS devices.
+// TODO(b/324303395): Update link to landing page.
+inline constexpr char16_t kDeviceExtendedUpdatesLearnMoreURL[] =
+    u"https://support.google.com/chromebook?p=extended_updates_support";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)

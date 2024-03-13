@@ -125,24 +125,28 @@
                 hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
               <!-- TODO(crbug.com/986596): Don't use browser icons here. Fork
                 them. -->
-              <iron-icon
+              <iron-icon id="updateRowIcon"
                   icon$="[[getUpdateStatusIcon_(
-                      hasEndOfLife_, currentUpdateStatusEvent_)]]"
+                      hasEndOfLife_, currentUpdateStatusEvent_,
+                      showExtendedUpdatesOption_)]]"
                   src="[[getThrobberSrcIfUpdating_(
                       isDarkModeActive_,
                       hasEndOfLife_,
-                      currentUpdateStatusEvent_)]]">
+                      currentUpdateStatusEvent_,
+                      showExtendedUpdatesOption_)]]">
               </iron-icon>
             </div>
           </template>
           <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
             <iron-icon id="updateRowIcon"
                 icon$="[[getUpdateStatusIcon_(
-                    hasEndOfLife_, currentUpdateStatusEvent_)]]"
+                    hasEndOfLife_, currentUpdateStatusEvent_,
+                    showExtendedUpdatesOption_)]]"
                 src="[[getThrobberSrcIfUpdating_(
                     isDarkModeActive_,
                     hasEndOfLife_,
-                    currentUpdateStatusEvent_)]]">
+                    currentUpdateStatusEvent_,
+                    showExtendedUpdatesOption_)]]">
             </iron-icon>
           </template>
           <div class="start padded">
@@ -165,10 +169,20 @@
                 id="endOfLifeMessage" hidden="[[!hasEndOfLife_]]"
                 localized-string="$i18n{endOfLifeMessage}">
             </localized-link>
+            <div id="extendedUpdatesMainMessage"
+                hidden="[[!showExtendedUpdatesOption_]]">
+              $i18n{extendedUpdatesMainMessage}
+            </div>
             <div class="secondary" hidden="[[!hasDeferredUpdate_]]">
               $i18n{aboutDeferredUpdate}
             </div>
             <div class="secondary">$i18n{aboutBrowserVersion}</div>
+            <div class="secondary" hidden="[[!showExtendedUpdatesOption_]]">
+              <localized-link
+                  id="extendedUpdatesSecondaryMessage"
+                  localized-string="$i18n{extendedUpdatesSecondaryMessage}">
+              </localized-link>
+            </div>
           </div>
           <div class="separator" hidden="[[!showButtonContainer_]]"></div>
           <span id="buttonContainer" hidden="[[!showButtonContainer_]]">
@@ -181,6 +195,11 @@
                 on-click="onCheckUpdatesClick_"
                 deep-link-focus-id$="[[Setting.kCheckForOsUpdate]]">
               $i18n{aboutCheckForUpdates}
+            </cr-button>
+            <cr-button id="extendedUpdatesButton"
+                hidden="[[!showExtendedUpdatesOption_]]"
+                on-click="onExtendedUpdatesButtonClick_">
+              $i18n{aboutExtendedUpdatesButton}
             </cr-button>
           </span>
         </div>
