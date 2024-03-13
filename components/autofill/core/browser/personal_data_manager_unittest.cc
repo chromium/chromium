@@ -48,9 +48,11 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
@@ -1307,6 +1309,24 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   EXPECT_EQ(1U, personal_data_->GetLocalCreditCards().size());
   EXPECT_EQ(1U, personal_data_->GetServerCreditCards().size());
 }
+
+TEST_F(PersonalDataManagerSyncTransportModeTest,
+       AutofillSyncToggleAvailableInTransportMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{syncer::
+                                kSyncEnableContactInfoDataTypeInTransportMode,
+                            syncer::kSyncDecoupleAddressPaymentSettings,
+                            ::switches::kExplicitBrowserSigninUIOnDesktop},
+      /*disabled_features=*/{});
+
+  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, true);
+  EXPECT_TRUE(personal_data_->IsAutofillSyncToggleAvailable());
+
+  prefs_->SetBoolean(::prefs::kExplicitBrowserSignin, false);
+  EXPECT_FALSE(personal_data_->IsAutofillSyncToggleAvailable());
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

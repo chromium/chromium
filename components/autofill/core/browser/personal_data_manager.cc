@@ -72,6 +72,8 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -1086,7 +1088,10 @@ bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
          base::FeatureList::IsEnabled(
              syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
          base::FeatureList::IsEnabled(
-             syncer::kSyncDecoupleAddressPaymentSettings);
+             syncer::kSyncDecoupleAddressPaymentSettings) &&
+         ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             ::switches::ExplicitBrowserSigninPhase::kFull) &&
+         pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);
 }
 
 void PersonalDataManager::AddFullServerCreditCardForTesting(
