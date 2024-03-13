@@ -54,7 +54,6 @@ void FakePlusAddressService::ConfirmPlusAddress(
   if (on_confirmed_) {
     std::move(on_confirmed_).Run(profile);
     on_confirmed_.Reset();
-    return;
   }
   std::move(on_completed).Run(profile);
 }
