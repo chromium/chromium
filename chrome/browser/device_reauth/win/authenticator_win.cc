@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -82,6 +83,12 @@ AuthenticationResultStatusWin ConvertUserConsentVerificationResult(
     case UserConsentVerificationResult_Canceled:
       return AuthenticationResultStatusWin::kCanceled;
   }
+}
+
+void RecordWindowsHelloAuthenticationResult(
+    AuthenticationResultStatusWin result) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.RequestVerificationAsyncResult", result);
 }
 
 void ReturnAvailabilityValue(AvailabilityCallback callback,
@@ -158,6 +165,8 @@ void ReturnAuthenticationValue(base::OnceCallback<void(bool)> callback,
                                const std::u16string& message) {
   AuthenticationResultStatusWin authentication_result =
       ConvertUserConsentVerificationResult(result);
+  RecordWindowsHelloAuthenticationResult(authentication_result);
+
   switch (authentication_result) {
     case AuthenticationResultStatusWin::kVerified:
       std::move(callback).Run(/*success=*/true);
@@ -174,6 +183,10 @@ void ReturnAuthenticationValue(base::OnceCallback<void(bool)> callback,
       // API.
       AuthenticateWithLegacyApi(message, std::move(callback));
       return;
+    case AuthenticationResultStatusWin::kFailedToCallAPI:
+    case AuthenticationResultStatusWin::kFailedToCreateFactory:
+      // This values are not returned by UserConsentVerifier API.
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -196,6 +209,8 @@ void PerformWindowsHelloAuthenticationAsync(
       RuntimeClass_Windows_Security_Credentials_UI_UserConsentVerifier>(
       &factory);
   if (FAILED(hr)) {
+    RecordWindowsHelloAuthenticationResult(
+        AuthenticationResultStatusWin::kFailedToCreateFactory);
     AuthenticateWithLegacyApi(message, std::move(callback));
     return;
   }
@@ -204,6 +219,8 @@ void PerformWindowsHelloAuthenticationAsync(
       base::win::HStringReference(base::UTF16ToWide(message).c_str()).Get(),
       &async_op);
   if (FAILED(hr)) {
+    RecordWindowsHelloAuthenticationResult(
+        AuthenticationResultStatusWin::kFailedToCallAPI);
     AuthenticateWithLegacyApi(message, std::move(callback));
     return;
   }

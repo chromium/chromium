@@ -78,6 +78,25 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Malformed response"/>
 </enum>
 
+<enum name="AuthenticationResultStatusWin">
+  <summary>Result of authenticating using Windows Hello.</summary>
+  <int value="0" label="User verified successfully."/>
+  <int value="1" label="There is no biometric verifier device available."/>
+  <int value="2"
+      label="A biometric verifier device is not configured for this user."/>
+  <int value="3"
+      label="Group policy has disabled the biometric verifier device."/>
+  <int value="4"
+      label="The biometric verifier device is performing an operation and is
+             unavailable."/>
+  <int value="5"
+      label="After 10 attempts, the original verification request and all
+             subsequent attempts at the same verification were not verified."/>
+  <int value="6" label="The verification operation was canceled."/>
+  <int value="7" label="Failed to create UserConsentVerifier factory."/>
+  <int value="8" label="Failed to call UserConsentVerifier API."/>
+</enum>
+
 <enum name="AutoSigninFirstRun">
   <int value="0" label="No action"/>
   <int value="1" label="Turn off"/>
