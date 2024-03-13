@@ -378,7 +378,8 @@ TEST_F(MagicStackRankingModelTest,
   EXPECT_SET_MAGIC_STACK_ORDER(
       consumer_, ContentSuggestionsModuleType::kCompactedSetUpList,
       ContentSuggestionsModuleType::kMostVisited,
-      ContentSuggestionsModuleType::kShortcuts, );
+      ContentSuggestionsModuleType::kShortcuts,
+      ContentSuggestionsModuleType::kParcelTracking, );
 
   [_magicStackRankingModel fetchLatestMagicStackRanking];
 

@@ -628,15 +628,13 @@ bool IsKeyboardAccessoryUpgradeEnabled() {
 }
 
 // Feature disabled by default.
-BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMagicStack, "MagicStack", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFeedContainment,
              "EnableFeedContainment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabResumption,
-             "TabResumption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabResumption, "TabResumption", base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
 
@@ -682,7 +680,7 @@ bool IsTabResumptionEnabledForMostRecentTabOnly() {
   CHECK(IsTabResumptionEnabled());
   std::string feature_param = base::GetFieldTrialParamValueByFeature(
       kTabResumption, kTabResumptionParameterName);
-  return feature_param == kTabResumptionMostRecentTabOnlyParam;
+  return feature_param != kTabResumptionAllTabsParam;
 }
 
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
@@ -703,7 +701,7 @@ bool ShouldPutMostVisitedSitesInMagicStack() {
 
 double ReducedNTPTopMarginSpaceForMagicStack() {
   return base::GetFieldTrialParamByFeatureAsDouble(kMagicStack,
-                                                   kReducedSpaceParam, 0);
+                                                   kReducedSpaceParam, 20);
 }
 
 bool ShouldHideIrrelevantModules() {

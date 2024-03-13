@@ -169,9 +169,6 @@ id<GREYMatcher> mostlyNotVisible() {
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);
   }
-  if ([self isRunningTest:@selector(testMinimumHeight)]) {
-    config.features_enabled.push_back(kMagicStack);
-  }
 
   if ([self isRunningTest:@selector(testCollectionShortcuts)]) {
     // This ensures that the test will not fail when What's New is updated.
@@ -1028,6 +1025,7 @@ id<GREYMatcher> mostlyNotVisible() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
       performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  GREYWaitForAppToIdle(@"App failed to idle");
 
   // Ensures that tiles are still all visible with feed turned off after
   // scrolling.
@@ -1041,12 +1039,12 @@ id<GREYMatcher> mostlyNotVisible() {
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
 
-  // Just check for Magic Stack visibility since the top module shown may
+  // Just check for Magic Stack interactibility since the top module shown may
   // vary.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kMagicStackViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_interactable()];
 
   // Ensures that fake omnibox visibility is correct.
   // On iPads, fake omnibox disappears and becomes real omnibox. On other

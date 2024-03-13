@@ -8,7 +8,9 @@
 #import "base/files/file_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "components/commerce/core/mock_shopping_service.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
@@ -47,6 +49,7 @@
 #import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -103,6 +106,12 @@ class BrowserCoordinatorTest : public PlatformTest {
         base::BindRepeating(
             segmentation_platform::SegmentationPlatformServiceFactory::
                 GetDefaultFactory()));
+    test_cbs_builder.AddTestingFactory(
+        commerce::ShoppingServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<commerce::MockShoppingService>();
+            }));
 
     chrome_browser_state_ = test_cbs_builder.Build();
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
@@ -113,6 +122,7 @@ class BrowserCoordinatorTest : public PlatformTest {
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
+    StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     WebStateDelegateBrowserAgent::CreateForBrowser(
         browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
     SyncErrorBrowserAgent::CreateForBrowser(browser_.get());

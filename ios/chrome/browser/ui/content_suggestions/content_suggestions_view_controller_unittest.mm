@@ -11,6 +11,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
+#import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -39,6 +41,10 @@ const char kURL[] = "https://chromium.org/";
 class ContentSuggestionsViewControllerTest : public PlatformTest {
  public:
   ContentSuggestionsViewControllerTest() {
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
+    RegisterLocalStatePrefs(local_state_->registry());
+    TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
+
     view_controller_ = [[ContentSuggestionsViewController alloc] init];
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:&pref_service_];
@@ -52,6 +58,11 @@ class ContentSuggestionsViewControllerTest : public PlatformTest {
         -1);
     view_controller_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
+  void TearDown() override {
+    TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
+    local_state_.reset();
   }
 
   // Iterates a view's subviews recursively, calling the block with each one.
@@ -98,6 +109,7 @@ class ContentSuggestionsViewControllerTest : public PlatformTest {
   ContentSuggestionsViewController* view_controller_;
   id metrics_recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
 };
 
 // Tests that the correct Magic Stack impression metrics are logged depending on

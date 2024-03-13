@@ -242,7 +242,7 @@ std::unique_ptr<Config> IosModuleRanker::GetConfig() {
   }
   bool serve_default_config = base::GetFieldTrialParamByFeatureAsBool(
       features::kSegmentationPlatformIosModuleRanker, kDefaultModelEnabledParam,
-      false);
+      true);
   auto config = std::make_unique<Config>();
   config->segmentation_key = kIosModuleRankerKey;
   config->segmentation_uma_name = kIosModuleRankerUmaName;

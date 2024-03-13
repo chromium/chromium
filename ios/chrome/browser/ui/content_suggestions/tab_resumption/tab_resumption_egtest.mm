@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
+#import "ios/chrome/browser/ui/ntp/ntp_app_interface.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/tabs/tests/distant_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
@@ -92,7 +93,7 @@ NSString* HostnameFromGURL(GURL URL) {
   config.additional_args.push_back(
       "--enable-features=" + std::string(kTabResumption.name) + ":" +
       kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam + "," +
-      kMagicStack.name + "," + syncer::kSyncSessionOnVisibilityChanged.name);
+      syncer::kSyncSessionOnVisibilityChanged.name);
   return config;
 }
 
@@ -102,8 +103,7 @@ NSString* HostnameFromGURL(GURL URL) {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(
       "--enable-features=" + std::string(kStartSurface.name) + "<" +
-      std::string(kStartSurface.name) + "," + kMagicStack.name + "," +
-      kTabResumption.name);
+      std::string(kStartSurface.name));
   config.additional_args.push_back(
       "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
   config.additional_args.push_back(
@@ -118,6 +118,10 @@ NSString* HostnameFromGURL(GURL URL) {
   [ChromeEarlGrey clearBrowsingHistory];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   SignInAndSync();
+  [NTPAppInterface recordModuleFreshnessSignalForType:
+                       ContentSuggestionsModuleType::kTabResumption];
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 }
 
 - (void)tearDown {

@@ -10285,33 +10285,6 @@
             ]
         }
     ],
-    "MagicStack": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Magic_Stack_Less_Top_Space_20231024",
-                    "params": {
-                        "MagicStackMostVisitedModule": "false",
-                        "ReducedNTPTopSpace": "20",
-                        "SetUpListCompactedTimeThresholdDays": "0",
-                        "enable_default_model": "true",
-                        "variant": "tab-resumption-all-tabs"
-                    },
-                    "enable_features": [
-                        "IOSParcelTracking",
-                        "MagicStack",
-                        "SafetyCheckMagicStack",
-                        "SegmentationPlatformIosModuleRanker",
-                        "SegmentationPlatformUserVisibleTaskRunner",
-                        "TabResumption"
-                    ]
-                }
-            ]
-        }
-    ],
     "MainThreadCompositingPriority": [
         {
             "platforms": [

@@ -315,6 +315,7 @@ source_set("unit_tests") {
     ":ntp_internal",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
     "//components/feed/core/v2/public:common",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/ntp_tiles",
@@ -324,10 +325,12 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/variations/service",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -363,6 +366,26 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/strings",
   ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "ntp_app_interface.h",
+    "ntp_app_interface.mm",
+  ]
+  deps = [ "//ios/chrome/browser/ui/ntp/metrics:home_metrics" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "ntp_app_interface.h",
+    "ntp_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
 }
 
 source_set("eg2_tests") {
