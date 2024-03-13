@@ -24,6 +24,7 @@ include_rules = [
   "+components/net_log",
   "+components/password_manager/core",
   "+components/password_manager/ios",
+  "+components/plus_addresses/webdata/plus_address_webdata_service.h",
   "+components/pref_registry",
   "+components/prefs",
   "+components/profile_metrics",

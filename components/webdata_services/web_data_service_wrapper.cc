@@ -153,7 +153,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
 
   plus_address_web_data_ =
       base::MakeRefCounted<plus_addresses::PlusAddressWebDataService>(
-          profile_database_, ui_task_runner);
+          profile_database_, ui_task_runner, db_task_runner);
   plus_address_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_PLUS_ADDRESS));
 

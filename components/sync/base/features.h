@@ -55,6 +55,11 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletUsageData);
 // Controls whether to enable syncing of Autofill Wallet Credential Data.
 BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 
+// Controls if the `PlusAddressSyncBridge`, controlling PLUS_ADDRESS should be
+// instantiated.
+// TODO(b/322147254): Cleanup when launched.
+BASE_DECLARE_FEATURE(kSyncPlusAddress);
+
 // If enabled, Segmentation data type will be synced.
 BASE_DECLARE_FEATURE(kSyncSegmentationDataType);
 

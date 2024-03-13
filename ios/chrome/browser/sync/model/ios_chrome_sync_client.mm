@@ -26,6 +26,7 @@
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
+#import "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/supervised_user/core/common/buildflags.h"
@@ -114,7 +115,9 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
           local_or_syncable_bookmark_sync_service,
           account_bookmark_sync_service,
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_),
-          supervised_user_settings_service);
+          supervised_user_settings_service,
+          ios::WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(
+              browser_state_, ServiceAccessType::IMPLICIT_ACCESS));
 
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(

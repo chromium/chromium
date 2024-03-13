@@ -30,6 +30,10 @@ namespace password_manager {
 class PasswordStoreInterface;
 }
 
+namespace plus_addresses {
+class PlusAddressWebDataService;
+}
+
 namespace sync_bookmarks {
 class BookmarkSyncService;
 }
@@ -65,7 +69,9 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
       power_bookmarks::PowerBookmarkService* power_bookmark_service,
       supervised_user::SupervisedUserSettingsService*
-          supervised_user_settings_service);
+          supervised_user_settings_service,
+      const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
+          plus_address_webdata_service);
   SyncApiComponentFactoryImpl(const SyncApiComponentFactoryImpl&) = delete;
   SyncApiComponentFactoryImpl& operator=(const SyncApiComponentFactoryImpl&) =
       delete;
@@ -132,6 +138,8 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
   const raw_ptr<power_bookmarks::PowerBookmarkService> power_bookmark_service_;
   const raw_ptr<supervised_user::SupervisedUserSettingsService>
       supervised_user_settings_service_;
+  const scoped_refptr<plus_addresses::PlusAddressWebDataService>
+      plus_address_webdata_service_;
 };
 
 }  // namespace browser_sync

@@ -9,6 +9,7 @@ include_rules = [
   "+components/history/core/common",
   "+components/keyed_service/core",
   "+components/password_manager/core/browser",
+  "+components/plus_addresses/webdata",
   "+components/power_bookmarks/core",
   "+components/prefs",
   "+components/reading_list/core",

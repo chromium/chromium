@@ -729,7 +729,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
     webdatabase_service_->AddTable(std::make_unique<PlusAddressTable>());
     webdatabase_service_->LoadDatabase();
     plus_webdata_service_ = base::MakeRefCounted<PlusAddressWebDataService>(
-        webdatabase_service_,
+        webdatabase_service_, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     plus_webdata_service_->Init(base::DoNothing());
   }

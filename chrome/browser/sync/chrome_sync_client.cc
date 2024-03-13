@@ -62,6 +62,7 @@
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
@@ -256,7 +257,9 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile_),
       AccountBookmarkSyncServiceFactory::GetForProfile(profile_),
       PowerBookmarkServiceFactory::GetForBrowserContext(profile_),
-      supervised_user_settings_service);
+      supervised_user_settings_service,
+      WebDataServiceFactory::GetPlusAddressWebDataForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS));
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;

@@ -35,6 +35,7 @@
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
+#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/prefs/pref_service.h"
@@ -176,7 +177,9 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
     sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
     power_bookmarks::PowerBookmarkService* power_bookmark_service,
     supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service)
+        supervised_user_settings_service,
+    const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
+        plus_address_webdata_service)
     : sync_client_(sync_client),
       channel_(channel),
       ui_thread_(ui_thread),
@@ -193,7 +196,8 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
           local_or_syncable_bookmark_sync_service),
       account_bookmark_sync_service_(account_bookmark_sync_service),
       power_bookmark_service_(power_bookmark_service),
-      supervised_user_settings_service_(supervised_user_settings_service) {
+      supervised_user_settings_service_(supervised_user_settings_service),
+      plus_address_webdata_service_(plus_address_webdata_service) {
   DCHECK(sync_client_);
 }
 
@@ -416,6 +420,18 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
                 sync_client_->GetPrefService()));
       }
     }
+  }
+
+  // `plus_address_webdata_service_` is null on iOS WebView.
+  if (!disabled_types.Has(syncer::PLUS_ADDRESS) &&
+      plus_address_webdata_service_ &&
+      base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::PLUS_ADDRESS,
+        /*delegate_for_full_sync_mode=*/
+        plus_address_webdata_service_->GetSyncControllerDelegate(),
+        /*delegate_for_transport_mode=*/
+        plus_address_webdata_service_->GetSyncControllerDelegate()));
   }
 
   if (!disabled_types.Has(syncer::PREFERENCES)) {

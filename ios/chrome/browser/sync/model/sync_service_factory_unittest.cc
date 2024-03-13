@@ -107,8 +107,9 @@ class SyncServiceFactoryTest : public PlatformTest {
       datatypes.Put(syncer::COLLABORATION_GROUP);
       datatypes.Put(syncer::SHARED_TAB_GROUP_DATA);
     }
-    // TODO(b/322147254): Add `syncer::PLUS_ADDRESS` once it has a controller.
-
+    if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
+      datatypes.Put(syncer::PLUS_ADDRESS);
+    }
     return datatypes;
   }
 

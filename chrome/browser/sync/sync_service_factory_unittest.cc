@@ -199,7 +199,9 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::WEB_APKS);
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-    // TODO(b/322147254): Add `syncer::PLUS_ADDRESS` once it has a controller.
+    if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddress)) {
+      datatypes.Put(syncer::PLUS_ADDRESS);
+    }
     return datatypes;
   }
 
