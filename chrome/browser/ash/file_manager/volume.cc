@@ -234,6 +234,8 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
   volume->icon_set_ = file_system_info.icon_set();
 
   volume->volume_id_ = GenerateVolumeId(*volume);
+  volume->file_system_id_ = file_system_info.file_system_id();
+  volume->provider_id_ = file_system_info.provider_id();
 
   if (!optional_fusebox_path.empty()) {
     volume->file_system_type_ = util::kFuseBox;
@@ -248,10 +250,6 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
     // "fusebox" prefix the original FSP volume id.
     volume->volume_id_ =
         base::StrCat({util::kFuseBox, GenerateVolumeId(*volume)});
-
-  } else {
-    volume->file_system_id_ = file_system_info.file_system_id();
-    volume->provider_id_ = file_system_info.provider_id();
   }
 
   return volume;
