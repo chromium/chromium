@@ -31,6 +31,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engine_type.h"
@@ -1364,6 +1365,27 @@ bool AutocompleteMatch::IsOnDeviceSearchSuggestion() const {
       (provider &&
        provider->type() == AutocompleteProvider::TYPE_ON_DEVICE_HEAD);
   return from_on_device_provider && subtypes.contains(271);
+}
+
+int AutocompleteMatch::GetSortingOrder() const {
+  if (IsStarterPackType(type)) {
+    return 0;
+  }
+#if !BUILDFLAG(IS_IOS)
+  // Group history cluster suggestions with searches.
+  if (type == AutocompleteMatchType::HISTORY_CLUSTER) {
+    return 2;
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+  if (IsSearchType(type)) {
+    return 2;
+  }
+  // Group boosted shortcuts above searches.
+  if (omnibox_feature_configs::ShortcutBoosting::Get().group_with_searches &&
+      shortcut_boosted) {
+    return 1;
+  }
+  return 3;
 }
 
 bool AutocompleteMatch::IsUrlScoringEligible() const {

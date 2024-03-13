@@ -1469,21 +1469,6 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
   if (begin == end)
     return;
 
-  base::ranges::stable_sort(begin, end, {}, [](const auto& m) {
-    if (AutocompleteMatch::IsStarterPackType(m.type))
-      return 0;
-#if !BUILDFLAG(IS_IOS)
-    // Group history cluster suggestions with searches.
-    if (m.type == AutocompleteMatchType::HISTORY_CLUSTER)
-      return 2;
-#endif  // !BUILDFLAG(IS_IOS)
-    if (AutocompleteMatch::IsSearchType(m.type))
-      return 2;
-    // Group boosted shortcuts above searches.
-    if (omnibox_feature_configs::ShortcutBoosting::Get().group_with_searches &&
-        m.shortcut_boosted) {
-      return 1;
-    }
-    return 3;
-  });
+  base::ranges::stable_sort(begin, end, {},
+                            [](const auto& m) { return m.GetSortingOrder(); });
 }

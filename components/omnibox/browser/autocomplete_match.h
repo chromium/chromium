@@ -529,6 +529,11 @@ struct AutocompleteMatch {
   // providers.
   bool IsOnDeviceSearchSuggestion() const;
 
+  // Returns the top-level sorting order of the suggestion.
+  // Suggestions should be sorted by this value first, and by Relevance score
+  // next.
+  int GetSortingOrder() const;
+
   // Returns true if the match is eligible to be re-scored by ML Url scoring.
   bool IsUrlScoringEligible() const;
 

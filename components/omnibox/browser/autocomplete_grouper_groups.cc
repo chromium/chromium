@@ -46,8 +46,5 @@ void Group::Add(const AutocompleteMatch& match) {
 
 void Group::GroupMatchesBySearchVsUrl() {
   base::ranges::stable_sort(matches_.begin(), matches_.end(), {},
-                            [](const auto& m) {
-                              return m->suggestion_group_id.value() ==
-                                     omnibox::GroupId::GROUP_OTHER_NAVS;
-                            });
+                            [](const auto& m) { return m->GetSortingOrder(); });
 }

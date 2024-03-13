@@ -1530,23 +1530,35 @@ TEST(AutocompleteGrouperSectionsTest,
     VerifyMatches(out_matches, expected_relevances);
   };
 
+  auto make_search = [](int score) {
+    auto match = CreateMatch(score, omnibox::GROUP_SEARCH);
+    match.type = AutocompleteMatchType::SEARCH_HISTORY;
+    return match;
+  };
+
+  auto make_url = [](int score) {
+    auto match = CreateMatch(score, omnibox::GROUP_OTHER_NAVS);
+    match.type = AutocompleteMatchType::NAVSUGGEST;
+    return match;
+  };
+
   {
     SCOPED_TRACE("No matches = no crashes.");
     test({}, {});
   }
   {
     SCOPED_TRACE("Grouping top section only.");
-    test({CreateMatch(100, omnibox::GROUP_SEARCH)}, {100});
+    test({make_search(100)}, {100});
   }
   {
     SCOPED_TRACE("Grouping top two sections.");
     test(
         {
-            CreateMatch(20, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(19, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(18, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(10, omnibox::GROUP_SEARCH),
-            CreateMatch(9, omnibox::GROUP_SEARCH),
+            make_url(20),
+            make_url(19),
+            make_url(18),
+            make_search(10),
+            make_search(9),
         },
         // 20     -- default match.
         // 10, 9  -- top searches.
@@ -1557,23 +1569,23 @@ TEST(AutocompleteGrouperSectionsTest,
     SCOPED_TRACE("Grouping all sections.");
     test(
         {
-            CreateMatch(20, omnibox::GROUP_OTHER_NAVS),
+            make_url(20),
             // top adaptive group
-            CreateMatch(19, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(18, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(10, omnibox::GROUP_SEARCH),
-            CreateMatch(9, omnibox::GROUP_SEARCH),
-            CreateMatch(17, omnibox::GROUP_OTHER_NAVS),
+            make_url(19),
+            make_url(18),
+            make_search(10),
+            make_search(9),
+            make_url(17),
             // bottom adaptive group
-            CreateMatch(16, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(8, omnibox::GROUP_SEARCH),
-            CreateMatch(7, omnibox::GROUP_SEARCH),
-            CreateMatch(15, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(14, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(6, omnibox::GROUP_SEARCH),
-            CreateMatch(5, omnibox::GROUP_SEARCH),
-            CreateMatch(13, omnibox::GROUP_OTHER_NAVS),
-            CreateMatch(12, omnibox::GROUP_OTHER_NAVS),
+            make_url(16),
+            make_search(8),
+            make_search(7),
+            make_url(15),
+            make_url(14),
+            make_search(6),
+            make_search(5),
+            make_url(13),
+            make_url(12),
         },
         {
             20,                             // the default match
