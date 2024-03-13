@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "chrome/browser/ash/file_manager/indexing/file_index.h"
@@ -30,26 +31,30 @@ class InmemoryFileIndex : public FileIndex {
 
   // Overrides base implementation to store association between terms
   // and info in in-memory maps.
-  void UpdateFile(const std::vector<Term>& terms,
-                  const FileInfo& info) override;
+  OpResults UpdateFile(const std::vector<Term>& terms,
+                       const FileInfo& info) override;
 
   // Overrides base implementation to associate additional terms with
   // the given file.
-  void AugmentFile(const std::vector<Term>& terms,
-                   const FileInfo& info) override;
+  OpResults AugmentFile(const std::vector<Term>& terms,
+                        const FileInfo& info) override;
 
   // Overrides base implementation to purge in-memory maps of information
   // associated with the file with the given `url`.
-  bool RemoveFile(const GURL& url) override;
+  OpResults RemoveFile(const GURL& url) override;
 
   // Overrides base implementation to search in-memory maps for files that match
   // the specified query.
   std::vector<FileInfo> Search(const Query& query) override;
 
  private:
+  // Builds a map from field name to unique term IDs.
+  std::map<std::string, std::set<int64_t>> ConvertToTermIds(
+      const std::vector<Term>& terms);
+
   // Sets association between terms and the file. This method assumes that the
   // term list is not empty.
-  void SetFileTerms(const std::vector<Term>& terms, const FileInfo& info);
+  OpResults SetFileTerms(const std::vector<Term>& terms, const FileInfo& info);
 
   // Adds association between terms and the file. This method assumes that the
   // term list is not empty.

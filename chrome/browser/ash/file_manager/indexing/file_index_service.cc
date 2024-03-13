@@ -15,17 +15,17 @@ FileIndexService::FileIndexService(Profile* profile)
 
 FileIndexService::~FileIndexService() = default;
 
-void FileIndexService::UpdateFile(const std::vector<Term>& terms,
-                                  const FileInfo& info) {
-  file_index_delegate_->UpdateFile(terms, info);
+OpResults FileIndexService::UpdateFile(const std::vector<Term>& terms,
+                                       const FileInfo& info) {
+  return file_index_delegate_->UpdateFile(terms, info);
 }
 
-void FileIndexService::AugmentFile(const std::vector<Term>& terms,
-                                   const FileInfo& info) {
-  file_index_delegate_->AugmentFile(terms, info);
+OpResults FileIndexService::AugmentFile(const std::vector<Term>& terms,
+                                        const FileInfo& info) {
+  return file_index_delegate_->AugmentFile(terms, info);
 }
 
-bool FileIndexService::RemoveFile(const GURL& url) {
+OpResults FileIndexService::RemoveFile(const GURL& url) {
   return file_index_delegate_->RemoveFile(url);
 }
 

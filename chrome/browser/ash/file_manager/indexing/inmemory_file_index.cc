@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include "file_index.h"
 
 namespace file_manager {
 
@@ -13,19 +14,18 @@ InmemoryFileIndex::InmemoryFileIndex() = default;
 
 InmemoryFileIndex::~InmemoryFileIndex() = default;
 
-void InmemoryFileIndex::UpdateFile(const std::vector<Term>& terms,
-                                   const FileInfo& info) {
+OpResults InmemoryFileIndex::UpdateFile(const std::vector<Term>& terms,
+                                        const FileInfo& info) {
   if (terms.empty()) {
-    RemoveFile(info.file_url);
-  } else {
-    SetFileTerms(terms, info);
+    return OpResults::kArgumentError;
   }
+  return SetFileTerms(terms, info);
 }
 
-bool InmemoryFileIndex::RemoveFile(const GURL& url) {
+OpResults InmemoryFileIndex::RemoveFile(const GURL& url) {
   int64_t url_id = GetUrlId(url);
   if (url_id < 0) {
-    return false;
+    return OpResults::kSuccess;
   }
   for (auto& [field_name, term_lists] : term_namespace_) {
     auto term_it = term_lists.find(url_id);
@@ -45,41 +45,27 @@ bool InmemoryFileIndex::RemoveFile(const GURL& url) {
     term_lists.erase(term_it);
   }
   url_to_id_.erase(url);
-  return true;
+  return OpResults::kSuccess;
 }
 
-void InmemoryFileIndex::AugmentFile(const std::vector<Term>& terms,
-                                    const FileInfo& info) {
+OpResults InmemoryFileIndex::AugmentFile(const std::vector<Term>& terms,
+                                         const FileInfo& info) {
   if (terms.empty()) {
-    return;
+    return OpResults::kSuccess;
   }
 
   int64_t url_id = GetOrCreateUrlId(info);
   DCHECK(url_id >= 0);
 
-  // TODO(majewski): Factor out making term_ids_by_field.
-  std::map<std::string, std::set<int64_t>> term_ids_by_field;
-  for (const Term& term : terms) {
-    auto it = term_ids_by_field.find(term.field());
-    int64_t term_id = GetTermId(term.text_bytes(), true);
-    if (it == term_ids_by_field.end()) {
-      std::set<int64_t> term_set{term_id};
-      term_ids_by_field.emplace(std::make_pair(term.field(), term_set));
-    } else {
-      it->second.insert(term_id);
-    }
-  }
+  auto term_ids_by_field = ConvertToTermIds(terms);
   for (const auto& by_field_it : term_ids_by_field) {
     AddFileTerms(by_field_it.first, by_field_it.second, url_id);
   }
+  return OpResults::kSuccess;
 }
 
-void InmemoryFileIndex::SetFileTerms(const std::vector<Term>& terms,
-                                     const FileInfo& info) {
-  DCHECK(!terms.empty());
-
-  // TODO(majewski): Factor out making term_ids_by_field.
-  // Arrange terms by field and remove duplicates and convert to internal IDs.
+std::map<std::string, std::set<int64_t>> InmemoryFileIndex::ConvertToTermIds(
+    const std::vector<Term>& terms) {
   std::map<std::string, std::set<int64_t>> term_ids_by_field;
   for (const Term& term : terms) {
     auto it = term_ids_by_field.find(term.field());
@@ -91,7 +77,15 @@ void InmemoryFileIndex::SetFileTerms(const std::vector<Term>& terms,
       it->second.insert(term_id);
     }
   }
+  return term_ids_by_field;
+}
 
+OpResults InmemoryFileIndex::SetFileTerms(const std::vector<Term>& terms,
+                                          const FileInfo& info) {
+  DCHECK(!terms.empty());
+
+  // Arrange terms by field and remove duplicates and convert to internal IDs.
+  auto term_ids_by_field = ConvertToTermIds(terms);
   int64_t url_id = GetOrCreateUrlId(info);
   DCHECK(url_id >= 0);
 
@@ -124,6 +118,7 @@ void InmemoryFileIndex::SetFileTerms(const std::vector<Term>& terms,
   for (const auto& by_field_it : term_ids_by_field) {
     AddFileTerms(by_field_it.first, by_field_it.second, url_id);
   }
+  return OpResults::kSuccess;
 }
 
 void InmemoryFileIndex::AddFileTerms(const std::string& field_name,

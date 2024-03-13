@@ -54,7 +54,8 @@ TEST_F(FileIndexServiceTest, EmptySearch) {
   EXPECT_THAT(index_service_->Search(Query({})), testing::ElementsAre());
 
   FileInfo file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
-  index_service_->UpdateFile({pinned_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info),
+            OpResults::kSuccess);
 
   // Empty query on an non-empty index.
   EXPECT_THAT(index_service_->Search(Query({})), testing::ElementsAre());
@@ -63,7 +64,8 @@ TEST_F(FileIndexServiceTest, EmptySearch) {
 TEST_F(FileIndexServiceTest, SimpleMatch) {
   FileInfo file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
 
-  index_service_->UpdateFile({pinned_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info),
+            OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({pinned_})),
               testing::ElementsAre(file_info));
 }
@@ -72,7 +74,8 @@ TEST_F(FileIndexServiceTest, MultiTermMatch) {
   FileInfo file_info(MakeLocalURL("foot.txt"), 1024, base::Time());
 
   // Label file_info as pinned and starred.
-  index_service_->UpdateFile({pinned_, starred_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({pinned_, starred_}, file_info),
+            OpResults::kSuccess);
 
   std::vector<FileInfo> pinned_files = index_service_->Search(Query({pinned_}));
   EXPECT_THAT(index_service_->Search(Query({pinned_})),
@@ -90,7 +93,8 @@ TEST_F(FileIndexServiceTest, AugmentTerms) {
   FileInfo file_info(MakeLocalURL("foot.txt"), 1024, base::Time());
 
   // Label file_info as pinned and starred.
-  index_service_->UpdateFile({downloaded_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, file_info),
+            OpResults::kSuccess);
 
   // Can find by downloaded.
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
@@ -99,7 +103,8 @@ TEST_F(FileIndexServiceTest, AugmentTerms) {
   EXPECT_THAT(index_service_->Search(Query({starred_})),
               testing::ElementsAre());
 
-  index_service_->AugmentFile({starred_}, file_info);
+  EXPECT_EQ(index_service_->AugmentFile({starred_}, file_info),
+            OpResults::kSuccess);
   // Can find by downloaded.
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
               testing::ElementsAre(file_info));
@@ -115,28 +120,32 @@ TEST_F(FileIndexServiceTest, ReplaceTerms) {
   FileInfo file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
 
   // Start with the single label: downloaded.
-  index_service_->UpdateFile({downloaded_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, file_info),
+            OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
               testing::ElementsAre(file_info));
   EXPECT_THAT(index_service_->Search(Query({starred_})),
               testing::ElementsAre());
 
   // Just adding more labels: both downloaded and starred.
-  index_service_->UpdateFile({downloaded_, starred_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({downloaded_, starred_}, file_info),
+            OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
               testing::ElementsAre(file_info));
   EXPECT_THAT(index_service_->Search(Query({starred_})),
               testing::ElementsAre(file_info));
 
   // Remove the original "downloaded" label.
-  index_service_->UpdateFile({starred_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({starred_}, file_info),
+            OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
               testing::ElementsAre());
   EXPECT_THAT(index_service_->Search(Query({starred_})),
               testing::ElementsAre(file_info));
 
   // Remove the "starred" label and add back "downloaded".
-  index_service_->UpdateFile({downloaded_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, file_info),
+            OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
               testing::ElementsAre(file_info));
   EXPECT_THAT(index_service_->Search(Query({starred_})),
@@ -145,10 +154,12 @@ TEST_F(FileIndexServiceTest, ReplaceTerms) {
 
 TEST_F(FileIndexServiceTest, SearchMultipleFiles) {
   FileInfo foo_file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
-  index_service_->UpdateFile({downloaded_}, foo_file_info);
+  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, foo_file_info),
+            OpResults::kSuccess);
 
   FileInfo bar_file_info(MakeDriveURL("bar.txt"), 1024, base::Time());
-  index_service_->UpdateFile({downloaded_}, bar_file_info);
+  EXPECT_EQ(index_service_->UpdateFile({downloaded_}, bar_file_info),
+            OpResults::kSuccess);
 
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
               testing::ElementsAre(foo_file_info, bar_file_info));
@@ -156,38 +167,36 @@ TEST_F(FileIndexServiceTest, SearchMultipleFiles) {
 
 TEST_F(FileIndexServiceTest, SearchByNonexistingTerms) {
   FileInfo file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
-  index_service_->UpdateFile({pinned_}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info),
+            OpResults::kSuccess);
 
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
               testing::ElementsAre());
 }
 
-TEST_F(FileIndexServiceTest, EmptyUpdateDeletes) {
+TEST_F(FileIndexServiceTest, EmptyUpdateIsInvalid) {
   FileInfo file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
   // Insert into the index with pinned label.
-  index_service_->UpdateFile({pinned_}, file_info);
-  // Remove from index by inserting it with no labels.
-  index_service_->UpdateFile({}, file_info);
+  EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info),
+            OpResults::kSuccess);
+  // Verify that passing empty terms is disallowed.
+  EXPECT_EQ(index_service_->UpdateFile({}, file_info),
+            OpResults::kArgumentError);
 
-  EXPECT_THAT(index_service_->Search(Query({pinned_})), testing::ElementsAre());
-}
-
-TEST_F(FileIndexServiceTest, EmptyUpdateForUnknownFile) {
-  FileInfo file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
-  // Inserting with empty terms does nothing.
-  index_service_->UpdateFile({}, file_info);
-
-  EXPECT_THAT(index_service_->Search(Query({pinned_})), testing::ElementsAre());
+  EXPECT_THAT(index_service_->Search(Query({pinned_})),
+              testing::ElementsAre(file_info));
 }
 
 TEST_F(FileIndexServiceTest, FieldSeparator) {
   Term colon_in_field("foo:", u"one");
   FileInfo foo_info(MakeLocalURL("foo.txt"), 1024, base::Time());
-  index_service_->UpdateFile({colon_in_field}, foo_info);
+  EXPECT_EQ(index_service_->UpdateFile({colon_in_field}, foo_info),
+            OpResults::kSuccess);
 
   Term colon_in_text("foo", u":one");
   FileInfo bar_info(MakeLocalURL("bar.txt"), 1024, base::Time());
-  index_service_->UpdateFile({colon_in_text}, bar_info);
+  EXPECT_EQ(index_service_->UpdateFile({colon_in_text}, bar_info),
+            OpResults::kSuccess);
 
   EXPECT_THAT(index_service_->Search(Query({colon_in_field})),
               testing::ElementsAre(foo_info));

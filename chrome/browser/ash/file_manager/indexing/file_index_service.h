@@ -57,18 +57,18 @@ class FileIndexService : public KeyedService {
   // say, Term("label", "pinned") only the "pinned" label is associated with
   // the given `file_info`. If you want both terms to be associated you must
   // pass both terms in a single call.
-  void UpdateFile(const std::vector<Term>& terms, const FileInfo& info);
+  OpResults UpdateFile(const std::vector<Term>& terms, const FileInfo& info);
 
   // Augments terms associated with the file with the `terms` given as the first
   // argument. Once this operation is finished, the file can be retrieved by any
   // existing terms that were associated with it, or any new terms this call
   // added.
-  void AugmentFile(const std::vector<Term>& terms, const FileInfo& info);
+  OpResults AugmentFile(const std::vector<Term>& terms, const FileInfo& info);
 
   // Removes the file uniquely identified by the URL from this index. This is
   // preferred way of removing files over calling the UpdateFile method with an
   // empty terms vector. Returns true if the file was found and removed.
-  bool RemoveFile(const GURL& url);
+  OpResults RemoveFile(const GURL& url);
 
   // Adds specified terms to terms associated with the file. The file must
   // already exist for this operation to succeed.
