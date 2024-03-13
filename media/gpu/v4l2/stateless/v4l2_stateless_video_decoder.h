@@ -187,8 +187,8 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // through the queue. To do that the |last_frame_id_generated_| holds the id
   // of the last input buffer while |last_frame_id_dequeued_| holds the id of
   // the last output buffer.
-  uint64_t last_frame_id_generated_;
-  uint64_t last_frame_id_dequeued_;
+  uint64_t last_frame_id_generated_ = 0;
+  uint64_t last_frame_id_dequeued_ = 0;
 
   base::LRUCache<int32_t, base::TimeDelta> bitstream_id_to_timestamp_;
 
