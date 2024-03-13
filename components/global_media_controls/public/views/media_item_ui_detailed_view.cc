@@ -7,6 +7,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
+#include "components/global_media_controls/views/media_action_button.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -20,8 +21,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -56,8 +55,7 @@ constexpr int kFontSize = 12;
 constexpr int kMediaInfoSeparator = 4;
 constexpr int kControlsColumnSeparator = 10;
 constexpr int kChevronIconSize = 15;
-constexpr int kMediaButtonIconSize = 20;
-constexpr int kNotMediaActionButtonId = -1;
+constexpr int kMediaActionButtonIconSize = 20;
 
 constexpr float kFocusRingHaloInset = -3.0f;
 
@@ -105,64 +103,6 @@ class MediaLabelButton : public views::Button {
 };
 
 BEGIN_METADATA(MediaLabelButton)
-END_METADATA
-
-class MediaButton : public views::ImageButton {
-  METADATA_HEADER(MediaButton, views::ImageButton)
-
- public:
-  MediaButton(PressedCallback callback,
-              int button_id,
-              const gfx::VectorIcon& vector_icon,
-              int tooltip_text_id,
-              ui::ColorId foreground_color_id,
-              ui::ColorId foreground_disabled_color_id,
-              ui::ColorId focus_ring_color_id)
-      : ImageButton(std::move(callback)),
-        foreground_disabled_color_id_(foreground_disabled_color_id) {
-    views::ConfigureVectorImageButton(this);
-
-    bool enable_flip_canvas =
-        (button_id == static_cast<int>(MediaSessionAction::kPreviousTrack) ||
-         button_id == static_cast<int>(MediaSessionAction::kNextTrack));
-    SetFlipCanvasOnPaintForRTLUI(enable_flip_canvas);
-
-    auto button_size = (button_id == static_cast<int>(MediaSessionAction::kPlay)
-                            ? kPlayPauseButtonSize
-                            : kControlsButtonSize);
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  button_size.height() / 2);
-    SetPreferredSize(button_size);
-
-    SetInstallFocusRingOnFocus(true);
-    SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    views::FocusRing::Get(this)->SetColorId(focus_ring_color_id);
-
-    Update(button_id, vector_icon, tooltip_text_id, foreground_color_id);
-  }
-
-  void Update(int button_id,
-              const gfx::VectorIcon& vector_icon,
-              int tooltip_text_id,
-              ui::ColorId foreground_color_id) {
-    if (button_id != kNotMediaActionButtonId) {
-      SetID(button_id);
-    }
-    SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
-    views::SetImageFromVectorIconWithColorId(
-        this, vector_icon, foreground_color_id, foreground_disabled_color_id_,
-        kMediaButtonIconSize);
-  }
-
-  void UpdateText(int tooltip_text_id) {
-    SetTooltipText(l10n_util::GetStringUTF16(tooltip_text_id));
-  }
-
- private:
-  const ui::ColorId foreground_disabled_color_id_;
-};
-
-BEGIN_METADATA(MediaButton)
 END_METADATA
 
 // If the image does not fit the square view, scale the image to fill the view
@@ -301,7 +241,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   }
 
   // Create the play/pause button.
-  play_pause_button_ = CreateMediaButton(
+  play_pause_button_ = CreateMediaActionButton(
       controls_column, static_cast<int>(MediaSessionAction::kPlay),
       media_message_center::kPlayArrowIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
@@ -318,7 +258,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   //     views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Create the previous track button.
-  CreateMediaButton(
+  CreateMediaActionButton(
       controls_row, static_cast<int>(MediaSessionAction::kPreviousTrack),
       media_message_center::kMediaPreviousTrackIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK);
@@ -339,15 +279,15 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   controls_row->SetFlexForView(progress_view_, 1);
 
   // Create the next track button.
-  CreateMediaButton(
+  CreateMediaActionButton(
       controls_row, static_cast<int>(MediaSessionAction::kNextTrack),
       media_message_center::kMediaNextTrackIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
   // Create the start casting button.
   if (device_selector_view) {
-    start_casting_button_ = CreateMediaButton(
-        controls_row, kNotMediaActionButtonId,
+    start_casting_button_ = CreateMediaActionButton(
+        controls_row, kEmptyMediaActionButtonId,
         media_message_center::kMediaCastStartIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SHOW_DEVICE_LIST);
     start_casting_button_->SetCallback(
@@ -357,7 +297,7 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   }
 
   // Create the picture-in-picture button.
-  picture_in_picture_button_ = CreateMediaButton(
+  picture_in_picture_button_ = CreateMediaActionButton(
       controls_row,
       static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
       media_message_center::kMediaEnterPipIcon,
@@ -586,20 +526,24 @@ void MediaItemUIDetailedView::MediaLabelPressed(MediaLabelButton* button) {
   container_->OnHeaderClicked(/*activate_original_media=*/true);
 }
 
-MediaButton* MediaItemUIDetailedView::CreateMediaButton(
+MediaActionButton* MediaItemUIDetailedView::CreateMediaActionButton(
     views::View* parent,
     int button_id,
     const gfx::VectorIcon& vector_icon,
     int tooltip_text_id) {
-  auto button = std::make_unique<MediaButton>(
-      views::Button::PressedCallback(), button_id, vector_icon, tooltip_text_id,
+  auto button = std::make_unique<MediaActionButton>(
+      views::Button::PressedCallback(), button_id, tooltip_text_id,
+      kMediaActionButtonIconSize, vector_icon,
+      (button_id == static_cast<int>(MediaSessionAction::kPlay)
+           ? kPlayPauseButtonSize
+           : kControlsButtonSize),
       theme_.primary_foreground_color_id, theme_.secondary_foreground_color_id,
       theme_.focus_ring_color_id);
   auto* button_ptr = parent->AddChildView(std::move(button));
 
-  if (button_id != kNotMediaActionButtonId) {
+  if (button_id != kEmptyMediaActionButtonId) {
     button_ptr->SetCallback(
-        base::BindRepeating(&MediaItemUIDetailedView::MediaButtonPressed,
+        base::BindRepeating(&MediaItemUIDetailedView::MediaActionButtonPressed,
                             base::Unretained(this), button_ptr));
     action_buttons_.push_back(button_ptr);
   }
@@ -642,7 +586,7 @@ void MediaItemUIDetailedView::UpdateActionButtonsVisibility() {
   }
 }
 
-void MediaItemUIDetailedView::MediaButtonPressed(views::Button* button) {
+void MediaItemUIDetailedView::MediaActionButtonPressed(views::Button* button) {
   const auto action = static_cast<MediaSessionAction>(button->GetID());
   if (item_) {
     item_->OnMediaSessionActionButtonPressed(action);

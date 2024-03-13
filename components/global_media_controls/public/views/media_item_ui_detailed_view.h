@@ -38,10 +38,10 @@ struct AXNodeData;
 
 namespace global_media_controls {
 
+class MediaActionButton;
 class MediaProgressView;
 
 namespace {
-class MediaButton;
 class MediaLabelButton;
 }  // namespace
 
@@ -138,15 +138,15 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   // Callback for a media label being pressed.
   void MediaLabelPressed(MediaLabelButton* button);
 
-  MediaButton* CreateMediaButton(views::View* parent,
-                                 int button_id,
-                                 const gfx::VectorIcon& vector_icon,
-                                 int tooltip_text_id);
+  MediaActionButton* CreateMediaActionButton(views::View* parent,
+                                             int button_id,
+                                             const gfx::VectorIcon& vector_icon,
+                                             int tooltip_text_id);
 
   void UpdateActionButtonsVisibility();
 
   // Callback for a media action button being pressed.
-  void MediaButtonPressed(views::Button* button);
+  void MediaActionButtonPressed(views::Button* button);
 
   // Callback for the user dragging the progress view. A playing media should be
   // temporarily paused when the user is dragging the progress line.
@@ -194,9 +194,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   raw_ptr<views::ImageView> chevron_icon_ = nullptr;
 
   raw_ptr<MediaProgressView> progress_view_ = nullptr;
-  raw_ptr<MediaButton> play_pause_button_ = nullptr;
-  raw_ptr<MediaButton> start_casting_button_ = nullptr;
-  raw_ptr<MediaButton> picture_in_picture_button_ = nullptr;
+  raw_ptr<MediaActionButton> play_pause_button_ = nullptr;
+  raw_ptr<MediaActionButton> start_casting_button_ = nullptr;
+  raw_ptr<MediaActionButton> picture_in_picture_button_ = nullptr;
 
   raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;

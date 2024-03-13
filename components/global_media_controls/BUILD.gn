@@ -70,6 +70,8 @@ component("global_media_controls") {
     "public/views/media_item_ui_updated_view.cc",
     "public/views/media_item_ui_view.cc",
     "public/views/media_progress_view.cc",
+    "views/media_action_button.cc",
+    "views/media_action_button.h",
   ]
 
   if (is_chromeos_ash) {
@@ -91,6 +93,7 @@ source_set("unit_tests") {
     "public/views/media_item_ui_updated_view_unittest.cc",
     "public/views/media_item_ui_view_unittest.cc",
     "public/views/media_progress_view_unittest.cc",
+    "views/media_action_button_unittest.cc",
   ]
 
   deps = [
@@ -98,6 +101,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//components/media_message_center:test_support",
+    "//components/strings:components_strings_grit",
     "//media",
     "//services/media_session/public/cpp/test:test_support",
     "//skia",
