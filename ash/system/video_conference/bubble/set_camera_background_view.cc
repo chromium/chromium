@@ -14,11 +14,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "skia/ext/image_operations.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
@@ -101,44 +103,103 @@ gfx::ImageSkia ConstrainedScaleAndCrop(const SkBitmap& bitmap,
   return gfx::ImageSkia::CreateFrom1xBitmap(resized);
 }
 
+// Helper to resize the image and return as ImageSkia.
+gfx::ImageSkia GetResizedBackground(const std::string& jpeg_bytes,
+                                    const int expected_width) {
+  // TODO(b/329324151): evaluate the cost of the decoding and consider moving
+  // this to the io thread. The same code is also used in
+  // VcBackgroundUISeaPenProviderImpl.
+  std::unique_ptr<SkBitmap> bitmap = gfx::JPEGCodec::Decode(
+      reinterpret_cast<const unsigned char*>(jpeg_bytes.data()),
+      jpeg_bytes.size());
+
+  const auto resized_ = ConstrainedScaleAndCrop(
+      *bitmap, gfx::Size(expected_width, kRecentlyUsedImagesHeight));
+
+  const auto img = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+      kSetCameraBackgroundViewRadius, resized_);
+
+  return img;
+}
+
 // Image button for the recently used images as camera background.
 class RecentlyUsedImageButton : public views::ImageButton {
   METADATA_HEADER(RecentlyUsedImageButton, views::ImageButton)
 
  public:
-  RecentlyUsedImageButton(const base::FilePath& filename,
-                          const std::string& jpeg_bytes,
-                          const int expected_width)
-      : ImageButton(
-            base::BindRepeating(&RecentlyUsedImageButton::OnButtonClicked,
-                                base::Unretained(this))),
-        filename_(filename) {
-    // Deccode the jpeg content.
-    std::unique_ptr<SkBitmap> bitmap = gfx::JPEGCodec::Decode(
-        reinterpret_cast<const unsigned char*>(jpeg_bytes.data()),
-        jpeg_bytes.size());
-
-    // Resize to the right size.
-    const auto resized = ConstrainedScaleAndCrop(
-        *bitmap, gfx::Size(expected_width, kRecentlyUsedImagesHeight));
-
-    // Add round corner.
-    const auto img = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-        kSetCameraBackgroundViewRadius, resized);
-
-    // Set as background image.
+  RecentlyUsedImageButton(
+      const std::string& jpeg_bytes,
+      const int expected_width,
+      const base::RepeatingCallback<void()>& image_button_callback)
+      : ImageButton(image_button_callback),
+        check_icon_(&kBackgroundSelectionIcon,
+                    cros_tokens::kCrosSysFocusRingOnPrimaryContainer) {
+    background_image_ = GetResizedBackground(jpeg_bytes, expected_width);
     SetImageModel(ButtonState::STATE_NORMAL,
-                  ui::ImageModel::FromImageSkia(img));
+                  ui::ImageModel::FromImageSkia(background_image_));
   }
 
-  // Apply background replace when the button is clicked on.
-  void OnButtonClicked(const ui::Event& event) {
-    GetCameraEffectsController()->SetBackgroundImage(filename_,
-                                                     base::DoNothing());
+  void SetSelected(bool selected) {
+    if (selected_ == selected) {
+      return;
+    }
+    selected_ = selected;
+    SchedulePaint();
   }
 
  private:
-  const base::FilePath filename_;
+  // ImageButton:
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    // If current image is selected, we need to draw the background image with
+    // required boundary and then put the check mark on the top-left corner.
+    if (selected_) {
+      canvas->DrawImageInPath(background_image_, 0, 0, GetClipPath(),
+                              cc::PaintFlags());
+      canvas->DrawImageInt(check_icon_.GetImageSkia(GetColorProvider()), 0, 0);
+    } else {
+      // Otherwise, draw the normal background image.
+      canvas->DrawImageInt(background_image_, 0, 0);
+    }
+  }
+
+  SkPath GetClipPath() {
+    const auto width = this->width();
+    const auto height = this->height();
+    const auto radius = kSetCameraBackgroundViewRadius;
+
+    return SkPathBuilder()
+        // Start just before the curve of the top-right corner.
+        .moveTo(width - radius, 0.f)
+        // Move to left before the curve.
+        .lineTo(38, 0)
+        // Draw first part of the top-left corner.
+        .rCubicTo(-5.52f, 0, -10, 4.48f, -10, 10)
+        // Move down a bit.
+        .rLineTo(-0.f, 2.f)
+        // Draw second part of the top-left corner.
+        .rCubicTo(0, 8.84f, -7.16f, 16, -16, 16)
+        // Move left a bit.
+        .rLineTo(-2.f, 0.f)
+        // Draw the third part of the top-left corner.
+        .cubicTo(4.48f, 28, 0, 32.48f, 0, 38)
+        // Move to the bottom-left corner.
+        .lineTo(-0.f, height - radius)
+        // Draw bottom-left curve.
+        .rCubicTo(0, 8.84f, 7.16f, 16, 16, 16)
+        // Move to the bottom-right corner.
+        .lineTo(width - radius, height)
+        // Draw bottom-right curve.
+        .rCubicTo(8.84f, 0, 16, -7.16f, 16, -16)
+        // Move to the top-right corner.
+        .lineTo(width, 16)
+        // Draw top-right curve.
+        .rCubicTo(0, -8.84f, -7.16f, -16, -16, -16)
+        .close()
+        .detach();
+  }
+
+  bool selected_ = false;
+  const ui::ThemedVectorIcon check_icon_;
 };
 
 BEGIN_METADATA(RecentlyUsedImageButton)
@@ -170,8 +231,11 @@ class RecentlyUsedBackgroundView : public views::View {
       const std::vector<BackgroundImageInfo>& images_info) {
     for (std::size_t i = 0; i < images_info.size(); ++i) {
       AddChildView(std::make_unique<RecentlyUsedImageButton>(
-          images_info[i].basename, images_info[i].jpeg_bytes,
-          GetRecentlyUsedImageWidth(i, images_info.size())));
+          images_info[i].jpeg_bytes,
+          GetRecentlyUsedImageWidth(i, images_info.size()),
+          base::BindRepeating(&RecentlyUsedBackgroundView::OnImageButtonClicked,
+                              weak_factory_.GetWeakPtr(), i,
+                              images_info[i].basename)));
     }
 
     // Because this is async, we need to update the ui when all images are
@@ -179,6 +243,19 @@ class RecentlyUsedBackgroundView : public views::View {
     if (bubble_view_) {
       bubble_view_->ChildPreferredSizeChanged(this);
     }
+  }
+
+  // Called when index-th image button is clicked on.
+  void OnImageButtonClicked(std::size_t index, const base::FilePath& filename) {
+    // Select index-th image button and deselect the rest of the image buttons.
+    for (std::size_t i = 0; i < children().size(); i++) {
+      RecentlyUsedImageButton* button =
+          views::AsViewClass<RecentlyUsedImageButton>(children()[i]);
+      button->SetSelected(i == index);
+    }
+
+    GetCameraEffectsController()->SetBackgroundImage(filename,
+                                                     base::DoNothing());
   }
 
  private:

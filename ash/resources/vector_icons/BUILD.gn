@@ -38,6 +38,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "autoclick_scroll_left.icon",
     "autoclick_scroll_right.icon",
     "autoclick_scroll_up.icon",
+    "background_selection.icon",
     "battery.icon",
     "battery_saver_plus.icon",
     "battery_saver_plus_outline.icon",
