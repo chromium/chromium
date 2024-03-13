@@ -4826,10 +4826,7 @@ if (is_android) {
 
   generate_jni("base_java_test_support_uncommon_jni") {
     testonly = true
-    sources = [
-      "test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java",
-      "test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java",
-    ]
+    sources = [ "test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java" ]
   }
 
   android_library("base_java_test_support_uncommon") {
@@ -4848,7 +4845,6 @@ if (is_android) {
     sources = [
       "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BundleTestRule.java",
-      "test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java",
       "test/android/javatests/src/org/chromium/base/test/SetUpStatement.java",
       "test/android/javatests/src/org/chromium/base/test/SetUpTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/task/SchedulerTestHelpers.java",
