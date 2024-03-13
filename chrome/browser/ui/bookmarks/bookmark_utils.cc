@@ -17,6 +17,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -158,10 +159,20 @@ bool IsAppsShortcutEnabled(Profile* profile) {
 #endif
 }
 
+bool IsSavedTabGroupsEnabled(Profile* profile) {
+  return base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
+         profile->IsRegularProfile();
+}
+
 bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
   return IsAppsShortcutEnabled(profile) &&
          profile->GetPrefs()->GetBoolean(
              bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
+}
+
+bool ShouldShowTabGroupsInBookmarkBar(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar);
 }
 
 int GetBookmarkDragOperation(content::BrowserContext* browser_context,

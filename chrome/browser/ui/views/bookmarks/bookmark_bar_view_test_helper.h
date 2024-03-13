@@ -38,6 +38,10 @@ class BookmarkBarViewTestHelper {
     return bbv_->saved_tab_group_bar_;
   }
 
+  const views::View* saved_tab_groups_separator_view_() const {
+    return bbv_->GetSavedTabGroupsSeparatorViewForTesting();
+  }
+
   int GetDropLocationModelIndexForTesting() {
     return bbv_->GetDropLocationModelIndexForTesting();
   }

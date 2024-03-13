@@ -260,6 +260,21 @@ TEST_F(BookmarkBarViewTest, AppsShortcutVisibility) {
   EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
 }
 
+TEST_F(BookmarkBarViewTest, TabGroupsBarVisibility) {
+  // Pref to show by default. Tab group bar is visible by default.
+  EXPECT_TRUE(test_helper_->saved_tab_group_bar()->GetVisible());
+
+  // Pref not to show hides tab group bar.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar, false);
+  EXPECT_FALSE(test_helper_->saved_tab_group_bar()->GetVisible());
+
+  // Pref to show displays tab group bar.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar, true);
+  EXPECT_TRUE(test_helper_->saved_tab_group_bar()->GetVisible());
+}
+
 // Various assertions around visibility of the overflow_button.
 TEST_F(BookmarkBarViewTest, OverflowVisibility) {
   EXPECT_FALSE(test_helper_->overflow_button()->GetVisible());
@@ -301,8 +316,8 @@ TEST_F(BookmarkBarViewTest, ButtonsDynamicallyAddedAfterModelHasNodes) {
   EXPECT_EQ(6u, test_helper_->GetBookmarkButtonCount());
 
   // Ensure buttons were added in the correct place.
-  auto button_iter =
-      bookmark_bar_view()->FindChild(test_helper_->saved_tab_group_bar());
+  auto button_iter = bookmark_bar_view()->FindChild(
+      test_helper_->saved_tab_groups_separator_view_());
   for (size_t i = 0; i < test_helper_->GetBookmarkButtonCount(); ++i) {
     ++button_iter;
     ASSERT_NE(bookmark_bar_view()->children().cend(), button_iter);
@@ -323,8 +338,8 @@ TEST_F(BookmarkBarViewTest, ButtonsDynamicallyAdded) {
   views::test::RunScheduledLayout(bookmark_bar_view());
   EXPECT_EQ(6u, test_helper_->GetBookmarkButtonCount());
   // Ensure buttons were added in the correct place.
-  auto button_iter =
-      bookmark_bar_view()->FindChild(test_helper_->saved_tab_group_bar());
+  auto button_iter = bookmark_bar_view()->FindChild(
+      test_helper_->saved_tab_groups_separator_view_());
   for (size_t i = 0; i < test_helper_->GetBookmarkButtonCount(); ++i) {
     ++button_iter;
     ASSERT_NE(bookmark_bar_view()->children().cend(), button_iter);

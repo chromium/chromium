@@ -109,6 +109,7 @@ enum {
   kSyncableHistorySensitiveListPrefForTesting = 68,  // For tests.
   kAutofillPaymentCardBenefits = 69,
   kCloseTabs = 70,
+  kShowTabGroupsInBookmarkBar = 71,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -136,6 +137,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
          {syncable_prefs_ids::kShowAppsShortcutInBookmarkBar,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {bookmarks::prefs::kShowTabGroupsInBookmarkBar,
+         {syncable_prefs_ids::kShowTabGroupsInBookmarkBar, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
         {bookmarks::prefs::kShowBookmarkBar,
          {syncable_prefs_ids::kShowBookmarkBar, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},

@@ -284,10 +284,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void ConfigureButton(const bookmarks::BookmarkNode* node,
                        views::LabelButton* button);
 
-  // Returns true when the TabGroupsSave feature should be added to the
-  // bookmarks bar.
-  bool IsSavedTabGroupsEnabled();
-
   // Implementation for BookmarkNodeAddedImpl. Returns true if LayoutAndPaint()
   // is required.
   bool BookmarkNodeAddedImpl(const bookmarks::BookmarkNode* parent,
@@ -343,6 +339,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Updates the visibility of the apps shortcut based on the pref value.
   void OnAppsPageShortcutVisibilityPrefChanged();
 
+  // Updates the visibility of the tab groups based on the pref value.
+  void OnTabGroupsVisibilityPrefChanged();
+
   void OnShowManagedBookmarksPrefChanged();
 
   void LayoutAndPaint() {
@@ -373,8 +372,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
                    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   int GetDropLocationModelIndexForTesting() const;
+  const views::View* GetSavedTabGroupsSeparatorViewForTesting() const;
 
-  // Needed to react to kShowAppsShortcutInBookmarkBar changes.
+  // Needed to react to bookmark bar pref changes.
   PrefChangeRegistrar profile_pref_registrar_;
 
   // Used for opening urls.

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -204,6 +205,11 @@ void BookmarkContextMenuController::BuildMenu() {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
   }
+  if (chrome::IsSavedTabGroupsEnabled(profile_) &&
+      base::FeatureList::IsEnabled(features::kTabGroupsSaveV2)) {
+    AddCheckboxItem(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
+                    IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);
+  }
   AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS,
                   IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME);
   AddCheckboxItem(IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_SHOW_BOOKMARK_BAR);
@@ -369,6 +375,14 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       break;
     }
 
+    case IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS: {
+      PrefService* prefs = profile_->GetPrefs();
+      prefs->SetBoolean(
+          bookmarks::prefs::kShowTabGroupsInBookmarkBar,
+          !prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar));
+      break;
+    }
+
     case IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS: {
       PrefService* prefs = profile_->GetPrefs();
       prefs->SetBoolean(
@@ -458,6 +472,9 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
   if (command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS) {
     return prefs->GetBoolean(
         bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS) {
+    return prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
   }
 
   DCHECK_EQ(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT, command_id);
