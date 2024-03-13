@@ -31,6 +31,8 @@ class MahiTabHelper : public content::WebContentsUserData<MahiTabHelper>,
   // content::WebContentObserver:
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
  private:
@@ -39,6 +41,10 @@ class MahiTabHelper : public content::WebContentsUserData<MahiTabHelper>,
   // The only constructor is private because it will only be called by the
   // WebContentsUserData.
   explicit MahiTabHelper(content::WebContents* web_contents);
+
+  // Boolean to indicate if this web contents get focused. Only one web content
+  // can get focused at the same time.
+  bool focused_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

@@ -93,6 +93,12 @@ void MahiWebContentsManager::OnFocusedPageLoadComplete(
       /* max_nodes= */ 5000, /* timeout= */ {});
 }
 
+void MahiWebContentsManager::ClearFocusedWebContentState() {
+  focused_web_content_state_ = WebContentState(/*url=*/GURL(), /*title=*/u"");
+  // Notifies `MahiManger` the focused page has changed.
+  client_->OnFocusedPageChanged(focused_web_content_state_);
+}
+
 void MahiWebContentsManager::OnContextMenuClicked(
     int64_t display_id,
     ButtonType button_type,

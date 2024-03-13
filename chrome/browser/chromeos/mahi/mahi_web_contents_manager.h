@@ -52,6 +52,9 @@ class MahiWebContentsManager {
   // Virtual so we can override in tests.
   virtual void OnFocusedPageLoadComplete(content::WebContents* web_contents);
 
+  // Clears the focused web content state, and notifies mahi manager.
+  void ClearFocusedWebContentState();
+
   // Called when the browser context menu has been clicked by the user.
   // `question` is used only if `ButtonType` is kQA.
   // Virtual so we can override in tests.

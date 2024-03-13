@@ -26,17 +26,27 @@ MahiTabHelper::MahiTabHelper(content::WebContents* web_contents)
 
 void MahiTabHelper::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
-  // Only fire an event if the web content has finished document loading.
+  focused_ = true;
+  // Fires an event if the web content has finished document loading.
   // Otherwise, it would be handled by
   // `DocumentOnLoadCompletedInPrimaryMainFrame`.
   if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     MahiWebContentsManager::Get()->OnFocusedPageLoadComplete(web_contents());
+  } else {
+    // Clears the previous focused page state so that it won't be shown before
+    // the new page finishes loading.
+    MahiWebContentsManager::Get()->ClearFocusedWebContentState();
   }
 }
 
+void MahiTabHelper::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+  focused_ = false;
+}
+
 void MahiTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  // Ignore the events from unfocused pages.
-  if (!web_contents()->GetFocusedFrame()) {
+  // Ignores the events from unfocused pages.
+  if (!focused_) {
     return;
   }
   MahiWebContentsManager::Get()->OnFocusedPageLoadComplete(web_contents());

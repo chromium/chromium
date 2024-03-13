@@ -67,10 +67,17 @@ TEST_F(MahiTabHelperTest, FocusedTabLoadComplete) {
   NavigateAndCommit(GURL("https://example1.com"));
 
   // When a tab gets focus, notification will be received from navigation.
-  FocusWebContentsOnMainFrame();
   EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
-      .Times(1);
+      .Times(2);
+  MahiTabHelper::FromWebContents(web_contents())->OnWebContentsFocused(nullptr);
   NavigateAndCommit(GURL("https://example2.com"));
+
+  // After losing focus, the tab's notification will no longer be received.
+  EXPECT_CALL(mock_mahi_web_contents_manager_, OnFocusedPageLoadComplete(_))
+      .Times(0);
+  MahiTabHelper::FromWebContents(web_contents())
+      ->OnWebContentsLostFocus(nullptr);
+  NavigateAndCommit(GURL("https://example3.com"));
 }
 
 TEST_F(MahiTabHelperTest, TabSwitch) {

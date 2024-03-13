@@ -178,6 +178,14 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
   base::RunLoop run_loop;
   // Expects that `MahiBrowserDelegate` should receive the focused page change.
   EXPECT_CALL(browser_delegate_, OnFocusedPageChanged)
+      // When browser opens with `chrome://newtab`, we should be notified to
+      // clear the previous focus info.
+      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
+                   base::OnceCallback<void(bool)> callback) {
+        EXPECT_EQ(GURL(), page_info->url);
+        EXPECT_FALSE(page_info->IsDistillable.has_value());
+        std::move(callback).Run(/*success=*/true);
+      })
       // When a new page gets focus, the `MahiBrowserDelegate` should be
       // notified without the distillability check.
       .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
@@ -223,6 +231,10 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
   // First create a web page so there is a place to extract the contents from.
   base::RunLoop run_loop;
   EXPECT_CALL(browser_delegate_, OnFocusedPageChanged)
+      .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
+                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(/*success=*/true);
+      })
       .WillOnce([](crosapi::mojom::MahiPageInfoPtr page_info,
                    base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(/*success=*/true);
