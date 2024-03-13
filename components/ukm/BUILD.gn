@@ -16,6 +16,8 @@ component("ukm_recorder") {
   ]
 
   sources = [
+    "bitset.cc",
+    "bitset.h",
     "scheme_constants.cc",
     "scheme_constants.h",
     "ukm_consent_state.h",
@@ -134,6 +136,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "app_source_url_recorder_test.cc",
+    "bitset_unittest.cc",
     "observers/ukm_consent_state_observer_unittest.cc",
     "singular_ukm_entry_unittest.cc",
     "ukm_recorder_impl_unittest.cc",
