@@ -158,6 +158,7 @@ const CGFloat kSpinnerButtonPadding = 18;
   [super viewDidLoad];
   [self loadModel];
   [self setRightNavBarItem];
+  [self setLeftNavBarItem];
 
   SceneState* sceneState = self.browser->GetSceneState();
   _uiBlocker = std::make_unique<ScopedUIBlocker>(sceneState);
@@ -336,6 +337,13 @@ const CGFloat kSpinnerButtonPadding = 18;
   [self reloadData];
 }
 
+- (void)cancelPressed {
+  CHECK(self.presentModally);
+  [self.navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+}
+
 // Sets up the navigation bar's right button. The button will be enabled iff
 // `-areAllFieldsFilled` returns YES.
 - (void)setRightNavBarItem {
@@ -352,6 +360,17 @@ const CGFloat kSpinnerButtonPadding = 18;
   // Only setting the enabled state doesn't make the item redraw. As a
   // workaround, set it again.
   self.navigationItem.rightBarButtonItem = submitButtonItem;
+}
+
+- (void)setLeftNavBarItem {
+  if (!self.presentModally) {
+    return;
+  }
+  UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(cancelPressed)];
+  self.navigationItem.leftBarButtonItem = cancelButton;
 }
 
 - (BOOL)areAllFieldsFilled {
