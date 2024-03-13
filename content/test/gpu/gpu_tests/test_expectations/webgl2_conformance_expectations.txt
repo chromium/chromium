@@ -606,6 +606,11 @@ crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/tr
 
 crbug.com/327026292 [ angle-metal apple passthrough sonoma graphite-enabled ] conformance2/glsl3/float-parsing.html [ Failure ]
 
+## Metal Graphite ##
+
+crbug.com/329285449 [ mac angle-metal graphite-enabled apple ] conformance/textures/misc/texture-active-bind.html [ RetryOnFailure ]
+crbug.com/329285449 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/textures/misc/texture-active-bind.html [ RetryOnFailure ]
+
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
 ######################################################################
