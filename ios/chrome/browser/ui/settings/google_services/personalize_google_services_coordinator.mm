@@ -6,10 +6,12 @@
 
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/settings/google_services/personalize_google_services_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/personalize_google_services_view_controller.h"
 
 @interface PersonalizeGoogleServicesCoordinator () <
-    PersonalizeGoogleServicesViewControllerPresentationDelegate>
+    PersonalizeGoogleServicesViewControllerPresentationDelegate,
+    PersonalizeGoogleServicesCommandHandler>
 @end
 
 @implementation PersonalizeGoogleServicesCoordinator {
@@ -33,6 +35,7 @@
   _viewController = [[PersonalizeGoogleServicesViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _viewController.presentationDelegate = self;
+  _viewController.handler = self;
 
   CHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:_viewController
@@ -49,6 +52,16 @@
     (PersonalizeGoogleServicesViewController*)controller {
   CHECK_EQ(_viewController, controller);
   [self.delegate personalizeGoogleServicesCoordinatorWasRemoved:self];
+}
+
+#pragma mark - PersonalizeGoogleServicesCommandHandler
+
+- (void)openWebAppActivityDialog {
+  // TODO(crbug.com/324091979): Open Web & App Activity page.
+}
+
+- (void)openLinkedGoogleServicesDialog {
+  // TODO(crbug.com/324091979): Open Linked Google services page.
 }
 
 @end

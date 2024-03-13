@@ -136,6 +136,7 @@ source_set("parcel_tracking") {
 
 source_set("personalize_google_services") {
   sources = [
+    "personalize_google_services_command_handler.h",
     "personalize_google_services_coordinator.h",
     "personalize_google_services_coordinator.mm",
     "personalize_google_services_view_controller.h",
@@ -254,11 +255,13 @@ source_set("unit_tests") {
     "manage_sync_settings_mediator_unittest.mm",
     "parcel_tracking_settings_mediator_unittest.mm",
     "parcel_tracking_settings_view_controller_unittest.mm",
+    "personalize_google_services_view_controller_unittest.mm",
   ]
   deps = [
     ":features",
     ":google_services",
     ":parcel_tracking",
+    ":personalize_google_services",
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",

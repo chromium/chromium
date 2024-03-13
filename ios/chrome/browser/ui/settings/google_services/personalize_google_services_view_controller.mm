@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/personalize_google_services_command_handler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -100,6 +101,22 @@ enum ItemType {
   linkedGoogleServicesItem.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:linkedGoogleServicesItem
       toSectionWithIdentifier:kSectionIdentifierLinkouts];
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  [super tableView:tableView didSelectRowAtIndexPath:indexPath];
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  switch (itemType) {
+    case kItemTypeWebAndAppActivity:
+      [self.handler openWebAppActivityDialog];
+      break;
+    case kItemTypeLinkedGoogleServices:
+      [self.handler openLinkedGoogleServicesDialog];
+      break;
+  }
 }
 
 @end

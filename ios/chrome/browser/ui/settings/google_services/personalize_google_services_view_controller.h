@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 @class PersonalizeGoogleServicesViewController;
+@protocol PersonalizeGoogleServicesCommandHandler;
 
 // Delegate for presentation events related to
 // PersonalizeGoogleServicesViewController which is usually handled by a class
@@ -28,6 +29,9 @@
 @property(nonatomic, weak)
     id<PersonalizeGoogleServicesViewControllerPresentationDelegate>
         presentationDelegate;
+
+// Command handler
+@property(nonatomic, weak) id<PersonalizeGoogleServicesCommandHandler> handler;
 
 @end
 
