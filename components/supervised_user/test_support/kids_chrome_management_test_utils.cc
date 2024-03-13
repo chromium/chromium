@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 
 namespace supervised_user {
@@ -17,14 +18,14 @@ void SetFamilyMemberAttributesForTesting(
     kids_chrome_management::FamilyRole role,
     base::StringPiece username) {
   mutable_member->mutable_profile()->set_display_name(std::string(username));
-  mutable_member->mutable_profile()->set_email(
-      base::StrCat({username, "@gmail.com"}));
+  const std::string email = base::StrCat({username, "@gmail.com"});
+  mutable_member->mutable_profile()->set_email(email);
   mutable_member->mutable_profile()->set_profile_url(
       base::StrCat({"http://profile.url/", username}));
   mutable_member->mutable_profile()->set_profile_image_url(
       base::StrCat({"http://image.url/", username}));
   mutable_member->set_role(role);
-  mutable_member->set_user_id(base::StrCat({"obfuscatedGaiaId", username}));
+  mutable_member->set_user_id(signin::GetTestGaiaIdForEmail(email));
 }
 
 }  // namespace supervised_user

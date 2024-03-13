@@ -16,6 +16,7 @@ source_set("test_support") {
     "//base",
     "//components/safe_search_api",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/browser:fetcher_config",
