@@ -147,6 +147,8 @@ const base::flat_map<std::string, ActionType>& GetActionTypesMap() {
            ActionType::kOpenChromebookPerksGfnPriority2022},
           {kActionTypeOpenChromebookPerksMinecraft2023,
            ActionType::kOpenChromebookPerksMinecraft2023},
+          {kActionTypeOpenChromebookPerksMinecraftRealms2023,
+           ActionType::kOpenChromebookPerksMinecraftRealms2023},
       });
   return *action_types_map;
 }
@@ -303,6 +305,7 @@ ActionType ParseActionType(const std::string& action_type_string) {
     // kInvalid as the parsed result.
     return ActionType::kInvalid;
   }
+
   return it->second;
 }
 
@@ -920,10 +923,22 @@ void ScalableIph::CheckTriggerConditions(
           continue;
         }
         SCALABLE_IPH_LOG(GetLogger()) << "Triggering a notification.";
-        delegate_->ShowNotification(
-            *notification_params.get(),
-            std::make_unique<IphSession>(*feature, tracker_, this));
-        return;
+
+        if (delegate_->ShowNotification(
+                *notification_params.get(),
+                std::make_unique<IphSession>(*feature, tracker_, this))) {
+          SCALABLE_IPH_LOG(GetLogger())
+              << "Requested the UI framework to show a notification. Request "
+                 "status: success. -> Do not check other trigger conditions to "
+                 "avoid triggering multiple IPHs at the same time.";
+          return;
+        }
+
+        SCALABLE_IPH_LOG(GetLogger())
+            << "Requested the UI framework to show a notification. Request "
+               "status: failure. -> Keep checking other trigger conditions as "
+               "this IPH should not be shown.";
+        continue;
       }
       case UiType::kBubble: {
         std::unique_ptr<BubbleParams> bubble_params =
@@ -935,10 +950,21 @@ void ScalableIph::CheckTriggerConditions(
           continue;
         }
         SCALABLE_IPH_LOG(GetLogger()) << "Triggering a bubble.";
-        delegate_->ShowBubble(
-            *bubble_params.get(),
-            std::make_unique<IphSession>(*feature, tracker_, this));
-        return;
+        if (delegate_->ShowBubble(
+                *bubble_params.get(),
+                std::make_unique<IphSession>(*feature, tracker_, this))) {
+          SCALABLE_IPH_LOG(GetLogger())
+              << "Requested the UI framework to show a bubble. Request status: "
+                 "success. -> Do not check other trigger conditions to avoid "
+                 "triggering multiple IPHs at the same time.";
+          return;
+        }
+
+        SCALABLE_IPH_LOG(GetLogger())
+            << "Requested the UI framework to show a bubble. Request status: "
+               "failure. -> Keep checking other trigger conditions as this IPH "
+               "should not be shown.";
+        continue;
       }
       case UiType::kNone:
         SCALABLE_IPH_LOG(GetLogger())

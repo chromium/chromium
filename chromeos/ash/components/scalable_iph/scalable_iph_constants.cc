@@ -38,6 +38,8 @@ std::ostream& operator<<(std::ostream& out, ActionType action_type) {
       return out << "OpenChromebookPerksGfnPriority2022";
     case ActionType::kOpenChromebookPerksMinecraft2023:
       return out << "OpenChromebookPerksMinecraft2023";
+    case ActionType::kOpenChromebookPerksMinecraftRealms2023:
+      return out << "OpenChromebookPerksMinecraftRealms2023";
   }
 }
 
