@@ -1,16 +1,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
-# TODO(awillia): Fix compilation issues without this and then remove.
-config("anonymous_tokens_internal_config") {
-  cflags = []
-  if (is_clang) {
-    cflags += [
-      "-Wno-sign-compare",
-      "-Wno-c++11-narrowing",
-    ]
-  }
-}
-
 config("anonymous_tokens_config") {
   include_dirs = [
     "overrides",
@@ -61,7 +50,6 @@ source_set("anonymous_tokens_redemption_client") {
     "src/anonymous_tokens/cpp/client/anonymous_tokens_redemption_client.h",
   ]
 
-  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
 
   deps = [ ":constants" ]
@@ -77,7 +65,6 @@ source_set("anonymous_tokens_pb_openssl_converters") {
     "src/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters.h",
   ]
 
-  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
 
   deps = [
@@ -141,7 +128,6 @@ source_set("crypto_utils") {
     "src/anonymous_tokens/cpp/crypto/crypto_utils.cc",
     "src/anonymous_tokens/cpp/crypto/crypto_utils.h",
   ]
-  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
   deps = [
     ":constants",
@@ -159,7 +145,6 @@ source_set("rsa_blinder") {
     "src/anonymous_tokens/cpp/crypto/rsa_blinder.cc",
     "src/anonymous_tokens/cpp/crypto/rsa_blinder.h",
   ]
-  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
   deps = [
     ":blinder",
@@ -185,7 +170,6 @@ source_set("rsa_blind_signer") {
     "src/anonymous_tokens/cpp/crypto/rsa_blind_signer.cc",
     "src/anonymous_tokens/cpp/crypto/rsa_blind_signer.h",
   ]
-  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
   deps = [
     ":anonymous_tokens_pb_openssl_converters",
@@ -232,7 +216,6 @@ source_set("rsa_bssa_public_metadata_client") {
     "src/anonymous_tokens/cpp/privacy_pass/rsa_bssa_public_metadata_client.cc",
     "src/anonymous_tokens/cpp/privacy_pass/rsa_bssa_public_metadata_client.h",
   ]
-  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
   deps = [
     ":constants",
@@ -252,7 +235,6 @@ source_set("tokens_encodings") {
     "src/anonymous_tokens/cpp/privacy_pass/token_encodings.cc",
     "src/anonymous_tokens/cpp/privacy_pass/token_encodings.h",
   ]
-  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
   deps = [ ":status_utils" ]
   public_deps = [
@@ -263,11 +245,6 @@ source_set("tokens_encodings") {
 
 static_library("anonymous_tokens_test_support") {
   testonly = true
-  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
-  # absl::HexStringToBytes have been removed.
-  cflags = [
-    "-Wno-deprecated-declarations",
-  ]
   sources = [
     "overrides/anonymous_tokens/cpp/testing/testdata_utils.h",
     "src/anonymous_tokens/cpp/testing/proto_utils.cc",
@@ -306,11 +283,6 @@ bundle_data("test_data") {
 
 source_set("anonymous_tokens_tests") {
   testonly = true
-  # TODO(crbug.com/325102878): Remove once usage of the deprecated version of
-  # absl::HexStringToBytes have been removed.
-  cflags = [
-    "-Wno-deprecated-declarations",
-  ]
   sources = [
     "src/anonymous_tokens/cpp/client/anonymous_tokens_public_key_client_test.cc",
     "src/anonymous_tokens/cpp/client/anonymous_tokens_redemption_client_test.cc",
@@ -326,7 +298,6 @@ source_set("anonymous_tokens_tests") {
   ]
 
   data = [ "src/anonymous_tokens/testdata/" ]
-  configs += [ ":anonymous_tokens_internal_config" ]
   public_configs = [ ":anonymous_tokens_config" ]
   deps = [
     ":anonymous_tokens_pb_openssl_converters",
