@@ -361,7 +361,6 @@ class CommandBufferSetup {
     if (gpu_preferences_.use_passthrough_cmd_decoder)
       recreate_context_ = true;
 
-    surface_ = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
     if (!recreate_context_) {
       InitContext();
     }
@@ -379,7 +378,7 @@ class CommandBufferSetup {
       InitContext();
     }
 
-    context_->MakeCurrent(surface_.get());
+    context_->MakeCurrentDefault();
     GpuFeatureInfo gpu_feature_info;
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
     gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
@@ -400,9 +399,10 @@ class CommandBufferSetup {
     } else {
       shared_context = CreateContext();
     }
-    shared_context->MakeCurrent(surface_.get());
+    shared_context->MakeCurrentDefault();
     context_state_ = base::MakeRefCounted<SharedContextState>(
-        share_group_, surface_, std::move(shared_context),
+        share_group_, shared_context->default_surface(),
+        std::move(shared_context),
         config_.workarounds.use_virtualized_gl_contexts, base::DoNothing(),
         gpu_preferences_.gr_context_type);
     context_state_->InitializeSkia(gpu_preferences_, config_.workarounds);
@@ -443,7 +443,7 @@ class CommandBufferSetup {
         gpu_feature_info, gpu_preferences_, nullptr /* memory_tracker */,
         shared_image_manager_.get(), context_state_, true /* is_privileged */));
 #else
-    context_->MakeCurrent(surface_.get());
+    context_->MakeCurrentDefault();
     // GLES2Decoder may Initialize feature_info differently than
     // SharedContextState and should have its own.
     auto decoder_feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
@@ -463,8 +463,8 @@ class CommandBufferSetup {
 
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-    auto result = decoder_->Initialize(surface_.get(), context, true,
-                                       gles2::DisallowedFeatures(),
+    auto result = decoder_->Initialize(context->default_surface(), context,
+                                       true, gles2::DisallowedFeatures(),
                                        config_.attrib_helper);
     if (result != gpu::ContextResult::kSuccess) {
       return false;
@@ -583,15 +583,20 @@ class CommandBufferSetup {
   }
 
   scoped_refptr<gl::GLContext> CreateContext() {
+    // The surface will be owned by the |context|.
+    auto surface = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
 #if defined(GPU_FUZZER_USE_STUB)
     auto stub = base::MakeRefCounted<gl::GLContextStub>(share_group_.get());
     stub->SetGLVersionString(config_.version);
     stub->SetExtensionsString(config_.extensions.c_str());
     stub->SetUseStubApi(true);
+    // The stub ctx needs to be initialized so that the gl::GLContext can
+    // store the |compatible_surface|.
+    stub->Initialize(surface.get(), {});
     return stub;
 #else
     auto context = base::MakeRefCounted<gl::GLContextEGL>(share_group_.get());
-    context->Initialize(surface_.get(), config_.gl_context_attribs);
+    context->Initialize(surface.get(), config_.gl_context_attribs);
     return context;
 #endif
   }
@@ -604,7 +609,7 @@ class CommandBufferSetup {
 // callback to catch them if it does.
 #if defined(GPU_FUZZER_USE_ANGLE) && \
     !defined(GPU_FUZZER_USE_PASSTHROUGH_CMD_DECODER)
-    context_->MakeCurrent(surface_.get());
+    context_->MakeCurrentDefault();
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
@@ -644,7 +649,6 @@ class CommandBufferSetup {
 
   bool recreate_context_ = false;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
-  scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
 
