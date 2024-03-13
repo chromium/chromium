@@ -86,9 +86,17 @@ TEST_F(AutofillClientProviderLegacyTest, AlwaysCreatesChromeClient) {
 }
 
 class AutofillClientProviderTest : public AutofillClientProviderBaseTest {
+ public:
+  AutofillClientProviderTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillVirtualViewStructureAndroid,
+        {{features::kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
+              .name,
+          "true"}});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillVirtualViewStructureAndroid};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AutofillClientProviderTest, CreateAndroidClientForEnabledPref) {

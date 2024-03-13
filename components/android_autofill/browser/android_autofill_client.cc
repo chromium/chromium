@@ -12,6 +12,7 @@
 #include "base/android/locale_utils.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -25,6 +26,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -35,6 +37,9 @@
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+using autofill::features::kAutofillVirtualViewStructureAndroid;
+using autofill::features::
+    kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck;
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::JavaParamRef;
@@ -53,6 +58,18 @@ void AndroidAutofillClient::CreateForWebContents(
                           base::WrapUnique(new AndroidAutofillClient(
                               contents, std::move(notify_client_created))));
   }
+}
+
+// static
+bool AndroidAutofillClient::AllowedForAutofillService() {
+  if (!base::FeatureList::IsEnabled(kAutofillVirtualViewStructureAndroid)) {
+    return false;
+  }
+  if (kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck.Get()) {
+    return true;
+  }
+  return Java_AndroidAutofillClient_allowedForAutofillService(
+      AttachCurrentThread());
 }
 
 AndroidAutofillClient::~AndroidAutofillClient() {

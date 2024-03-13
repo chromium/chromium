@@ -222,6 +222,10 @@ extern const base::FeatureParam<int>
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroid);
+inline constexpr base::FeatureParam<bool>
+    kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck{
+        &kAutofillVirtualViewStructureAndroid, "skip_compatibility_check",
+        false};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_APPLE)

@@ -3711,6 +3711,19 @@ const FeatureEntry::FeatureVariation kLinkPreviewTriggerTypeVariations[] = {
      std::size(kLinkPreviewTriggerTypeLongPress), nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr flags_ui::FeatureEntry::FeatureParam
+    kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheckParam = {
+        autofill::features::
+            kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck.name,
+        "true"};
+inline constexpr flags_ui::FeatureEntry::FeatureVariation
+    kAutofillVirtualViewStructureVariation[] = {
+        {"Enabled without compatibility check",
+         &kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheckParam, 1,
+         nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5666,8 +5679,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillVirtualViewStructureAndroidName,
      flag_descriptions::kAutofillVirtualViewStructureAndroidDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillVirtualViewStructureAndroid)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillVirtualViewStructureAndroid,
+         kAutofillVirtualViewStructureVariation,
+         "Skip AutofillService Check")},
+
     {"enable-pix-detection", flag_descriptions::kEnablePixDetectionName,
      flag_descriptions::kEnablePixDetectionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnablePixDetection)},

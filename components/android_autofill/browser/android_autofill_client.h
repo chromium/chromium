@@ -75,6 +75,11 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       base::FunctionRef<void(const base::android::JavaRef<jobject>&)>
           notify_client_created);
 
+  // Checks whether the AutofillService selected in Android settings works for
+  // the browser. Autofill With Google should never fill Chrome since the
+  // built-in filling mechanism is the preferred way.
+  static bool AllowedForAutofillService();
+
   AndroidAutofillClient(const AndroidAutofillClient&) = delete;
   AndroidAutofillClient& operator=(const AndroidAutofillClient&) = delete;
 
