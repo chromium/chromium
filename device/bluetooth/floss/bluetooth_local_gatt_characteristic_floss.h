@@ -19,7 +19,7 @@
 
 namespace floss {
 
-struct GattReadRequest {
+struct GattRequest {
   std::string address;
   int32_t request_id;
   int32_t offset;
@@ -105,8 +105,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
       std::optional<BluetoothGattServiceFloss::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
-  // Cached instance of the latest pending read request, if one exists.
-  std::optional<GattReadRequest> pending_read_request_;
+  // Runs after the browser client has processed the write request and has sent
+  // a response.
+  void OnWriteRequestCallback(int32_t request_id,
+                              std::vector<uint8_t>& value,
+                              bool needs_response,
+                              bool success);
+
+  // Cached instance of the latest pending read/write request, if one exists.
+  std::optional<GattRequest> pending_request_;
 
   // Timer to stop waiting for a callback response.
   base::OneShotTimer response_timer_;

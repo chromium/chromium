@@ -18,7 +18,7 @@ namespace floss {
 
 namespace {
 
-const base::TimeDelta kReadResponseTimeout = base::Seconds(1);
+const base::TimeDelta kResponseTimeout = base::Seconds(1);
 
 }  // namespace
 
@@ -121,10 +121,9 @@ void BluetoothLocalGattCharacteristicFloss::GattServerCharacteristicReadRequest(
     int32_t handle) {
   DCHECK(handle == floss_instance_id_);
 
-  if (pending_read_request_.has_value()) {
-    LOG(ERROR) << __func__ << ": A read request for device '"
-               << pending_read_request_.value().address
-               << "' is already pending";
+  if (pending_request_.has_value()) {
+    LOG(ERROR) << __func__ << ": A request for device '"
+               << pending_request_.value().address << "' is already pending";
     FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
         base::DoNothing(), address, request_id, GattStatus::kBusy, offset,
         std::vector<uint8_t>());
@@ -140,7 +139,7 @@ void BluetoothLocalGattCharacteristicFloss::GattServerCharacteristicReadRequest(
     return;
   }
 
-  pending_read_request_.emplace(GattReadRequest{address, request_id, offset});
+  pending_request_.emplace(GattRequest{address, request_id, offset});
   auto* device = service_->GetAdapter()->GetDevice(address);
   BluetoothLocalGattCharacteristic* characteristic =
       static_cast<BluetoothLocalGattCharacteristic*>(this);
@@ -148,7 +147,7 @@ void BluetoothLocalGattCharacteristicFloss::GattServerCharacteristicReadRequest(
   // This callback is expected to run, so run it if the client has not done so
   // within the next second.
   response_timer_.Start(
-      FROM_HERE, kReadResponseTimeout,
+      FROM_HERE, kResponseTimeout,
       base::BindOnce(
           &BluetoothLocalGattCharacteristicFloss::OnReadRequestCallback,
           weak_ptr_factory_.GetWeakPtr(), request_id,
@@ -166,13 +165,13 @@ void BluetoothLocalGattCharacteristicFloss::OnReadRequestCallback(
     int32_t request_id,
     std::optional<BluetoothGattServiceFloss::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
-  if (!pending_read_request_.has_value()) {
+  if (!pending_request_.has_value()) {
     // If this check trips, we have already handled the request response.
     LOG(ERROR) << __func__ << ": No pending read request for request with id "
                << request_id;
     return;
   }
-  auto read_request = pending_read_request_.value();
+  auto read_request = pending_request_.value();
   if (read_request.request_id != request_id) {
     // This check may trip due to a stale (timed-out) request being belatedly
     // responded to.
@@ -189,7 +188,7 @@ void BluetoothLocalGattCharacteristicFloss::OnReadRequestCallback(
   FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
       base::DoNothing(), read_request.address, request_id, status,
       read_request.offset, value);
-  pending_read_request_.reset();
+  pending_request_.reset();
 }
 
 void BluetoothLocalGattCharacteristicFloss::
@@ -201,7 +200,88 @@ void BluetoothLocalGattCharacteristicFloss::
                                          bool needs_response,
                                          int32_t handle,
                                          std::vector<uint8_t> value) {
-  NOTIMPLEMENTED();
+  DCHECK(handle == floss_instance_id_);
+
+  if (pending_request_.has_value()) {
+    LOG(ERROR) << __func__ << ": A request for device '"
+               << pending_request_.value().address << "' is already pending";
+    if (needs_response) {
+      FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
+          base::DoNothing(), address, request_id, GattStatus::kBusy, offset,
+          value);
+    }
+    return;
+  }
+
+  device::BluetoothLocalGattService::Delegate* delegate = service_->delegate_;
+  if (!delegate) {
+    LOG(ERROR) << __func__ << ": No delegate for local GATT service";
+    if (needs_response) {
+      FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
+          base::DoNothing(), address, request_id, GattStatus::kError, offset,
+          value);
+    }
+    return;
+  }
+
+  pending_request_.emplace(GattRequest{address, request_id, offset});
+  auto* device = service_->GetAdapter()->GetDevice(address);
+  BluetoothLocalGattCharacteristic* characteristic =
+      static_cast<BluetoothLocalGattCharacteristic*>(this);
+
+  // This callback is expected to run, so run it if the client has not done so
+  // within the next second.
+  response_timer_.Start(
+      FROM_HERE, kResponseTimeout,
+      base::BindOnce(
+          &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+          weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
+          needs_response, /*success=*/false));
+
+  delegate->OnCharacteristicWriteRequest(
+      device, characteristic, value, offset,
+      base::BindOnce(
+          &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+          weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
+          needs_response,
+          /*success=*/true),
+      base::BindOnce(
+          &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+          weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
+          needs_response,
+          /*success=*/false));
+}
+
+void BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback(
+    int32_t request_id,
+    std::vector<uint8_t>& value,
+    bool needs_response,
+    bool success) {
+  if (!pending_request_.has_value()) {
+    // If this check trips, we have already handled the request response.
+    LOG(ERROR) << __func__ << ": No pending write request for request with id "
+               << request_id;
+    return;
+  }
+  auto write_request = pending_request_.value();
+  if (write_request.request_id != request_id) {
+    // This check may trip due to a stale (timed-out) request being belatedly
+    // responded to.
+    LOG(ERROR) << __func__ << ": Write request id mismatch. Expected: "
+               << write_request.request_id << ", Actual: " << request_id;
+    return;
+  }
+  response_timer_.Stop();
+
+  if (!needs_response) {
+    pending_request_.reset();
+    return;
+  }
+  GattStatus status = success ? GattStatus::kSuccess : GattStatus::kError;
+  FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
+      base::DoNothing(), write_request.address, write_request.request_id,
+      status, write_request.offset, value);
+  pending_request_.reset();
 }
 
 int32_t BluetoothLocalGattCharacteristicFloss::AddDescriptor(
