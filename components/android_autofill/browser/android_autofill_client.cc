@@ -59,8 +59,9 @@ AndroidAutofillClient::~AndroidAutofillClient() {
   HideAutofillPopup(autofill::PopupHidingReason::kTabGone);
 }
 
-bool AndroidAutofillClient::IsOffTheRecord() {
-  return GetWebContents().GetBrowserContext()->IsOffTheRecord();
+bool AndroidAutofillClient::IsOffTheRecord() const {
+  auto* mutable_this = const_cast<AndroidAutofillClient*>(this);
+  return mutable_this->GetWebContents().GetBrowserContext()->IsOffTheRecord();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

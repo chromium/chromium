@@ -115,7 +115,7 @@ class TestAutofillClientTemplate : public T {
     return channel_for_testing_;
   }
 
-  bool IsOffTheRecord() override { return is_off_the_record_; }
+  bool IsOffTheRecord() const override { return is_off_the_record_; }
 
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override {
     return crowdsourcing_manager_.get();

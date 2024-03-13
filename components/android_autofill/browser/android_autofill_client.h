@@ -81,7 +81,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   ~AndroidAutofillClient() override;
 
   // AutofillClient:
-  bool IsOffTheRecord() override;
+  bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;

@@ -46,7 +46,7 @@ version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
 
-bool AutofillClient::IsOffTheRecord() {
+bool AutofillClient::IsOffTheRecord() const {
   return false;
 }
 

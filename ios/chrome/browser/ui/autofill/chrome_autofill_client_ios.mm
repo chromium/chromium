@@ -144,7 +144,7 @@ version_info::Channel ChromeAutofillClientIOS::GetChannel() const {
   return ::GetChannel();
 }
 
-bool ChromeAutofillClientIOS::IsOffTheRecord() {
+bool ChromeAutofillClientIOS::IsOffTheRecord() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }
 

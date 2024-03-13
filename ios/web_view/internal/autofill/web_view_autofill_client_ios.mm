@@ -98,7 +98,7 @@ WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
   HideAutofillPopup(PopupHidingReason::kTabGone);
 }
 
-bool WebViewAutofillClientIOS::IsOffTheRecord() {
+bool WebViewAutofillClientIOS::IsOffTheRecord() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }
 

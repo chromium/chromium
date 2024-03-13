@@ -392,7 +392,7 @@ class AutofillClient {
   virtual version_info::Channel GetChannel() const;
 
   // Returns whether the user is currently operating in an incognito context.
-  virtual bool IsOffTheRecord() = 0;
+  virtual bool IsOffTheRecord() const = 0;
 
   // Returns the URL loader factory associated with this driver.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
