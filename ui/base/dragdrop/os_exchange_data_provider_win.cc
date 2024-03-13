@@ -659,19 +659,22 @@ bool OSExchangeDataProviderWin::GetPickledData(
   return success;
 }
 
-bool OSExchangeDataProviderWin::GetFileContents(
-    base::FilePath* filename,
-    std::string* file_contents) const {
-  if (HasCustomFormat(GetIgnoreFileContentsFormatType()))
-    return false;
+std::optional<OSExchangeDataProvider::FileContentsInfo>
+OSExchangeDataProviderWin::GetFileContents() const {
+  if (HasCustomFormat(GetIgnoreFileContentsFormatType())) {
+    return std::nullopt;
+  }
 
   std::wstring filename_str;
+  std::string file_contents;
   if (!clipboard_util::GetFileContents(source_object_.Get(), &filename_str,
-                                       file_contents)) {
-    return false;
+                                       &file_contents) ||
+      filename_str.empty()) {
+    return std::nullopt;
   }
-  *filename = base::FilePath(filename_str);
-  return true;
+
+  return FileContentsInfo{.filename = base::FilePath(filename_str),
+                          .file_contents = std::move(file_contents)};
 }
 
 std::optional<OSExchangeDataProvider::HtmlInfo>

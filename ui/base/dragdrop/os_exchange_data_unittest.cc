@@ -95,11 +95,9 @@ TEST_F(OSExchangeDataTest, URLStringFileContents) {
   // HasFileContents() should be false, and GetFileContents() should be empty
   // (https://crbug.com/1274395).
   EXPECT_FALSE(copy.HasFileContents());
-  base::FilePath filename;
-  std::string contents;
-  EXPECT_FALSE(copy.GetFileContents(&filename, &contents));
-  EXPECT_TRUE(filename.empty());
-  EXPECT_TRUE(contents.empty());
+  std::optional<OSExchangeData::FileContentsInfo> file_contents =
+      copy.GetFileContents();
+  EXPECT_FALSE(file_contents.has_value());
 }
 
 TEST_F(OSExchangeDataTest, TestFileToURLConversion) {

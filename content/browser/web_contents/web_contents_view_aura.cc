@@ -737,17 +737,18 @@ void WebContentsViewAura::PrepareDropData(
       drag_security_info_.IsImageAccessibleFromFrame();
   data.GetFilenames(&drop_data->filenames);
   if (access_allowed && drop_data->filenames.empty()) {
-    base::FilePath filename;
-    std::string file_contents;
-    data.GetFileContents(&filename, &file_contents);
-    if (!filename.empty()) {
-      drop_data->file_contents = std::move(file_contents);
+    std::optional<ui::OSExchangeData::FileContentsInfo> file_contents =
+        data.GetFileContents();
+    if (file_contents.has_value()) {
+      drop_data->file_contents = std::move(file_contents->file_contents);
       drop_data->file_contents_image_accessible = true;
       drop_data->file_contents_source_url =
-          GURL(ui::FilePathToFileURL(filename));
-      base::FilePath::StringType extension = filename.Extension();
-      if (!extension.empty())
+          GURL(ui::FilePathToFileURL(file_contents->filename));
+      base::FilePath::StringType extension =
+          file_contents->filename.Extension();
+      if (!extension.empty()) {
         drop_data->file_contents_filename_extension = extension.substr(1);
+      }
     }
   }
 

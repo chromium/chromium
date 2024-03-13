@@ -74,11 +74,11 @@ TEST(WaylandExchangeDataProviderTest, FileContents) {
   std::vector<std::string> mime_types = provider.BuildMimeTypesList();
   EXPECT_THAT(mime_types, ::testing::Contains(kMimeType));
 
-  base::FilePath get_file_name;
-  std::string get_file_contents;
-  EXPECT_TRUE(provider.GetFileContents(&get_file_name, &get_file_contents));
-  EXPECT_EQ(kName, get_file_name.value());
-  EXPECT_EQ(kContents, get_file_contents);
+  std::optional<OSExchangeDataProvider::FileContentsInfo> file_contents =
+      provider.GetFileContents();
+  EXPECT_TRUE(file_contents.has_value());
+  EXPECT_EQ(kName, file_contents->filename.value());
+  EXPECT_EQ(kContents, file_contents->file_contents);
 
   std::string extracted;
   EXPECT_TRUE(provider.ExtractData(kMimeType, &extracted));

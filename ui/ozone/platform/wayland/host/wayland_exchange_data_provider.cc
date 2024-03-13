@@ -240,11 +240,9 @@ std::vector<std::string> WaylandExchangeDataProvider::BuildMimeTypesList()
   }
 
   if (HasFileContents()) {
-    base::FilePath file_contents_filename;
-    std::string file_contents;
-    GetFileContents(&file_contents_filename, &file_contents);
+    std::optional<FileContentsInfo> file_contents = GetFileContents();
 
-    std::string filename = file_contents_filename.value();
+    std::string filename = file_contents->filename.value();
     base::ReplaceChars(filename, "\\", "\\\\", &filename);
     base::ReplaceChars(filename, "\"", "\\\"", &filename);
     const std::string mime_type =
@@ -313,10 +311,8 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   }
   if (base::StartsWith(mime_type, ui::kMimeTypeOctetStream) &&
       HasFileContents()) {
-    base::FilePath filename;
-    std::string file_contents;
-    GetFileContents(&filename, &file_contents);
-    out_content->append(file_contents);
+    std::optional<FileContentsInfo> file_contents = GetFileContents();
+    out_content->append(file_contents->file_contents);
     return true;
   }
   if (mime_type == ui::kMimeTypeWebCustomData &&

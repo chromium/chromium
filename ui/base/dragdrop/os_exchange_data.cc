@@ -134,9 +134,9 @@ void OSExchangeData::SetFileContents(const base::FilePath& filename,
   provider_->SetFileContents(filename, file_contents);
 }
 
-bool OSExchangeData::GetFileContents(base::FilePath* filename,
-                                     std::string* file_contents) const {
-  return provider_->GetFileContents(filename, file_contents);
+std::optional<OSExchangeData::FileContentsInfo>
+OSExchangeData::GetFileContents() const {
+  return provider_->GetFileContents();
 }
 
 #if BUILDFLAG(IS_WIN)

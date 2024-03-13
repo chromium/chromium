@@ -5,6 +5,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -17,6 +18,7 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -181,15 +183,13 @@ void OSExchangeDataProviderNonBacked::SetFileContents(
   file_contents_ = file_contents;
 }
 
-bool OSExchangeDataProviderNonBacked::GetFileContents(
-    base::FilePath* filename,
-    std::string* file_contents) const {
+std::optional<OSExchangeDataProvider::FileContentsInfo>
+OSExchangeDataProviderNonBacked::GetFileContents() const {
   if (file_contents_filename_.empty()) {
-    return false;
+    return std::nullopt;
   }
-  *filename = file_contents_filename_;
-  *file_contents = file_contents_;
-  return true;
+  return FileContentsInfo{.filename = file_contents_filename_,
+                          .file_contents = file_contents_};
 }
 
 bool OSExchangeDataProviderNonBacked::HasFileContents() const {

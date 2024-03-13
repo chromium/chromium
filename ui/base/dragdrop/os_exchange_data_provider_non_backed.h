@@ -65,8 +65,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
   void SetFileContents(const base::FilePath& filename,
                        const std::string& file_contents) override;
-  bool GetFileContents(base::FilePath* filename,
-                       std::string* file_contents) const override;
+  std::optional<FileContentsInfo> GetFileContents() const override;
   bool HasFileContents() const override;
 
   void SetHtml(const std::u16string& html, const GURL& base_url) override;

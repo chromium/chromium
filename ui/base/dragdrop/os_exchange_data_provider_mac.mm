@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <optional>
+
 #include "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
@@ -279,11 +281,10 @@ void OSExchangeDataProviderMac::SetFileContents(
   NOTIMPLEMENTED();
 }
 
-bool OSExchangeDataProviderMac::GetFileContents(
-    base::FilePath* filename,
-    std::string* file_contents) const {
+std::optional<OSExchangeDataProvider::FileContentsInfo>
+OSExchangeDataProviderMac::GetFileContents() const {
   NOTIMPLEMENTED();
-  return false;
+  return std::nullopt;
 }
 
 bool OSExchangeDataProviderMac::HasFileContents() const {

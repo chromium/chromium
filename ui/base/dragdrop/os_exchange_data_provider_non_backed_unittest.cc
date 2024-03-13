@@ -66,11 +66,12 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_TRUE(pickle_itr.ReadString16(&copy_pickle_string));
   EXPECT_EQ(kTestString, copy_pickle_string);
 
-  base::FilePath copy_file_contents_filename;
-  std::string copy_file_contents;
-  copy->GetFileContents(&copy_file_contents_filename, &copy_file_contents);
-  EXPECT_EQ(base::FilePath(kFileContentsFileName), copy_file_contents_filename);
-  EXPECT_EQ(std::string(kFileContents), copy_file_contents);
+  std::optional<OSExchangeDataProvider::FileContentsInfo> copy_file_contents =
+      copy->GetFileContents();
+  ASSERT_TRUE(copy_file_contents.has_value());
+  EXPECT_EQ(base::FilePath(kFileContentsFileName),
+            copy_file_contents->filename);
+  EXPECT_EQ(std::string(kFileContents), copy_file_contents->file_contents);
 
   std::optional<OSExchangeDataProvider::HtmlInfo> html_content =
       copy->GetHtml();

@@ -81,8 +81,11 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
 
   virtual void SetFileContents(const base::FilePath& filename,
                                const std::string& file_contents) = 0;
-  virtual bool GetFileContents(base::FilePath* filename,
-                               std::string* file_contents) const = 0;
+  struct FileContentsInfo {
+    base::FilePath filename;
+    std::string file_contents;
+  };
+  virtual std::optional<FileContentsInfo> GetFileContents() const = 0;
   virtual bool HasFileContents() const = 0;
 #if BUILDFLAG(IS_WIN)
   virtual bool HasVirtualFilenames() const = 0;

@@ -438,11 +438,11 @@ TEST_F(OSExchangeDataWinTest, FileContents) {
   data.SetFileContents(base::FilePath(L"filename.txt"), file_contents);
 
   OSExchangeData copy(data.provider().Clone());
-  base::FilePath filename;
-  std::string read_contents;
-  EXPECT_TRUE(copy.GetFileContents(&filename, &read_contents));
-  EXPECT_EQ(L"filename.txt", filename.value());
-  EXPECT_EQ(file_contents, read_contents);
+  std::optional<OSExchangeData::FileContentsInfo> file_contents_info =
+      copy.GetFileContents();
+  EXPECT_TRUE(file_contents_info.has_value());
+  EXPECT_EQ(L"filename.txt", file_contents_info->filename.value());
+  EXPECT_EQ(file_contents, file_contents_info->file_contents);
 }
 
 TEST_F(OSExchangeDataWinTest, VirtualFiles) {

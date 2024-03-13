@@ -281,12 +281,10 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     return;
   }
 
-  base::FilePath file_contents_filename;
-  std::string file_contents;
-  if (data.provider().HasFileContents() &&
-      data.provider().GetFileContents(&file_contents_filename,
-                                      &file_contents)) {
-    std::string filename = file_contents_filename.value();
+  if (std::optional<ui::OSExchangeDataProvider::FileContentsInfo>
+          file_contents = data.provider().GetFileContents();
+      file_contents.has_value()) {
+    std::string filename = file_contents->filename.value();
     base::ReplaceChars(filename, "\\", "\\\\", &filename);
     base::ReplaceChars(filename, "\"", "\\\"", &filename);
     const std::string mime_type =
@@ -296,7 +294,8 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
            DataOffer::SendDataCallback callback) {
           std::move(callback).Run(std::move(contents));
         },
-        base::MakeRefCounted<base::RefCountedString>(std::move(file_contents)));
+        base::MakeRefCounted<base::RefCountedString>(
+            std::move(file_contents->file_contents)));
 
     data_callbacks_.emplace(mime_type, std::move(callback));
     delegate_->OnOffer(mime_type);

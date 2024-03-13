@@ -181,8 +181,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
           callback) const override;
   bool GetPickledData(const ClipboardFormatType& format,
                       base::Pickle* data) const override;
-  bool GetFileContents(base::FilePath* filename,
-                       std::string* file_contents) const override;
+  std::optional<FileContentsInfo> GetFileContents() const override;
   std::optional<HtmlInfo> GetHtml() const override;
   bool HasString() const override;
   bool HasURL(FilenameToURLPolicy policy) const override;

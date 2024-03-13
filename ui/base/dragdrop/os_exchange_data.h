@@ -147,8 +147,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // Windows).
   void SetFileContents(const base::FilePath& filename,
                        const std::string& file_contents);
-  bool GetFileContents(base::FilePath* filename,
-                       std::string* file_contents) const;
+  using FileContentsInfo = OSExchangeDataProvider::FileContentsInfo;
+  std::optional<FileContentsInfo> GetFileContents() const;
 
 #if BUILDFLAG(IS_WIN)
   // Methods used to query and retrieve file data from a drag source

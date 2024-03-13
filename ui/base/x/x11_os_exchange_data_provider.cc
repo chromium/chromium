@@ -4,9 +4,11 @@
 
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -16,6 +18,7 @@
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_util.h"
@@ -433,17 +436,19 @@ void XOSExchangeDataProvider::SetFileContents(
                  base::MakeRefCounted<base::RefCountedString>(file_contents)));
 }
 
-bool XOSExchangeDataProvider::GetFileContents(
-    base::FilePath* filename,
-    std::string* file_contents) const {
+std::optional<OSExchangeDataProvider::FileContentsInfo>
+XOSExchangeDataProvider::GetFileContents() const {
   std::vector<char> str;
   if (!connection_->GetArrayProperty(source_window_,
                                      x11::GetAtom(kXdndDirectSave0), &str)) {
-    return false;
+    return std::nullopt;
   }
 
-  *filename =
+  base::FilePath filename =
       base::FilePath(base::FilePath::StringPieceType(str.data(), str.size()));
+  if (filename.empty()) {
+    return std::nullopt;
+  }
 
   std::vector<x11::Atom> file_contents_atoms;
   file_contents_atoms.push_back(x11::GetAtom(kMimeTypeOctetStream));
@@ -452,10 +457,12 @@ bool XOSExchangeDataProvider::GetFileContents(
 
   ui::SelectionData data(format_map_.GetFirstOf(requested_types));
   if (data.IsValid()) {
-    data.AssignTo(file_contents);
-    return true;
+    std::string file_contents;
+    data.AssignTo(&file_contents);
+    return FileContentsInfo{.filename = filename,
+                            .file_contents = std::move(file_contents)};
   }
-  return false;
+  return std::nullopt;
 }
 
 bool XOSExchangeDataProvider::HasFileContents() const {
