@@ -532,7 +532,24 @@ void WaylandConnection::DumpState(std::ostream& out) const {
 }
 
 bool WaylandConnection::ShouldUseOverlayDelegation() const {
-  return IsWaylandOverlayDelegationEnabled() && !overlay_delegation_disabled_;
+  // Since using fractional_scale_v1 requires using viewport to rescale the
+  // window to Wayland logical coordinates, using overlays in conjunction with
+  // fractional_scale_v1 would require support for subpixel viewport
+  // destination sizes and subpixel subsurface positions, which currently
+  // isn't present on any non-exo Wayland compositors.
+  bool should_use_overlay_delegation =
+      IsWaylandOverlayDelegationEnabled() && !fractional_scale_manager_v1();
+#if BUILDFLAG(IS_LINUX)
+  // Overlay delegation also requires a single-pixel-buffer protocol, which
+  // allows creation of non-backed solid color buffers. Even though only video
+  // overlays can be supported on Linux, these color buffers are still needed
+  // due to a peculiarity of the design of the Ozone/Wayland with the
+  // WaylandOverlayDelegation feature enabled, which implies usage of a
+  // transparent background buffer for a root surface while the content itself
+  // is attached to a subsurface.
+  should_use_overlay_delegation &= !!single_pixel_buffer();
+#endif
+  return should_use_overlay_delegation;
 }
 
 bool WaylandConnection::IsUsingZAuraOutputManager() const {

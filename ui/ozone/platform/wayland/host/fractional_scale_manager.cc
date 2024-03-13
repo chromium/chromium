@@ -46,13 +46,6 @@ void FractionalScaleManager::Instantiate(WaylandConnection* connection,
   connection->fractional_scale_manager_v1_ = std::move(instance);
 
   connection->set_supports_viewporter_surface_scaling(true);
-
-  // Since using fractional_scale_v1 requires using viewport to rescale the
-  // window to Wayland logical coordinates, using overlays in conjunction with
-  // fractional_scale_v1 would require support for subpixel viewport
-  // destination sizes and subpixel subsurface positions, which currently
-  // isn't present on any non-exo Wayland compositors.
-  connection->set_overlay_delegation_disabled(true);
 }
 
 }  // namespace ui

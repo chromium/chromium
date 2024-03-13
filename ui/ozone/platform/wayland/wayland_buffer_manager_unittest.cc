@@ -611,8 +611,10 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
   });
 
   std::vector<wl::WaylandOverlayConfig> overlay_configs;
-  overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
-      INT32_MIN, 1u, window_->GetBoundsInPixels()));
+  if (connection_->ShouldUseOverlayDelegation()) {
+    overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+        INT32_MIN, 1u, window_->GetBoundsInPixels()));
+  }
   // Non-existing buffer id
   overlay_configs.emplace_back(
       CreateBasicWaylandOverlayConfig(0, 2u, window_->GetBoundsInPixels()));
@@ -630,6 +632,10 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonExistingBufferId) {
 }
 
 TEST_P(WaylandBufferManagerTest, CommitOverlaysWithSameBufferId) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
   const size_t expected_number_of_buffers =
       connection_->linux_explicit_synchronization_v1() ? 1 : 2;
 
@@ -681,6 +687,10 @@ TEST_P(WaylandBufferManagerTest, CommitBufferNullWidget) {
 // Tests that committing overlays with bounds_rect containing NaN or infinity
 // values is illegal - the host terminates the gpu process.
 TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
   const std::vector<gfx::RectF> bounds_rect_test_data = {
       gfx::RectF(std::nanf(""), window_->GetBoundsInPixels().y(), std::nanf(""),
                  window_->GetBoundsInPixels().height()),
@@ -774,6 +784,50 @@ TEST_P(WaylandBufferManagerTest, CommitOverlaysNonsensicalBoundsRect) {
         mock_surface->ClearBufferReleases();
       });
     }
+  }
+}
+
+// A similar test to the above with the only difference that a background
+// dummy buffer is not used as delegation is disabled.
+TEST_P(WaylandBufferManagerTest,
+       CommitOverlaysNonsensicalBoundsRectSingleOverlay) {
+  if (connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
+  const std::vector<gfx::RectF> bounds_rect_test_data = {
+      gfx::RectF(std::nanf(""), window_->GetBoundsInPixels().y(), std::nanf(""),
+                 window_->GetBoundsInPixels().height()),
+      gfx::RectF(window_->GetBoundsInPixels().x(),
+                 std::numeric_limits<float>::infinity(),
+                 window_->GetBoundsInPixels().width(),
+                 std::numeric_limits<float>::infinity())};
+
+  for (const auto& faulty_bounds_rect : bounds_rect_test_data) {
+    constexpr uint32_t kBufferId1 = 1;
+
+    CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                      kBufferId1);
+    ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
+                                                 false /* fail */);
+
+    // Can't commit for bounds rect containing NaN
+    SetTerminateCallbackExpectationAndDestroyChannel(&callback_, true /*fail*/);
+
+    size_t z_order = 0;
+    std::vector<wl::WaylandOverlayConfig> overlay_configs;
+
+    overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+        z_order, kBufferId1, faulty_bounds_rect));
+
+    buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), 1u,
+                                        gfx::FrameData(delegate_.viz_seq()),
+                                        std::move(overlay_configs));
+
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_EQ("Overlay bounds_rect is invalid (NaN or infinity).",
+              channel_destroyed_error_message_);
   }
 }
 
@@ -2359,6 +2413,10 @@ TEST_P(WaylandBufferManagerTest, OnSubmissionCalledForSingleBuffer) {
 // Tests that when CommitOverlays(), root_surface can only be committed once all
 // overlays in the frame are committed.
 TEST_P(WaylandBufferManagerTest, RootSurfaceIsCommittedLast) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
   constexpr uint32_t kBufferId1 = 1;
   constexpr uint32_t kBufferId2 = 2;
   constexpr uint32_t kBufferId3 = 3;
@@ -2652,6 +2710,10 @@ TEST_P(WaylandBufferManagerTest,
 // primary subsurface as sw compositing uses the root surface to draw new
 // frames. Verifies the fix for https://crbug.com/1201314
 TEST_P(WaylandBufferManagerTest, HidesSubsurfacesOnChannelDestroyed) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
   constexpr uint32_t kBufferId1 = 1;
   constexpr uint32_t kBufferId2 = 2;
   constexpr uint32_t kBufferId3 = 3;
@@ -2785,6 +2847,10 @@ TEST_P(WaylandBufferManagerTest, HasOverlayPrioritizer) {
 }
 
 TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
   std::vector<uint32_t> kBufferIds = {1, 2, 3};
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
@@ -2859,6 +2925,10 @@ TEST_P(WaylandBufferManagerTest, HasSurfaceAugmenter) {
 }
 
 TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
   InitializeSurfaceAugmenter();
 
   std::vector<uint32_t> kBufferIds = {1, 2, 3};
@@ -3215,6 +3285,9 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
 // Tests viewport destination is set correctly when the augmenter subsurface
 // protocol is not available and then becomes available.
 TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationNonInteger) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
   constexpr gfx::RectF test_data[2][2] = {
       {gfx::RectF({21, 18}, {7, 11}), gfx::RectF({21, 18}, {7, 11})},
       {gfx::RectF({7, 8}, {43, 63}), gfx::RectF({7, 8}, {43, 63})}};
@@ -3233,6 +3306,10 @@ TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationNonInteger) {
 // protocol is not available (the destination is rounded), and the protocol is
 // available (the destination is set with floating point precision).
 TEST_P(WaylandBufferManagerViewportTest, ViewportDestinationInteger) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
+
   constexpr gfx::RectF test_data[2][2] = {
       {gfx::RectF({21, 18}, {7.423, 11.854}), gfx::RectF({21, 18}, {7, 12})},
       {gfx::RectF({7, 8}, {43.562, 63.76}),

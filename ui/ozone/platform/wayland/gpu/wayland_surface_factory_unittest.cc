@@ -246,6 +246,9 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
 
 TEST_P(WaylandSurfaceFactoryTest,
        GbmSurfacelessWaylandCommitOverlaysCallbacksTest) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
   // This tests multiple buffers per-frame and order of SwapCompletionCallbacks.
   // Even when all OnSubmission from later frames are called, their
   // SwapCompletionCallbacks should not run until previous frames'
@@ -602,6 +605,9 @@ TEST_P(WaylandSurfaceFactoryTest,
 
 TEST_P(WaylandSurfaceFactoryTest,
        GbmSurfacelessWaylandGroupOnSubmissionCallbacksTest) {
+  if (!connection_->ShouldUseOverlayDelegation()) {
+    GTEST_SKIP();
+  }
   // This tests multiple buffers per-frame. GbmSurfacelessWayland receive 1
   // OnSubmission call per frame before running in submission order.
   gl::SetGLImplementation(gl::kGLImplementationEGLGLES2);
