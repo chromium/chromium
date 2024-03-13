@@ -471,11 +471,13 @@ class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
     // If the WebContents was already set up before given to the Shell, it may
     // have a set of RenderFrames already, and we need to notify about them
     // here.
-    web_contents->ForEachRenderFrameHost(
-        [&](RenderFrameHost* render_frame_host) {
-          if (render_frame_host->IsRenderFrameLive())
-            RenderFrameCreated(render_frame_host);
-        });
+    static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame())
+        ->ForEachRenderFrameHostIncludingSpeculative(
+            [&](RenderFrameHostImpl* render_frame_host) {
+              if (render_frame_host->IsRenderFrameLive()) {
+                RenderFrameCreated(render_frame_host);
+              }
+            });
   }
 
  private:
@@ -1713,31 +1715,20 @@ void WebTestControlHost::SimulateWebContentIndexDelete(const std::string& id) {
 
 void WebTestControlHost::WebTestRuntimeFlagsChanged(
     base::Value::Dict changed_web_test_runtime_flags) {
-  const int render_process_id = receiver_bindings_.current_context();
-
   // Stash the accumulated changes for future, not-yet-created renderers.
   accumulated_web_test_runtime_flags_changes_.Merge(
       changed_web_test_runtime_flags.Clone());
   web_test_runtime_flags_.tracked_dictionary().ApplyUntrackedChanges(
       accumulated_web_test_runtime_flags_changes_);
 
-  base::flat_map<int, mojom::WebTestRenderFrame*> process_to_frame_map;
-
-  // Propagate the changes to all the renderer processes, we only
-  // need to send it once per process so we build a list of the first
-  // frame we find per process.
-  for (auto& item : web_test_render_frame_map_) {
-    if (item.first.child_id == render_process_id) {
-      continue;
-    }
-    process_to_frame_map.emplace(item.first.child_id, item.second.get());
-  }
-
-  // Then we send the new flags to those frames.
-  for (auto [id, frame] : process_to_frame_map) {
-    frame->ReplicateWebTestRuntimeFlagsChanges(
-        changed_web_test_runtime_flags.Clone());
-  }
+  static_cast<RenderFrameHostImpl*>(
+      main_window_->web_contents()->GetPrimaryMainFrame())
+      ->ForEachRenderFrameHostIncludingSpeculative(
+          [&](RenderFrameHostImpl* render_frame_host) {
+            GetWebTestRenderFrameRemote(render_frame_host)
+                ->ReplicateWebTestRuntimeFlagsChanges(
+                    changed_web_test_runtime_flags.Clone());
+          });
 }
 
 void WebTestControlHost::RegisterIsolatedFileSystem(
