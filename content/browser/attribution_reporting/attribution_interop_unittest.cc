@@ -165,7 +165,7 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    AttributionInteropTestInputs,
+    ,
     AttributionInteropTest,
     ::testing::ValuesIn(GetInputs()),
     /*name_generator=*/

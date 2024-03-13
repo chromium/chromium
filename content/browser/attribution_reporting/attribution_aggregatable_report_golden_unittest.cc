@@ -685,7 +685,7 @@ TEST_P(AttributionAggregatableReportGoldenLegacyVersionTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(,
                          AttributionAggregatableReportGoldenLegacyVersionTest,
                          ::testing::ValuesIn(GetLegacyVersions()));
 

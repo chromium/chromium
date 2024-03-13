@@ -495,7 +495,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
     },
 };
 
-INSTANTIATE_TEST_SUITE_P(AttributionInteropParserInvalidInputs,
+INSTANTIATE_TEST_SUITE_P(,
                          AttributionInteropParserInputErrorTest,
                          ::testing::ValuesIn(kParseErrorTestCases));
 

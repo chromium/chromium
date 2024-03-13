@@ -4540,7 +4540,7 @@ class AttributionDataHostManagerImplPreferredPlatformEnabledTest
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    ,
     AttributionDataHostManagerImplPreferredPlatformEnabledTest,
     ::testing::ValuesIn(kPreferredPlatformTestCases));
 
@@ -4638,7 +4638,7 @@ class
       public ::testing::WithParamInterface<PreferredPlatformTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(
-    All,
+    ,
     AttributionDataHostManagerImplWithInBrowserMigrationAndPreferredPlatformTest,
     ::testing::ValuesIn(kPreferredPlatformTestCases));
 

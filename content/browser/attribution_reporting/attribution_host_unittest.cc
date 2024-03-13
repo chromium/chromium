@@ -474,7 +474,7 @@ TEST_P(AttributionHostOriginTrustworthyChecksTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    AttributionHostOriginTrustworthyChecks,
+    ,
     AttributionHostOriginTrustworthyChecksTest,
     ::testing::ValuesIn(kOriginTrustworthyChecksTestCases));
 
