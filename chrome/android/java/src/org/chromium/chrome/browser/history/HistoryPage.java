@@ -52,6 +52,7 @@ public class HistoryPage extends BasicNativePage {
                         profile,
                         tabSupplier,
                         new BrowsingHistoryBridge(profile.getOriginalProfile()),
+                        new HistoryUmaRecorder(),
                         null,
                         /* shouldShowClearData= */ true,
                         /* appSpecificHistory= */ false);

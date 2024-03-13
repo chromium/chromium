@@ -33,6 +33,8 @@ public class HistoryActivity extends SnackbarActivity {
         String clientPackageName =
                 IntentUtils.safeGetStringExtra(getIntent(), Intent.EXTRA_PACKAGE_NAME);
         Profile profile = getProfileProvider().getOriginalProfile();
+        HistoryUmaRecorder historyUmaRecorder =
+                appSpecificHistory ? new AppHistoryUmaRecorder() : new HistoryUmaRecorder();
         mHistoryManager =
                 new HistoryManager(
                         this,
@@ -41,6 +43,7 @@ public class HistoryActivity extends SnackbarActivity {
                         ProfileProvider.getOrCreateProfile(getProfileProvider(), isIncognito),
                         /* Supplier<Tab>= */ null,
                         new BrowsingHistoryBridge(profile),
+                        historyUmaRecorder,
                         clientPackageName,
                         shouldShowClearData,
                         appSpecificHistory);

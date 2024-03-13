@@ -2632,6 +2632,146 @@ should be able to be added at any place in this file.
   <description>Add to homescreen IPH message UI was shown.</description>
 </action>
 
+<action name="Android.AppHistoryPage.CopyLink">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User copied the URL for an item on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.LoadMoreOnScroll">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User scrolled to the bottom of the screen causing more items to load on the
+    Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.OpenFullHistory">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User navigated from in-app history to Chrome BrApp history.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.OpenItem">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User opened an item on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.OpenSelected">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User opened one or more selected items in new tabs on the Android in-app
+    history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.OpenSelectedIncognito">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User opened one or more selected items in new incognito tabs on the Android
+    in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.RemoveItem">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User removed an item on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.RemoveSelected">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User removed one or more selected items on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User tapped the search icon on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search.CopyLink">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User copied the URL for an item while searching on the Android in-app
+    history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search.LoadMoreOnScroll">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User scrolled to the bottom of the screen causing more items to load while
+    searching on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search.OpenItem">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User opened an item while searching on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search.OpenSelected">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User opened one or more selected items in new tabs while searching on the
+    Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search.OpenSelectedIncognito">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User opened one or more selected items in new incognito tabs while searching
+    on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search.RemoveItem">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User removed an item while searching on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search.RemoveSelected">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User removed one or more selected items while searching on the native
+    Android history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Search.SelectionEstablished">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User established a selection while searching on the Android in-app history
+    page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.SelectionEstablished">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>
+    User established a selection on the Android in-app history page.
+  </description>
+</action>
+
+<action name="Android.AppHistoryPage.Show">
+  <owner>jinsukkim@chromium.org</owner>
+  <description>User navigated to the Android in-app history page.</description>
+</action>
+
 <action name="Android.BookmarkPage.ReadingList.MarkAsRead">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>

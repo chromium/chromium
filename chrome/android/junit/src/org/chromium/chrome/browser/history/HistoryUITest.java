@@ -162,6 +162,7 @@ public class HistoryUITest {
                         mProfile,
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
+                        new HistoryUmaRecorder(),
                         null,
                         true,
                         false);

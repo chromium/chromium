@@ -84,7 +84,7 @@ public class HistoryManagerToolbar extends SelectableListToolbar<HistoryItem> {
             getItemById(R.id.selection_mode_copy_link).setVisible(numSelected == 1);
 
             if (!wasSelectionEnabled) {
-                mManager.recordUserActionWithOptionalSearch("SelectionEstablished");
+                mManager.recordSelectionEstablished();
             }
         }
     }
