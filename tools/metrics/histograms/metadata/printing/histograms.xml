@@ -529,6 +529,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Printing.PrintManagement.GetPrintJobsRequestDuration"
+    units="ms" expires_after="2025-03-11">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Recorded the time it takes for the Print Management UI to receive a response
+    from a `getPrintJobs()` request. Recorded whenever print jobs are requested.
+  </summary>
+</histogram>
+
 <histogram name="Printing.PrintServers.ServersToQuery" units="servers"
     expires_after="2024-09-01">
   <owner>pawliczek@chromium.org</owner>

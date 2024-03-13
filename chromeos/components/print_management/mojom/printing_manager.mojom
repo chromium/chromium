@@ -164,4 +164,7 @@ interface PrintManagementHandler {
   // Opens OS Settings to the Printer settings subpage. `source` parameter
   // used to help record users' action.
   LaunchPrinterSettings(LaunchSource source);
+
+  // Record the length of time in milliseconds for a print jobs request.
+  RecordGetPrintJobsRequestDuration(uint32 duration);
 };

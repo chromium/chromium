@@ -241,7 +241,8 @@ export class PrintManagementElement extends PrintManagementElementBase
     }
   }
 
-  private onPrintJobsReceived(jobs: {printJobs: PrintJobInfo[]}): void {
+  private onPrintJobsReceived(
+      jobs: {printJobs: PrintJobInfo[]}, requestStartTime: number): void {
     // Set on the first print jobs response.
     if (!this.printJobsLoaded) {
       this.printJobsLoaded = true;
@@ -263,11 +264,17 @@ export class PrintManagementElement extends PrintManagementElementBase
     // Sort the print jobs in chronological order.
     this.ongoingPrintJobs = ongoingList.sort(comparePrintJobsChronologically);
     this.printJobs = historyList.sort(comparePrintJobsReverseChronologically);
+
+    // Record request duration.
+    this.pageHandler.recordGetPrintJobsRequestDuration(
+        Date.now() - requestStartTime);
   }
 
   private getPrintJobs(): void {
+    const requestStartTime = Date.now();
     this.mojoInterfaceProvider.getPrintJobs().then(
-        this.onPrintJobsReceived.bind(this));
+        (jobs: {printJobs: PrintJobInfo[]}) =>
+            this.onPrintJobsReceived(jobs, requestStartTime));
   }
 
   private onPrintJobHistoryExpirationPeriodReceived(printJobPolicyInfo: {
