@@ -342,7 +342,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // changes.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_ChangesTargettedRenderView DISABLED_ChangesTargettedRenderView
 #else
 #define MAYBE_ChangesTargettedRenderView ChangesTargettedRenderView
@@ -422,7 +423,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 // reload. Regression test for http://crbug.com/916332.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
 #else
 #define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash
@@ -501,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // content is not changing.
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_DeliversRefreshFramesUponRequest \
   DISABLED_DeliversRefreshFramesUponRequest
 #else
