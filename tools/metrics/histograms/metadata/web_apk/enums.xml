@@ -65,6 +65,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Dialog shown after timeout"/>
   <int value="6" label="Dialog cancelled (Back)"/>
   <int value="7" label="Redirect to shortcut creation"/>
+  <int value="8" label="Redirect to install crafted app"/>
+  <int value="9" label="Redirect to install homebrew app"/>
 </enum>
 
 <enum name="WebApkAppType">

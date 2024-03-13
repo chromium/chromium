@@ -41,8 +41,10 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     public static final int DIALOG_SHOWN_AFTER_TIMEOUT = 5;
     public static final int DIALOG_CANCELLED_BACK_BUTTON = 6;
     public static final int REDIRECT_TO_SHORTCUT_CREATION = 7;
+    public static final int REDIRECT_TO_INSTALL_APP = 8;
+    public static final int REDIRECT_TO_INSTALL_APP_DIY = 9;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int DIALOG_RESULT_COUNT = 8;
+    public static final int DIALOG_RESULT_COUNT = 10;
 
     // How long (in milliseconds) to wait for the installability check before showing the toast. Set
     // to 100ms because that's about the limit for users to notice that the system isn't reacting
@@ -62,6 +64,9 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     // Tracks what we're showing this dialog for (specifically, what the results of the
     // installability check was for the site).
     private @AppType Integer mAppType;
+
+    // Whether we are showing the dialog for the root of the domain (path == '/') or a leaf page.
+    private boolean mIsRoot;
 
     // Whether we are yet to show this dialog (the dialog is shown after a brief delay, possibly
     // with a toast while we wait for it to appear).
@@ -94,6 +99,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         mInstallCallback = installCallback;
         mAddShortcutCallback = addShortcutCallback;
         mOpenAppCallback = openAppCallback;
+        mIsRoot = "/".equals(webContents.getLastCommittedUrl().getPath());
 
         mView = new PwaUniversalInstallBottomSheetView();
         mView.initialize(activity, webContents, arrowId, installOverlayId, shortcutOverlayId);
@@ -259,13 +265,36 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         mAppType = appType;
         if (mToast != null) mToast.cancel();
 
-        if (mWaitingToShow && mAppType == AppType.SHORTCUT) {
+        // Check if we need to redirect without showing the dialog (and log the outcome).
+        if (mWaitingToShow
+                && (mAppType == AppType.SHORTCUT
+                        || (mIsRoot
+                                && (mAppType == AppType.WEBAPK
+                                        || mAppType == AppType.WEBAPK_DIY)))) {
             mWaitingToShow = false;
-            mAddShortcutCallback.run();
-            RecordHistogram.recordEnumeratedHistogram(
-                    "WebApk.UniversalInstall.DialogAction",
-                    REDIRECT_TO_SHORTCUT_CREATION,
-                    DIALOG_RESULT_COUNT);
+            switch (mAppType) {
+                case AppType.SHORTCUT:
+                    mAddShortcutCallback.run();
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "WebApk.UniversalInstall.DialogAction",
+                            REDIRECT_TO_SHORTCUT_CREATION,
+                            DIALOG_RESULT_COUNT);
+                    break;
+                case AppType.WEBAPK:
+                    mInstallCallback.run();
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "WebApk.UniversalInstall.DialogAction",
+                            REDIRECT_TO_INSTALL_APP,
+                            DIALOG_RESULT_COUNT);
+                    break;
+                case AppType.WEBAPK_DIY:
+                    mInstallCallback.run();
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "WebApk.UniversalInstall.DialogAction",
+                            REDIRECT_TO_INSTALL_APP_DIY,
+                            DIALOG_RESULT_COUNT);
+                    break;
+            }
             return;
         }
 

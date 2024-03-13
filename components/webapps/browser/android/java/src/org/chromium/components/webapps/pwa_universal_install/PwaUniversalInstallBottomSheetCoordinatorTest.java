@@ -4,6 +4,7 @@
 
 package org.chromium.components.webapps.pwa_universal_install;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import android.app.Activity;
@@ -27,6 +28,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 /** Instrumentation tests for PWA Universal Install bottom sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -61,6 +63,9 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
 
         // Setup the coordinator with a mocked WebContents object.
         MockWebContents webContents = mock(MockWebContents.class);
+        GURL url = new GURL("http://www.example.com");
+        doReturn(url).when(webContents).getLastCommittedUrl();
+
         PwaUniversalInstallBottomSheetCoordinator coordinator =
                 new PwaUniversalInstallBottomSheetCoordinator(
                         activity,
