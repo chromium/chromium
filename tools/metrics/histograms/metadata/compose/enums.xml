@@ -138,6 +138,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Close Clicked"/>
   <int value="19" label="Edit Clicked"/>
   <int value="20" label="Cancel Edit Clicked"/>
+  <int value="21" label="Used a modifier">Added in M124</int>
 </enum>
 
 <enum name="ComposeShowStatus">

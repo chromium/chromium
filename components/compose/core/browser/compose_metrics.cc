@@ -117,21 +117,30 @@ void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kUndoClicked);
   }
+  bool has_used_modifier = false;
   if (session_events.shorten_count > 0) {
+    has_used_modifier = true;
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kShortenClicked);
   }
   if (session_events.lengthen_count > 0) {
+    has_used_modifier = true;
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kElaborateClicked);
   }
   if (session_events.casual_count > 0) {
+    has_used_modifier = true;
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kCasualClicked);
   }
   if (session_events.formal_count > 0) {
+    has_used_modifier = true;
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kFormalClicked);
+  }
+  if (has_used_modifier) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kAnyModifierUsed);
   }
   if (session_events.has_thumbs_down) {
     base::UmaHistogramEnumeration(histogram,

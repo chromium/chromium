@@ -2747,6 +2747,9 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kCloseClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kAnyModifierUsed, 0);
 
   // Navigate page away to upload UKM metrics to the collector.
   NavigateAndCommitActiveTab(GURL("about:blank"));
@@ -2860,6 +2863,9 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kShortenClicked, 0);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kAnyModifierUsed, 1);
 
   // Check session level UKM metrics.
   auto session_ukm_entries = ukm_recorder().GetEntries(
@@ -2976,6 +2982,9 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   histograms().ExpectBucketCount(
       compose::kComposeSessionEventCounts,
       compose::ComposeSessionEventTypes::kShortenClicked, 1);
+  histograms().ExpectBucketCount(
+      compose::kComposeSessionEventCounts,
+      compose::ComposeSessionEventTypes::kAnyModifierUsed, 1);
 
   // Check session level UKM metrics.
   auto session_ukm_entries = ukm_recorder().GetEntries(

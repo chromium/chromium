@@ -120,7 +120,8 @@ enum class ComposeSessionEventTypes {
   kCloseClicked = 18,
   kEditClicked = 19,
   kCancelEditClicked = 20,
-  kMaxValue = kCancelEditClicked,
+  kAnyModifierUsed = 21,
+  kMaxValue = kAnyModifierUsed,
 };
 
 // Enum for recording the show status of the Compose context menu item.
