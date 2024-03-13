@@ -888,12 +888,17 @@ enum EvalJsOptions {
 //    callers of domAutomationController.send() -- EvalJs does not rely on
 //    domAutomationController.
 //  - Lists, dicts, null values, etc. can be returned as base::Values.
+//  - |after_script_invoke| is an optional callback which will be invoked after
+//    script execution has started in the renderer but before the RunLoop is
+//    blocked on the result.
 //
 // It is guaranteed that EvalJs works even when the target frame is frozen.
-[[nodiscard]] EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
-                                  base::StringPiece script,
-                                  int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                                  int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
+[[nodiscard]] EvalJsResult EvalJs(
+    const ToRenderFrameHost& execution_target,
+    base::StringPiece script,
+    int options = EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+    int32_t world_id = ISOLATED_WORLD_ID_GLOBAL,
+    base::OnceClosure after_script_invoke = base::DoNothing());
 
 // Like EvalJs(), but runs |raf_script| inside a requestAnimationFrame handler,
 // and runs |script| after the rendering update has completed. By the time
