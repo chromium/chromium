@@ -121,25 +121,30 @@ void ScriptPromiseResolver::Reject(ExceptionState& exception_state) {
 void ScriptPromiseResolver::RejectWithDOMException(
     DOMExceptionCode exception_code,
     const String& message) {
+  ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowDOMException(exception_code, message);
 }
 
 void ScriptPromiseResolver::RejectWithSecurityError(
     const String& sanitized_message,
     const String& unsanitized_message) {
+  ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowSecurityError(sanitized_message,
                                                unsanitized_message);
 }
 
 void ScriptPromiseResolver::RejectWithTypeError(const String& message) {
+  ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowTypeError(message);
 }
 
 void ScriptPromiseResolver::RejectWithRangeError(const String& message) {
+  ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowRangeError(message);
 }
 
 void ScriptPromiseResolver::RejectWithWasmCompileError(const String& message) {
+  ScriptState::Scope scope(script_state_.Get());
   ExceptionStateScope(this).ThrowWasmCompileError(message);
 }
 

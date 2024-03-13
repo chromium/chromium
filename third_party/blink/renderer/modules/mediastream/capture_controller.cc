@@ -105,8 +105,9 @@ bool ShouldFocusCapturedSurface(V8CaptureStartFocusBehavior focus_behavior) {
   NOTREACHED_NORETURN();
 }
 
-void OnCapturedSurfaceControlResult(ScriptPromiseResolver* resolver,
-                                    DOMException* exception) {
+void OnCapturedSurfaceControlResult(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    DOMException* exception) {
   if (exception) {
     resolver->Reject(exception);
   } else {
@@ -184,8 +185,9 @@ void CaptureController::setFocusBehavior(
   FinalizeFocusDecision();
 }
 
-ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
-                                           CapturedWheelAction* action) {
+ScriptPromiseTyped<IDLUndefined> CaptureController::sendWheel(
+    ScriptState* script_state,
+    CapturedWheelAction* action) {
   DCHECK(IsMainThread());
   CHECK(action);
   CHECK(action->hasX());
@@ -193,27 +195,28 @@ ScriptPromise CaptureController::sendWheel(ScriptState* script_state,
   CHECK(action->hasWheelDeltaX());
   CHECK(action->hasWheelDeltaY());
 
-  ScriptPromiseResolver* const resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
 
-  const ScriptPromise promise = resolver->Promise();
+  const auto promise = resolver->Promise();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Unsupported."));
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Unsupported.");
   return promise;
 #else
   ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
   if (validation_result.code != DOMExceptionCode::kNoError) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        validation_result.code, validation_result.message));
+    resolver->RejectWithDOMException(validation_result.code,
+                                     validation_result.message);
     return promise;
   }
 
   const base::expected<ScaledCoordinates, String> scaled_coordinates =
       ScaleCoordinates(video_track_, action);
   if (!scaled_coordinates.has_value()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, scaled_coordinates.error()));
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     scaled_coordinates.error());
     return promise;
   }
 
@@ -276,30 +279,32 @@ int CaptureController::getZoomLevel(ExceptionState& exception_state) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
-ScriptPromise CaptureController::setZoomLevel(ScriptState* script_state,
-                                              int zoom_level) {
+ScriptPromiseTyped<IDLUndefined> CaptureController::setZoomLevel(
+    ScriptState* script_state,
+    int zoom_level) {
   DCHECK(IsMainThread());
 
-  ScriptPromiseResolver* const resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
 
-  const ScriptPromise promise = resolver->Promise();
+  const auto promise = resolver->Promise();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNotSupportedError, "Unsupported."));
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Unsupported.");
   return promise;
 #else
   ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
   if (validation_result.code != DOMExceptionCode::kNoError) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        validation_result.code, validation_result.message));
+    resolver->RejectWithDOMException(validation_result.code,
+                                     validation_result.message);
     return promise;
   }
 
   if (!getSupportedZoomLevels().Contains(zoom_level)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Only values returned by getSupportedZoomLevels() are valid."));
+        "Only values returned by getSupportedZoomLevels() are valid.");
     return promise;
   }
 

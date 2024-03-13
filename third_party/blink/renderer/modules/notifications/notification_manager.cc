@@ -193,7 +193,7 @@ void NotificationManager::DisplayPersistentNotification(
     int64_t service_worker_registration_id,
     mojom::blink::NotificationDataPtr notification_data,
     mojom::blink::NotificationResourcesPtr notification_resources,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   DCHECK(notification_data);
   DCHECK(notification_resources);
   DCHECK_EQ(notification_data->actions.has_value()
@@ -230,7 +230,7 @@ void NotificationManager::DisplayPersistentNotification(
 }
 
 void NotificationManager::DidDisplayPersistentNotification(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     mojom::blink::PersistentNotificationError error) {
   switch (error) {
     case mojom::blink::PersistentNotificationError::NONE:

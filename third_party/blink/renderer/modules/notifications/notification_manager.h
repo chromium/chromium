@@ -73,7 +73,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
       int64_t service_worker_registration_id,
       mojom::blink::NotificationDataPtr notification_data,
       mojom::blink::NotificationResourcesPtr notification_resources,
-      ScriptPromiseResolver* resolver);
+      ScriptPromiseResolverTyped<IDLUndefined>* resolver);
 
   // Closes a persistent notification identified by its notification id.
   void ClosePersistentNotification(const WebString& notification_id);
@@ -92,7 +92,7 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
 
  private:
   void DidDisplayPersistentNotification(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
       mojom::blink::PersistentNotificationError error);
 
   void DidGetNotifications(

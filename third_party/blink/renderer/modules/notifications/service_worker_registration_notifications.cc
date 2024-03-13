@@ -30,7 +30,8 @@ ServiceWorkerRegistrationNotifications::ServiceWorkerRegistrationNotifications(
     ServiceWorkerRegistration* registration)
     : Supplement(*registration), ExecutionContextLifecycleObserver(context) {}
 
-ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
+ScriptPromiseTyped<IDLUndefined>
+ServiceWorkerRegistrationNotifications::showNotification(
     ScriptState* script_state,
     ServiceWorkerRegistration& registration,
     const String& title,
@@ -41,7 +42,7 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "showNotification() is not allowed in fenced frames.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // If context object's active worker is null, reject the promise with a
@@ -52,7 +53,7 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
     exception_state.ThrowTypeError(
         "No active registration available on "
         "the ServiceWorkerRegistration.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // If permission for notification's origin is not "granted", reject the
@@ -63,14 +64,14 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
         PersistentNotificationDisplayResult::kPermissionNotGranted);
     exception_state.ThrowTypeError(
         "No notification permission has been granted for this origin.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // Validate the developer-provided options to get the NotificationData.
   mojom::blink::NotificationDataPtr data = CreateNotificationData(
       execution_context, title, options, exception_state);
   if (exception_state.HadException())
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
 
   // Log number of actions developer provided in linear histogram:
   //     0    -> underflow bucket,
@@ -80,9 +81,10 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
       "Notifications.PersistentNotificationActionCount",
       options->actions().size(), 17);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   ServiceWorkerRegistrationNotifications::From(execution_context, registration)
       .PrepareShow(std::move(data), resolver);
@@ -137,7 +139,7 @@ ServiceWorkerRegistrationNotifications::From(
 
 void ServiceWorkerRegistrationNotifications::PrepareShow(
     mojom::blink::NotificationDataPtr data,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   scoped_refptr<const SecurityOrigin> origin =
       GetExecutionContext()->GetSecurityOrigin();
   NotificationResourcesLoader* loader =
@@ -152,7 +154,7 @@ void ServiceWorkerRegistrationNotifications::PrepareShow(
 void ServiceWorkerRegistrationNotifications::DidLoadResources(
     scoped_refptr<const SecurityOrigin> origin,
     mojom::blink::NotificationDataPtr data,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     NotificationResourcesLoader* loader) {
   DCHECK(loaders_.Contains(loader));
 

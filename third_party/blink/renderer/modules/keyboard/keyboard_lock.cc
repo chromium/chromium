@@ -43,35 +43,36 @@ KeyboardLock::KeyboardLock(ExecutionContext* context)
 
 KeyboardLock::~KeyboardLock() = default;
 
-ScriptPromise KeyboardLock::lock(ScriptState* state,
-                                 const Vector<String>& keycodes,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> KeyboardLock::lock(
+    ScriptState* state,
+    const Vector<String>& keycodes,
+    ExceptionState& exception_state) {
   DCHECK(state);
 
   if (!IsLocalFrameAttached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockFrameDetachedErrorMsg);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (!CalledFromSupportedContext(ExecutionContext::From(state))) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockChildFrameErrorMsg);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (!EnsureServiceConnected()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kKeyboardLockRequestFailedErrorMsg);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   request_keylock_resolver_ =
-      MakeGarbageCollected<ScriptPromiseResolver>(state);
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(state);
   service_->RequestKeyboardLock(
       keycodes,
-      request_keylock_resolver_->WrapCallbackInScriptScope(WTF::BindOnce(
-          &KeyboardLock::LockRequestFinished, WrapPersistent(this))));
+      WTF::BindOnce(&KeyboardLock::LockRequestFinished, WrapPersistent(this),
+                    WrapPersistent(request_keylock_resolver_.Get())));
   return request_keylock_resolver_->Promise();
 }
 
@@ -114,15 +115,14 @@ bool KeyboardLock::CalledFromSupportedContext(ExecutionContext* context) {
 }
 
 void KeyboardLock::LockRequestFinished(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     mojom::KeyboardLockRequestResult result) {
   DCHECK(request_keylock_resolver_);
 
   // If |resolver| is not the current promise, then reject the promise.
   if (resolver != request_keylock_resolver_) {
-    resolver->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver->GetScriptState()->GetIsolate(), DOMExceptionCode::kAbortError,
-        kKeyboardLockPromisePreemptedErrorMsg));
+    resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                     kKeyboardLockPromisePreemptedErrorMsg);
     return;
   }
 
@@ -131,28 +131,20 @@ void KeyboardLock::LockRequestFinished(
       resolver->Resolve();
       break;
     case mojom::blink::KeyboardLockRequestResult::kFrameDetachedError:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
-          DOMExceptionCode::kInvalidStateError,
-          kKeyboardLockFrameDetachedErrorMsg));
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       kKeyboardLockFrameDetachedErrorMsg);
       break;
     case mojom::blink::KeyboardLockRequestResult::kNoValidKeyCodesError:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
-          DOMExceptionCode::kInvalidAccessError,
-          kKeyboardLockNoValidKeyCodesErrorMsg));
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidAccessError,
+                                       kKeyboardLockNoValidKeyCodesErrorMsg);
       break;
     case mojom::blink::KeyboardLockRequestResult::kChildFrameError:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
-          DOMExceptionCode::kInvalidStateError,
-          kKeyboardLockChildFrameErrorMsg));
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       kKeyboardLockChildFrameErrorMsg);
       break;
     case mojom::blink::KeyboardLockRequestResult::kRequestFailedError:
-      resolver->Reject(V8ThrowDOMException::CreateOrDie(
-          resolver->GetScriptState()->GetIsolate(),
-          DOMExceptionCode::kInvalidStateError,
-          kKeyboardLockRequestFailedErrorMsg));
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       kKeyboardLockRequestFailedErrorMsg);
       break;
   }
   request_keylock_resolver_ = nullptr;
