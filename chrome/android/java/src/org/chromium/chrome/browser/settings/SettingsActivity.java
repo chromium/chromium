@@ -636,8 +636,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
         if (fragment instanceof IpProtectionSettingsFragment) {
-            ((IpProtectionSettingsFragment) fragment)
-                    .setIProtectionDelegate(new ChromeIpProtectionDelegate(mProfile));
+            IpProtectionSettingsFragment ipProtectionSettingsFragment =
+                    ((IpProtectionSettingsFragment) fragment);
+            ipProtectionSettingsFragment.setIProtectionDelegate(
+                    new ChromeIpProtectionDelegate(mProfile));
+            ipProtectionSettingsFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
     }
 

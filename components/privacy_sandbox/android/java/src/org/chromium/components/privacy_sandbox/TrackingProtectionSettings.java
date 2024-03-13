@@ -6,7 +6,6 @@ package org.chromium.components.privacy_sandbox;
 
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -49,17 +48,6 @@ import java.util.Locale;
 /** Fragment to manage settings for tracking protection. */
 public class TrackingProtectionSettings extends PreferenceFragmentCompat
         implements CustomDividerFragment, OnPreferenceClickListener, SiteAddedCallback {
-
-    /**
-     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
-     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
-     * TODO(crbug.com/1181700): Update when LaunchIntentDispatcher is (partially-)modularized.
-     */
-    public interface CustomTabIntentHelper {
-        /** @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent */
-        Intent createCustomTabActivityIntent(Context context, Intent intent);
-    }
-
     // Must match keys in tracking_protection_preferences.xml.
     private static final String OFFBOARDING_NOTICE = "offboarding_notice";
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
