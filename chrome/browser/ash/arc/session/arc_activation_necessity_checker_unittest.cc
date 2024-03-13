@@ -25,6 +25,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,6 +116,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   base::test::ScopedFeatureList feature_list_;
+  session_manager::SessionManager session_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;

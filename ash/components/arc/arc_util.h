@@ -323,7 +323,17 @@ bool ShouldAlwaysMountAndroidVolumesInFilesForTesting();
 
 // Returns true if ARC's activation should be deferred until the user session
 // start up tasks are completed.
-bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion();
+// This checks the history of first ARC activation timing in recent user
+// sessions, and decides whether or not to defer ARC.
+// See also b/326065955#comment9 and linked materials for more background.
+bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+    const PrefService* prefs);
+
+// Records whether first ARC activation is done during user session start up
+// in `prefs`. Just to be explicit, `value` == true means the first activation
+// is done during the user session start up.
+void RecordFirstActivationDuringUserSessionStartUp(PrefService* prefs,
+                                                   bool value);
 
 }  // namespace arc
 

@@ -12,6 +12,7 @@
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 
 namespace arc {
@@ -168,6 +169,8 @@ class ArcAppTest {
   bool initialize_real_intent_helper_bridge_ = false;
 
   bool wait_compatibility_mode_ = false;
+
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
 
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;

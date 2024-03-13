@@ -100,6 +100,11 @@ const char kArcProvisioningInitiatedFromOobe[] =
 const char kArcFastAppReinstallStarted[] = "arc.fast.app.reinstall.started";
 // A preference to keep list of Play Fast App Reinstall packages.
 const char kArcFastAppReinstallPackages[] = "arc.fast.app.reinstall.packages";
+// Stores the history of whether the first ARC activation during user session
+// start up. A list of booleans; true if the first activation is done during
+// the user session start up.
+const char kArcFirstActivationDuringUserSessionStartUpHistory[] =
+    "arc.first_activation_during_user_session_start_up_history";
 // A preference to keep the current Android framework version. Note, that value
 // is only available after first packages update.
 const char kArcFrameworkVersion[] = "arc.framework.version";
@@ -249,6 +254,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kArcPaiStarted, false);
   registry->RegisterBooleanPref(kArcFastAppReinstallStarted, false);
   registry->RegisterListPref(kArcFastAppReinstallPackages);
+  registry->RegisterListPref(
+      kArcFirstActivationDuringUserSessionStartUpHistory);
   registry->RegisterBooleanPref(kArcPolicyComplianceReported, false);
   registry->RegisterBooleanPref(kArcProvisioningInitiatedFromOobe, false);
   registry->RegisterBooleanPref(kArcSignedIn, false);

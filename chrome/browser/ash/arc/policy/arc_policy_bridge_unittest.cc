@@ -47,6 +47,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "components/policy/policy_constants.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -347,6 +348,7 @@ class ArcPolicyBridgeTestBase {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  session_manager::SessionManager session_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::RunLoop run_loop_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;

@@ -491,7 +491,7 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithArcOnDemand) {
 
   // ARC starts after calling AllowActivation().
   arc_session_manager()->AllowActivation(
-      ArcSessionManager::AllowActivationReason::kImmediateActivation);
+      ArcSessionManager::AllowActivationReason::kUserLaunchAction);
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 
@@ -515,9 +515,113 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithDeferringArcActivation) {
   arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
 
+  // No history is updated yet.
+  ASSERT_TRUE(
+      prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory)
+          .empty());
+
   // Emulate session start up task completion.
   arc_session_manager()->OnUserSessionStartUpTaskCompleted();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  // Making sure activation is recorded.
+  auto& history =
+      prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
+  ASSERT_EQ(1u, history.size());
+  EXPECT_EQ(history.front(), base::Value(false));
+}
+
+TEST_F(ArcSessionManagerTest,
+       SignedInWorkflowWithDeferringArcActivationActivatedSoon) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
+  // By default ARC is not enabled.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+  ASSERT_FALSE(arc_session_manager()->IsActivationDelayed());
+
+  // Enabling ARC, does not yet activate ARC.
+  arc_session_manager()->RequestEnable();
+  ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+
+  // No history is updated yet.
+  ASSERT_TRUE(
+      prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory)
+          .empty());
+
+  // Activate by some external event.
+  arc_session_manager()->AllowActivation(
+      ArcSessionManager::AllowActivationReason::kUserLaunchAction);
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  // Making sure activation is recorded.
+  auto& history =
+      prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
+  ASSERT_EQ(1u, history.size());
+  EXPECT_EQ(history.front(), base::Value(true));
+
+  // Emulate session start up task completion.
+  arc_session_manager()->OnUserSessionStartUpTaskCompleted();
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  // No more history is recorded, since it is one for each user session.
+  EXPECT_EQ(1u, history.size());
+}
+
+TEST_F(ArcSessionManagerTest,
+       SignedInWorkflowWithDeferringArcActivationForUsersAggressivelyUsingArc) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+  // TODO(b/326065955): Remove the magic number.
+  constexpr size_t kHistoryThreshold = 3;
+
+  PrefService* const prefs = profile()->GetPrefs();
+  prefs->SetBoolean(prefs::kArcTermsAccepted, true);
+  prefs->SetBoolean(prefs::kArcSignedIn, true);
+  {
+    // Emulate the situation that ARC is activated during user session start up
+    // in recent three sessions, which exceeds the threshold.
+    base::Value::List history;
+    for (size_t i = 0; i < kHistoryThreshold; ++i) {
+      history.Append(base::Value(true));
+    }
+    prefs->SetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory,
+                   std::move(history));
+  }
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+
+  // By default ARC is not enabled.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+  ASSERT_FALSE(arc_session_manager()->IsActivationDelayed());
+
+  // Enabling ARC immediately activates.
+  arc_session_manager()->RequestEnable();
+  ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  // No history is updated yet, even if the activation is done immediately.
+  ASSERT_EQ(
+      kHistoryThreshold,
+      prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory)
+          .size());
+
+  // Emulate session start up task completion.
+  arc_session_manager()->OnUserSessionStartUpTaskCompleted();
+
+  // Making sure activation is recorded.
+  auto& history =
+      prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
+  ASSERT_EQ(kHistoryThreshold + 1u, history.size());
+  EXPECT_EQ(history.back(), base::Value(false));
 }
 
 TEST_F(ArcSessionManagerTest,

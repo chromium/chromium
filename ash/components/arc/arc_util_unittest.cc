@@ -806,5 +806,42 @@ TEST_F(ArcUtilTest, EnsureStaleArcVmAndArcVmUpstartJobsStopped_Success) {
   EXPECT_EQ(ash::FakeConciergeClient::Get()->stop_vm_call_count(), 1);
 }
 
+TEST_F(ArcUtilTest,
+       ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletionEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+  constexpr int kProductionWindowSize = 5;
+  constexpr int kProductionThreshold = 3;
+
+  // First, we should wait for the session start.
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+  for (int i = 0; i < kProductionThreshold - 1; ++i) {
+    RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), true);
+    EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+        profile_prefs()));
+  }
+
+  // Try to cross the threshold.
+  for (int i = 0; i < kProductionWindowSize - kProductionThreshold + 1; ++i) {
+    RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), true);
+    EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+        profile_prefs()));
+  }
+
+  // Emulate ARC app is not launched in session start up.
+  for (int i = 0; i < kProductionWindowSize - kProductionThreshold; ++i) {
+    RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), false);
+    EXPECT_FALSE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+        profile_prefs()));
+  }
+
+  // Cross the threshold.
+  RecordFirstActivationDuringUserSessionStartUp(profile_prefs(), false);
+  EXPECT_TRUE(ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+      profile_prefs()));
+}
+
 }  // namespace
 }  // namespace arc

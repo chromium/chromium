@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,6 +127,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  session_manager::SessionManager session_manager_;
   std::unique_ptr<FakeAdbdMonitorInstance> instance_;
   std::unique_ptr<ArcAdbdMonitorBridge> bridge_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;

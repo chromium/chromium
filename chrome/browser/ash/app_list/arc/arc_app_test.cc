@@ -108,6 +108,10 @@ void ArcAppTest::SetUp(Profile* profile) {
   DCHECK(!profile_);
   profile_ = profile;
 
+  if (!session_manager::SessionManager::Get()) {
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
+  }
+
   arc::ResetArcAllowedCheckForTesting(profile_);
 
   if (fake_user_manager_.Get()) {
@@ -349,6 +353,7 @@ void ArcAppTest::TearDown() {
     concierge_client_initialized_ = false;
   }
   profile_ = nullptr;
+  session_manager_.reset();
 }
 
 void ArcAppTest::StopArcInstance() {

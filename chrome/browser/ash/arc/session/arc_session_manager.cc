@@ -744,6 +744,7 @@ void ArcSessionManager::SetProfile(Profile* profile) {
   // RequestEnable() requires |profile_| set, therefore shouldn't have been
   // called at this point.
   SetArcEnabledStateMetric(false);
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
 }
 
 void ArcSessionManager::SetUserInfo() {
@@ -846,6 +847,7 @@ void ArcSessionManager::Shutdown() {
   VLOG(1) << "Shutting down session manager";
   enable_requested_ = false;
   ResetArcState();
+  session_manager_observation_.Reset();
   arc_session_runner_->OnShutdown();
   data_remover_.reset();
   if (support_host_) {
@@ -909,7 +911,6 @@ void ArcSessionManager::ResetArcState() {
   arc_sign_in_timer_.Stop();
   playstore_launcher_.reset();
   requirement_checker_.reset();
-  session_manager_observation_.Reset();
 }
 
 void ArcSessionManager::AddObserver(ArcSessionManagerObserver* observer) {
@@ -991,15 +992,32 @@ void ArcSessionManager::RequestEnable() {
 }
 
 void ArcSessionManager::OnUserSessionStartUpTaskCompleted() {
-  AllowActivation(AllowActivationReason::kUserSessionStartUpTaskCompleted);
+  MaybeRecordFirstActivationDuringUserSessionStartUp(false);
+
+  // Allow activation only when it already turns out ARC-On-Demand does not
+  // delay the activation.
+  if (is_activation_delayed_.has_value() && !is_activation_delayed_.value()) {
+    AllowActivation(AllowActivationReason::kUserSessionStartUpTaskCompleted);
+  }
 }
 
 void ArcSessionManager::AllowActivation(AllowActivationReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Activation is happening, so we no longer need to wait for user session
-  // start up task completion.
-  session_manager_observation_.Reset();
+  // Record the first activation is happening during the user session start up
+  // to be referred whether or not to defer ARC for user session start up in
+  // following user sessions.
+  // ImmediateAction is ignored here. That happens when ARC gets READY and
+  // it is decided not to defer ARC, and it should not be considered on deciding
+  // whether or not to defer ARC in the following user sessions. Instead,
+  // a following activation is recorded, e.g. user's explicit action to launch
+  // an ARC app.
+  // TODO(hidehiko): Consider excluding non user initiated actions, such as
+  // forced by policy.
+  if (reason != AllowActivationReason::kImmediateActivation) {
+    MaybeRecordFirstActivationDuringUserSessionStartUp(
+        reason != AllowActivationReason::kUserSessionStartUpTaskCompleted);
+  }
 
   // First time that ARCVM is allowed in this user session.
   if (!activation_is_allowed_) {
@@ -1180,23 +1198,15 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
 
   is_activation_delayed_ = !result;
   if (result) {
-    auto* session_manager = session_manager::SessionManager::Get();
-    if (ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion() &&
+    if (ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+            profile_->GetPrefs()) &&
         !activation_is_allowed_ &&
-        !session_manager->IsUserSessionStartUpTaskCompleted()) {
+        !session_manager::SessionManager::Get()
+             ->IsUserSessionStartUpTaskCompleted()) {
       // Wait for the user session start up task completion to prioritize
       // resources for them.
       VLOG(1) << "ARC activation is deferred until user sesssion start up "
               << "tasks are completed";
-      if (session_manager_observation_.IsObserving()) {
-        // This is unexpected case, but not very critical practically.
-        // Take the crash dump for transition period for investigation just in
-        // case, without actual crash for user experimence.
-        // TODO(b/326065955): switch to LOG(FATAL) or remove this possibility.
-        DUMP_WILL_BE_CHECK(false);
-      } else {
-        session_manager_observation_.Observe(session_manager);
-      }
     } else {
       // In AllowActivation, actual ARC instance is going to be launched,
       // so call it here even if `activation_is_allowed_` checked above is
@@ -1231,7 +1241,6 @@ void ArcSessionManager::RequestDisable(bool remove_arc_data) {
   pai_starter_.reset();
   fast_app_reinstall_starter_.reset();
   arc_ui_availability_reporter_.reset();
-  session_manager_observation_.Reset();
 
   // Reset any pending request to re-enable ARC.
   reenable_arc_ = false;
@@ -1913,6 +1922,16 @@ void ArcSessionManager::StopMiniArcIfNecessary() {
   pre_start_time_ = base::TimeTicks();
   VLOG(1) << "Stopping mini-ARC instance (if any)";
   arc_session_runner_->RequestStop();
+}
+
+void ArcSessionManager::MaybeRecordFirstActivationDuringUserSessionStartUp(
+    bool value) {
+  if (is_first_activation_during_user_session_start_up_recorded_) {
+    return;
+  }
+  is_first_activation_during_user_session_start_up_recorded_ = true;
+  CHECK(profile_);
+  RecordFirstActivationDuringUserSessionStartUp(profile_->GetPrefs(), value);
 }
 
 std::ostream& operator<<(std::ostream& os,

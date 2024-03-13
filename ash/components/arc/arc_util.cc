@@ -31,6 +31,7 @@
 #include "chromeos/version/version_loader.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -59,6 +60,10 @@ constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 constexpr char kReadahead[] = "readahead";
 constexpr char kGenerate[] = "generate";
 constexpr char kDisabled[] = "disabled";
+
+// TODO(b/326065955): make these configurable for future experiments.
+constexpr int kFirstActivationDuringUserSessionStartUpWindow = 5;
+constexpr int kFirstActivationDuringUserSessionStartUpThreshold = 3;
 
 // Decodes a job name that may have "_2d" e.g. |kArcCreateDataJobName|
 // and returns a decoded string.
@@ -682,11 +687,38 @@ bool ShouldAlwaysMountAndroidVolumesInFilesForTesting() {
       ash::switches::kArcForceMountAndroidVolumesInFiles);
 }
 
-bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion() {
-  // TODO(b/326065955): look at the history whether ARC is activated
-  // while user session start up tasks are running in recent sessions.
-  return base::FeatureList::IsEnabled(
-      kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
+bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+    const PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(
+          kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
+    return false;
+  }
+
+  const auto& history =
+      prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
+  size_t window_size = std::min<size_t>(
+      history.size(), kFirstActivationDuringUserSessionStartUpWindow);
+  base::span<const base::Value> history_window(history.begin(),
+                                               history.begin() + window_size);
+  return base::ranges::count(history_window, base::Value(true)) <
+         kFirstActivationDuringUserSessionStartUpThreshold;
+}
+
+void RecordFirstActivationDuringUserSessionStartUp(PrefService* prefs,
+                                                   bool value) {
+  if (!base::FeatureList::IsEnabled(
+          kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
+    return;
+  }
+
+  ScopedListPrefUpdate update(
+      prefs, prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
+  auto& history = update.Get();
+  // Limit the size up to the history_window.
+  if (history.size() >= kFirstActivationDuringUserSessionStartUpWindow) {
+    history.erase(history.begin());
+  }
+  history.Append(value);
 }
 
 }  // namespace arc

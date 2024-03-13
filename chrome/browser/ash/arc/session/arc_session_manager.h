@@ -496,6 +496,12 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Called when ExpandPropertyFilesAndReadSalt is done.
   void OnExpandPropertyFilesAndReadSalt(ExpansionResult result);
 
+  // Records whether the first activation is triggered during
+  // the user session start up.
+  // Only the first invocation records it, and following calls
+  // will be no-op.
+  void MaybeRecordFirstActivationDuringUserSessionStartUp(bool value);
+
   std::unique_ptr<ArcSessionRunner> arc_session_runner_;
   std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
       adb_sideloading_availability_delegate_;
@@ -518,9 +524,12 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   bool skipped_terms_of_service_negotiation_ = false;
   bool activation_is_allowed_ = false;
   // Tri-state of if Activation is delayed. 1) std::nullopt means it is yet
-  // unknown, 2) true means Activation is delayed, and 3) false means
-  // Activation is not delayed.
+  // unknown, 2) true means Activation is delayed by ARC-on-demand, and 3)
+  // false means Activation is not delayed by ARC-on-demand.
+  // TODO(hidehiko): Consider to rename to make it more explicit that this is
+  // for ARC-On-Demand only.
   std::optional<bool> is_activation_delayed_ = false;
+  bool is_first_activation_during_user_session_start_up_recorded_ = false;
   base::OneShotTimer arc_sign_in_timer_;
 
   std::unique_ptr<ArcSupportHost> support_host_;
