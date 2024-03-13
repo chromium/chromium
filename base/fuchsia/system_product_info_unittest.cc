@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/fuchsia/system_info.h"
-#include "base/functional/callback_forward.h"
-
 #include <fidl/fuchsia.buildinfo/cpp/fidl.h>
 #include <fidl/fuchsia.hwinfo/cpp/fidl.h>
 #include <lib/async/default.h>
@@ -12,13 +9,15 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/fuchsia/scoped_service_binding.h"
+#include "base/fuchsia/system_info.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -33,8 +32,8 @@ namespace {
 
 class FakeHardwareInfoProduct : public fidl::Server<fuchsia_hwinfo::Product> {
  public:
-  FakeHardwareInfoProduct(const base::StringPiece model,
-                          const base::StringPiece manufacturer,
+  FakeHardwareInfoProduct(const std::string_view model,
+                          const std::string_view manufacturer,
                           sys::OutgoingDirectory* outgoing_services)
       : model_(model),
         manufacturer_(manufacturer),

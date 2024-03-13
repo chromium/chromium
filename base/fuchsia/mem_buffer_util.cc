@@ -5,15 +5,15 @@
 #include "base/fuchsia/mem_buffer_util.h"
 
 #include <lib/fdio/io.h>
-
 #include <lib/zx/vmo.h>
+
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace base {
@@ -29,7 +29,7 @@ std::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
              : std::nullopt;
 }
 
-zx::vmo VmoFromString(StringPiece data, StringPiece name) {
+zx::vmo VmoFromString(std::string_view data, std::string_view name) {
   zx::vmo vmo;
 
   // The `ZX_PROP_VMO_CONTENT_SIZE` property is automatically set on VMO
@@ -45,18 +45,19 @@ zx::vmo VmoFromString(StringPiece data, StringPiece name) {
   return vmo;
 }
 
-fuchsia::mem::Buffer MemBufferFromString(StringPiece data, StringPiece name) {
+fuchsia::mem::Buffer MemBufferFromString(std::string_view data,
+                                         std::string_view name) {
   fuchsia::mem::Buffer buffer;
   buffer.vmo = VmoFromString(data, name);
   buffer.size = data.size();
   return buffer;
 }
 
-fuchsia::mem::Buffer MemBufferFromString16(StringPiece16 data,
-                                           StringPiece name) {
+fuchsia::mem::Buffer MemBufferFromString16(std::u16string_view data,
+                                           std::string_view name) {
   return MemBufferFromString(
-      StringPiece(reinterpret_cast<const char*>(data.data()),
-                  data.size() * sizeof(char16_t)),
+      std::string_view(reinterpret_cast<const char*>(data.data()),
+                       data.size() * sizeof(char16_t)),
       name);
 }
 
@@ -134,7 +135,7 @@ fuchsia::mem::Buffer MemBufferFromFile(File file) {
 }
 
 fuchsia::mem::Buffer CloneBuffer(const fuchsia::mem::Buffer& buffer,
-                                 StringPiece name) {
+                                 std::string_view name) {
   fuchsia::mem::Buffer output;
   output.size = buffer.size;
   zx_status_t status = buffer.vmo.create_child(

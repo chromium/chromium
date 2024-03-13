@@ -9,10 +9,10 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/files/file.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -24,19 +24,19 @@ BASE_EXPORT std::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
 // Creates a Fuchsia VMO from `data`. The size of the resulting virtual memory
 // object will be set to the size of the string, and it will be given the name
 // `name`.
-BASE_EXPORT zx::vmo VmoFromString(StringPiece data, StringPiece name);
+BASE_EXPORT zx::vmo VmoFromString(std::string_view data, std::string_view name);
 
 // Creates a Fuchsia memory buffer from `data`. The resulting virtual memory
 // object will be given the name `name`.
 // `fuchsia::mem::Buffer` is deprecated: for new interfaces, prefer using
 // a VMO object directly (see `VmoFromString`).
-BASE_EXPORT fuchsia::mem::Buffer MemBufferFromString(StringPiece data,
-                                                     StringPiece name);
+BASE_EXPORT fuchsia::mem::Buffer MemBufferFromString(std::string_view data,
+                                                     std::string_view name);
 
 // Creates a Fuchsia memory buffer from the UTF-16 string `data`. The resulting
 // virtual memory object will be given the name `name`.
-BASE_EXPORT fuchsia::mem::Buffer MemBufferFromString16(StringPiece16 data,
-                                                       StringPiece name);
+BASE_EXPORT fuchsia::mem::Buffer MemBufferFromString16(std::u16string_view data,
+                                                       std::string_view name);
 
 // Returns the contents of `data`, or null if the read operation fails.
 BASE_EXPORT std::optional<std::string> StringFromVmo(const zx::vmo& vmo);
@@ -58,7 +58,7 @@ BASE_EXPORT fuchsia::mem::Buffer MemBufferFromFile(File file);
 // Creates a non-resizeable, copy-on-write shared memory clone of `buffer`. The
 // resulting virtual memory object will be given the name `name`.
 BASE_EXPORT fuchsia::mem::Buffer CloneBuffer(const fuchsia::mem::Buffer& buffer,
-                                             StringPiece name);
+                                             std::string_view name);
 
 }  // namespace base
 

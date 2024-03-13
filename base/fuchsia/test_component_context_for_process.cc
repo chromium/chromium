@@ -10,6 +10,8 @@
 #include <lib/fidl/cpp/interface_handle.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include <string_view>
+
 #include "base/files/file_enumerator.h"
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -79,13 +81,13 @@ sys::OutgoingDirectory* TestComponentContextForProcess::additional_services() {
 }
 
 void TestComponentContextForProcess::AddService(
-    const base::StringPiece service) {
+    const std::string_view service) {
   zx_status_t status = context_services_->AddService(service);
   ZX_CHECK(status == ZX_OK, status) << "AddService(" << service << ") failed";
 }
 
 void TestComponentContextForProcess::AddServices(
-    base::span<const base::StringPiece> services) {
+    base::span<const std::string_view> services) {
   for (auto service : services)
     AddService(service);
 }

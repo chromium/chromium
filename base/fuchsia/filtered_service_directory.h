@@ -10,10 +10,11 @@
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <lib/zx/channel.h>
+
 #include <memory>
+#include <string_view>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -34,7 +35,7 @@ class BASE_EXPORT FilteredServiceDirectory {
   // Adds the specified service to the list of allowed services.
   // Returns a status other than ZX_OK if the service cannot be added, e.g.
   // because it is already in the list of allowed services.
-  [[nodiscard]] zx_status_t AddService(StringPiece service_name);
+  [[nodiscard]] zx_status_t AddService(std::string_view service_name);
 
   // Connects a directory client. The directory can be passed to a sandboxed
   // process to be used for /svc namespace.
