@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_partition_context
+  AssertionError: Key set should be present: {'userContext'}
+[FAIL] test_partition_context_frame
+  AssertionError: Key set should be present: {'userContext'}
+Harness: the test ran to completion.
