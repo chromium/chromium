@@ -267,6 +267,7 @@ class BookmarkBridge : public ProfileObserver,
   void SetReadStatus(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& j_id,
                      jboolean j_read);
+  void SetReadStatusImpl(const GURL& url, bool read);
 
   jint GetUnreadCount(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& j_id);

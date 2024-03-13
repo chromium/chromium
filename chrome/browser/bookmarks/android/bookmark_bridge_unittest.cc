@@ -481,6 +481,36 @@ TEST_F(BookmarkBridgeTest, GetUnreadCountLocalOrSyncable) {
                                      .obj())));
 }
 
+TEST_F(BookmarkBridgeTest, SetReadStatus) {
+  CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
+
+  GURL url1 = GURL("http://foo.com");
+  GURL url2 = GURL("http://bar.com");
+  const bookmarks::BookmarkNode* local1 =
+      local_or_syncable_reading_list_manager()->Add(url1, "foo");
+  const bookmarks::BookmarkNode* local2 =
+      local_or_syncable_reading_list_manager()->Add(url2, "bar");
+  const bookmarks::BookmarkNode* acc1 =
+      account_reading_list_manager()->Add(url1, "foo");
+
+  bookmark_bridge()->SetReadStatusImpl(url1, true);
+  bookmark_bridge()->SetReadStatusImpl(url2, true);
+  ASSERT_TRUE(local_or_syncable_reading_list_manager()->GetReadStatus(local1));
+  ASSERT_TRUE(local_or_syncable_reading_list_manager()->GetReadStatus(local2));
+  ASSERT_TRUE(account_reading_list_manager()->GetReadStatus(acc1));
+
+  const bookmarks::BookmarkNode* acc2 =
+      account_reading_list_manager()->Add(url2, "bar");
+  ASSERT_FALSE(account_reading_list_manager()->GetReadStatus(acc2));
+
+  bookmark_bridge()->SetReadStatusImpl(url1, false);
+  bookmark_bridge()->SetReadStatusImpl(url2, false);
+  ASSERT_FALSE(local_or_syncable_reading_list_manager()->GetReadStatus(local1));
+  ASSERT_FALSE(local_or_syncable_reading_list_manager()->GetReadStatus(local2));
+  ASSERT_FALSE(account_reading_list_manager()->GetReadStatus(acc1));
+  ASSERT_FALSE(account_reading_list_manager()->GetReadStatus(acc2));
+}
+
 // Test that the correct type, parent node, etc are returned for account
 // reading list nodes.
 TEST_F(BookmarkBridgeTest, TestAccountReadingListNodes) {

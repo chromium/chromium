@@ -1262,10 +1262,19 @@ void BookmarkBridge::SetReadStatus(JNIEnv* env,
 
   const BookmarkNode* node = GetNodeByID(JavaBookmarkIdGetId(env, j_id),
                                          JavaBookmarkIdGetType(env, j_id));
-  ReadingListManager* manager =
-      GetReadingListManagerFromParentNode(node->parent());
+  SetReadStatusImpl(node->url(), j_read);
+}
 
-  manager->SetReadStatus(node->url(), j_read);
+void BookmarkBridge::SetReadStatusImpl(const GURL& url, bool read) {
+  // When marking an item as un/read, the same operation is done in both models
+  // (if the url exists) as a convenience. See crbug.com/329280811 for details.
+  if (local_or_syncable_reading_list_manager_->Get(url)) {
+    local_or_syncable_reading_list_manager_->SetReadStatus(url, read);
+  }
+  if (account_reading_list_manager_ &&
+      account_reading_list_manager_->Get(url)) {
+    account_reading_list_manager_->SetReadStatus(url, read);
+  }
 }
 
 int BookmarkBridge::GetUnreadCount(JNIEnv* env,
