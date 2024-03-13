@@ -71,13 +71,15 @@ void RenderAccessibilityManager::SetMode(const ui::AXMode& new_mode,
   if (render_accessibility_) {
     CHECK(reset_token);
     render_accessibility_->set_reset_token(reset_token);
+    render_accessibility_->NotifyAccessibilityModeChange(new_mode);
   }
 
   // Notify the RenderFrame when the accessibility mode is changes to ensure it
   // notifies the relevant observers (subclasses of RenderFrameObserver). This
-  // includes the RenderAccessibilityImpl instance owned by |this|, which will
-  // make update Blink and emit the relevant events back to the browser process
-  // according to change in the accessibility mode being made.
+  // does not include the RenderAccessibilityImpl instance owned by |this| which
+  // already received the mode change above. It must go first because it sets up
+  // or tears down Blink accessibility ensuring subsequent observers can reason
+  // accurately about accessibility.
   render_frame_->NotifyAccessibilityModeChange(new_mode);
 }
 

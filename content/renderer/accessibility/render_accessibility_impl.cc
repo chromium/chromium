@@ -166,7 +166,8 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
   weak_factory_for_pending_events_.InvalidateWeakPtrs();
 }
 
-void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
+void RenderAccessibilityImpl::NotifyAccessibilityModeChange(
+    const ui::AXMode& mode) {
   CHECK(reset_token_);
   ui::AXMode old_mode = accessibility_mode_;
   DCHECK(!mode.is_mode_off())

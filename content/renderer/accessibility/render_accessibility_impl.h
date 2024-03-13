@@ -81,8 +81,8 @@ class RenderAccessibilityManager;
 class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                                public RenderFrameObserver {
  public:
-  // A call to AccessibilityModeChanged() is required after construction to
-  // start accessibility.
+  // A call to NotifyAccessibilityModeChange() is required after construction
+  // to start accessibility.
   RenderAccessibilityImpl(
       RenderAccessibilityManager* const render_accessibility_manager,
       RenderFrameImpl* const render_frame);
@@ -92,6 +92,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   ~RenderAccessibilityImpl() override;
 
+  void NotifyAccessibilityModeChange(const ui::AXMode& mode);
   ui::AXMode GetAccessibilityMode() { return accessibility_mode_; }
 
   // RenderAccessibility implementation.
@@ -104,7 +105,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // RenderFrameObserver implementation.
   void DidCreateNewDocument() override;
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
-  void AccessibilityModeChanged(const ui::AXMode& mode) override;
 
   void HitTest(const gfx::Point& point,
                ax::mojom::Event event_to_fire,
