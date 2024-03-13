@@ -7,11 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_http_interface.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_message_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -21,15 +22,15 @@ class SimpleURLLoader;
 
 // HTTP Fetching for IP Protection. This implements the `BlindSignHttpInterface`
 // for use by the BSA library.
-class IpProtectionConfigHttp : public quiche::BlindSignHttpInterface {
+class IpProtectionConfigHttp : public quiche::BlindSignMessageInterface {
  public:
   explicit IpProtectionConfigHttp(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~IpProtectionConfigHttp() override;
 
-  // BlindSignHttp implementation.
+  // quiche::BlindSignMessageInterface implementation:
   void DoRequest(quiche::BlindSignHttpRequestType request_type,
-                 const std::string& authorization_header,
+                 std::optional<std::string_view> authorization_header,
                  const std::string& body,
                  quiche::BlindSignHttpCallback callback) override;
 

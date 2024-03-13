@@ -77,7 +77,7 @@ IpProtectionConfigHttp::~IpProtectionConfigHttp() = default;
 
 void IpProtectionConfigHttp::DoRequest(
     quiche::BlindSignHttpRequestType request_type,
-    const std::string& authorization_header,
+    std::optional<std::string_view> authorization_header,
     const std::string& body,
     quiche::BlindSignHttpCallback callback) {
   GURL::Replacements replacements;
@@ -102,9 +102,10 @@ void IpProtectionConfigHttp::DoRequest(
   resource_request->url = std::move(request_url);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  CHECK(authorization_header.has_value());
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
-      base::StrCat({"Bearer ", authorization_header}));
+      base::StrCat({"Bearer ", *authorization_header}));
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kProtobufContentType);
 

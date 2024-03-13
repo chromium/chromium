@@ -850,8 +850,8 @@ component("blind_sign_auth") {
     "src/quiche/blind_sign_auth/blind_sign_auth.cc",
     "src/quiche/blind_sign_auth/blind_sign_auth.h",
     "src/quiche/blind_sign_auth/blind_sign_auth_interface.h",
-    "src/quiche/blind_sign_auth/blind_sign_http_interface.h",
     "src/quiche/blind_sign_auth/blind_sign_http_response.h",
+    "src/quiche/blind_sign_auth/blind_sign_message_interface.h",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth.cc",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth.h",
   ]
