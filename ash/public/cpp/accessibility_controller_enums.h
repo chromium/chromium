@@ -241,6 +241,14 @@ enum class AccessibilityToastType {
   kDictationNoFocusedTextField,
 };
 
+// Dominant hand for mouse keys.  This determines which keys to use for the
+// feature.
+enum class MouseKeysDominantHand {
+  kRightHandDominant = 0,
+  kLeftHandDominant = 1,
+  kMaxValue = kLeftHandDominant,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_

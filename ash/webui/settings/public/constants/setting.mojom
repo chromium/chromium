@@ -313,6 +313,12 @@ enum Setting {
   kColorCorrectionFilterType = 1535,
   kColorCorrectionFilterAmount = 1536,
   kReducedAnimationsEnabled = 1537,
+  kMouseKeysEnabled = 1538,
+  kMouseKeysShortcutToPauseEnabled = 1539,
+  kMouseKeysDisableInTextFields = 1540,
+  kMouseKeysAcceleration = 1541,
+  kMouseKeysMaxSpeed = 1542,
+  kMouseKeysDominantHand = 1543,
 
   // Reset section.
   kPowerwash = 1600,

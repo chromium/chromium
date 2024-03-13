@@ -91,6 +91,17 @@ class OSSettingsMochaTestReducedAnimationsEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsMochaTestMouseKeysEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityMouseKeys);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled, ApnSubpage) {
   RunSettingsTest("apn_subpage_test.js");
 }
@@ -970,6 +981,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageChromeVoxSubpage) {
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageCursorAndTouchpadPage) {
+  RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMouseKeysEnabled,
+                       OsA11yPageCursorAndTouchpadPage) {
   RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
 }
 

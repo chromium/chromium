@@ -64,6 +64,65 @@
       label="$i18n{autoclickRevertToLeftClick}">
   </settings-toggle-button>
 </div>
+<template is="dom-if" if="[[isAccessibilityMouseKeysEnabled_]]">
+  <settings-toggle-button
+      id="enableMouseKeys"
+      icon="os-settings:mouse-keys"
+      pref="{{prefs.settings.a11y.mouse_keys.enabled}}"
+      label="$i18n{mouseKeysLabel}"
+      sub-label="$i18n{mouseKeysDescription}"
+      deep-link-focus-id$="[[Setting.kMouseKeysEnabled]]">
+  </settings-toggle-button>
+  <div class="sub-item"
+      hidden$="[[!prefs.settings.a11y.mouse_keys.enabled.value]]">
+    <settings-toggle-button id="enableMouseKeysShortcutToPause"
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.mouse_keys.ctrl_to_pause_enabled}}"
+        label="$i18n{mouseKeysShortcutToPause}">
+    </settings-toggle-button>
+    <settings-toggle-button id="enableMouseKeysDisableInTextFields"
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.mouse_keys.disable_in_text_fields}}"
+        label="$i18n{mouseKeysDisableInTextFields}">
+    </settings-toggle-button>
+    <div class="settings-box continuation">
+      <div class="start settings-box-text" id="mouseKeysAcceleration"
+          aria-hidden="true">
+        $i18n{mouseKeysAcceleration}
+      </div>
+      <settings-slider show-markers
+          pref="{{prefs.settings.a11y.mouse_keys.acceleration}}"
+          ticks="[[mouseKeysAccelerationTicks_()]]"
+          label-aria="$i18n{mouseKeysAcceleration}"
+          label-min="$i18n{mouseKeysAccelerationMinLabel}"
+          label-max="$i18n{mouseKeysAccelerationMaxLabel}">
+      </settings-slider>
+    </div>
+    <div class="settings-box continuation">
+      <div class="start settings-box-text" id="mouseKeysMaxSpeed"
+          aria-hidden="true">
+        $i18n{mouseKeysMaxSpeed}
+      </div>
+      <settings-slider show-markers
+          pref="{{prefs.settings.a11y.mouse_keys.max_speed}}"
+          ticks="[[mouseKeysMaxSpeedTicks_()]]"
+          label-aria="$i18n{mouseKeysMaxSpeed}"
+          label-min="$i18n{mouseKeysMaxSpeedMinLabel}"
+          label-max="$i18n{mouseKeysMaxSpeedMaxLabel}">
+      </settings-slider>
+    </div>
+    <div class="settings-box">
+      <div class="start settings-box-text" aria-hidden="true">
+        $i18n{mouseKeysDominantHand}
+      </div>
+      <settings-dropdown-menu id="mouseKeysDominantHand"
+          label="$i18n{mouseKeysDominantHand}"
+          pref="{{prefs.settings.a11y.mouse_keys.dominant_hand}}"
+          menu-options="[[mouseKeysDominantHandOptions_]]">
+      </settings-dropdown-menu>
+    </div>
+  </div>
+</template>
 <!-- TODO(b/299724949): Add deep link focus ID -->
 <template is="dom-if" if="[[isAccessibilityFaceGazeEnabled_]]">
   <settings-toggle-button

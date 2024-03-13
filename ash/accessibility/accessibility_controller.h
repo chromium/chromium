@@ -249,6 +249,7 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   Feature& large_cursor() const;
   Feature& live_caption() const;
   Feature& mono_audio() const;
+  Feature& mouse_keys() const;
   Feature& spoken_feedback() const;
   Feature& select_to_speak() const;
   Feature& sticky_keys() const;

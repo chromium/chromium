@@ -9,7 +9,7 @@ import {CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, SettingsDro
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -423,4 +423,143 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         assertTrue(isVisible(faceGazeCursorControlButton));
         assertTrue(isVisible(faceGazeFacialExpressionsButton));
       });
+
+  test('Mouse keys feature disabled.', async () => {
+    await initPage();
+
+    if (loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled')) {
+      // Skip if the flag is enabled.
+      return;
+    }
+
+    // Toggle shouldn't be available if flag is disabled.
+    const enableMouseKeysToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableMouseKeys');
+    assertNull(enableMouseKeysToggle);
+  });
+
+  test('Mouse keys: Ctrl to disable', async () => {
+    await initPage();
+
+    if (!loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled')) {
+      // Skip if the flag isn't enabled.
+      return;
+    }
+
+    // If the flag is enabled, check that the UI works.
+    assertFalse(page.prefs.settings.a11y.mouse_keys.enabled.value);
+
+    const enableMouseKeysToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableMouseKeys');
+    assert(enableMouseKeysToggle);
+    assertTrue(isVisible(enableMouseKeysToggle));
+
+    enableMouseKeysToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertTrue(page.prefs.settings.a11y.mouse_keys.enabled.value);
+
+    // kAccessibilityMouseKeysShortcutToPauseEnabled
+    assertTrue(page.prefs.settings.a11y.mouse_keys.ctrl_to_pause_enabled.value);
+    const enableMouseKeysShortcutToPauseEnabledToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableMouseKeysShortcutToPause');
+    assert(enableMouseKeysShortcutToPauseEnabledToggle);
+    assertTrue(isVisible(enableMouseKeysShortcutToPauseEnabledToggle));
+
+    enableMouseKeysShortcutToPauseEnabledToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertFalse(
+        page.prefs.settings.a11y.mouse_keys.ctrl_to_pause_enabled.value);
+  });
+
+  test('Moust keys: Disable in text fields', async () => {
+    await initPage();
+
+    if (!loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled')) {
+      // Skip if the flag isn't enabled.
+      return;
+    }
+
+    // If the flag is enabled, check that the UI works.
+    assertFalse(page.prefs.settings.a11y.mouse_keys.enabled.value);
+
+    const enableMouseKeysToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableMouseKeys');
+    assert(enableMouseKeysToggle);
+    assertTrue(isVisible(enableMouseKeysToggle));
+
+    enableMouseKeysToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertTrue(page.prefs.settings.a11y.mouse_keys.enabled.value);
+
+    // kAccessibilityMouseKeysDisableInTextFields
+    assertTrue(
+        page.prefs.settings.a11y.mouse_keys.disable_in_text_fields.value);
+    const enableMouseKeysDisableInTextFieldsToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableMouseKeysDisableInTextFields');
+    assert(enableMouseKeysDisableInTextFieldsToggle);
+    assertTrue(isVisible(enableMouseKeysDisableInTextFieldsToggle));
+
+    enableMouseKeysDisableInTextFieldsToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertFalse(
+        page.prefs.settings.a11y.mouse_keys.disable_in_text_fields.value);
+  });
+
+  test('Mouse keys: Dominant Hand', async () => {
+    await initPage();
+
+    if (!loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled')) {
+      // Skip if the flag isn't enabled.
+      return;
+    }
+    // If the flag is enabled, check that the UI works.
+    assertFalse(page.prefs.settings.a11y.mouse_keys.enabled.value);
+
+    const enableMouseKeysToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#enableMouseKeys');
+    assert(enableMouseKeysToggle);
+    assertTrue(isVisible(enableMouseKeysToggle));
+
+    enableMouseKeysToggle.click();
+    await waitBeforeNextRender(page);
+    flush();
+
+    assertTrue(page.prefs.settings.a11y.mouse_keys.enabled.value);
+
+    // kAccessibilityMouseKeysDominantHand
+    // Ensure control exists.
+    const control =
+        page.shadowRoot!.querySelector<HTMLElement>(`#mouseKeysDominantHand`);
+    assert(control);
+
+    // Ensure pref is set to the default value.
+    let pref = page.getPref('settings.a11y.mouse_keys.dominant_hand');
+    assertEquals(pref.value, 0);
+
+    // Update control to alternate value.
+    await waitAfterNextRender(control);
+    const controlElement = control.shadowRoot!.querySelector('select');
+    assert(controlElement);
+    controlElement.value = String(1);
+    controlElement.dispatchEvent(new CustomEvent('change'));
+
+    // Ensure pref is set to the alternate value.
+    pref = page.getPref('settings.a11y.mouse_keys.dominant_hand');
+    assertEquals(pref.value, 1);
+  });
+
 });

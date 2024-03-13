@@ -470,6 +470,28 @@ inline constexpr char kAccessibilityVirtualKeyboardFeatures[] =
 // accessibility.
 inline constexpr char kAccessibilityMonoAudioEnabled[] =
     "settings.a11y.mono_audio";
+// A boolean pref which determines if mouse keys are enabled.
+inline constexpr char kAccessibilityMouseKeysEnabled[] =
+    "settings.a11y.mouse_keys.enabled";
+// A boolean pref which determines if you can pause mouse keys with a
+// keyboard shortcut.
+inline constexpr char kAccessibilityMouseKeysShortcutToPauseEnabled[] =
+    "settings.a11y.mouse_keys.ctrl_to_pause_enabled";
+// A boolean pref which determines if mouse keys is automatically disabled in
+// text fields.
+inline constexpr char kAccessibilityMouseKeysDisableInTextFields[] =
+    "settings.a11y.mouse_keys.disable_in_text_fields";
+// A double pref which determines the acceleration of mouse keys as a scale
+// factor ranging from 0-1 (0%-100%) inclusive.
+inline constexpr char kAccessibilityMouseKeysAcceleration[] =
+    "settings.a11y.mouse_keys.acceleration";
+// A double pref which determines the max speed of mouse keys as a factor of the
+// minimum speed.
+inline constexpr char kAccessibilityMouseKeysMaxSpeed[] =
+    "settings.a11y.mouse_keys.max_speed";
+// A boolean pref which determines if mouse keys uses left or right hand keys.
+inline constexpr char kAccessibilityMouseKeysDominantHand[] =
+    "settings.a11y.mouse_keys.dominant_hand";
 // A boolean pref which determines whether autoclick is enabled.
 inline constexpr char kAccessibilityAutoclickEnabled[] =
     "settings.a11y.autoclick";

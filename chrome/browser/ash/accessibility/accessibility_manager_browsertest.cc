@@ -218,6 +218,17 @@ bool IsReducedAnimationsEnabled() {
   return AccessibilityManager::Get()->IsReducedAnimationsEnabled();
 }
 
+void SetMouseKeysEnabled(bool enabled) {
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityMouseKeysEnabled,
+                                   enabled);
+  GetActiveUserPrefs()->CommitPendingWrite();
+}
+
+bool IsMouseKeysEnabled() {
+  return GetActiveUserPrefs()->GetBoolean(
+      prefs::kAccessibilityMouseKeysEnabled);
+}
+
 void SetVirtualKeyboardEnabled(bool enabled) {
   AccessibilityManager::Get()->EnableVirtualKeyboard(enabled);
 }
@@ -313,6 +324,11 @@ void SetAutoclickEnabledPref(bool enabled) {
 void SetReducedAnimationsEnabledPref(bool enabled) {
   GetActiveUserPrefs()->SetBoolean(
       prefs::kAccessibilityReducedAnimationsEnabled, enabled);
+}
+
+void SetMouseKeysEnabledPref(bool enabled) {
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityMouseKeysEnabled,
+                                   enabled);
 }
 
 void SetAutoclickDelayPref(int delay_ms) {
@@ -466,7 +482,8 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition,
-         ::features::kAccessibilityReducedAnimations},
+         ::features::kAccessibilityReducedAnimations,
+         ::features::kAccessibilityMouseKeys},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -565,6 +582,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
@@ -588,6 +606,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
 
   SetReducedAnimationsEnabledPref(true);
   EXPECT_TRUE(IsReducedAnimationsEnabled());
+
+  SetMouseKeysEnabledPref(true);
+  EXPECT_TRUE(IsMouseKeysEnabled());
 
   SetAutoclickDelayPref(kTestAutoclickDelayMs);
   EXPECT_EQ(kTestAutoclickDelayMs, GetAutoclickDelay());
@@ -621,6 +642,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TypePref) {
 
   SetReducedAnimationsEnabledPref(false);
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+
+  SetMouseKeysEnabledPref(false);
+  EXPECT_FALSE(IsMouseKeysEnabled());
 
   SetVirtualKeyboardEnabledPref(false);
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
@@ -1680,8 +1704,10 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
   AccessibilityManagerLoginTest()
       : disable_animations_(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityReducedAnimations);
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kAccessibilityReducedAnimations,
+         ::features::kAccessibilityMouseKeys},
+        {});
   }
 
   AccessibilityManagerLoginTest(const AccessibilityManagerLoginTest&) = delete;
@@ -1756,6 +1782,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
@@ -1768,6 +1795,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
@@ -1780,6 +1808,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
   EXPECT_FALSE(IsHighContrastEnabled());
   EXPECT_FALSE(IsAutoclickEnabled());
   EXPECT_FALSE(IsReducedAnimationsEnabled());
+  EXPECT_FALSE(IsMouseKeysEnabled());
   EXPECT_FALSE(IsVirtualKeyboardEnabled());
   EXPECT_FALSE(IsMonoAudioEnabled());
   EXPECT_EQ(default_autoclick_delay_, GetAutoclickDelay());
@@ -1798,6 +1827,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, Login) {
 
   SetReducedAnimationsEnabled(true);
   EXPECT_TRUE(IsReducedAnimationsEnabled());
+
+  SetMouseKeysEnabled(true);
+  EXPECT_TRUE(IsMouseKeysEnabled());
 
   SetAutoclickDelay(kTestAutoclickDelayMs);
   EXPECT_EQ(kTestAutoclickDelayMs, GetAutoclickDelay());

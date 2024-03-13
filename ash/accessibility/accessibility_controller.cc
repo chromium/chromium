@@ -94,6 +94,14 @@ AccessibilityController* g_instance = nullptr;
 
 using FeatureType = A11yFeatureType;
 
+// The default acceleration as a scale factor ranging from 0-1 for mouse keys
+// movement.
+constexpr double kDefaultAccessibilityMouseKeysAcceleration = 0.5;
+
+// The default max speed as a factor of the minimum speed for mouse keys
+// movement.  Ranges from 0-10.
+constexpr double kDefaultAccessibilityMouseKeysMaxSpeed = 5;
+
 // These classes are used to store the static configuration for a11y features.
 struct FeatureData {
   FeatureType type;
@@ -151,6 +159,8 @@ const FeatureData kFeatures[] = {
      &vector_icons::kLiveCaptionOnIcon, IDS_ASH_STATUS_TRAY_LIVE_CAPTION},
     {FeatureType::kMonoAudio, prefs::kAccessibilityMonoAudioEnabled, nullptr,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO},
+    {FeatureType::kMouseKeys, prefs::kAccessibilityMouseKeysEnabled, nullptr, 0,
+     /*toggleable_in_quicksettings=*/false},
     {FeatureType::kSpokenFeedback, prefs::kAccessibilitySpokenFeedbackEnabled,
      &kSystemMenuAccessibilityChromevoxIcon,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SPOKEN_FEEDBACK},
@@ -248,6 +258,12 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityFaceGazeEnabled,
     prefs::kAccessibilityMonoAudioEnabled,
     prefs::kAccessibilityReducedAnimationsEnabled,
+    prefs::kAccessibilityMouseKeysEnabled,
+    prefs::kAccessibilityMouseKeysShortcutToPauseEnabled,
+    prefs::kAccessibilityMouseKeysDisableInTextFields,
+    prefs::kAccessibilityMouseKeysAcceleration,
+    prefs::kAccessibilityMouseKeysMaxSpeed,
+    prefs::kAccessibilityMouseKeysDominantHand,
     prefs::kAccessibilityScreenMagnifierEnabled,
     prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,
     prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
@@ -1010,6 +1026,7 @@ void AccessibilityController::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(prefs::kAccessibilityLargeCursorEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityMonoAudioEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityMouseKeysEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityScreenMagnifierEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kAccessibilitySpokenFeedbackEnabled,
@@ -1131,6 +1148,19 @@ void AccessibilityController::RegisterProfilePrefs(
       kDefaultAccessibilityChromeVoxVirtualBrailleRows);
   registry->RegisterStringPref(prefs::kAccessibilityChromeVoxVoiceName,
                                kDefaultAccessibilityChromeVoxVoiceName);
+
+  // TODO(b/259372916): Enable sync for Mouse Keys settings before launch.
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityMouseKeysShortcutToPauseEnabled, true);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityMouseKeysDisableInTextFields, true);
+  registry->RegisterDoublePref(prefs::kAccessibilityMouseKeysAcceleration,
+                               kDefaultAccessibilityMouseKeysAcceleration);
+  registry->RegisterDoublePref(prefs::kAccessibilityMouseKeysMaxSpeed,
+                               kDefaultAccessibilityMouseKeysMaxSpeed);
+  registry->RegisterIntegerPref(
+      prefs::kAccessibilityMouseKeysDominantHand,
+      static_cast<int>(MouseKeysDominantHand::kRightHandDominant));
 
   //
   // Syncable prefs.
@@ -1416,6 +1446,10 @@ AccessibilityController::Feature& AccessibilityController::live_caption()
 
 AccessibilityController::Feature& AccessibilityController::mono_audio() const {
   return GetFeature(FeatureType::kMonoAudio);
+}
+
+AccessibilityController::Feature& AccessibilityController::mouse_keys() const {
+  return GetFeature(FeatureType::kMouseKeys);
 }
 
 AccessibilityController::Feature& AccessibilityController::spoken_feedback()
@@ -2819,6 +2853,9 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       break;
     case FeatureType::kMonoAudio:
       CrasAudioHandler::Get()->SetOutputMonoEnabled(enabled);
+      break;
+    case FeatureType::kMouseKeys:
+      // TODO(b/259372916): Consider creating/deleting MouseKeysController here.
       break;
     case FeatureType::kSpokenFeedback:
       message_center::MessageCenter::Get()->SetSpokenFeedbackEnabled(enabled);

@@ -496,6 +496,10 @@ bool IsAccessibilityFaceGazeEnabled() {
   return ::features::IsAccessibilityFaceGazeEnabled();
 }
 
+bool IsAccessibilityMouseKeysEnabled() {
+  return ::features::IsAccessibilityMouseKeysEnabled();
+}
+
 bool IsAccessibilityExtraLargeCursorEnabled() {
   return ::features::IsAccessibilityExtraLargeCursorEnabled();
 }
@@ -622,6 +626,29 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_AUTOCLICK_REVERT_TO_LEFT_CLICK},
       {"autoclickStabilizeCursorPosition",
        IDS_SETTINGS_AUTOCLICK_STABILIZE_CURSOR_POSITION},
+      {"mouseKeysLabel", IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LABEL},
+      {"mouseKeysDescription",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DESCRIPTION},
+      {"mouseKeysShortcutToPause",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_SHORTCUT_TO_PAUSE},
+      {"mouseKeysDisableInTextFields",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DISABLE_IN_TEXT_FIELDS},
+      {"mouseKeysAcceleration",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_ACCELERATION},
+      {"mouseKeysAccelerationMinLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_ACCELERATION_MIN_LABEL},
+      {"mouseKeysAccelerationMaxLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_ACCELERATION_MAX_LABEL},
+      {"mouseKeysMaxSpeed", IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED},
+      {"mouseKeysMaxSpeedMinLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED_MIN_LABEL},
+      {"mouseKeysMaxSpeedMaxLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_MAX_SPEED_MAX_LABEL},
+      {"mouseKeysDominantHand",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DOMINANT_HAND},
+      {"mouseKeysRightHand",
+       IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_RIGHT_HAND},
+      {"mouseKeysLeftHand", IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LEFT_HAND},
       {"cancel", IDS_CANCEL},
       {"caretBrowsingLabel",
        IDS_SETTINGS_ACCESSIBILITY_CARET_BROWSING_DESCRIPTION},
@@ -1194,6 +1221,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
                           IsAccessibilityFaceGazeEnabled());
 
+  html_source->AddBoolean("isAccessibilityMouseKeysEnabled",
+                          IsAccessibilityMouseKeysEnabled());
+
   html_source->AddBoolean("isAccessibilityExtraLargeCursorEnabled",
                           IsAccessibilityExtraLargeCursorEnabled());
 
@@ -1346,6 +1376,12 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kEnableSwitchAccess,
       mojom::Setting::kHighlightTextCaret,
       mojom::Setting::kAutoClickWhenCursorStops,
+      mojom::Setting::kMouseKeysEnabled,
+      mojom::Setting::kMouseKeysShortcutToPauseEnabled,
+      mojom::Setting::kMouseKeysDisableInTextFields,
+      mojom::Setting::kMouseKeysAcceleration,
+      mojom::Setting::kMouseKeysMaxSpeed,
+      mojom::Setting::kMouseKeysDominantHand,
       mojom::Setting::kLargeCursor,
       mojom::Setting::kHighlightCursorWhileMoving,
       mojom::Setting::kTabletNavigationButtons,

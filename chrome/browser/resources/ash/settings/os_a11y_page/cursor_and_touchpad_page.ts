@@ -17,10 +17,11 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 
-import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -171,6 +172,20 @@ export class SettingsCursorAndTouchpadPageElement extends
         },
       },
 
+      mouseKeysDominantHandOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          // These values correspond to the values of MouseKeysDominantHand in
+          // ash/public/cpp/accessibility_controller_enums.h
+          // If these values get changed then this needs to be updated as well.
+          return [
+            {value: 1, name: loadTimeData.getString('mouseKeysLeftHand')},
+            {value: 0, name: loadTimeData.getString('mouseKeysRightHand')},
+          ];
+        },
+      },
+
       /**
        * Whether the user is in kiosk mode.
        */
@@ -229,6 +244,17 @@ export class SettingsCursorAndTouchpadPageElement extends
       },
 
       /**
+       * Whether the controlling the mouse cursor with the keyboard feature is
+       * enabled.
+       */
+      isAccessibilityMouseKeysEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled');
+        },
+      },
+
+      /**
        * The maximum size in density-independent pixels of the large mouse
        * cursor. Note that this has no effect if it is larger than the maximum
        * set in CursorWindowController.
@@ -250,6 +276,7 @@ export class SettingsCursorAndTouchpadPageElement extends
         type: Object,
         value: () => new Set<Setting>([
           Setting.kAutoClickWhenCursorStops,
+          Setting.kMouseKeysEnabled,
           Setting.kLargeCursor,
           Setting.kHighlightCursorWhileMoving,
           Setting.kTabletNavigationButtons,
@@ -277,6 +304,7 @@ export class SettingsCursorAndTouchpadPageElement extends
       chrome.settingsPrivate.PrefObject<boolean>;
   private showShelfNavigationButtonsSettings_: boolean;
   private isAccessibilityFaceGazeEnabled_: boolean;
+  private isAccessibilityMouseKeysEnabled_: boolean;
   private readonly largeCursorMaxSize_: number;
 
   constructor() {
@@ -329,6 +357,51 @@ export class SettingsCursorAndTouchpadPageElement extends
     }
 
     this.attemptDeepLink();
+  }
+
+  /**
+   * Ticks for the Mouse Keys accelerations slider. Valid rates are
+   * between 0 and 1.
+   */
+  private mouseKeysAccelerationTicks_(): SliderTick[] {
+    return this.buildLinearTicks_(0, 1);
+  }
+
+  /**
+   * Ticks for the Mouse Keys max speed slider. Valid rates are
+   * between 1 and 10.
+   */
+  private mouseKeysMaxSpeedTicks_(): SliderTick[] {
+    return this.buildLinearTicks_(1, 10);
+  }
+
+  /**
+   * A helper to build a set of ticks between |min| and |max| (inclusive) spaced
+   * evenly by 10%.
+   */
+  private buildLinearTicks_(min: number, max: number): SliderTick[] {
+    const ticks: SliderTick[] = [];
+
+    // Avoid floating point addition errors by scaling everything by 10.
+    min *= 10;
+    max *= 10;
+    const step = (max - min) / 10;
+    for (let tickValue = min; tickValue <= max; tickValue += step) {
+      ticks.push(this.initTick_((tickValue - min) / ((max - min) * 10)));
+    }
+    return ticks;
+  }
+
+  /**
+   * Initializes i18n labels for ticks arrays.
+   */
+  private initTick_(tick: number): SliderTick {
+    const value = Math.round(100 * tick);
+    const strValue = value.toFixed(0);
+    const label = strValue === '100' ?
+        this.i18n('defaultPercentage', strValue) :
+        this.i18n('percentage', strValue);
+    return {label: label, value: tick, ariaValue: value};
   }
 
   private onFaceGazeCursorSettingsClick_(): void {
