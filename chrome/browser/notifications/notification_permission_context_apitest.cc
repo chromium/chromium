@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 
 #include "base/check.h"
 #include "base/scoped_observation.h"

@@ -6,6 +6,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

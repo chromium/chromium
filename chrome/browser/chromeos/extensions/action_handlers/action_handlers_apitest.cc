@@ -5,6 +5,7 @@
 #include "apps/launcher.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"

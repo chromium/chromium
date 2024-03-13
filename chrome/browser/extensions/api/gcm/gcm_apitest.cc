@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_gcm_app_handler.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"

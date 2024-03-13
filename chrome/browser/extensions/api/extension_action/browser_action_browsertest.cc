@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_action.h"

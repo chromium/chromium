@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/extensions/input_method_event_router.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"

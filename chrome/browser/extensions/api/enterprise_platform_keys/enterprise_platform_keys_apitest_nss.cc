@@ -25,6 +25,7 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/chaps_util/test_util.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"

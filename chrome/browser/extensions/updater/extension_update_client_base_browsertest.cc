@@ -14,6 +14,7 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/browsertest_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
 #include "components/update_client/protocol_handler.h"
 #include "content/public/browser/browser_context.h"

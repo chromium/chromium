@@ -6,6 +6,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_install_error.h"
 #include "chrome/browser/extensions/external_install_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_error/global_error_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"

@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/wifi/fake_wifi_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"

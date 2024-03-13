@@ -5,8 +5,10 @@
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/script_executor.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 

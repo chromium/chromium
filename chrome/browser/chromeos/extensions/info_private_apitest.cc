@@ -12,6 +12,7 @@
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"

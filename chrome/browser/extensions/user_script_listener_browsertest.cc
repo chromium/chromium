@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/user_script_listener.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_handle.h"

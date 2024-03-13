@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_base_test.h"
 
+#include "chrome/browser/ui/browser.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 
 namespace {

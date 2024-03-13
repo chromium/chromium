@@ -18,8 +18,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/browsertest_util.h"
@@ -125,13 +123,9 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   ~ExtensionBrowserTest() override;
 
   // Useful accessors.
-  ExtensionService* extension_service() {
-    return ExtensionSystem::Get(profile())->extension_service();
-  }
+  ExtensionService* extension_service();
 
-  ExtensionRegistry* extension_registry() {
-    return ExtensionRegistry::Get(profile());
-  }
+  ExtensionRegistry* extension_registry();
 
   const extensions::ExtensionId& last_loaded_extension_id() {
     return last_loaded_extension_id_;

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/reading_list.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "content/public/test/browser_test.h"

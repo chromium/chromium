@@ -140,6 +140,7 @@ source_set("browser_tests") {
     ":events",
     ":test_support",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
+    "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//chromeos/crosapi/mojom",
     "//content/test:test_support",
@@ -152,10 +153,7 @@ source_set("browser_tests") {
   data = [ "//chrome/test/data" ]
 
   if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-    ]
+    deps += [ "//chrome/browser/profiles:profile" ]
   }
 
   if (is_chromeos_lacros) {

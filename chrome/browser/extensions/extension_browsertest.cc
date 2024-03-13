@@ -317,6 +317,14 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
 ExtensionBrowserTest::~ExtensionBrowserTest() {
 }
 
+ExtensionService* ExtensionBrowserTest::extension_service() {
+  return ExtensionSystem::Get(profile())->extension_service();
+}
+
+ExtensionRegistry* ExtensionBrowserTest::extension_registry() {
+  return ExtensionRegistry::Get(profile());
+}
+
 void ExtensionBrowserTest::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
