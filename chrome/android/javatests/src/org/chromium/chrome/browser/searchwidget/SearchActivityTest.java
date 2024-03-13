@@ -70,8 +70,8 @@ import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
+import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.SearchType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.MultiActivityTestRule;
@@ -239,7 +239,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     public void testOmniboxSuggestionContainerAppears() throws Exception {
-        SearchActivity searchActivity = startSearchActivity();
+        startSearchActivity();
 
         // Wait for the Activity to fully load.
         mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
@@ -319,7 +319,7 @@ public class SearchActivityTest {
     }
 
     private void verifyUrlLoads(final String url) throws Exception {
-        SearchActivity searchActivity = startSearchActivity();
+        startSearchActivity();
 
         // Wait for the Activity to fully load.
         mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
@@ -327,7 +327,6 @@ public class SearchActivityTest {
         mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
 
         // Monitor for ChromeTabbedActivity.
-        final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         waitForChromeTabbedActivityToStart(
                 () -> {
                     mOmnibox.requestFocus();
@@ -471,7 +470,7 @@ public class SearchActivityTest {
 
         // Wait for the activity to load, but don't let it load the native library.
         mTestDelegate.shouldDelayLoadingNative = true;
-        final SearchActivity searchActivity = startSearchActivity();
+        startSearchActivity();
 
         // Focus on the url bar with not text.
         mOmnibox.requestFocus();
@@ -485,7 +484,7 @@ public class SearchActivityTest {
     public void testTypeBeforeDeferredInitialization() throws Exception {
         // Start the Activity.  It should pause and assume that a promo dialog has appeared.
         mTestDelegate.shouldDelayDeferredInitialization = true;
-        final SearchActivity searchActivity = startSearchActivity();
+        startSearchActivity();
         mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(0);
         mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(0);
         Assert.assertNotNull(mTestDelegate.onSearchEngineFinalizedCallback);
@@ -623,35 +622,6 @@ public class SearchActivityTest {
                     locationBarCoordinator.onUrlChangedForTesting();
                     Assert.assertTrue(urlBar.getText().toString().isEmpty());
                 });
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchTypes_knownValidValues() {
-        Assert.assertEquals(
-                SearchType.TEXT,
-                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_TEXT_SEARCH));
-        Assert.assertEquals(
-                SearchType.VOICE,
-                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_VOICE_SEARCH));
-        Assert.assertEquals(
-                SearchType.LENS,
-                SearchActivity.getSearchType(SearchActivityConstants.ACTION_START_LENS_SEARCH));
-    }
-
-    @Test
-    @SmallTest
-    public void testSearchTypes_invalidValuesFallBackToTextSearch() {
-        Assert.assertEquals(SearchType.TEXT, SearchActivity.getSearchType("Aaaaaaa"));
-        Assert.assertEquals(SearchType.TEXT, SearchActivity.getSearchType(null));
-        Assert.assertEquals(
-                SearchType.TEXT,
-                SearchActivity.getSearchType(
-                        SearchActivityConstants.ACTION_START_VOICE_SEARCH + "x"));
-        Assert.assertEquals(
-                SearchType.TEXT,
-                SearchActivity.getSearchType(
-                        SearchActivityConstants.ACTION_START_LENS_SEARCH + "1"));
     }
 
     @Test

@@ -9,6 +9,7 @@ import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -37,6 +38,14 @@ public class SearchActivityUtils {
         int SEARCH_WIDGET = 1;
         int QUICK_ACTION_SEARCH_WIDGET = 2;
         int CUSTOM_TAB = 3;
+    }
+
+    @IntDef({SearchType.TEXT, SearchType.VOICE, SearchType.LENS})
+    @Retention(RetentionPolicy.SOURCE)
+    /* package */ @interface SearchType {
+        int TEXT = 0;
+        int VOICE = 1;
+        int LENS = 2;
     }
 
     @VisibleForTesting
@@ -116,6 +125,38 @@ public class SearchActivityUtils {
             return IntentOrigin.CUSTOM_TAB;
         }
         return IntentOrigin.UNKNOWN;
+    }
+
+    /**
+     * Retrieve the intent search type.
+     *
+     * <p>TODO(ender): link this to an explicit EXTRA, drop string comparison.
+     *
+     * @param intent intent received by SearchActivity
+     * @return the requested search type
+     */
+    /* package */ static @SearchType int getIntentSearchType(@NonNull Intent intent) {
+        var action = intent.getAction();
+        switch (getIntentOrigin(intent)) {
+            case IntentOrigin.SEARCH_WIDGET:
+                if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_VOICE_SEARCH)) {
+                    return SearchType.VOICE;
+                }
+                return SearchType.TEXT;
+
+            case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET:
+                if (TextUtils.equals(
+                        action, SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH)) {
+                    return SearchType.VOICE;
+                } else if (TextUtils.equals(
+                        action, SearchActivityConstants.ACTION_START_LENS_SEARCH)) {
+                    return SearchType.LENS;
+                }
+                return SearchType.TEXT;
+
+            default:
+                return SearchType.TEXT;
+        }
     }
 
     /**

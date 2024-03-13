@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.IntentOrigin;
+import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.SearchType;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
@@ -74,7 +75,6 @@ import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -497,7 +497,7 @@ public class SearchActivity extends AsyncInitializationActivity
         CustomTabsConnection.getInstance().warmup(0);
         VoiceRecognitionHandler voiceRecognitionHandler =
                 mLocationBarCoordinator.getVoiceRecognitionHandler();
-        @SearchType int searchType = getSearchType(getIntent().getAction());
+        @SearchType int searchType = SearchActivityUtils.getIntentSearchType(getIntent());
         if (mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET) {
             recordQuickActionSearchType(searchType);
         }
@@ -567,25 +567,12 @@ public class SearchActivity extends AsyncInitializationActivity
         return mSnackbarManager;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static @SearchType int getSearchType(String action) {
-        if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_VOICE_SEARCH)
-                || TextUtils.equals(
-                        action, SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH)) {
-            return SearchType.VOICE;
-        } else if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_LENS_SEARCH)) {
-            return SearchType.LENS;
-        } else {
-            return SearchType.TEXT;
-        }
-    }
-
     private String getOptionalIntentQuery() {
         return IntentUtils.safeGetStringExtra(getIntent(), SearchManager.QUERY);
     }
 
     private void beginQuery() {
-        @SearchType int searchType = getSearchType(getIntent().getAction());
+        @SearchType int searchType = SearchActivityUtils.getIntentSearchType(getIntent());
         if (mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET) {
             recordQuickActionSearchType(searchType);
         }

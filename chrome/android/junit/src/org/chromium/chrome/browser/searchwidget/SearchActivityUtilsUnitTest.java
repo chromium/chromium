@@ -23,6 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.IntentOrigin;
+import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.url.GURL;
 
@@ -143,6 +144,94 @@ public class SearchActivityUtilsUnitTest {
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(SearchActivityUtils.EXTRA_CURRENT_URL);
         assertEquals(IntentOrigin.UNKNOWN, SearchActivityUtils.getIntentOrigin(intent));
+    }
+
+    @Test
+    public void getIntentSearchType_forCustomTab() {
+        SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
+
+        var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
+        assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
+
+        // Invalid variants
+        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_TEXT_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_VOICE_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_LENS_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(null);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction("abcd");
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+    }
+
+    @Test
+    public void getIntentSearchType_forSearchWidget() {
+        var intent = buildSearchWidgetIntent();
+        assertEquals(IntentOrigin.SEARCH_WIDGET, SearchActivityUtils.getIntentOrigin(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_TEXT_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_VOICE_SEARCH);
+        assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
+
+        // Invalid variants
+        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_LENS_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(null);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction("abcd");
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+    }
+
+    @Test
+    public void getIntentSearchType_forQuickActionSearchWidget() {
+        var intent = buildQuickActionSearchWidgetIntent();
+        assertEquals(
+                IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
+                SearchActivityUtils.getIntentOrigin(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
+        assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_LENS_SEARCH);
+        assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
+
+        // Invalid variants
+        intent.setAction(SearchActivityConstants.ACTION_START_TEXT_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(SearchActivityConstants.ACTION_START_VOICE_SEARCH);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction(null);
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+
+        intent.setAction("abcd");
+        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
     }
 
     @Test
