@@ -136,9 +136,12 @@ class AdapterTest : public testing::Test {
   }
 
  protected:
-  void RegisterAdvertisement(bool should_succeed, bool use_scan_data) {
+  void RegisterAdvertisement(bool should_succeed,
+                             bool use_scan_data,
+                             bool connectable) {
     mock_bluetooth_adapter_->should_advertisement_registration_succeed_ =
         should_succeed;
+    last_set_connectable_ = connectable;
 
     auto service_data = GetByteVector(kDeviceServiceDataStr);
     mojo::Remote<mojom::Advertisement> advertisement;
@@ -146,7 +149,8 @@ class AdapterTest : public testing::Test {
     base::RunLoop run_loop;
     adapter_->RegisterAdvertisement(
         device::BluetoothUUID(kServiceId), service_data,
-        /*use_scan_data=*/use_scan_data,
+        /*use_scan_response=*/use_scan_data,
+        /*connectable=*/connectable,
         base::BindLambdaForTesting([&](mojo::PendingRemote<mojom::Advertisement>
                                            pending_advertisement) {
           EXPECT_EQ(should_succeed, pending_advertisement.is_valid());
@@ -161,6 +165,7 @@ class AdapterTest : public testing::Test {
         mock_bluetooth_adapter_->last_advertisement_data_->service_uuids();
     EXPECT_EQ(1u, uuid_list->size());
     EXPECT_EQ(kServiceId, (*uuid_list)[0]);
+    VerifyAdvertisementConnectable(last_set_connectable_);
     auto last_service_data =
         mock_bluetooth_adapter_->last_advertisement_data_->service_data();
     EXPECT_EQ(service_data, last_service_data->at(kServiceId));
@@ -174,6 +179,7 @@ class AdapterTest : public testing::Test {
         mock_bluetooth_adapter_->last_advertisement_data_->service_uuids();
     EXPECT_EQ(1u, uuid_list->size());
     EXPECT_EQ(kServiceId, (*uuid_list)[0]);
+    VerifyAdvertisementConnectable(last_set_connectable_);
     EXPECT_FALSE(
         mock_bluetooth_adapter_->last_advertisement_data_->service_data());
     auto last_scan_response_data =
@@ -186,6 +192,17 @@ class AdapterTest : public testing::Test {
     EXPECT_EQ(0xAB, raw_data[1]);
     EXPECT_EQ(service_data,
               std::vector<uint8_t>(raw_data.begin() + 2, raw_data.end()));
+  }
+
+  void VerifyAdvertisementConnectable(bool connectable) {
+    auto type = mock_bluetooth_adapter_->last_advertisement_data_->type();
+    if (connectable) {
+      EXPECT_EQ(type, device::BluetoothAdvertisement::AdvertisementType::
+                          ADVERTISEMENT_TYPE_PERIPHERAL);
+    } else {
+      EXPECT_EQ(type, device::BluetoothAdvertisement::AdvertisementType::
+                          ADVERTISEMENT_TYPE_BROADCAST);
+    }
   }
 
   device::BluetoothUUID bluetooth_service_id_{kServiceId};
@@ -201,21 +218,37 @@ class AdapterTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  bool last_set_connectable_ = false;
 };
 
 TEST_F(AdapterTest, TestRegisterAdvertisement_Success) {
-  RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/false);
+  RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/false,
+                        /*connectable=*/false);
   VerifyAdvertisement();
 }
 
 TEST_F(AdapterTest, TestRegisterAdvertisement_Error) {
-  RegisterAdvertisement(/*should_succeed=*/false, /*use_scan_data=*/false);
+  RegisterAdvertisement(/*should_succeed=*/false, /*use_scan_data=*/false,
+                        /*connectable=*/false);
   VerifyAdvertisement();
 }
 
 TEST_F(AdapterTest, TestRegisterAdvertisement_ScanResponseData) {
-  RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/true);
+  RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/true,
+                        /*connectable=*/false);
   VerifyAdvertisementWithScanData();
+}
+
+TEST_F(AdapterTest, TestRegisterAdvertisement_NotConnectable) {
+  RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/false,
+                        /*connectable=*/false);
+  VerifyAdvertisement();
+}
+
+TEST_F(AdapterTest, TestRegisterAdvertisement_Connectable) {
+  RegisterAdvertisement(/*should_succeed=*/true, /*use_scan_data=*/false,
+                        /*connectable=*/true);
+  VerifyAdvertisement();
 }
 
 TEST_F(AdapterTest, TestConnectToServiceInsecurely_DisallowedUuid) {

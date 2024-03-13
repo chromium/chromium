@@ -132,10 +132,13 @@ void Adapter::AddObserver(mojo::PendingRemote<mojom::AdapterObserver> observer,
 void Adapter::RegisterAdvertisement(const device::BluetoothUUID& service_uuid,
                                     const std::vector<uint8_t>& service_data,
                                     bool use_scan_response,
+                                    bool connectable,
                                     RegisterAdvertisementCallback callback) {
   auto advertisement_data =
       std::make_unique<device::BluetoothAdvertisement::Data>(
-          device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
+          connectable
+              ? device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_PERIPHERAL
+              : device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
 
   device::BluetoothAdvertisement::UUIDList uuid_list;
   uuid_list.push_back(service_uuid.value());
