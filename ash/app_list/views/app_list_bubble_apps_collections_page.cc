@@ -11,6 +11,7 @@
 
 #include "ash/app_list/app_collections_constants.h"
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/views/app_list_keyboard_controller.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
@@ -233,6 +234,8 @@ void AppListBubbleAppsCollectionsPage::AbortAllAnimations() {
 }
 
 void AppListBubbleAppsCollectionsPage::OnNudgeRemoved() {
+  AppsCollectionsController::Get()->SetAppsCollectionDismissed();
+
   CHECK(exit_page_callback_);
 
   std::move(exit_page_callback_).Run();

@@ -25,6 +25,14 @@ class ASH_EXPORT AppsCollectionsController {
   // Whether the AppsCollection page should be presented by default when opening
   // the bubble, instead of the Apps page.
   bool ShouldShowAppsCollection();
+
+  // Signal that the user has dismissed the AppsCollection page.
+  void SetAppsCollectionDismissed();
+
+ private:
+  // A local flag that stores whether the apps collections view was dismissed
+  // during this session.
+  bool apps_collections_was_dissmissed_ = false;
 };
 
 }  // namespace ash

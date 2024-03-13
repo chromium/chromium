@@ -4,18 +4,64 @@
 
 #include "ash/app_list/apps_collections_controller.h"
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
 
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 namespace {
+
+class AppsCollectionsControllerTest : public NoSessionAshTestBase {
+ public:
+  AppsCollectionsControllerTest() {
+    scoped_feature_list_.InitWithFeatures({app_list_features::kAppsCollections},
+                                          {});
+  }
+
+  // NoSessionAshTestBase:
+  void SetUp() override {
+    NoSessionAshTestBase::SetUp();
+
+    SimulateNewUserFirstLogin("primary@test");
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AppsCollectionsControllerTest,
+       ShowAppsPageOnFirstShowAfterDismissingNudge) {
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  AppListToastContainerView* toast_container =
+      apps_collections_page->GetToastContainerViewForTest();
+  EXPECT_TRUE(toast_container->IsToastVisible());
+
+  // Click on close button to dismiss the toast.
+  LeftClickOn(toast_container->GetToastButton());
+  EXPECT_FALSE(toast_container->IsToastVisible());
+
+  // Apps page is not visible.
+  EXPECT_FALSE(apps_collections_page->GetVisible());
+
+  helper->Dismiss();
+  helper->ShowAppList();
+
+  // Apps page is not visible.
+  EXPECT_FALSE(apps_collections_page->GetVisible());
+  EXPECT_TRUE(helper->GetBubbleAppsPage()->GetVisible());
+}
 
 // Class for tests of the `AppsCollectionsController` which are
 // concerned with user eligibility, parameterized by:

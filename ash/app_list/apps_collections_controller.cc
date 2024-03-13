@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/shell.h"
+
 namespace ash {
 namespace {
 
@@ -38,6 +39,10 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
     return false;
   }
 
+  if (apps_collections_was_dissmissed_) {
+    return false;
+  }
+
   if (app_list_features::IsForceShowAppsCollectionsEnabled()) {
     return true;
   }
@@ -56,6 +61,10 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
   // cross-device, similar to how UserEducation features check for new users.
 
   return session_controller->IsUserFirstLogin();
+}
+
+void AppsCollectionsController::SetAppsCollectionDismissed() {
+  apps_collections_was_dissmissed_ = true;
 }
 
 }  // namespace ash
