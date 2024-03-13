@@ -89,8 +89,8 @@ void CameraCoordinator::OnVideoSourceChanged(
   mojo::Remote<video_capture::mojom::VideoSource> video_source;
   camera_mediator_.BindVideoSource(active_device_id_,
                                    video_source.BindNewPipeAndPassReceiver());
-  video_stream_coordinator_->ConnectToDevice(std::move(video_source),
-                                             device_info.supported_formats);
+  video_stream_coordinator_->ConnectToDevice(device_info,
+                                             std::move(video_source));
 }
 
 void CameraCoordinator::UpdateDevicePreferenceRanking() {

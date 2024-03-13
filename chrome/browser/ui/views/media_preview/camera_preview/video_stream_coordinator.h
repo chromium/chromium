@@ -35,8 +35,8 @@ class VideoStreamCoordinator
 
   // Initializes CameraVideoFrameHandler, and request to start receiving frames.
   void ConnectToDevice(
-      mojo::Remote<video_capture::mojom::VideoSource> video_source,
-      const std::vector<media::VideoCaptureFormat>& supported_formats);
+      const media::VideoCaptureDeviceInfo& device_info,
+      mojo::Remote<video_capture::mojom::VideoSource> video_source);
 
   // Stops active VideoSource connection.
   void Stop();

@@ -24,8 +24,8 @@ VideoStreamCoordinator::~VideoStreamCoordinator() {
 }
 
 void VideoStreamCoordinator::ConnectToDevice(
-    mojo::Remote<video_capture::mojom::VideoSource> video_source,
-    const std::vector<media::VideoCaptureFormat>& supported_formats) {
+    const media::VideoCaptureDeviceInfo& device_info,
+    mojo::Remote<video_capture::mojom::VideoSource> video_source) {
   Stop();
   if (auto* view = GetVideoStreamView(); view) {
     // Using double the view width when choosing preferred format. This provides
@@ -36,7 +36,10 @@ void VideoStreamCoordinator::ConnectToDevice(
         std::make_unique<capture_mode::CameraVideoFrameHandler>(
             content::GetContextFactory(), std::move(video_source),
             video_format_comparison::GetClosestVideoFormat(
-                supported_formats, requested_format_width));
+                device_info.supported_formats, requested_format_width),
+            // TODO: Add testing to check that we pass the right device id to
+            // CameraVideoFrameHandler.
+            device_info.descriptor.device_id);
 
     video_frame_handler_->StartHandlingFrames(/*delegate=*/this);
   }
