@@ -174,7 +174,6 @@ public class TrustedCdnPublisherUrlTest {
     @SmallTest
     @Feature({"UiCatalogue"})
     @OverrideTrustedCdn
-    @DisabledTest(message = "crbug.com/1487332")
     public void testHttps() throws Exception {
         runTrustedCdnPublisherUrlTest(
                 "https://www.example.com/test",
