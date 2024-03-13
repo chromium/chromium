@@ -53,27 +53,39 @@ class InmemoryFileIndex : public FileIndex {
 
   // Adds association between terms and the file. This method assumes that the
   // term list is not empty.
-  void AddFileTerms(const std::set<int64_t>& term_ids, int64_t url_id);
+  void AddFileTerms(const std::string& field_name,
+                    const std::set<int64_t>& term_ids,
+                    int64_t url_id);
 
-  // Adds to the posting list for the given term ID with the given file info ID.
-  // This may be no-op if the file_info_id already is associated with the given
-  // term_id.
-  void AddToPostingList(int64_t term_id, int64_t file_info_id);
+  // For the given field name, adds to the posting list for the given term ID
+  // with the given file info ID. This may be no-op if the file_info_id already
+  // is associated with the given term_id.
+  void AddToPostingList(const std::string& field_name,
+                        int64_t term_id,
+                        int64_t file_info_id);
 
-  // Removes the given `file_info_id` from the posting list of the specified
-  // `term_id`. This may be a no-op if the file_info_id is not present on the
-  // posting list for the given term.
-  void RemoveFromPostingList(int64_t term_id, int64_t file_info_id);
+  // For posting namespace of the given `field_name`, this method removes the
+  // `file_info_id` from the posting list of the specified `term_id`. This may
+  // be a no-op if the file_info_id is not present on the posting list for the
+  // given term.
+  void RemoveFromPostingList(const std::string& field_name,
+                             int64_t term_id,
+                             int64_t file_info_id);
 
-  // Adds to the term list, which stores all term IDs known for the given file
-  // info ID. This may be a no-op if the given term has previously been
-  // associated with the file info ID.
-  void AddToTermList(int64_t file_info_id, int64_t term_id);
+  // Adds to the term list, associated with the given `field_name` the specified
+  // `term_id`. For a given field name, a term list stores all term IDs known
+  // for the given file info ID. This may be a no-op if the given term has
+  // previously been associated with the file info ID.
+  void AddToTermList(const std::string& field_name,
+                     int64_t file_info_id,
+                     int64_t term_id);
 
   // Removes the given `term_id` from the term list of the specified
   // `file_info_id`. This may be a no-op if the term_id is not present
   // on the term list for the given `file_info_id`.
-  void RemoveFromTermList(int64_t file_info_id, int64_t term_id);
+  void RemoveFromTermList(const std::string& field_name,
+                          int64_t file_info_id,
+                          int64_t term_id);
 
   // Returns the ID corresponding to the given term bytes. If the term bytes
   // cannot be located, we return -1, unless create is set to true.
@@ -101,11 +113,18 @@ class InmemoryFileIndex : public FileIndex {
   // Maps url_id to the corresponding FileInfo.
   std::map<int64_t, FileInfo> url_id_to_file_info_;
 
-  // A map from Term IDs to FileInfo IDs.
-  std::map<int64_t, std::set<int64_t>> posting_lists_;
+  // A posting list, which is a map from a term ID to a set of all FileInfo
+  // IDs that represent files that has this term ID associated with them.
+  typedef std::map<int64_t, std::set<int64_t>> PostingLists;
 
-  // A map from FileInfo ID to all known terms IDs.
-  std::map<int64_t, std::set<int64_t>> term_lists_;
+  // A map from field name posting list.
+  std::map<std::string, PostingLists> posting_namespace_;
+
+  // A map from FileInfo ID to term IDs that are stored for a given file.
+  typedef std::map<int64_t, std::set<int64_t>> TermLists;
+
+  // A map from field name to TermLists.
+  std::map<std::string, TermLists> term_namespace_;
 };
 
 }  // namespace file_manager

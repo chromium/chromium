@@ -180,5 +180,20 @@ TEST_F(FileIndexServiceTest, EmptyUpdateForUnknownFile) {
   EXPECT_THAT(index_service_->Search(Query({pinned_})), testing::ElementsAre());
 }
 
+TEST_F(FileIndexServiceTest, FieldSeparator) {
+  Term colon_in_field("foo:", u"one");
+  FileInfo foo_info(MakeLocalURL("foo.txt"), 1024, base::Time());
+  index_service_->UpdateFile({colon_in_field}, foo_info);
+
+  Term colon_in_text("foo", u":one");
+  FileInfo bar_info(MakeLocalURL("bar.txt"), 1024, base::Time());
+  index_service_->UpdateFile({colon_in_text}, bar_info);
+
+  EXPECT_THAT(index_service_->Search(Query({colon_in_field})),
+              testing::ElementsAre(foo_info));
+  EXPECT_THAT(index_service_->Search(Query({colon_in_text})),
+              testing::ElementsAre(bar_info));
+}
+
 }  // namespace
 }  // namespace file_manager
