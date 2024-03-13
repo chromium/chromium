@@ -23,6 +23,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_device_metrics_handler.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/audio/audio_pref_observer.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
@@ -1026,6 +1027,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler_;
   base::ObserverList<AudioObserver>::Unchecked observers_;
 
+  // Handles firing of audio selection related metrics.
+  AudioDeviceMetricsHandler audio_device_metrics_handler_;
+
   // Audio data and state.
   AudioDeviceMap audio_devices_;
 
@@ -1112,6 +1116,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   int num_stream_ignore_ui_gains_ = 0;
 
   int32_t num_arc_streams_ = 0;
+
+  // A boolean flag used to tell if system audio selection happens for the first
+  // time when system boots or chrome restarts.
+  bool is_chrome_restarts_ = true;
 
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 };

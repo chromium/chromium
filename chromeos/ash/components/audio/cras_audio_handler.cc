@@ -1232,6 +1232,11 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
         EncodeBeforeAndAfterAudioDeviceSets(previous_input_devices,
                                             input_devices));
 
+    // Record chrome restarts related metrics.
+    audio_device_metrics_handler_
+        .RecordAudioSelectionMetricsSeparatedByChromeRestarts(
+            /*is_input=*/true, is_switched, is_chrome_restarts_);
+
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // since only one decision can be made either switching or not switching.
     input_switched_by_system_at_ =
@@ -1269,6 +1274,11 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
                     : kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSet,
         EncodeBeforeAndAfterAudioDeviceSets(previous_output_devices,
                                             output_devices));
+
+    // Record chrome restarts related metrics.
+    audio_device_metrics_handler_
+        .RecordAudioSelectionMetricsSeparatedByChromeRestarts(
+            /*is_input=*/false, is_switched, is_chrome_restarts_);
 
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // same as above.
@@ -2366,6 +2376,10 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   HandleAudioDeviceChange(true, input_devices, hotplug_input_devices,
                           input_devices_changed, has_input_removed,
                           active_input_removed);
+
+  // At this moment, system has already made the switching or not switching
+  // decision, set this flag to false.
+  is_chrome_restarts_ = false;
 
   // content::MediaStreamManager listens to
   // base::SystemMonitor::DevicesChangedObserver for audio devices,

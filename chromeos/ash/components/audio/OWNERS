@@ -12,3 +12,6 @@ per-file cros_audio_config*=zhangwenyu@google.com
 
 # For audio_device_encoding*:
 per-file audio_device_encoding*=zhangwenyu@google.com
+
+# For audio_device_metrics_handler*:
+per-file audio_device_metrics_handler*=zhangwenyu@google.com
