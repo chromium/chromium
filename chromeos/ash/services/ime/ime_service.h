@@ -17,8 +17,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 #include "chromeos/ash/services/ime/decoder/system_engine.h"
+#include "chromeos/ash/services/ime/input_method_user_data_service_impl.h"
 #include "chromeos/ash/services/ime/public/cpp/shared_lib/interfaces.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
+#include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -73,6 +75,9 @@ class ImeService : public mojom::ImeService,
       mojo::PendingRemote<mojom::PlatformAccessProvider> provider) override;
   void BindInputEngineManager(
       mojo::PendingReceiver<mojom::InputEngineManager> receiver) override;
+  void BindInputMethodUserDataService(
+      mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver)
+      override;
 
   // mojom::InputEngineManager overrides:
   void ConnectToImeEngine(
@@ -117,6 +122,10 @@ class ImeService : public mojom::ImeService,
   // at any point in time.
   std::unique_ptr<DecoderEngine> proto_mode_shared_lib_engine_;
   std::unique_ptr<SystemEngine> mojo_mode_shared_lib_engine_;
+
+  // InputMethodUserDataService runs independently of the DecoderEngine and
+  // SystemEngine, and is always connected after binding.
+  std::unique_ptr<InputMethodUserDataServiceImpl> input_method_user_data_api_;
 
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;

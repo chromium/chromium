@@ -19,6 +19,8 @@
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 #include "chromeos/ash/services/ime/decoder/system_engine.h"
+#include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
+#include "chromeos/ash/services/ime/input_method_user_data_service_impl.h"
 #include "mojo/public/c/system/thunks.h"
 
 namespace ash {
@@ -74,6 +76,21 @@ void ImeService::BindInputEngineManager(
 void ImeService::ResetAllBackendConnections() {
   proto_mode_shared_lib_engine_.reset();
   mojo_mode_shared_lib_engine_.reset();
+}
+
+void ImeService::BindInputMethodUserDataService(
+    mojo::PendingReceiver<mojom::InputMethodUserDataService> receiver) {
+  if (input_method_user_data_api_ == nullptr) {
+    std::optional<ImeSharedLibraryWrapper::EntryPoints> entry_points =
+        ime_shared_library_->MaybeLoadThenReturnEntryPoints();
+    if (!entry_points.has_value()) {
+      LOG(ERROR) << "shared library entry_points not loaded";
+      return;
+    }
+    input_method_user_data_api_ =
+        std::make_unique<InputMethodUserDataServiceImpl>(this, *entry_points);
+  }
+  input_method_user_data_api_->AddReceiver(std::move(receiver));
 }
 
 void ImeService::ConnectToImeEngine(

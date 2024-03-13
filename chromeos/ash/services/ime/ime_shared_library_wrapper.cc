@@ -92,9 +92,13 @@ ImeSharedLibraryWrapperImpl::MaybeLoadThenReturnEntryPoints() {
       .mojo_mode_is_input_method_connected =
           reinterpret_cast<IsInputMethodConnectedFn>(
               library.GetFunctionPointer(kIsInputMethodConnectedFnName)),
+      .init_user_data_service = reinterpret_cast<InitUserDataServiceFn>(
+          library.GetFunctionPointer(kInitUserDataServiceFnName)),
   };
 
   // Checking if entry_points are loaded.
+  // TODO(b/328997024): Add .init_user_data_service check once implemented in
+  // sharedlib.
   if (!entry_points.init_proto_mode || !entry_points.close_proto_mode ||
       !entry_points.proto_mode_supports ||
       !entry_points.proto_mode_activate_ime ||

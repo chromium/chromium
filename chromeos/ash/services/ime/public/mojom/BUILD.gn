@@ -14,6 +14,7 @@ mojom("mojom") {
     "input_engine.mojom",
     "input_method.mojom",
     "input_method_host.mojom",
+    "input_method_user_data.mojom",
     "japanese_settings.mojom",
   ]
 

@@ -8,6 +8,7 @@ import "chromeos/ash/services/ime/public/mojom/connection_factory.mojom";
 import "chromeos/ash/services/ime/public/mojom/input_engine.mojom";
 import "chromeos/ash/services/ime/public/mojom/input_method.mojom";
 import "chromeos/ash/services/ime/public/mojom/input_method_host.mojom";
+import "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -77,4 +78,9 @@ interface ImeService {
 
   // Binds an InputEngineManager interface.
   BindInputEngineManager(pending_receiver<InputEngineManager> receiver);
+
+
+  // Bind a receiver to an InputMethodUserDataService interface.
+  BindInputMethodUserDataService(
+    pending_receiver<InputMethodUserDataService> receiver);
 };

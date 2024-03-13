@@ -41,6 +41,8 @@ source_set("lib") {
     "decoder/system_engine.h",
     "ime_service.cc",
     "ime_service.h",
+    "input_method_user_data_service_impl.cc",
+    "input_method_user_data_service_impl.h",
   ]
 
   deps = [
