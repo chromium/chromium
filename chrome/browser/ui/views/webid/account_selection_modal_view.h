@@ -106,10 +106,13 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   std::unique_ptr<views::View> CreateRequestPermissionHeader(
       const content::IdentityProviderMetadata& idp_metadata);
 
-  // Returns a View for a row of custom buttons. A cancel button is always shown
-  // and a confirm button is shown if `confirm_callback` is specified.
+  // Returns a View for a row of custom buttons. A cancel button is always
+  // shown, a continue button is shown if `continue_callback` is specified and a
+  // use other account button is shown if `use_other_account_callback` is
+  // specified.
   std::unique_ptr<views::View> CreateButtonRow(
-      std::optional<views::Button::PressedCallback> continue_callback);
+      std::optional<views::Button::PressedCallback> continue_callback,
+      std::optional<views::Button::PressedCallback> use_other_account_callback);
 
   // Resizes the modal dialog to the size of its contents.
   void UpdateModalPositionAndTitle();

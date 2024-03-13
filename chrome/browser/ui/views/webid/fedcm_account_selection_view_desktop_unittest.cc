@@ -1257,6 +1257,57 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccount) {
               testing::ElementsAre(kAccountId, kAccountId2));
 }
 
+// Test the use another account flow in a modal, resulting in the new account
+// being shown after logging in.
+TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountModal) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  // Emulate the user clicking "use another account button".
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Emulate user completing the sign-in flow and IdP prompts closing the
+  // pop-up window and sending new accounts.
+  controller->CloseModalDialog();
+
+  const char kAccountId2[] = "account_id2";
+  IdentityProviderDisplayData idp_data2 = CreateIdentityProviderDisplayData(
+      {{kAccountId, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}});
+  // The new account would be kAccountId2.
+  std::vector<content::IdentityRequestAccount> new_accounts = {
+      {kAccountId2, "", "", "", GURL(),
+       /*login_hints=*/std::vector<std::string>(),
+       /*domain_hints=*/std::vector<std::string>(), LoginState::kSignUp}};
+  content::IdentityProviderData new_idp_data = {
+      kIdpEtldPlusOne,
+      new_accounts,
+      content::IdentityProviderMetadata(),
+      content::ClientMetadata(GURL(), GURL()),
+      blink::mojom::RpContext::kSignIn,
+      /*request_permission=*/true,
+      /*has_login_status_mismatch=*/false};
+
+  Show(*controller, idp_data2.accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kButton, new_idp_data);
+
+  // Only the newly logged in account is shown in the latest dialog.
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId2));
+}
+
 // Tests that the error dialog can be shown.
 TEST_F(FedCmAccountSelectionViewDesktopTest, ErrorDialogShown) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =

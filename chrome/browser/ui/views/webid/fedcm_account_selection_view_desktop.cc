@@ -93,9 +93,7 @@ void FedCmAccountSelectionView::Show(
   // TODO(crbug.com/1518356): Support modal dialogs for all types of FedCM
   // dialogs. This boolean is used to fall back to the bubble dialog where
   // modal is not yet implemented.
-  bool has_modal_support =
-      sign_in_mode != Account::SignInMode::kAuto &&
-      !identity_provider_data_list[0].idp_metadata.supports_add_account;
+  bool has_modal_support = sign_in_mode != Account::SignInMode::kAuto;
 
   idp_display_data_list_.clear();
 
@@ -160,20 +158,24 @@ void FedCmAccountSelectionView::Show(
     }
   } else if (new_account_idp) {
     // When we just logged in to an account, show that account right away.
-    // TODO(crbug.com/41490360): verify this works on modal dialog.
-    state_ = GetDialogType() == DialogType::MODAL ? State::SINGLE_ACCOUNT_PICKER
-                                                  : State::REQUEST_PERMISSION;
+    state_ = State::REQUEST_PERMISSION;
     new_account_idp_display_data_ = IdentityProviderDisplayData(
         base::UTF8ToUTF16(new_account_idp->idp_for_display),
         new_account_idp->idp_metadata, new_account_idp->client_metadata,
         new_account_idp->accounts, new_account_idp->request_permission,
         new_account_idp->has_login_status_mismatch);
 
-    account_selection_view_->ShowSingleAccountConfirmDialog(
-        top_frame_for_display_, iframe_for_display_,
-        new_account_idp_display_data_->accounts[0],
-        *new_account_idp_display_data_,
-        /*show_back_button=*/accounts_size > 1u ? true : false);
+    if (GetDialogType() == DialogType::MODAL) {
+      account_selection_view_->ShowRequestPermissionDialog(
+          top_frame_for_display_, new_account_idp_display_data_->accounts[0],
+          *new_account_idp_display_data_);
+    } else {
+      account_selection_view_->ShowSingleAccountConfirmDialog(
+          top_frame_for_display_, iframe_for_display_,
+          new_account_idp_display_data_->accounts[0],
+          *new_account_idp_display_data_,
+          /*show_back_button=*/accounts_size > 1u ? true : false);
+    }
   } else if (idp_display_data_list_.size() == 1u && accounts_size == 1u &&
              !idp_display_data_list_[0].idp_metadata.supports_add_account) {
     // When there is a single IDP and a single account to show and the IDP does

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -149,34 +150,60 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_EQ(body_view->GetText(), expected_body);
   }
 
-  void CheckButtonRow(views::View* button_row, bool expect_continue_button) {
+  void CheckButtonRow(views::View* button_row,
+                      bool expect_continue_button,
+                      bool expect_add_account_button) {
     std::vector<raw_ptr<views::View, VectorExperimental>> button_row_children =
         button_row->children();
 
-    // Number of buttons: cancel button, continue button
-    ASSERT_EQ(button_row_children.size(), expect_continue_button ? 2u : 1u);
+    // Cancel button is always expected.
+    size_t num_expected_buttons = 1u;
 
-    views::MdTextButton* cancel_button =
-        static_cast<views::MdTextButton*>(button_row_children[0]);
-    ASSERT_TRUE(cancel_button);
-
-    if (!expect_continue_button) {
-      return;
+    if (expect_continue_button) {
+      ++num_expected_buttons;
     }
 
-    views::MdTextButton* continue_button =
-        static_cast<views::MdTextButton*>(button_row_children[1]);
-    ASSERT_TRUE(continue_button);
+    if (expect_add_account_button) {
+      ++num_expected_buttons;
+    }
+
+    ASSERT_EQ(button_row_children.size(), num_expected_buttons);
+
+    size_t button_index = 0;
+    if (expect_add_account_button) {
+      std::vector<raw_ptr<views::View, VectorExperimental>>
+          add_account_container_children =
+              button_row_children[button_index++]->children();
+      ASSERT_EQ(add_account_container_children.size(), 1u);
+      views::MdTextButton* add_account_button =
+          static_cast<views::MdTextButton*>(add_account_container_children[0]);
+      ASSERT_TRUE(add_account_button);
+      EXPECT_EQ(add_account_button->GetText(), u"Use a different account");
+    }
+
+    views::MdTextButton* cancel_button =
+        static_cast<views::MdTextButton*>(button_row_children[button_index++]);
+    ASSERT_TRUE(cancel_button);
+    EXPECT_EQ(cancel_button->GetText(), u"Cancel");
+
+    if (expect_continue_button) {
+      views::MdTextButton* continue_button =
+          static_cast<views::MdTextButton*>(button_row_children[button_index]);
+      ASSERT_TRUE(continue_button);
+      EXPECT_EQ(continue_button->GetText(), u"Continue");
+    }
   }
 
   void TestSingleAccount(const std::u16string& expected_title,
-                         const std::u16string& expected_body) {
+                         const std::u16string& expected_body,
+                         bool supports_add_account = false) {
     const std::string kAccountSuffix = "suffix";
     content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
         kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
+    content::IdentityProviderMetadata idp_metadata;
+    idp_metadata.supports_add_account = supports_add_account;
     CreateSingleAccountPicker(
-        /*show_back_button=*/false, account,
-        content::IdentityProviderMetadata(), kTermsOfServiceUrl);
+        /*show_back_button=*/false, account, idp_metadata, kTermsOfServiceUrl);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -189,13 +216,15 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     size_t accounts_index = 0;
     CheckHoverableAccountRows(account_rows->children(), {kAccountSuffix},
                               accounts_index);
-    CheckButtonRow(children[2], /*expect_continue_button=*/true);
+    CheckButtonRow(children[2], /*expect_continue_button=*/true,
+                   supports_add_account);
   }
 
   void TestMultipleAccounts(const std::u16string& expected_title,
-                            const std::u16string& expected_body) {
+                            const std::u16string& expected_body,
+                            bool supports_add_account = false) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
-    CreateMultiAccountPicker(kAccountSuffixes);
+    CreateMultiAccountPicker(kAccountSuffixes, supports_add_account);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -218,7 +247,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
     size_t accounts_index = 0;
     CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index);
-    CheckButtonRow(children[2], /*expect_continue_button=*/false);
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   supports_add_account);
   }
 
   void TestRequestPermission(const std::u16string& expected_title,
@@ -244,7 +274,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CheckDisclosureText(single_account_chooser->children()[1],
                         /*expect_terms_of_service=*/true,
                         /*expect_privacy_policy=*/true);
-    CheckButtonRow(children[2], /*expect_continue_button=*/true);
+    CheckButtonRow(children[2], /*expect_continue_button=*/true,
+                   /*expect_add_account_button=*/false);
   }
 
   void TestVerifyingSheet(const std::u16string& expected_title,
@@ -332,4 +363,19 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
   TestRequestPermission(kTitleRequestPermission);
   ShowVerifyingSheet();
   TestVerifyingSheet(kTitleRequestPermission);
+}
+
+// Tests that the single account dialog is rendered correctly when IDP supports
+// use other account.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       SingleAccountUseOtherAccount) {
+  TestSingleAccount(kTitleSignIn, kBodySignIn, /*supports_add_account=*/true);
+}
+
+// Tests that the multiple accounts dialog is rendered correctly when IDP
+// supports use other account.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       MultipleAccountsUseOtherAccount) {
+  TestMultipleAccounts(kTitleSignIn, kBodySignIn,
+                       /*supports_add_account=*/true);
 }
