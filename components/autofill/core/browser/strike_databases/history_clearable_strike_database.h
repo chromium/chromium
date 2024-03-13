@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_integrator_base.h"
+#include "components/history/core/browser/history_types.h"
 
 namespace autofill {
 
@@ -46,9 +47,30 @@ class HistoryClearableStrikeDatabase
     : public SimpleAutofillStrikeDatabase<Traits> {
  public:
   using SimpleAutofillStrikeDatabase<Traits>::SimpleAutofillStrikeDatabase;
+  using StrikeDatabaseIntegratorBase::ClearAllStrikes;
   using StrikeDatabaseIntegratorBase::ClearStrikesByIdMatching;
   using StrikeDatabaseIntegratorBase::ClearStrikesByIdMatchingAndTime;
 
+  void ClearStrikesWithHistory(const history::DeletionInfo& deletion_info) {
+    if (deletion_info.IsAllHistory()) {
+      // If the whole history is deleted, clear all strikes.
+      ClearAllStrikes();
+      return;
+    }
+    std::set<std::string> deleted_hosts;
+    for (const auto& url_row : deletion_info.deleted_rows()) {
+      deleted_hosts.insert(url_row.url().host());
+    }
+    if (!deletion_info.time_range().IsValid()) {
+      ClearStrikesByOrigin(deleted_hosts);
+      return;
+    }
+    ClearStrikesByOriginAndTime(deleted_hosts,
+                                deletion_info.time_range().begin(),
+                                deletion_info.time_range().end());
+  }
+
+ private:
   void ClearStrikesByOriginAndTime(const std::set<std::string>& hosts_to_delete,
                                    base::Time delete_begin,
                                    base::Time delete_end) {

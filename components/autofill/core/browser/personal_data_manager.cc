@@ -115,28 +115,6 @@ enum class MigrateUserOptedInWalletSyncType {
   kMaxValue = kNotMigratedUnexpectedPrimaryAccountIdWithEmail,
 };
 
-template <typename T>
-void ClearStrikesWithHistory(HistoryClearableStrikeDatabase<T>& strike_database,
-                             const history::DeletionInfo& deletion_info) {
-  if (deletion_info.IsAllHistory()) {
-    // If the whole history is deleted, clear all strikes.
-    strike_database.ClearAllStrikes();
-    return;
-  }
-  std::set<std::string> deleted_hosts;
-  for (const auto& url_row : deletion_info.deleted_rows()) {
-    deleted_hosts.insert(url_row.url().host());
-  }
-  if (!deletion_info.time_range().IsValid() ||
-      deletion_info.time_range().IsAllTime()) {
-    strike_database.ClearStrikesByOrigin(deleted_hosts);
-    return;
-  }
-  strike_database.ClearStrikesByOriginAndTime(
-      deleted_hosts, deletion_info.time_range().begin(),
-      deletion_info.time_range().end());
-}
-
 }  // namespace
 
 PersonalDataManager::PersonalDataManager(
@@ -257,11 +235,10 @@ void PersonalDataManager::OnURLsDeleted(
     AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_);
   }
   if (profile_save_strike_database_) {
-    ClearStrikesWithHistory(*profile_save_strike_database_, deletion_info);
+    profile_save_strike_database_->ClearStrikesWithHistory(deletion_info);
   }
   if (address_suggestion_strike_database_) {
-    ClearStrikesWithHistory(*address_suggestion_strike_database_,
-                            deletion_info);
+    address_suggestion_strike_database_->ClearStrikesWithHistory(deletion_info);
   }
 }
 

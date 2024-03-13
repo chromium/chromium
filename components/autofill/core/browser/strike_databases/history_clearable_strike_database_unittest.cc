@@ -4,19 +4,22 @@
 
 #include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
 
+#include <optional>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 namespace {
-
 struct TestStrikeDatabaseTraits {
   static constexpr std::string_view kName = "Test";
   static constexpr size_t kMaxStrikeEntities = 200;
@@ -44,6 +47,10 @@ class HistoryClearableStrikeDatabaseTest : public ::testing::Test {
     strike_database_ = std::make_unique<
         HistoryClearableStrikeDatabase<TestStrikeDatabaseTraits>>(
         strike_database_service_.get());
+    delete_first_url_row_.emplace_back(kUrl1);
+    delete_all_urls_rows_.emplace_back(kUrl1);
+    delete_all_urls_rows_.emplace_back(kUrl2);
+    delete_all_urls_rows_.emplace_back(kUrl3);
   }
 
   void TearDown() override {
@@ -55,6 +62,21 @@ class HistoryClearableStrikeDatabaseTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void ClearStrikesByOrigin(const history::URLRows& deleted_rows) {
+    strike_database_->ClearStrikesWithHistory(
+        history::DeletionInfo::ForUrls(deleted_rows,
+                                       /*favicon_urls=*/{}));
+  }
+
+  void ClearStrikesByOriginAndTime(const history::URLRows& deleted_rows,
+                                   base::Time delete_begin,
+                                   base::Time delete_end) {
+    strike_database_->ClearStrikesWithHistory(history::DeletionInfo(
+        history::DeletionTimeRange(delete_begin, delete_end),
+        /*is_from_expiration=*/false, deleted_rows,
+        /*favicon_urls=*/{}, /*restrict_urls=*/std::nullopt));
+  }
+
  protected:
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
@@ -63,13 +85,12 @@ class HistoryClearableStrikeDatabaseTest : public ::testing::Test {
   std::unique_ptr<HistoryClearableStrikeDatabase<TestStrikeDatabaseTraits>>
       strike_database_;
 
-  std::string test_host1 = "https://www.strikedhost.com";
-  std::string test_host2 = "https://www.otherhost.com";
-  std::string test_host3 = "https://www.justanotherhost.com";
+  const GURL kUrl1 = GURL("https://www.strikedhost.com");
+  const GURL kUrl2 = GURL("https://www.otherhost.com");
+  const GURL kUrl3 = GURL("https://www.justanotherhost.com");
 
-  std::set<std::string> delete_first_host_set = {test_host1};
-  std::set<std::string> delete_all_hosts_set = {test_host1, test_host2,
-                                                test_host3};
+  history::URLRows delete_first_url_row_;
+  history::URLRows delete_all_urls_rows_;
 };
 
 TEST_F(HistoryClearableStrikeDatabaseTest,
@@ -77,31 +98,30 @@ TEST_F(HistoryClearableStrikeDatabaseTest,
   base::Time start_time = AutofillClock::Now();
   // Both strikes are added within the deletion window, but the second should
   // be ruled out by the filter.
-  strike_database_->AddStrike(test_host1);
-  strike_database_->AddStrike(test_host2);
+  strike_database_->AddStrike(kUrl1.host());
+  strike_database_->AddStrike(kUrl2.host());
   base::Time end_time = AutofillClock::Now();
 
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
 
-  strike_database_->ClearStrikesByOriginAndTime(delete_first_host_set,
-                                                start_time, end_time);
+  ClearStrikesByOriginAndTime(delete_first_url_row_, start_time, end_time);
 
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 0);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 0);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
 }
 
 TEST_F(HistoryClearableStrikeDatabaseTest, RemoveStrikesByOrigin) {
-  strike_database_->AddStrike(test_host1);
-  strike_database_->AddStrike(test_host2);
+  strike_database_->AddStrike(kUrl1.host());
+  strike_database_->AddStrike(kUrl2.host());
 
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
 
-  strike_database_->ClearStrikesByOrigin(delete_first_host_set);
+  ClearStrikesByOrigin(delete_first_url_row_);
 
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 0);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host2), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 0);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
 }
 
 TEST_F(HistoryClearableStrikeDatabaseTest,
@@ -110,18 +130,17 @@ TEST_F(HistoryClearableStrikeDatabaseTest,
   test_autofill_clock.SetNow(AutofillClock::Now());
 
   base::Time start_time = AutofillClock::Now();
-  strike_database_->AddStrike(test_host1);
+  strike_database_->AddStrike(kUrl1.host());
   test_autofill_clock.Advance(base::Minutes(1));
   base::Time end_time = AutofillClock::Now();
   test_autofill_clock.Advance(base::Minutes(1));
 
   // Now update the time stamp of this entry by adding another strike.
   // By this, the entry should not be deleted.
-  strike_database_->AddStrike(test_host1);
+  strike_database_->AddStrike(kUrl1.host());
 
-  strike_database_->ClearStrikesByOriginAndTime(delete_all_hosts_set,
-                                                start_time, end_time);
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 2);
+  ClearStrikesByOriginAndTime(delete_all_urls_rows_, start_time, end_time);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 2);
 }
 
 TEST_F(HistoryClearableStrikeDatabaseTest,
@@ -130,17 +149,16 @@ TEST_F(HistoryClearableStrikeDatabaseTest,
   TestAutofillClock test_autofill_clock;
   test_autofill_clock.SetNow(AutofillClock::Now());
 
-  strike_database_->AddStrike(test_host1);
+  strike_database_->AddStrike(kUrl1.host());
   test_autofill_clock.Advance(base::Minutes(1));
 
   base::Time start_time = AutofillClock::Now();
   test_autofill_clock.Advance(base::Minutes(1));
   base::Time end_time = AutofillClock::Now();
 
-  strike_database_->ClearStrikesByOriginAndTime(delete_all_hosts_set,
-                                                start_time, end_time);
+  ClearStrikesByOriginAndTime(delete_all_urls_rows_, start_time, end_time);
 
-  EXPECT_EQ(strike_database_->GetStrikes(test_host1), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 1);
 }
 
 }  // namespace

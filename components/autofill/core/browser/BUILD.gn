@@ -1296,6 +1296,7 @@ source_set("unit_tests") {
     "//components/commerce/core:shopping_service_test_support",
     "//components/device_reauth:test_support",
     "//components/feature_engagement",
+    "//components/history/core/browser",
     "//components/image_fetcher/core:core",
     "//components/image_fetcher/core:test_support",
     "//components/leveldb_proto",
