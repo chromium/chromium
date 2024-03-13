@@ -99,7 +99,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
 
   EXPECT_EQ(net::DefaultSupportedQuicVersions(),
             quic_params_.supported_versions);
-  EXPECT_FALSE(params_.enable_quic_proxies_for_https_urls);
   EXPECT_EQ(0u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_FALSE(
       quic_params_.initial_delay_for_broken_alternative_service.has_value());
@@ -196,17 +195,6 @@ TEST_F(NetworkSessionConfiguratorTest, EnableQuicForDataReductionProxy) {
   ParseFieldTrials();
 
   EXPECT_TRUE(params_.enable_quic);
-}
-
-TEST_F(NetworkSessionConfiguratorTest, EnableQuicProxiesForHttpsUrls) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["enable_quic_proxies_for_https_urls"] = "true";
-  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_TRUE(params_.enable_quic_proxies_for_https_urls);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, DisableRetryWithoutAltSvcOnQuicErrors) {

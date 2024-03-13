@@ -347,14 +347,11 @@ class HttpStreamFactory::Job
                                           const GURL& origin_url,
                                           const HttpRequestInfo& request_info);
 
-  // Returns whether an appropriate SPDY or QUIC session would correspond to
-  // either a connection to the last proxy server in the chain (for the
-  // traditional HTTP proxying behavior of sending a GET request to the proxy
-  // server) or a connection through the entire proxy chain (for tunneled
-  // requests).
-  // TODO(https://crbug.com/1495793): Support for this is being removed for QUIC
-  // proxy chains, but will remain for SPDY proxies (so update the comment
-  // above once this change is made).
+  // Returns whether an appropriate SPDY session would correspond to either a
+  // connection to the last proxy server in the chain (for the traditional HTTP
+  // proxying behavior of sending a GET request to the proxy server) or a
+  // connection through the entire proxy chain (for tunneled requests). Note
+  // that for QUIC proxies we no longer support the former.
   static bool IsGetToProxy(const ProxyChain& proxy_chain,
                            const GURL& origin_url);
 

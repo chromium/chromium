@@ -107,7 +107,11 @@ bool ProxyChain::IsValidInternal() const {
     return false;
   }
   if (is_single_proxy()) {
-    return proxy_server_list_.value().at(0).is_valid();
+    bool is_valid = proxy_server_list_.value().at(0).is_valid();
+    if (proxy_server_list_.value().at(0).is_quic()) {
+      is_valid = is_valid && is_for_ip_protection();
+    }
+    return is_valid;
   }
   bool all_https = base::ranges::all_of(
       proxy_server_list_.value(), [](const auto& proxy_server) {

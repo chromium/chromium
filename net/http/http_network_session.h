@@ -147,9 +147,6 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // Enables QUIC support.
   bool enable_quic = true;
 
-  // If true, HTTPS URLs can be sent to QUIC proxies.
-  bool enable_quic_proxies_for_https_urls = false;
-
   // If non-empty, QUIC will only be spoken to hosts in this list.
   base::flat_set<std::string> quic_host_allowlist;
 
