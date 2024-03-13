@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_RECENT_TABS_SUB_MENU_MODEL_H_
-#define CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_RECENT_TABS_SUB_MENU_MODEL_H_
+#ifndef CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_MODEL_H_
+#define CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_MODEL_H_
 
 #include <memory>
 #include <set>
@@ -106,17 +106,26 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
 
   // Build a recently closed tab item with parameters needed to restore it, and
   // add it to the menumodel at |curr_model_index|.
-  void BuildLocalTabItem(const sessions::TabRestoreService::Tab& tab,
-                         size_t curr_model_index);
+  void BuildLocalTabItem(
+      SessionID session_id,
+      std::optional<tab_groups::TabGroupVisualData> visual_data,
+      const std::u16string& title,
+      const GURL& url,
+      size_t curr_model_index);
 
   // Build the recently closed window item with parameters needed to restore it,
   // and add it to the menumodel at |curr_model_index|.
-  void BuildLocalWindowItem(const sessions::TabRestoreService::Window& window,
+  void BuildLocalWindowItem(SessionID window_id,
+                            std::unique_ptr<ui::SimpleMenuModel> window_model,
+                            size_t num_tabs,
                             size_t curr_model_index);
 
   // Build the recently closed group item with parameters needed to restore it,
   // and add it to the menumodel at |curr_model_index|.
-  void BuildLocalGroupItem(const sessions::TabRestoreService::Group& group,
+  void BuildLocalGroupItem(SessionID session_id,
+                           tab_groups::TabGroupVisualData visual_data,
+                           std::unique_ptr<ui::SimpleMenuModel> group_model,
+                           size_t num_tabs,
                            size_t curr_model_index);
 
   // Build the tab item for other devices with parameters needed to restore it.
@@ -141,10 +150,6 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   void AddGroupItemToModel(SimpleMenuModel* parent_model,
                            std::unique_ptr<SimpleMenuModel> group_model,
                            tab_groups::TabGroupVisualData group_visual_data);
-
-  void AddTabItemToModel(const sessions::TabRestoreService::Tab* tab,
-                         ui::SimpleMenuModel* model,
-                         int command_id);
 
   // Return the appropriate menu item label for a tab group, given its title
   // and the number of tabs it contains.
@@ -282,4 +287,4 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
       weak_ptr_factory_for_other_devices_tab_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_RECENT_TABS_SUB_MENU_MODEL_H_
+#endif  // CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_MODEL_H_
