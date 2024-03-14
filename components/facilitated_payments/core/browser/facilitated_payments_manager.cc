@@ -8,14 +8,17 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace payments::facilitated {
 
 FacilitatedPaymentsManager::FacilitatedPaymentsManager(
     FacilitatedPaymentsDriver* driver,
+    FacilitatedPaymentsClient* client,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : driver_(*driver),
+      client_(*client),
       optimization_guide_decider_(optimization_guide_decider) {
   DCHECK(optimization_guide_decider_);
   // TODO(b/314826708): Check if at least 1 GPay linked PIX account is
@@ -110,6 +113,7 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     DelayedTriggerPixCodeDetection(kRetriggerPixCodeDetectionWaitTime);
     return;
   }
+  client_->ShowPixPaymentPrompt();
   ukm::builders::FacilitatedPayments_PixCodeDetectionResult(ukm_source_id_)
       .SetResult(static_cast<uint8_t>(result))
       .SetLatencyInMillis(GetPixCodeDetectionLatencyInMillis())

@@ -4,6 +4,7 @@
 
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
+#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace payments::facilitated {
@@ -11,11 +12,11 @@ namespace payments::facilitated {
 ContentFacilitatedPaymentsDriverFactory::
     ContentFacilitatedPaymentsDriverFactory(
         content::WebContents* web_contents,
+        FacilitatedPaymentsClient* client,
         optimization_guide::OptimizationGuideDecider*
             optimization_guide_decider)
-    : content::WebContentsUserData<ContentFacilitatedPaymentsDriverFactory>(
-          *web_contents),
-      content::WebContentsObserver(web_contents),
+    : content::WebContentsObserver(web_contents),
+      client_(*client),
       optimization_guide_decider_(optimization_guide_decider) {}
 
 ContentFacilitatedPaymentsDriverFactory::
@@ -65,11 +66,9 @@ ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
     return *iter->second;
   }
   driver = std::make_unique<ContentFacilitatedPaymentsDriver>(
-      optimization_guide_decider_, render_frame_host);
+      &*client_, optimization_guide_decider_, render_frame_host);
   DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(), driver.get());
   return *iter->second;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentFacilitatedPaymentsDriverFactory);
 
 }  // namespace payments::facilitated

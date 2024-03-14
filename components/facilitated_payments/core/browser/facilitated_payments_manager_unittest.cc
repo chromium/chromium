@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -78,8 +79,9 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     optimization_guide_decider_ =
         std::make_unique<MockOptimizationGuideDecider>();
     driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr);
+    client_ = std::make_unique<FacilitatedPaymentsClient>();
     manager_ = std::make_unique<FacilitatedPaymentsManager>(
-        driver_.get(), optimization_guide_decider_.get());
+        driver_.get(), client_.get(), optimization_guide_decider_.get());
   }
 
   void TearDown() override {
@@ -184,6 +186,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   std::unique_ptr<MockOptimizationGuideDecider> optimization_guide_decider_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
+  std::unique_ptr<FacilitatedPaymentsClient> client_;
   std::unique_ptr<FacilitatedPaymentsManager> manager_;
 
  private:

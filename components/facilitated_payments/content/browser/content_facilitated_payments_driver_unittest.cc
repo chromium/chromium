@@ -8,6 +8,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -48,6 +49,7 @@ class ContentFacilitatedPaymentsDriverTest
   void SetUp() override {
     decider_ =
         std::make_unique<optimization_guide::TestOptimizationGuideDecider>();
+    client_ = std::make_unique<FacilitatedPaymentsClient>();
     agent_ = std::make_unique<FakeFacilitatedPaymentsAgent>();
     content::RenderViewHostTestHarness::SetUp();
 
@@ -62,7 +64,7 @@ class ContentFacilitatedPaymentsDriverTest
                 base::Unretained(agent_.get())));
 
     driver_ = std::make_unique<ContentFacilitatedPaymentsDriver>(
-        decider_.get(), render_frame_host);
+        client_.get(), decider_.get(), render_frame_host);
   }
 
   void TearDown() override {
@@ -74,6 +76,7 @@ class ContentFacilitatedPaymentsDriverTest
 
  protected:
   std::unique_ptr<optimization_guide::TestOptimizationGuideDecider> decider_;
+  std::unique_ptr<FacilitatedPaymentsClient> client_;
   std::unique_ptr<FakeFacilitatedPaymentsAgent> agent_;
   std::unique_ptr<ContentFacilitatedPaymentsDriver> driver_;
 };

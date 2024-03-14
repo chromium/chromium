@@ -8,14 +8,14 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
+class WebContents;
 class NavigationHandle;
 class RenderFrameHost;
-class WebContents;
 }  // namespace content
 
 namespace optimization_guide {
@@ -24,16 +24,17 @@ class OptimizationGuideDecider;
 
 namespace payments::facilitated {
 
+class FacilitatedPaymentsClient;
+
 // Manages the lifetime of `ContentFacilitatedPaymentsDriver`. It is owned by
-// `WebContents`. Creates one `ContentFacilitatedPaymentsDriver` for each
-// outermost main `RenderFrameHost`.
+// `ContentFacilitatedPaymentsClient`. Creates one
+// `ContentFacilitatedPaymentsDriver` for each outermost main `RenderFrameHost`.
 class ContentFacilitatedPaymentsDriverFactory
-    : public content::WebContentsUserData<
-          ContentFacilitatedPaymentsDriverFactory>,
-      public content::WebContentsObserver {
+    : public content::WebContentsObserver {
  public:
   ContentFacilitatedPaymentsDriverFactory(
       content::WebContents* web_contents,
+      FacilitatedPaymentsClient* client,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   ContentFacilitatedPaymentsDriverFactory(
       const ContentFacilitatedPaymentsDriverFactory&) = delete;
@@ -42,8 +43,6 @@ class ContentFacilitatedPaymentsDriverFactory
   ~ContentFacilitatedPaymentsDriverFactory() override;
 
  private:
-  friend class content::WebContentsUserData<
-      ContentFacilitatedPaymentsDriverFactory>;
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
@@ -63,12 +62,13 @@ class ContentFacilitatedPaymentsDriverFactory
                  std::unique_ptr<ContentFacilitatedPaymentsDriver>>
       driver_map_;
 
+  // Owner.
+  raw_ref<FacilitatedPaymentsClient> client_;
+
   // The optimization guide decider to help determine whether the current main
   // frame URL is eligible for facilitated payments.
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace payments::facilitated

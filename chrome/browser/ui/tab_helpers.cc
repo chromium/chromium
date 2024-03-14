@@ -174,12 +174,12 @@
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
+#include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/fast_checkout/fast_checkout_tab_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
-#include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/common/content_features.h"
@@ -569,8 +569,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
           payments::facilitated::kEnablePixDetection)) {
     if (auto* optimization_guide_decider =
             OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
-      payments::facilitated::ContentFacilitatedPaymentsDriverFactory::
-          CreateForWebContents(web_contents, optimization_guide_decider);
+      ChromeFacilitatedPaymentsClient::CreateForWebContents(
+          web_contents, optimization_guide_decider);
     }
   }
 #else  // BUILDFLAG(IS_ANDROID)

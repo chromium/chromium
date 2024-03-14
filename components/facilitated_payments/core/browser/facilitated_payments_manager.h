@@ -20,14 +20,16 @@ class GURL;
 namespace payments::facilitated {
 
 class FacilitatedPaymentsDriver;
+class FacilitatedPaymentsClient;
 
-// A cross-platform interface that manages the flow of PIX payments between the
-// browser and the Payments platform. It is owned by
-// `FacilitatedPaymentsDriver`.
+// A cross-platform interface that manages the flow of payments for non-form
+// based form-of-payments between the browser and the Payments platform. It is
+// owned by `FacilitatedPaymentsDriver`.
 class FacilitatedPaymentsManager {
  public:
   FacilitatedPaymentsManager(
       FacilitatedPaymentsDriver* driver,
+      FacilitatedPaymentsClient* client,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   FacilitatedPaymentsManager(const FacilitatedPaymentsManager&) = delete;
   FacilitatedPaymentsManager& operator=(const FacilitatedPaymentsManager&) =
@@ -119,7 +121,11 @@ class FacilitatedPaymentsManager {
 
   int64_t GetPixCodeDetectionLatencyInMillis() const;
 
+  // Owner.
   raw_ref<FacilitatedPaymentsDriver> driver_;
+
+  // Indirect owner.
+  raw_ref<FacilitatedPaymentsClient> client_;
 
   // The optimization guide decider to help determine whether the current main
   // frame URL is eligible for facilitated payments.
