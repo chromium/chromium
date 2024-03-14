@@ -713,14 +713,12 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
             screen_->GetLocalProcessWidgetAtPoint({50, 50}, {}));
 
   // Emulates a pointer::leave event being sent before data_source::cancelled,
-  // what happens with some compositors, e.g: Exosphere. Even in these cases,
+  // what happens with some compositors, e.g: Mutter, KWin. Even in these cases,
   // WaylandWindowDragController must guarantee the mouse button release event
   // (aka: drop) is delivered to the upper layer listeners.
   //
-  // TODO(https://crbug.com/1405471): Replace the block below by a call to
-  // `SendPointerLeave(target_window, &delegate_)` when the bypass to pointer
-  // enter|leave events is removed from
-  // WaylandPointer::Enter|Leave().
+  // TODO(crbug.com/329479345): Revisit once drop/cancellation handling is
+  // refactored in drag controller.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
   WaylandDragDropTest::SendPointerLeave(target_window, &delegate_);
   Mock::VerifyAndClearExpectations(&delegate_);
@@ -991,8 +989,8 @@ TEST_P(WaylandWindowDragControllerTest,
         // Simulate a spurious `wl_pointer.enter` event to the |source_window|.
         // This should be ignored given that a window dnd operation is in place.
         //
-        // NOTE: SendPointerEnter() isn't used here given that it sets
-        // expectations that won't be met.
+        // TODO(crbug.com/329479345): Revisit once drop/cancellation handling is
+        // refactored in drag controller.
         WaylandDragDropTest::SendPointerEnter(source_window, &delegate_);
         EXPECT_EQ(target_window->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
@@ -1235,7 +1233,7 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
 
         // TODO(crbug.com/1498170): Remove window's origin here once the
         // non-Lacros motion events handling in detached mode gets fixed.
-        gfx::Point expected_point{50, 50};
+        gfx::Point expected_point{20, 20};
         expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
         EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
         test_step = kDone;
