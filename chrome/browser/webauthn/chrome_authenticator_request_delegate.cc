@@ -557,7 +557,9 @@ bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
 
   auto* profile = Profile::FromBrowserContext(browser_context);
   auto* const identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  // TODO(enclave): what do we do in an Incognito session?
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;
   }
 
