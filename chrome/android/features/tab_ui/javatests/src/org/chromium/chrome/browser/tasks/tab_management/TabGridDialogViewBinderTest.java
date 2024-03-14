@@ -241,7 +241,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetPrimaryColor() {
-        int color = ContextCompat.getColor(getActivity(), R.color.modern_blue_300);
+        int color = ContextCompat.getColor(getActivity(), R.color.baseline_primary_80);
 
         mModel.set(TabGridDialogProperties.PRIMARY_COLOR, color);
 

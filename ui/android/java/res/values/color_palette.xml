@@ -95,10 +95,6 @@ found in the LICENSE file.
 
     <!-- Remapped to 2021 color palette. Do not add new references to these. -->
     <color name="modern_white">@color/baseline_neutral_100</color>
-    <!-- Correct for most places to use 200 instead of 300 now. -->
-    <color name="modern_blue_300">@color/baseline_primary_80</color>
-    <color name="modern_blue_300_alpha_10" tools:ignore="UnusedResources">@color/baseline_primary_80_alpha_10</color>
-    <color name="modern_blue_300_alpha_50">@color/baseline_primary_80_alpha_50</color>
     <color name="modern_blue_600">@color/baseline_primary_40</color>
     <color name="modern_blue_600_alpha_6">@color/baseline_primary_40_alpha_6</color>
     <color name="modern_blue_600_alpha_10">@color/baseline_primary_40_alpha_10</color>

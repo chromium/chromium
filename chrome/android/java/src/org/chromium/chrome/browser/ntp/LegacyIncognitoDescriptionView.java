@@ -352,7 +352,9 @@ public class LegacyIncognitoDescriptionView extends LinearLayout
 
         NoUnderlineClickableSpan span =
                 new NoUnderlineClickableSpan(
-                        getContext(), R.color.modern_blue_300, (view) -> mLearnMore.callOnClick());
+                        getContext(),
+                        R.color.baseline_primary_80,
+                        (view) -> mLearnMore.callOnClick());
         textWithLearnMoreLink.setSpan(
                 span, subtitleText.length() + 1, textWithLearnMoreLink.length(), /* flags= */ 0);
         mSubtitle.setText(textWithLearnMoreLink);

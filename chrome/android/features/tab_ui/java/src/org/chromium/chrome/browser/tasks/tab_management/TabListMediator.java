@@ -1824,12 +1824,12 @@ class TabListMediator {
                             pseudoTab.isIncognito()
                                     ? R.color.default_icon_color_light
                                     : R.color.default_icon_color_tint_list);
-            // TODO(995876): Update color modern_blue_300 to active_color_dark when the associated
-            // bug is landed.
+            // TODO(995876): Update color baseline_primary_80 to active_color_dark when the
+            // associated bug is landed.
             ColorStateList actionbuttonSelectedBackgroundColorList =
                     ColorStateList.valueOf(
                             pseudoTab.isIncognito()
-                                    ? mContext.getColor(R.color.modern_blue_300)
+                                    ? mContext.getColor(R.color.baseline_primary_80)
                                     : SemanticColorUtils.getDefaultControlColorActive(mContext));
 
             tabInfo.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, checkedDrawableColorList);

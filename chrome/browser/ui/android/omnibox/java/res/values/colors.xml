@@ -24,7 +24,7 @@ found in the LICENSE file.
 
     <color name="locationbar_status_preview_color_dark">@color/default_text_color_secondary_dark</color>
     <color name="locationbar_status_preview_color_light">@android:color/white</color>
-    <color name="locationbar_status_preview_color_incognito">@color/modern_blue_300</color>
+    <color name="locationbar_status_preview_color_incognito">@color/baseline_primary_80</color>
 
     <color name="locationbar_status_separator_color_dark">@color/baseline_neutral_variant_50</color>
     <color name="locationbar_status_separator_color_light">@color/white_alpha_60</color>

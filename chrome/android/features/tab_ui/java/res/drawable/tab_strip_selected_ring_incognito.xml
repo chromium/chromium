@@ -9,8 +9,8 @@
         a 17,17 0 1,0 34,0
         a 17,17 0 1,0 -34,0
         z"
-        android:strokeColor="@color/modern_blue_300" android:strokeWidth="2"/>
-    <path android:fillColor="@color/modern_blue_300" android:fillType="evenOdd"
+        android:strokeColor="@color/baseline_primary_80" android:strokeWidth="2"/>
+    <path android:fillColor="@color/baseline_primary_80" android:fillType="evenOdd"
         android:pathData="M 40, 12
         m -12, 0
         a 8,8 0 1,0 16,0

@@ -87,13 +87,13 @@ found in the LICENSE file.
     <color name="divider_line_bg_color_dark">@color/baseline_neutral_variant_90</color>
     <color name="divider_line_bg_color_light">@color/baseline_neutral_variant_30</color>
     <color name="default_bg_color_blue_dark">@color/modern_blue_600</color>
-    <color name="default_bg_color_blue_light">@color/modern_blue_300</color>
+    <color name="default_bg_color_blue_light">@color/baseline_primary_80</color>
     <color name="default_scrim_color">@color/black_alpha_65</color>
     <color name="incognito_card_bg_color">@color/default_bg_color_dark_elev_1_baseline</color>
 
     <!-- IPH Highlight Colors -->
     <color name="iph_highlight_blue_dark">@color/modern_blue_600_alpha_10</color>
-    <color name="iph_highlight_blue_light">@color/modern_blue_300_alpha_50</color>
+    <color name="iph_highlight_blue_light">@color/baseline_primary_80_alpha_50</color>
 
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
     <!-- Same as ?attr/colorPrimary. -->
@@ -119,7 +119,7 @@ found in the LICENSE file.
 
     <!-- Ripple Colors -->
     <color name="ripple_color_blue_dark">@color/modern_blue_600</color>
-    <color name="ripple_color_blue_light">@color/modern_blue_300</color>
+    <color name="ripple_color_blue_light">@color/baseline_primary_80</color>
 
     <!-- Image loading colors -->
     <color name="image_loading_color_dark">@color/modern_grey_300</color>
@@ -156,7 +156,7 @@ found in the LICENSE file.
     <color name="adaptive_toolbar_preference_header_line_light">@color/modern_grey_800</color>
     <color name="adaptive_toolbar_preference_header_line_dark">@color/modern_white</color>
     <color name="adaptive_toolbar_preference_header_blue_light">@color/modern_blue_600</color>
-    <color name="adaptive_toolbar_preference_header_blue_dark">@color/modern_blue_300</color>
+    <color name="adaptive_toolbar_preference_header_blue_dark">@color/baseline_primary_80</color>
     <color name="adaptive_toolbar_preference_header_omnibox_light">@color/modern_grey_100</color>
     <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
 
