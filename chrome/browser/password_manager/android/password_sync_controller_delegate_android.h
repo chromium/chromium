@@ -91,11 +91,6 @@ class PasswordSyncControllerDelegateAndroid
 
   const std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge_;
 
-  // Current sync status, std::nullopt until OnSyncServiceInitialized() is
-  // called. This value is used to distinguish between sync setup on startup and
-  // when user turns on sync manually.
-  std::optional<IsPwdSyncEnabled> is_sync_enabled_;
-
   // Last sync status set in CredentialManager.
   std::optional<IsPwdSyncEnabled> credential_manager_sync_setting_;
 

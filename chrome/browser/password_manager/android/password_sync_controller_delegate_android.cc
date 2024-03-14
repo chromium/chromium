@@ -63,29 +63,12 @@ void PasswordSyncControllerDelegateAndroid::OnSyncServiceInitialized(
   sync_observation_.Observe(sync_service);
   // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
   // Android.
-  is_sync_enabled_ =
-      IsPwdSyncEnabled(IsSyncFeatureEnabledIncludingPasswords(sync_service));
   UpdateCredentialManagerSyncStatus(sync_service);
 }
 
 void PasswordSyncControllerDelegateAndroid::OnSyncStarting(
     const syncer::DataTypeActivationRequest& request,
     StartCallback callback) {
-  // React on sync starting only if we know that sync was disabled. Otherwise,
-  // we either couldn't obtain sync status before OnSyncStarting was called, or
-  // sync was already active and this is called on browser start up. In either
-  // case we shouldn't react.
-  // TODO(crbug.com/1312392): Record whether OnSyncStarting is called before
-  // |is_sync_enabled_| holds value.
-  if (is_sync_enabled_.has_value() &&
-      is_sync_enabled_.value() == IsPwdSyncEnabled(false)) {
-    // TODO(crbug.com/1312392): Sync was enabled. Move passwords from local
-    // storage to syncing storage.
-    NOTIMPLEMENTED();
-  }
-
-  is_sync_enabled_ = IsPwdSyncEnabled(true);
-
   // Set |skip_engine_connection| to true to indicate that, actually, this sync
   // datatype doesn't depend on the built-in SyncEngine to communicate changes
   // to/from the Sync server. Instead, Android specific functionality is
@@ -112,7 +95,6 @@ void PasswordSyncControllerDelegateAndroid::OnSyncStopping(
       // TODO(crbug.com/1312392): Sync was disabled. Move passwords from syncing
       // storage to local storage.
       NOTIMPLEMENTED();
-      is_sync_enabled_ = IsPwdSyncEnabled(false);
       break;
   }
 }
@@ -200,12 +182,6 @@ PasswordSyncControllerDelegateAndroid::GetWeakPtrToBaseClass() {
 }
 
 void PasswordSyncControllerDelegateAndroid::ClearMetadataIfStopped() {
-  // If this method is being called, this means sync was permanently disabled,
-  // either fully or specifically for passwords. This also includes more
-  // advanced cases like the user having cleared all sync data in the dashboard
-  // (birthday reset) or, at least in theory, the sync server reporting that all
-  // sync metadata is obsolete (i.e. CLIENT_DATA_OBSOLETE in the sync protocol).
-  is_sync_enabled_ = IsPwdSyncEnabled(false);
   // No metadata is managed by PasswordSyncControllerDelegateAndroid.
 }
 
