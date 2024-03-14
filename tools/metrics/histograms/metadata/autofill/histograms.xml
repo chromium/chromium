@@ -3289,30 +3289,6 @@ chromium-metrics-reviews@google.com.
   <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
-<histogram name="Autofill.OfferNotificationInfoBarOffer.{OfferType}"
-    enum="BooleanShown" expires_after="2024-07-01">
-  <owner>siashah@chromium.org</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Emits true when the offer notification infobar is displayed and does not
-    emit any value otherwise.
-  </summary>
-  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
-</histogram>
-
-<histogram name="Autofill.OfferNotificationInfoBarResult.{OfferType}"
-    enum="AutofillOfferNotificationInfoBarResult" expires_after="2024-07-01">
-  <owner>siashah@chromium.org</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records the reason for closing the offer notification infobar for
-    {OfferType}. Recorded when the infobar is closed.
-  </summary>
-  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
-</histogram>
-
 <histogram name="Autofill.OtpAuth.{OtpAuthType}.Attempt"
     enum="BooleanAttempted" expires_after="2024-09-01">
   <owner>siyua@chromium.org</owner>

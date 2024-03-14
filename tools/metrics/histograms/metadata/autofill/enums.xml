@@ -1442,12 +1442,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Bubble lost focus and was deactivated"/>
 </enum>
 
-<enum name="AutofillOfferNotificationInfoBarResult">
-  <int value="0" label="User closed infobar via OK button"/>
-  <int value="1" label="User closed infobar via corner X"/>
-  <int value="2" label="User did not interact with the infobar"/>
-</enum>
-
 <enum name="AutofillOptionsReferrer">
   <int value="0" label="User entered the autofill options via main settings."/>
   <int value="1" label="User entered the autofill options via deep link."/>

@@ -619,8 +619,6 @@ static_library("browser") {
     sources += [
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.cc",
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.h",
-      "payments/autofill_offer_notification_infobar_delegate_mobile.cc",
-      "payments/autofill_offer_notification_infobar_delegate_mobile.h",
       "payments/autofill_save_card_delegate.cc",
       "payments/autofill_save_card_delegate.h",
       "payments/autofill_save_card_infobar_delegate_mobile.cc",

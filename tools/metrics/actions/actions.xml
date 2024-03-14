@@ -4402,6 +4402,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_OfferNotificationInfoBar_DeepLinkClicked">
+  <obsolete>
+    Deprecated as of 03/2024. Offer notifications are not shown on infobars
+    anymore.
+  </obsolete>
   <owner>siashah@chromium.org</owner>
   <owner>siyua@chromium.org</owner>
   <description>

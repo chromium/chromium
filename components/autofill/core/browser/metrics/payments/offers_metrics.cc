@@ -111,23 +111,6 @@ void LogOfferNotificationBubbleSuppressed(
   base::UmaHistogramBoolean(histogram_name, true);
 }
 
-void LogOfferNotificationInfoBarDeepLinkClicked() {
-  base::RecordAction(base::UserMetricsAction(
-      "Autofill_OfferNotificationInfoBar_DeepLinkClicked"));
-}
-
-void LogOfferNotificationInfoBarResultMetric(
-    OfferNotificationInfoBarResultMetric metric) {
-  DCHECK_LE(metric, OfferNotificationInfoBarResultMetric::kMaxValue);
-  base::UmaHistogramEnumeration(
-      "Autofill.OfferNotificationInfoBarResult.CardLinkedOffer", metric);
-}
-
-void LogOfferNotificationInfoBarShown() {
-  base::UmaHistogramBoolean(
-      "Autofill.OfferNotificationInfoBarOffer.CardLinkedOffer", true);
-}
-
 void LogStoredOfferMetrics(
     const std::vector<std::unique_ptr<AutofillOfferData>>& offers) {
   std::unordered_map<AutofillOfferData::OfferType, int> offer_count;

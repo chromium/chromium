@@ -28,20 +28,6 @@ enum class OfferNotificationBubbleResultMetric {
   kMaxValue = OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
 };
 
-// Metrics to track event when the offer notification infobar is closed.
-enum class OfferNotificationInfoBarResultMetric {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
-  // User acknowledged the infobar by clicking the ok button.
-  OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED = 0,
-  // User explicitly closed the infobar with the close button.
-  OFFER_NOTIFICATION_INFOBAR_CLOSED = 1,
-  // InfoBar was shown but user did not interact with the it.
-  OFFER_NOTIFICATION_INFOBAR_IGNORED = 2,
-  kMaxValue = OFFER_NOTIFICATION_INFOBAR_IGNORED,
-};
-
 // Metrics to track events related to the offers suggestions popup.
 enum class OffersSuggestionsPopupEvent {
   // These values are persisted to logs. Entries should not be renumbered and
@@ -114,11 +100,6 @@ void LogOffersSuggestionsPopupShown(bool first_time_being_logged);
 // Log the offers suggestions popup `event` for the corresponding `offer_type`.
 void LogIndividualOfferSuggestionEvent(OffersSuggestionsEvent event,
                                        AutofillOfferData::OfferType offer_type);
-
-void LogOfferNotificationInfoBarDeepLinkClicked();
-void LogOfferNotificationInfoBarResultMetric(
-    OfferNotificationInfoBarResultMetric metric);
-void LogOfferNotificationInfoBarShown();
 
 // Logs the offer data associated with a profile. This should be called each
 // time a Chrome profile is launched.
