@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/webui/lens/lens_untrusted_ui.h"
 
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/lens_untrusted_resources.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
+#include "components/lens/lens_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -35,6 +37,15 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUILensUntrustedURL);
   html_source->AddLocalizedString("close", IDS_CLOSE);
+
+  // Allow frameSrc from all Google subdomains as redirects can occur.
+  GURL results_side_panel_url =
+      GURL(lens::features::GetLensOverlayResultsSearchURL());
+  std::string frame_src_directive =
+      base::StrCat({"frame-src https://*.google.com ",
+                    results_side_panel_url.GetWithEmptyPath().spec(), ";"});
+  html_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, frame_src_directive);
 
   // Add required resources.
   webui::SetupWebUIDataSource(
@@ -85,6 +96,15 @@ void LensUntrustedUI::CreatePageHandler(
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
   LensOverlayController::GetController(web_ui())->BindOverlay(
+      std::move(receiver), std::move(page));
+}
+
+void LensUntrustedUI::CreateSidePanelPageHandler(
+    mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
+    mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
+  // Once the interface is bound, we want to connect this instance with the
+  // appropriate instance of LensOverlayController.
+  LensOverlayController::GetController(web_ui())->BindSidePanel(
       std::move(receiver), std::move(page));
 }
 

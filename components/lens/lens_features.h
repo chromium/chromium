@@ -199,6 +199,10 @@ extern bool GetShouldIssueProcessPrewarmingForLens();
 // Returns whether the Lens overlay is enabled
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayEnabled();
+
+// Returns the finch configured results search URL to use as base for queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayResultsSearchURL();
 }  // namespace features
 }  // namespace lens
 

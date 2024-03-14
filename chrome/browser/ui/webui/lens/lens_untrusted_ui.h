@@ -36,6 +36,9 @@ class LensUntrustedUI : public ui::UntrustedBubbleWebUIController,
   void CreatePageHandler(
       mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
       mojo::PendingRemote<lens::mojom::LensPage> page) override;
+  void CreateSidePanelPageHandler(
+      mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
+      mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) override;
 
   void LoadScreenshot(
       const std::string& resource_path,

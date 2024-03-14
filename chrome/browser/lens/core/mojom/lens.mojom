@@ -5,6 +5,7 @@
 module lens.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
 
 // Factory method for creating a new WebUI page handler.
 interface LensPageHandlerFactory {
@@ -12,6 +13,10 @@ interface LensPageHandlerFactory {
   CreatePageHandler(
       pending_receiver<LensPageHandler> handler,
       pending_remote<LensPage> page);
+
+  // The side panel WebUI calls this method when the page is first initialized.
+  CreateSidePanelPageHandler(pending_receiver<LensSidePanelPageHandler> handler,
+      pending_remote<LensSidePanelPage> page);
 };
 
 // Browser-side handler for requests from WebUI page. (TypeScript -> C++)
@@ -30,4 +35,16 @@ interface LensPageHandler {
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface LensPage {
+};
+
+// Browser-side handler for requests from Side PanelWebUI page.
+// (TypeScript -> C++)
+interface LensSidePanelPageHandler {
+};
+
+// Side Panel WebUI page handler for request from Browser side.
+// (C++ -> TypeScript)
+interface LensSidePanelPage {
+  // Load a provided URL into the side panel results iframe.
+  LoadResultsInFrame(url.mojom.Url results_url);
 };

@@ -41,7 +41,8 @@ class WebUI;
 // This class is not thread safe. It should only be used from the browser
 // thread.
 class LensOverlayController : public TabStripModelObserver,
-                              public lens::mojom::LensPageHandler {
+                              public lens::mojom::LensPageHandler,
+                              public lens::mojom::LensSidePanelPageHandler {
  public:
   explicit LensOverlayController(tabs::TabModel* tab_model);
   ~LensOverlayController() override;
@@ -66,6 +67,13 @@ class LensOverlayController : public TabStripModelObserver,
   // executing javascript and ready to bind.
   void BindOverlay(mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
                    mojo::PendingRemote<lens::mojom::LensPage> page);
+
+  // This method is used to set up communication between this instance and the
+  // side panel WebUI. This is called by the WebUIController when the WebUI is
+  // executing javascript and ready to bind.
+  void BindSidePanel(
+      mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
+      mojo::PendingRemote<lens::mojom::LensSidePanelPage> page);
 
   // Internal state machine. States are mutually exclusive. Exposed for testing.
   enum class State {
@@ -108,6 +116,12 @@ class LensOverlayController : public TabStripModelObserver,
   // Creates the glue that allows the WebUIController for a WebView to look up
   // the LensOverlayController.
   void CreateGlueForWebView(views::WebView* web_view);
+
+  // Removes the glue that allows the WebUIController for a WebView to look up
+  // the LensOverlayController. Used by the side panel coordinator when it is
+  // closed when the overlay is still open. This is a no-op if the provided web
+  // view is not glued.
+  void RemoveGlueForWebView(views::WebView* web_view);
 
  private:
   class UnderlyingWebContentsObserver;
@@ -172,6 +186,13 @@ class LensOverlayController : public TabStripModelObserver,
   // and has bound the connection.
   mojo::Receiver<lens::mojom::LensPageHandler> receiver_{this};
   mojo::Remote<lens::mojom::LensPage> page_;
+
+  // Connections to and from the side panel WebUI. Only valid when the side
+  // panel is currently open and after the WebUI has started executing JS and
+  // has bound the connection.
+  mojo::Receiver<lens::mojom::LensSidePanelPageHandler> side_panel_receiver_{
+      this};
+  mojo::Remote<lens::mojom::LensSidePanelPage> side_panel_page_;
 
   // Side panel coordinator for showing results in the panel.
   std::unique_ptr<lens::LensOverlaySidePanelCoordinator>

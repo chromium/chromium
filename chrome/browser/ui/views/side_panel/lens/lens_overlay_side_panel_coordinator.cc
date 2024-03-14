@@ -49,6 +49,10 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   side_panel_ui_->Show(SidePanelEntry::Id::kLensOverlayResults);
 }
 
+void LensOverlaySidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+  DeregisterEntry();
+}
+
 void LensOverlaySidePanelCoordinator::RegisterEntry() {
   auto* registry = SidePanelRegistry::Get(GetTabWebContents());
   CHECK(registry);
@@ -70,12 +74,31 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
             &LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl,
             base::Unretained(this)));
     registry->Register(std::move(entry));
+
+    // Observe the side panel entry.
+    auto* registered_entry = registry->GetEntryForKey(
+        SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
+    registered_entry->AddObserver(this);
   }
 }
 
 void LensOverlaySidePanelCoordinator::DeregisterEntry() {
   auto* registry = SidePanelRegistry::Get(GetTabWebContents());
   CHECK(registry);
+  // If the side panel web view was created, then we need to remove the glue to
+  // the overlay controller if it is present.
+  if (side_panel_web_view_) {
+    lens_overlay_controller_->RemoveGlueForWebView(side_panel_web_view_);
+    side_panel_web_view_ = nullptr;
+  }
+
+  // Remove the side panel entry observer if it is present.
+  auto* registered_entry = registry->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
+  if (registered_entry) {
+    registered_entry->RemoveObserver(this);
+  }
+
   // This is a no-op if the entry does not exist.
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
@@ -92,6 +115,7 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
           tab_browser_->profile(), IDS_SIDE_PANEL_COMPANION_TITLE,
           /*webui_resizes_host=*/false,
           /*esc_closes_ui=*/false));
+  side_panel_web_view_ = view.get();
   // Important safety note: creating the SidePanelWebUIViewT can result in
   // synchronous construction of the WebUIController. Until
   // "CreateGlueForWebView" is called below, the WebUIController will not be

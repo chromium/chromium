@@ -124,9 +124,8 @@ void LensOverlayController::CloseUI() {
   // instances of views::WebView being glued is through this method. Any changes
   // to this assumption will likely need to restructure the concept of
   // `glued_webviews_`.
-  for (views::WebView* glue : glued_webviews_) {
-    glue->GetWebContents()->RemoveUserData(
-        LensOverlayControllerGlue::UserDataKey());
+  while (!glued_webviews_.empty()) {
+    RemoveGlueForWebView(glued_webviews_.front());
   }
   glued_webviews_.clear();
 
@@ -140,6 +139,8 @@ void LensOverlayController::CloseUI() {
   overlay_widget_.reset();
   tab_contents_observer_.reset();
 
+  side_panel_receiver_.reset();
+  side_panel_page_.reset();
   receiver_.reset();
   page_.reset();
   current_screenshot_.reset();
@@ -167,6 +168,19 @@ void LensOverlayController::BindOverlay(
   state_ = State::kOverlay;
 }
 
+void LensOverlayController::BindSidePanel(
+    mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
+    mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
+  // If a side panel was already bound to this overlay controller, then we
+  // should reset. This can occur if the side panel is closed and then reopened
+  // while the overlay is open.
+  side_panel_receiver_.reset();
+  side_panel_page_.reset();
+
+  side_panel_receiver_.Bind(std::move(receiver));
+  side_panel_page_.Bind(std::move(page));
+}
+
 views::Widget* LensOverlayController::GetOverlayWidgetForTesting() {
   return overlay_widget_.get();
 }
@@ -180,6 +194,15 @@ void LensOverlayController::CreateGlueForWebView(views::WebView* web_view) {
   LensOverlayControllerGlue::CreateForWebContents(web_view->GetWebContents(),
                                                   this);
   glued_webviews_.push_back(web_view);
+}
+
+void LensOverlayController::RemoveGlueForWebView(views::WebView* web_view) {
+  auto it = std::find(glued_webviews_.begin(), glued_webviews_.end(), web_view);
+  if (it != glued_webviews_.end()) {
+    web_view->GetWebContents()->RemoveUserData(
+        LensOverlayControllerGlue::UserDataKey());
+    glued_webviews_.erase(it);
+  }
 }
 
 class LensOverlayController::UnderlyingWebContentsObserver
