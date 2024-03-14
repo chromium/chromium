@@ -151,7 +151,8 @@ export async function tabindexFocusDirectorySelected() {
 
   // Fake chrome.fileManagerPrivate.sharesheetHasTargets to return true.
   const fakeData = {
-    'chrome.fileManagerPrivate.sharesheetHasTargets': ['static_fake', [true]],
+    'chrome.fileManagerPrivate.sharesheetHasTargets':
+        ['static_promise_fake', [true]],
   };
   await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
 

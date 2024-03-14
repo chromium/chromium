@@ -399,25 +399,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setHandleRequest(
-      'sharesheetHasTargets',
-      function(entries, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
-        fileManagerPrivateInternal.sharesheetHasTargets(
-            urls, callbackAdaptor(successCallback, failureCallback));
-      });
-
-  apiFunctions.setHandleRequest(
-      'invokeSharesheet',
-      function(
-          entries, launchSource, dlpSourceUrls, successCallback,
-          failureCallback) {
-        var urls = entries.map(getEntryURL);
-        fileManagerPrivateInternal.invokeSharesheet(
-            urls, launchSource, dlpSourceUrls,
-            callbackAdaptor(successCallback, failureCallback));
-      });
-
-  apiFunctions.setHandleRequest(
       'toggleAddedToHoldingSpace',
       function(entries, added, successCallback, failureCallback) {
         const urls = entries.map(getEntryURL);

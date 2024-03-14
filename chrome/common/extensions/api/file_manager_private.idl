@@ -1914,9 +1914,8 @@ interface Functions {
   // |callback| is called with error in case of failure and with no arguments
   // if successfully launched the Sharesheet dialog, but before user has
   // finished the sharing.
-  [nocompile, doesNotSupportPromises]
-  static void sharesheetHasTargets([instanceOf=Entry] object[] entries,
-                           BooleanCallback callback);
+  static void sharesheetHasTargets(DOMString[] fileUrls,
+                                   BooleanCallback callback);
 
   // Invoke Sharesheet for selected files.
   // |entries| Array of selected entries.
@@ -1924,8 +1923,7 @@ interface Functions {
   // |dlpSourceUrls| Array of source URLs corresponding to the entries, used to
   // check Data Leak Prevention (DLP) restrictions
   // |callback|
-  [nocompile, doesNotSupportPromises]
-  static void invokeSharesheet([instanceOf=Entry] object[] entries,
+  static void invokeSharesheet(DOMString[] fileUrls,
                                SharesheetLaunchSource launchSource,
                                DOMString[] dlpSourceUrls,
                                SimpleCallback callback);

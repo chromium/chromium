@@ -165,14 +165,6 @@ namespace fileManagerPrivateInternal {
         DOMString url,
         InstallLinuxPackageCallback callback);
     static void importCrostiniImage(DOMString url);
-    static void sharesheetHasTargets(
-        DOMString[] urls,
-        BooleanCallback callback);
-    static void invokeSharesheet(
-        DOMString[] urls,
-        fileManagerPrivate.SharesheetLaunchSource launchSource,
-        DOMString[] dlpSourceUrls,
-        SimpleCallback callback);
     static void toggleAddedToHoldingSpace(
         DOMString[] urls, boolean add,
                                           optional SimpleCallback callback);

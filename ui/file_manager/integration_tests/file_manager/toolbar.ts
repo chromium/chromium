@@ -301,13 +301,14 @@ export async function toolbarSharesheetButtonWithSelection() {
 
   // Fake chrome.fileManagerPrivate.sharesheetHasTargets to return true.
   let fakeData = {
-    'chrome.fileManagerPrivate.sharesheetHasTargets': ['static_fake', [true]],
+    'chrome.fileManagerPrivate.sharesheetHasTargets':
+        ['static_promise_fake', [true]],
   };
   await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
 
   // Fake chrome.fileManagerPrivate.invokeSharesheet.
   fakeData = {
-    'chrome.fileManagerPrivate.invokeSharesheet': ['static_fake', []],
+    'chrome.fileManagerPrivate.invokeSharesheet': ['static_promise_fake', []],
   } as any;
   await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
 
@@ -341,13 +342,14 @@ export async function toolbarSharesheetContextMenuWithSelection() {
 
   // Fake chrome.fileManagerPrivate.sharesheetHasTargets to return true.
   let fakeData = {
-    'chrome.fileManagerPrivate.sharesheetHasTargets': ['static_fake', [true]],
+    'chrome.fileManagerPrivate.sharesheetHasTargets':
+        ['static_promise_fake', [true]],
   };
   await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
 
   // Fake chrome.fileManagerPrivate.invokeSharesheet.
   fakeData = {
-    'chrome.fileManagerPrivate.invokeSharesheet': ['static_fake', []],
+    'chrome.fileManagerPrivate.invokeSharesheet': ['static_promise_fake', []],
   } as any;
   await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
 

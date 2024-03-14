@@ -1360,14 +1360,9 @@ export class InvokeSharesheetCommand extends FilesCommand {
     const dlpSourceUrls =
         fileManager.metadataModel.getCache(entries, ['sourceUrl'])
             .map(m => m.sourceUrl || '');
-    chrome.fileManagerPrivate.invokeSharesheet(
-        entries.map(e => unwrapEntry(e)) as Entry[], launchSource,
-        dlpSourceUrls, () => {
-          if (chrome.runtime.lastError) {
-            console.warn(chrome.runtime.lastError.message);
-            return;
-          }
-        });
+    chrome.fileManagerPrivate
+        .invokeSharesheet(entriesToURLs(entries), launchSource, dlpSourceUrls)
+        .catch(console.warn);
   }
 
   override canExecute(event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
@@ -1395,16 +1390,13 @@ export class InvokeSharesheetCommand extends FilesCommand {
     event.command.disabled =
         !fileManager.ui.actionbar.contains(event.target as Node);
 
-    chrome.fileManagerPrivate.sharesheetHasTargets(
-        entries.map(e => unwrapEntry(e)) as Entry[], (hasTargets: boolean) => {
-          if (chrome.runtime.lastError) {
-            console.warn(chrome.runtime.lastError.message);
-            return;
-          }
+    chrome.fileManagerPrivate.sharesheetHasTargets(entriesToURLs(entries))
+        .then((hasTargets: boolean) => {
           event.command.setHidden(!hasTargets);
           event.canExecute = hasTargets;
           event.command.disabled = !hasTargets;
-        });
+        })
+        .catch(console.warn);
   }
 }
 

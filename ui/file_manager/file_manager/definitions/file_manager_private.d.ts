@@ -979,12 +979,12 @@ declare global {
       export function selectAndroidPickerApp(
           androidApp: AndroidApp, callback: () => void): void;
 
-      export function sharesheetHasTargets(
-          entries: Entry[], callback: (result: boolean) => void): void;
+      export function sharesheetHasTargets(fileUrls: string[]):
+          Promise<boolean>;
 
       export function invokeSharesheet(
-          entries: Entry[], launchSource: SharesheetLaunchSource,
-          dlpSourceUrls: string[], callback: () => void): void;
+          fileUrls: string[], launchSource: SharesheetLaunchSource,
+          dlpSourceUrls: string[]): Promise<void>;
 
       export function toggleAddedToHoldingSpace(
           entries: Entry[], added: boolean, callback?: () => void): void;
