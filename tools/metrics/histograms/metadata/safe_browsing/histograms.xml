@@ -358,6 +358,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.CheckUrl.FirstRequestThreatType{ThreatSource}"
+    enum="SBThreatType" expires_after="2024-09-12">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the threat type of the first request to Safe Browsing, split by the
+    source of the threat type. This is logged whenever the first request
+    completes, unless its safe due to a synchronous check against the hash
+    prefix database (in which case we don't know the threat source).
+
+    Note that an unsafe threat type is slightly different than a warning, since
+    there are other conditions that must apply for an unsafe threat type to show
+    a warning.
+  </summary>
+  <token key="ThreatSource">
+    <variant name=""/>
+    <variant name=".AndroidSafeBrowsing"/>
+    <variant name=".AndroidSafeBrowsingRealTime"/>
+    <variant name=".LocalPVer4"/>
+    <variant name=".NativePVer5RealTime"/>
+    <variant name=".Remote"/>
+    <variant name=".Unknown"/>
+    <variant name=".UrlRealTimeCheck"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.CheckUrl.IsDocumentCheckPrefetch"
     enum="BooleanIsPrefetch" expires_after="2024-07-14">
   <owner>thefrog@chromium.org</owner>

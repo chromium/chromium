@@ -39,6 +39,57 @@ namespace {
 void RecordCheckUrlTimeout(bool timed_out) {
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.CheckUrl.Timeout", timed_out);
 }
+
+void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
+                                    std::optional<ThreatSource> threat_source) {
+  static bool is_first_request = true;
+
+  if (!is_first_request) {
+    return;
+  }
+
+  is_first_request = false;
+  if (!threat_source.has_value()) {
+    return;
+  }
+
+  std::string threat_source_name = "";
+  switch (threat_source.value()) {
+    case ThreatSource::LOCAL_PVER4:
+      threat_source_name = "LocalPVer4";
+      break;
+    case ThreatSource::REMOTE:
+      threat_source_name = "Remote";
+      break;
+    case ThreatSource::CLIENT_SIDE_DETECTION:
+      NOTREACHED_NORETURN();
+    case ThreatSource::URL_REAL_TIME_CHECK:
+      threat_source_name = "UrlRealTimeCheck";
+      break;
+    case ThreatSource::NATIVE_PVER5_REAL_TIME:
+      threat_source_name = "NativePVer5RealTime";
+      break;
+    case ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
+      threat_source_name = "AndroidSafeBrowsingRealTime";
+      break;
+    case ThreatSource::ANDROID_SAFEBROWSING:
+      threat_source_name = "AndroidSafeBrowsing";
+      break;
+    case ThreatSource::UNKNOWN:
+      threat_source_name = "Unknown";
+      break;
+  }
+
+  // TODO(drubery): Make SBThreatType an `enum class`, so we can use
+  // the template instantiations relying on kMaxValue here.
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.CheckUrl.FirstRequestThreatType", threat_type,
+      static_cast<SBThreatType>(SB_THREAT_TYPE_MAX + 1));
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.CheckUrl.FirstRequestThreatType." + threat_source_name,
+      threat_type, static_cast<SBThreatType>(SB_THREAT_TYPE_MAX + 1));
+}
+
 }  // namespace
 
 SafeBrowsingUrlCheckerImpl::Notifier::Notifier(CheckUrlCallback callback)
@@ -258,6 +309,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
   DCHECK_EQ(urls_[next_index_].url, url);
   DCHECK(threat_source.has_value() || threat_type == SB_THREAT_TYPE_SAFE);
 
+  MaybeRecordFirstRequestMetrics(threat_type, threat_source);
   RecordCheckUrlTimeout(timed_out);
   TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
                                   TRACE_ID_LOCAL(this), "url", url.spec());
