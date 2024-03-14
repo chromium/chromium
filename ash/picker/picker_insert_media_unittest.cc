@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/picker/picker_rich_media.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/fake_text_input_client.h"
 
@@ -27,11 +28,23 @@ struct TestCase {
 
 using PickerInsertMediaTest = testing::TestWithParam<TestCase>;
 
-TEST_P(PickerInsertMediaTest, InsertsOnNextFocusWhileFocused) {
+TEST_P(PickerInsertMediaTest, SupportsInsertingMedia) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
-  EXPECT_TRUE(InsertMediaToInputField(GetParam().media_to_insert, client));
+  EXPECT_TRUE(
+      InputFieldSupportsInsertingMedia(GetParam().media_to_insert, client));
+}
+
+TEST_P(PickerInsertMediaTest, InsertsMediaWithNoError) {
+  ui::FakeTextInputClient client(
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
+
+  base::test::TestFuture<InsertMediaResult> future;
+  InsertMediaToInputField(GetParam().media_to_insert, client,
+                          future.GetCallback());
+
+  EXPECT_EQ(future.Get(), InsertMediaResult::kSuccess);
   EXPECT_EQ(client.text(), GetParam().expected_text);
   EXPECT_EQ(client.last_inserted_image_url(), GetParam().expected_image_url);
 }
@@ -54,12 +67,25 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_text = u"http://foo.com/",
         }));
 
-TEST(PickerInsertMediaUnsupportedTest, InsertingUnsupportedImageReturnsFalse) {
+TEST(PickerInsertImageMediaTest, UnsupportedInputField) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
-  EXPECT_FALSE(InsertMediaToInputField(
+  EXPECT_FALSE(InputFieldSupportsInsertingMedia(
       PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client));
+}
+
+TEST(PickerInsertImageMediaTest,
+     InsertingUnsupportedInputFieldFailsAsynchronously) {
+  ui::FakeTextInputClient client(
+      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
+
+  base::test::TestFuture<InsertMediaResult> future;
+  InsertMediaToInputField(
+      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client,
+      future.GetCallback());
+
+  EXPECT_EQ(future.Get(), InsertMediaResult::kUnsupported);
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
 

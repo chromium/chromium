@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/picker_rich_media.h"
+#include "base/functional/callback_forward.h"
 
 namespace ui {
 class TextInputClient;
@@ -14,11 +15,23 @@ class TextInputClient;
 
 namespace ash {
 
-// Inserts `media` into `client`.
-// Returns whether the insertion was successful.
-[[nodiscard]] ASH_EXPORT bool InsertMediaToInputField(
-    PickerRichMedia media,
-    ui::TextInputClient& client);
+// Returns whether the `client` supports inserting `media`.
+ASH_EXPORT bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
+                                                 ui::TextInputClient& client);
+
+enum class ASH_EXPORT InsertMediaResult {
+  kSuccess,
+  kUnsupported,
+};
+
+using OnInsertMediaCompleteCallback =
+    base::OnceCallback<void(InsertMediaResult)>;
+
+// Inserts `media` into `client` asynchronously.
+// `callback` is called with whether the insertion was successful.
+ASH_EXPORT void InsertMediaToInputField(PickerRichMedia media,
+                                        ui::TextInputClient& client,
+                                        OnInsertMediaCompleteCallback callback);
 
 }  // namespace ash
 

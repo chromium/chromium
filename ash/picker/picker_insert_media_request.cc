@@ -14,6 +14,20 @@
 
 namespace ash {
 
+namespace {
+
+PickerInsertMediaRequest::Result ConvertInsertMediaResult(
+    InsertMediaResult result) {
+  switch (result) {
+    case InsertMediaResult::kSuccess:
+      return PickerInsertMediaRequest::Result::kSuccess;
+    case InsertMediaResult::kUnsupported:
+      return PickerInsertMediaRequest::Result::kUnsupported;
+  }
+}
+
+}  // namespace
+
 PickerInsertMediaRequest::PickerInsertMediaRequest(
     ui::InputMethod* input_method,
     const PickerRichMedia& media_to_insert,
@@ -46,15 +60,17 @@ void PickerInsertMediaRequest::OnTextInputStateChanged(
     return;
   }
 
-  if (!InsertMediaToInputField(*media_to_insert_, *mutable_client)) {
+  if (!InputFieldSupportsInsertingMedia(*media_to_insert_, *mutable_client)) {
     return;
   }
 
   insert_timeout_timer_.Reset();
-  media_to_insert_ = std::nullopt;
   observation_.Reset();
 
-  std::move(on_complete_callback_).Run(Result::kSuccess);
+  InsertMediaToInputField(*std::exchange(media_to_insert_, std::nullopt),
+                          *mutable_client,
+                          base::BindOnce(&ConvertInsertMediaResult)
+                              .Then(std::move(on_complete_callback_)));
 }
 
 void PickerInsertMediaRequest::OnInputMethodDestroyed(

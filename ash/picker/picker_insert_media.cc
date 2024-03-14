@@ -4,7 +4,10 @@
 
 #include "ash/picker/picker_insert_media.h"
 
+#include <utility>
+
 #include "ash/picker/picker_rich_media.h"
+#include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/ime/text_input_client.h"
@@ -12,29 +15,43 @@
 
 namespace ash {
 
-bool InsertMediaToInputField(PickerRichMedia media,
-                             ui::TextInputClient& client) {
-  return std::visit(
+bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
+                                      ui::TextInputClient& client) {
+  return std::visit(base::Overloaded{
+                        [](const PickerTextMedia& media) { return true; },
+                        [&client](const PickerImageMedia& media) {
+                          return client.CanInsertImage();
+                        },
+                        [](const PickerLinkMedia& media) { return true; },
+                    },
+                    media);
+}
+
+void InsertMediaToInputField(PickerRichMedia media,
+                             ui::TextInputClient& client,
+                             OnInsertMediaCompleteCallback callback) {
+  std::visit(
       base::Overloaded{
-          [&client](PickerTextMedia media) {
+          [&client, &callback](PickerTextMedia media) mutable {
             client.InsertText(media.text,
                               ui::TextInputClient::InsertTextCursorBehavior::
                                   kMoveCursorAfterText);
-            return true;
+            std::move(callback).Run(InsertMediaResult::kSuccess);
           },
-          [&client](PickerImageMedia media) {
+          [&client, &callback](PickerImageMedia media) mutable {
             if (!client.CanInsertImage()) {
-              return false;
+              std::move(callback).Run(InsertMediaResult::kUnsupported);
+              return;
             }
             client.InsertImage(media.url);
-            return true;
+            std::move(callback).Run(InsertMediaResult::kSuccess);
           },
-          [&client](PickerLinkMedia media) {
+          [&client, &callback](PickerLinkMedia media) mutable {
             // TODO(b/322729192): Insert a real hyperlink.
             client.InsertText(base::UTF8ToUTF16(media.url.spec()),
                               ui::TextInputClient::InsertTextCursorBehavior::
                                   kMoveCursorAfterText);
-            return true;
+            std::move(callback).Run(InsertMediaResult::kSuccess);
           },
       },
       std::move(media));
