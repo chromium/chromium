@@ -91,6 +91,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattServiceFloss
                                         bool needs_response,
                                         int32_t handle,
                                         std::vector<uint8_t> value) override;
+  void GattServerExecuteWrite(std::string address,
+                              int32_t request_id,
+                              bool execute_write) override;
 
  protected:
   explicit BluetoothGattServiceFloss(BluetoothAdapterFloss* adapter);

@@ -74,6 +74,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicFloss
       bool needs_response,
       int32_t handle,
       std::vector<uint8_t> value) override;
+  void GattServerExecuteWrite(std::string address,
+                              int32_t request_id,
+                              bool execute_write) override;
 
   void ResolveInstanceId(const GattService& service);
   int32_t InstanceId() const { return floss_instance_id_; }

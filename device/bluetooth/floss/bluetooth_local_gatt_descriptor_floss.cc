@@ -98,4 +98,11 @@ void BluetoothLocalGattDescriptorFloss::GattServerDescriptorWriteRequest(
   NOTIMPLEMENTED();
 }
 
+void BluetoothLocalGattDescriptorFloss::GattServerExecuteWrite(
+    std::string address,
+    int32_t request_id,
+    bool execute_write) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace floss

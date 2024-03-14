@@ -238,18 +238,33 @@ void BluetoothLocalGattCharacteristicFloss::
           weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
           needs_response, /*success=*/false));
 
-  delegate->OnCharacteristicWriteRequest(
-      device, characteristic, value, offset,
-      base::BindOnce(
-          &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
-          weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
-          needs_response,
-          /*success=*/true),
-      base::BindOnce(
-          &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
-          weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
-          needs_response,
-          /*success=*/false));
+  if (is_prepared_write) {
+    delegate->OnCharacteristicPrepareWriteRequest(
+        device, characteristic, value, offset, /*has_subsequent_request=*/true,
+        base::BindOnce(
+            &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+            weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
+            needs_response,
+            /*success=*/true),
+        base::BindOnce(
+            &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+            weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
+            needs_response,
+            /*success=*/false));
+  } else {
+    delegate->OnCharacteristicWriteRequest(
+        device, characteristic, value, offset,
+        base::BindOnce(
+            &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+            weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
+            needs_response,
+            /*success=*/true),
+        base::BindOnce(
+            &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+            weak_ptr_factory_.GetWeakPtr(), request_id, std::ref(value),
+            needs_response,
+            /*success=*/false));
+  }
 }
 
 void BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback(
@@ -282,6 +297,63 @@ void BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback(
       base::DoNothing(), write_request.address, write_request.request_id,
       status, write_request.offset, value);
   pending_request_.reset();
+}
+
+void BluetoothLocalGattCharacteristicFloss::GattServerExecuteWrite(
+    std::string address,
+    int32_t request_id,
+    bool execute_write) {
+  if (!execute_write) {
+    // TODO(b/329667574) - Support aborted prepared writes
+    LOG(ERROR) << __func__ << ": Aborting prepared writes is not supported";
+  }
+
+  if (pending_request_.has_value()) {
+    LOG(ERROR) << __func__ << ": A request for device '"
+               << pending_request_.value().address << "' is already pending";
+    FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
+        base::DoNothing(), address, request_id, GattStatus::kBusy, /*offset=*/0,
+        std::vector<uint8_t>());
+    return;
+  }
+
+  device::BluetoothLocalGattService::Delegate* delegate = service_->delegate_;
+  if (!delegate) {
+    LOG(ERROR) << __func__ << ": No delegate for local GATT service";
+    FlossDBusManager::Get()->GetGattManagerClient()->SendResponse(
+        base::DoNothing(), address, request_id, GattStatus::kError,
+        /*offset=*/0, std::vector<uint8_t>());
+    return;
+  }
+
+  pending_request_.emplace(GattRequest{address, request_id, /*offset=*/0});
+  auto* device = service_->GetAdapter()->GetDevice(address);
+  BluetoothLocalGattCharacteristic* characteristic =
+      static_cast<BluetoothLocalGattCharacteristic*>(this);
+
+  // This callback is expected to run, so run it if the client has not done so
+  // within the next second.
+  response_timer_.Start(
+      FROM_HERE, kResponseTimeout,
+      base::BindOnce(
+          &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+          weak_ptr_factory_.GetWeakPtr(), request_id,
+          base::OwnedRef(std::vector<uint8_t>()),
+          /*needs_response=*/true, /*success=*/false));
+
+  delegate->OnCharacteristicPrepareWriteRequest(
+      device, characteristic, std::vector<uint8_t>(), /*offset=*/0,
+      /*has_subsequent_request=*/false,
+      base::BindOnce(
+          &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+          weak_ptr_factory_.GetWeakPtr(), request_id,
+          base::OwnedRef(std::vector<uint8_t>()),
+          /*needs_response=*/true, /*success=*/true),
+      base::BindOnce(
+          &BluetoothLocalGattCharacteristicFloss::OnWriteRequestCallback,
+          weak_ptr_factory_.GetWeakPtr(), request_id,
+          base::OwnedRef(std::vector<uint8_t>()),
+          /*needs_response=*/true, /*success=*/false));
 }
 
 int32_t BluetoothLocalGattCharacteristicFloss::AddDescriptor(

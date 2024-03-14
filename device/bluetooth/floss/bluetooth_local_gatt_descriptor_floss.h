@@ -62,6 +62,9 @@ class BluetoothLocalGattDescriptorFloss
                                         bool needs_response,
                                         int32_t handle,
                                         std::vector<uint8_t> value) override;
+  void GattServerExecuteWrite(std::string address,
+                              int32_t request_id,
+                              bool execute_write) override;
 
   void ResolveInstanceId(const GattCharacteristic& characteristic);
 

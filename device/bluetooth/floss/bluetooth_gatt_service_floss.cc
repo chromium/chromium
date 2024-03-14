@@ -200,4 +200,12 @@ void BluetoothGattServiceFloss::GattServerDescriptorWriteRequest(
   }
 }
 
+void BluetoothGattServiceFloss::GattServerExecuteWrite(std::string address,
+                                                       int32_t request_id,
+                                                       bool execute_write) {
+  for (auto const& [_, observer] : server_observer_by_handle_) {
+    observer->GattServerExecuteWrite(address, request_id, execute_write);
+  }
+}
+
 }  // namespace floss
