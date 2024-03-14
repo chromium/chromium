@@ -109,6 +109,10 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
       GetOptimizationGuide()->RegisterOptimizationTypes(types);
     }
   }
+
+  autofill_managers_observation_.Observe(
+      web_contents, autofill::ScopedAutofillManagersObservation::
+                        InitializationPolicy::kObservePreexistingManagers);
 }
 
 ChromeComposeClient::~ChromeComposeClient() = default;
@@ -428,13 +432,16 @@ void ChromeComposeClient::RemoveAllSessions() {
 
 void ChromeComposeClient::ShowSavedStateNotification(
     autofill::FieldGlobalId field_id) {
+  if (!active_compose_ids_.has_value()) {
+    // Do not show the saved state notification on a previous field if another
+    // autofill suggestion is showing in the newly focused field.
+    return;
+  }
   if (active_compose_ids_->first != field_id &&
       HasSession(active_compose_ids_->first)) {
     // Do not show the saved state notification on a previous field if focusing
     // on a new field that will show a compose nudge. Do not show nudge and
     // saved state notification on two different fields at the same time.
-    // TODO(b/328730215): Saved state notification should not appear when user
-    // focuses on a password field and the password autofill suggestion shows.
     return;
   }
 
@@ -510,6 +517,16 @@ bool ChromeComposeClient::ShouldTriggerContextMenu(
     page_ukm_tracker_->MenuItemShown();
   }
   return allow_context_menu;
+}
+
+void ChromeComposeClient::OnAfterFocusOnFormField(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form,
+    autofill::FieldGlobalId field) {
+  // Reset the `active_compose_ids_` on every focus change. This will be set to
+  // a valid value when triggering a compose nudge or showing the compose
+  // dialog.
+  active_compose_ids_.reset();
 }
 
 optimization_guide::ModelQualityLogsUploader*

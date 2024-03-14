@@ -433,9 +433,13 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
                                          const gfx::RectF& bounding_box) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
+  NotifyObservers(&Observer::OnBeforeFocusOnFormField, form.global_id(),
+                  field.global_id(), form);
   ParseFormAsync(form, ParsingCallback(&AutofillManager::OnFocusOnFormFieldImpl,
                                        field, bounding_box)
-                           .Then(NotifyNoObserversCallback()));
+                           .Then(NotifyObserversCallback(
+                               &Observer::OnAfterFocusOnFormField,
+                               form.global_id(), field.global_id())));
 }
 
 void AutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {

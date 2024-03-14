@@ -275,6 +275,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnAfterDidFillAutofillFormData).Times(0);
   EXPECT_CALL(observer, OnBeforeAskForValuesToFill).Times(0);
   EXPECT_CALL(observer, OnAfterAskForValuesToFill).Times(0);
+  EXPECT_CALL(observer, OnBeforeFocusOnFormField).Times(0);
+  EXPECT_CALL(observer, OnAfterFocusOnFormField).Times(0);
   EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue).Times(0);
   EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue).Times(0);
   EXPECT_CALL(observer, OnBeforeLoadedServerPredictions).Times(0);
@@ -347,6 +349,10 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnBeforeAskForValuesToFill(m, f, ff, Ref(form)));
   EXPECT_CALL(observer, OnAfterAskForValuesToFill(m, f, ff));
   manager_->OnAskForValuesToFill(form, field, {}, {});
+
+  EXPECT_CALL(observer, OnBeforeFocusOnFormField(m, f, ff, Ref(form)));
+  EXPECT_CALL(observer, OnAfterFocusOnFormField(m, f, ff));
+  manager_->OnFocusOnFormField(form, field, {});
 
   EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue(m, f, ff));
   EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue(m, f, ff));
