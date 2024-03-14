@@ -6861,7 +6861,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ComposeGraduatedFromSettings",
+                        "ComposeSettingsVisibility",
                         "TabOrganizationSettingsVisibility",
                         "WallpaperSearchSettingsVisibility"
                     ]
