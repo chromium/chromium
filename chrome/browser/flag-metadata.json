@@ -3602,11 +3602,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-shortcut-customization-logging",
-    "owners": [ "jimmyxgong@chromium.org", "zentaro@chromium.org", "cros-peripherals@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-show-autofill-signatures",
     "owners": [ "kazinova@google.com" ],
     // Used for debugging and QA by the autofill team for the indefinite future.

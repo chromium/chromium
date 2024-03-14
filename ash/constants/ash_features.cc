@@ -2110,11 +2110,6 @@ BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
              "SearchCustomizableShortcutsInLauncher",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables shortcut customization logging.
-BASE_FEATURE(kEnableShortcutCustomizationLogging,
-             "EnableShortcutCustomizationLogging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables elaborate for Orca.
 BASE_FEATURE(kOrcaElaborate, "OrcaElaborate", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4529,10 +4524,6 @@ bool IsWmModeEnabled() {
 
 bool IsSearchCustomizableShortcutsInLauncherEnabled() {
   return base::FeatureList::IsEnabled(kSearchCustomizableShortcutsInLauncher);
-}
-
-bool IsShortcutCustomizationLoggingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableShortcutCustomizationLogging);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {

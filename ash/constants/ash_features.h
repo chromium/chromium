@@ -609,8 +609,6 @@ BASE_DECLARE_FEATURE(kOneDriveUploadImmediateReauth);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kOngoingProcesses);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSearchCustomizableShortcutsInLauncher);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kEnableShortcutCustomizationLogging);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kOobeChoobe);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kOobeCrosEvents);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kOobeDrivePinning);
@@ -1315,7 +1313,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAndroidStagingSmds();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseStorkSmds();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSearchCustomizableShortcutsInLauncherEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShortcutCustomizationLoggingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFeatureAwareDeviceDemoModeEnabled();
 // TODO(michaelpg): Remove after M71 branch to re-enable Play Store by default.
