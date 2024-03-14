@@ -2090,7 +2090,6 @@ component("base") {
       "profiler/suspendable_thread_delegate_mac.h",
       "synchronization/waitable_event_watcher_mac.cc",
       "system/sys_info_mac.mm",
-      "time/time_exploded_posix.cc",
     ]
 
     libs += [
@@ -2196,12 +2195,6 @@ component("base") {
       ]
     }
 
-    if (current_cpu == "x64" || current_cpu == "arm64") {
-      sources += [ "time/time_exploded_posix.cc" ]
-    } else {
-      sources += [ "time/time_exploded_ios.cc" ]
-    }
-
     frameworks += [
       "Foundation.framework",
       "UIKit.framework",
@@ -2292,7 +2285,6 @@ component("base") {
       "synchronization/waitable_event_watcher_posix.cc",
       "threading/platform_thread_internal_posix.cc",
       "threading/platform_thread_internal_posix.h",
-      "time/time_exploded_posix.cc",
       "time/time_now_posix.cc",
     ]
 
@@ -2312,6 +2304,10 @@ component("base") {
         "//third_party/icu:icuuc",
       ]
     }
+  }
+
+  if (is_posix) {
+    sources += [ "time/time_exploded_posix.cc" ]
   }
 
   if ((is_posix && !is_apple && !is_android) || is_fuchsia) {
