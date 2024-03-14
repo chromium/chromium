@@ -189,8 +189,8 @@ public class ExclusionUtilities {
                 }
             } catch (XmlPullParserException | IOException e) {
                 // try next assetCookie
-                parser.close();
             }
+            parser.close();
         }
         // could not find manifest with correct package name
         return null;
