@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_parser.h"
+#include "components/plus_addresses/plus_address_parsing_utils.h"
 
 #include <optional>
 
@@ -16,11 +16,9 @@ namespace plus_addresses {
 // PlusAddressParsing tests validate the ParsePlusAddressFrom* methods
 // Returns empty when the DataDecoder fails to parse the JSON.
 TEST(PlusAddressParsing, NotValidJson) {
-  EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(
-                base::unexpected("error!")),
+  EXPECT_EQ(ParsePlusProfileFromV1Create(base::unexpected("error!")),
             std::nullopt);
-  EXPECT_EQ(PlusAddressParser::ParsePlusAddressMapFromV1List(
-                base::unexpected("error!")),
+  EXPECT_EQ(ParsePlusAddressMapFromV1List(base::unexpected("error!")),
             std::nullopt);
 }
 
@@ -50,7 +48,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   data_decoder::DataDecoder::ValueOrError value = std::move(valid_mode.value());
 
   std::optional<PlusProfile> valid_result =
-      PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value));
+      ParsePlusProfileFromV1Create(std::move(value));
   ASSERT_TRUE(valid_result.has_value());
   EXPECT_EQ(valid_result->facet, facet);
   EXPECT_EQ(valid_result->plus_address, plus_address);
@@ -78,7 +76,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       std::move(invalid_mode.value());
 
   std::optional<PlusProfile> invalid_result =
-      PlusAddressParser::ParsePlusProfileFromV1Create(std::move(decoded));
+      ParsePlusProfileFromV1Create(std::move(decoded));
   ASSERT_TRUE(invalid_result.has_value());
   EXPECT_EQ(invalid_result->facet, facet);
   EXPECT_EQ(invalid_result->plus_address, plus_address);
@@ -98,8 +96,7 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusAddress) {
     )");
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            std::nullopt);
+  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
 }
 
 // Validate that there is a plusMode field in the plusEmail object.
@@ -115,8 +112,7 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusMode) {
     )");
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            std::nullopt);
+  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
 }
 
 // Validate that there is a plusEmail object.
@@ -130,8 +126,7 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutEmailObject) {
     )");
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            std::nullopt);
+  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsForEmptyDict) {
@@ -142,8 +137,7 @@ TEST(PlusAddressParsing, FromV1Create_FailsForEmptyDict) {
     )");
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            std::nullopt);
+  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusProfileKey) {
@@ -154,8 +148,7 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusProfileKey) {
     )");
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            std::nullopt);
+  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsIfPlusProfileIsNotDict) {
@@ -166,8 +159,7 @@ TEST(PlusAddressParsing, FromV1Create_FailsIfPlusProfileIsNotDict) {
     )");
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(PlusAddressParser::ParsePlusProfileFromV1Create(std::move(value)),
-            std::nullopt);
+  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
 }
 
 // Success case - Returns the plus address map.
@@ -196,8 +188,7 @@ TEST(PlusAddressParsing, FromV1List_ParsesSuccessfully) {
   ASSERT_TRUE(perfect.has_value());
 
   std::optional<PlusAddressMap> result =
-      PlusAddressParser::ParsePlusAddressMapFromV1List(
-          std::move(perfect.value()));
+      ParsePlusAddressMapFromV1List(std::move(perfect.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"},
                                             {"netflix.com", "bar@plus.com"}}));
@@ -226,7 +217,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithFacets) {
   ASSERT_TRUE(json.has_value());
 
   std::optional<PlusAddressMap> result =
-      PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
+      ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
 }
@@ -254,7 +245,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusAddresses) {
   ASSERT_TRUE(json.has_value());
 
   std::optional<PlusAddressMap> result =
-      PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
+      ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
 }
@@ -282,7 +273,7 @@ TEST(PlusAddressParsing, FromV1List_OnlyParsesProfilesWithPlusModes) {
   ASSERT_TRUE(json.has_value());
 
   std::optional<PlusAddressMap> result =
-      PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
+      ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap({{"google.com", "foo@plus.com"}}));
 }
@@ -295,7 +286,7 @@ TEST(PlusAddressParsing, FromV1List_ReturnsEmptyMapForEmptyProfileList) {
     )");
   ASSERT_TRUE(json.has_value());
   std::optional<PlusAddressMap> result =
-      PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
+      ParsePlusAddressMapFromV1List(std::move(json.value()));
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), PlusAddressMap());
 }
@@ -308,7 +299,7 @@ TEST(PlusAddressParsing, FromV1List_FailsIfPlusProfilesIsNotList) {
     )");
   ASSERT_TRUE(json.has_value());
   std::optional<PlusAddressMap> result =
-      PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
+      ParsePlusAddressMapFromV1List(std::move(json.value()));
   EXPECT_FALSE(result.has_value());
 }
 
@@ -322,7 +313,7 @@ TEST(PlusAddressParsing, FromV1List_FailsIfMissingPlusProfilesKey) {
     )");
   ASSERT_TRUE(json.has_value());
   std::optional<PlusAddressMap> result =
-      PlusAddressParser::ParsePlusAddressMapFromV1List(std::move(json.value()));
+      ParsePlusAddressMapFromV1List(std::move(json.value()));
   EXPECT_FALSE(result.has_value());
 }
 

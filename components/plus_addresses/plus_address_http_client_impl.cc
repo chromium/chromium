@@ -11,23 +11,23 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/json/json_writer.h"
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_parser.h"
+#include "components/plus_addresses/plus_address_parsing_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -404,7 +404,7 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
   // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
-      base::BindOnce(&PlusAddressParser::ParsePlusProfileFromV1Create)
+      base::BindOnce(&ParsePlusProfileFromV1Create)
           .Then(base::BindOnce(
               [](PlusAddressRequestCallback callback,
                  std::optional<PlusProfile> result) {
@@ -445,7 +445,7 @@ void PlusAddressHttpClientImpl::OnGetAllPlusAddressesComplete(
   // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
-      base::BindOnce(&PlusAddressParser::ParsePlusAddressMapFromV1List)
+      base::BindOnce(&ParsePlusAddressMapFromV1List)
           .Then(base::BindOnce(
               [](PlusAddressMapRequestCallback callback,
                  std::optional<PlusAddressMap> result) {

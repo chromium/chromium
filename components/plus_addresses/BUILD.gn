@@ -13,6 +13,19 @@ source_set("types") {
   ]
 }
 
+source_set("parsing") {
+  sources = [
+    "plus_address_parsing_utils.cc",
+    "plus_address_parsing_utils.h",
+  ]
+  deps = []
+  public_deps = [
+    ":types",
+    "//base",
+    "//services/data_decoder/public/cpp",
+  ]
+}
+
 source_set("plus_addresses") {
   sources = [
     "affiliations/plus_address_affiliation_source_adapter.cc",
@@ -25,14 +38,13 @@ source_set("plus_addresses") {
     "plus_address_jit_allocator.h",
     "plus_address_metrics.cc",
     "plus_address_metrics.h",
-    "plus_address_parser.cc",
-    "plus_address_parser.h",
     "plus_address_prefs.cc",
     "plus_address_prefs.h",
     "plus_address_service.cc",
     "plus_address_service.h",
   ]
   deps = [
+    ":parsing",
     "//components/affiliations/core/browser:affiliations",
     "//components/plus_addresses/webdata",
     "//components/prefs",
@@ -78,12 +90,13 @@ source_set("unit_tests") {
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
-    "plus_address_parser_unittest.cc",
+    "plus_address_parsing_utils_unittest.cc",
     "plus_address_service_unittest.cc",
   ]
 
   deps = [
     ":features",
+    ":parsing",
     ":plus_addresses",
     ":test_support",
     "//base/test:test_support",
