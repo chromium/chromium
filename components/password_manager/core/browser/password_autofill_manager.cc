@@ -88,7 +88,7 @@ bool HasLoadingSuggestion(base::span<const autofill::Suggestion> suggestions,
 }
 
 std::vector<autofill::Suggestion> SetUnlockLoadingState(
-    base::span<const autofill::Suggestion> suggestions,
+    std::vector<autofill::Suggestion> suggestions,
     autofill::PopupItemId unlock_item,
     IsLoading is_loading) {
   DCHECK(unlock_item == autofill::PopupItemId::kPasswordAccountStorageOptIn ||
@@ -96,13 +96,10 @@ std::vector<autofill::Suggestion> SetUnlockLoadingState(
              autofill::PopupItemId::kPasswordAccountStorageReSignin ||
          unlock_item ==
              autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate);
-  std::vector<autofill::Suggestion> new_suggestions;
-  new_suggestions.reserve(suggestions.size());
-  base::ranges::copy(suggestions, std::back_inserter(new_suggestions));
-  auto unlock_iter = base::ranges::find(new_suggestions, unlock_item,
+  auto unlock_iter = base::ranges::find(suggestions, unlock_item,
                                         &autofill::Suggestion::popup_item_id);
   unlock_iter->is_loading = is_loading;
-  return new_suggestions;
+  return suggestions;
 }
 
 void LogAccountStoredPasswordsCountInFillDataAfterUnlock(
@@ -496,7 +493,7 @@ bool PasswordAutofillManager::ShowPopup(
 }
 
 void PasswordAutofillManager::UpdatePopup(
-    const std::vector<autofill::Suggestion>& suggestions) {
+    std::vector<autofill::Suggestion> suggestions) {
   if (!password_manager_driver_->CanShowAutofillUi())
     return;
   if (!ContainsOtherThanManagePasswords(suggestions)) {
@@ -504,10 +501,10 @@ void PasswordAutofillManager::UpdatePopup(
         autofill::PopupHidingReason::kNoSuggestions);
     return;
   }
-  last_popup_open_args_.suggestions = suggestions;
   autofill_client_->UpdatePopup(
       suggestions, autofill::FillingProduct::kPassword,
       autofill::AutofillSuggestionTriggerSource::kPasswordManager);
+  last_popup_open_args_.suggestions = std::move(suggestions);
 }
 
 bool PasswordAutofillManager::FillSuggestion(
@@ -622,8 +619,9 @@ void PasswordAutofillManager::OnUnlockReauthCompleted(
     }
     return;
   }
-  UpdatePopup(SetUnlockLoadingState(last_popup_open_args_.suggestions,
-                                    unlock_item, IsLoading(false)));
+  UpdatePopup(
+      SetUnlockLoadingState(std::move(last_popup_open_args_).suggestions,
+                            unlock_item, IsLoading(false)));
   // Resets the popup arguments until the next ShowPopup() call.
   last_popup_open_args_ = {};
 }

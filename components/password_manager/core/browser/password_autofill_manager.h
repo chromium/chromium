@@ -127,7 +127,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
                  const std::vector<autofill::Suggestion>& suggestions);
 
   // Validates and forwards the given objects to the autofill client.
-  void UpdatePopup(const std::vector<autofill::Suggestion>& suggestions);
+  void UpdatePopup(std::vector<autofill::Suggestion> suggestions);
 
   // Attempts to find and fill the suggestions with the user name |username| and
   // the `popup_item_id` indicating the store (account-stored or local). Returns
