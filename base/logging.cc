@@ -536,7 +536,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   }
 #endif
 
-  // Ignore file options unless logging to file is set.
+  // ignore file options unless logging to file is set.
   if ((g_logging_destination & LOG_TO_FILE) == 0)
     return true;
 
@@ -548,13 +548,13 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
   // default log file will re-initialize to the new options.
   CloseLogFileUnlocked();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (settings.log_file) {
     DCHECK(!settings.log_file_path);
     g_log_file = settings.log_file;
     return true;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif
 
   DCHECK(settings.log_file_path) << "LOG_TO_FILE set but no log_file_path!";
 
@@ -1151,24 +1151,6 @@ FILE* DuplicateLogFILE() {
   if (!duplicate)
     return nullptr;
   std::ignore = dup_fd.release();
-  return duplicate;
-}
-#endif
-
-#if BUILDFLAG(IS_WIN)
-HANDLE DuplicateLogFileHandle() {
-  // `g_log_file` should only be valid, or nullptr, but be very careful that we
-  // do not duplicate INVALID_HANDLE_VALUE as it aliases the process handle.
-  if (!(g_logging_destination & LOG_TO_FILE) || !g_log_file ||
-      g_log_file == INVALID_HANDLE_VALUE) {
-    return nullptr;
-  }
-  HANDLE duplicate = nullptr;
-  if (!::DuplicateHandle(::GetCurrentProcess(), g_log_file,
-                         ::GetCurrentProcess(), &duplicate, 0,
-                         /*bInheritHandle=*/TRUE, DUPLICATE_SAME_ACCESS)) {
-    return nullptr;
-  }
   return duplicate;
 }
 #endif

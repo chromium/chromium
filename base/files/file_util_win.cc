@@ -379,7 +379,6 @@ OnceClosure GetDeleteFileCallbackInternal(
 // might cause the browser or operating system to fail in unexpected ways.
 bool IsPathSafeToSetAclOn(const FilePath& path) {
 #if BUILDFLAG(CLANG_PROFILING)
-  // TODO(crbug.com/329482479) Use PreventExecuteMappingUnchecked for .profraw.
   // Ignore .profraw profiling files, as they can occur anywhere, and only occur
   // during testing.
   if (path.Extension() == FILE_PATH_LITERAL(".profraw")) {
@@ -1153,13 +1152,13 @@ bool PreReadFile(const FilePath& file_path,
                                  /*Flags=*/0);
 }
 
-bool PreventExecuteMappingInternal(const FilePath& path, bool skip_path_check) {
+bool PreventExecuteMapping(const FilePath& path) {
   if (!base::FeatureList::IsEnabled(
           features::kEnforceNoExecutableFileHandles)) {
     return true;
   }
 
-  bool is_path_safe = skip_path_check || IsPathSafeToSetAclOn(path);
+  bool is_path_safe = IsPathSafeToSetAclOn(path);
 
   if (!is_path_safe) {
     // To mitigate the effect of past OS bugs where attackers are able to use
@@ -1206,16 +1205,6 @@ bool PreventExecuteMappingInternal(const FilePath& path, bool skip_path_check) {
   // ACE if it already exists.
   return win::DenyAccessToPath(path, *sids, FILE_EXECUTE, /*NO_INHERITANCE=*/0,
                                /*recursive=*/false);
-}
-
-bool PreventExecuteMapping(const FilePath& path) {
-  return PreventExecuteMappingInternal(path, false);
-}
-
-bool PreventExecuteMappingUnchecked(
-    const FilePath& path,
-    base::PassKey<PreventExecuteMappingClasses> passkey) {
-  return PreventExecuteMappingInternal(path, true);
 }
 
 void SetExtraNoExecuteAllowedPath(int path_key) {

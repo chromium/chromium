@@ -390,13 +390,12 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationAsync(
           std::move(process)));
 }
 
-#if !BUILDFLAG(IS_WIN)
 void ChildProcessLauncherHelper::PassLoggingSwitches(
     base::LaunchOptions* launch_options,
     base::CommandLine* cmd_line) {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
-  constexpr const char* kForwardSwitches[] = {
+  static const char* const kForwardSwitches[] = {
       switches::kDisableLogging,
       switches::kEnableLogging,
       switches::kLogFile,
@@ -406,7 +405,6 @@ void ChildProcessLauncherHelper::PassLoggingSwitches(
   };
   cmd_line->CopySwitchesFrom(browser_command_line, kForwardSwitches);
 }
-#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace internal
 

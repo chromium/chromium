@@ -23,7 +23,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
-#include "base/types/pass_key.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -34,27 +33,10 @@
 #include "base/posix/eintr_wrapper.h"
 #endif
 
-namespace content::internal {
-class ChildProcessLauncherHelper;
-}  // namespace content::internal
-
 namespace base {
 
 class Environment;
 class Time;
-
-#if BUILDFLAG(IS_WIN)
-class PreventExecuteMappingClasses {
- public:
-  using PassKey = base::PassKey<PreventExecuteMappingClasses>;
-
- private:
-  static PassKey GetPassKey() { return PassKey(); }
-
-  // Allowed to open log files in arbitrary locations.
-  friend class content::internal::ChildProcessLauncherHelper;
-};
-#endif
 
 //-----------------------------------------------------------------------------
 // Functions that involve filesystem access or modification:
@@ -145,13 +127,6 @@ BASE_EXPORT bool DeleteFileAfterReboot(const FilePath& path);
 // on the filesystem. This allows the file handle to be safely passed to an
 // untrusted process. See also `File::FLAG_WIN_NO_EXECUTE`.
 BASE_EXPORT bool PreventExecuteMapping(const FilePath& path);
-
-// Same as PreventExecuteMapping but DCHECK for known allowed paths is omitted.
-// Only call this if you know the path you are providing is safe to mark as
-// non-executable, such as log files.
-BASE_EXPORT bool PreventExecuteMappingUnchecked(
-    const FilePath& path,
-    base::PassKey<PreventExecuteMappingClasses> passkey);
 
 // Set `path_key` to the second of two valid paths that support safely marking a
 // file as non-execute. The first allowed path is always PATH_TEMP. This is
