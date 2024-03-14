@@ -568,12 +568,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 && isEeaChoiceCountry) {
             mSettingsLauncher.launchSettingsActivity(
                     getContext(), PersonalizeGoogleServicesSettings.class);
+            RecordUserAction.record("Signin_AccountSettings_PersonalizeGoogleServicesClicked");
         } else {
             AppHooks.get()
                     .createGoogleActivityController()
                     .openWebAndAppActivitySettings(getActivity(), signedInAccountName);
-        }
         RecordUserAction.record("Signin_AccountSettings_GoogleActivityControlsClicked");
+        }
     }
 
     private void onSignOutAndTurnOffSyncClicked() {

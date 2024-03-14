@@ -34424,6 +34424,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_AccountSettings_LinkedGoogleServicesClicked">
+  <owner>rubindl@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded when the user clicks the &quot;Linked Google Services&quot; link
+    row in the &quot;Personalize Google Settings&quot; page. Only on Android.
+  </description>
+</action>
+
+<action name="Signin_AccountSettings_PersonalizeGoogleServicesClicked">
+  <owner>rubindl@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded when the user clicks the &quot;Personalize Google Services&quot;
+    link row in the account settings page. Only on Android.
+  </description>
+</action>
+
 <action name="Signin_AddAccountToDevice">
   <owner>gogerald@chromium.org</owner>
   <description>Recorded when the add account dialog is opened.</description>
