@@ -25,6 +25,7 @@ include_rules = [
   "+net/http",
   "+net/ssl",
   "+net/traffic_annotation",
+  "+services/metrics/public/cpp",
   "+services/network/network_context.h",
   "+services/network/public",
   "+services/service_manager/public/cpp",

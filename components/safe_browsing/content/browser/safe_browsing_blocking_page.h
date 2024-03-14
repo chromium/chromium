@@ -142,6 +142,13 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
                            bool did_proceed,
                            int num_visits) override;
 
+  // Log UKM for the user bypassing a safe browsing interstitial.
+  void LogSafeBrowsingInterstitialBypassedUKM(
+      content::WebContents* web_contents);
+
+  // Log UKM for the safe browsing interstitial being shown to the user.
+  void LogSafeBrowsingInterstitialShownUKM(content::WebContents* web_contents4);
+
   // Whether ThreatDetails collection is in progress as part of this
   // interstitial.
   bool threat_details_in_progress_;

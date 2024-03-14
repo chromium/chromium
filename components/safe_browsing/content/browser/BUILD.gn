@@ -62,6 +62,7 @@ if (safe_browsing_mode > 0) {
       "//components/security_interstitials/core",
       "//components/security_interstitials/core:unsafe_resource",
       "//content/public/browser",
+      "//services/metrics/public/cpp:ukm_builders",
     ]
   }
 }

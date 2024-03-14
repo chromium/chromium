@@ -23323,6 +23323,43 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SafeBrowsingInterstitial">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Records that the user encountered a Safe Browsing interstitial and whether
+    they proceeded past the interstitial, bypassing the warning.
+  </summary>
+  <metric name="Bypassed" enum="Boolean">
+    <summary>
+      A boolean signaling that the user bypassed the interstitial; only records
+      true values. This event gets logged right when a user clicks to proceed on
+      the Safe Browsing interstitial UI.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      A boolean signaling that the interstitial was shown to the user; only
+      records true values. This event gets logged right when the Safe Browsing
+      interstitial is shown to the user.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="SalientImageAvailability" singular="True">
   <owner>chrome-intelligence-core@google.com</owner>
   <owner>tbansal@chromium.org</owner>

@@ -34,6 +34,9 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 using content::BrowserThread;
 using content::WebContents;
@@ -88,6 +91,7 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
   }
+  LogSafeBrowsingInterstitialShownUKM(web_contents);
 
   if (metrics_collector_) {
     metrics_collector_->AddSafeBrowsingEventToPref(
@@ -133,7 +137,6 @@ SafeBrowsingBlockingPage::GetTypeForTesting() {
 void SafeBrowsingBlockingPage::OnInterstitialClosing() {
   interstitial_interactions_ =
       sb_error_ui()->get_interstitial_interaction_data();
-
   // If this is a phishing interstitial and the user did not make a decision
   // through the UI, record that interaction in UMA
   if (!sb_error_ui()->did_user_make_decision()) {
@@ -150,6 +153,12 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
               base::Time::Now().InMillisecondsSinceUnixEpoch()));
     }
   }
+
+  // Log UKM if the user bypassed the interstitial.
+  if (proceeded()) {
+    LogSafeBrowsingInterstitialBypassedUKM(web_contents());
+  }
+
   // With committed interstitials OnProceed and OnDontProceed don't get
   // called, so call FinishThreatDetails from here.
   FinishThreatDetails(
@@ -253,6 +262,22 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
     controller()->metrics_helper()->RecordUserInteraction(
         security_interstitials::MetricsHelper::EXTENDED_REPORTING_IS_ENABLED);
   }
+}
+
+void SafeBrowsingBlockingPage::LogSafeBrowsingInterstitialBypassedUKM(
+    content::WebContents* web_contents) {
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::SafeBrowsingInterstitial(source_id).SetBypassed(true).Record(
+      ukm::UkmRecorder::Get());
+}
+
+void SafeBrowsingBlockingPage::LogSafeBrowsingInterstitialShownUKM(
+    content::WebContents* web_contents) {
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::SafeBrowsingInterstitial(source_id).SetShown(true).Record(
+      ukm::UkmRecorder::Get());
 }
 
 }  // namespace safe_browsing

@@ -101,6 +101,7 @@
 #include "components/security_interstitials/core/urls.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1441,6 +1442,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, MAYBE_LearnMore) {
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        Histograms_DontProceed) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   SafeBrowsingMetricsCollector* metrics_collector =
@@ -1520,10 +1522,18 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       security_interstitials::SecurityInterstitialTabHelper::
           InterstitialCloseReason::NAVIGATE_AWAY,
       1);
+
+  // Check that we are recording the UKM when interstitial is shown and we do
+  // not record for the interstitial bypassed.
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("SafeBrowsingInterstitial");
+  EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "Shown", true);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        Histograms_Proceed) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   base::HistogramTester histograms;
   SBThreatType threat_type = GetThreatType();
   std::string prefix = GetHistogramPrefix(threat_type);
@@ -1588,6 +1598,14 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       security_interstitials::SecurityInterstitialTabHelper::
           InterstitialCloseReason::NAVIGATE_AWAY,
       1);
+
+  // Check that we are recording the UKM when interstitial is shown and we do
+  // not record for the interstitial bypassed.
+  auto ukm_entries =
+      test_ukm_recorder.GetEntriesByName("SafeBrowsingInterstitial");
+  EXPECT_EQ(2u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "Shown", true);
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[1], "Bypassed", true);
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
