@@ -26,6 +26,11 @@
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/extensions/api/favicon/favicon_util.h"
+#include "chrome/browser/extensions/api/preference/cookie_controls_mode_transformer.h"
+#include "chrome/browser/extensions/api/preference/network_prediction_transformer.h"
+#include "chrome/browser/extensions/api/preference/privacy_sandbox_transformer.h"
+#include "chrome/browser/extensions/api/preference/protected_content_enabled_transformer.h"
+#include "chrome/browser/extensions/api/proxy/proxy_api.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
@@ -43,10 +48,13 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
+#include "chrome/browser/extensions/pref_mapping.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/prefetch/pref_names.h"
+#include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -71,7 +79,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/update_client/update_client.h"
@@ -170,11 +181,45 @@ void AddActionToExtensionActivityLog(content::BrowserContext* browser_context,
   ActivityLog::GetInstance(browser_context)->LogAction(action);
 }
 
+bool RegisterTransformers() {
+  PrefMapping* pref_mapping = PrefMapping::GetInstance();
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kCookieControlsMode,
+      std::make_unique<CookieControlsModeTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      proxy_config::prefs::kProxy, std::make_unique<ProxyPrefTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefetch::prefs::kNetworkPredictionOptions,
+      std::make_unique<NetworkPredictionTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kProtectedContentDefault,
+      std::make_unique<ProtectedContentEnabledTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1TopicsEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1FledgeEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxM1AdMeasurementEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+  pref_mapping->RegisterPrefTransformer(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
+      std::make_unique<PrivacySandboxTransformer>());
+
+  return true;
+}
+
 }  // namespace
 
 ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient() {
   AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
   AddAPIProvider(std::make_unique<ChromeExtensionsBrowserAPIProvider>());
+  // This ensures transformers are only registered once. This is required
+  // because testing will create the singleton ChromeExtensionsBrowserClient
+  // instance multiple times within the same process.
+  static bool registered = RegisterTransformers();
+  CHECK(registered);
 
   process_manager_delegate_ = std::make_unique<ChromeProcessManagerDelegate>();
   api_client_ = std::make_unique<ChromeExtensionsAPIClient>();
