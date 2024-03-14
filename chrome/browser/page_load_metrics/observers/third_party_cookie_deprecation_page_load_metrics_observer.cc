@@ -154,12 +154,12 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieUseCounters(
 
   if (allow_mechanism != ThirdPartyCookieAllowMechanism::kNone) {
     UMA_HISTOGRAM_ENUMERATION(
-        "PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism2",
+        "PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism3",
         allow_mechanism);
   }
 
   if (CookieSettingsBase::Is1PDtRelatedAllowMechanism(allow_mechanism)) {
-    ukm::builders::Tpcd_Mitigations_Dt_FirstParty_Deployment(
+    ukm::builders::Tpcd_Mitigations_Dt_FirstParty_Deployment2(
         GetDelegate()
             .GetWebContents()
             ->GetPrimaryMainFrame()
@@ -339,7 +339,7 @@ void ThirdPartyCookieDeprecationMetricsObserver::RecordCookieReadUseCounters(
     }
 
     base::UmaHistogramEnumeration(
-        "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus", status);
+        "PageLoad.Clients.TPCD.TPCAccess.CookieReadStatus2", status);
 
     if (status == CookieReadStatus::kBlockedSkippedMetadataGrantAd ||
         status == CookieReadStatus::kBlockedSkippedTrialAd ||

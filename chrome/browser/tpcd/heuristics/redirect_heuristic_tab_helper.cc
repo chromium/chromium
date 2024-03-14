@@ -137,7 +137,7 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
 
   int32_t access_id = base::RandUint64();
 
-  ukm::builders::RedirectHeuristic_CookieAccess(first_party_source_id)
+  ukm::builders::RedirectHeuristic_CookieAccess2(first_party_source_id)
       .SetAccessId(access_id)
       .SetAccessAllowed(!details.blocked_by_policy)
       .SetIsAdTagged(static_cast<int64_t>(is_ad_tagged_cookie))
@@ -149,7 +149,8 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
       .SetIsCurrentInteraction(is_current_interaction)
       .Record(ukm::UkmRecorder::Get());
 
-  ukm::builders::RedirectHeuristic_CookieAccessThirdParty(third_party_source_id)
+  ukm::builders::RedirectHeuristic_CookieAccessThirdParty2(
+      third_party_source_id)
       .SetAccessId(access_id)
       .Record(ukm::UkmRecorder::Get());
 }
