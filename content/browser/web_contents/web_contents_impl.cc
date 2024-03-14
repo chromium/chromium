@@ -1900,27 +1900,32 @@ void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
 
   accessibility_mode_ = mode;
 
-  // Update state for all frames in this tree and inner trees. Should also
-  // include speculative frame hosts. Take care not to touch frame hosts that
-  // belong to another WebContents (e.g., guest views) -- it is the
-  // responsibility of other WebContents' to update their own frames. Note that
-  // content::BrowserAccessibilityState will propagate mode flag changes that
-  // target the whole process (CreateScopedModeForProcess) or a BrowserContext
-  // (CreateScopedModeForBrowserContext) to all relevant WebContents, so inner
-  // WebContents will automatically receive the same mode flag changes. In cases
-  // where mode flag changes apply to a specific WebContents (via
-  // CreateScopedModeForWebContents), it is the responsibility of the owner of
-  // the ScopedAccessibilityMode to choose whether or not to create scopers for
-  // inner WebContents.
-  GetPrimaryMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
+  // Update state for all frames in this tree and inner trees, including
+  // speculative frame hosts and those in the back-forward cache. Take care not
+  // to touch frame hosts that belong to another WebContents (e.g., guest views)
+  // -- it is the responsibility of other WebContents' to update their own
+  // frames. Note that content::BrowserAccessibilityState will propagate mode
+  // flag changes that target the whole process (CreateScopedModeForProcess) or
+  // a BrowserContext (CreateScopedModeForBrowserContext) to all relevant
+  // WebContents, so inner WebContents will automatically receive the same mode
+  // flag changes. In cases where mode flag changes apply to a specific
+  // WebContents (via CreateScopedModeForWebContents), it is the responsibility
+  // of the owner of the ScopedAccessibilityMode to choose whether or not to
+  // create scopers for inner WebContents.
+  ForEachRenderFrameHostIncludingSpeculativeWithAction(
       [this](RenderFrameHostImpl* frame_host) {
         if (WebContentsImpl::FromRenderFrameHostImpl(frame_host) == this) {
           frame_host->UpdateAccessibilityMode();
+          return FrameIterationAction::kContinue;
         }
+        return FrameIterationAction::kSkipChildren;
       });
 }
 
 void WebContentsImpl::ResetAccessibility() {
+  // In contrast to the above, do not bother with frames in the back-forward
+  // cache since the reset is intended to generate new trees for observers of
+  // active frames.
   GetPrimaryMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
       [this](RenderFrameHostImpl* frame_host) {
         if (WebContentsImpl::FromRenderFrameHostImpl(frame_host) == this) {
