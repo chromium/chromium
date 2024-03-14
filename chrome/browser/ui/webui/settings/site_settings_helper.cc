@@ -220,11 +220,13 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::DIRECT_SOCKETS, nullptr},
 };
 
-static_assert(std::size(kContentSettingsTypeGroupNames) ==
-                  // ContentSettingsType starts at -1, so add 1 here.
-                  static_cast<int32_t>(ContentSettingsType::NUM_TYPES) + 1,
-              "kContentSettingsTypeGroupNames should have "
-              "CONTENT_SETTINGS_NUM_TYPES elements");
+static_assert(
+    std::size(kContentSettingsTypeGroupNames) ==
+        // Add one since the sequence is kMinValue = -1, 0, ..., kMaxValue
+        1 + static_cast<int32_t>(ContentSettingsType::kMaxValue) -
+            static_cast<int32_t>(ContentSettingsType::kMinValue),
+    "kContentSettingsTypeGroupNames should have the correct number "
+    "of elements");
 
 struct SiteSettingSourceStringMapping {
   SiteSettingSource source;

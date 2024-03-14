@@ -41,7 +41,7 @@ void PrivacySandboxInternalsHandler::ReadPref(const std::string& pref_name,
 void PrivacySandboxInternalsHandler::ReadContentSettings(
     const ContentSettingsType type,
     ReadContentSettingsCallback callback) {
-  if (!IsKnownEnumValue(type) || type == ContentSettingsType::NUM_TYPES) {
+  if (!IsKnownEnumValue(type)) {
     mojo::ReportBadMessage(
         "ReadContentSettings received invalid ContentSettingsType");
     return;

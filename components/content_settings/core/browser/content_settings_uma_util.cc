@@ -190,9 +190,11 @@ void RecordContentSettingsHistogram(const std::string& name,
 }
 
 int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting) {
-  static_assert(kHistogramValue.size() ==
-                    static_cast<size_t>(ContentSettingsType::NUM_TYPES),
-                "Update content settings histogram lookup");
+  static_assert(
+      kHistogramValue.size() ==
+          // DEFAULT is not in the histogram, so we want [0, kMaxValue]
+          1 + static_cast<size_t>(ContentSettingsType::kMaxValue),
+      "Update content settings histogram lookup");
 
   auto found = kHistogramValue.find(content_setting);
   if (found != kHistogramValue.end()) {

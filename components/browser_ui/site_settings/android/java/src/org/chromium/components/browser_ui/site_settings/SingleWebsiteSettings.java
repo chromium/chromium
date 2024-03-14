@@ -1241,7 +1241,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         if (mPreferenceMap == null) {
             mPreferenceMap = new HashMap<>();
             for (@ContentSettingsType.EnumType int type = 0;
-                    type < ContentSettingsType.NUM_TYPES;
+                    type <= ContentSettingsType.MAX_VALUE;
                     type++) {
                 String key = getPreferenceKey(type);
                 if (key != null) {
@@ -1315,7 +1315,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         // for its logic. This class should maintain its own data model, and only update the screen
         // after a change is made.
         for (@ContentSettingsType.EnumType int type = 0;
-                type < ContentSettingsType.NUM_TYPES;
+                type <= ContentSettingsType.MAX_VALUE;
                 type++) {
             String key = getPreferenceKey(type);
             if (key != null) {

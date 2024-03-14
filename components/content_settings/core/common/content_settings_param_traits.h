@@ -9,7 +9,6 @@
 #include "ipc/ipc_message_macros.h"
 
 IPC_ENUM_TRAITS_MAX_VALUE(ContentSettingsType,
-                          static_cast<int32_t>(ContentSettingsType::NUM_TYPES) -
-                              1)
+                          static_cast<int32_t>(ContentSettingsType::kMaxValue))
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_COMMON_CONTENT_SETTINGS_PARAM_TRAITS_H_

@@ -158,10 +158,6 @@ class PrivacySandboxInternalsContentSettingsMojoTest
       public testing::WithParamInterface<int> {
  public:
   PrivacySandboxInternalsContentSettingsMojoTest() {
-    EXPECT_THAT(ContentSettingsType::NUM_TYPES,
-                Eq(ContentSettingsType::kMaxValue))
-        << "This test depends on kMaxValue being equal to the total number of "
-           "content settings.";
     EXPECT_THAT(ContentSettingsType::DEFAULT,
                 Eq(ContentSettingsType::kMinValue))
         << "This test depends on kMinValue being equal to the DEFAULT content "
@@ -180,9 +176,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxInternalsContentSettingsMojoTest,
   ContentSettingsType type = static_cast<ContentSettingsType>(GetParam());
   LOG(INFO) << "Testing for type " << type;
   EXPECT_TRUE(IsKnownEnumValue(type));
-  if (type == ContentSettingsType::NUM_TYPES) {
-    return;
-  }
   remote_->ReadContentSettings(
       type,
       base::BindOnce(&PrivacySandboxInternalsMojoTest::ContentSettingsCallback,
