@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -179,6 +181,20 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         setTaskDescription(
                 new ActivityManager.TaskDescription(
                         null, null, mIntentDataProvider.getColorProvider().getToolbarColor()));
+
+        GoogleBottomBarCoordinator googleBottomBarCoordinator =
+                mBaseCustomTabRootUiCoordinator.getGoogleBottomBarCoordinator();
+
+        // Display Google Bottom Bar using BottomBarDelegate only when PageInsightsHub is not
+        // enabled.
+        if (googleBottomBarCoordinator != null
+                && !mBaseCustomTabRootUiCoordinator.isPageInsightsHubEnabled()) {
+            View googleBottomBarView = googleBottomBarCoordinator.createGoogleBottomBarView();
+            getComponent()
+                    .resolveBottomBarDelegate()
+                    .setBottomBarHeight(googleBottomBarView.getHeight());
+            getComponent().resolveBottomBarDelegate().setBottomBarContentView(googleBottomBarView);
+        }
 
         getComponent().resolveBottomBarDelegate().showBottomBarIfNecessary();
     }

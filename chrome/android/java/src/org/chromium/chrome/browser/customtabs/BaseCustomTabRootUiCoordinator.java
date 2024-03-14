@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -112,6 +113,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     private @Nullable PageInsightsCoordinator mPageInsightsCoordinator;
     private @Nullable ContextualSearchObserver mContextualSearchObserver;
+
+    private @Nullable GoogleBottomBarCoordinator mGoogleBottomBarCoordinator;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -447,6 +450,23 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {
         maybeCreatePageInsightsComponent();
         return mPageInsightsCoordinator;
+    }
+
+    // Google Bottom bar
+    private @Nullable GoogleBottomBarCoordinator maybeCreateGoogleBottomBarComponents() {
+        // TODO - add intent check once flag is provided through intent extra
+        if (!GoogleBottomBarCoordinator.isFeatureEnabled()) {
+            return null;
+        }
+
+        return new GoogleBottomBarCoordinator(mActivity);
+    }
+
+    public @Nullable GoogleBottomBarCoordinator getGoogleBottomBarCoordinator() {
+        if (mGoogleBottomBarCoordinator == null) {
+            mGoogleBottomBarCoordinator = maybeCreateGoogleBottomBarComponents();
+        }
+        return mGoogleBottomBarCoordinator;
     }
 
     @Override
