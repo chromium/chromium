@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_callback_metric_reporter.h"
 #include "third_party/blink/renderer/platform/audio/audio_destination.h"
@@ -37,6 +38,7 @@ class RealtimeAudioDestinationHandler final
 
   // For AudioHandler.
   void Dispose() override;
+  AudioContext* Context() const override;
   void Initialize() override;
   void Uninitialize() override;
   void SetChannelCount(unsigned, ExceptionState&) override;

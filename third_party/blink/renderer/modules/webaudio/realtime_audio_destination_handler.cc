@@ -10,7 +10,6 @@
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
@@ -69,6 +68,10 @@ void RealtimeAudioDestinationHandler::Dispose() {
   AudioDestinationHandler::Dispose();
 }
 
+AudioContext* RealtimeAudioDestinationHandler::Context() const {
+  return static_cast<AudioContext*>(AudioDestinationHandler::Context());
+}
+
 void RealtimeAudioDestinationHandler::Initialize() {
   DCHECK(IsMainThread());
 
@@ -121,7 +124,7 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
   // After the context is closed, changing channel count will be ignored
   // because it will trigger the recreation of the platform destination. This
   // in turn can activate the audio rendering thread.
-  AudioContext* context = static_cast<AudioContext*>(Context());
+  AudioContext* context = Context();
   CHECK(context);
   if (context->ContextState() == AudioContext::kClosed ||
       ChannelCount() == old_channel_count ||
@@ -190,7 +193,7 @@ void RealtimeAudioDestinationHandler::Render(
   // take care of all AudioNode processes within this scope.
   DenormalDisabler denormal_disabler;
 
-  AudioContext* context = static_cast<AudioContext*>(Context());
+  AudioContext* context = Context();
 
   // A sanity check for the associated context, but this does not guarantee the
   // safe execution of the subsequence operations because the handler holds
@@ -408,7 +411,7 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   // After the context is closed, `SetSinkDescriptor` request will be ignored
   // because it will trigger the recreation of the platform destination. This in
   // turn can activate the audio rendering thread.
-  AudioContext* context = static_cast<AudioContext*>(Context());
+  AudioContext* context = Context();
   CHECK(context);
   if (context->ContextState() == AudioContext::kClosed) {
     std::move(callback).Run(
