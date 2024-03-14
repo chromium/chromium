@@ -165,6 +165,7 @@ class CORE_EXPORT InspectorCSSAgent final
           protocol::Array<protocol::CSS::InheritedPseudoElementMatches>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSKeyframesRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*,
+      protocol::Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>*,
       protocol::Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*,
       protocol::Maybe<protocol::CSS::CSSFontPaletteValuesRule>*
@@ -348,6 +349,8 @@ class CORE_EXPORT InspectorCSSAgent final
 
   std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>
   PositionFallbackRulesForNode(Element* element);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>
+  PositionTryRulesForElement(Element* element);
 
   std::pair<
       std::unique_ptr<protocol::Array<protocol::CSS::CSSPropertyRule>>,

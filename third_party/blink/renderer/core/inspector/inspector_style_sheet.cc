@@ -903,6 +903,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kKeyframe:
       case StyleRule::kFontFeature:
       case StyleRule::kTry:
+      case StyleRule::kPositionTry:
       case StyleRule::kViewTransition:
         result->push_back(data);
         break;
@@ -985,6 +986,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kKeyframeRule:
       case CSSRule::kFontFeatureRule:
       case CSSRule::kTryRule:
+      case CSSRule::kPositionTryRule:
       case CSSRule::kViewTransitionRule:
       case CSSRule::kFontPaletteValuesRule:
         result->push_back(rule);
@@ -1638,7 +1640,7 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
   if (!rule || !rule->parentStyleSheet() ||
       (!IsA<CSSStyleRule>(rule) && !IsA<CSSKeyframeRule>(rule) &&
        !IsA<CSSPropertyRule>(rule) && !IsA<CSSFontPaletteValuesRule>(rule) &&
-       !IsA<CSSTryRule>(rule))) {
+       !IsA<CSSTryRule>(rule) && !IsA<CSSPositionTryRule>(rule))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
         "Source range didn't match existing style source range");
@@ -1655,6 +1657,8 @@ CSSRule* InspectorStyleSheet::SetStyleText(const SourceRange& range,
   } else if (auto* font_palette_values_rule =
                  DynamicTo<CSSFontPaletteValuesRule>(rule)) {
     style = font_palette_values_rule->Style();
+  } else if (auto* position_try_rule = DynamicTo<CSSPositionTryRule>(rule)) {
+    style = position_try_rule->style();
   } else {
     style = To<CSSKeyframeRule>(rule)->style();
   }
@@ -2438,6 +2442,26 @@ InspectorStyleSheet::BuildObjectForTryRule(CSSTryRule* try_rule) {
       protocol::CSS::CSSTryRule::create()
           .setOrigin(origin_)
           .setStyle(BuildObjectForStyle(try_rule->style(), nullptr))
+          .build();
+  if (CanBind(origin_) && !Id().empty()) {
+    result->setStyleSheetId(Id());
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::CSS::CSSPositionTryRule>
+InspectorStyleSheet::BuildObjectForPositionTryRule(
+    CSSPositionTryRule* position_try_rule) {
+  std::unique_ptr<protocol::CSS::Value> name =
+      protocol::CSS::Value::create().setText(position_try_rule->name()).build();
+  if (CSSRuleSourceData* source_data = SourceDataForRule(position_try_rule)) {
+    name->setRange(BuildSourceRangeObject(source_data->rule_header_range));
+  }
+  std::unique_ptr<protocol::CSS::CSSPositionTryRule> result =
+      protocol::CSS::CSSPositionTryRule::create()
+          .setName(std::move(name))
+          .setOrigin(origin_)
+          .setStyle(BuildObjectForStyle(position_try_rule->style(), nullptr))
           .build();
   if (CanBind(origin_) && !Id().empty()) {
     result->setStyleSheetId(Id());

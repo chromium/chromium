@@ -466,6 +466,10 @@ class InspectorCSSAgent::ModifyRuleAction final
       return style_sheet_->BuildObjectForStyle(
           font_palette_values_rule->Style(), nullptr);
     }
+    if (auto* position_try_rule = DynamicTo<CSSPositionTryRule>(rule)) {
+      return style_sheet_->BuildObjectForStyle(position_try_rule->style(),
+                                               nullptr);
+    }
     return nullptr;
   }
 
@@ -1088,6 +1092,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         css_keyframes_rules,
     Maybe<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>*
         css_position_fallback_rules,
+    Maybe<protocol::Array<protocol::CSS::CSSPositionTryRule>>*
+        css_position_try_rules,
     Maybe<protocol::Array<protocol::CSS::CSSPropertyRule>>* css_property_rules,
     Maybe<protocol::Array<protocol::CSS::CSSPropertyRegistration>>*
         css_property_registrations,
@@ -1225,6 +1231,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   }
 
   *css_position_fallback_rules = PositionFallbackRulesForNode(element);
+  *css_position_try_rules = PositionTryRulesForElement(element);
 
   if (auto rule = FontPalettesForNode(*element)) {
     *css_font_palette_values_rule = std::move(rule);
@@ -1363,6 +1370,86 @@ InspectorCSSAgent::PositionFallbackRulesForNode(Element* element) {
           .build());
 
   return css_position_fallback_rules;
+}
+
+template <class CSSRuleCollection>
+static CSSPositionTryRule* FindPositionTryRule(
+    CSSRuleCollection* css_rules,
+    StyleRulePositionTry* position_try_rule) {
+  if (!css_rules) {
+    return nullptr;
+  }
+
+  CSSPositionTryRule* result = nullptr;
+  for (unsigned i = 0; i < css_rules->length() && !result; ++i) {
+    CSSRule* css_rule = css_rules->item(i);
+    if (auto* css_style_rule = DynamicTo<CSSPositionTryRule>(css_rule)) {
+      if (css_style_rule->PositionTry() == position_try_rule) {
+        result = css_style_rule;
+      }
+    } else if (auto* css_import_rule = DynamicTo<CSSImportRule>(css_rule)) {
+      result =
+          FindPositionTryRule(css_import_rule->styleSheet(), position_try_rule);
+    } else {
+      result = FindPositionTryRule(css_rule->cssRules(), position_try_rule);
+    }
+  }
+  return result;
+}
+
+std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>
+InspectorCSSAgent::PositionTryRulesForElement(Element* element) {
+  Document& document = element->GetDocument();
+  CHECK(!document.NeedsLayoutTreeUpdateForNode(*element));
+
+  const ComputedStyle* style = element->EnsureComputedStyle();
+  if (!style) {
+    return nullptr;
+  }
+
+  const PositionTryOptions* position_try_options =
+      style->GetPositionTryOptions();
+  if (!position_try_options) {
+    return nullptr;
+  }
+
+  auto css_position_try_rules =
+      std::make_unique<protocol::Array<protocol::CSS::CSSPositionTryRule>>();
+  StyleResolver& style_resolver = document.GetStyleResolver();
+  for (const PositionTryOption& option : position_try_options->GetOptions()) {
+    if (const ScopedCSSName* scoped_name = option.GetPositionTryName()) {
+      const TreeScope* tree_scope = scoped_name->GetTreeScope();
+      if (!tree_scope) {
+        tree_scope = &document;
+      }
+      StyleRulePositionTry* position_try_rule =
+          style_resolver.ResolvePositionTryRule(tree_scope,
+                                                scoped_name->GetName());
+      if (!position_try_rule) {
+        continue;
+      }
+      // Find CSSOM wrapper from internal Style rule.
+      DocumentStyleSheets::iterator css_style_sheets_for_document_it =
+          document_to_css_style_sheets_.find(&document);
+      if (css_style_sheets_for_document_it ==
+          document_to_css_style_sheets_.end()) {
+        continue;
+      }
+      for (CSSStyleSheet* style_sheet :
+           *css_style_sheets_for_document_it->value) {
+        if (CSSPositionTryRule* css_position_try_rule =
+                FindPositionTryRule(style_sheet, position_try_rule)) {
+          InspectorStyleSheet* inspector_style_sheet =
+              BindStyleSheet(css_position_try_rule->parentStyleSheet());
+          css_position_try_rules->emplace_back(
+              inspector_style_sheet->BuildObjectForPositionTryRule(
+                  css_position_try_rule));
+          break;
+        }
+      }
+    }
+  }
+  return css_position_try_rules;
 }
 
 template <class CSSRuleCollection>

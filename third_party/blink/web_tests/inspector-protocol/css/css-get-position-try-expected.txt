@@ -1,0 +1,11 @@
+Test that position-try rules are reported.
+Dumping CSS position-try rules: 
+@position-try --top {
+    top: anchor(--anchor top); @[13:2-13:28]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --bottom {
+    top: anchor(--anchor bottom); @[17:2-17:31]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+

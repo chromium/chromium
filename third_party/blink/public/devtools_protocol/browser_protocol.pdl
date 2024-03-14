@@ -1944,11 +1944,24 @@ experimental domain CSS
       CSSStyle style
 
   # CSS position-fallback rule representation.
-  type CSSPositionFallbackRule extends object
+  deprecated type CSSPositionFallbackRule extends object
     properties
       Value name
       # List of keyframes.
       array of CSSTryRule tryRules
+
+  # CSS @position-try rule representation.
+  type CSSPositionTryRule extends object
+    properties
+      # The prelude dashed-ident name
+      Value name
+      # The css style sheet identifier (absent for user agent stylesheet and user-specified
+      # stylesheet rules) this rule came from.
+      optional StyleSheetId styleSheetId
+      # Parent stylesheet's origin.
+      StyleSheetOrigin origin
+      # Associated style declaration.
+      CSSStyle style
 
   # CSS keyframes rule representation.
   type CSSKeyframesRule extends object
@@ -2123,7 +2136,9 @@ experimental domain CSS
       # A list of CSS keyframed animations matching this node.
       optional array of CSSKeyframesRule cssKeyframesRules
       # A list of CSS position fallbacks matching this node.
-      optional array of CSSPositionFallbackRule cssPositionFallbackRules
+      deprecated optional array of CSSPositionFallbackRule cssPositionFallbackRules
+      # A list of CSS @position-try rules matching this node, based on the position-try-options property.
+      optional array of CSSPositionTryRule cssPositionTryRules
       # A list of CSS at-property rules matching this node.
       optional array of CSSPropertyRule cssPropertyRules
       # A list of CSS property registrations matching this node.
