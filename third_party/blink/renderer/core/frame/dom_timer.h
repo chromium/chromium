@@ -89,6 +89,9 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
   int nesting_level_;
   probe::AsyncTaskContext async_task_context_;
   Member<ScheduledAction> action_;
+
+  // Dependency graph node ID for when this timer was scheduled.
+  int record_replay_dependency_graph_node_id_ = 0;
 };
 
 }  // namespace blink

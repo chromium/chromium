@@ -85,6 +85,8 @@ DOMTimer::DOMTimer(ExecutionContext* context,
       action_(action) {
   DCHECK_GT(timeout_id, 0);
 
+  record_replay_dependency_graph_node_id_ = recordreplay::NewDependencyGraphNode("{\"kind\":\"timerScheduled\"}");
+
   // Step 10:
   if (timeout.is_negative())
     timeout = base::TimeDelta();
@@ -176,6 +178,12 @@ void DOMTimer::Fired() {
   DCHECK(!context->IsContextPaused());
   // Only the first execution of a multi-shot timer should get an affirmative
   // user gesture indicator.
+
+  int dependency_graph_fired_id = recordreplay::NewDependencyGraphNode("{\"kind\":\"timerFired\"}");
+  recordreplay::AddDependencyGraphEdge(record_replay_dependency_graph_node_id_,
+                                       dependency_graph_fired_id,
+                                       "{\"kind\":\"baseTimer\"}");
+  recordreplay::AutoDependencyExecution execute(dependency_graph_fired_id);
 
   DEVTOOLS_TIMELINE_TRACE_EVENT("TimerFire", inspector_timer_fire_event::Data,
                                 context, timeout_id_);
