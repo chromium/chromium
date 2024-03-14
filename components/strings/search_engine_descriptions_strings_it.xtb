@@ -7,13 +7,14 @@ Do not modify it manually. -->
 <translationbundle lang="it">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing è un motore di ricerca AI alimentato da GPT-4</translation>
   <translation id="IDS_BRAVE_SEARCH_DESCRIPTION">Blocca gli annunci e i tracker durante la navigazione sul web.</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Noi non ti monitoriamo. Privacy, semplificata.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Pianta alberi mentre fai le tue ricerche. Abbiamo già superato i 200 milioni.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Trova ciò che ti serve con il motore di ricerca più usato al mondo.</translation>
-  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Ricerca facile e veloce</translation>
-  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Motore di ricerca indipendente, europeo, senza tracciabilità</translation>
+  <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Proteggi gli animali e la biodiversità: fai in modo che ogni ricerca conti!</translation>
+  <translation id="IDS_LILO_SEARCH_DESCRIPTION">La tua ricerca su Internet finanzia gratuitamente le associazioni</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Le tue ricerche puliscono i nostri oceani e spiagge dalla plastica.</translation>
   <translation id="IDS_PANDA_SEARCH_DESCRIPTION">Fai delle ricerche con Panda e sostieni i progetti e le campagne del WWF.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Un motore di ricerca che protegge la tua privacy.</translation>
-  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Ricerca rapida e sicura per siti Web, immagini e video</translation>
-  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Motore di ricerca Web che mira a condividere le entrate pubblicitarie con i creatori.</translation>
+  <translation id="IDS_QWANT_SEARCH_DESCRIPTION">Un motore di ricerca europeo che rispetta la tua privacy.</translation>
+  <translation id="IDS_YAHOO_SEARCH_DESCRIPTION">Scopri di più. Ricevi risposte velocemente. Esplora di più con Yahoo.</translation>
 </translationbundle>

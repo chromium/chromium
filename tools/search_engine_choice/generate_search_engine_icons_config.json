@@ -12,7 +12,20 @@
   // Engines for which we don't need to download icons, either because we
   // already have them from another source or because they're not relevant to
   // the default search engine choice screen.
-  "ignored_engines": [ "baidu", "coccoc", "daum", "google", "naver", "so_360", "sogou" ],
+  "ignored_engines": [
+    "baidu",
+    "coccoc",
+    "daum",
+    "google",
+    "naver",
+    "so_360",
+    "sogou",
+    "yandex_by",
+    "yandex_com",
+    "yandex_kz",
+    "yandex_ru",
+    "yandex_tr"
+  ],
   // The engine names in `prepopulated_engines.json` are not always the same as
   // the subfolders with the correct icon. This dictionary associates the engine
   // name with the subfolder name.
@@ -33,6 +46,7 @@
     "yahoo_co": "yahoo",
     "yahoo_de": "yahoo",
     "yahoo_dk": "yahoo",
+    "yahoo_emea": "yahoo",
     "yahoo_es": "yahoo",
     "yahoo_fi": "yahoo",
     "yahoo_fr": "yahoo",
@@ -52,12 +66,7 @@
     "yahoo_th": "yahoo",
     "yahoo_tr": "yahoo",
     "yahoo_tw": "yahoo",
-    "yahoo_uk": "yahoo",
-    "yandex_by": "yandex",
-    "yandex_com": "yandex",
-    "yandex_kz": "yandex",
-    "yandex_ru": "yandex",
-    "yandex_tr": "yandex"
+    "yahoo_uk": "yahoo"
   },
   // The default icon filenames are '{engine}_xxxhdpi.png',
   // '{engine}_icon_xxxhdpi.png' and 'xxxhdpi.png'.

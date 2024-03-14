@@ -216,7 +216,7 @@ TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {
 TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
   feature_list_.Reset();
   feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
-  const size_t kMinEea = 6;
+  const size_t kMinEea = 8;
   const size_t kMinRow = 3;
 
   for (int country_id : kAllCountryIds) {

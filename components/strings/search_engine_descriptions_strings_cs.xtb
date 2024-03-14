@@ -6,13 +6,12 @@ google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippe
 Do not modify it manually. -->
 <translationbundle lang="cs">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing je vyhledávač s AI poháněný GPT-4</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Nesledujeme vás. Soukromí, zjednodušeno.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Sázejte stromy vyhledáváním. Už jsme vysázeli přes 200 milionů stromů.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Najděte vše potřebné pomocí nejpoužívanějšího vyhledávače na světě.</translation>
-  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Rychlé a snadné vyhledávání</translation>
-  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Nezávislý, evropské, ne-tracking vyhledávač</translation>
+  <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Chraňte zvířata a biologickou rozmanitost – každé hledání se počítá!</translation>
+  <translation id="IDS_LILO_SEARCH_DESCRIPTION">Váš internetový výzkum financuje sdružení zdarma</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Vaše vyhledávání čistí oceány a pláže od plastů.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">Vyhledávací stroj, který chrání vaše soukromí.</translation>
   <translation id="IDS_SEZNAM_SEARCH_DESCRIPTION">"Užitečný, zábavný, inspirativní. Seznam - najdu tam, co neznám."</translation>
-  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Rychlé a bezpečné vyhledávání stránek, obrázků a videí</translation>
-  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Webový vyhledávač s cílem sdílet příjmy z reklamy s tvůrci obsahu.</translation>
 </translationbundle>

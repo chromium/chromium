@@ -5,5 +5,6 @@
 google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
 Do not modify it manually. -->
 <translationbundle lang="fa">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">جستجوی سریع، دقیق و خصوصی با فناوری Microsoft</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">با استفاده از پرکاربردترین موتور جستجوی دنیا، آنچه را می‌خواهید پیدا کنید.</translation>
 </translationbundle>

@@ -5,6 +5,5 @@
 google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
 Do not modify it manually. -->
 <translationbundle lang="am">
-  <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">በዓለም በጣም ጥቅም ላይ በሚውለው የፍለጋ ፕሮግራም አማካኝነት የሚያስፈልገዎትን ነገር ያግኙ።</translation>
-  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">ኢንዲፔንደንት, የአውሮፓ, ምንም-የክትትል የፍለጋ ፕሮግራም</translation>
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">ፈጣን፣ ትክክለኛ, እና ከማይክሮሶፍት የግል ፍለጋ</translation>
 </translationbundle>

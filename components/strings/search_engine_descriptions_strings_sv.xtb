@@ -6,12 +6,11 @@ google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippe
 Do not modify it manually. -->
 <translationbundle lang="sv">
   <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft Bing är en AI-sökmotor som drivs av GPT-4</translation>
+  <translation id="IDS_DUCKDUCKGO_SEARCH_DESCRIPTION">Vi spårar dig inte. Integritet, helt enkelt.</translation>
   <translation id="IDS_ECOSIA_SEARCH_DESCRIPTION">Plantera träd när du surfar. Över 200 miljoner träd planterade.</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Hitta det du letar efter med världens mest använda sökmotor.</translation>
-  <translation id="IDS_INFOCOM_SEARCH_DESCRIPTION">Snabb och enkel sökmotor</translation>
-  <translation id="IDS_MOJEEK_SEARCH_DESCRIPTION">Oberoende, europeiska, no-tracking sökmotor</translation>
+  <translation id="IDS_KARMA_SEARCH_DESCRIPTION">Skydda djur och biologisk mångfald – få varje sökning att räknas!</translation>
+  <translation id="IDS_LILO_SEARCH_DESCRIPTION">Din internetforskning finansierar föreningar gratis</translation>
   <translation id="IDS_OCEANHERO_SEARCH_DESCRIPTION">Dina sökningar städar våra hav och stränder från plast.</translation>
   <translation id="IDS_PRIVACYWALL_SEARCH_DESCRIPTION">En sökmotor som skyddar din integritet.</translation>
-  <translation id="IDS_YANDEX_SEARCH_DESCRIPTION">Snabb och säker sökning efter webbplatser, bilder och videoklipp</translation>
-  <translation id="IDS_YEP_SEARCH_DESCRIPTION">Webbsökmotor som syftar till att dela annonsintäkter med skapare.</translation>
 </translationbundle>

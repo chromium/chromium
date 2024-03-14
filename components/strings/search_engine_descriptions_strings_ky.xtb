@@ -5,5 +5,6 @@
 google3/googleclient/chrome/tools/search_engine_choice/generate_marketing_snippets.py.
 Do not modify it manually. -->
 <translationbundle lang="ky">
+  <translation id="IDS_BING_SEARCH_DESCRIPTION">Microsoft'тон ыкчам, так жана купуя издөө</translation>
   <translation id="IDS_GOOGLE_SEARCH_DESCRIPTION">Дүйнөдөгү эң көп колдонулган издөө каражаты менен керектүү нерселерди таап алыңыз.</translation>
 </translationbundle>
