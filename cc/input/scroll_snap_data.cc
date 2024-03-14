@@ -318,6 +318,18 @@ SnapPositionData SnapContainerData::FindSnapPosition(
 
   result.type = SnapPositionData::Type::kAligned;
   result.position = strategy.current_position();
+  // Make sure that |result| retains what we are currently snapped to in each
+  // axis in case this search had no result for one axis. This ensures we don't
+  // incorrectly trigger a snap event. Don't retain ids of areas that may no
+  // longer exist.
+  for (const auto& area : snap_area_list_) {
+    if (area.element_id == target_snap_area_element_ids_.x) {
+      result.target_element_ids.x = target_snap_area_element_ids_.x;
+    }
+    if (area.element_id == target_snap_area_element_ids_.y) {
+      result.target_element_ids.y = target_snap_area_element_ids_.y;
+    }
+  }
 
   if (selected_x) {
     result.position.set_x(selected_x->snap_offset());

@@ -17,6 +17,15 @@ function assertSnapEventDeprecated(evt, expected_ids) {
   assert_equals(actual, expected, "snap event supplied expected targets");
 }
 
+function assertSnapEvent(evt, expected_ids) {
+  assert_equals(evt.bubbles, false, "snap events don't bubble");
+  assert_false(evt.cancelable, "snap events are not cancelable.");
+  assert_equals(evt.snapTargetBlock, expected_ids.block,
+    "snap event supplied expected target in block axis");
+  assert_equals(evt.snapTargetInline, expected_ids.inline,
+    "snap event supplied expected target in inline axis");
+}
+
 // This function is deprecated. It tests a deprecated SnapEvent interface.
 // This function holds logic intended to be used by tests for scroll snap
 // events.
@@ -51,8 +60,28 @@ async function test_snap_event_deprecated(test, test_data, event_type) {
     "horizontal scroll offset mismatch.");
 }
 
+async function test_snap_event(test, test_data, event_type) {
+  checkSnapEventSupport(event_type);
+  await waitForScrollReset(test, test_data.scroller);
+
+  let listener = test_data.scroller ==
+    document.scrollingElement ? document : test_data.scroller;
+
+  const event_promise = waitForSnapEvent(listener, event_type);
+  await test_data.scrolling_function();
+  let evt = await event_promise;
+
+  assertSnapEvent(evt, test_data.expected_snap_targets);
+  assert_approx_equals(test_data.scroller.scrollTop,
+    test_data.expected_scroll_offsets.y, 1,
+    "vertical scroll offset mismatch.");
+  assert_approx_equals(test_data.scroller.scrollLeft,
+    test_data.expected_scroll_offsets.x, 1,
+    "horizontal scroll offset mismatch.");
+}
+
 async function test_snapchanged(test, test_data) {
-  await test_snap_event_deprecated(test, test_data, "snapchanged");
+  await test_snap_event(test, test_data, "snapchanged");
 }
 
 function waitForEventUntil(event_target, event_type, wait_until) {

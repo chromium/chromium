@@ -581,10 +581,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   bool ScrollStartIsDefault() const;
   virtual bool IsApplyingScrollStart() const { return false; }
 
-  virtual const cc::SnappedTargetData* GetSnappedTargetData() const {
-    return nullptr;
-  }
-  virtual void SetSnappedTargetData(std::optional<cc::SnappedTargetData>) {}
+  virtual void SetSnapchangedTargetIds(
+      std::optional<cc::TargetSnapAreaElementIds>) {}
   virtual void UpdateSnappedTargetsAndEnqueueSnapChanged() {}
 
   bool ScrollOffsetIsNoop(const ScrollOffset& offset) const;
@@ -652,6 +650,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual void StopApplyingScrollStart() {}
   const ScrollStartTargetCandidates* GetScrollStartTargets() const;
+
+  virtual Node* GetSnapEventTargetAlongAxis(const AtomicString& type,
+                                            cc::SnapAxis) const {
+    return nullptr;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollableAreaTest,

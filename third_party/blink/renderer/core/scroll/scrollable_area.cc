@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -1422,9 +1423,12 @@ void ScrollableArea::EnqueueSnapChangedEvent() const {
   if (!target_node) {
     return;
   }
-  HeapVector<Member<Node>> snap_targets =
-      PrepareSnapEventTargets(GetSnappedTargetData());
-  target_node->GetDocument().EnqueueSnapChangedEvent(target_node, snap_targets);
+  Member<Node> block_target = GetSnapEventTargetAlongAxis(
+      event_type_names::kSnapchanged, cc::SnapAxis::kBlock);
+  Member<Node> inline_target = GetSnapEventTargetAlongAxis(
+      event_type_names::kSnapchanged, cc::SnapAxis::kInline);
+  target_node->GetDocument().EnqueueSnapChangedEvent(target_node, block_target,
+                                                     inline_target);
 }
 
 void ScrollableArea::EnqueueSnapChangingEvent() const {
