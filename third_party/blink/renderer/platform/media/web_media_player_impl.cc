@@ -3578,27 +3578,38 @@ bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
 bool WebMediaPlayerImpl::ShouldDisableVideoWhenHidden() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (!is_background_video_track_optimization_supported_)
+  if (!is_background_video_track_optimization_supported_) {
     return false;
+  }
 
   // Only disable the video track on audio + video playbacks, otherwise they
   // should be paused or left alone.
-  if (!HasVideo() || !HasAudio())
+  if (!HasVideo() || !HasAudio()) {
     return false;
+  }
 
   // Disabling tracks causes seeks which can cause problematic network delays
   // on streaming resources.
-  if (IsStreaming())
+  if (IsStreaming()) {
     return false;
+  }
 
   // In these cases something external needs the frames.
-  if (IsInPictureInPicture() || IsVideoBeingCaptured() || is_flinging_)
+  if (IsInPictureInPicture() || IsVideoBeingCaptured() || is_flinging_) {
     return false;
+  }
+
+  // Media Foundation does not currently support smoothly disabling &
+  // re-enabling video tracks.
+  if (renderer_type_ == media::RendererType::kMediaFoundation) {
+    return false;
+  }
 
   // Videos shorter than the maximum allowed keyframe distance can be optimized.
   base::TimeDelta duration = GetPipelineMediaDuration();
-  if (duration < kMaxKeyframeDistanceToDisableBackgroundVideo)
+  if (duration < kMaxKeyframeDistanceToDisableBackgroundVideo) {
     return true;
+  }
 
   // Otherwise, only optimize videos with shorter average keyframe distance.
   auto stats = GetPipelineStatistics();
