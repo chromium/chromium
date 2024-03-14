@@ -83,6 +83,7 @@ AppCollectionMap GetAppCollectionsMap() {
       {web_app::kPlayBooksAppId, ash::AppCollection::kEntertainment},
 
       // Utilities.
+      {web_app::kHelpAppId, ash::AppCollection::kUtilities},
       {web_app::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kCalculatorAppId, ash::AppCollection::kUtilities},
       {extension_misc::kTextEditorAppId, ash::AppCollection::kUtilities},
