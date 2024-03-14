@@ -9,7 +9,9 @@
 
 namespace media {
 
-H264BitstreamBuffer::H264BitstreamBuffer() : data_(nullptr) {
+H264BitstreamBuffer::H264BitstreamBuffer(bool insert_emulation_prevention_bytes)
+    : insert_emulation_prevention_bytes_(insert_emulation_prevention_bytes),
+      data_(nullptr) {
   Reset();
 }
 
@@ -30,6 +32,8 @@ void H264BitstreamBuffer::Reset() {
   Grow();
 
   bits_left_in_reg_ = kRegBitSize;
+
+  in_nalu_ = false;
 }
 
 void H264BitstreamBuffer::Grow() {
@@ -51,13 +55,41 @@ void H264BitstreamBuffer::FlushReg() {
   // Convert to MSB and append as such to the stream.
   reg_ = base::HostToNet64(reg_);
 
-  // Make sure we have enough space. Grow() will CHECK() on allocation failure.
-  if (pos_ + bytes_in_reg > capacity_)
-    Grow();
+  if (insert_emulation_prevention_bytes_ && in_nalu_) {
+    // The EPB only works on complete bytes being flushed.
+    CHECK_EQ(bits_in_reg % 8, 0u);
+    // Insert emulation prevention bytes (spec 7.3.1).
+    static const uint8_t kEmulationByte = 0x03;
 
-  memcpy(data_ + pos_, &reg_, bytes_in_reg);
-  bits_in_buffer_ = pos_ * 8 + bits_in_reg;
-  pos_ += bytes_in_reg;
+    uint8_t* byte_ptr = reinterpret_cast<uint8_t*>(&reg_);
+    for (size_t i = 0; i < bytes_in_reg; ++i) {
+      // This will possibly check the NALU header byte. However the
+      // CHECK_NE(nalu_type, 0) makes sure that it is not 0.
+      if (pos_ >= 2 && data_[pos_ - 2] == 0 && data_[pos_ - 1] == 0 &&
+          byte_ptr[i] <= kEmulationByte) {
+        if (pos_ + 1 > capacity_) {
+          Grow();
+        }
+        data_[pos_++] = kEmulationByte;
+        bits_in_buffer_ += 8;
+      }
+      if (pos_ + 1 > capacity_) {
+        Grow();
+      }
+      data_[pos_++] = byte_ptr[i];
+      bits_in_buffer_ += 8;
+    }
+  } else {
+    // Make sure we have enough space. Grow() will CHECK() on allocation
+    // failure.
+    if (pos_ + bytes_in_reg > capacity_) {
+      Grow();
+    }
+
+    memcpy(data_ + pos_, &reg_, bytes_in_reg);
+    bits_in_buffer_ = pos_ * 8 + bits_in_reg;
+    pos_ += bytes_in_reg;
+  }
 
   reg_ = 0;
   bits_left_in_reg_ = kRegBitSize;
@@ -120,6 +152,7 @@ void H264BitstreamBuffer::AppendUE(unsigned int val) {
                                                "FinishNALU() first."
 
 void H264BitstreamBuffer::BeginNALU(H264NALU::Type nalu_type, int nal_ref_idc) {
+  DCHECK(!in_nalu_);
   DCHECK_FINISHED();
 
   DCHECK_LE(nalu_type, H264NALU::kEOStream);
@@ -127,8 +160,11 @@ void H264BitstreamBuffer::BeginNALU(H264NALU::Type nalu_type, int nal_ref_idc) {
   DCHECK_LE(nal_ref_idc, 3);
 
   AppendBits(32, 0x00000001);
+  Flush();
+  in_nalu_ = true;
   AppendBits(1, 0);  // forbidden_zero_bit
   AppendBits(2, nal_ref_idc);
+  CHECK_NE(nalu_type, 0);
   AppendBits(5, nalu_type);
 }
 
@@ -140,6 +176,7 @@ void H264BitstreamBuffer::FinishNALU() {
   AppendBits(bits_left_in_reg_ % 8, 0);
 
   Flush();
+  in_nalu_ = false;
 }
 
 void H264BitstreamBuffer::Flush() {

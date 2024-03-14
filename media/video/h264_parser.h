@@ -79,6 +79,8 @@ enum {
 
 struct MEDIA_EXPORT H264SPS {
   H264SPS();
+  H264SPS& operator=(const H264SPS&);
+  H264SPS(H264SPS&&) noexcept;
 
   enum H264ProfileIDC {
     kProfileIDCBaseline = 66,
@@ -234,6 +236,7 @@ struct MEDIA_EXPORT H264SPS {
 
 struct MEDIA_EXPORT H264PPS {
   H264PPS();
+  H264PPS(H264PPS&&) noexcept;
 
   int pic_parameter_set_id;
   int seq_parameter_set_id;

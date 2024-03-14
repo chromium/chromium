@@ -36,18 +36,18 @@ class H264BitstreamBufferAppendBitsTest
 // TODO(posciak): More tests!
 
 TEST_P(H264BitstreamBufferAppendBitsTest, AppendAndVerifyBits) {
-  auto b = base::MakeRefCounted<H264BitstreamBuffer>();
+  H264BitstreamBuffer b;
   uint64_t num_bits = GetParam();
   // TODO(posciak): Tests for >64 bits.
   ASSERT_LE(num_bits, 64u);
   uint64_t num_bytes = base::bits::AlignUp(num_bits, uint64_t{8}) / 8;
 
-  b->AppendBits(num_bits, kTestPattern);
-  b->FlushReg();
+  b.AppendBits(num_bits, kTestPattern);
+  b.FlushReg();
 
-  EXPECT_EQ(b->BytesInBuffer(), num_bytes);
+  EXPECT_EQ(b.BytesInBuffer(), num_bytes);
 
-  const uint8_t* ptr = b->data();
+  const uint8_t* ptr = b.data();
   uint64_t got = GetDataFromBuffer(ptr, num_bits);
   uint64_t expected = kTestPattern;
 
@@ -58,17 +58,17 @@ TEST_P(H264BitstreamBufferAppendBitsTest, AppendAndVerifyBits) {
 }
 
 TEST_F(H264BitstreamBufferAppendBitsTest, VerifyFlushAndBitsInBuffer) {
-  auto b = base::MakeRefCounted<H264BitstreamBuffer>();
+  H264BitstreamBuffer b;
   uint64_t num_bits = 20;
   uint64_t num_bytes = base::bits::AlignUp(num_bits, uint64_t{8}) / 8;
 
-  b->AppendBits(num_bits, kTestPattern);
-  b->Flush();
+  b.AppendBits(num_bits, kTestPattern);
+  b.Flush();
 
-  EXPECT_EQ(b->BytesInBuffer(), num_bytes);
-  EXPECT_EQ(b->BitsInBuffer(), num_bits);
+  EXPECT_EQ(b.BytesInBuffer(), num_bytes);
+  EXPECT_EQ(b.BitsInBuffer(), num_bits);
 
-  const uint8_t* ptr = b->data();
+  const uint8_t* ptr = b.data();
   uint64_t got = GetDataFromBuffer(ptr, num_bits);
   uint64_t expected = kTestPattern;
   expected &= ((1ull << num_bits) - 1);

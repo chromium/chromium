@@ -17,6 +17,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
+#include "media/gpu/h264_builder.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -300,8 +301,8 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   submit_packed_headers_ =
       submit_packed_sps && submit_packed_pps && submit_packed_slice;
   if (submit_packed_headers_) {
-    packed_sps_ = base::MakeRefCounted<H264BitstreamBuffer>();
-    packed_pps_ = base::MakeRefCounted<H264BitstreamBuffer>();
+    packed_sps_.emplace();
+    packed_pps_.emplace();
   } else {
     DVLOGF(2) << "Packed headers are not submitted to a driver";
   }
@@ -587,8 +588,11 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.time_offset_length = H264SPS::kDefaultTimeOffsetLength;
   current_sps_.low_delay_hrd_flag = false;
 
-  if (submit_packed_headers_)
-    GeneratePackedSPS();
+  if (submit_packed_headers_) {
+    DCHECK(packed_sps_);
+    packed_sps_->Reset();
+    BuildPackedH264SPS(packed_sps_.value(), current_sps_);
+  }
   encoding_parameters_changed_ = true;
 }
 
@@ -614,175 +618,21 @@ void H264VaapiVideoEncoderDelegate::UpdatePPS() {
   current_pps_.transform_8x8_mode_flag =
       (current_sps_.profile_idc == H264SPS::kProfileIDCHigh);
 
-  if (submit_packed_headers_)
-    GeneratePackedPPS();
+  if (submit_packed_headers_) {
+    DCHECK(packed_pps_);
+    packed_pps_->Reset();
+    BuildPackedH264PPS(packed_pps_.value(), current_sps_, current_pps_);
+  }
   encoding_parameters_changed_ = true;
 }
 
-void H264VaapiVideoEncoderDelegate::GeneratePackedSPS() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(submit_packed_headers_);
-  DCHECK(packed_sps_);
-
-  packed_sps_->Reset();
-
-  packed_sps_->BeginNALU(H264NALU::kSPS, 3);
-
-  packed_sps_->AppendBits(8, current_sps_.profile_idc);
-  packed_sps_->AppendBool(current_sps_.constraint_set0_flag);
-  packed_sps_->AppendBool(current_sps_.constraint_set1_flag);
-  packed_sps_->AppendBool(current_sps_.constraint_set2_flag);
-  packed_sps_->AppendBool(current_sps_.constraint_set3_flag);
-  packed_sps_->AppendBool(current_sps_.constraint_set4_flag);
-  packed_sps_->AppendBool(current_sps_.constraint_set5_flag);
-  packed_sps_->AppendBits(2, 0);  // reserved_zero_2bits
-  packed_sps_->AppendBits(8, current_sps_.level_idc);
-  packed_sps_->AppendUE(current_sps_.seq_parameter_set_id);
-
-  if (current_sps_.profile_idc == H264SPS::kProfileIDCHigh) {
-    packed_sps_->AppendUE(current_sps_.chroma_format_idc);
-    if (current_sps_.chroma_format_idc == 3)
-      packed_sps_->AppendBool(current_sps_.separate_colour_plane_flag);
-    packed_sps_->AppendUE(current_sps_.bit_depth_luma_minus8);
-    packed_sps_->AppendUE(current_sps_.bit_depth_chroma_minus8);
-    packed_sps_->AppendBool(current_sps_.qpprime_y_zero_transform_bypass_flag);
-    packed_sps_->AppendBool(current_sps_.seq_scaling_matrix_present_flag);
-    CHECK(!current_sps_.seq_scaling_matrix_present_flag);
-  }
-
-  packed_sps_->AppendUE(current_sps_.log2_max_frame_num_minus4);
-  packed_sps_->AppendUE(current_sps_.pic_order_cnt_type);
-  if (current_sps_.pic_order_cnt_type == 0)
-    packed_sps_->AppendUE(current_sps_.log2_max_pic_order_cnt_lsb_minus4);
-  else if (current_sps_.pic_order_cnt_type == 1)
-    NOTREACHED();
-
-  packed_sps_->AppendUE(current_sps_.max_num_ref_frames);
-  packed_sps_->AppendBool(current_sps_.gaps_in_frame_num_value_allowed_flag);
-  packed_sps_->AppendUE(current_sps_.pic_width_in_mbs_minus1);
-  packed_sps_->AppendUE(current_sps_.pic_height_in_map_units_minus1);
-
-  packed_sps_->AppendBool(current_sps_.frame_mbs_only_flag);
-  if (!current_sps_.frame_mbs_only_flag)
-    packed_sps_->AppendBool(current_sps_.mb_adaptive_frame_field_flag);
-
-  packed_sps_->AppendBool(current_sps_.direct_8x8_inference_flag);
-
-  packed_sps_->AppendBool(current_sps_.frame_cropping_flag);
-  if (current_sps_.frame_cropping_flag) {
-    packed_sps_->AppendUE(current_sps_.frame_crop_left_offset);
-    packed_sps_->AppendUE(current_sps_.frame_crop_right_offset);
-    packed_sps_->AppendUE(current_sps_.frame_crop_top_offset);
-    packed_sps_->AppendUE(current_sps_.frame_crop_bottom_offset);
-  }
-
-  packed_sps_->AppendBool(current_sps_.vui_parameters_present_flag);
-  if (current_sps_.vui_parameters_present_flag) {
-    packed_sps_->AppendBool(false);  // aspect_ratio_info_present_flag
-    packed_sps_->AppendBool(false);  // overscan_info_present_flag
-    packed_sps_->AppendBool(false);  // video_signal_type_present_flag
-    packed_sps_->AppendBool(false);  // chroma_loc_info_present_flag
-
-    packed_sps_->AppendBool(current_sps_.timing_info_present_flag);
-    if (current_sps_.timing_info_present_flag) {
-      packed_sps_->AppendBits(32, current_sps_.num_units_in_tick);
-      packed_sps_->AppendBits(32, current_sps_.time_scale);
-      packed_sps_->AppendBool(current_sps_.fixed_frame_rate_flag);
-    }
-
-    packed_sps_->AppendBool(current_sps_.nal_hrd_parameters_present_flag);
-    if (current_sps_.nal_hrd_parameters_present_flag) {
-      packed_sps_->AppendUE(current_sps_.cpb_cnt_minus1);
-      packed_sps_->AppendBits(4, current_sps_.bit_rate_scale);
-      packed_sps_->AppendBits(4, current_sps_.cpb_size_scale);
-      CHECK_LT(base::checked_cast<size_t>(current_sps_.cpb_cnt_minus1),
-               std::size(current_sps_.bit_rate_value_minus1));
-      for (int i = 0; i <= current_sps_.cpb_cnt_minus1; ++i) {
-        packed_sps_->AppendUE(current_sps_.bit_rate_value_minus1[i]);
-        packed_sps_->AppendUE(current_sps_.cpb_size_value_minus1[i]);
-        packed_sps_->AppendBool(current_sps_.cbr_flag[i]);
-      }
-      packed_sps_->AppendBits(
-          5, current_sps_.initial_cpb_removal_delay_length_minus_1);
-      packed_sps_->AppendBits(5, current_sps_.cpb_removal_delay_length_minus1);
-      packed_sps_->AppendBits(5, current_sps_.dpb_output_delay_length_minus1);
-      packed_sps_->AppendBits(5, current_sps_.time_offset_length);
-    }
-
-    packed_sps_->AppendBool(false);  // vcl_hrd_parameters_flag
-    if (current_sps_.nal_hrd_parameters_present_flag)
-      packed_sps_->AppendBool(current_sps_.low_delay_hrd_flag);
-
-    packed_sps_->AppendBool(false);  // pic_struct_present_flag
-    packed_sps_->AppendBool(true);   // bitstream_restriction_flag
-
-    packed_sps_->AppendBool(false);  // motion_vectors_over_pic_boundaries_flag
-    packed_sps_->AppendUE(2);        // max_bytes_per_pic_denom
-    packed_sps_->AppendUE(1);        // max_bits_per_mb_denom
-    packed_sps_->AppendUE(16);       // log2_max_mv_length_horizontal
-    packed_sps_->AppendUE(16);       // log2_max_mv_length_vertical
-
-    // Explicitly set max_num_reorder_frames to 0 to allow the decoder to
-    // output pictures early.
-    packed_sps_->AppendUE(0);  // max_num_reorder_frames
-
-    // The value of max_dec_frame_buffering shall be greater than or equal to
-    // max_num_ref_frames.
-    const unsigned int max_dec_frame_buffering =
-        current_sps_.max_num_ref_frames;
-    packed_sps_->AppendUE(max_dec_frame_buffering);
-  }
-
-  packed_sps_->FinishNALU();
-}
-
-void H264VaapiVideoEncoderDelegate::GeneratePackedPPS() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(submit_packed_headers_);
-  DCHECK(packed_pps_);
-
-  packed_pps_->Reset();
-
-  packed_pps_->BeginNALU(H264NALU::kPPS, 3);
-
-  packed_pps_->AppendUE(current_pps_.pic_parameter_set_id);
-  packed_pps_->AppendUE(current_pps_.seq_parameter_set_id);
-  packed_pps_->AppendBool(current_pps_.entropy_coding_mode_flag);
-  packed_pps_->AppendBool(
-      current_pps_.bottom_field_pic_order_in_frame_present_flag);
-  CHECK_EQ(current_pps_.num_slice_groups_minus1, 0);
-  packed_pps_->AppendUE(current_pps_.num_slice_groups_minus1);
-
-  packed_pps_->AppendUE(current_pps_.num_ref_idx_l0_default_active_minus1);
-  packed_pps_->AppendUE(current_pps_.num_ref_idx_l1_default_active_minus1);
-
-  packed_pps_->AppendBool(current_pps_.weighted_pred_flag);
-  packed_pps_->AppendBits(2, current_pps_.weighted_bipred_idc);
-
-  packed_pps_->AppendSE(current_pps_.pic_init_qp_minus26);
-  packed_pps_->AppendSE(current_pps_.pic_init_qs_minus26);
-  packed_pps_->AppendSE(current_pps_.chroma_qp_index_offset);
-
-  packed_pps_->AppendBool(current_pps_.deblocking_filter_control_present_flag);
-  packed_pps_->AppendBool(current_pps_.constrained_intra_pred_flag);
-  packed_pps_->AppendBool(current_pps_.redundant_pic_cnt_present_flag);
-
-  packed_pps_->AppendBool(current_pps_.transform_8x8_mode_flag);
-  packed_pps_->AppendBool(current_pps_.pic_scaling_matrix_present_flag);
-  DCHECK(!current_pps_.pic_scaling_matrix_present_flag);
-  packed_pps_->AppendSE(current_pps_.second_chroma_qp_index_offset);
-
-  packed_pps_->FinishNALU();
-}
-
-scoped_refptr<H264BitstreamBuffer>
-H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
+void H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
+    H264BitstreamBuffer& packed_slice_header,
     const VAEncPictureParameterBufferH264& pic_param,
     const VAEncSliceParameterBufferH264& slice_param,
     const H264Picture& pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto packed_slice_header = base::MakeRefCounted<H264BitstreamBuffer>();
   const bool is_idr = !!pic_param.pic_fields.bits.idr_pic_flag;
   const bool is_ref = !!pic_param.pic_fields.bits.reference_pic_flag;
   // IDR:3, Non-IDR I slice:2, P slice:1, non ref frame: 0.
@@ -796,43 +646,43 @@ H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
     nal_ref_idc = is_ref;
     nalu_type = H264NALU::kNonIDRSlice;
   }
-  packed_slice_header->BeginNALU(nalu_type, nal_ref_idc);
+  packed_slice_header.BeginNALU(nalu_type, nal_ref_idc);
 
-  packed_slice_header->AppendUE(
+  packed_slice_header.AppendUE(
       slice_param.macroblock_address);  // first_mb_in_slice
-  packed_slice_header->AppendUE(slice_param.slice_type);
-  packed_slice_header->AppendUE(slice_param.pic_parameter_set_id);
-  packed_slice_header->AppendBits(current_sps_.log2_max_frame_num_minus4 + 4,
-                                  pic_param.frame_num);  // frame_num
+  packed_slice_header.AppendUE(slice_param.slice_type);
+  packed_slice_header.AppendUE(slice_param.pic_parameter_set_id);
+  packed_slice_header.AppendBits(current_sps_.log2_max_frame_num_minus4 + 4,
+                                 pic_param.frame_num);  // frame_num
 
   DCHECK(current_sps_.frame_mbs_only_flag);
   if (is_idr)
-    packed_slice_header->AppendUE(slice_param.idr_pic_id);
+    packed_slice_header.AppendUE(slice_param.idr_pic_id);
 
   DCHECK_EQ(current_sps_.pic_order_cnt_type, 0);
-  packed_slice_header->AppendBits(
+  packed_slice_header.AppendBits(
       current_sps_.log2_max_pic_order_cnt_lsb_minus4 + 4,
       pic_param.CurrPic.TopFieldOrderCnt);
   DCHECK(!current_pps_.bottom_field_pic_order_in_frame_present_flag);
   DCHECK(!current_pps_.redundant_pic_cnt_present_flag);
 
   if (slice_param.slice_type == H264SliceHeader::kPSlice) {
-    packed_slice_header->AppendBits(
+    packed_slice_header.AppendBits(
         1, slice_param.num_ref_idx_active_override_flag);
     if (slice_param.num_ref_idx_active_override_flag)
-      packed_slice_header->AppendUE(slice_param.num_ref_idx_l0_active_minus1);
+      packed_slice_header.AppendUE(slice_param.num_ref_idx_l0_active_minus1);
   }
 
   if (slice_param.slice_type != H264SliceHeader::kISlice) {
-    packed_slice_header->AppendBits(1, pic.ref_pic_list_modification_flag_l0);
+    packed_slice_header.AppendBits(1, pic.ref_pic_list_modification_flag_l0);
     // modification flag for P slice.
     if (pic.ref_pic_list_modification_flag_l0) {
       // modification_of_pic_num_idc
-      packed_slice_header->AppendUE(0);
+      packed_slice_header.AppendUE(0);
       // abs_diff_pic_num_minus1
-      packed_slice_header->AppendUE(pic.abs_diff_pic_num_minus1);
+      packed_slice_header.AppendUE(pic.abs_diff_pic_num_minus1);
       // modification_of_pic_num_idc
-      packed_slice_header->AppendUE(3);
+      packed_slice_header.AppendUE(3);
     }
   }
   DCHECK_NE(slice_param.slice_type, H264SliceHeader::kBSlice);
@@ -842,32 +692,31 @@ H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
   // dec_ref_pic_marking
   if (nal_ref_idc != 0) {
     if (is_idr) {
-      packed_slice_header->AppendBool(false);  // no_output_of_prior_pics_flag
-      packed_slice_header->AppendBool(false);  // long_term_reference_flag
+      packed_slice_header.AppendBool(false);  // no_output_of_prior_pics_flag
+      packed_slice_header.AppendBool(false);  // long_term_reference_flag
     } else {
-      packed_slice_header->AppendBool(
+      packed_slice_header.AppendBool(
           false);  // adaptive_ref_pic_marking_mode_flag
     }
   }
 
   if (pic_param.pic_fields.bits.entropy_coding_mode_flag &&
       slice_param.slice_type != H264SliceHeader::kISlice) {
-    packed_slice_header->AppendUE(slice_param.cabac_init_idc);
+    packed_slice_header.AppendUE(slice_param.cabac_init_idc);
   }
 
-  packed_slice_header->AppendSE(slice_param.slice_qp_delta);
+  packed_slice_header.AppendSE(slice_param.slice_qp_delta);
 
   if (pic_param.pic_fields.bits.deblocking_filter_control_present_flag) {
-    packed_slice_header->AppendUE(slice_param.disable_deblocking_filter_idc);
+    packed_slice_header.AppendUE(slice_param.disable_deblocking_filter_idc);
 
     if (slice_param.disable_deblocking_filter_idc != 1) {
-      packed_slice_header->AppendSE(slice_param.slice_alpha_c0_offset_div2);
-      packed_slice_header->AppendSE(slice_param.slice_beta_offset_div2);
+      packed_slice_header.AppendSE(slice_param.slice_alpha_c0_offset_div2);
+      packed_slice_header.AppendSE(slice_param.slice_beta_offset_div2);
     }
   }
 
-  packed_slice_header->Flush();
-  return packed_slice_header;
+  packed_slice_header.Flush();
 }
 
 bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
@@ -1037,20 +886,20 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
       {VAEncMiscParameterBufferType, misc_buffers[2].size(),
        misc_buffers[2].data()}};
 
-  scoped_refptr<H264BitstreamBuffer> packed_slice_header;
+  H264BitstreamBuffer packed_slice_header;
   VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;
   if (submit_packed_headers_) {
-    packed_slice_header =
-        GeneratePackedSliceHeader(pic_param, slice_param, *pic);
+    GeneratePackedSliceHeader(packed_slice_header, pic_param, slice_param,
+                              *pic);
     packed_slice_param_buffer.type = VAEncPackedHeaderSlice;
-    packed_slice_param_buffer.bit_length = packed_slice_header->BitsInBuffer();
+    packed_slice_param_buffer.bit_length = packed_slice_header.BitsInBuffer();
     packed_slice_param_buffer.has_emulation_bytes = 0;
     va_buffers.push_back({VAEncPackedHeaderParameterBufferType,
                           sizeof(packed_slice_param_buffer),
                           &packed_slice_param_buffer});
     va_buffers.push_back({VAEncPackedHeaderDataBufferType,
-                          packed_slice_header->BytesInBuffer(),
-                          packed_slice_header->data()});
+                          packed_slice_header.BytesInBuffer(),
+                          packed_slice_header.data()});
   }
 
   return vaapi_wrapper_->SubmitBuffers(va_buffers);

@@ -68,6 +68,10 @@ H264SPS::H264SPS() {
   memset(this, 0, sizeof(*this));
 }
 
+H264SPS& H264SPS::operator=(const H264SPS&) = default;
+
+H264SPS::H264SPS(H264SPS&&) noexcept = default;
+
 // Based on T-REC-H.264 7.4.2.1.1, "Sequence parameter set data semantics",
 // available from http://www.itu.int/rec/T-REC-H.264.
 std::optional<gfx::Size> H264SPS::GetCodedSize() const {
@@ -205,6 +209,8 @@ bool H264SPS::CheckIndicatedLevelWithinTarget(uint8_t target_level) const {
 H264PPS::H264PPS() {
   memset(this, 0, sizeof(*this));
 }
+
+H264PPS::H264PPS(H264PPS&&) noexcept = default;
 
 H264SliceHeader::H264SliceHeader() {
   memset(this, 0, sizeof(*this));

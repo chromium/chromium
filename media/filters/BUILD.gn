@@ -233,7 +233,7 @@ source_set("filters") {
     }
   }
 
-  if (use_vaapi) {
+  if (is_win || use_vaapi) {
     sources += [
       "h264_bitstream_buffer.cc",
       "h264_bitstream_buffer.h",
