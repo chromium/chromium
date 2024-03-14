@@ -91,12 +91,6 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   // bubble on or off the screen as appropriate.
   void CheckMousePointerPosition();
 
-  void ExitExclusiveAccess();
-
-  // The following strings may change according to the content type and URL.
-  std::u16string GetCurrentMessageText() const;
-  std::u16string GetCurrentDenyButtonText() const;
-  std::u16string GetCurrentAllowButtonText() const;
 
   // This string *may* contain the name of the key surrounded in pipe characters
   // ('|'), which should be drawn graphically as a key, not displayed literally.

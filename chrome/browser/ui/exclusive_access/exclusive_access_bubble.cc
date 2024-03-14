@@ -127,24 +127,6 @@ void ExclusiveAccessBubble::CheckMousePointerPosition() {
   }
 }
 
-void ExclusiveAccessBubble::ExitExclusiveAccess() {
-  manager_->ExitExclusiveAccess();
-}
-
-std::u16string ExclusiveAccessBubble::GetCurrentMessageText() const {
-  return exclusive_access_bubble::GetLabelTextForType(
-      bubble_type_, url_,
-      extensions::ExtensionRegistry::Get(manager_->context()->GetProfile()));
-}
-
-std::u16string ExclusiveAccessBubble::GetCurrentDenyButtonText() const {
-  return exclusive_access_bubble::GetDenyButtonTextForType(bubble_type_);
-}
-
-std::u16string ExclusiveAccessBubble::GetCurrentAllowButtonText() const {
-  return exclusive_access_bubble::GetAllowButtonTextForType(bubble_type_, url_);
-}
-
 std::u16string ExclusiveAccessBubble::GetInstructionText(
     const std::u16string& accelerator) const {
   return exclusive_access_bubble::GetInstructionTextForType(

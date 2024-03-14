@@ -14135,38 +14135,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Custom Files
       </message>
 
-      <!-- Fullscreen Strings -->
-      <message name="IDS_FULLSCREEN_USER_ENTERED_FULLSCREEN" desc="Message for the user telling them that they have entered fullscreen mode.">
-        You have gone full screen.
-      </message>
-      <message name="IDS_FULLSCREEN_EXTENSION_TRIGGERED_FULLSCREEN" desc="Message for the user telling them that an extension triggered fullscreen mode.">
-        "<ph name="EXTENSION_NAME">$1<ex>MyExtension</ex></ph>" triggered full screen.
-      </message>
-      <message name="IDS_FULLSCREEN_UNKNOWN_EXTENSION_TRIGGERED_FULLSCREEN" desc="Message for the user telling them that an extension whose name is unknown triggered fullscreen mode.">
-        An extension triggered full screen.
-      </message>
-      <message name="IDS_FULLSCREEN_SITE_ENTERED_FULLSCREEN" desc="Text displayed in the bubble when a page has gone fullscreen. (With a domain URL to display)">
-        <ph name="FULLSCREEN_ORIGIN">$1<ex>google.com</ex></ph> is now full screen.
-      </message>
-      <message name="IDS_FULLSCREEN_ENTERED_FULLSCREEN" desc="Text displayed in the bubble when a page has gone fullscreen. (No domain to be shown, e.g. from filesystem page)">
-        This page is now full screen.
-      </message>
-      <message name="IDS_FULLSCREEN_SITE_ENTERED_FULLSCREEN_MOUSELOCK" desc="Text displayed in the bubble to inform the user that the page has gone fullscreen and locked the mouse. (With a domain URL to display)">
-        <ph name="FULLSCREEN_ORIGIN">$1<ex>google.com</ex></ph> is now full screen and has disabled your mouse cursor.
-      </message>
-      <message name="IDS_FULLSCREEN_ENTERED_FULLSCREEN_MOUSELOCK" desc="Text displayed in the bubble to inform the user that the page has gone fullscreen and locked the mouse. (No domain to be shown, e.g. from filesystem page)">
-        This page is now full screen and has disabled your mouse cursor.
-      </message>
-      <message name="IDS_FULLSCREEN_SITE_ENTERED_MOUSELOCK" desc="Text displayed in the bubble to inform the user that the page has locked the mouse. (With a domain URL to display)">
-        <ph name="FULLSCREEN_ORIGIN">$1<ex>google.com</ex></ph> has disabled your mouse cursor.
-      </message>
-      <message name="IDS_FULLSCREEN_ENTERED_MOUSELOCK" desc="Text displayed in the bubble to inform the user that the page has locked the mouse. (No domain to be shown, e.g. from filesystem page)">
-        This page has disabled your mouse cursor.
-      </message>
-      <message name="IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_MOUSELOCK" desc="Text displayed in the bubble to tell users how to return from mouselock mode (where the mouse cursor is hidden) to normal mode. Please surround the name of the key (e.g. 'Esc') in pipe characters so it can be rendered as a key.">
-        Press |<ph name="ACCELERATOR">$1<ex>Esc</ex></ph>| to show your cursor
-      </message>
-
       <!-- Sensor messages -->
       <message name="IDS_SENSORS_ALLOWED_TOOLTIP" desc="Location bar icon tooltip text when a page is allowed to use device's sensors.">
         This site is using motion or light sensors.
