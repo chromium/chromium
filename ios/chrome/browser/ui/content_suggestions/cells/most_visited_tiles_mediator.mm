@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/metrics.h"
@@ -31,7 +32,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
@@ -140,7 +140,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   _freshMostVisitedItems = [NSMutableArray array];
   int index = 0;
   for (const ntp_tiles::NTPTile& tile : mostVisited) {
-    ContentSuggestionsMostVisitedItem* item = ConvertNTPTile(tile);
+    ContentSuggestionsMostVisitedItem* item = [self convertNTPTile:tile];
     item.commandHandler = self;
     item.incognitoAvailable = _incognitoAvailable;
     item.index = index;
@@ -445,6 +445,21 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       return;
     }
   }
+}
+
+// Converts a ntp_tiles::NTPTile `tile` to a ContentSuggestionsMostVisitedItem
+// with a `sectionInfo`.
+- (ContentSuggestionsMostVisitedItem*)convertNTPTile:
+    (const ntp_tiles::NTPTile&)tile {
+  ContentSuggestionsMostVisitedItem* suggestion =
+      [[ContentSuggestionsMostVisitedItem alloc] init];
+
+  suggestion.title = base::SysUTF16ToNSString(tile.title);
+  suggestion.URL = tile.url;
+  suggestion.source = tile.source;
+  suggestion.titleSource = tile.title_source;
+
+  return suggestion;
 }
 
 @end

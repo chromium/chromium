@@ -4,28 +4,6 @@
 
 import("//ios/build/chrome_build.gni")
 
-source_set("start_suggest") {
-  sources = [
-    "start_suggest_service_factory.h",
-    "start_suggest_service_factory.mm",
-    "start_suggest_service_response_bridge.h",
-    "start_suggest_service_response_bridge.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
-    "//components/prefs",
-    "//components/search:start_suggest",
-    "//ios/chrome/browser/autocomplete/model",
-    "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
-    "//ios/chrome/browser/shared/model/url:constants",
-    "//services/network/public/cpp",
-  ]
-}
-
 source_set("content_suggestions") {
   sources = [
     "content_suggestions_coordinator.h",
@@ -95,7 +73,6 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:most_visited_tiles",
     "//ios/chrome/browser/ui/content_suggestions/cells:shortcuts",
-    "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:cells",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
@@ -255,8 +232,6 @@ source_set("content_suggestions_ui_util") {
   sources = [
     "content_suggestions_collection_utils.h",
     "content_suggestions_collection_utils.mm",
-    "content_suggestions_mediator_util.h",
-    "content_suggestions_mediator_util.mm",
   ]
   deps = [
     ":content_suggestions_constant",
@@ -273,7 +248,6 @@ source_set("content_suggestions_ui_util") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
-    "//ios/chrome/browser/ui/content_suggestions/identifier",
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/start_surface:feature_flags",

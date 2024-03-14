@@ -22,18 +22,11 @@ source_set("cells") {
     "content_suggestions_most_visited_item.mm",
     "content_suggestions_most_visited_tile_view.h",
     "content_suggestions_most_visited_tile_view.mm",
-    "content_suggestions_return_to_recent_tab_item.h",
-    "content_suggestions_return_to_recent_tab_item.mm",
-    "content_suggestions_return_to_recent_tab_view.h",
-    "content_suggestions_return_to_recent_tab_view.mm",
     "content_suggestions_tile_view.h",
     "content_suggestions_tile_view.mm",
     "most_visited_tiles_commands.h",
     "multi_row_container_view.h",
     "multi_row_container_view.mm",
-    "query_suggestion_view.h",
-    "query_suggestion_view.mm",
-    "suggested_content.h",
   ]
   deps = [
     ":constants",

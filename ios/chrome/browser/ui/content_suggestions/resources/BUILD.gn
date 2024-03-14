@@ -4,24 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("content_suggestions_no_image") {
-  sources = [
-    "content_suggestions_no_image.imageset/Contents.json",
-    "content_suggestions_no_image.imageset/content_suggestions_no_image.png",
-    "content_suggestions_no_image.imageset/content_suggestions_no_image@2x.png",
-    "content_suggestions_no_image.imageset/content_suggestions_no_image@3x.png",
-  ]
-}
-
-imageset("content_suggestions_offline") {
-  sources = [
-    "content_suggestions_offline.imageset/Contents.json",
-    "content_suggestions_offline.imageset/content_suggestions_offline.png",
-    "content_suggestions_offline.imageset/content_suggestions_offline@2x.png",
-    "content_suggestions_offline.imageset/content_suggestions_offline@3x.png",
-  ]
-}
-
 colorset("fake_omnibox_placeholder_color") {
   sources = [ "fake_omnibox_placeholder_color.colorset/Contents.json" ]
 }
@@ -29,13 +11,4 @@ colorset("fake_omnibox_placeholder_color") {
 colorset("magic_stack_edit_button_background_color") {
   sources =
       [ "magic_stack_edit_button_background_color.colorset/Contents.json" ]
-}
-
-imageset("ntp_search_icon") {
-  sources = [
-    "ntp_search_icon.imageset/Contents.json",
-    "ntp_search_icon.imageset/ntp_search_icon.png",
-    "ntp_search_icon.imageset/ntp_search_icon@2x.png",
-    "ntp_search_icon.imageset/ntp_search_icon@3x.png",
-  ]
 }

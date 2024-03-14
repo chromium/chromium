@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
