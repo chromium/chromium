@@ -148,7 +148,8 @@ class ProfileCreationSignedInFlowController
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       std::optional<SkColor> profile_color,
-      base::OnceCallback<void(PostHostClearedCallback, bool)>
+      base::OnceCallback<
+          void(PostHostClearedCallback, bool, StepSwitchFinishedCallback)>
           step_completed_callback)
       : ProfilePickerSignedInFlowController(host,
                                             profile,
@@ -269,7 +270,8 @@ class ProfileCreationSignedInFlowController
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
     std::move(step_completed_callback_)
-        .Run(std::move(post_host_cleared_callback), is_continue_callback);
+        .Run(std::move(post_host_cleared_callback), is_continue_callback,
+             StepSwitchFinishedCallback());
   }
 
   // Controls whether the flow still needs to finalize (which includes showing
@@ -277,7 +279,8 @@ class ProfileCreationSignedInFlowController
   bool is_finishing_ = false;
 
   std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
-  base::OnceCallback<void(PostHostClearedCallback, bool)>
+  base::OnceCallback<
+      void(PostHostClearedCallback, bool, StepSwitchFinishedCallback)>
       step_completed_callback_;
 };
 

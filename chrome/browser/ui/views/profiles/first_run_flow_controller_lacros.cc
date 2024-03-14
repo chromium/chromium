@@ -65,7 +65,8 @@ class LacrosFirstRunSignedInFlowController
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       base::OnceClosure sync_confirmation_seen_callback,
-      base::OnceCallback<void(PostHostClearedCallback, bool)>
+      base::OnceCallback<
+          void(PostHostClearedCallback, bool, StepSwitchFinishedCallback)>
           step_completed_callback)
       : ProfilePickerSignedInFlowController(
             host,
@@ -127,7 +128,8 @@ class LacrosFirstRunSignedInFlowController
     // immediately continue with that.
     bool is_continue_callback = !callback->is_null();
     std::move(step_completed_callback_)
-        .Run(std::move(callback), is_continue_callback);
+        .Run(std::move(callback), is_continue_callback,
+             StepSwitchFinishedCallback());
   }
 
   void SwitchToLacrosIntro(
@@ -183,7 +185,8 @@ class LacrosFirstRunSignedInFlowController
   base::OnceClosure sync_confirmation_seen_callback_;
 
   // Callback that will be called when the user completes the step.
-  base::OnceCallback<void(PostHostClearedCallback, bool)>
+  base::OnceCallback<
+      void(PostHostClearedCallback, bool, StepSwitchFinishedCallback)>
       step_completed_callback_;
   std::unique_ptr<signin::IdentityManager::Observer> can_retry_init_observer_;
 };
