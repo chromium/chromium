@@ -2423,7 +2423,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5745733273847572235">Može tražiti vašu lokaciju</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Koristite virtuelni broj za ovu karticu}one{Odaberite karticu}few{Odaberite karticu}other{Odaberite karticu}}</translation>
 <translation id="5752552348183096912">Antiperspiranti, dezodoransi i sprejevi za tijelo</translation>
-<translation id="5754400531489347219">Ljubimci i životinje</translation>
+<translation id="5754400531489347219">Kućni ljubimci i druge životinje</translation>
 <translation id="5759751709240058861">koristi i pomjera kameru</translation>
 <translation id="5763042198335101085">Upišite važeću adresu e-pošte</translation>
 <translation id="5764725887548570807">Nevažeći format polazišta.</translation>
@@ -4226,7 +4226,7 @@ Dodatni detalji:
 <translation id="962484866189421427">Sadržaj može pokušati instalirati obmanjujuće aplikacije koje se pretvaraju da predstavljaju nešto drugo ili koje prikupljaju podatke koji se mogu iskoristiti za vaše praćenje. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Svi korisnici</translation>
 <translation id="964050462028070434">Upravljajte lozinkama i pristupnim ključevima…</translation>
-<translation id="96680173638229310">Automobili i vozila</translation>
+<translation id="96680173638229310">Automobili i druga vozila</translation>
 <translation id="969892804517981540">Zvanična verzija</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Nijedna}=1{1 stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>
 <translation id="976522784004777030">5 x 8 in</translation>

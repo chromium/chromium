@@ -127,7 +127,7 @@
 <translation id="1612730193129642006">عرض شبكة علامة التبويب</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1622717322707146952">‏اختَر "الإضافة إلى تقويم Google" أو "الإضافة إلى تقويم Apple".</translation>
-<translation id="1626771852476987600">‫<ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
+<translation id="1626771852476987600">كلمات المرور المستخدَمة لحساب آخر: ‫<ph name="COUNT" /></translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
 <translation id="1641316430523156212">متابعة</translation>
 <translation id="1644574205037202324">السجل</translation>
@@ -804,7 +804,7 @@
 <translation id="519530786644929958">تعذّر تنزيل الملف ولا يمكن إعادة المحاولة.</translation>
 <translation id="5197255632782567636">الإنترنت</translation>
 <translation id="5211488077761630279">هل تريد السماح لـ "<ph name="SITE_NAME" />" باستخدام <ph name="PERMISSION" />؟</translation>
-<translation id="5219295696240154694">المساعدة على تحسين الأمان على الإنترنت لخدمة الجميع</translation>
+<translation id="5219295696240154694">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="5220945116117011963">إنشاء أحداث في التقويم من التواريخ</translation>
 <translation id="5221339005270097309">جارٍ التحقّق من كلمات المرور…</translation>
 <translation id="5226568866393490213">إغلاق التحذير</translation>
