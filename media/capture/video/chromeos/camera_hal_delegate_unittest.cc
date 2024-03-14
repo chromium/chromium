@@ -48,7 +48,8 @@ class CameraHalDelegateTest : public ::testing::Test {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         &mock_gpu_memory_buffer_manager_);
     camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        base::ThreadPool::CreateSingleThreadTaskRunner(
+            {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED));
     if (!camera_hal_delegate_->Init()) {
       LOG(ERROR) << "Failed to initialize CameraHalDelegate";
       camera_hal_delegate_.reset();
