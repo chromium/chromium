@@ -477,7 +477,8 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
    * Handler for Gaia loading timeout.
    */
   private onLoadingTimeOut(): void {
-    if (Oobe.getInstance().currentScreen.id !== 'gaia-signin') {
+    const currentScreen = Oobe.getInstance().currentScreen;
+    if (currentScreen && currentScreen.id !== 'gaia-signin') {
       return;
     }
     this.clearLoadingTimer();

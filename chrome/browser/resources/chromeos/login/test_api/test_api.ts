@@ -1447,11 +1447,16 @@ export class OobeApiProvider {
     };
 
     this.getCurrentScreenName = function(): string {
-      return Oobe.getInstance().currentScreen.id.trim();
+      const currentScreen = Oobe.getInstance().currentScreen;
+      return currentScreen ? currentScreen.id.trim() : 'none';
     };
 
     this.getCurrentScreenStep = function(): string {
-      const step = Oobe.getInstance().currentScreen.getAttribute('multistep');
+      const currentScreen = Oobe.getInstance().currentScreen;
+      if (currentScreen === null) {
+        return 'none';
+      }
+      const step = currentScreen.getAttribute('multistep');
       if (step === null) {
         return 'default';
       }
@@ -1463,7 +1468,7 @@ export class OobeApiProvider {
      */
     this.getOobeActiveDialog = function(): HTMLElement|null {
       const adaptiveDialogs =
-          Oobe.getInstance().currentScreen.shadowRoot?.querySelectorAll(
+          Oobe.getInstance().currentScreen?.shadowRoot?.querySelectorAll(
               'oobe-adaptive-dialog');
       if (adaptiveDialogs) {
         for (const dialog of adaptiveDialogs) {
@@ -1480,7 +1485,7 @@ export class OobeApiProvider {
       // In this case we can try to fetch all loading dialogs attached to the
       // current screen and check their internal adaptive dialogs.
       const loadingDialogs =
-          Oobe.getInstance().currentScreen.shadowRoot?.querySelectorAll(
+          Oobe.getInstance().currentScreen?.shadowRoot?.querySelectorAll(
               'oobe-loading-dialog');
       if (loadingDialogs) {
         for (const dialog of loadingDialogs) {

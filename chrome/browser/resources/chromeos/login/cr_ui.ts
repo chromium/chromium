@@ -119,8 +119,8 @@ export class Oobe extends DisplayManager {
       enterpriseEnroll: boolean = false): void {
     // Helper method that runs |fn| after |screenName| is visible.
     function waitForOobeScreen(screenName: string, fn: () => void) {
-      if (Oobe.getInstance().currentScreen &&
-          Oobe.getInstance().currentScreen.id === screenName) {
+      const currentScreen = Oobe.getInstance().currentScreen;
+      if (currentScreen && currentScreen.id === screenName) {
         fn();
       } else {
         const oobe = document.querySelector('#oobe');

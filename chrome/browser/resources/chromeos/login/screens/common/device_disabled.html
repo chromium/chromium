@@ -3,14 +3,6 @@ Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<!--
-TODO(crbug.com/1259303): resolve this hack
-Hack: if device_disabled screen would load (and register) as first screen,
-code in DisplayManager.showScreen() would prevent rest of the code from working
-correctly. Adding a phony dependency to other screen makes that screen register
-first, and prevents such error.
--->
-
 <style include="oobe-dialog-host-styles">
   #message {
     overflow: auto;
