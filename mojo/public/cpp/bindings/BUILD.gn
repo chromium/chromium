@@ -77,6 +77,8 @@ component("bindings_base") {
     "lib/message_header_validator.cc",
     "lib/message_internal.cc",
     "lib/message_internal.h",
+    "lib/message_size_estimator.cc",
+    "lib/message_size_estimator.h",
     "lib/pending_receiver_state.cc",
     "lib/pending_receiver_state.h",
     "lib/pending_remote_state.cc",
