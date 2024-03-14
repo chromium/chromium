@@ -181,8 +181,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   // sharing between threads.
   const bool is_for_display_compositor_;
 
-  // This is |shared_context_state_|'s GrContextType or GrContextType::kNone if
-  // there is no shared context.
+  // This is |shared_context_state_|'s context type. Some tests leave
+  // |shared_context_state_| as nullptr, in which case this is set to a default
+  /// of kGL.
   const GrContextType gr_context_type_;
 
   // The set of SharedImages which have been created (and are being kept alive)
