@@ -428,6 +428,11 @@ InputDeviceSettingsMetricsManager::~InputDeviceSettingsMetricsManager() =
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
     const mojom::Keyboard& keyboard) {
+  // TODO(dpad, b/329330990): Fix to work with flag enabled.
+  if (features::IsModifierSplitEnabled()) {
+    return;
+  }
+
   // Only record the metrics once for each keyboard.
   const auto account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();

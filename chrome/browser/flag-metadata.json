@@ -474,6 +474,14 @@
     "expiry_milestone": 129
   },
   {
+    "name": "ash-split-keyboard-refactor",
+    "owners": [
+      "dpad@chromium.org",
+      "cros-peripherals@google.com"
+    ],
+    "expiry_milestone": 131
+  },
+  {
     "name": "assistant-iph",
     "owners": ["wutao@chromium.org", "assistive-eng@google.com"],
     "expiry_milestone": 126

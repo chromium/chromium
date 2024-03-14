@@ -717,6 +717,11 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
     modifier_keys.push_back(mojom::ModifierKey::kAssistant);
   }
 
+  if (ash::features::IsSplitKeyboardRefactorEnabled()) {
+    modifier_keys.push_back(mojom::ModifierKey::kFunction);
+    modifier_keys.push_back(mojom::ModifierKey::kRightAlt);
+  }
+
   return modifier_keys;
 }
 

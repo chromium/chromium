@@ -19581,6 +19581,7 @@ from previous Chrome versions.
   <int value="-553732400" label="ShoppingPageTypes:enabled"/>
   <int value="-552937174"
       label="AccessibilityCaretBlinkIntervalSetting:disabled"/>
+  <int value="-552565840" label="SplitKeyboardRefactor:enabled"/>
   <int value="-552425893" label="ProjectorAnnotator:disabled"/>
   <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>
   <int value="-551664909" label="DrawEdgeToEdge:enabled"/>
@@ -23533,6 +23534,7 @@ from previous Chrome versions.
   <int value="1240073971" label="ash-disable-smooth-screen-rotation"/>
   <int value="1240335491"
       label="ExperimentalAccessibilityGoogleTtsLanguagePacks:disabled"/>
+  <int value="1240539446" label="SplitKeyboardRefactor:disabled"/>
   <int value="1241162639" label="debug-chime-notification"/>
   <int value="1241606015" label="OsFeedbackDialog:enabled"/>
   <int value="1242100010" label="AutofillProfileClientValidation:disabled"/>

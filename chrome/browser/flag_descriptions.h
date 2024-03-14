@@ -3313,6 +3313,9 @@ extern const char kAshPickerDescription[];
 extern const char kAshPickerFeatureKeyName[];
 extern const char kAshPickerFeatureKeyDescription[];
 
+extern const char kAshSplitKeyboardRefactorName[];
+extern const char kAshSplitKeyboardRefactorDescription[];
+
 extern const char kAsynchronousScannerDiscoveryName[];
 extern const char kAsynchronousScannerDiscoveryDescription[];
 

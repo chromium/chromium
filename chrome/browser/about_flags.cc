@@ -10931,6 +10931,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshModifierSplitFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kModifierSplitFeatureKey, "")},
 
+    {"ash-split-keyboard-refactor",
+     flag_descriptions::kAshSplitKeyboardRefactorName,
+     flag_descriptions::kAshSplitKeyboardRefactorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSplitKeyboardRefactor)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"pwm-shadow-dom-support",

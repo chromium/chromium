@@ -1576,6 +1576,11 @@ BASE_FEATURE(kSnoopingProtection,
              "SnoopingProtection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables the split keyboard refactor cleanup.
+BASE_FEATURE(kSplitKeyboardRefactor,
+             "SplitKeyboardRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables message to notify users of apps that previously opened in the browser
 // are now opening in standalone windows.
 BASE_FEATURE(kStandaloneWindowMigrationUx,
@@ -3995,6 +4000,11 @@ bool IsModifierSplitEnabled() {
   enabled = debug_key_hash == hash;
 
   return *enabled;
+}
+
+bool IsSplitKeyboardRefactorEnabled() {
+  return base::FeatureList::IsEnabled(kSplitKeyboardRefactor) &&
+         IsModifierSplitEnabled();
 }
 
 bool IsOobeJellyModalEnabled() {
