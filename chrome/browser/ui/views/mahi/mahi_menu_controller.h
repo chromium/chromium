@@ -14,13 +14,17 @@
 
 class Profile;
 
-namespace chromeos::mahi {
+namespace chromeos {
 
+class ReadWriteCardsUiController;
+
+namespace mahi {
 // Controller that manages the mahi menu related views.
 // TODO(b/319256809): Rename this class to something less misleading.
 class MahiMenuController : public chromeos::ReadWriteCardController {
  public:
-  MahiMenuController();
+  explicit MahiMenuController(
+      chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
   MahiMenuController(const MahiMenuController&) = delete;
   MahiMenuController& operator=(const MahiMenuController&) = delete;
   ~MahiMenuController() override;
@@ -37,10 +41,13 @@ class MahiMenuController : public chromeos::ReadWriteCardController {
   base::WeakPtr<MahiMenuController> GetWeakPtr();
 
  private:
+  ReadWriteCardsUiController& read_write_cards_ui_controller_;
   views::UniqueWidgetPtr menu_widget_;
   base::WeakPtrFactory<MahiMenuController> weak_factory_{this};
 };
 
-}  // namespace chromeos::mahi
+}  // namespace mahi
+
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_CONTROLLER_H_

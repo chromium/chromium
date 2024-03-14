@@ -41,7 +41,7 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
   }
 
   if (chromeos::features::IsMahiEnabled()) {
-    mahi_menu_controller_ = std::make_unique<mahi::MahiMenuController>();
+    mahi_menu_controller_.emplace(ui_controller_);
   }
 }
 

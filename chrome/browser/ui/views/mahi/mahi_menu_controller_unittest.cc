@@ -9,6 +9,7 @@
 
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/gfx/geometry/rect.h"
@@ -18,7 +19,8 @@ namespace chromeos::mahi {
 class MahiMenuControllerTest : public ChromeViewsTestBase {
  public:
   MahiMenuControllerTest() {
-    menu_controller_ = std::make_unique<MahiMenuController>();
+    menu_controller_ =
+        std::make_unique<MahiMenuController>(read_write_cards_ui_controller_);
 
     scoped_mahi_web_contents_manager_ =
         std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
@@ -40,6 +42,9 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
         value);
   }
 
+ protected:
+  ReadWriteCardsUiController read_write_cards_ui_controller_;
+
  private:
   std::unique_ptr<MahiMenuController> menu_controller_;
 
@@ -48,7 +53,9 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
       scoped_mahi_web_contents_manager_;
 };
 
-TEST_F(MahiMenuControllerTest, Widget) {
+// Tests the behavior of the controller when there's no text selected when
+// `OnTextAvailable()` is triggered.
+TEST_F(MahiMenuControllerTest, TextNotSelected) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
   // Menu widget should show when text is displayed.
@@ -57,6 +64,7 @@ TEST_F(MahiMenuControllerTest, Widget) {
                                      /*surrounding_text=*/"");
 
   EXPECT_TRUE(menu_controller()->menu_widget_for_test());
+  EXPECT_TRUE(menu_controller()->menu_widget_for_test()->IsVisible());
 
   // Menu widget should hide when dismissed.
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
@@ -71,6 +79,8 @@ TEST_F(MahiMenuControllerTest, Widget) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 }
 
+// Tests the behavior of the controller when `OnAnchorBoundsChanged()` is
+// triggered.
 TEST_F(MahiMenuControllerTest, BoundsChanged) {
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 
@@ -92,6 +102,26 @@ TEST_F(MahiMenuControllerTest, BoundsChanged) {
   EXPECT_EQ(editor_menu::GetEditorMenuBounds(anchor_bounds,
                                              widget->GetContentsView()),
             widget->GetRestoredBounds());
+}
+
+// Tests the behavior of the controller when there's text selected when
+// `OnTextAvailable()` is triggered.
+TEST_F(MahiMenuControllerTest, TextSelected) {
+  EXPECT_FALSE(read_write_cards_ui_controller_.widget_for_test());
+
+  // Menu widget should show when text is displayed.
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"test selected text",
+                                     /*surrounding_text=*/"");
+
+  EXPECT_TRUE(read_write_cards_ui_controller_.widget_for_test());
+  EXPECT_TRUE(read_write_cards_ui_controller_.widget_for_test()->IsVisible());
+  EXPECT_TRUE(read_write_cards_ui_controller_.GetMahiViewForTest());
+
+  // Menu widget should hide when dismissed.
+  menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
+  EXPECT_FALSE(read_write_cards_ui_controller_.widget_for_test());
+  EXPECT_FALSE(read_write_cards_ui_controller_.GetMahiViewForTest());
 }
 
 }  // namespace chromeos::mahi

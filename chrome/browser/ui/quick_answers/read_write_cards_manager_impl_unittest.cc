@@ -68,7 +68,9 @@ class ReadWriteCardsManagerImplTest : public ChromeAshTestBase,
     return manager_->quick_answers_controller_.get();
   }
   chromeos::mahi::MahiMenuController* mahi_menu_controller() {
-    return manager_->mahi_menu_controller_.get();
+    return manager_->mahi_menu_controller_.has_value()
+               ? &manager_->mahi_menu_controller_.value()
+               : nullptr;
   }
 
  protected:

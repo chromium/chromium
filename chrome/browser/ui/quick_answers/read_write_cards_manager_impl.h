@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_READ_WRITE_CARDS_MANAGER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_cards_manager.h"
 
 class QuickAnswersControllerImpl;
@@ -24,10 +27,6 @@ namespace chromeos {
 namespace editor_menu {
 class EditorMenuControllerImpl;
 }  // namespace editor_menu
-
-namespace mahi {
-class MahiMenuController;
-}  // namespace mahi
 
 class ReadWriteCardController;
 
@@ -62,10 +61,12 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   GetMahiOrQuickAnswerControllersIfEligible(
       const content::ContextMenuParams& params);
 
+  chromeos::ReadWriteCardsUiController ui_controller_;
+
   std::unique_ptr<QuickAnswersControllerImpl> quick_answers_controller_;
   std::unique_ptr<chromeos::editor_menu::EditorMenuControllerImpl>
       editor_menu_controller_;
-  std::unique_ptr<chromeos::mahi::MahiMenuController> mahi_menu_controller_;
+  std::optional<chromeos::mahi::MahiMenuController> mahi_menu_controller_;
 
   base::WeakPtrFactory<ReadWriteCardsManagerImpl> weak_factory_{this};
 };
