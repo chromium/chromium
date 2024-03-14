@@ -78,6 +78,12 @@ def main():
     # this would put the wrong name in the depfile.
     genargs.append('--output')
     genargs.append(args.output)
+
+    # The GN rules know what path to find the system headers in, and we want to
+    # use the headers we specify, instead of non-hermetic headers from elsewhere
+    # in the system.
+    genargs.append('--no-include-path-detection')
+
     if args.wrap_static_fns:
       wrap_static_fns = stack.enter_context(
           action_helpers.atomic_output(args.wrap_static_fns))
