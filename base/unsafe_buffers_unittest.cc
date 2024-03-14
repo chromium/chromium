@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(__clang__)
-#error "These tests only supported on clang."
-#endif
-
 #include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
