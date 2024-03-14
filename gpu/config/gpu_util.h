@@ -22,10 +22,6 @@ struct GpuPreferences;
 enum class IntelGpuSeriesType;
 enum class IntelGpuGeneration;
 
-// Set GPU feature status if hardware acceleration is disabled.
-GPU_EXPORT GpuFeatureInfo
-ComputeGpuFeatureInfoWithHardwareAccelerationDisabled();
-
 // Set GPU feature status if GPU is blocked.
 GPU_EXPORT GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu();
 
