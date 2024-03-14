@@ -11,6 +11,8 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
@@ -216,9 +218,14 @@ id<GREYMatcher> mostlyNotVisible() {
   [ChromeEarlGrey openNewTab];
 
   // Check the Bookmarks.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS)]
+
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                 IDS_IOS_CONTENT_SUGGESTIONS_BOOKMARKS),
+                             grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeFastInDirection(kGREYDirectionLeft)
+      onElementWithMatcher:grey_accessibilityID(
+                               kMagicStackScrollViewAccessibilityIdentifier)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
@@ -1042,9 +1049,9 @@ id<GREYMatcher> mostlyNotVisible() {
   // Just check for Magic Stack interactibility since the top module shown may
   // vary.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kMagicStackViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_interactable()];
+      selectElementWithMatcher:
+          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   // Ensures that fake omnibox visibility is correct.
   // On iPads, fake omnibox disappears and becomes real omnibox. On other
@@ -1195,14 +1202,14 @@ id<GREYMatcher> mostlyNotVisible() {
 - (void)testMagicStack {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kMagicStack.name) + "<" +
-      std::string(kMagicStack.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kMagicStack.name) + "/Test");
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" + std::string(kMagicStack.name) +
-      ".Test:" + std::string(kMagicStackMostVisitedModuleParam) + "/" + "true");
+  std::string enable_magic_stack_segmentation_arg =
+      std::string(
+          segmentation_platform::features::kSegmentationPlatformIosModuleRanker
+              .name) +
+      ":" + segmentation_platform::kDefaultModelEnabledParam + "/true" + "," +
+      kMagicStack.name + ":" + kMagicStackMostVisitedModuleParam + "/true";
+  config.additional_args.push_back("--enable-features=" +
+                                   enable_magic_stack_segmentation_arg);
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

@@ -195,8 +195,7 @@
 
 - (void)tabResumptionHelperDidReceiveItem {
   CHECK(IsTabResumptionEnabled());
-  if (!self.consumer ||
-      tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
     return;
   }
 
@@ -204,8 +203,7 @@
 }
 
 - (void)tabResumptionHelperDidReplaceItem:(TabResumptionItem*)oldItem {
-  if (!self.consumer ||
-      tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
     return;
   }
 
@@ -576,6 +574,9 @@
     return;
   }
 
+  if (!self.consumer) {
+    return;
+  }
   _latestMagicStackOrder =
       base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformIosModuleRanker)

@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
+#import "ios/chrome/browser/ui/ntp/ntp_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
@@ -27,6 +28,8 @@ NSString* const kSafetyCheckTableViewId = @"kSafetyCheckTableViewId";
 
 // Checks that the visibility of the Safety Check module matches `should_show`.
 void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
+  id<GREYMatcher> matcher =
+      should_show ? grey_sufficientlyVisible() : grey_notVisible();
   GREYCondition* module_shown = [GREYCondition
       conditionWithName:@"Module shown"
                   block:^BOOL {
@@ -34,7 +37,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
                     [[EarlGrey selectElementWithMatcher:
                                    grey_accessibilityID(
                                        safety_check::kSafetyCheckViewID)]
-                        assertWithMatcher:grey_notNil()
+                        assertWithMatcher:matcher
                                     error:&error];
                     return error == nil;
                   }];
@@ -47,7 +50,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
   if (should_show) {
     GREYAssertTrue(success, @"Module did not appear.");
   } else {
-    GREYAssertFalse(success, @"Module appeared.");
+    GREYAssertTrue(success, @"Module was visible.");
   }
 }
 
@@ -68,14 +71,10 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
                                     ReauthenticationResult::kSuccess];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
-
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    // Rotate iphone device so Magic Stack can be scrollable.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_scrollInDirection(kGREYDirectionDown, 180)];
-  }
+  [NTPAppInterface recordModuleFreshnessSignalForType:
+                       ContentSuggestionsModuleType::kSafetyCheck];
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 }
 
 - (void)tearDown {
@@ -89,6 +88,7 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
   AppLaunchConfiguration config;
 
   config.features_enabled.push_back(kMagicStack);
+  config.features_enabled.push_back(kIOSMagicStackCollectionView);
   config.features_enabled.push_back(kSafetyCheckMagicStack);
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordAuthOnEntryV2);
@@ -99,19 +99,12 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 // Tests that long pressing the Safety Check view displays a context menu; tests
 // the Safety Check view is properly hidden via the context menu.
 - (void)testLongPressAndHide {
-  [[[EarlGrey
+  WaitUntilSafetyCheckModuleVisibleOrTimeout(true);
+  [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               safety_check::kSafetyCheckViewID),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 350)
-      onElementWithMatcher:grey_accessibilityID(
-                               kMagicStackScrollViewAccessibilityIdentifier)]
       performAction:grey_longPress()];
-
-  [[EarlGrey selectElementWithMatcher:
-                 grey_text(l10n_util::GetNSString(
-                     IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_DESCRIPTION))]
-      assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:
                  grey_text(l10n_util::GetNSString(
@@ -127,13 +120,11 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 - (void)testPasswordCheckupDismissedAfterAllPasswordsGone {
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
-  [[[EarlGrey
+  WaitUntilSafetyCheckModuleVisibleOrTimeout(true);
+  [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               safety_check::kSafetyCheckViewID),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 350)
-      onElementWithMatcher:grey_accessibilityID(
-                               kMagicStackScrollViewAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   ConditionBlock condition = ^{
@@ -183,13 +174,11 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 - (void)testPasswordCheckupDismissedAfterFailedAuthentication {
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
-  [[[EarlGrey
+  WaitUntilSafetyCheckModuleVisibleOrTimeout(true);
+  [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               safety_check::kSafetyCheckViewID),
                                           grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionRight, 350)
-      onElementWithMatcher:grey_accessibilityID(
-                               kMagicStackScrollViewAccessibilityIdentifier)]
       performAction:grey_tap()];
 
   ConditionBlock condition = ^{
