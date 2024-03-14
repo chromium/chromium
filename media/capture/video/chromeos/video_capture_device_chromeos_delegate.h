@@ -106,8 +106,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate {
 
   base::SequenceBound<ScreenObserverDelegate> screen_observer_delegate_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-
   base::WeakPtrFactory<VideoCaptureDeviceChromeOSDelegate> weak_ptr_factory_{
       this};
 };
