@@ -20,6 +20,9 @@ declare_args() {
   # Controls whether fast_app_terminate_buildflags is enabled
   # (see crbug.com/1328891 for details).
   fast_app_terminate_enabled = -1
+
+  # Path to a PrivacyInfo.xcprivacy file to be included in the application.
+  ios_chrome_privacy_manifest = ""
 }
 
 # If fast_app_terminate_enabled is not enabled, default to true,
@@ -666,6 +669,9 @@ source_set("main") {
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
+  if (ios_chrome_privacy_manifest != "") {
+    deps += [ ":privacy_manifest" ]
+  }
   if (ios_enable_sandbox_dump) {
     deps += [ "//ios/chrome/app/startup:sandbox_dump" ]
   }
@@ -682,6 +688,13 @@ source_set("main") {
       "//ios/third_party/material_components_ios:material_components_ios+bundle",
       "//ios/third_party/material_components_ios:material_components_ios+link",
     ]
+  }
+}
+
+if (ios_chrome_privacy_manifest != "") {
+  bundle_data("privacy_manifest") {
+    sources = [ ios_chrome_privacy_manifest ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 }
 
