@@ -94,6 +94,11 @@ export class SettingsInternetSubpageElement extends
        */
       vpnProviders: Array,
 
+      isAddingBuiltInVpnProhibited: {
+        type: Boolean,
+        value: false,
+      },
+
       showSpinner: {
         type: Boolean,
         notify: true,
@@ -237,6 +242,7 @@ export class SettingsInternetSubpageElement extends
   defaultNetwork: OncMojo.NetworkStateProperties|null|undefined;
   deviceState: OncMojo.DeviceStateProperties|undefined;
   globalPolicy: GlobalPolicy|undefined;
+  isAddingBuiltInVpnProhibited: boolean;
   isCellularSetupActive: boolean;
   isConnectedToNonCellularNetwork: boolean;
   showSpinner: boolean;

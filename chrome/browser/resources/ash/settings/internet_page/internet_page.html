@@ -64,13 +64,13 @@
                     aria-labelledby="add-wifi-label"></cr-icon-button>
               </div>
             </template>
-            <div actionable$="[[!disableVpnUi_]]" class="list-item"
-                on-click="onAddVpnClick_">
+            <div actionable$="[[!isAddingBuiltInVpnProhibited_]]"
+                class="list-item" on-click="onAddVpnClick_">
               <div class="start settings-box-text"
                   id="add-vpn-label" aria-hidden="true">
                 $i18n{internetAddVPN}
               </div>
-              <template is="dom-if" if="[[disableVpnUi_]]">
+              <template is="dom-if" if="[[isAddingBuiltInVpnProhibited_]]">
                 <cr-policy-indicator id="vpnPolicyIndicator"
                     icon-aria-label="$i18n{networkVpnBuiltin}"
                     indicator-type="devicePolicy"
@@ -79,7 +79,7 @@
               </template>
               <cr-icon-button id="add-vpn-button" class="icon-add-circle"
                   aria-labelledby="add-vpn-label"
-                  disabled="[[disableVpnUi_]]">
+                  disabled="[[isAddingBuiltInVpnProhibited_]]">
               </cr-icon-button>
             </div>
             <template is="dom-repeat" items="[[vpnProviders_]]">
@@ -174,7 +174,8 @@
           vpn-providers="[[vpnProviders_]]"
           show-spinner="{{showSpinner_}}"
           is-connected-to-non-cellular-network="[[isConnectedToNonCellularNetwork_]]"
-          is-cellular-setup-active="[[showCellularSetupDialog_]]">
+          is-cellular-setup-active="[[showCellularSetupDialog_]]"
+          is-adding-built-in-vpn-prohibited="[[isAddingBuiltInVpnProhibited_]]">
       </settings-internet-subpage>
     </os-settings-subpage>
   </template>

@@ -531,6 +531,28 @@ suite('<settings-internet-subpage>', () => {
         assertEquals(1, allNetworkLists[3]!.networks.length);
       });
 
+      test('Add built-in VPN button disabled when prohibited', async () => {
+        createSubpage();
+        await initSubpage();
+        initVpn();
+
+        internetSubpage.isAddingBuiltInVpnProhibited = true;
+        await flushTasks();
+
+        const addBuiltInVpnButton =
+            internetSubpage.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#addBuiltInVpnButton');
+
+        assertTrue(!!addBuiltInVpnButton);
+        assertTrue(addBuiltInVpnButton.disabled);
+
+        internetSubpage.isAddingBuiltInVpnProhibited = false;
+        await flushTasks();
+
+        assertTrue(!!addBuiltInVpnButton);
+        assertFalse(addBuiltInVpnButton.disabled);
+      });
+
       test(
           'should not show built-in VPN list when device is disabled',
           async () => {

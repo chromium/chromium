@@ -186,9 +186,9 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
        * enforced by policy and users are prohibited by policy from manually
        * disconnecting from it.
        */
-      disableVpnUi_: {
+      isAddingBuiltInVpnProhibited_: {
         type: Boolean,
-        computed: 'shouldDisableVpnUi_(vpnIsProhibited_,' +
+        computed: 'computeIsAddingBuiltInVpnProhibited_(vpnIsProhibited_,' +
             'prefs.vpn_config_allowed.*' +
             'prefs.arc.vpn.*,' +
             'prefs.arc.vpn.always_on.*)',
@@ -382,7 +382,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private isNumCustomApnsLimitReached_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
-  private disableVpnUi_: boolean;
+  private isAddingBuiltInVpnProhibited_: boolean;
   private knownNetworksType_: NetworkType;
   private networkConfig_: CrosNetworkConfigInterface;
   private passpointSubscription_: PasspointSubscription|undefined;
@@ -865,7 +865,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   private onAddVpnClick_(): void {
-    if (!this.disableVpnUi_) {
+    if (!this.isAddingBuiltInVpnProhibited_) {
       this.showConfig_(true /* configAndConnect */, NetworkType.kVPN);
     }
   }
@@ -938,7 +938,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     return this.allowAddWiFiConnection_(globalPolicy, managedNetworkAvailable);
   }
 
-  private shouldDisableVpnUi_(): boolean {
+  private computeIsAddingBuiltInVpnProhibited_(): boolean {
     if (this.vpnIsProhibited_) {
       return true;
     }
