@@ -75,6 +75,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private final boolean mRequestPayerPhone;
     private final boolean mRequestPayerEmail;
     private final boolean mSaveToDisk;
+    private final PersonalDataManager mPersonalDataManager;
     private final Set<String> mPayerNames;
     private final Set<String> mPhoneNumbers;
     private final Set<String> mEmailAddresses;
@@ -91,21 +92,24 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     /**
      * Builds a contact information editor.
      *
-     * @param requestPayerName  Whether to request the user's name.
+     * @param requestPayerName Whether to request the user's name.
      * @param requestPayerPhone Whether to request the user's phone number.
      * @param requestPayerEmail Whether to request the user's email address.
-     * @param saveToDisk        Whether to save changes to disk.
+     * @param saveToDisk Whether to save changes to disk.
+     * @param personalDataManager The context appropriate PersonalDataManager reference.
      */
     public ContactEditor(
             boolean requestPayerName,
             boolean requestPayerPhone,
             boolean requestPayerEmail,
-            boolean saveToDisk) {
+            boolean saveToDisk,
+            PersonalDataManager personalDataManager) {
         assert requestPayerName || requestPayerPhone || requestPayerEmail;
         mRequestPayerName = requestPayerName;
         mRequestPayerPhone = requestPayerPhone;
         mRequestPayerEmail = requestPayerEmail;
         mSaveToDisk = saveToDisk;
+        mPersonalDataManager = personalDataManager;
         mPayerNames = new HashSet<>();
         mPhoneNumbers = new HashSet<>();
         mEmailAddresses = new HashSet<>();
@@ -349,7 +353,7 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         }
 
         if (mSaveToDisk) {
-            profile.setGUID(PersonalDataManager.getInstance().setProfileToLocal(profile));
+            profile.setGUID(mPersonalDataManager.setProfileToLocal(profile));
         }
 
         if (profile.getGUID().isEmpty()) {

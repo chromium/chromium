@@ -43,7 +43,8 @@ public class PaymentRequestContactDetailsSectionUnitTest {
                         requestPayerName,
                         requestPayerPhone,
                         requestPayerEmail,
-                        /* saveToDisk= */ true);
+                        /* saveToDisk= */ true,
+                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile());
         mContactDetailsSection =
                 new ContactDetailsSection(
                         ApplicationProvider.getApplicationContext(),

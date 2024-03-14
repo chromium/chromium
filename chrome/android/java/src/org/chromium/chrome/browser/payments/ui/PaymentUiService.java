@@ -515,7 +515,8 @@ public class PaymentUiService
                             options.requestPayerName,
                             options.requestPayerPhone,
                             options.requestPayerEmail,
-                            /* saveToDisk= */ !mIsOffTheRecord);
+                            /* saveToDisk= */ !mIsOffTheRecord,
+                            personalDataManager);
             boolean haveCompleteContactInfo = false;
             for (int i = 0; i < getAutofillProfiles().size(); i++) {
                 AutofillProfile profile = getAutofillProfiles().get(i);
