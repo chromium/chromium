@@ -173,9 +173,10 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   CHECK(!si_info.meta.format.PrefersExternalSampler())
       << si_info.meta.format.ToString();
 #endif
+  auto buffer_handle_type = buffer_handle.type;
   return base::MakeRefCounted<ClientSharedImage>(
       AddMailbox(proxy_->CreateSharedImage(si_info, std::move(buffer_handle))),
-      si_info.meta, GenUnverifiedSyncToken(), holder_);
+      si_info.meta, GenUnverifiedSyncToken(), holder_, buffer_handle_type);
 }
 
 SharedImageInterface::SharedImageMapping
@@ -242,7 +243,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
                           gpu_memory_buffer->GetSize(),
                           si_info.meta.color_space, si_info.meta.surface_origin,
                           si_info.meta.alpha_type, si_info.meta.usage),
-      GenUnverifiedSyncToken(), holder_);
+      GenUnverifiedSyncToken(), holder_, gpu_memory_buffer->GetType());
 }
 
 #if BUILDFLAG(IS_WIN)

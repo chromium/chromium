@@ -81,7 +81,8 @@ class GPU_EXPORT ClientSharedImage
       const Mailbox& mailbox,
       const SharedImageMetadata& metadata,
       const SyncToken& sync_token,
-      scoped_refptr<SharedImageInterfaceHolder> sii_holder);
+      scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+      gfx::GpuMemoryBufferType gmb_type = gfx::EMPTY_BUFFER);
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
@@ -185,6 +186,10 @@ class GPU_EXPORT ClientSharedImage
   SyncToken creation_sync_token_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
+
+  // Whether a client-side native buffer was used in the creation of this
+  // SharedImage.
+  bool client_side_native_buffer_used_ = false;
 };
 
 struct GPU_EXPORT ExportedSharedImage {

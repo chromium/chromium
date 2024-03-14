@@ -15,6 +15,14 @@
 
 namespace gpu {
 
+namespace {
+
+bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
+  return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
+}
+
+}  // namespace
+
 ClientSharedImage::ScopedMapping::ScopedMapping() = default;
 ClientSharedImage::ScopedMapping::~ScopedMapping() {
   if (buffer_) {
@@ -86,11 +94,13 @@ ClientSharedImage::ClientSharedImage(
     const Mailbox& mailbox,
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
-    scoped_refptr<SharedImageInterfaceHolder> sii_holder)
+    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+    gfx::GpuMemoryBufferType gmb_type /*= gfx::EMPTY_BUFFER*/)
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),
-      sii_holder_(std::move(sii_holder)) {
+      sii_holder_(std::move(sii_holder)),
+      client_side_native_buffer_used_(GMBIsNative(gmb_type)) {
   CHECK(!mailbox.IsZero());
 }
 
@@ -116,6 +126,7 @@ ClientSharedImage::ClientSharedImage(
               base::DoNothing())),
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
+  client_side_native_buffer_used_ = GMBIsNative(gpu_memory_buffer_->GetType());
 }
 
 ClientSharedImage::~ClientSharedImage() = default;
