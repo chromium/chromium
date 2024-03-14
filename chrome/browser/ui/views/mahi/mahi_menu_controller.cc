@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 
+#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "ui/views/view_utils.h"
 
@@ -18,6 +19,11 @@ void MahiMenuController::OnContextMenuShown(Profile* profile) {}
 void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
                                          const std::string& selected_text,
                                          const std::string& surrounding_text) {
+  // Only shows mahi menu for distillable pages.
+  if (!::mahi::MahiWebContentsManager::Get()->IsFocusedPageDistillable()) {
+    return;
+  }
+
   menu_widget_ = MahiMenuView::CreateWidget(anchor_bounds);
   menu_widget_->ShowInactive();
 }

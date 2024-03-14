@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/callback_list.h"
-#include "base/run_loop.h"
-#include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
+#include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
+#include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/mock_mahi_crosapi.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
@@ -144,11 +145,11 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
   run_loop.Run();
 
   // After the context menu request, the requested state should be updated to
-  // the focused state and the focused state should be reset.
+  // the focused state and the focused state stays the same.
   EXPECT_EQ(
       focused_page_id,
       fake_mahi_web_contents_manager_.requested_web_content_state().page_id);
-  EXPECT_NE(
+  EXPECT_EQ(
       focused_page_id,
       fake_mahi_web_contents_manager_.focused_web_content_state().page_id);
   EXPECT_EQ(GURL(),
@@ -261,16 +262,16 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
   run_loop.Run();
 
   // After the content request, the requested state should be updated to the
-  // focused state and the focused state should be reset.
+  // focused state and the focused state stays the same.
   EXPECT_EQ(
       focused_page_id,
       fake_mahi_web_contents_manager_.requested_web_content_state().page_id);
-  EXPECT_NE(
+  EXPECT_EQ(
       focused_page_id,
       fake_mahi_web_contents_manager_.focused_web_content_state().page_id);
-  EXPECT_EQ(GURL(),
+  EXPECT_EQ(GURL(kUrl),
             fake_mahi_web_contents_manager_.focused_web_content_state().url);
-  EXPECT_EQ(u"",
+  EXPECT_EQ(u"data:text/html,<p>kittens!</p>",
             fake_mahi_web_contents_manager_.focused_web_content_state().title);
 }
 

@@ -34,6 +34,10 @@ class FakeMahiWebContentsManager : public MahiWebContentsManager {
     return focused_web_content_state_;
   }
 
+  void set_focused_web_content_is_distillable(bool value) {
+    focused_web_content_state_.is_distillable.emplace(value);
+  }
+
   WebContentState requested_web_content_state() {
     return requested_web_content_state_;
   }

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -181,8 +182,7 @@ void MahiWebContentsManager::RequestContent(
 }
 
 void MahiWebContentsManager::FocusedPageGotRequest() {
-  requested_web_content_state_ = std::move(focused_web_content_state_);
-  focused_web_content_state_ = WebContentState(/*url=*/GURL(), /*title=*/u"");
+  requested_web_content_state_ = focused_web_content_state_;
 }
 
 gfx::ImageSkia MahiWebContentsManager::GetFavicon(
@@ -190,16 +190,23 @@ gfx::ImageSkia MahiWebContentsManager::GetFavicon(
   return favicon::TabFaviconFromWebContents(web_contents).AsImageSkia();
 }
 
-// A tab should be skipped if it is empty, blank or default page.
 bool MahiWebContentsManager::ShouldSkip(content::WebContents* web_contents) {
+  const std::string& url = web_contents->GetURL().spec();
+
   static constexpr auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>({
       // blank and default pages.
       "about:blank",
       "chrome://newtab/",
   });
+  // A tab should be skipped if it is empty, blank or default page.
+  if (url.empty() || base::Contains(kSkipUrls, url)) {
+    return true;
+  }
 
-  const std::string& url = web_contents->GetURL().spec();
-  return url.empty() || base::Contains(kSkipUrls, url);
+  // Also skip urls that begins with `chrome`. They are usually web UI and
+  // internal pages. E.g., `chrome://`, `chrome-internal://` and
+  // `chrome-untrusted://`.
+  return url.rfind("chrome", 0) == 0;
 }
 
 }  // namespace mahi

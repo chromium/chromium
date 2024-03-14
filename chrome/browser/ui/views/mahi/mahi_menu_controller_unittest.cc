@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
+#include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/gfx/geometry/rect.h"
@@ -17,6 +19,13 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
  public:
   MahiMenuControllerTest() {
     menu_controller_ = std::make_unique<MahiMenuController>();
+
+    scoped_mahi_web_contents_manager_ =
+        std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+            &fake_mahi_web_contents_manager_);
+    // Sets the focused page's distillability to true so that it does not block
+    // the menu widget's display.
+    ChangePageDistillability(true);
   }
 
   MahiMenuControllerTest(const MahiMenuControllerTest&) = delete;
@@ -26,8 +35,17 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
 
   MahiMenuController* menu_controller() { return menu_controller_.get(); }
 
+  void ChangePageDistillability(bool value) {
+    fake_mahi_web_contents_manager_.set_focused_web_content_is_distillable(
+        value);
+  }
+
  private:
   std::unique_ptr<MahiMenuController> menu_controller_;
+
+  ::mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
+  std::unique_ptr<::mahi::ScopedMahiWebContentsManagerForTesting>
+      scoped_mahi_web_contents_manager_;
 };
 
 TEST_F(MahiMenuControllerTest, Widget) {
@@ -42,6 +60,14 @@ TEST_F(MahiMenuControllerTest, Widget) {
 
   // Menu widget should hide when dismissed.
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
+  EXPECT_FALSE(menu_controller()->menu_widget_for_test());
+
+  // If page is not distillable, then menu widget should not be triggered.
+  ChangePageDistillability(false);
+  menu_controller()->OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                     /*selected_text=*/"",
+                                     /*surrounding_text=*/"");
+
   EXPECT_FALSE(menu_controller()->menu_widget_for_test());
 }
 

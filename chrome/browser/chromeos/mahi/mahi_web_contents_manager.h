@@ -92,8 +92,7 @@ class MahiWebContentsManager {
                       GetContentCallback callback);
 
   // Should be called when user requests on the focused page. We should update
-  // the focused page state to the requested page state and reset the focused
-  // page state.
+  // the focused page state to the requested page state.
   void FocusedPageGotRequest();
 
   // Gets the favicon from the given web contents. Returns an empty imageskia if
@@ -101,8 +100,8 @@ class MahiWebContentsManager {
   // Virtual so we can override in tests.
   virtual gfx::ImageSkia GetFavicon(content::WebContents* web_contents) const;
 
-  // Default pages are all skipped including "about::blank" and
-  // "chrome://newtab/".
+  // Determines if the given web contents should be skipped for distillability
+  // check.
   bool ShouldSkip(content::WebContents* web_contents);
 
   std::unique_ptr<MahiContentExtractionDelegate> content_extraction_delegate_;
