@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -24,7 +23,7 @@
 #include "services/webnn/coreml/context_impl.h"
 #endif
 
-#if BUILDFLAG(WEBNN_USE_TFLITE)
+#if BUILDFLAG(IS_LINUX)
 #include "services/webnn/tflite/context_impl.h"
 #endif
 
@@ -74,14 +73,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                                               std::move(callback));
     return;
   }
-#if BUILDFLAG(WEBNN_USE_TFLITE)
-  // The remote sent to the renderer.
-  mojo::PendingRemote<mojom::WebNNContext> blink_remote;
-  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new tflite::ContextImpl(
-      blink_remote.InitWithNewPipeAndPassReceiver(), this)));
-  std::move(callback).Run(
-      mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
-#elif BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!is_gpu_supported_) {
     std::move(callback).Run(ToError<mojom::CreateContextResult>(
         mojom::Error::Code::kNotSupportedError,
@@ -138,6 +130,13 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         "WebNN Service is not supported on this platform."));
     DLOG(ERROR) << "WebNN Service is not supported on this platform.";
   }
+#elif BUILDFLAG(IS_LINUX)
+  // The remote sent to the renderer.
+  mojo::PendingRemote<mojom::WebNNContext> blink_remote;
+  impls_.push_back(base::WrapUnique<WebNNContextImpl>(new tflite::ContextImpl(
+      blink_remote.InitWithNewPipeAndPassReceiver(), this)));
+  std::move(callback).Run(
+      mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #else
   // TODO(crbug.com/1273291): Supporting WebNN Service on the platform.
   std::move(callback).Run(ToError<mojom::CreateContextResult>(

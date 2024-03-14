@@ -2,15 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//mojo/public/tools/fuzzers/mojolpm.gni")
-import("//services/webnn/features.gni")
 import("//third_party/protobuf/proto_library.gni")
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "WEBNN_USE_TFLITE=$webnn_use_tflite" ]
-}
 
 source_set("coreml_graph_builder") {
   sources = [
@@ -56,7 +49,6 @@ component("webnn_service") {
   ]
 
   deps = [
-    ":buildflags",
     "//base",
     "//components/ml/webnn",
     "//mojo/public/cpp/bindings",
@@ -109,7 +101,7 @@ component("webnn_service") {
     deps += [ ":coreml_graph_builder" ]
   }
 
-  if (webnn_use_tflite) {
+  if (is_linux) {
     sources += [
       "tflite/context_impl.cc",
       "tflite/context_impl.h",
@@ -152,12 +144,11 @@ source_set("tests") {
     ]
   }
 
-  if (webnn_use_tflite || is_mac || is_win) {
+  if (is_linux || is_mac || is_win) {
     sources += [ "webnn_graph_impl_backend_test.cc" ]
   }
 
   deps = [
-    ":buildflags",
     ":webnn_service",
     "//base",
     "//base/test:test_support",

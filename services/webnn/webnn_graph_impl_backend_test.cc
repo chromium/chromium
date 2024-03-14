@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/webnn/buildflags.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -333,7 +332,7 @@ void WebNNGraphImplBackendTest::SetUp() {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(WEBNN_USE_TFLITE)
+#if BUILDFLAG(IS_LINUX)
 class WebNNGraphImplBackendTest : public testing::Test {
  public:
   WebNNGraphImplBackendTest()
@@ -360,7 +359,7 @@ void WebNNGraphImplBackendTest::SetUp() {
     GTEST_SKIP() << "Skipping test because the operator is not yet supported.";
   }
 }
-#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // BUILDFLAG(IS_LINUX)
 
 template <typename T>
 struct ArgMinMaxTester {
@@ -1820,9 +1819,9 @@ TEST_F(WebNNGraphImplBackendTest,
   // TODO(https://issues.chromium.org/41481333): Enable these tests on Mac,
   // after adding support for other binary operators.
 #if !BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
   // after adding support for other binary operators.
-#if !BUILDFLAG(WEBNN_USE_TFLITE)
+#if !BUILDFLAG(IS_LINUX)
   // Test building and computing a graph with single operator equal.
   {
     ElementWiseBinaryTester<float, uint8_t>{
@@ -1988,7 +1987,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 1, 1, 1, 0, 0}}}
         .Test();
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // !BUILDFLAG(IS_LINUX)
 #endif  // !BUILDFLAG(IS_MAC)
 }
 
@@ -2043,9 +2042,9 @@ TEST_F(WebNNGraphImplBackendTest,
       .dimensions = {1, 2, 3, 1},
       .values = {0, 2, 0, 4, 5, 120}};
 
-  // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
   // after adding support for other unary operators.
-#if !BUILDFLAG(WEBNN_USE_TFLITE)
+#if !BUILDFLAG(IS_LINUX)
   {
     ElementWiseUnaryTester<uint8_t>{
         .input = {.type = mojom::Operand::DataType::kUint8,
@@ -2099,7 +2098,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = test_operand_info_uint8}
         .Test();
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // !BUILDFLAG(IS_LINUX)
 
   {
     // Test Sqrt with 0-D scalar input.
@@ -2125,9 +2124,9 @@ TEST_F(WebNNGraphImplBackendTest,
         .Test();
   }
 
-  // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
   // after adding support for float16 and other unary operators.
-#if !BUILDFLAG(WEBNN_USE_TFLITE)
+#if !BUILDFLAG(IS_LINUX)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2186,7 +2185,7 @@ TEST_F(WebNNGraphImplBackendTest,
                         std::numeric_limits<float>::infinity()})}}
         .Test();
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // !BUILDFLAG(IS_LINUX)
 
   {
     ElementWiseUnaryTester<float>{
@@ -2233,9 +2232,9 @@ TEST_F(WebNNGraphImplBackendTest,
         .Test();
   }
 
-  // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
   // after adding support for other unary operators.
-#if !BUILDFLAG(WEBNN_USE_TFLITE)
+#if !BUILDFLAG(IS_LINUX)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2247,7 +2246,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = Float16FromFloat32({-2, 0, 1, -3, 0, 2})}}
         .Test();
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // !BUILDFLAG(IS_LINUX)
 
   {
     ElementWiseUnaryTester<float>{
@@ -2283,9 +2282,9 @@ TEST_F(WebNNGraphImplBackendTest,
         .Test();
   }
 
-  // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
+  // TODO(https://issues.chromium.org/326356909): Enable these tests on Linux,
   // after adding support for other unary operators.
-#if !BUILDFLAG(WEBNN_USE_TFLITE)
+#if !BUILDFLAG(IS_LINUX)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -2297,7 +2296,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {tan(1.f), tan(-2.f), tan(3.f), tan(-4.f)}}}
         .Test();
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
+#endif  // !BUILDFLAG(IS_LINUX)
 }
 
 template <typename T>
