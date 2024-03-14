@@ -26,6 +26,7 @@
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
+#include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/oop_video_decoder.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
@@ -842,12 +843,15 @@ void VideoDecoderPipeline::OnFrameConverted(
     return;
   }
 
-  // Gets a VideoFrame from |frame|.
-  // TODO(nhebert): add support for NativePixmap FrameResource when it is ready.
-  LOG_ASSERT(frame->AsVideoFrameResource())
-      << "frame is expected to be a VideoFrameResource";
+  // Gets or creates a VideoFrame from |frame|.
+  LOG_ASSERT(frame->AsVideoFrameResource() ||
+             frame->AsNativePixmapFrameResource())
+      << "frame is expected to be a VideoFrameResource or "
+         "NativePixmapFrameResource";
   scoped_refptr<VideoFrame> video_frame =
-      frame->AsVideoFrameResource()->GetMutableVideoFrame();
+      frame->AsVideoFrameResource()
+          ? frame->AsVideoFrameResource()->GetMutableVideoFrame()
+          : frame->AsNativePixmapFrameResource()->CreateVideoFrame();
 
   // Invalidates |frame| to avoid accidental usage. |video_frame| is what will
   // be output.
