@@ -10,6 +10,7 @@
 
 namespace tab_groups {
 
+// TODO(pengchaocai): Reword to "Everything" for V2.
 class SavedTabGroupOverflowButton : public views::MenuButton {
   METADATA_HEADER(SavedTabGroupOverflowButton, views::MenuButton)
 

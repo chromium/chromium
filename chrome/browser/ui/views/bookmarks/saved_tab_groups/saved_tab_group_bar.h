@@ -97,6 +97,11 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // placed on the bar.
   int CalculatePreferredWidthRestrictedBy(int width_restriction) const;
 
+  // Calculates what the visible width would be when a restriction on width is
+  // placed on the bar. Should only get invoked behind TabGroupsSaveV2.
+  // TODO(crbug.com/329659664): Rename once V2 ships.
+  int V2CalculatePreferredWidthRestrictedBy(int width_restriction) const;
+
   bool IsOverflowButtonVisible();
 
  private:
@@ -169,7 +174,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
 
   // Finds the index of the last button that can be displayed within the given
   // width. Guaranteed to not exceed `kMaxVisibleButtons`. Does not include the
-  // overflow button.
+  // overflow button. Returns -1 to indicate that no tab groups button is
+  // visible with the given width.
   int CalculateLastVisibleButtonIndexForWidth(int max_width) const;
 
   // Updates the drop index in `drag_data_` based on the current drag location.

@@ -53,13 +53,21 @@ const tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
 
 }  // anonymous namespace
 
-class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
+class SavedTabGroupBarUnitTest : public ChromeViewsTestBase,
+                                 public ::testing::WithParamInterface<bool> {
  public:
   SavedTabGroupBarUnitTest()
       : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()) {
-    feature_list_.InitAndEnableFeature(features::kTabGroupsSave);
+    if (IsV2Enabled()) {
+      feature_list_.InitWithFeatures(
+          {features::kTabGroupsSave, features::kTabGroupsSaveV2}, {});
+    } else {
+      feature_list_.InitWithFeatures({features::kTabGroupsSave},
+                                     {features::kTabGroupsSaveV2});
+    }
   }
 
+  bool IsV2Enabled() const { return GetParam(); }
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
   SavedTabGroupModel* saved_tab_group_model() {
     return saved_tab_group_model_.get();
@@ -134,7 +142,7 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
   static constexpr int button_height_ = 20;
 };
 
-TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
+TEST_P(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
   // Verify the initial count of saved tab group buttons. Even when visibly
   // empty, the SavedTabGroupBar still contains an invisible overflow menu
   // that is invisible.
@@ -149,7 +157,44 @@ TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
   EXPECT_EQ(3u, saved_tab_group_bar()->children().size());
 }
 
-TEST_F(SavedTabGroupBarUnitTest, OverflowMenuVisibleWhenFifthButtonAdded) {
+TEST_P(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisibleForV2) {
+  // Verify the initial count of saved tab group buttons.
+  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  const views::View* overflow_button = saved_tab_group_bar()->children()[0];
+  if (IsV2Enabled()) {
+    // Everything button shows by default.
+    saved_tab_group_bar()->SetBounds(
+        0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400),
+        2);
+    EXPECT_TRUE(overflow_button->GetVisible());
+
+    // Add a tab group button; the Everything button is still there.
+    saved_tab_group_model()->Add(kSavedTabGroup1);
+    saved_tab_group_bar()->SetBounds(
+        0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400),
+        2);
+    EXPECT_TRUE(overflow_button->GetVisible());
+
+    // Remove the last tab group button; the Everything button is still there.
+    saved_tab_group_model()->Remove(kSavedTabGroup1.saved_guid());
+    saved_tab_group_bar()->SetBounds(
+        0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400),
+        2);
+    EXPECT_TRUE(overflow_button->GetVisible());
+  } else {
+    saved_tab_group_bar()->SetBounds(
+        0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(400),
+        2);
+    EXPECT_FALSE(overflow_button->GetVisible());
+  }
+}
+
+TEST_P(SavedTabGroupBarUnitTest, OverflowMenuVisibleWhenFifthButtonAdded) {
+  if (IsV2Enabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
   // The first view should be an invisible overflow menu.
   ASSERT_EQ(1u, saved_tab_group_bar()->children().size());
 
@@ -176,7 +221,11 @@ TEST_F(SavedTabGroupBarUnitTest, OverflowMenuVisibleWhenFifthButtonAdded) {
 
 // Verifies that when a 5th saved group is removed, the overflow menu is not
 // visible.
-TEST_F(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFifthButtonRemoved) {
+TEST_P(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFifthButtonRemoved) {
+  if (IsV2Enabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
   // The first view should be an invisible overflow menu.
   ASSERT_EQ(1u, saved_tab_group_bar()->children().size());
 
@@ -208,7 +257,11 @@ TEST_F(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFifthButtonRemoved) {
 
 // Verifies that when a 5th saved group is added and the first group is removed,
 // the overflow menu is not visible and the 5th button is visible.
-TEST_F(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFirstButtonRemoved) {
+TEST_P(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFirstButtonRemoved) {
+  if (IsV2Enabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
   // The first view should be an invisible overflow menu.
   ASSERT_EQ(1u, saved_tab_group_bar()->children().size());
 
@@ -239,7 +292,7 @@ TEST_F(SavedTabGroupBarUnitTest, OverflowMenuHiddenWhenFirstButtonRemoved) {
   EXPECT_EQ(5u, saved_tab_group_bar()->children().size());
 }
 
-TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
+TEST_P(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
 
   SavedTabGroupBar another_tab_group_bar_on_same_model(
@@ -249,7 +302,7 @@ TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
             another_tab_group_bar_on_same_model.children().size());
 }
 
-TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
+TEST_P(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
 
   // Remove the group and expect no buttons except the overflow menu.
@@ -269,7 +322,7 @@ TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
       saved_tab_group_bar()->children()[0]));
 }
 
-TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
+TEST_P(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
 
   SavedTabGroup group_2_with_position = kSavedTabGroup2;
@@ -300,7 +353,7 @@ TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   EXPECT_EQ(new_button_2->tab_group_color_id(), kNewColor);
 }
 
-TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
+TEST_P(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
   const auto get_button_guids = [this]() {
     std::vector<base::Uuid> guids;
     for (views::View* view : saved_tab_group_bar()->children()) {
@@ -342,7 +395,11 @@ TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {
 }
 
 // If the restriction is exactly the expected size all should be visible
-TEST_F(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
+TEST_P(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
+  if (IsV2Enabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
   Add4Groups();
 
   int exact_width = GetWidthOfButtonsAndPadding();
@@ -369,8 +426,12 @@ TEST_F(SavedTabGroupBarUnitTest, CalculatePreferredWidthRestrictedByExactSize) {
 }
 
 // If the restriction is more than the expected size all should be visible
-TEST_F(SavedTabGroupBarUnitTest,
+TEST_P(SavedTabGroupBarUnitTest,
        CalculatePreferredWidthRestrictedByLargerSize) {
+  if (IsV2Enabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
   Add4Groups();
   int exact_width = GetWidthOfButtonsAndPadding();
 
@@ -396,8 +457,12 @@ TEST_F(SavedTabGroupBarUnitTest,
 
 // If the restriction is 1 less than the size the last button should not be
 // visible, and second to last should be visible.
-TEST_F(SavedTabGroupBarUnitTest,
+TEST_P(SavedTabGroupBarUnitTest,
        CalculatePreferredWidthRestrictedBySmallerSize) {
+  if (IsV2Enabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
+
   Add4Groups();
   int exact_width = GetWidthOfButtonsAndPadding();
 
@@ -420,5 +485,9 @@ TEST_F(SavedTabGroupBarUnitTest,
   EXPECT_LT(exact_width, new_width);
   EXPECT_GT(new_width, actual_width);
 }
+
+INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
+                         SavedTabGroupBarUnitTest,
+                         testing::Bool());
 
 }  // namespace tab_groups

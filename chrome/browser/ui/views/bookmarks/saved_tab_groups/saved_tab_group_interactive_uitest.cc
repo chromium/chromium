@@ -55,15 +55,25 @@
 
 namespace tab_groups {
 
-class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
+class SavedTabGroupInteractiveTest
+    : public InteractiveBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SavedTabGroupInteractiveTest() = default;
   ~SavedTabGroupInteractiveTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kTabGroupsSave}, {});
+    if (IsV2Enabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kTabGroupsSave, features::kTabGroupsSaveV2}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({features::kTabGroupsSave},
+                                            {features::kTabGroupsSaveV2});
+    }
     InteractiveBrowserTest::SetUp();
   }
+
+  bool IsV2Enabled() const { return GetParam(); }
 
   MultiStep ShowBookmarksBar() {
     return Steps(PressButton(kToolbarAppMenuButtonElementId),
@@ -170,6 +180,12 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
     });
   }
 
+  auto CheckEverythingButtonVisibility(bool is_v2_enabled) {
+    return is_v2_enabled
+               ? EnsurePresent(kSavedTabGroupOverflowButtonElementId)
+               : EnsureNotPresent(kSavedTabGroupOverflowButtonElementId);
+  }
+
   std::unique_ptr<content::WebContents> CreateWebContents() {
     return content::WebContents::Create(
         content::WebContents::CreateParams(browser()->profile()));
@@ -179,7 +195,7 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
   const tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
 
@@ -194,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
       WaitForShow(kSavedTabGroupButtonElementId, true));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        UnsaveGroupFromTabGroupHeader) {
   const tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0});
@@ -216,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       ClickMouse(ui_controls::LEFT));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        UnsaveGroupFromButtonMenu) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
@@ -262,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
 #define MAYBE_MoveGroupToNewWindowFromButtonMenu \
   MoveGroupToNewWindowFromButtonMenu
 #endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        MAYBE_MoveGroupToNewWindowFromButtonMenu) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
@@ -310,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
           false));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SavedTabGroupInteractiveTest,
     MoveGroupToNewWindowFromButtonMenuDoesNothingIfOnlyGroupInWindow) {
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
@@ -355,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(
           true));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        FirstTabIsFocusedInReopenedSavedGroup) {
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -402,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
           [&]() { return browser()->tab_strip_model()->active_index(); }, 1));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        UpdateButtonWhenTabGroupVisualDataChanges) {
   // Add 1 tab into the browser. And verify there are 2 tabs (The tab when you
   // open the browser and the added one).
@@ -450,8 +466,48 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       ClickMouse(ui_controls::LEFT), FinishTabstripAnimations());
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
+                       EverythingButtonAlwaysShowsForV2) {
+  const tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  const bool is_v2_enabled = IsV2Enabled();
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      CheckEverythingButtonVisibility(is_v2_enabled),
+
+      // Ensure no tab groups save buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+      SaveGroupLeaveEditorBubbleOpen(group_id),
+      WaitForShow(kSavedTabGroupButtonElementId, true),
+      // Click the tab group header to close the menu.
+      FlushEvents(), HoverTabGroupHeader(group_id),
+      ClickMouse(ui_controls::LEFT), FinishTabstripAnimations(),
+      CheckEverythingButtonVisibility(is_v2_enabled),
+
+      // Press the enter/return key on the button to open the context menu.
+      WithElement(kSavedTabGroupButtonElementId,
+                  [](ui::TrackedElement* el) {
+                    const ui::KeyEvent event(
+                        ui::ET_KEY_PRESSED, ui::KeyboardCode::VKEY_RETURN,
+                        ui::DomCode::ENTER, ui::EF_NONE, ui::DomKey::ENTER,
+                        base::TimeTicks(), /*is_char=*/false);
+
+                    AsView<SavedTabGroupButton>(el)->OnKeyPressed(event);
+                  }),
+      // Flush events and select the delete group menu item.
+      EnsurePresent(SavedTabGroupButton::kDeleteGroupMenuItem), FlushEvents(),
+      SelectMenuItem(SavedTabGroupButton::kDeleteGroupMenuItem),
+      // Ensure the button is no longer present.
+      FinishTabstripAnimations(), WaitForHide(kSavedTabGroupButtonElementId),
+      CheckEverythingButtonVisibility(is_v2_enabled));
+}
+
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        FiveSavedGroupsShowsOverflowMenuButton) {
+  if (IsV2Enabled()) {
+    GTEST_SKIP() << "N/A for V2";
+  }
   // Add 4 additional tabs to the browser.
   ASSERT_TRUE(
       AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
@@ -506,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
 // TODO(crbug.com/1432770): Re-enable this test once it doesn't get stuck in
 // drag and drop. Maybe related issue - the relative positioning seems to be
 // interpreted as an absolute position.
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        DISABLED_DragGroupWithinBar) {
   // Create two tab groups with one tab each.
   const tab_groups::TabGroupId group_id_1 =
@@ -548,7 +604,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
   EXPECT_EQ(1, model->GetIndexOf(group_id_1).value());
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        OverflowMenuUpdatesWhileOpen) {
 #if BUILDFLAG(IS_MAC)
   // TODO (crbug/1521486): Test fails on MacOS when ChromeRefresh2023 flags are
@@ -650,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       WaitForHide(kSavedTabGroupOverflowMenuId));
 }
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                        OverflowMenuClosesWhenNoMoreButtons) {
   // Add 5 additional tabs to the browser.
   ASSERT_TRUE(
@@ -710,5 +766,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
       WaitForHide(kSavedTabGroupOverflowMenuId),
       EnsureNotPresent(kSavedTabGroupOverflowMenuId));
 }
+
+INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
+                         SavedTabGroupInteractiveTest,
+                         testing::Bool());
 
 }  // namespace tab_groups
