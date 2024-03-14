@@ -37,6 +37,9 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 class MahiPanelViewTest : public AshTestBase {
  public:
   MahiPanelViewTest() = default;
+  explicit MahiPanelViewTest(base::test::TaskEnvironment::TimeSource time)
+      : AshTestBase(time) {}
+
   MahiPanelViewTest(const MahiPanelViewTest&) = delete;
   MahiPanelViewTest& operator=(const MahiPanelViewTest&) = delete;
   ~MahiPanelViewTest() override = default;
@@ -188,6 +191,59 @@ TEST_F(MahiPanelViewTest, LearnMoreLink) {
                       NewWindowDelegate::Disposition::kNewForegroundTab));
   LeftClickOn(
       panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink));
+}
+
+// A test class that uses a mock time task environment.
+class MahiPanelViewMockTimeTest : public MahiPanelViewTest {
+ public:
+  MahiPanelViewMockTimeTest()
+      : MahiPanelViewTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  MahiPanelViewMockTimeTest(const MahiPanelViewMockTimeTest&) = delete;
+  MahiPanelViewMockTimeTest& operator=(const MahiPanelViewMockTimeTest&) =
+      delete;
+  ~MahiPanelViewMockTimeTest() override = default;
+
+  // MahiPanelViewTest:
+  void SetUp() override {
+    MahiPanelViewTest::SetUp();
+    fake_mahi_manager()->set_enable_fake_delays_for_animations(true);
+  }
+};
+
+TEST_F(MahiPanelViewMockTimeTest, LoadingAnimations) {
+  auto mahi_view = std::make_unique<MahiPanelView>();
+
+  auto* summary_loading_animated_image = mahi_view->GetViewByID(
+      mahi_constants::ViewId::kSummaryLoadingAnimatedImage);
+  auto* outlines_loading_animated_image = mahi_view->GetViewByID(
+      mahi_constants::ViewId::kOutlinesLoadingAnimatedImage);
+  auto* summary_label =
+      mahi_view->GetViewByID(mahi_constants::ViewId::kSummaryLabel);
+  auto* outlines_container =
+      mahi_view->GetViewByID(mahi_constants::ViewId::kOutlinesContainer);
+
+  EXPECT_TRUE(summary_loading_animated_image->GetVisible());
+  EXPECT_TRUE(outlines_loading_animated_image->GetVisible());
+  EXPECT_FALSE(summary_label->GetVisible());
+  EXPECT_FALSE(outlines_container->GetVisible());
+
+  // Fast forward until the summary has loaded, the outline animation should
+  // still be visible.
+  task_environment()->FastForwardBy(
+      base::Seconds(mahi_constants::kFakeMahiManagerLoadSummaryDelaySeconds));
+  EXPECT_FALSE(summary_loading_animated_image->GetVisible());
+  EXPECT_TRUE(outlines_loading_animated_image->GetVisible());
+  EXPECT_TRUE(summary_label->GetVisible());
+  EXPECT_FALSE(outlines_container->GetVisible());
+
+  // Fast forward until everything is loaded, all animations shouldn't be
+  // visible.
+  task_environment()->FastForwardBy(
+      base::Seconds(mahi_constants::kFakeMahiManagerLoadOutlinesDelaySeconds));
+  EXPECT_FALSE(summary_loading_animated_image->GetVisible());
+  EXPECT_FALSE(outlines_loading_animated_image->GetVisible());
+  EXPECT_TRUE(summary_label->GetVisible());
+  EXPECT_TRUE(outlines_container->GetVisible());
 }
 
 }  // namespace

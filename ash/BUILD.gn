@@ -1782,6 +1782,8 @@ component("ash") {
     "system/lock_screen_notification_controller.h",
     "system/mahi/fake_mahi_manager.cc",
     "system/mahi/fake_mahi_manager.h",
+    "system/mahi/mahi_animation_utils.cc",
+    "system/mahi/mahi_animation_utils.h",
     "system/mahi/mahi_constants.h",
     "system/mahi/mahi_panel_view.cc",
     "system/mahi/mahi_panel_view.h",

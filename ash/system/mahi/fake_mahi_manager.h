@@ -56,6 +56,11 @@ class ASH_EXPORT FakeMahiManager : public chromeos::MahiManager {
     return open_feedback_dialog_called_count_;
   }
 
+  void set_enable_fake_delays_for_animations(
+      bool enable_fake_delays_for_animations) {
+    enable_fake_delays_for_animations_ = enable_fake_delays_for_animations;
+  }
+
  private:
   std::u16string content_title_;
   gfx::ImageSkia content_icon_;

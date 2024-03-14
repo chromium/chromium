@@ -8,9 +8,15 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
+
+namespace views {
+class AnimatedImageView;
+class Label;
+}  // namespace views
 
 namespace ash {
 
@@ -25,6 +31,24 @@ class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView {
   ~SummaryOutlinesSection() override;
 
  private:
+  // Requests summary and outlines data from `MahiManager` for the currently
+  // active content and starts playing the loading animations.
+  void LoadSummaryAndOutlines();
+
+  // Callback provided to the `MahiManager` which runs when the summary is
+  // available.
+  void OnSummaryLoaded(std::u16string summary,
+                       chromeos::MahiResponseStatus status);
+
+  // Callback provided to the `MahiManager` which runs when all outlines are
+  // available.
+  void OnOutlinesLoaded(std::vector<chromeos::MahiOutline> outlines,
+                        chromeos::MahiResponseStatus status);
+
+  raw_ptr<views::AnimatedImageView> summary_loading_animated_image_ = nullptr;
+  raw_ptr<views::AnimatedImageView> outlines_loading_animated_image_ = nullptr;
+  raw_ptr<views::Label> summary_label_ = nullptr;
+
   base::WeakPtrFactory<SummaryOutlinesSection> weak_ptr_factory_{this};
 };
 

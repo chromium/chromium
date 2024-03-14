@@ -22,6 +22,9 @@ enum ViewId {
   kMahiPanelView,
   kAskQuestionSendButton,
   kBackButton,
+  kOutlinesContainer,
+  kSummaryLoadingAnimatedImage,
+  kOutlinesLoadingAnimatedImage,
 };
 
 // The size of the icon that appears in the panel's source row.
@@ -34,6 +37,10 @@ inline constexpr char kLearnMorePage[] = "https://google.com";
 
 inline constexpr int kRefreshBannerStackDepth = 25;
 inline constexpr int kPanelCornerRadius = 16;
+
+// Delays used in `FakeMahiManager` for testing.
+inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
+inline constexpr int kFakeMahiManagerLoadOutlinesDelaySeconds = 6;
 
 }  // namespace ash::mahi_constants
 

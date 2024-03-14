@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,7 +19,9 @@ namespace ash {
 
 FakeMahiManager::FakeMahiManager(bool enable_callback_delays_for_animations)
     : content_title_(u"fake content title"),
-      summary_text_(u"fake summary text"),
+      summary_text_(
+          u"fake summary text\nfake summary text\nfake summary text\nfake "
+          u"summary text\nfake summary text"),
       enable_fake_delays_for_animations_(
           enable_callback_delays_for_animations) {}
 
@@ -50,7 +53,7 @@ void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {
       FROM_HERE,
       base::BindOnce(std::move(callback), summary_text_,
                      chromeos::MahiResponseStatus::kSuccess),
-      base::Seconds(4));
+      base::Seconds(mahi_constants::kFakeMahiManagerLoadSummaryDelaySeconds));
 }
 
 void FakeMahiManager::GetOutlines(MahiOutlinesCallback callback) {
@@ -69,7 +72,7 @@ void FakeMahiManager::GetOutlines(MahiOutlinesCallback callback) {
       FROM_HERE,
       base::BindOnce(std::move(callback), outlines,
                      chromeos::MahiResponseStatus::kSuccess),
-      base::Seconds(6));
+      base::Seconds(mahi_constants::kFakeMahiManagerLoadOutlinesDelaySeconds));
 }
 
 void FakeMahiManager::OnContextMenuClicked(
