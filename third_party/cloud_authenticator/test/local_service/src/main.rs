@@ -308,7 +308,7 @@ impl EnclaveServer {
             client_state,
             // This timestamp is fixed so that any XML files submitted by tests will be considered
             // unexpired.
-            1707344402,
+            1707344402000,
             &handshake_response.handshake_hash,
             commands,
         ) {

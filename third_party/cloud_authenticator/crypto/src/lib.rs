@@ -438,6 +438,7 @@ mod ringimpl {
             let key_pair = ring::signature::EcdsaKeyPair::from_pkcs8(
                 &ring::signature::ECDSA_P256_SHA256_ASN1_SIGNING,
                 pkcs8,
+                &PRNG,
             )
             .map_err(|_| ())?;
             Ok(EcdsaKeyPair { key_pair })

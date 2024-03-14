@@ -23,10 +23,9 @@ use super::{
     debug, unwrap, AuthLevel, Authentication, DirtyFlag, PINState, ParsedState, RequestError,
     PUB_KEY,
 };
-use alloc::vec;
-
 use alloc::collections::BTreeMap;
 use alloc::string::String;
+use alloc::vec;
 use alloc::vec::Vec;
 use cbor::{MapKey, MapKeyRef, MapLookupKey, Value};
 use chromesync::pb::webauthn_credential_specifics::EncryptedData;
@@ -46,7 +45,6 @@ map_keys! {
     WEBAUTHN_REQUEST, WEBAUTHN_REQUEST_KEY = "request",
     WRAPPED_SECRET, WRAPPED_SECRET_KEY = "wrapped_secret",
     WRAPPED_SECRETS, WRAPPED_SECRETS_KEY = "wrapped_secrets",
-    SECRET, SECRET_KEY = "secret",
     WRAPPED_PIN_DATA, WRAPPED_PIN_DATA_KEY = "wrapped_pin_data",
     CLAIMED_PIN, CLAIMED_PIN_KEY = "claimed_pin",
 }
@@ -134,7 +132,8 @@ pub(crate) fn do_assert(
     let (entity_secrets, security_domain_secret) =
         entity_secrets_from_proto(state.wrapping_key(device_id)?, wrapped_secrets, &proto)?;
 
-    let pin_verified = maybe_verify_pin(&request, state, device_id, &security_domain_secret)?;
+    let pin_verified =
+        maybe_validate_pin_from_request(&request, state, device_id, &security_domain_secret)?;
     let user_verification = matches!(auth_level, AuthLevel::UserVerification) || pin_verified;
 
     // We may, in the future, want to limit UV requests to the UV key, if
@@ -201,7 +200,10 @@ pub(crate) fn do_create(
     if !cose_algorithms.contains(&COSE_ALGORITHM_ECDSA_P256_SHA256) {
         return Err(RequestError::NoSupportedAlgorithm);
     }
-    maybe_verify_pin(&request, state, device_id, security_domain_secret)?;
+    // Creating a credential doesn't sign anything, so the return value here
+    // isn't used. But an incorrect PIN will still cause the request to fail
+    // so that the client can check whether it was correct.
+    maybe_validate_pin_from_request(&request, state, device_id, security_domain_secret)?;
 
     let pkcs8 = EcdsaKeyPair::generate_pkcs8();
     let key = EcdsaKeyPair::from_pkcs8(pkcs8.as_ref())
@@ -225,10 +227,13 @@ pub(crate) fn do_create(
     ])))
 }
 
-fn maybe_verify_pin(
+/// Attempt to verify a claimed PIN from `request`. Returns true if the PIN
+/// verified correctly, false if there was no PIN claim, and an error if
+/// the PIN claim was invalid for any reason.
+fn maybe_validate_pin_from_request(
     request: &BTreeMap<MapKey, Value>,
     state: &mut DirtyFlag<'_, ParsedState>,
-    device_id: &Vec<u8>,
+    device_id: &[u8],
     security_domain_secret: &[u8; 32],
 ) -> Result<bool, RequestError> {
     if let Some(Value::Bytestring(wrapped_pin_data)) = request.get(WRAPPED_PIN_DATA_KEY) {
@@ -261,8 +266,9 @@ struct EntitySecrets {
     // large_blob: Option<(Vec<u8>, u64)>,
 }
 
-/// Get the entity secrets from a protobuf and the security domain secret, given
-/// a list of wrapped secrets and the wrapping key for this device.
+/// Given a list of wrapped secrets and the wrapping key for this device,
+/// returns the entity secrets from a protobuf and the security domain secret
+/// used.
 fn entity_secrets_from_proto(
     wrapping_key: &[u8],
     wrapped_secrets: Vec<Vec<u8>>,
@@ -381,15 +387,24 @@ fn security_domain_secret_to_encryption_key(
     .unwrap();
 }
 
+/// A representation of the PIN data after unwrapping with the
+/// security domain secret.
 struct PinData {
+    /// The hash of the PIN. Usually hashed with scrypt, but this code only
+    /// deals with hashes and so isn't affected by the choice of algorithm so
+    /// long as the output is 256 bits long.
     pin_hash: [u8; 32],
+    /// The generation number. Starts at zero and is incremented for each
+    /// PIN change.
     generation: i64,
+    /// An AES-256-GCM key used to encrypt claimed PIN hashes.
     claim_key: [u8; 32],
 }
 
 impl TryFrom<Vec<u8>> for PinData {
     type Error = ();
 
+    /// Parse a `PinData` from CBOR bytes.
     fn try_from(pin_data: Vec<u8>) -> Result<PinData, Self::Error> {
         let parsed = cbor::parse(pin_data).map_err(|_| ())?;
         let Value::Map(map) = parsed else {
@@ -406,7 +421,6 @@ impl TryFrom<Vec<u8>> for PinData {
         };
         Ok(PinData {
             pin_hash: pin_hash.as_ref().try_into().map_err(|_| ())?,
-
             generation: *generation,
             claim_key: claim_key.as_ref().try_into().map_err(|_| ())?,
         })
@@ -432,6 +446,7 @@ fn constant_time_compare(a: &[u8], b: &[u8]) -> bool {
     crypto::sha256_two_part(&rand_bytes, a) == crypto::sha256_two_part(&rand_bytes, b)
 }
 
+/// Validate a claimed PIN, returning an error if it's incorrect.
 fn validate_pin(
     state: &mut DirtyFlag<ParsedState>,
     device_id: &[u8],
@@ -450,7 +465,7 @@ fn validate_pin(
     };
 
     if pin_data.generation < generation_high_water {
-        return Err(RequestError::PINOutDated);
+        return Err(RequestError::PINOutdated);
     }
 
     let claimed_pin_hash = open_aes_256_gcm(&pin_data.claim_key, claim, PIN_CLAIM_AAD)

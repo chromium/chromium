@@ -17,6 +17,7 @@
 use crate::der;
 
 #[derive(Debug, PartialEq)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum PublicKeyType {
     P256,
     RSA,

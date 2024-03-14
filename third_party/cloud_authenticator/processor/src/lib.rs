@@ -428,7 +428,7 @@ impl<'a, T> DirtyFlag<'a, T> {
         DirtyFlag { _contents: r, changed: false, minor_change: false }
     }
 
-    fn get_mut<'b>(&'b mut self) -> &'b mut T where {
+    fn get_mut(&mut self) -> &mut T where {
         self.changed = true;
         self._contents
     }
@@ -442,7 +442,7 @@ impl<'a, T> DirtyFlag<'a, T> {
 
 pub fn process_client_msg(
     state: ClientState,
-    current_time: i64,
+    current_time_epoch_millis: i64,
     handshake_hash: &[u8],
     client_msg: Vec<u8>,
 ) -> Result<(Value, StateUpdate), Error> {
@@ -507,7 +507,8 @@ pub fn process_client_msg(
         let Value::Map(request) = request else {
             return Err(Error::Str("each request must be a map"));
         };
-        match do_request(current_time, &mut auth, &mut state_with_dirty_flag, request) {
+        match do_request(current_time_epoch_millis, &mut auth, &mut state_with_dirty_flag, request)
+        {
             Ok(result) => results
                 .push(Value::Map(BTreeMap::from([(MapKey::String(String::from(OK)), result)]))),
             Err(error) => {
@@ -530,8 +531,10 @@ pub fn process_client_msg(
         || match auth {
             Authentication::Device(device_id, _) => {
                 if let Some(device) = state.get_mut_device(&device_id) {
-                    device
-                        .insert(MapKey::String(String::from(LAST_USED)), Value::Int(current_time));
+                    device.insert(
+                        MapKey::String(String::from(LAST_USED)),
+                        Value::Int(current_time_epoch_millis),
+                    );
                     true
                 } else {
                     false
@@ -580,7 +583,7 @@ enum RequestError {
 
     /// A newer PIN has been seen. The client should fetch updated PIN
     /// information.
-    PINOutDated,
+    PINOutdated,
 
     /// An error that should never happen and thus is only reported for
     /// debugging purposes. Clients are not expected to handle these errors
@@ -596,7 +599,7 @@ impl RequestError {
             RequestError::Duplicate => Value::Int(2),
             RequestError::IncorrectPIN => Value::Int(3),
             RequestError::PINLocked => Value::Int(4),
-            RequestError::PINOutDated => Value::Int(5),
+            RequestError::PINOutdated => Value::Int(5),
             RequestError::Debug(s) => Value::String(String::from(*s)),
         }
     }
@@ -608,7 +611,7 @@ fn debug<T>(msg: &'static str) -> Result<T, RequestError> {
 }
 
 fn do_request(
-    current_time: i64,
+    current_time_epoch_millis: i64,
     auth: &mut Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -617,7 +620,7 @@ fn do_request(
         return debug("request is missing cmd");
     };
     match cmd.as_str() {
-        "device/register" => do_device_register(current_time, auth, state, request),
+        "device/register" => do_device_register(current_time_epoch_millis, auth, state, request),
         "device/forget" => do_device_forget(auth, state, request),
         "debug/success" => Ok(Value::Boolean(true)),
         "debug/dump" => do_debug_dump(auth, state, request),
@@ -625,13 +628,15 @@ fn do_request(
         "keys/wrap" => do_keys_wrap(auth, state, request),
         "passkeys/assert" => passkeys::do_assert(auth, state, request),
         "passkeys/create" => passkeys::do_create(auth, state, request),
-        "recovery_key_store/wrap" => recovery_key_store::do_wrap(current_time, request),
+        "recovery_key_store/wrap" => {
+            recovery_key_store::do_wrap(current_time_epoch_millis, request)
+        }
         _ => debug("unknown command"),
     }
 }
 
 fn do_device_register(
-    current_time: i64,
+    current_time_epoch_millis: i64,
     auth: &mut Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -645,7 +650,8 @@ fn do_device_register(
     let device_id = device_id.clone();
 
     let mut device: BTreeMap<MapKey, Value> = BTreeMap::new();
-    device.insert(MapKey::String(String::from(REGISTER_TIME)), Value::Int(current_time));
+    device
+        .insert(MapKey::String(String::from(REGISTER_TIME)), Value::Int(current_time_epoch_millis));
 
     for (key, value) in request {
         let MapKey::String(key) = key else {
@@ -800,6 +806,8 @@ fn do_debug_dump(
 
 #[cfg(test)]
 mod tests {
+    extern crate bytes;
+    extern crate hex;
     extern crate std;
 
     use super::*;
@@ -837,7 +845,7 @@ mod tests {
     pub const TIMESTAMP: i64 = 100;
 
     fn bytes(b: Vec<u8>) -> Value {
-        return Value::Bytestring(Bytes::from(b));
+        Value::Bytestring(Bytes::from(b))
     }
 
     fn x962_to_spki(x962: &[u8]) -> Vec<u8> {
@@ -1217,6 +1225,8 @@ mod tests {
         seal_aes_256_gcm(&pin_data_key, pin_data, &[])
     }
 
+    /// Make an assertion with the given claimed PIN. Returns any error that
+    /// resulted, the resulting PIN state, and the updated account state.
     fn attempt_pin(
         state: ClientState,
         wrapped_pin_data: &[u8],
@@ -1252,6 +1262,8 @@ mod tests {
         };
         let error = map.get(&MapKeyRef::Str("err") as &dyn MapLookupKey);
 
+        // Get the state after processing the command. That's either a new
+        // state, or the original state because no update was made.
         let state_data = match state_update {
             StateUpdate::Minor(state_data) => state_data,
             StateUpdate::Major(state_data) => state_data,

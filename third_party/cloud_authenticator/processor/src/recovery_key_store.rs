@@ -735,7 +735,7 @@ mod key_distribution {
     pub fn get_cohort_key(
         cert_xml: &[u8],
         sig_xml: &[u8],
-        current_time_epoch_secs: i64,
+        current_time_epoch_millis: i64,
         cohort_selector: u32,
     ) -> Result<([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>), &'static str> {
         // The cert.sig.xml contains:
@@ -772,7 +772,7 @@ mod key_distribution {
 
         // The public key from <certificate> should only be trusted if it chains
         // up to `ROOT_CERTIFICATE`.
-        build_path(&leaf_cert, sig_value, ROOT_CERTIFICATE, current_time_epoch_secs)?;
+        build_path(&leaf_cert, sig_value, ROOT_CERTIFICATE, current_time_epoch_millis)?;
 
         // The <value> is an RSA signature of the cert.xml file.
         if !crypto::rsa_verify(leaf_key, cert_xml, &sig) {
@@ -781,7 +781,7 @@ mod key_distribution {
 
         // Now that the `cert.xml` file has been validated, the cohort public keys
         // can be extracted from it.
-        get_public_keys_from_certs(cert_xml, current_time_epoch_secs, cohort_selector)
+        get_public_keys_from_certs(cert_xml, current_time_epoch_millis, cohort_selector)
     }
 
     /// Return an ECDH public key, and certificate path, from an arbitrary
@@ -792,7 +792,7 @@ mod key_distribution {
     /// "randomly" pick a cohort.
     fn get_public_keys_from_certs(
         cert_xml: &[u8],
-        current_time_epoch_secs: i64,
+        current_time_epoch_millis: i64,
         cohort_selector: u32,
     ) -> Result<([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>), &'static str> {
         let (certs_toplevel, certs_value) =
@@ -844,7 +844,7 @@ mod key_distribution {
             // the certificate path is required in futher parts of the protocol.
             // Thus it might seem that checking `cert.sig.xml` is superfluous
             // but the Android implementation does it and so this code does too.
-            build_path(&endpoint_cert, certs_value, ROOT_CERTIFICATE, current_time_epoch_secs)?,
+            build_path(&endpoint_cert, certs_value, ROOT_CERTIFICATE, current_time_epoch_millis)?,
         ))
     }
 
@@ -855,7 +855,7 @@ mod key_distribution {
         leaf: &x509::Certificate,
         xml: BTreeMap<String, xml::Element>,
         root_der: &[u8],
-        current_time_epoch_secs: i64,
+        current_time_epoch_millis: i64,
     ) -> Result<Vec<Vec<u8>>, &'static str> {
         let root = x509::parse(root_der).ok_or("failed to parse root")?;
 
@@ -935,7 +935,7 @@ mod key_distribution {
             leaf: &x509::Certificate,
             intermediates: &[x509::Certificate],
             root: &x509::Certificate,
-            current_time_epoch_secs: i64,
+            current_time_epoch_millis: i64,
             // The number of steps performed so far.
             steps: &mut usize,
             // The indexes of the intermediates in the current path.
@@ -962,7 +962,11 @@ mod key_distribution {
                 }
                 certs.push(root);
 
-                return if check_path(&certs, current_time_epoch_secs) { Some(path) } else { None };
+                return if check_path(&certs, current_time_epoch_millis / 1000) {
+                    Some(path)
+                } else {
+                    None
+                };
             }
 
             for (i, intermediate) in intermediates.iter().enumerate() {
@@ -976,8 +980,14 @@ mod key_distribution {
                     let mut path = path.clone();
                     path.push(i);
                     *steps += 1;
-                    let path =
-                        path_step(leaf, intermediates, root, current_time_epoch_secs, steps, path);
+                    let path = path_step(
+                        leaf,
+                        intermediates,
+                        root,
+                        current_time_epoch_millis,
+                        steps,
+                        path,
+                    );
                     if path.is_some() {
                         return path;
                     }
@@ -989,9 +999,15 @@ mod key_distribution {
         }
 
         let mut steps = 0;
-        let intermediate_indexes =
-            path_step(leaf, &intermediates, &root, current_time_epoch_secs, &mut steps, Vec::new())
-                .ok_or("no path found")?;
+        let intermediate_indexes = path_step(
+            leaf,
+            &intermediates,
+            &root,
+            current_time_epoch_millis,
+            &mut steps,
+            Vec::new(),
+        )
+        .ok_or("no path found")?;
 
         // Build a vector of the certificates in the valid path by pulling
         // the values from `intermediates_der`.
@@ -1239,7 +1255,7 @@ fn wrap(
     pin_hash: &[u8],
     cert_xml: &[u8],
     sig_xml: &[u8],
-    current_time_epoch_secs: i64,
+    current_time_epoch_millis: i64,
 ) -> Result<Wrapped, &'static str> {
     let mut vault_handle = [0u8; VAULT_HANDLE_LEN];
     vault_handle[0] = 3; // a type byte that indicates a GPM PIN.
@@ -1248,7 +1264,7 @@ fn wrap(
     let (cohort_public_key, certs_in_path) = key_distribution::get_cohort_key(
         cert_xml,
         sig_xml,
-        current_time_epoch_secs,
+        current_time_epoch_millis,
         cohort_selector_from_handle(&vault_handle),
     )?;
 
@@ -1334,7 +1350,7 @@ map_keys! {
 }
 
 pub(crate) fn do_wrap(
-    current_time: i64,
+    current_time_epoch_millis: i64,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
     let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
@@ -1346,7 +1362,8 @@ pub(crate) fn do_wrap(
     let Some(Value::Bytestring(sig_xml)) = request.get(SIG_XML_KEY) else {
         return debug("cert.sig.xml required");
     };
-    let wrapped = wrap(pin_hash, cert_xml, sig_xml, current_time).map_err(RequestError::Debug)?;
+    let wrapped = wrap(pin_hash, cert_xml, sig_xml, current_time_epoch_millis)
+        .map_err(RequestError::Debug)?;
     Ok(cbor!({
         "cohort_public_key": (&wrapped.cohort_public_key),
         "encrypted_recovery_key": (wrapped.encrypted_recovery_key),
@@ -1454,4 +1471,4 @@ const SAMPLE_SIG_XML : &[u8] = br#"<?xml version="1.0" encoding="UTF-8"?>
 
 /// This is a timestamp at which the sample XML files are valid.
 #[cfg(test)]
-const SAMPLE_VALIDATION_EPOCH_SECONDS: i64 = 1707344402;
+const SAMPLE_VALIDATION_EPOCH_SECONDS: i64 = 1707344402000;
