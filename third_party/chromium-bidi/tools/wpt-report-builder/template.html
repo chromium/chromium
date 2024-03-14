@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BiDi-CDP Mapper WPT test pass rate</title>
+  <style>
+    body {
+      font-family: Roboto, serif;
+      font-size: 13px;
+      color: #202124;
+    }
+    .path {
+      font-family:
+        Menlo,
+        Consolas,
+        Monaco,
+        Liberation Mono,
+        Lucida Console,
+        monospace;
+      line-height: 180%;
+      padding: 5px 18px;
+      margin: 0;
+    }
+    .top {
+      box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.15),
+        0 1px 6px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      margin: auto;
+      padding: 60px;
+      max-width: 1200px;
+    }
+
+    .top > div > .test-card,
+    .top > div > .divider {
+      margin-left: 0;
+    }
+    .test-card {
+      margin-left: 20px;
+      max-width: 1200px;
+    }
+    .test-card-subtest {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .test-name {
+      word-break: break-all;
+    }
+    .divider {
+      margin-left: 20px;
+      height: 1px;
+      background: #a0a0a0;
+    }
+    .non-collapsible-item {
+      padding-left: 27px;
+      padding-right: 15px;
+      word-break: break-all;
+    }
+    .result {
+      padding-right: 18px;
+      padding-left: 5px;
+    }
+    .stat {
+      float: right;
+    }
+    .pass {
+      background: #d5f2d7;
+    }
+    .part {
+      background: #f2edd5;
+    }
+    .fail {
+      background: #f2d7d5;
+    }
+    .hidden {
+      display: none;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+    }
+
+    .headings {
+      flex-grow: 1;
+    }
+
+    .button {
+      padding: 5px 10px;
+      margin: 10px;
+      background-color: white;
+      border: none;
+      box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.15),
+        0 1px 6px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    time {
+      white-space: nowrap;
+    }
+
+    @media screen and (max-width: 768px) {
+      .top {
+        padding: 10px;
+      }
+
+      .stat {
+        float: none;
+      }
+    }
+  </style>
+  <div class="top">
+    <div class="header">
+      <chromium-bidi-header />
+      <div>
+        <button class="expand button" type="button">Expand</button>
+        <button class="toggle button" type="button">Long</button>
+      </div>
+    </div>
+    <chromium-bidi-tests />
+    <script>
+      const toggle = document.querySelector('.toggle');
+      let toggleState = 'short';
+      toggle.addEventListener('click', () => {
+        toggle.innerText =
+          toggleState.charAt(0).toUpperCase() + toggleState.slice(1);
+
+        const toHide = document.querySelectorAll(`.${toggleState}-name`);
+        for (const element of toHide) {
+          element.classList.add('hidden');
+        }
+
+        toggleState = toggleState === 'short' ? 'long' : 'short';
+        const toShow = document.querySelectorAll(`.${toggleState}-name`);
+        for (const element of toShow) {
+          element.classList.remove('hidden');
+        }
+      });
+
+      const expand = document.querySelector('.expand');
+      let expandState = 'collapse';
+      expand.addEventListener('click', () => {
+        document.body.querySelectorAll('details').forEach((element) => {
+          if (expandState === 'collapse') {
+            element.setAttribute('open', true);
+          } else {
+            element.removeAttribute('open');
+          }
+        });
+        expand.innerText =
+          expandState.charAt(0).toUpperCase() + expandState.slice(1);
+        if (expandState === 'collapse') {
+          expandState = 'expand';
+        } else {
+          expandState = 'collapse';
+        }
+      });
+    </script>
+  </div>
+</html>

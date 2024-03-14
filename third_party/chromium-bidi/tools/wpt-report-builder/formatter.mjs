@@ -14,6 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
+
+// eslint-disable-next-line
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
 export function escapeHtml(str) {
   return str
     .replace(/&/g, '&amp;')
@@ -158,108 +165,39 @@ function generateHtml(map, commitHash, isFiltered, baseline) {
   const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
   const shortCommitHash = commitHash.slice(0, 8);
 
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <meta charset="utf-8">
-    <title>BiDi-CDP Mapper WPT test pass rate</title>
-    <style>
-      body { font-family: Roboto, serif; font-size: 13px; color: #202124; }
-      .path { font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; line-height: 180%; padding: 5px 18px; margin: 0; }
-      .top { box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px; margin: auto; padding: 60px; max-width: 1200px; }
-      .test-card { padding-left: 20px; max-width: 1200px; }
-      .divider { margin-left: 20px; height: 1px; background: #a0a0a0; }
-      .non-collapsible-item { padding-left: 27px; padding-right: 15px; }
-      .stat { float: right }
-      .pass { background: #D5F2D7; }
-      .part { background: #F2EDD5; }
-      .fail { background: #F2D7D5; }
-      .hidden { display: none; }
+  const header = `
+    <div class="headings">
+      <h1>
+        WPT test results
+          ${
+            isFiltered
+              ? ' matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>'
+              : ''
+          }
+        for <a href="${linkCommit(commitHash)}"><code>${shortCommitHash}</code></a>
+          @ <time>${date}</time>
+        <h2>${map.stat.passing} / ${map.stat.total} (${
+          map.stat.total - map.stat.passing
+        } remaining)</h2>
+      ${isFiltered ? `<p>${compareToBaseLine(map.stat, baseline)}</p>` : ''}
+    </div>`;
 
-      .header {
-        display: flex;
-        align-items: center;
-      }
-
-      .headings {
-        flex-grow: 1;
-      }
-
-      .button {
-        padding: 5px 10px;
-        margin: 10px;
-        background-color: white;
-        border: none;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2);
-        border-radius: 8px;
-        font-weight: bold;
-      }
-    </style>
-    <div class="top">
-      <div class="header">
-        <div class="headings">
-          <h1>
-            WPT test results
-            ${
-              isFiltered
-                ? ' matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>'
-                : ''
-            }
-            for <a href="${linkCommit(commitHash)}"><code>${shortCommitHash}</code></a>
-            @ <time>${date}</time>
-          <h2>${map.stat.passing} / ${map.stat.total} (${
-            map.stat.total - map.stat.passing
-          } remaining)</h2>
-          ${isFiltered ? `<p>${compareToBaseLine(map.stat, baseline)}</p>` : ''}
-        </div>
+  const tests = `
         <div>
-          <button class="expand button" type="button">Expand</button>
-          <button class="toggle button" type="button">Long</button>
-        </div>
-      </div>
-      <div>
         ${Array.from(map.children.values())
           .map((t) => generateTestReport(t, map.path))
           .join('')}
       </div>
-      <script>
-        const toggle = document.querySelector('.toggle');
-        let toggleState = 'short';
-        toggle.addEventListener('click', () => {
-          toggle.innerText = toggleState.charAt(0).toUpperCase() + toggleState.slice(1);
+    `;
 
-          const toHide = document.querySelectorAll(\`.\${toggleState}-name\`);
-          for (const element of toHide){
-            element.classList.add("hidden");
-          }
+  const template = fs.readFileSync(
+    path.join(__dirname, './template.html'),
+    'utf-8'
+  );
 
-          toggleState = toggleState === 'short' ? 'long' : 'short';
-          const toShow = document.querySelectorAll(\`.\${toggleState}-name\`);
-          for (const element of toShow){
-            element.classList.remove('hidden');
-          }
-        });
-
-        const expand = document.querySelector('.expand');
-        let expandState = 'collapse';
-        expand.addEventListener('click', () => {
-          document.body.querySelectorAll('details')
-            .forEach((element) => {
-              if (expandState === 'collapse') {
-                element.setAttribute('open', true);
-              } else {
-                element.removeAttribute('open');
-              }
-            });
-          expand.innerText = expandState.charAt(0).toUpperCase() + expandState.slice(1);
-          if (expandState === 'collapse') {
-            expandState = 'expand';
-          } else {
-            expandState = 'collapse';
-          }
-        });
-      </script>
-    </div>`;
+  return template
+    .replace('<chromium-bidi-header />', header)
+    .replace('<chromium-bidi-tests />', tests);
 }
 
 function generateTestReport(map, parent) {
@@ -300,19 +238,25 @@ function generateSubtestReport(subtest) {
   const name =
     subtest.name ?? removeWebDriverBiDiPrefix(subtest.path).split('/').at(-1);
   return `<div class="divider"></div>
-      <div class="test-card">
-        <p class="non-collapsible-item path ${
-          subtest.status === 'PASS' ? 'pass' : 'fail'
-        }">
-          <span class="short-name">${escapeHtml(name)}</span>
-          <span class="long-name hidden">${escapeHtml(subtest.path)}</span>
+      <div class="test-card test-card-subtest ${
+        subtest.status === 'PASS' ? 'pass' : 'fail'
+      }">
+        <div class="test-name">
+          <p class="non-collapsible-item path">
+          <span class="short-name">${escapeHtml(name).replaceAll('&#47;', '/').replaceAll('&#39;', "'")}</span>
+          <span class="long-name hidden">${escapeHtml(subtest.path).replaceAll('&#47;', '/').replaceAll('&#39;', "'")}</span>
           ${
             subtest.message
               ? `<br /><small>${escapeHtml(subtest.message)}</small>`
               : ''
           }
-          <span class="stat"><b>${escapeHtml(subtest.status)}</b></span>
         </p>
+        </div>
+        <div class="result">
+          <span>
+            <b>${escapeHtml(subtest.status)}</b>
+          </span>
+        </div>
       </div>`;
 }
 
