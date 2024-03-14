@@ -101,6 +101,8 @@ rewrite_imports("cros_components_ts") {
 
   import_mappings = [
     "lit|//resources/mwc/lit/index.js",
+    "@lit/|//resources/mwc/@lit/",
+
     "@material/|chrome://resources/mwc/@material/",
 
     # Add js prefix's to any internal imports so they work at runtime.
