@@ -378,6 +378,11 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
           .Build());
 }
 
+void AutofillHandler::OnContentAutofillDriverFactoryDestroyed(
+    autofill::ContentAutofillDriverFactory& factory) {
+  autofill_manager_observation_.Reset();
+}
+
 void AutofillHandler::OnContentAutofillDriverCreated(
     autofill::ContentAutofillDriverFactory&,
     autofill::ContentAutofillDriver& new_driver) {

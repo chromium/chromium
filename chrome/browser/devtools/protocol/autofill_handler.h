@@ -64,6 +64,8 @@ class AutofillHandler : public protocol::Autofill::Backend,
       override;
 
   // ContentAutofillDriverFactory::Observer:
+  void OnContentAutofillDriverFactoryDestroyed(
+      autofill::ContentAutofillDriverFactory& factory) override;
   void OnContentAutofillDriverCreated(
       autofill::ContentAutofillDriverFactory&,
       autofill::ContentAutofillDriver&) override;
