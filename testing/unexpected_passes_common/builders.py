@@ -26,6 +26,7 @@ INTERNAL_TESTING_BUILDBOT_DIR = os.path.realpath(
 PUBLIC_INTERNAL_JSON_FILES = {
     'chrome.json',
     'chrome.gpu.fyi.json',
+    'chromeos.preuprev.json',
     'internal.chrome.fyi.json',
     'internal.chromeos.fyi.json',
 }

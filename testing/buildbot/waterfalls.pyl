@@ -336,6 +336,74 @@
     }
   },
   {
+    'project': 'chrome',
+    'bucket': 'ci',
+    'name': 'chromeos.preuprev',
+    'mixins': ['chrome-tester-service-account'],
+    'machines': {
+      'chromeos-betty-pi-arc-chrome-preuprev': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'chromeos-betty',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_vm_gtests_and_tast',
+          'isolated_scripts': 'chromeos_isolated_scripts',
+        },
+      },
+      'chromeos-brya-chrome-preuprev': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_brya_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
+      'chromeos-jacuzzi-chrome-preuprev': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
+      'chromeos-volteer-chrome-preuprev': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_volteer_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
+      'linux-chromeos-chrome-preuprev': {
+        'additional_compile_targets': [
+          'chrome',
+          'chrome_sandbox',
+          'linux_symbols',
+          'symupload'
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+          'linux-jammy',
+        ],
+        'swarming': {
+          'dimensions': {
+            'ssd': '0',
+          },
+        },
+        'test_suites': {
+          'gtest_tests': 'linux_chromeos_gtests',
+          'isolated_scripts': 'linux_chromeos_isolated_scripts',
+        },
+      },
+    },
+  },
+  {
     'name': 'chromium.accessibility',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
