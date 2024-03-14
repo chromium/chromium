@@ -7378,11 +7378,23 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_ERROR_LAST_UPDATE_TIME" desc="The error message used in the task glanceable to notify users that the task list is not updated since the shown time today.">
         Tasks last updated: <ph name="TIME">$1<ex>3:17 PM</ex></ph>.
       </message>
+      <message name="IDS_GLANCEABLES_TASKS_ERROR_LOAD_ITEMS_FAILED" desc="The error message used in the glanceables to notify users that the glanceables failed to load the tasks or classroom data.">
+        Couldn't load items.
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_ERROR_LOAD_ITEMS_FAILED_WHILE_OFFLINE" desc="The error message used in the glanceables to notify users that the glanceables failed to load the tasks or classroom data because the device is offline. Also guide the user to try again when the device is connected to the network.">
+        Couldn't load items. Try again when online.
+      </message>
       <message name="IDS_GLANCEABLES_TASKS_ERROR_MARK_COMPLETE_FAILED" desc="The error message used in the task glanceable to notify users that clicking on the check button to mark a task as complete failed.">
         Couldn't mark as complete.
       </message>
       <message name="IDS_GLANCEABLES_TASKS_ERROR_MARK_COMPLETE_FAILED_WHILE_OFFLINE" desc="The error message used in the task glanceable to notify users that clicking on the check button to mark a task as complete failed because the device is offline. Also guide the user to try again when the device is connected to the network.">
         Couldn't mark as complete. Try again when online.
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_ERROR_EDIT_TASK_FAILED" desc="The error message used in the task glanceable to notify users that the glanceables failed to commit the task that they edited.">
+        Couldn't edit task.
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_ERROR_EDIT_TASK_FAILED_WHILE_OFFLINE" desc="The error message used in the task glanceable to notify users that the glanceables failed to commit the task that they edited because the device is offline. Also guide the user to try again when the device is connected to the network.">
+        Couldn't edit task. Try again when online.
       </message>
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">

@@ -9,7 +9,7 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/ash_export.h"
-#include "ash/glanceables/common/glanceables_tasks_error_type.h"
+#include "ash/glanceables/tasks/glanceables_tasks_error_type.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -121,6 +121,10 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
 
   // Title of the task.
   std::u16string task_title_;
+
+  // Cached to reset the value of `task_title_` when the new title failed to
+  // commit after editing.
+  std::u16string task_title_before_edit_ = u"";
 
   bool saving_task_changes_ = false;
 

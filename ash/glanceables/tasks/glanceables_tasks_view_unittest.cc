@@ -8,7 +8,9 @@
 
 #include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
+#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/common/test/glanceables_test_new_window_delegate.h"
 #include "ash/glanceables/glanceables_controller.h"
@@ -64,7 +66,7 @@ class GlanceablesTasksViewTest : public AshTestBase {
     view_ = widget_->SetContentsView(std::make_unique<GlanceablesTasksView>(
         fake_glanceables_tasks_client_->task_lists()));
 
-    GlanceablesTaskViewV2::SetIsNetworkConnectedForTest(true);
+    glanceables_util::SetIsNetworkConnectedForTest(true);
   }
 
   void TearDown() override {
@@ -131,8 +133,8 @@ class GlanceablesTasksViewTest : public AshTestBase {
         base::to_underlying(GlanceablesViewId::kProgressBar)));
   }
 
-  const views::View* GetErrorMessage() const {
-    return views::AsViewClass<views::View>(view_->GetViewByID(
+  const GlanceablesErrorMessageView* GetErrorMessage() const {
+    return views::AsViewClass<GlanceablesErrorMessageView>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView)));
   }
 
@@ -509,7 +511,7 @@ TEST_F(GlanceablesTasksViewTest, OpenBrowserWithEmptyNewTaskDoesntCrash) {
 
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
   tasks_client()->set_paused(true);
-  tasks_client()->set_run_with_errors(true);
+  tasks_client()->set_update_errors(true);
 
   const auto* const task_items_container_view = GetTaskItemsContainerView();
   ASSERT_TRUE(task_items_container_view);
@@ -530,11 +532,12 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 1u);
   EXPECT_EQ(task_items_container_view->children().size(), 2u);
   EXPECT_TRUE(GetErrorMessage());
+  EXPECT_EQ(GetErrorMessage()->GetMessageForTest(), u"Couldn't edit task.");
 }
 
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
   tasks_client()->set_paused(true);
-  tasks_client()->set_run_with_errors(true);
+  tasks_client()->set_update_errors(true);
 
   const auto* const task_items_container_view = GetTaskItemsContainerView();
   ASSERT_TRUE(task_items_container_view);
@@ -542,9 +545,10 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
   EXPECT_EQ(task_items_container_view->children().size(), 2u);
   EXPECT_FALSE(GetErrorMessage());
 
-  const auto* const title_label = views::AsViewClass<views::Label>(
+  const auto* title_label = views::AsViewClass<views::Label>(
       task_items_container_view->children()[0]->GetViewByID(
           base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+
   GestureTapOn(title_label);
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_SPACE);
   GetEventGenerator()->PressAndReleaseKey(ui::VKEY_U);
@@ -559,9 +563,36 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
   EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
   EXPECT_EQ(task_items_container_view->children().size(), 2u);
   EXPECT_TRUE(GetErrorMessage());
+  EXPECT_EQ(GetErrorMessage()->GetMessageForTest(), u"Couldn't edit task.");
 
-  // TODO(b/308446582): Confirm if the title needs to be reverted back in case
-  // of error.
+  // Revert the task title to the one before editing.
+  title_label = views::AsViewClass<views::Label>(
+      task_items_container_view->children()[0]->GetViewByID(
+          base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
+  EXPECT_EQ(title_label->GetText(), u"Task List 1 Item 1 Title");
+}
+
+TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterChangingTaskList) {
+  const auto* const task_items_container_view = GetTaskItemsContainerView();
+  ASSERT_TRUE(task_items_container_view);
+  EXPECT_FALSE(GetErrorMessage());
+
+  // Disconnect the network for test.
+  glanceables_util::SetIsNetworkConnectedForTest(false);
+
+  // Switch to another task list. The error message should show up immediately
+  // and ask users to try again after connecting to the network.
+  MenuSelectionAt(2);
+  EXPECT_TRUE(GetErrorMessage());
+  EXPECT_EQ(GetErrorMessage()->GetMessageForTest(),
+            u"Couldn't load items. Try again when online.");
+
+  // The task list should be reset to the one before switch.
+  const std::optional<size_t> selected_index =
+      GetComboBoxView()->GetSelectedIndex();
+  ASSERT_TRUE(selected_index.has_value());
+  EXPECT_EQ(GetComboBoxView()->GetTextForRow(selected_index.value()),
+            u"Task List 1 Title");
 }
 
 TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromHeaderView) {

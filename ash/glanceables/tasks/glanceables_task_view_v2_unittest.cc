@@ -11,6 +11,7 @@
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
@@ -41,7 +42,7 @@ class GlanceablesTaskViewStableLaunchTest : public AshTestBase {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlanceablesTimeManagementTasksView},
         /*disabled_features=*/{});
-    GlanceablesTaskViewV2::SetIsNetworkConnectedForTest(true);
+    glanceables_util::SetIsNetworkConnectedForTest(true);
   }
 
  private:
@@ -138,7 +139,7 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
 TEST_F(GlanceablesTaskViewStableLaunchTest,
        UpdatingTaskTriggersErrorMessageIfNoNetwork) {
   // Simulate that the network is disabled.
-  GlanceablesTaskViewV2::SetIsNetworkConnectedForTest(false);
+  glanceables_util::SetIsNetworkConnectedForTest(false);
 
   const auto task = api::Task("task-id", "Task title",
                               /*due=*/std::nullopt, /*completed=*/false,

@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_GLANCEABLES_COMMON_GLANCEABLES_TASKS_ERROR_TYPE_H_
-#define ASH_GLANCEABLES_COMMON_GLANCEABLES_TASKS_ERROR_TYPE_H_
+#ifndef ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_ERROR_TYPE_H_
+#define ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_ERROR_TYPE_H_
 
 namespace ash {
 
 enum class GlanceablesTasksErrorType {
   // The tasks view data wasn't successfully fetched so the list can not be
-  // updated.
-  kCantUpdateList,
+  // updated. This is only used when the cached task data is shown.
+  kCantUpdateTasks,
+
+  // The new tasks data can not be loaded. These are used in the cases where
+  // users have never loaded the tasks or are switching between lists and
+  // failed.
+  kCantLoadTasks,
+  kCantLoadTasksNoNetwork,
 
   // The tasks weren't marked as completed because of failing to commit the
   // change. This normally shows when the user reopens the glanceables after
@@ -34,4 +40,4 @@ enum class GlanceablesTasksErrorType {
 
 }  // namespace ash
 
-#endif  // ASH_GLANCEABLES_COMMON_GLANCEABLES_TASKS_ERROR_TYPE_H_
+#endif  // ASH_GLANCEABLES_TASKS_GLANCEABLES_TASKS_ERROR_TYPE_H_

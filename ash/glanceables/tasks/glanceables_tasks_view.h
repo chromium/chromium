@@ -10,8 +10,8 @@
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/ash_export.h"
-#include "ash/glanceables/common/glanceables_tasks_error_type.h"
 #include "ash/glanceables/glanceables_metrics.h"
+#include "ash/glanceables/tasks/glanceables_tasks_error_type.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -182,6 +182,10 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Records the time when the bubble was about to request a task list. Used for
   // metrics.
   base::TimeTicks tasks_requested_time_;
+
+  // Cached to reset the value of the index of `task_list_combo_box_view_` when
+  // the target task list failed to be loaded.
+  std::optional<size_t> cached_selected_list_index_ = std::nullopt;
 
   // Number of tasks added by the user for the currently selected task list.
   // Task is considered "added" if task creation was requested via tasks API.

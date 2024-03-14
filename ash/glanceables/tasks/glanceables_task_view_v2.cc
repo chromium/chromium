@@ -10,6 +10,7 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -18,8 +19,6 @@
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
-#include "ash/system/model/system_tray_model.h"
-#include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/functional/bind.h"
@@ -28,9 +27,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chromeos/ash/components/network/network_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -57,9 +53,6 @@
 
 namespace ash {
 namespace {
-
-// A global flag for tests to manually set the connection of the network.
-std::optional<bool> g_is_network_connected_for_test = std::nullopt;
 
 constexpr char kFormatterPattern[] = "EEE, MMM d";  // "Wed, Feb 28"
 
@@ -120,17 +113,6 @@ std::unique_ptr<views::ImageView> CreateSecondRowIcon(
   icon_view->SetImage(ui::ImageModel::FromVectorIcon(
       icon, cros_tokens::kCrosSysOnSurfaceVariant));
   return icon_view;
-}
-
-bool IsNetworkConnected() {
-  if (g_is_network_connected_for_test.has_value()) {
-    return g_is_network_connected_for_test.value();
-  }
-
-  const auto* const network =
-      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-
-  return network && network->IsConnectedState();
 }
 
 class TaskViewTextField : public SystemTextfield,
@@ -472,6 +454,7 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
           /*completed=*/check_button_->checked());
       break;
     case TaskTitleViewState::kEdit:
+      task_title_before_edit_ = task_title_;
       task_title_textfield_ =
           tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
               task_title_,
@@ -488,11 +471,6 @@ void GlanceablesTaskViewV2::UpdateTaskTitleViewForState(
   }
 
   UpdateContentsMargins(state);
-}
-
-// static
-void GlanceablesTaskViewV2::SetIsNetworkConnectedForTest(bool connected) {
-  g_is_network_connected_for_test = connected;
 }
 
 void GlanceablesTaskViewV2::UpdateContentsMargins(TaskTitleViewState state) {
@@ -518,7 +496,7 @@ void GlanceablesTaskViewV2::UpdateContentsMargins(TaskTitleViewState state) {
 }
 
 void GlanceablesTaskViewV2::CheckButtonPressed() {
-  if (!IsNetworkConnected()) {
+  if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork);
     return;
@@ -539,7 +517,7 @@ void GlanceablesTaskViewV2::CheckButtonPressed() {
 }
 
 void GlanceablesTaskViewV2::TaskTitleButtonPressed() {
-  if (!IsNetworkConnected()) {
+  if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
         GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork);
     return;
@@ -550,7 +528,6 @@ void GlanceablesTaskViewV2::TaskTitleButtonPressed() {
 }
 
 void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
-  const auto old_title = task_title_;
   if (!title.empty()) {
     task_title_ = title;
   }
@@ -559,7 +536,7 @@ void GlanceablesTaskViewV2::OnFinishedEditing(const std::u16string& title) {
     GetFocusManager()->ClearFocus();
   }
 
-  if (task_id_.empty() || task_title_ != old_title) {
+  if (task_id_.empty() || task_title_ != task_title_before_edit_) {
     saving_task_changes_ = true;
     if (task_title_button_) {
       task_title_button_->SetEnabled(false);
@@ -598,7 +575,12 @@ void GlanceablesTaskViewV2::OnSaved(const api::Task* task) {
   }
   if (task) {
     task_id_ = task->id;
+  } else {
+    // If `task` is a nullptr, the change failed to commit.
+    task_title_ = task_title_before_edit_;
+    task_title_button_->SetText(task_title_);
   }
+  task_title_before_edit_ = u"";
 }
 
 BEGIN_METADATA(GlanceablesTaskViewV2)

@@ -104,6 +104,10 @@ void GlanceablesErrorMessageView::UpdateBoundsToContainer(
   SetBoundsRect(preferred_bounds);
 }
 
+std::u16string GlanceablesErrorMessageView::GetMessageForTest() const {
+  return error_message_label_->GetText();
+}
+
 BEGIN_METADATA(GlanceablesErrorMessageView)
 END_METADATA
 

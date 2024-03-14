@@ -37,6 +37,8 @@ class ASH_EXPORT GlanceablesErrorMessageView : public views::FlexLayoutView {
   // `container_bounds`.
   void UpdateBoundsToContainer(const gfx::Rect& container_bounds);
 
+  std::u16string GetMessageForTest() const;
+
  private:
   raw_ptr<views::Label> error_message_label_ = nullptr;
   raw_ptr<views::LabelButton> dismiss_button_ = nullptr;

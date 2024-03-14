@@ -395,9 +395,10 @@ void GlanceableTrayBubbleView::AddClassroomBubbleStudentViewIfNeeded(
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
     bool fetch_success,
     const ui::ListModel<api::TaskList>* task_lists) {
-  if (task_lists->item_count() == 0) {
+  if (!fetch_success || task_lists->item_count() == 0) {
     return;
   }
+
   // Add tasks bubble before everything.
   if (features::IsGlanceablesTimeManagementTasksViewEnabled()) {
     time_management_container_view_ =

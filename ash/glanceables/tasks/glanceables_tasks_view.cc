@@ -12,6 +12,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
+#include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
@@ -353,6 +354,15 @@ std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
 }
 
 void GlanceablesTasksView::SelectedTasksListChanged() {
+  if (!glanceables_util::IsNetworkConnected()) {
+    // If the network is disconnected, cancel the list change and show the error
+    // message.
+    ShowErrorMessageWithType(
+        GlanceablesTasksErrorType::kCantLoadTasksNoNetwork);
+    task_list_combo_box_view_->SetSelectedIndex(cached_selected_list_index_);
+    return;
+  }
+
   weak_ptr_factory_.InvalidateWeakPtrs();
   tasks_requested_time_ = base::TimeTicks::Now();
   tasks_list_change_count_++;
@@ -389,24 +399,34 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
     std::move(recreate_combobox_callback_).Run();
   }
 
+  if (!fetch_success) {
+    switch (context) {
+      case ListShownContext::kCachedList:
+        // Cached list should always considered as successfully fetched.
+        NOTREACHED_NORETURN();
+      case ListShownContext::kInitialList: {
+        if (GetTasksClient()->GetCachedTasksInTaskList(task_list_id)) {
+          // Notify users the last updated time of the tasks with the cached
+          // data.
+          ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantUpdateTasks);
+        } else {
+          // Notify users that the target list of tasks wasn't loaded and guide
+          // them to retry.
+          ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantLoadTasks);
+        }
+        return;
+      }
+      case ListShownContext::kUserSelectedList:
+        ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantLoadTasks);
+        task_list_combo_box_view_->SetSelectedIndex(
+            cached_selected_list_index_);
+        return;
+    }
+  }
+
   // Discard the fetched tasks that is not shown now.
   if (task_list_id != GetActiveTaskList()->id) {
     return;
-  }
-
-  if (!fetch_success) {
-    if (!GetTasksClient()->GetCachedTasksInTaskList(task_list_id) &&
-        context == ListShownContext::kInitialList) {
-      // TODO(b/323959143): Show "Couldn't load item" view if there is no cached
-      // view shown.
-      return;
-    } else {
-      // TODO(b/323959143): The error message should only be shown after we
-      // implement caching the fetched tasks and show cached tasks in UI.
-      // Revisit this to see if it works.
-      ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantUpdateList);
-      return;
-    }
   }
 
   switch (context) {
@@ -426,6 +446,7 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
 
   add_new_task_button_->SetVisible(true);
   task_items_container_view_->RemoveAllChildViews();
+  cached_selected_list_index_ = task_list_combo_box_view_->GetSelectedIndex();
 
   size_t num_tasks_shown = 0;
   user_with_no_tasks_ =
@@ -583,12 +604,18 @@ void GlanceablesTasksView::ShowErrorMessageWithType(
 std::u16string GlanceablesTasksView::GetErrorString(
     GlanceablesTasksErrorType error_type) const {
   switch (error_type) {
-    case GlanceablesTasksErrorType::kCantUpdateList: {
+    case GlanceablesTasksErrorType::kCantUpdateTasks: {
       auto last_modified_time =
           GetTasksClient()->GetTasksLastUpdateTime(GetActiveTaskList()->id);
       CHECK(last_modified_time.has_value());
       return GetLastUpdateTimeMessage(last_modified_time.value());
     }
+    case GlanceablesTasksErrorType::kCantLoadTasks:
+      return l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_ERROR_LOAD_ITEMS_FAILED);
+    case GlanceablesTasksErrorType::kCantLoadTasksNoNetwork:
+      return l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_ERROR_LOAD_ITEMS_FAILED_WHILE_OFFLINE);
     case GlanceablesTasksErrorType::kCantMarkComplete:
       return l10n_util::GetStringUTF16(
           IDS_GLANCEABLES_TASKS_ERROR_MARK_COMPLETE_FAILED);
@@ -596,9 +623,11 @@ std::u16string GlanceablesTasksView::GetErrorString(
       return l10n_util::GetStringUTF16(
           IDS_GLANCEABLES_TASKS_ERROR_MARK_COMPLETE_FAILED_WHILE_OFFLINE);
     case GlanceablesTasksErrorType::kCantUpdateTitle:
+      return l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_ERROR_EDIT_TASK_FAILED);
     case GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork:
-      // TODO(b/323959143): Add the string when it is ready.
-      return u"Error";
+      return l10n_util::GetStringUTF16(
+          IDS_GLANCEABLES_TASKS_ERROR_EDIT_TASK_FAILED_WHILE_OFFLINE);
   }
 }
 

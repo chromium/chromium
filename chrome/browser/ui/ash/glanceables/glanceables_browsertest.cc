@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
+#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
@@ -840,6 +841,84 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
             std::vector<std::string>({"Task List 2 Item 1 Title",
                                       "Task List 2 Item 2 Title",
                                       "Task List 2 Item 3 Title"}));
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
+                       DontShowTasksIfNoNetwork) {
+  fake_glanceables_tasks_client()->set_get_task_lists_error(true);
+
+  // Click the date tray to show the glanceable bubbles.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_FALSE(GetTasksView());
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
+                       ShowFailedToLoadViewIfNoNetwork) {
+  fake_glanceables_tasks_client()->set_get_tasks_error(true);
+
+  // Click the date tray to show the glanceable bubbles.
+  ToggleDateTray();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  auto* error_view = views::AsViewClass<GlanceablesErrorMessageView>(
+      GetTasksView()->GetViewByID(base::to_underlying(
+          GlanceablesViewId::kGlanceablesErrorMessageView)));
+  ASSERT_TRUE(error_view);
+  EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
+                       SwitchTaskListsWithError) {
+  ToggleDateTray();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that the tasks glanceable is completely shown on the primary screen.
+  GetTasksView()->ScrollViewToVisible();
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetTasksView()->GetBoundsInScreen()));
+
+  // Set the error flag to true so that it fails on the next time the tasks are
+  // fetched.
+  fake_glanceables_tasks_client()->set_get_tasks_error(true);
+
+  // Check that task list items from the first list are shown.
+  const auto* combobox = GetTasksComboBoxView();
+  EXPECT_EQ(combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
+            u"Task List 1 Title");
+
+  // Click on the combo box to show the task lists.
+  GetEventGenerator()->MoveMouseTo(combobox->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  views::Label* second_menu_item_label =
+      FindMenuItemLabelWithString(u"Task List 2 Title");
+
+  // Click on the second menu item label to switch to the second task list.
+  ASSERT_TRUE(second_menu_item_label);
+  GetEventGenerator()->MoveMouseTo(
+      second_menu_item_label->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  base::RunLoop().RunUntilIdle();
+
+  // Failing to update the task list will reset the combobox to the task list
+  // before switching.
+  EXPECT_EQ(combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
+            u"Task List 1 Title");
+
+  auto* error_view = views::AsViewClass<GlanceablesErrorMessageView>(
+      GetTasksView()->GetViewByID(base::to_underlying(
+          GlanceablesViewId::kGlanceablesErrorMessageView)));
+  ASSERT_TRUE(error_view);
+  EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
 }
 
 }  // namespace ash
