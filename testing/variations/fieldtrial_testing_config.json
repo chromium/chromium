@@ -448,6 +448,23 @@
             ]
         }
     ],
+    "AndroidLowLatencyCanvas": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LowLatencyCanvas2dImageChromium",
+                        "LowLatencyWebGLImageChromium"
+                    ],
+                    "min_os_version": "10.0.0"
+                }
+            ]
+        }
+    ],
     "AndroidMediaPickerAdoption": [
         {
             "platforms": [
