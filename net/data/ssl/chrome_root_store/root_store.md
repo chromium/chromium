@@ -1,6 +1,6 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 14
+Version: 15
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
@@ -138,3 +138,5 @@ b2fae53e14ccd7ab9212064701ae279c1d8988facb775fa8a008914e663988a8 | CN=Atos Trust
 81a9088ea59fb364c548a6f85559099b6f0405efbf18e5324ec9f457ba00112f | CN=Atos TrustedRoot Root CA RSA TLS 2021,O=Atos,C=DE | 2021-04-22 | 2041-04-17
 c90f26f0fb1b4018b22227519b5ca2b53e2ca5b3be5cf18efe1bef47380c5383 | CN=Sectigo Public Server Authentication Root E46,O=Sectigo Limited,C=GB | 2021-03-22 | 2046-03-21
 7bb647a62aeeac88bf257aa522d01ffea395e0ab45c73f93f65654ec38f25a06 | CN=Sectigo Public Server Authentication Root R46,O=Sectigo Limited,C=GB | 2021-03-22 | 2046-03-21
+c32ffd9f46f936d16c3673990959434b9ad60aafbb9e7cf33654f144cc1ba143 | CN=SSL.com TLS ECC Root CA 2022,O=SSL Corporation,C=US | 2022-08-25 | 2046-08-19
+8faf7d2e2cb4709bb8e0b33666bf75a5dd45b5de480f8ea8d4bfe6bebc17f2ed | CN=SSL.com TLS RSA Root CA 2022,O=SSL Corporation,C=US | 2022-08-25 | 2046-08-19
