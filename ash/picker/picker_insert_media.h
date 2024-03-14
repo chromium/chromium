@@ -18,7 +18,7 @@ namespace ash {
 // Returns whether the insertion was successful.
 [[nodiscard]] ASH_EXPORT bool InsertMediaToInputField(
     PickerRichMedia media,
-    ui::TextInputClient* client);
+    ui::TextInputClient& client);
 
 }  // namespace ash
 

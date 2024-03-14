@@ -27,16 +27,11 @@ struct TestCase {
 
 using PickerInsertMediaTest = testing::TestWithParam<TestCase>;
 
-TEST_P(PickerInsertMediaTest, ReturnsFalseForNullClient) {
-  EXPECT_FALSE(InsertMediaToInputField(GetParam().media_to_insert,
-                                       /*client=*/nullptr));
-}
-
 TEST_P(PickerInsertMediaTest, InsertsOnNextFocusWhileFocused) {
   ui::FakeTextInputClient client(
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
-  EXPECT_TRUE(InsertMediaToInputField(GetParam().media_to_insert, &client));
+  EXPECT_TRUE(InsertMediaToInputField(GetParam().media_to_insert, client));
   EXPECT_EQ(client.text(), GetParam().expected_text);
   EXPECT_EQ(client.last_inserted_image_url(), GetParam().expected_image_url);
 }
@@ -64,7 +59,7 @@ TEST(PickerInsertMediaUnsupportedTest, InsertingUnsupportedImageReturnsFalse) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
   EXPECT_FALSE(InsertMediaToInputField(
-      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), &client));
+      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client));
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
 

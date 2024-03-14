@@ -44,7 +44,7 @@ void PickerInsertMediaRequest::OnTextInputStateChanged(
     return;
   }
 
-  if (!InsertMediaToInputField(*media_to_insert_, mutable_client)) {
+  if (!InsertMediaToInputField(*media_to_insert_, *mutable_client)) {
     return;
   }
 

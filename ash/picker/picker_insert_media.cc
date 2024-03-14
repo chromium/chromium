@@ -13,31 +13,27 @@
 namespace ash {
 
 bool InsertMediaToInputField(PickerRichMedia media,
-                             ui::TextInputClient* client) {
-  if (client == nullptr) {
-    return false;
-  }
-
+                             ui::TextInputClient& client) {
   return std::visit(
       base::Overloaded{
-          [client](PickerTextMedia media) {
-            client->InsertText(media.text,
-                               ui::TextInputClient::InsertTextCursorBehavior::
-                                   kMoveCursorAfterText);
+          [&client](PickerTextMedia media) {
+            client.InsertText(media.text,
+                              ui::TextInputClient::InsertTextCursorBehavior::
+                                  kMoveCursorAfterText);
             return true;
           },
-          [client](PickerImageMedia media) {
-            if (!client->CanInsertImage()) {
+          [&client](PickerImageMedia media) {
+            if (!client.CanInsertImage()) {
               return false;
             }
-            client->InsertImage(media.url);
+            client.InsertImage(media.url);
             return true;
           },
-          [client](PickerLinkMedia media) {
+          [&client](PickerLinkMedia media) {
             // TODO(b/322729192): Insert a real hyperlink.
-            client->InsertText(base::UTF8ToUTF16(media.url.spec()),
-                               ui::TextInputClient::InsertTextCursorBehavior::
-                                   kMoveCursorAfterText);
+            client.InsertText(base::UTF8ToUTF16(media.url.spec()),
+                              ui::TextInputClient::InsertTextCursorBehavior::
+                                  kMoveCursorAfterText);
             return true;
           },
       },
