@@ -951,6 +951,7 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "b/329570561")
     public void testUmaDialogSwitchIsOffWhenAllowCrashUploadWasTurnedOffBefore() {
         launchActivityWithFragment();
         clickOnUmaDialogLinkAndWait();
