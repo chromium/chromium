@@ -496,8 +496,8 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
 
     factory_->OnSessionClosed(session);
     EXPECT_FALSE(HasActiveSession(destination));
-    EXPECT_TRUE(socket_data.AllReadDataConsumed());
-    EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+    socket_data.ExpectAllReadDataConsumed();
+    socket_data.ExpectAllWriteDataConsumed();
     return socket_factory_->udp_client_socket_ports()[socket_count];
   }
 
@@ -641,9 +641,9 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
              << " " << expected_address.port();
 
     stream.reset();
-    EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-    EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-    EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+    socket_data1.ExpectAllReadDataConsumed();
+    socket_data2.ExpectAllReadDataConsumed();
+    socket_data2.ExpectAllWriteDataConsumed();
   }
 
   // Verifies that the QUIC stream factory is initialized correctly.
@@ -841,7 +841,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     ASSERT_EQ(1U, cached->certs().size());
     EXPECT_EQ(test_cert, cached->certs()[0]);
 
-    EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+    socket_data.ExpectAllWriteDataConsumed();
 
     // Create a session and verify that the cached state is loaded.
     MockQuicData socket_data2(version_);
@@ -1067,8 +1067,8 @@ TEST_P(QuicSessionPoolTest, CreateSyncQuicSession) {
   stream = CreateStream(&builder3.request);  // Will reset stream 5.
   stream.reset();                            // Will reset stream 7.
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, CreateAsyncQuicSession) {
@@ -1102,8 +1102,8 @@ TEST_P(QuicSessionPoolTest, CreateAsyncQuicSession) {
   stream = CreateStream(&builder3.request);  // Will reset stream 5.
   stream.reset();                            // Will reset stream 7.
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // This test uses synchronous QUIC session creation
@@ -1131,8 +1131,8 @@ TEST_P(QuicSessionPoolTest, SyncCreateZeroRtt) {
   EXPECT_EQ(OK, builder.CallRequest());
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, AsyncCreateZeroRtt) {
@@ -1160,8 +1160,8 @@ TEST_P(QuicSessionPoolTest, AsyncCreateZeroRtt) {
 
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for crbug.com/1117331.
@@ -1196,8 +1196,8 @@ TEST_P(QuicSessionPoolTest, AsyncZeroRtt) {
 
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, DefaultInitialRtt) {
@@ -1523,8 +1523,8 @@ TEST_P(QuicSessionPoolTest, GoAway) {
 
   EXPECT_FALSE(HasActiveSession(kDefaultDestination));
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // Makes sure that setting and clearing ServerNetworkStats respects the
@@ -1591,8 +1591,8 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
     EXPECT_FALSE(
         HasActiveSession(kDefaultDestination, kNetworkAnonymizationKeys[i]));
 
-    EXPECT_TRUE(socket_data.AllReadDataConsumed());
-    EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+    socket_data.ExpectAllReadDataConsumed();
+    socket_data.ExpectAllWriteDataConsumed();
 
     for (size_t j = 0; j < std::size(kNetworkAnonymizationKeys); ++j) {
       // Stats up to kNetworkAnonymizationKeys[j] should have been populated,
@@ -1767,10 +1767,10 @@ TEST_P(QuicSessionPoolTest, Pooling) {
   builder5.url = GURL(kServer5Url);
   EXPECT_EQ(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN, builder5.CallRequest());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for https://crbug.com/639916.
@@ -1821,8 +1821,8 @@ TEST_P(QuicSessionPoolTest, PoolingWithServerMigration) {
   std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
   EXPECT_TRUE(stream2.get());
 
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 
   EXPECT_TRUE(HasActiveSession(server2));
 
@@ -1885,10 +1885,10 @@ TEST_P(QuicSessionPoolTest, NoPoolingAfterGoAway) {
 
   EXPECT_TRUE(HasActiveSession(server2));
 
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, HttpsPooling) {
@@ -1925,8 +1925,8 @@ TEST_P(QuicSessionPoolTest, HttpsPooling) {
 
   EXPECT_EQ(GetActiveSession(server1), GetActiveSession(server2));
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
@@ -1968,8 +1968,8 @@ TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
 
   EXPECT_EQ(GetActiveSession(server1), GetActiveSession(server2));
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
@@ -2028,10 +2028,10 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
 
   EXPECT_NE(GetActiveSession(server1), GetActiveSession(server2));
 
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, Goaway) {
@@ -2078,10 +2078,10 @@ TEST_P(QuicSessionPoolTest, Goaway) {
   stream2.reset();
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MaxOpenStream) {
@@ -2155,8 +2155,8 @@ TEST_P(QuicSessionPoolTest, MaxOpenStream) {
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 
   // Force close of the connection to suppress the generation of RST
   // packets when streams are torn down, which wouldn't be relevant to
@@ -2178,8 +2178,8 @@ TEST_P(QuicSessionPoolTest, ResolutionErrorInCreate) {
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // This test uses synchronous QUIC session creation.
@@ -2196,8 +2196,8 @@ TEST_P(QuicSessionPoolTest, SyncConnectErrorInCreate) {
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, AsyncConnectErrorInCreate) {
@@ -2211,8 +2211,8 @@ TEST_P(QuicSessionPoolTest, AsyncConnectErrorInCreate) {
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // This test uses synchronous QUIC session creation.
@@ -2238,8 +2238,8 @@ TEST_P(QuicSessionPoolTest, SyncCancelCreate) {
   EXPECT_TRUE(stream.get());
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, AsyncCancelCreate) {
@@ -2262,8 +2262,8 @@ TEST_P(QuicSessionPoolTest, AsyncCancelCreate) {
   EXPECT_TRUE(stream.get());
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, CloseAllSessions) {
@@ -2314,10 +2314,10 @@ TEST_P(QuicSessionPoolTest, CloseAllSessions) {
   stream = CreateStream(&builder2.request);
   stream.reset();  // Will reset stream 3.
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for crbug.com/700617. Test a write error during the
@@ -2375,10 +2375,10 @@ TEST_P(QuicSessionPoolTest,
   std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -2430,10 +2430,10 @@ TEST_P(QuicSessionPoolTest,
   std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -2489,10 +2489,10 @@ TEST_P(QuicSessionPoolTest,
   std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -2547,10 +2547,10 @@ TEST_P(QuicSessionPoolTest,
   std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for crbug.com/1409382. Test that OnCreateSessionComplete()
@@ -2677,10 +2677,10 @@ TEST_P(QuicSessionPoolTest, CloseSessionsOnIPAddressChanged) {
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(factory_.get(), session2));
 
   stream.reset();  // Will reset stream 3.
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // Test that if goaway_session_on_ip_change is set, old sessions will be marked
@@ -2774,10 +2774,10 @@ TEST_P(QuicSessionPoolTest, GoAwaySessionsOnIPAddressChanged) {
 
   stream.reset();
   stream2.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, OnIPAddressChangedWithConnectionMigration) {
@@ -2825,8 +2825,8 @@ TEST_P(QuicSessionPoolTest, OnIPAddressChangedWithConnectionMigration) {
   stream = CreateStream(&builder2.request);
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MigrateOnNetworkMadeDefaultWithSynchronousWrite) {
@@ -2971,10 +2971,10 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkMadeDefault(
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for http://859674.
@@ -3127,10 +3127,10 @@ TEST_P(QuicSessionPoolTest, MigratedToBlockedSocketAfterProbing) {
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that session times out connection migration attempt
@@ -3195,8 +3195,8 @@ TEST_P(QuicSessionPoolTest, MigrationTimeoutWithNoNewNetwork) {
   EXPECT_FALSE(HasActiveSession(kDefaultDestination));
   EXPECT_EQ(ERR_INTERNET_DISCONNECTED, callback_.WaitForResult());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that connectivity probes will be sent even if there is
@@ -3317,10 +3317,10 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNonMigratableStream(
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, OnNetworkMadeDefaultConnectionMigrationDisabled) {
@@ -3382,8 +3382,8 @@ TEST_P(QuicSessionPoolTest, OnNetworkMadeDefaultConnectionMigrationDisabled) {
 
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -3496,11 +3496,11 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNonMigratableStream(
     EXPECT_EQ(0u, session->GetNumActiveStreams());
     base::RunLoop().RunUntilIdle();
 
-    EXPECT_TRUE(failed_socket_data.AllReadDataConsumed());
-    EXPECT_TRUE(failed_socket_data.AllWriteDataConsumed());
+    failed_socket_data.ExpectAllReadDataConsumed();
+    failed_socket_data.ExpectAllWriteDataConsumed();
   }
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, OnNetworkDisconnectedConnectionMigrationDisabled) {
@@ -3548,8 +3548,8 @@ TEST_P(QuicSessionPoolTest, OnNetworkDisconnectedConnectionMigrationDisabled) {
   EXPECT_FALSE(QuicSessionPoolPeer::IsLiveSession(factory_.get(), session));
   EXPECT_FALSE(HasActiveSession(kDefaultDestination));
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -3629,11 +3629,11 @@ void QuicSessionPoolTestBase::TestOnNetworkMadeDefaultNoOpenStreams(
   if (migrate_idle_sessions) {
     quic_data1.Resume();
     base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-    EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+    quic_data1.ExpectAllReadDataConsumed();
+    quic_data1.ExpectAllWriteDataConsumed();
   }
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -3699,11 +3699,11 @@ void QuicSessionPoolTestBase::TestOnNetworkDisconnectedNoOpenStreams(
 
   EXPECT_EQ(migrate_idle_sessions, HasActiveSession(kDefaultDestination));
 
-  EXPECT_TRUE(default_socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(default_socket_data.AllWriteDataConsumed());
+  default_socket_data.ExpectAllReadDataConsumed();
+  default_socket_data.ExpectAllWriteDataConsumed();
   if (migrate_idle_sessions) {
-    EXPECT_TRUE(alternate_socket_data.AllReadDataConsumed());
-    EXPECT_TRUE(alternate_socket_data.AllWriteDataConsumed());
+    alternate_socket_data.ExpectAllReadDataConsumed();
+    alternate_socket_data.ExpectAllWriteDataConsumed();
   }
 }
 
@@ -3846,10 +3846,10 @@ void QuicSessionPoolTestBase::TestMigrationOnNetworkDisconnected(
       ->NotifyNetworkMadeDefault(kNewNetworkForTests);
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test receives NCN signals in the following order:
@@ -3979,10 +3979,10 @@ TEST_P(QuicSessionPoolTest, NewNetworkConnectedAfterNoNetwork) {
       ->NotifyNetworkMadeDefault(kNewNetworkForTests);
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for http://crbug.com/872011.
@@ -4129,10 +4129,10 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that the connection migrates to the alternate network
@@ -4293,10 +4293,10 @@ void QuicSessionPoolTestBase::TestMigrationOnPathDegrading(
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MigrateSessionEarlyProbingWriterError) {
@@ -4414,9 +4414,9 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyProbingWriterError) {
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -4553,9 +4553,9 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
   base::RunLoop().RunUntilIdle();
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
@@ -4695,10 +4695,10 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
   stream.reset();
   task_runner->RunUntilIdle();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, SuccessfullyMigratedToServerPreferredAddress) {
@@ -4774,10 +4774,10 @@ TEST_P(QuicSessionPoolTest, SuccessfullyMigratedToServerPreferredAddress) {
   EXPECT_EQ(session->peer_address(),
             ToQuicSocketAddress(server_preferred_address));
 
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, FailedToValidateServerPreferredAddress) {
@@ -4861,10 +4861,10 @@ TEST_P(QuicSessionPoolTest, FailedToValidateServerPreferredAddress) {
   EXPECT_NE(session->peer_address(),
             ToQuicSocketAddress(server_preferred_address));
 
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -4965,8 +4965,8 @@ TEST_P(QuicSessionPoolTest, PortMigrationDisabledOnPathDegrading) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -5076,10 +5076,10 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -5960,10 +5960,10 @@ void QuicSessionPoolTestBase::TestSimplePortMigrationOnPathDegrading() {
   EXPECT_TRUE(chrome_stream);
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
@@ -6115,10 +6115,14 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
       task_runner->FastForwardUntilNoTasksRemain();
     }
 
-    EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+    quic_data2.ExpectAllWriteDataConsumed();
     // The last round of migration will abort upon reading the probing response.
     // Future reads in the same socket is ignored.
-    EXPECT_EQ(i != 4, quic_data2.AllReadDataConsumed());
+    if (i != 4) {
+      quic_data2.ExpectAllReadDataConsumed();
+    } else {
+      EXPECT_FALSE(quic_data2.AllReadDataConsumed());
+    }
   }
 
   // Verify that the session is still alive.
@@ -6126,8 +6130,8 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -6291,10 +6295,10 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(factory_.get(), session));
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that the connection will not migrate to a bad socket
@@ -6397,8 +6401,8 @@ TEST_P(QuicSessionPoolTest, DoNotMigrateToBadSocketOnPathDegrading) {
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
   stream.reset();
-  EXPECT_TRUE(quic_data.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data.AllWriteDataConsumed());
+  quic_data.ExpectAllReadDataConsumed();
+  quic_data.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for http://crbug.com/847569.
@@ -6550,10 +6554,10 @@ void QuicSessionPoolTestBase::TestMigrateSessionWithDrainingStream(
   EXPECT_EQ(OK, stream->ReadResponseHeaders(callback_.callback()));
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for http://crbug.com/835444.
@@ -6707,10 +6711,10 @@ TEST_P(QuicSessionPoolTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
   stream.reset();
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that multiple sessions are migrated on connection
@@ -6822,10 +6826,10 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_FALSE(QuicSessionPoolPeer::IsLiveSession(factory_.get(), session1));
   EXPECT_FALSE(QuicSessionPoolPeer::IsLiveSession(factory_.get(), session2));
 
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that session attempts connection migration with signals
@@ -6916,8 +6920,8 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithNoNewNetwork) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(quic_data.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data.AllWriteDataConsumed());
+  quic_data.ExpectAllReadDataConsumed();
+  quic_data.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that session with non-migratable stream will probe the
@@ -7036,10 +7040,10 @@ void QuicSessionPoolTestBase::TestMigrateSessionEarlyNonMigratableStream(
   EXPECT_EQ(migrate_idle_sessions, HasActiveSession(kDefaultDestination));
   EXPECT_EQ(0u, session->GetNumActiveStreams());
 
-  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MigrateSessionEarlyConnectionMigrationDisabled) {
@@ -7103,8 +7107,8 @@ TEST_P(QuicSessionPoolTest, MigrateSessionEarlyConnectionMigrationDisabled) {
 
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // Regression test for http://crbug.com/791886.
@@ -7269,10 +7273,10 @@ TEST_P(QuicSessionPoolTest, MigrateSessionOnAsyncWriteError) {
   stream1.reset();
   stream2.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // Verify session is not marked as going away after connection migration on
@@ -7442,12 +7446,12 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream1.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
-  EXPECT_TRUE(quic_data3.AllReadDataConsumed());
-  EXPECT_TRUE(quic_data3.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
+  quic_data3.ExpectAllReadDataConsumed();
+  quic_data3.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that the connection will not attempt connection migration
@@ -7495,8 +7499,8 @@ TEST_P(QuicSessionPoolTest,
 
   EXPECT_FALSE(HasActiveSession(kDefaultDestination));
   EXPECT_TRUE(HasActiveJob(kDefaultDestination, PRIVACY_MODE_DISABLED));
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that if a connection is closed with
@@ -7572,8 +7576,8 @@ void QuicSessionPoolTestBase::TestNoAlternateNetworkBeforeHandshake(
   // No new session should be created as there is no alternate network.
   EXPECT_FALSE(HasActiveSession(kDefaultDestination));
   EXPECT_FALSE(HasActiveJob(kDefaultDestination, PRIVACY_MODE_DISABLED));
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, NewConnectionBeforeHandshakeAfterIdleTimeout) {
@@ -7752,10 +7756,10 @@ void QuicSessionPoolTestBase::
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // Test that connection will be closed with PACKET_WRITE_ERROR if a write error
@@ -7812,10 +7816,10 @@ TEST_P(QuicSessionPoolTest, MigrationOnWriteErrorBeforeHandshakeConfirmed) {
   std::unique_ptr<HttpStream> stream = CreateStream(&builder2.request);
   EXPECT_TRUE(stream.get());
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // Test that if the original connection is closed with QUIC_PACKET_WRITE_ERROR
@@ -7909,10 +7913,10 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(200, response.headers->response_code());
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 void QuicSessionPoolTestBase::TestMigrationOnWriteError(
@@ -8015,10 +8019,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteError(
 
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MigrateSessionOnWriteErrorSynchronous) {
@@ -8111,8 +8115,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNoNewNetwork(
   EXPECT_EQ(error_details.quic_connection_error,
             quic::QUIC_CONNECTION_MIGRATION_NO_NEW_NETWORK);
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MigrateSessionOnWriteErrorNoNewNetworkSynchronous) {
@@ -8264,10 +8268,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorWithMultipleRequests(
   stream1.reset();
   stream2.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MigrateOnWriteErrorWithMixedRequestsSync) {
@@ -8407,10 +8411,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams(
 
   stream1.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MigrateOnWriteErrorWithMixedRequests2Sync) {
@@ -8566,10 +8570,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMixedStreams2(
 
   stream1.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that when a connection encounters a packet write error, it
@@ -8672,11 +8676,11 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorNonMigratableStream(
   EXPECT_EQ(migrate_idle_sessions, HasActiveSession(kDefaultDestination));
 
   if (migrate_idle_sessions) {
-    EXPECT_TRUE(failed_socket_data.AllReadDataConsumed());
-    EXPECT_TRUE(failed_socket_data.AllWriteDataConsumed());
+    failed_socket_data.ExpectAllReadDataConsumed();
+    failed_socket_data.ExpectAllWriteDataConsumed();
   }
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(
@@ -8752,8 +8756,8 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorMigrationDisabled(
   // Migration fails, and session is closed and deleted.
   EXPECT_FALSE(QuicSessionPoolPeer::IsLiveSession(factory_.get(), session));
   EXPECT_FALSE(HasActiveSession(kDefaultDestination));
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -8851,12 +8855,12 @@ void QuicSessionPoolTestBase::TestMigrationOnMultipleWriteErrors(
   // second migration.
   EXPECT_FALSE(QuicSessionPoolPeer::IsLiveSession(factory_.get(), session));
   stream.reset();
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(failed_quic_data2.AllReadDataConsumed());
-  EXPECT_TRUE(failed_quic_data2.AllWriteDataConsumed());
-  EXPECT_TRUE(failed_quic_data1.AllReadDataConsumed());
-  EXPECT_TRUE(failed_quic_data1.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  failed_quic_data2.ExpectAllReadDataConsumed();
+  failed_quic_data2.ExpectAllWriteDataConsumed();
+  failed_quic_data1.ExpectAllReadDataConsumed();
+  failed_quic_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, MigrateSessionOnMultipleWriteErrorsSyncSync) {
@@ -8916,8 +8920,8 @@ TEST_P(QuicSessionPoolTest, NoMigrationBeforeHandshakeOnNetworkDisconnected) {
 
   EXPECT_FALSE(HasActiveSession(kDefaultDestination));
   EXPECT_FALSE(HasActiveJob(kDefaultDestination, PRIVACY_MODE_DISABLED));
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // Sets up the connection migration test where network change notification is
@@ -9030,10 +9034,10 @@ void QuicSessionPoolTestBase::
 
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that session attempts connection migration successfully
@@ -9183,10 +9187,10 @@ void QuicSessionPoolTestBase::
 
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that session attempts connection migration successfully
@@ -9353,10 +9357,10 @@ void QuicSessionPoolTestBase::TestMigrationOnWriteErrorPauseBeforeConnected(
       ->NotifyNetworkMadeDefault(kNewNetworkForTests);
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest,
@@ -9482,9 +9486,9 @@ TEST_P(QuicSessionPoolTest, IgnoreWriteErrorFromOldWriterAfterMigration) {
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that when session successfully migrate to the alternate
@@ -9606,10 +9610,10 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorFromOldReaderAfterMigration) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that after migration on network is executed, packet
@@ -9732,9 +9736,9 @@ TEST_P(QuicSessionPoolTest, IgnoreReadErrorOnOldReaderDuringMigration) {
   EXPECT_EQ(200, response.headers->response_code());
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that when connection migration on path degrading is
@@ -9887,10 +9891,10 @@ TEST_P(QuicSessionPoolTest, DefaultRetransmittableOnWireTimeoutForMigration) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that when connection migration on path degrading is
@@ -10045,10 +10049,10 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeoutForMigration) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that when no migration is enabled, but a custom value for
@@ -10165,8 +10169,8 @@ TEST_P(QuicSessionPoolTest, CustomRetransmittableOnWireTimeout) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that when no migration is enabled, and no custom value
@@ -10289,8 +10293,8 @@ TEST_P(QuicSessionPoolTest, NoRetransmittableOnWireTimeout) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that when only migration on network change is enabled, and
@@ -10409,8 +10413,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that when only migration on network change is enabled, and
@@ -10535,8 +10539,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(1u, session->GetNumActiveStreams());
 
   stream.reset();
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that after migration on write error is posted, packet
@@ -10640,10 +10644,10 @@ TEST_P(QuicSessionPoolTest,
   // the connection.
   socket_data1.Resume();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // Migrate on asynchronous write error, old network disconnects after alternate
@@ -10829,10 +10833,10 @@ void QuicSessionPoolTestBase::
   stream.reset();
   stream2.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies after session migrates off the default network, it keeps
@@ -11040,10 +11044,10 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
     task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
   }
 
-  EXPECT_TRUE(default_socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(default_socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(alternate_socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(alternate_socket_data.AllWriteDataConsumed());
+  default_socket_data.ExpectAllReadDataConsumed();
+  default_socket_data.ExpectAllWriteDataConsumed();
+  alternate_socket_data.ExpectAllReadDataConsumed();
+  alternate_socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
@@ -11220,10 +11224,10 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
     task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
   }
 
-  EXPECT_TRUE(default_socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(default_socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(alternate_socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(alternate_socket_data.AllWriteDataConsumed());
+  default_socket_data.ExpectAllReadDataConsumed();
+  default_socket_data.ExpectAllWriteDataConsumed();
+  alternate_socket_data.ExpectAllReadDataConsumed();
+  alternate_socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, ServerMigration) {
@@ -11352,10 +11356,10 @@ TEST_P(QuicSessionPoolTest, ServerMigration) {
 
   stream.reset();
 
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, ServerMigrationNonMigratableStream) {
@@ -11465,8 +11469,8 @@ TEST_P(QuicSessionPoolTest, ServerMigrationNonMigratableStream) {
 
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, ServerMigrationIPv4ToIPv4) {
@@ -11564,8 +11568,8 @@ TEST_P(QuicSessionPoolTest, ServerMigrationIPv6ToIPv4Fails) {
            << " " << expected_address.port();
 
   stream.reset();
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, ServerMigrationIPv4ToIPv6Fails) {
@@ -11638,8 +11642,8 @@ TEST_P(QuicSessionPoolTest, ServerMigrationIPv4ToIPv6Fails) {
            << " " << expected_address.port();
 
   stream.reset();
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, OnCertDBChanged) {
@@ -11694,10 +11698,10 @@ TEST_P(QuicSessionPoolTest, OnCertDBChanged) {
   stream2.reset();
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, OnCertVerifierChanged) {
@@ -11752,10 +11756,10 @@ TEST_P(QuicSessionPoolTest, OnCertVerifierChanged) {
   stream2.reset();
   stream.reset();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, SharedCryptoConfig) {
@@ -11874,8 +11878,8 @@ TEST_P(QuicSessionPoolTest, EnableNotLoadFromDiskCache) {
 
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
@@ -11966,10 +11970,10 @@ TEST_P(QuicSessionPoolTest, ReducePingTimeoutOnConnectionTimeOutOpenStreams) {
   base::RunLoop run_loop2;
   run_loop2.RunUntilIdle();
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // Verifies that the QUIC stream factory is initialized correctly.
@@ -12390,8 +12394,8 @@ TEST_P(QuicSessionPoolTest, YieldAfterPackets) {
 
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_FALSE(stream.get());  // Session is already closed.
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, YieldAfterDuration) {
@@ -12434,8 +12438,8 @@ TEST_P(QuicSessionPoolTest, YieldAfterDuration) {
 
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_FALSE(stream.get());  // Session is already closed.
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // Pool to existing session with matching quic::QuicServerId
@@ -12481,8 +12485,8 @@ TEST_P(QuicSessionPoolTest, PoolByOrigin) {
                                /*privacy_mode_enabled=*/false),
             session1->server_id());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 namespace {
@@ -12679,8 +12683,8 @@ TEST_P(QuicSessionPoolWithDestinationTest, SharedCertificate) {
                                /*privacy_mode_enabled=*/false),
             session1->server_id());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 // QuicSessionRequest is not pooled if PrivacyMode differs.
@@ -12757,10 +12761,10 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentPrivacyMode) {
                                /*privacy_mode_enabled=*/true),
             session2->server_id());
 
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // QuicSessionRequest is not pooled if the secure_dns_policy field differs.
@@ -12828,10 +12832,10 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSecureDnsPolicy) {
   QuicChromiumClientSession::Handle* session2 =
       QuicHttpStreamPeer::GetSessionHandle(stream2.get());
   EXPECT_FALSE(session1->SharesSameSession(*session2));
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // QuicSessionRequest is not pooled if the ProxyChain field differs.
@@ -12912,10 +12916,10 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   QuicChromiumClientSession::Handle* session2 =
       QuicHttpStreamPeer::GetSessionHandle(stream2.get());
   EXPECT_FALSE(session1->SharesSameSession(*session2));
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // QuicSessionRequest is not pooled if the SessionUsage field differs.
@@ -12983,10 +12987,10 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentSessionUsage) {
   QuicChromiumClientSession::Handle* session2 =
       QuicHttpStreamPeer::GetSessionHandle(stream2.get());
   EXPECT_FALSE(session1->SharesSameSession(*session2));
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // QuicSessionRequest is not pooled if certificate does not match its origin.
@@ -13066,10 +13070,10 @@ TEST_P(QuicSessionPoolWithDestinationTest, DisjointCertificate) {
                                /*privacy_mode_enabled=*/false),
             session2->server_id());
 
-  EXPECT_TRUE(socket_data1.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data1.AllWriteDataConsumed());
-  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
+  socket_data1.ExpectAllReadDataConsumed();
+  socket_data1.ExpectAllWriteDataConsumed();
+  socket_data2.ExpectAllReadDataConsumed();
+  socket_data2.ExpectAllWriteDataConsumed();
 }
 
 // This test verifies that QuicSessionPool::ClearCachedStatesInCryptoConfig
@@ -13166,8 +13170,8 @@ TEST_P(QuicSessionPoolTest, HostResolverUsesRequestPriority) {
 
   EXPECT_EQ(MAXIMUM_PRIORITY, host_resolver_->last_request_priority());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, HostResolverRequestReprioritizedOnSetPriority) {
@@ -13237,8 +13241,8 @@ TEST_P(QuicSessionPoolTest, HostResolverUsesParams) {
   EXPECT_EQ(kNetworkAnonymizationKey,
             host_resolver_->last_request_network_anonymization_key().value());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, ConfigMaxTimeBeforeCryptoHandshake) {
@@ -13746,8 +13750,8 @@ TEST_P(QuicSessionPoolTest, DnsAliasesCanBeAccessedFromStream) {
 
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 
   EXPECT_THAT(stream->GetDnsAliases(),
               testing::ElementsAre("alias1", "alias2", kDefaultServerHostName));
@@ -13775,8 +13779,8 @@ TEST_P(QuicSessionPoolTest, NoAdditionalDnsAliases) {
 
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 
   EXPECT_THAT(stream->GetDnsAliases(),
               testing::ElementsAre(kDefaultServerHostName));
@@ -13807,8 +13811,8 @@ TEST_P(QuicSessionPoolTest, DoNotUseDnsAliases) {
 
   EXPECT_EQ(DEFAULT_PRIORITY, host_resolver_->last_request_priority());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 
   EXPECT_TRUE(stream->GetDnsAliases().empty());
 }
@@ -13830,8 +13834,8 @@ TEST_P(QuicSessionPoolTest, ConnectErrorInCreateWithDnsAliases) {
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, RequireDnsHttpsAlpnNoHttpsRecord) {
@@ -14117,8 +14121,8 @@ TEST_P(QuicSessionPoolDnsAliasPoolingTest, IPPooling) {
                                /*privacy_mode_enabled=*/false),
             session1->server_id());
 
-  EXPECT_TRUE(socket_data.AllReadDataConsumed());
-  EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 
   EXPECT_EQ(expected_dns_aliases1_, stream1->GetDnsAliases());
   EXPECT_EQ(expected_dns_aliases2_, stream2->GetDnsAliases());
