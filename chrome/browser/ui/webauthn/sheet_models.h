@@ -731,8 +731,6 @@ class AuthenticatorGPMArbitraryPinSheetModel
 
   // Sets currently typed pin in the sheet.
   void SetPin(std::u16string pin);
-  // Sets currently typed pin confirmation in the sheet.
-  void SetPinConfirmation(std::u16string pin_confirmation);
 
   Mode mode() { return mode_; }
 
@@ -746,7 +744,6 @@ class AuthenticatorGPMArbitraryPinSheetModel
   void OnAccept() override;
 
   std::u16string pin_;
-  std::u16string pin_confirmation_;
   const Mode mode_;
 };
 

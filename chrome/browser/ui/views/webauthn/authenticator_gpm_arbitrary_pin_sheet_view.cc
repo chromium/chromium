@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_sheet_view.h"
 
-#include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
 
 AuthenticatorGPMArbitraryPinSheetView::AuthenticatorGPMArbitraryPinSheetView(
     std::unique_ptr<AuthenticatorGPMArbitraryPinSheetModel> sheet_model)
@@ -21,23 +21,11 @@ AuthenticatorGPMArbitraryPinSheetView::gpm_arbitrary_pin_sheet_model() {
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorGPMArbitraryPinSheetView::AutoFocus>
 AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificContent() {
-  // TODO(rgod): Use different view when mocks are ready or re-use and possibly
-  // rename client pin.
   return std::make_pair(
-      std::make_unique<AuthenticatorClientPinEntryView>(
-          this, /*show_confirmation_text_field=*/gpm_arbitrary_pin_sheet_model()
-                        ->mode() ==
-                    AuthenticatorGPMArbitraryPinSheetModel::Mode::kPinCreate),
+      std::make_unique<AuthenticatorGPMArbitraryPinView>(this),
       AutoFocus::kYes);
 }
 
-void AuthenticatorGPMArbitraryPinSheetView::OnPincodeChanged(
-    std::u16string pin_code) {
-  gpm_arbitrary_pin_sheet_model()->SetPin(std::move(pin_code));
-}
-
-void AuthenticatorGPMArbitraryPinSheetView::OnConfirmationChanged(
-    std::u16string pin_confirmation) {
-  gpm_arbitrary_pin_sheet_model()->SetPinConfirmation(
-      std::move(pin_confirmation));
+void AuthenticatorGPMArbitraryPinSheetView::OnPinChanged(std::u16string pin) {
+  gpm_arbitrary_pin_sheet_model()->SetPin(std::move(pin));
 }

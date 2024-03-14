@@ -1694,15 +1694,6 @@ void AuthenticatorGPMArbitraryPinSheetModel::SetPin(std::u16string pin) {
   }
 }
 
-void AuthenticatorGPMArbitraryPinSheetModel::SetPinConfirmation(
-    std::u16string pin_confirmation) {
-  bool accept_button_enabled = IsAcceptButtonEnabled();
-  pin_confirmation_ = std::move(pin_confirmation);
-  if (accept_button_enabled != IsAcceptButtonEnabled()) {
-    dialog_model()->OnButtonsStateChange();
-  }
-}
-
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepTitle() const {
   switch (mode_) {
     case Mode::kPinCreate:
@@ -1729,7 +1720,7 @@ bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonVisible() const {
 }
 
 bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonEnabled() const {
-  return pin_.length() > 0 && pin_confirmation_.length() > 0;
+  return pin_.length() > 0;
 }
 
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetAcceptButtonLabel()

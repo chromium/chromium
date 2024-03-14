@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ARBITRARY_PIN_SHEET_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ARBITRARY_PIN_SHEET_VIEW_H_
 
-#include "chrome/browser/ui/views/webauthn/authenticator_client_pin_entry_view.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_gpm_arbitrary_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
@@ -13,7 +13,7 @@
 // user to enter an arbitrary (alphanumeric) GPM pin code used in passkeys flow.
 class AuthenticatorGPMArbitraryPinSheetView
     : public AuthenticatorRequestSheetView,
-      public AuthenticatorClientPinEntryView::Delegate {
+      public AuthenticatorGPMArbitraryPinView::Delegate {
  public:
   explicit AuthenticatorGPMArbitraryPinSheetView(
       std::unique_ptr<AuthenticatorGPMArbitraryPinSheetModel> sheet_model);
@@ -32,9 +32,8 @@ class AuthenticatorGPMArbitraryPinSheetView
   std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
       override;
 
-  // AuthenticatorClientPinEntryView::Delegate:
-  void OnPincodeChanged(std::u16string pin_code) override;
-  void OnConfirmationChanged(std::u16string pin_confirmation) override;
+  // AuthenticatorGPMArbitraryPinView::Delegate:
+  void OnPinChanged(std::u16string pin) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ARBITRARY_PIN_SHEET_VIEW_H_
