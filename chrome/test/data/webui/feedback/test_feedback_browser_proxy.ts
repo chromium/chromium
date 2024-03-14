@@ -18,7 +18,7 @@ export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
       'getDialogArguments', 'getUserMedia', 'sendFeedback',
       'showAutofillMetadataInfo', 'showDialog', 'showMetrics', 'showSystemInfo',
       // <if expr="chromeos_ash">
-      'showAssistantLogsInfo', 'showBluetoothLogsInfo',
+      'showAssistantLogsInfo',
       // </if>
     ]);
   }
@@ -77,9 +77,6 @@ export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
   // <if expr="chromeos_ash">
   showAssistantLogsInfo() {
     this.methodCalled('showAssistantLogsInfo');
-  }
-  showBluetoothLogsInfo() {
-    this.methodCalled('showBluetoothLogsInfo');
   }
   // </if>
 

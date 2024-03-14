@@ -24,7 +24,6 @@ class FeedbackHandler : public content::WebUIMessageHandler {
   void HandleShowDialog(const base::Value::List& args);
 #if BUILDFLAG(IS_CHROMEOS)
   void HandleShowAssistantLogsInfo(const base::Value::List& args);
-  void HandleShowBluetoothLogsInfo(const base::Value::List& args);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   void HandleShowAutofillMetadataInfo(const base::Value::List& args);
   void HandleShowMetrics(const base::Value::List& args);

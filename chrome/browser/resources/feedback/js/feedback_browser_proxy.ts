@@ -31,7 +31,6 @@ export interface FeedbackBrowserProxy {
 
   // <if expr="chromeos_ash">
   showAssistantLogsInfo(): void;
-  showBluetoothLogsInfo(): void;
   // </if>
 
   showSystemInfo(): void;
@@ -78,10 +77,6 @@ export class FeedbackBrowserProxyImpl implements FeedbackBrowserProxy {
   // <if expr="chromeos_ash">
   showAssistantLogsInfo() {
     chrome.send('showAssistantLogsInfo');
-  }
-
-  showBluetoothLogsInfo() {
-    chrome.send('showBluetoothLogsInfo');
   }
   // </if>
 

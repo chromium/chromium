@@ -82,10 +82,6 @@ void FeedbackHandler::RegisterMessages() {
       "showAssistantLogsInfo",
       base::BindRepeating(&FeedbackHandler::HandleShowAssistantLogsInfo,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "showBluetoothLogsInfo",
-      base::BindRepeating(&FeedbackHandler::HandleShowBluetoothLogsInfo,
-                          base::Unretained(this)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   web_ui()->RegisterMessageCallback(
@@ -114,14 +110,6 @@ void FeedbackHandler::HandleShowAssistantLogsInfo(
                 ChildPageURL("html/assistant_logs_info.html"), std::u16string(),
                 std::string(),
                 /*dialog_width=*/400, /*dialog_height=*/120,
-                /*can_resize=*/false, /*can_minimize=*/false);
-}
-void FeedbackHandler::HandleShowBluetoothLogsInfo(
-    const base::Value::List& args) {
-  ShowChildPage(Profile::FromWebUI(web_ui()), dialog_,
-                ChildPageURL("html/bluetooth_logs_info.html"), std::u16string(),
-                std::string(),
-                /*dialog_width=*/400, /*dialog_height=*/190,
                 /*can_resize=*/false, /*can_minimize=*/false);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

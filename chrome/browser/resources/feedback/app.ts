@@ -335,21 +335,6 @@ export class FeedbackAppElement extends PolymerElement {
       }
 
       // <if expr="chromeos_ash">
-      const bluetoothLogsInfoLinkElement =
-          this.shadowRoot!.querySelector<HTMLElement>(
-              '#bluetooth-logs-info-link');
-      if (bluetoothLogsInfoLinkElement) {
-        bluetoothLogsInfoLinkElement.onclick = (e: Event) => {
-          e.preventDefault();
-
-          FeedbackBrowserProxyImpl.getInstance().showBluetoothLogsInfo();
-
-          bluetoothLogsInfoLinkElement.onauxclick = (e: Event) => {
-            e.preventDefault();
-          };
-        };
-      }
-
       const assistantLogsInfoLinkElement =
           this.shadowRoot!.querySelector<HTMLElement>(
               '#assistant-logs-info-link');
@@ -672,14 +657,6 @@ export class FeedbackAppElement extends PolymerElement {
         !this.getRequiredElement('#assistant-checkbox-container').hidden) {
       // User consent to link Assistant debug info on Assistant server.
       this.feedbackInfo.assistantDebugInfoAllowed = true;
-    }
-
-    const bluetoothCheckbox = this.shadowRoot!.querySelector<HTMLInputElement>(
-        '#bluetooth-logs-checkbox');
-    if (bluetoothCheckbox != null && bluetoothCheckbox.checked &&
-        !this.getRequiredElement('#bluetooth-checkbox-container').hidden) {
-      this.feedbackInfo.sendBluetoothLogs = true;
-      this.feedbackInfo.categoryTag = 'BluetoothReportWithLogs';
     }
 
     const performanceCheckbox =

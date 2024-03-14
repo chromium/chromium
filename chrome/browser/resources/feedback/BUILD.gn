@@ -28,7 +28,6 @@ build_webui("build") {
     static_files += [
       "css/logs_info.css",
       "html/assistant_logs_info.html",
-      "html/bluetooth_logs_info.html",
     ]
   }
 
