@@ -12,6 +12,7 @@ class ModuleSystem;
 class NativeExtensionBindingsSystem;
 class ScriptContext;
 class ResourceBundleSourceMap;
+class V8SchemaRegistry;
 
 // An interface class that is owned by extensions::Dispatcher.
 // ExtensionsRendererAPIProvider can be used to override and extend the behavior
@@ -30,6 +31,7 @@ class ExtensionsRendererAPIProvider {
   virtual void RegisterNativeHandlers(
       ModuleSystem* module_system,
       NativeExtensionBindingsSystem* bindings_system,
+      V8SchemaRegistry* v8_schema_registry,
       ScriptContext* context) const = 0;
 
   // Registers any additional hooks associated with specific APIs to the API

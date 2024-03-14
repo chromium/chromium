@@ -5,19 +5,41 @@
 #include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 
 #include "extensions/grit/extensions_renderer_resources.h"
+#include "extensions/renderer/api/app_window_custom_bindings.h"
+#include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
+#include "extensions/renderer/api/context_menus_custom_bindings.h"
 #include "extensions/renderer/api/declarative_content_hooks_delegate.h"
 #include "extensions/renderer/api/dom_hooks_delegate.h"
 #include "extensions/renderer/api/feedback_private_hooks_delegate.h"
+#include "extensions/renderer/api/file_system_natives.h"
 #include "extensions/renderer/api/i18n_hooks_delegate.h"
+#include "extensions/renderer/api/messaging/messaging_bindings.h"
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 #include "extensions/renderer/api/web_request_hooks.h"
+#include "extensions/renderer/api_activity_logger.h"
+#include "extensions/renderer/api_definitions_natives.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
+#include "extensions/renderer/blob_native_handler.h"
 #include "extensions/renderer/chrome_setting.h"
 #include "extensions/renderer/content_setting.h"
+#include "extensions/renderer/guest_view/guest_view_internal_custom_bindings.h"
+#include "extensions/renderer/id_generator_custom_bindings.h"
+#include "extensions/renderer/logging_native_handler.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
+#include "extensions/renderer/process_info_native_handler.h"
+#include "extensions/renderer/render_frame_observer_natives.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
+#include "extensions/renderer/runtime_custom_bindings.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/service_worker_natives.h"
+#include "extensions/renderer/set_icon_natives.h"
 #include "extensions/renderer/storage_area.h"
+#include "extensions/renderer/test_features_native_handler.h"
+#include "extensions/renderer/test_native_handler.h"
+#include "extensions/renderer/user_gestures_native_handler.h"
+#include "extensions/renderer/utils_native_handler.h"
+#include "extensions/renderer/v8_context_native_handler.h"
+#include "extensions/renderer/v8_schema_registry.h"
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
 
 namespace extensions {
@@ -25,7 +47,65 @@ namespace extensions {
 void CoreExtensionsRendererAPIProvider::RegisterNativeHandlers(
     ModuleSystem* module_system,
     NativeExtensionBindingsSystem* bindings_system,
-    ScriptContext* context) const {}
+    V8SchemaRegistry* v8_schema_registry,
+    ScriptContext* context) const {
+  module_system->RegisterNativeHandler(
+      "logging", std::make_unique<LoggingNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "schema_registry",
+      v8_schema_registry->AsNativeHandler(context->isolate()));
+  module_system->RegisterNativeHandler(
+      "test_features", std::make_unique<TestFeaturesNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "test_native_handler", std::make_unique<TestNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "user_gestures", std::make_unique<UserGesturesNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "utils", std::make_unique<UtilsNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "v8_context", std::make_unique<V8ContextNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "messaging_natives", std::make_unique<MessagingBindings>(context));
+  module_system->RegisterNativeHandler(
+      "apiDefinitions",
+      std::make_unique<ApiDefinitionsNatives>(v8_schema_registry, context));
+  module_system->RegisterNativeHandler(
+      "setIcon", std::make_unique<SetIconNatives>(context));
+  module_system->RegisterNativeHandler(
+      "activityLogger", std::make_unique<APIActivityLogger>(
+                            bindings_system->GetIPCMessageSender(), context));
+  module_system->RegisterNativeHandler(
+      "renderFrameObserverNatives",
+      std::make_unique<RenderFrameObserverNatives>(context));
+
+  // Natives used by multiple APIs.
+  module_system->RegisterNativeHandler(
+      "file_system_natives", std::make_unique<FileSystemNatives>(context));
+  module_system->RegisterNativeHandler(
+      "service_worker_natives",
+      std::make_unique<ServiceWorkerNatives>(context));
+
+  // Custom bindings.
+  module_system->RegisterNativeHandler(
+      "app_window_natives", std::make_unique<AppWindowCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "blob_natives", std::make_unique<BlobNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "context_menus", std::make_unique<ContextMenusCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "guest_view_internal",
+      std::make_unique<GuestViewInternalCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "id_generator", std::make_unique<IdGeneratorCustomBindings>(context));
+  module_system->RegisterNativeHandler(
+      "process", std::make_unique<ProcessInfoNativeHandler>(context));
+  module_system->RegisterNativeHandler(
+      "runtime", std::make_unique<RuntimeCustomBindings>(context));
+
+  module_system->RegisterNativeHandler(
+      "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
+                                context, bindings_system));
+}
 
 void CoreExtensionsRendererAPIProvider::AddBindingsSystemHooks(
     Dispatcher* dispatcher,

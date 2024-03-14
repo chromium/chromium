@@ -25,6 +25,7 @@ class ChromeExtensionsRendererAPIProvider
   // ExtensionsRendererAPIProvider:
   void RegisterNativeHandlers(ModuleSystem* module_system,
                               NativeExtensionBindingsSystem* bindings_system,
+                              V8SchemaRegistry* v8_schema_registry,
                               ScriptContext* context) const override;
   void AddBindingsSystemHooks(
       Dispatcher* dispatcher,

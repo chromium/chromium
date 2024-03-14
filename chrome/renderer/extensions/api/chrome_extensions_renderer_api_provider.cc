@@ -42,6 +42,7 @@ namespace extensions {
 void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
     ModuleSystem* module_system,
     NativeExtensionBindingsSystem* bindings_system,
+    V8SchemaRegistry* v8_schema_registry,
     ScriptContext* context) const {
   module_system->RegisterNativeHandler(
       "sync_file_system",

@@ -15,6 +15,7 @@ namespace controlled_frame {
 void ControlledFrameExtensionsRendererAPIProvider::RegisterNativeHandlers(
     extensions::ModuleSystem* module_system,
     extensions::NativeExtensionBindingsSystem* bindings_system,
+    extensions::V8SchemaRegistry* v8_schema_registry,
     extensions::ScriptContext* context) const {}
 
 void ControlledFrameExtensionsRendererAPIProvider::AddBindingsSystemHooks(
