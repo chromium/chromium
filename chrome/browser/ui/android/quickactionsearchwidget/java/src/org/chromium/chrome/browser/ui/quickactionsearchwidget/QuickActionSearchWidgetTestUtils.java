@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.text.TextUtils;
 import android.view.View;
 
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -22,7 +20,6 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -45,9 +42,6 @@ class QuickActionSearchWidgetTestUtils {
         testRule.setActivity(
                 ApplicationTestUtils.waitForActivityWithClass(
                         SearchActivity.class, Stage.CREATED, action));
-
-        assertSearchActivityLaunchedWithCorrectVoiceExtras(
-                testRule.getActivity(), shouldActivityLaunchVoiceMode);
     }
 
     /**
@@ -87,16 +81,6 @@ class QuickActionSearchWidgetTestUtils {
                 () -> {
                     view.findViewById(clickTarget).performClick();
                 });
-    }
-
-    private static void assertSearchActivityLaunchedWithCorrectVoiceExtras(
-            final Activity activity, final boolean shouldActivityLaunchVoiceMode) {
-        Intent intent = activity.getIntent();
-        boolean isVoiceMode =
-                TextUtils.equals(
-                        intent.getAction(),
-                        SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
-        Assert.assertEquals(shouldActivityLaunchVoiceMode, isVoiceMode);
     }
 
     /**

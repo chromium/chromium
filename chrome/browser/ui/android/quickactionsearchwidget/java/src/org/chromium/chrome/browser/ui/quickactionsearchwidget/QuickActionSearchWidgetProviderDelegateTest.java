@@ -41,9 +41,10 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.browser.searchwidget.SearchActivityUtils;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetButtonSettings;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate.WidgetVariant;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -68,6 +69,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     private int mSmallWidgetMinHeightDp;
     private int mMediumWidgetMinHeightDp;
     private int mDinoWidgetEdgeSizeDp;
+    private SearchActivityClient mClient;
 
     @Mock RemoteViews mMockRemoteViews;
 
@@ -80,12 +82,11 @@ public class QuickActionSearchWidgetProviderDelegateTest {
                         .getTargetContext()
                         .getApplicationContext();
 
-        ComponentName searchActivityComponent = new ComponentName(mContext, SearchActivity.class);
+        mClient = new SearchActivityUtils();
 
         mDelegate =
                 new QuickActionSearchWidgetProviderDelegate(
                         mContext,
-                        searchActivityComponent,
                         IntentHandler.createTrustedOpenNewTabIntent(
                                 mContext, /* incognito= */ true),
                         createDinoIntent(mContext));
@@ -193,12 +194,20 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         mWidgetView =
                 mDelegate
                         .createSearchWidgetRemoteViews(
-                                mContext, prefs, mDefaultWidgetWidthDp, mMediumWidgetMinHeightDp)
+                                mContext,
+                                mClient,
+                                prefs,
+                                mDefaultWidgetWidthDp,
+                                mMediumWidgetMinHeightDp)
                         .apply(mContext, null);
         mDinoWidgetView =
                 mDelegate
                         .createDinoWidgetRemoteViews(
-                                mContext, prefs, mDinoWidgetEdgeSizeDp, mDinoWidgetEdgeSizeDp)
+                                mContext,
+                                mClient,
+                                prefs,
+                                mDinoWidgetEdgeSizeDp,
+                                mDinoWidgetEdgeSizeDp)
                         .apply(mContext, null);
     }
 

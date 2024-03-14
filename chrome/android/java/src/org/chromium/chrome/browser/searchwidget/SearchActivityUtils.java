@@ -11,48 +11,62 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Class facilitating interactions with the SearchActivity and the Omnibox. */
-public class SearchActivityUtils {
-    @IntDef({
-        IntentOrigin.UNKNOWN,
-        IntentOrigin.SEARCH_WIDGET,
-        IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-        IntentOrigin.CUSTOM_TAB
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface IntentOrigin {
-        int UNKNOWN = 0;
-        int SEARCH_WIDGET = 1;
-        int QUICK_ACTION_SEARCH_WIDGET = 2;
-        int CUSTOM_TAB = 3;
-    }
-
-    @IntDef({SearchType.TEXT, SearchType.VOICE, SearchType.LENS})
-    @Retention(RetentionPolicy.SOURCE)
-    /* package */ @interface SearchType {
-        int TEXT = 0;
-        int VOICE = 1;
-        int LENS = 2;
-    }
-
+public class SearchActivityUtils implements SearchActivityClient {
     @VisibleForTesting
     /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8 | 'I';
 
+    @VisibleForTesting /* package */ static final String EXTRA_ORIGIN = "origin";
+    @VisibleForTesting /* package */ static final String EXTRA_SEARCH_TYPE = "search-type";
     @VisibleForTesting /* package */ static final String EXTRA_CURRENT_URL = "current-url";
     @VisibleForTesting /* package */ static final String EXTRA_URL_TO_NAVIGATE = "url-to-navigate";
+
+    // Note: while we don't rely on Actions, PendingIntents do require them to be Unique.
+    // Responsibility to define values for PendingIntents could be offset to Caller; meantime we
+    // offer complimentary default values.
+    @VisibleForTesting
+    /* package */ static final String ACTION_TEXT_SEARCH =
+            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_TEXT_SEARCH";
+
+    @VisibleForTesting
+    /* package */ static final String ACTION_VOICE_SEARCH =
+            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_VOICE_SEARCH";
+
+    @VisibleForTesting
+    /* package */ static final String ACTION_LENS_SEARCH =
+            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_LENS_SEARCH";
+
+    @Override
+    public Intent createIntent(
+            @NonNull Context context,
+            @IntentOrigin int origin,
+            @Nullable GURL url,
+            @SearchType int searchType) {
+        String action =
+                switch (searchType) {
+                    case SearchType.VOICE -> ACTION_VOICE_SEARCH;
+                    case SearchType.LENS -> ACTION_LENS_SEARCH;
+                    default -> ACTION_TEXT_SEARCH;
+                };
+
+        var intent = buildTrustedIntent(context, action);
+        intent.putExtra(EXTRA_ORIGIN, origin);
+        if (!GURL.isEmptyOrInvalid(url)) {
+            intent.putExtra(EXTRA_CURRENT_URL, url.getSpec());
+        }
+        intent.putExtra(EXTRA_SEARCH_TYPE, searchType);
+        return intent;
+    }
 
     /**
      * Call up SearchActivity/Omnibox on behalf of the current Activity.
@@ -69,8 +83,7 @@ public class SearchActivityUtils {
         if (activity == null) return;
 
         var intent =
-                buildTrustedIntent(
-                                activity, SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH)
+                buildTrustedIntent(activity, SearchActivityConstants.ACTION_START_TEXT_SEARCH)
                         .putExtra(EXTRA_CURRENT_URL, currentUrl.getSpec())
                         .addFlags(
                                 Intent.FLAG_ACTIVITY_NO_HISTORY
@@ -93,16 +106,6 @@ public class SearchActivityUtils {
     }
 
     /**
-     * @return true if the intent represents a Search request from QuickActionSearchWidget.
-     */
-    private static boolean isQuickActionSearchWidgetRequest(@NonNull Intent intent) {
-        return IntentUtils.safeGetBooleanExtra(
-                intent,
-                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET,
-                false);
-    }
-
-    /**
      * @return true if the intent represents a Search request from old SearchWidget.
      */
     private static boolean isSearchWidgetRequest(@NonNull Intent intent) {
@@ -117,10 +120,13 @@ public class SearchActivityUtils {
      * @return the origin of an intent
      */
     /* package */ static @IntentOrigin int getIntentOrigin(@NonNull Intent intent) {
+        if (IntentUtils.isTrustedIntentFromSelf(intent)
+                && IntentUtils.safeHasExtra(intent, EXTRA_ORIGIN)) {
+            return IntentUtils.safeGetIntExtra(intent, EXTRA_ORIGIN, IntentOrigin.UNKNOWN);
+        }
+
         if (isSearchWidgetRequest(intent)) {
             return IntentOrigin.SEARCH_WIDGET;
-        } else if (isQuickActionSearchWidgetRequest(intent)) {
-            return IntentOrigin.QUICK_ACTION_SEARCH_WIDGET;
         } else if (isOmniboxRequestForResult(intent)) {
             return IntentOrigin.CUSTOM_TAB;
         }
@@ -135,22 +141,18 @@ public class SearchActivityUtils {
      * @param intent intent received by SearchActivity
      * @return the requested search type
      */
-    /* package */ static @SearchType int getIntentSearchType(@NonNull Intent intent) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static @SearchType int getIntentSearchType(@NonNull Intent intent) {
+        if (IntentUtils.isTrustedIntentFromSelf(intent)
+                && IntentUtils.safeHasExtra(intent, EXTRA_SEARCH_TYPE)) {
+            return IntentUtils.safeGetIntExtra(intent, EXTRA_SEARCH_TYPE, SearchType.TEXT);
+        }
+
         var action = intent.getAction();
         switch (getIntentOrigin(intent)) {
             case IntentOrigin.SEARCH_WIDGET:
                 if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_VOICE_SEARCH)) {
                     return SearchType.VOICE;
-                }
-                return SearchType.TEXT;
-
-            case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET:
-                if (TextUtils.equals(
-                        action, SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH)) {
-                    return SearchType.VOICE;
-                } else if (TextUtils.equals(
-                        action, SearchActivityConstants.ACTION_START_LENS_SEARCH)) {
-                    return SearchType.LENS;
                 }
                 return SearchType.TEXT;
 

@@ -15,6 +15,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//url:url_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.quickactionsearchwidget"
 }

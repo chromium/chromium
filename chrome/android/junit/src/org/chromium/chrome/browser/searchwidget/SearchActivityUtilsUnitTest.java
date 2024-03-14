@@ -22,8 +22,9 @@ import org.robolectric.Shadows;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.IntentOrigin;
-import org.chromium.chrome.browser.searchwidget.SearchActivityUtils.SearchType;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.url.GURL;
 
@@ -42,11 +43,100 @@ public class SearchActivityUtilsUnitTest {
         return intent;
     }
 
-    private Intent buildQuickActionSearchWidgetIntent() {
-        Intent intent = new Intent();
-        intent.putExtra(
-                SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET, true);
-        return intent;
+    @Test
+    public void createIntent_forTextSearch() {
+        @IntentOrigin
+        int[] origins =
+                new int[] {
+                    IntentOrigin.SEARCH_WIDGET,
+                    IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
+                    IntentOrigin.CUSTOM_TAB,
+                };
+
+        SearchActivityClient client = new SearchActivityUtils();
+        for (int origin : origins) {
+            // null URL
+            var intent = client.createIntent(mActivity, origin, null, SearchType.TEXT);
+            assertEquals(SearchActivityUtils.ACTION_TEXT_SEARCH, intent.getAction());
+            assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+            assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
+
+            // non-null URL
+            intent =
+                    client.createIntent(
+                            mActivity, origin, new GURL("http://abc.xyz"), SearchType.TEXT);
+            assertEquals(SearchActivityUtils.ACTION_TEXT_SEARCH, intent.getAction());
+            assertEquals(
+                    "http://abc.xyz/",
+                    intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
+            assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
+        }
+    }
+
+    @Test
+    public void createIntent_forVoiceSearch() {
+        @IntentOrigin
+        int[] origins =
+                new int[] {
+                    IntentOrigin.SEARCH_WIDGET,
+                    IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
+                    IntentOrigin.CUSTOM_TAB,
+                };
+
+        SearchActivityClient client = new SearchActivityUtils();
+        for (int origin : origins) {
+            // null URL
+            var intent = client.createIntent(mActivity, origin, null, SearchType.VOICE);
+            assertEquals(SearchActivityUtils.ACTION_VOICE_SEARCH, intent.getAction());
+            assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
+            assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
+
+            // non-null URL
+            intent =
+                    client.createIntent(
+                            mActivity, origin, new GURL("http://abc.xyz"), SearchType.VOICE);
+            assertEquals(SearchActivityUtils.ACTION_VOICE_SEARCH, intent.getAction());
+            assertEquals(
+                    "http://abc.xyz/",
+                    intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
+            assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
+        }
+    }
+
+    @Test
+    public void createIntent_forLensSearch() {
+        @IntentOrigin
+        int[] origins =
+                new int[] {
+                    IntentOrigin.SEARCH_WIDGET,
+                    IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
+                    IntentOrigin.CUSTOM_TAB,
+                };
+
+        SearchActivityClient client = new SearchActivityUtils();
+        for (int origin : origins) {
+            // null URL
+            var intent = client.createIntent(mActivity, origin, null, SearchType.LENS);
+            assertEquals(SearchActivityUtils.ACTION_LENS_SEARCH, intent.getAction());
+            assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
+            assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
+
+            // non-null URL
+            intent =
+                    client.createIntent(
+                            mActivity, origin, new GURL("http://abc.xyz"), SearchType.LENS);
+            assertEquals(SearchActivityUtils.ACTION_LENS_SEARCH, intent.getAction());
+            assertEquals(
+                    "http://abc.xyz/",
+                    intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
+            assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
+            assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
+        }
     }
 
     @Test
@@ -121,14 +211,6 @@ public class SearchActivityUtilsUnitTest {
     }
 
     @Test
-    public void getIntentOrigin_forQuickActionSearchWidgetRequest() {
-        Intent intent = buildQuickActionSearchWidgetIntent();
-        assertEquals(
-                IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-                SearchActivityUtils.getIntentOrigin(intent));
-    }
-
-    @Test
     public void getIntentOrigin_untrustedIntent() {
         SearchActivityUtils.requestOmniboxForResult(mActivity, EMPTY_URL);
 
@@ -154,19 +236,10 @@ public class SearchActivityUtilsUnitTest {
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
 
         // Invalid variants
-        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
         intent.setAction(SearchActivityConstants.ACTION_START_TEXT_SEARCH);
         assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
 
         intent.setAction(SearchActivityConstants.ACTION_START_VOICE_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction(SearchActivityConstants.ACTION_START_LENS_SEARCH);
         assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
 
         intent.setAction(null);
@@ -188,45 +261,6 @@ public class SearchActivityUtilsUnitTest {
         assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
 
         // Invalid variants
-        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction(SearchActivityConstants.ACTION_START_LENS_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction(null);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction("abcd");
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-    }
-
-    @Test
-    public void getIntentSearchType_forQuickActionSearchWidget() {
-        var intent = buildQuickActionSearchWidgetIntent();
-        assertEquals(
-                IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-                SearchActivityUtils.getIntentOrigin(intent));
-
-        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction(SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
-        assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction(SearchActivityConstants.ACTION_START_LENS_SEARCH);
-        assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
-
-        // Invalid variants
-        intent.setAction(SearchActivityConstants.ACTION_START_TEXT_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
-        intent.setAction(SearchActivityConstants.ACTION_START_VOICE_SEARCH);
-        assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
-
         intent.setAction(null);
         assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
 
