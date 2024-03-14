@@ -124,7 +124,7 @@ public class CronetManifestTest {
     @Test
     @SmallTest
     public void testShouldReadHttpFlags_whenNoMetadata() throws Exception {
-        assertThat(CronetManifest.shouldReadHttpFlags(mCronetTestFramework.getContext())).isFalse();
+        assertThat(CronetManifest.shouldReadHttpFlags(mCronetTestFramework.getContext())).isTrue();
     }
 
     @Test

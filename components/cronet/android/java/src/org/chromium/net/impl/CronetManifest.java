@@ -46,12 +46,8 @@ public final class CronetManifest {
     @VisibleForTesting
     static final String ENABLE_TELEMETRY_META_DATA_KEY = "android.net.http.EnableTelemetry";
 
-    // Guarded by a "prerelease" prefix to make sure that we don't use the final name for something
-    // that we have not confirmed is working in production.
-    // TODO: remove the "prerelease" prefix once we confirm this works in production.
     @VisibleForTesting
-    public static final String READ_HTTP_FLAGS_META_DATA_KEY =
-            "android.net.http.PRERELEASE_ReadHttpFlags";
+    public static final String READ_HTTP_FLAGS_META_DATA_KEY = "android.net.http.ReadHttpFlags";
 
     /**
      * @return True if telemetry should be enabled, based on the {@link
@@ -72,9 +68,7 @@ public final class CronetManifest {
      * @see HttpFlagsLoader
      */
     public static boolean shouldReadHttpFlags(Context context) {
-        // TODO: switch the default to true once we confirm the HTTP flags system is working as
-        // intended.
-        return getMetaData(context).getBoolean(READ_HTTP_FLAGS_META_DATA_KEY, /* default= */ false);
+        return getMetaData(context).getBoolean(READ_HTTP_FLAGS_META_DATA_KEY, /* default= */ true);
     }
 
     /**
