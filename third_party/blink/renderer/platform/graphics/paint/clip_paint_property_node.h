@@ -50,6 +50,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNodeOrAlias
       const PropertyTreeState& relative_to_state,
       const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
 
+  // See PaintPropertyNode::ChangedSequenceNumber().
   void ClearChangedToRoot(int sequence_number) const;
 
   void AddChanged(PaintPropertyChangeType changed) final {

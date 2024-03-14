@@ -4928,7 +4928,7 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
   ASSERT_FALSE(const_cast<const cc::LayerTreeHost&>(host)
                    .pending_commit_state()
                    ->layers_that_should_push_properties.contains(scroll_layer));
-  ASSERT_FALSE(host.proxy()->CommitRequested());
+  ASSERT_FALSE(host.CommitRequested());
   ASSERT_FALSE(transform_tree.needs_update());
 
   ASSERT_TRUE(GetPaintArtifactCompositor().DirectlySetScrollOffset(
@@ -4936,12 +4936,47 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
   EXPECT_TRUE(const_cast<const cc::LayerTreeHost&>(host)
                   .pending_commit_state()
                   ->layers_that_should_push_properties.contains(scroll_layer));
-  EXPECT_TRUE(host.proxy()->CommitRequested());
+  EXPECT_TRUE(host.CommitRequested());
   EXPECT_EQ(gfx::PointF(-10, -20),
             scroll_tree.current_scroll_offset(scroll_element_id));
   // DirectlySetScrollOffset doesn't update transform node.
   EXPECT_EQ(gfx::PointF(-7, -9), transform_node->scroll_offset);
   EXPECT_FALSE(transform_tree.needs_update());
+}
+
+TEST_P(PaintArtifactCompositorTest, NoCommitRequestForUnchangedScroll) {
+  auto& host = GetLayerTreeHost();
+  auto scroll_state = ScrollState1();
+  PropertyTreeStateOrAlias scroll_hit_test_state(
+      *scroll_state.Transform().Parent(), *scroll_state.Clip().Parent(),
+      scroll_state.Effect());
+  auto& scroll = *scroll_state.Transform().ScrollNode();
+  EXPECT_EQ(PaintPropertyChangeType::kNodeAddedOrRemoved, scroll.NodeChanged());
+
+  auto* client = MakeGarbageCollected<FakeDisplayItemClient>("client");
+  Update(
+      TestPaintArtifact()
+          .Chunk(*client)
+          .Properties(scroll_hit_test_state)
+          .ScrollHitTest(scroll_state.Transform().ScrollNode()->ContainerRect(),
+                         &scroll_state.Transform())
+          .Build());
+  EXPECT_EQ(PaintPropertyChangeType::kUnchanged, scroll.NodeChanged());
+  EXPECT_TRUE(host.CommitRequested());
+
+  host.CompositeForTest(base::TimeTicks::Now(), true, base::OnceClosure());
+  EXPECT_FALSE(host.CommitRequested());
+
+  // Update with a paint artifact with the same content.
+  Update(
+      TestPaintArtifact()
+          .Chunk(*client)
+          .Properties(scroll_hit_test_state)
+          .ScrollHitTest(scroll_state.Transform().ScrollNode()->ContainerRect(),
+                         &scroll_state.Transform())
+          .Build());
+  // This update should not SetNeedsCommit().
+  EXPECT_FALSE(host.CommitRequested());
 }
 
 TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {

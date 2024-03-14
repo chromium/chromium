@@ -114,6 +114,9 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
 
   const ScrollPaintPropertyNode& Unalias() const = delete;
 
+  // See PaintPropertyNode::ChangedSequenceNumber().
+  void ClearChangedToRoot(int sequence_number) const;
+
   cc::OverscrollBehavior::Type OverscrollBehaviorX() const {
     return state_.overscroll_behavior.x;
   }

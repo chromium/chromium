@@ -54,6 +54,9 @@ class PLATFORM_EXPORT TransformPaintPropertyNodeOrAlias
     PaintPropertyNode::AddChanged(changed);
   }
 
+  // See PaintPropertyNode::ChangedSequenceNumber().
+  void ClearChangedToRoot(int sequence_number) const;
+
  protected:
   using PaintPropertyNodeBase::PaintPropertyNodeBase;
 };

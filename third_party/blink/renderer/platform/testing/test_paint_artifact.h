@@ -28,20 +28,6 @@ class TransformPaintPropertyNodeOrAlias;
 
 // Useful for quickly making a paint artifact in unit tests.
 //
-// If any method that automatically creates display item client is called, the
-// object must remain in scope while the paint artifact is used, because it owns
-// the display item clients.
-// Usage:
-//   TestPaintArtifact test_artifact;
-//   test_artifact.Chunk().Properties(paint_properties)
-//       .RectDrawing(bounds, color)
-//       .RectDrawing(bounds2, color2);
-//   test_artifact.Chunk().Properties(other_paint_properties)
-//       .RectDrawing(bounds3, color3);
-//   auto artifact = test_artifact.Build();
-//   DoSomethingWithArtifact(artifact);
-//
-// Otherwise the TestPaintArtifact object can be temporary.
 // Usage:
 //   auto artifact = TestPaintArtifact().Chunk(0).Chunk(1).Build();
 //   DoSomethingWithArtifact(artifact);
@@ -61,9 +47,7 @@ class TestPaintArtifact {
                            DisplayItem::Type = DisplayItem::kDrawingFirst);
 
   // This is for RasterInvalidatorTest, to create a chunk with specific id and
-  // bounds calculated with a function from the id. The client is static so
-  // the caller doesn't need to retain this object when using the paint
-  // artifact.
+  // bounds calculated with a function from the id.
   TestPaintArtifact& Chunk(int id);
 
   TestPaintArtifact& Properties(const PropertyTreeStateOrAlias&);
@@ -106,10 +90,6 @@ class TestPaintArtifact {
   TestPaintArtifact& RectDrawing(DisplayItemClient&,
                                  const gfx::Rect& bounds,
                                  Color color);
-  TestPaintArtifact& ScrollHitTest(
-      DisplayItemClient&,
-      const gfx::Rect&,
-      const TransformPaintPropertyNode* scroll_translation);
 
   // Sets fake bounds for the last paint chunk. Note that the bounds will be
   // overwritten when the PaintArtifact is constructed if the chunk has any
@@ -129,7 +109,7 @@ class TestPaintArtifact {
 
   const PaintArtifact& Build();
 
-  // Create a new display item client which is owned by this TestPaintArtifact.
+  // Create a new display item client.
   FakeDisplayItemClient& NewClient();
 
   FakeDisplayItemClient& Client(wtf_size_t) const;

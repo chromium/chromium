@@ -76,16 +76,6 @@ class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
 
   bool IsRoot() const { return !parent_; }
 
-  // Clear changed flags along the path to the root, and set sequence number.
-  // If a subclass needs to clear changed flags along additional paths, the
-  // subclass must override this.
-  // For information about |sequence_number|, see: |changed_sequence_number_|.
-  void ClearChangedToRoot(int sequence_number) const {
-    for (auto* n = this; n && n->changed_sequence_number_ != sequence_number;
-         n = n->Parent())
-      n->ClearChanged(sequence_number);
-  }
-
   // Returns true if this node is an alias for its parent. A parent alias is a
   // node which on its own does not contribute to the rendering output, and only
   // exists to enforce a particular structure of the paint property tree. Its
@@ -205,13 +195,15 @@ class PLATFORM_EXPORT PaintPropertyNode : public RefCounted<PaintPropertyNode> {
     changed_ = std::max(changed_, changed);
   }
 
+  // The following two functions are for subclasses to implement
+  // ClearChangedToRoot() which should clear changed flags along the path to
+  // the root, and set sequence number.
   // For information about |sequence_number|, see: |changed_sequence_number_|.
   void ClearChanged(int sequence_number) const {
     DCHECK_NE(changed_sequence_number_, sequence_number);
     changed_ = PaintPropertyChangeType::kUnchanged;
     changed_sequence_number_ = sequence_number;
   }
-
   int ChangedSequenceNumber() const { return changed_sequence_number_; }
 
  private:

@@ -56,6 +56,13 @@ const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
   return *root;
 }
 
+void ScrollPaintPropertyNode::ClearChangedToRoot(int sequence_number) const {
+  for (auto* n = this; n && n->ChangedSequenceNumber() != sequence_number;
+       n = n->Parent()) {
+    n->ClearChanged(sequence_number);
+  }
+}
+
 std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
   auto json = PaintPropertyNode::ToJSON();
   if (!state_.container_rect.IsEmpty())

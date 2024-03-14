@@ -956,6 +956,10 @@ void PaintArtifactCompositor::Update(
   for (auto& chunk : artifact.GetPaintChunks()) {
     chunk.properties.GetPropertyTreeState().ClearChangedToRoot(
         g_s_property_tree_sequence_number);
+    if (chunk.hit_test_data && chunk.hit_test_data->scroll_translation) {
+      chunk.hit_test_data->scroll_translation->ClearChangedToRoot(
+          g_s_property_tree_sequence_number);
+    }
   }
 
   DVLOG(2) << "PaintArtifactCompositor::Update() done\n"
