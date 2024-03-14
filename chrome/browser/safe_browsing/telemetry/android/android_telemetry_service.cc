@@ -22,7 +22,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
@@ -51,28 +50,6 @@ const int kAndroidTelemetryUserGestureLimit = 2;
 void RecordApkDownloadTelemetryOutcome(ApkDownloadTelemetryOutcome outcome) {
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.AndroidTelemetry.ApkDownload.Outcome",
                             outcome);
-}
-
-enum class ApkDownloadTelemetryIncompleteReason {
-  // |web_contents| was nullptr. This happens sometimes when downloads are
-  // resumed but it's not clear exactly when.
-  MISSING_WEB_CONTENTS = 0,
-  // Navigation manager wasn't ready yet to provide the referrer chain.
-  SB_NAVIGATION_MANAGER_NOT_READY = 1,
-  // Full referrer chain captured.
-  COMPLETE = 2,
-  // No render frame host existed for the download
-  MISSING_RENDER_FRAME_HOST = 3,
-  // The render frame host had not committed to a valid URL
-  RENDER_FRAME_HOST_INVALID_URL = 4,
-
-  kMaxValue = RENDER_FRAME_HOST_INVALID_URL,
-};
-
-void RecordApkDownloadTelemetryIncompleteReason(
-    ApkDownloadTelemetryIncompleteReason reason) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.AndroidTelemetry.ApkDownload.IncompleteReason", reason);
 }
 
 }  // namespace
@@ -134,6 +111,10 @@ void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
   }
 }
 
+void AndroidTelemetryService::OnDownloadRemoved(download::DownloadItem* item) {
+  referrer_chain_result_.erase(item);
+}
+
 bool AndroidTelemetryService::CanSendPing(download::DownloadItem* item) {
   if (!item->GetFileNameToReportUser().MatchesExtension(kApkSuffix) &&
       (item->GetMimeType() != kApkMimeType)) {
@@ -187,37 +168,32 @@ void AndroidTelemetryService::FillReferrerChain(download::DownloadItem* item) {
           : nullptr;
 
   if (!web_contents) {
-    RecordApkDownloadTelemetryIncompleteReason(MISSING_WEB_CONTENTS);
+    referrer_chain_result_[item].missing_reason = MISSING_WEB_CONTENTS;
     return;
   } else if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
                  profile_->GetPrefs(),
                  g_browser_process->safe_browsing_service()) ||
              !observer_manager) {
-    RecordApkDownloadTelemetryIncompleteReason(SB_NAVIGATION_MANAGER_NOT_READY);
+    referrer_chain_result_[item].missing_reason =
+        SB_NAVIGATION_MANAGER_NOT_READY;
     return;
   } else if (!rfh) {
-    RecordApkDownloadTelemetryIncompleteReason(MISSING_RENDER_FRAME_HOST);
+    referrer_chain_result_[item].missing_reason = MISSING_RENDER_FRAME_HOST;
     return;
   } else if (!rfh->GetLastCommittedURL().is_valid()) {
-    RecordApkDownloadTelemetryIncompleteReason(RENDER_FRAME_HOST_INVALID_URL);
+    referrer_chain_result_[item].missing_reason = RENDER_FRAME_HOST_INVALID_URL;
     return;
   }
 
-  RecordApkDownloadTelemetryIncompleteReason(
-      ApkDownloadTelemetryIncompleteReason::COMPLETE);
+  referrer_chain_result_[item].missing_reason =
+      ApkDownloadTelemetryIncompleteReason::COMPLETE;
   auto referrer_chain = std::make_unique<ReferrerChain>();
   SafeBrowsingNavigationObserverManager::AttributionResult result =
       observer_manager->IdentifyReferrerChainByRenderFrameHost(
           rfh, kAndroidTelemetryUserGestureLimit, referrer_chain.get());
+  referrer_chain_result_[item].result = result;
 
   size_t referrer_chain_length = referrer_chain->size();
-  UMA_HISTOGRAM_COUNTS_100(
-      "SafeBrowsing.ReferrerURLChainSize.ApkDownloadTelemetry",
-      referrer_chain_length);
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.ReferrerAttributionResult.ApkDownloadTelemetry", result,
-      SafeBrowsingNavigationObserverManager::ATTRIBUTION_FAILURE_TYPE_MAX);
-
   // Determines how many recent navigation events to append to referrer chain.
   size_t recent_navigations_to_collect =
       profile_ ? SafeBrowsingNavigationObserverManager::
@@ -250,6 +226,17 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
     *report->mutable_referrer_chain() =
         *referrer_chain_data->GetReferrerChain();
   }
+
+  UMA_HISTOGRAM_COUNTS_100(
+      "SafeBrowsing.ReferrerURLChainSize.ApkDownloadTelemetry",
+      report->referrer_chain_size());
+  UMA_HISTOGRAM_ENUMERATION(
+      "SafeBrowsing.ReferrerAttributionResult.ApkDownloadTelemetry",
+      referrer_chain_result_[item].result,
+      SafeBrowsingNavigationObserverManager::ATTRIBUTION_FAILURE_TYPE_MAX);
+  UMA_HISTOGRAM_ENUMERATION(
+      "SafeBrowsing.AndroidTelemetry.ApkDownload.IncompleteReason",
+      referrer_chain_result_[item].missing_reason);
 
   // Fill DownloadItemInfo
   ClientSafeBrowsingReportRequest::DownloadItemInfo*

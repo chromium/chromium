@@ -12,6 +12,7 @@
 #include "chrome/browser/safe_browsing/telemetry/telemetry_service.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
@@ -72,12 +73,34 @@ class AndroidTelemetryService
   void OnDownloadCreated(download::DownloadItem* item) override;
 
   // download::DownloadItem::Observer.
-  void OnDownloadUpdated(download::DownloadItem* download) override;
+  void OnDownloadUpdated(download::DownloadItem* item) override;
+  void OnDownloadRemoved(download::DownloadItem* item) override;
 
   Profile* profile() { return profile_; }
 
  private:
   friend class AndroidTelemetryServiceTest;
+
+  enum class ApkDownloadTelemetryIncompleteReason {
+    // |web_contents| was nullptr. This happens sometimes when downloads are
+    // resumed but it's not clear exactly when.
+    MISSING_WEB_CONTENTS = 0,
+    // Navigation manager wasn't ready yet to provide the referrer chain.
+    SB_NAVIGATION_MANAGER_NOT_READY = 1,
+    // Full referrer chain captured.
+    COMPLETE = 2,
+    // No render frame host existed for the download
+    MISSING_RENDER_FRAME_HOST = 3,
+    // The render frame host had not committed to a valid URL
+    RENDER_FRAME_HOST_INVALID_URL = 4,
+
+    kMaxValue = RENDER_FRAME_HOST_INVALID_URL,
+  };
+
+  struct ReferrerChainResult {
+    ApkDownloadTelemetryIncompleteReason missing_reason;
+    SafeBrowsingNavigationObserverManager::AttributionResult result;
+  };
 
   // Whether the ping can be sent, based on empty web_contents, or incognito
   // mode, or extended reporting opt-in status,
@@ -103,6 +126,12 @@ class AndroidTelemetryService
 
   // Profile associated with this instance. Unowned.
   raw_ptr<Profile> profile_;
+
+  // Referrer chains are best computed at download start, before we
+  // know whether it will be suitable to send a ping. In order to log
+  // metrics only for downloads that send a ping, we persist the
+  // outcome of referrer chain computation.
+  std::map<download::DownloadItem*, ReferrerChainResult> referrer_chain_result_;
 
   base::WeakPtrFactory<AndroidTelemetryService> weak_ptr_factory_{this};
 };
