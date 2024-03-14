@@ -23,6 +23,12 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
+
+  public_deps = [ ":constants_java" ]
+}
+
+android_library("constants_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/searchactivityutils/SearchActivityConstants.java" ]
 }
 
 android_library("unit_device_javatests") {
