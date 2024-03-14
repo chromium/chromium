@@ -454,6 +454,7 @@ LocalFrame::~LocalFrame() {
 
 void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(ad_tracker_);
+  visitor->Trace(script_observer_);
   visitor->Trace(attribution_src_loader_);
   visitor->Trace(probe_sink_);
   visitor->Trace(performance_monitor_);
@@ -713,6 +714,9 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
       box_shadow_paint_image_generator_->Shutdown();
     if (clip_path_paint_image_generator_)
       clip_path_paint_image_generator_->Shutdown();
+    if (script_observer_) {
+      script_observer_->Shutdown();
+    }
   }
   idleness_detector_->Shutdown();
   if (inspector_issue_reporter_)
@@ -1805,6 +1809,9 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
     if (RuntimeEnabledFeatures::AdTaggingEnabled()) {
       ad_tracker_ = MakeGarbageCollected<AdTracker>(this);
     }
+    if (blink::LcppScriptObserverEnabled()) {
+      script_observer_ = MakeGarbageCollected<LCPScriptObserver>(this);
+    }
   } else {
     // Inertness only needs to be updated if this frame might inherit the
     // inert state from a higher-level frame. If this is an OOPIF local root,
@@ -1813,6 +1820,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
     UpdateInheritedEffectiveTouchActionIfPossible();
     ad_tracker_ = LocalFrameRoot().ad_tracker_;
     performance_monitor_ = LocalFrameRoot().performance_monitor_;
+    script_observer_ = LocalFrameRoot().script_observer_;
   }
   idleness_detector_ = MakeGarbageCollected<IdlenessDetector>(this, clock);
   attribution_src_loader_ = MakeGarbageCollected<AttributionSrcLoader>(this);

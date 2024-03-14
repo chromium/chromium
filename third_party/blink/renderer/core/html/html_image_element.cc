@@ -123,11 +123,9 @@ HTMLImageElement::HTMLImageElement(Document& document, bool created_by_parser)
       is_predicted_lcp_element_(false) {
   if (blink::LcppScriptObserverEnabled()) {
     if (LocalFrame* frame = document.GetFrame()) {
-      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-        if (LCPScriptObserver* script_observer = lcpp->lcp_script_observer()) {
-          // Record scripts that created this HTMLImageElement.
-          creator_scripts_ = script_observer->GetExecutingScriptUrls();
-        }
+      if (LCPScriptObserver* script_observer = frame->GetScriptObserver()) {
+        // Record scripts that created this HTMLImageElement.
+        creator_scripts_ = script_observer->GetExecutingScriptUrls();
       }
     }
   }
@@ -565,14 +563,12 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+  if (blink::LcppScriptObserverEnabled()) {
     if (LocalFrame* frame = GetDocument().GetFrame()) {
-      if (LCPCriticalPathPredictor* lcpp = frame->GetLCPP()) {
-        if (LCPScriptObserver* script_observer = lcpp->lcp_script_observer()) {
-          // Record scripts that inserted this HTMLImageElement.
-          for (auto& url : script_observer->GetExecutingScriptUrls()) {
-            creator_scripts_.insert(url);
-          }
+      if (LCPScriptObserver* script_observer = frame->GetScriptObserver()) {
+        // Record scripts that inserted this HTMLImageElement.
+        for (auto& url : script_observer->GetExecutingScriptUrls()) {
+          creator_scripts_.insert(url);
         }
       }
     }

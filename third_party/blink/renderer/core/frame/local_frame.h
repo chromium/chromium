@@ -141,6 +141,7 @@ class InspectorTaskRunner;
 class InspectorTraceEvents;
 class InterfaceRegistry;
 class LCPCriticalPathPredictor;
+class LCPScriptObserver;
 class LayoutView;
 class LocalDOMWindow;
 class LocalFrameClient;
@@ -528,6 +529,7 @@ class CORE_EXPORT LocalFrame final
   IdlenessDetector* GetIdlenessDetector() { return idleness_detector_.Get(); }
   AdTracker* GetAdTracker() { return ad_tracker_.Get(); }
   void SetAdTrackerForTesting(AdTracker* ad_tracker);
+  LCPScriptObserver* GetScriptObserver() { return script_observer_.Get(); }
   AttributionSrcLoader* GetAttributionSrcLoader() {
     return attribution_src_loader_.Get();
   }
@@ -1093,6 +1095,7 @@ class CORE_EXPORT LocalFrame final
   // Access content_capture_manager_ through GetOrResetContentCaptureManager()
   // because WebContentCaptureClient might already stop the capture.
   Member<ContentCaptureManager> content_capture_manager_;
+  Member<LCPScriptObserver> script_observer_;
 
   HistoryUserActivationState history_user_activation_state_;
 

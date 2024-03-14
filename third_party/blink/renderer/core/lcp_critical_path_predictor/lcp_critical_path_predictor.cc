@@ -30,9 +30,6 @@ LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
       host_(frame.DomWindow()),
       task_runner_(frame.GetTaskRunner(TaskType::kInternalLoading)) {
   CHECK(LcppEnabled());
-  if (blink::LcppScriptObserverEnabled()) {
-    lcp_script_observer_ = MakeGarbageCollected<LCPScriptObserver>(frame_);
-  }
 }
 
 LCPCriticalPathPredictor::~LCPCriticalPathPredictor() = default;
@@ -328,7 +325,6 @@ void LCPCriticalPathPredictor::OnOutermostMainFrameDocumentLoad() {
 void LCPCriticalPathPredictor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(host_);
-  visitor->Trace(lcp_script_observer_);
 }
 
 }  // namespace blink
