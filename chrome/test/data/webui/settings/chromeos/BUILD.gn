@@ -40,6 +40,7 @@ build_webui_tests("build") {
     "lock_screen_subpage_test.ts",
     "onc_mojo_test.ts",
     "os_page_availability_test.ts",
+    "os_settings_routes_test.ts",
     "router_test.ts",
     "test_api.ts",
     "test_extension_control_browser_proxy.ts",

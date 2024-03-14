@@ -246,7 +246,7 @@ export {OsSettingsMenuElement} from './os_settings_menu/os_settings_menu.js';
 export {OsSettingsSubpageElement} from './os_settings_page/os_settings_subpage.js';
 export {SettingsCardElement} from './os_settings_page/settings_card.js';
 export {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
-export {OsSettingsRoutes} from './os_settings_routes.js';
+export {createRoutes as createRoutesForTesting, OsSettingsRoutes} from './os_settings_routes.js';
 export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_search_box.js';
 export {OsSettingsSearchBoxBrowserProxy, OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
 export {OsSettingsHatsBrowserProxy, OsSettingsHatsBrowserProxyImpl} from './os_settings_ui/os_settings_hats_browser_proxy.js';

@@ -42,6 +42,7 @@ interface MenuItemData {
 suite('<os-settings-menu>', () => {
   let settingsMenu: OsSettingsMenuElement;
   let accountManagerBrowserProxy: TestAccountManagerBrowserProxy;
+  let testRouter: Router;
 
   async function createMenu(): Promise<void> {
     clearBody();
@@ -62,7 +63,8 @@ suite('<os-settings-menu>', () => {
 
     // Reinitialize Router and routes based on load time data. Some routes
     // should not exist in guest mode.
-    Router.resetInstanceForTesting(createRouterForTesting());
+    testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
   }
 
   function enableInputDeviceSettingsSplit(enabled: boolean): void {
@@ -70,6 +72,7 @@ suite('<os-settings-menu>', () => {
   }
 
   setup(() => {
+    loadTimeData.overrideValues({isKerberosEnabled: true});
     simulateGuestMode(/*enabled=*/ false);
 
     accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
@@ -77,33 +80,32 @@ suite('<os-settings-menu>', () => {
         accountManagerBrowserProxy);
   });
 
-  suite('Menu item visibility', () => {
+  teardown(() => {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('Advanced toggle and collapsible menu are not visible', async () => {
+    await createMenu();
+
+    const advancedButton =
+        settingsMenu.shadowRoot!.querySelector('#advancedButton');
+    assertFalse(isVisible(advancedButton));
+
+    const advancedCollapse =
+        settingsMenu.shadowRoot!.querySelector('#advancedCollapse');
+    assertFalse(isVisible(advancedCollapse));
+
+    const advancedSubmenu =
+        settingsMenu.shadowRoot!.querySelector('#advancedSubmenu');
+    assertFalse(isVisible(advancedSubmenu));
+  });
+
+  suite('All menu items', () => {
     setup(async () => {
       await createMenu();
     });
 
-    test('Advanced toggle and collapsible menu are not visible', () => {
-      const advancedButton =
-          settingsMenu.shadowRoot!.querySelector('#advancedButton');
-      assertFalse(isVisible(advancedButton));
-
-      const advancedCollapse =
-          settingsMenu.shadowRoot!.querySelector('#advancedCollapse');
-      assertFalse(isVisible(advancedCollapse));
-
-      const advancedSubmenu =
-          settingsMenu.shadowRoot!.querySelector('#advancedSubmenu');
-      assertFalse(isVisible(advancedSubmenu));
-    });
-
-    test('About page menu item should always be visible', () => {
-      const path = `/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`;
-      const menuItem = queryMenuItemByPath(path);
-      assertTrue(isVisible(menuItem));
-    });
-
     const menuItemData: MenuItemData[] = [
-      // Basic pages
       {
         sectionName: 'kNetwork',
         path: `/${routesMojom.NETWORK_SECTION_PATH}`,
@@ -151,35 +153,59 @@ suite('<os-settings-menu>', () => {
     ];
 
     for (const {sectionName, path} of menuItemData) {
-      test(`${sectionName} menu item is visible if page is available`, () => {
-        // Make page available
-        settingsMenu.pageAvailability = {
-          ...settingsMenu.pageAvailability,
-          [Section[sectionName]]: true,
-        };
-        flush();
+      suite(`When ${sectionName} page is available`, () => {
+        setup(() => {
+          settingsMenu.pageAvailability = {
+            ...settingsMenu.pageAvailability,
+            [Section[sectionName]]: true,
+          };
+          flush();
+        });
 
-        const menuItem = queryMenuItemByPath(path);
-        assertTrue(isVisible(menuItem));
+        test(`${sectionName} menu item is visible`, () => {
+          const menuItem = queryMenuItemByPath(path);
+          assertTrue(isVisible(menuItem));
+        });
+
+
+        test(`${sectionName} menu item is selected when route changes`, () => {
+          const route = testRouter.getRouteForPath(path);
+          assertTrue(!!route);
+          testRouter.navigateTo(route);
+          flush();
+
+          const menuItem = queryMenuItemByPath(path);
+          assertTrue(!!menuItem);
+          assertEquals('true', menuItem.getAttribute('aria-current'));
+          assertTrue(menuItem.classList.contains('iron-selected'));
+        });
       });
 
-      test(
-          `${sectionName} menu item is not visible if page is unavailable`,
-          () => {
-            // Make page unavailable
-            settingsMenu.pageAvailability = {
-              ...settingsMenu.pageAvailability,
-              [Section[sectionName]]: false,
-            };
-            flush();
+      suite(`When ${sectionName} page is not available`, () => {
+        setup(() => {
+          settingsMenu.pageAvailability = {
+            ...settingsMenu.pageAvailability,
+            [Section[sectionName]]: false,
+          };
+          flush();
+        });
 
-            const menuItem = queryMenuItemByPath(path);
-            assertFalse(isVisible(menuItem));
-          });
+        test(`${sectionName} menu item is not visible`, () => {
+          const menuItem = queryMenuItemByPath(path);
+          assertFalse(isVisible(menuItem));
+        });
+      });
     }
   });
 
   suite('About ChromeOS menu item', () => {
+    test('About page menu item should always be visible', async () => {
+      await createMenu();
+      const menuItem =
+          queryMenuItemByPath(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
+      assertTrue(isVisible(menuItem));
+    });
+
     test('Description text', async () => {
       await createMenu();
 

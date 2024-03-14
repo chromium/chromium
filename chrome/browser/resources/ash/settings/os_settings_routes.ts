@@ -38,7 +38,15 @@ export class Route {
    * The document title that should be displayed for this route.
    */
   title: string|undefined;
+
+  /**
+   * The parent route, or null if this is a root route.
+   */
   parent: Route|null;
+
+  /**
+   * The URL path starting with a forward slash. e.g. `/internet`.
+   */
   path: string;
 
   constructor(path: string, title?: string) {
@@ -94,6 +102,23 @@ export class Route {
   isSubpage(): boolean {
     return !this.isNavigableDialog && !!this.parent && this.section !== null &&
         this.parent.section === this.section;
+  }
+
+  /**
+   * Returns the top-most ancestor Route for this route's `section`. If this
+   * route has no `section` then returns null.
+   */
+  getSectionAncestor(): Route|null {
+    if (this.section === null) {
+      return null;
+    }
+
+    let curr: Route = this;
+    while (curr.parent && curr.parent.section !== null) {
+      curr = curr.parent;
+    }
+
+    return curr;
   }
 }
 

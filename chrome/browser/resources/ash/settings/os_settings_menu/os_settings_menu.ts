@@ -373,17 +373,21 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   /**
-   * Set the selected menu item based on a menu item's route matching or
-   * containing the given |route|.
+   * The selected menu item should be the menu item whose path matches the path
+   * of the section ancestor route for the given `route`. For example, the
+   * BLUETOOTH_DEVICES_SUBPAGE route's section ancestor is the BLUETOOTH route,
+   * whose path matches the bluetooth menu item path.
    */
   private setSelectedItemPathForRoute_(route: Route): void {
-    const menuItems =
-        this.shadowRoot!.querySelectorAll('os-settings-menu-item');
-    for (const menuItem of menuItems) {
-      const matchingRoute = Router.getInstance().getRouteForPath(menuItem.path);
-      if (matchingRoute?.contains(route)) {
-        this.setSelectedItemPath_(menuItem.path);
-        return;
+    const sectionAncestorRoute = route.getSectionAncestor();
+    if (sectionAncestorRoute) {
+      const menuItems =
+          this.shadowRoot!.querySelectorAll('os-settings-menu-item');
+      for (const menuItem of menuItems) {
+        if (sectionAncestorRoute.path === menuItem.path) {
+          this.setSelectedItemPath_(menuItem.path);
+          return;
+        }
       }
     }
 
