@@ -68,15 +68,6 @@ bool ContainsIcannNameCollisionIp(const std::vector<IPEndPoint>& endpoints) {
   return false;
 }
 
-base::Value ToLogStringValue(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    return base::Value(absl::get<url::SchemeHostPort>(host).Serialize());
-  }
-
-  return base::Value(absl::get<std::string>(host));
-}
-
 // Creates NetLog parameters for HOST_RESOLVER_MANAGER_JOB_ATTACH/DETACH events.
 base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
                                         RequestPriority priority) {
@@ -86,19 +77,19 @@ base::Value::Dict NetLogJobAttachParams(const NetLogSource& source,
   return dict;
 }
 
-bool IsSchemeHttpsOrWss(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (!absl::holds_alternative<url::SchemeHostPort>(host)) {
+bool IsSchemeHttpsOrWss(const HostResolver::Host& host) {
+  if (!host.HasScheme()) {
     return false;
   }
-  base::StringPiece scheme = absl::get<url::SchemeHostPort>(host).scheme();
+  const std::string& scheme = host.GetScheme();
   return scheme == url::kHttpsScheme || scheme == url::kWssScheme;
 }
 
 }  // namespace
 
-HostResolverManager::JobKey::JobKey(ResolveContext* resolve_context)
-    : resolve_context(resolve_context->GetWeakPtr()) {}
+HostResolverManager::JobKey::JobKey(HostResolver::Host host,
+                                    ResolveContext* resolve_context)
+    : host(std::move(host)), resolve_context(resolve_context->GetWeakPtr()) {}
 
 HostResolverManager::JobKey::~JobKey() = default;
 
@@ -133,8 +124,14 @@ HostCache::Key HostResolverManager::JobKey::ToCacheKey(bool secure) const {
   const DnsQueryType query_type_for_key = query_types.Size() == 1
                                               ? *query_types.begin()
                                               : DnsQueryType::UNSPECIFIED;
-  HostCache::Key key(host, query_type_for_key, flags, source,
-                     network_anonymization_key);
+  absl::variant<url::SchemeHostPort, std::string> host_for_cache;
+  if (host.HasScheme()) {
+    host_for_cache = host.AsSchemeHostPort();
+  } else {
+    host_for_cache = std::string(host.GetHostnameWithoutBrackets());
+  }
+  HostCache::Key key(std::move(host_for_cache), query_type_for_key, flags,
+                     source, network_anonymization_key);
   key.secure = secure;
   return key;
 }
@@ -222,7 +219,7 @@ void HostResolverManager::Job::AddRequest(RequestImpl* request) {
   DCHECK_EQ(host_cache_, request->host_cache());
   // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
   // separated by scheme/port.
-  DCHECK_EQ(HostResolver::GetHostname(key_.host),
+  DCHECK_EQ(key_.host.GetHostnameWithoutBrackets(),
             request->request_host().GetHostnameWithoutBrackets());
 
   request->AssignJob(weak_ptr_factory_.GetSafeRef());
@@ -249,10 +246,7 @@ void HostResolverManager::Job::AddRequest(RequestImpl* request) {
 
 void HostResolverManager::Job::ChangeRequestPriority(RequestImpl* req,
                                                      RequestPriority priority) {
-  // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
-  // separated by scheme/port.
-  DCHECK_EQ(HostResolver::GetHostname(key_.host),
-            req->request_host().GetHostnameWithoutBrackets());
+  DCHECK_EQ(key_.host, req->request_host());
 
   priority_tracker_.Remove(req->priority());
   req->set_priority(priority);
@@ -261,10 +255,7 @@ void HostResolverManager::Job::ChangeRequestPriority(RequestImpl* req,
 }
 
 void HostResolverManager::Job::CancelRequest(RequestImpl* request) {
-  // TODO(crbug.com/1206799): Check equality of whole host once Jobs are
-  // separated by scheme/port.
-  DCHECK_EQ(HostResolver::GetHostname(key_.host),
-            request->request_host().GetHostnameWithoutBrackets());
+  DCHECK_EQ(key_.host, request->request_host());
   DCHECK(!requests_.empty());
 
   priority_tracker_.Remove(request->priority());
@@ -343,7 +334,7 @@ void HostResolverManager::Job::OnEvicted() {
 bool HostResolverManager::Job::ServeFromHosts() {
   DCHECK_GT(num_active_requests(), 0u);
   std::optional<HostCache::Entry> results = resolver_->ServeFromHosts(
-      HostResolver::GetHostname(key_.host), key_.query_types,
+      key_.host.GetHostnameWithoutBrackets(), key_.query_types,
       key_.flags & HOST_RESOLVER_DEFAULT_FAMILY_SET_DUE_TO_NO_IPV6, tasks_);
   if (results) {
     // This will destroy the Job.
@@ -455,7 +446,7 @@ base::Value::Dict HostResolverManager::Job::NetLogJobCreationParams(
     const NetLogSource& source) {
   base::Value::Dict dict;
   source.AddToEventParameters(dict);
-  dict.Set("host", ToLogStringValue(key_.host));
+  dict.Set("host", key_.host.ToString());
   base::Value::List query_types_list;
   for (DnsQueryType query_type : key_.query_types) {
     query_types_list.Append(kDnsQueryTypes.at(query_type));
@@ -560,7 +551,7 @@ void HostResolverManager::Job::StartSystemTask() {
   DCHECK(HasAddressType(key_.query_types));
 
   system_task_ = HostResolverSystemTask::Create(
-      std::string(HostResolver::GetHostname(key_.host)),
+      std::string(key_.host.GetHostnameWithoutBrackets()),
       HostResolver::DnsQueryTypeSetToAddressFamily(key_.query_types),
       key_.flags, resolver_->host_resolver_system_params_, net_log_,
       key_.GetTargetNetwork());
@@ -795,7 +786,7 @@ void HostResolverManager::Job::StartMdnsTask() {
   MDnsClient* client = nullptr;
   int rv = resolver_->GetOrCreateMdnsClient(&client);
   mdns_task_ = std::make_unique<HostResolverMdnsTask>(
-      client, std::string{HostResolver::GetHostname(key_.host)},
+      client, std::string(key_.host.GetHostnameWithoutBrackets()),
       key_.query_types);
 
   if (rv == OK) {
@@ -836,7 +827,7 @@ void HostResolverManager::Job::OnMdnsImmediateFailure(int rv) {
 void HostResolverManager::Job::StartNat64Task() {
   DCHECK(!nat64_task_);
   nat64_task_ = std::make_unique<HostResolverNat64Task>(
-      HostResolver::GetHostname(key_.host), key_.network_anonymization_key,
+      key_.host.GetHostnameWithoutBrackets(), key_.network_anonymization_key,
       net_log_, &*key_.resolve_context, resolver_);
   nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
                                     weak_ptr_factory_.GetWeakPtr()));
@@ -908,7 +899,7 @@ void HostResolverManager::Job::RecordJobHistograms(
         // successful queries are reported as errors, which would skew the
         // metrics.
         IsSchemeHttpsOrWss(key_.host) &&
-        IsGoogleHostWithAlpnH3(HostResolver::GetHostname(key_.host))) {
+        IsGoogleHostWithAlpnH3(key_.host.GetHostnameWithoutBrackets())) {
       bool has_metadata = !results.GetMetadatas().empty();
       base::UmaHistogramExactLinear(
           "Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2",

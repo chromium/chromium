@@ -533,21 +533,6 @@ bool HostResolver::AllProtocolEndpointsHaveEch(
 }
 
 // static
-base::StringPiece HostResolver::GetHostname(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    base::StringPiece hostname = absl::get<url::SchemeHostPort>(host).host();
-    if (hostname.size() >= 2 && hostname.front() == '[' &&
-        hostname.back() == ']') {
-      hostname = hostname.substr(1, hostname.size() - 2);
-    }
-    return hostname;
-  }
-
-  return absl::get<std::string>(host);
-}
-
-// static
 bool HostResolver::MayUseNAT64ForIPv4Literal(HostResolverFlags flags,
                                              HostResolverSource source,
                                              const IPAddress& ip_address) {

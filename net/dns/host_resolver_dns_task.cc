@@ -134,7 +134,7 @@ bool HostResolverDnsTask::TransactionInfo::operator<(
 
 HostResolverDnsTask::HostResolverDnsTask(
     DnsClient* client,
-    absl::variant<url::SchemeHostPort, std::string> host,
+    HostResolver::Host host,
     NetworkAnonymizationKey anonymization_key,
     DnsQueryTypeSet query_types,
     ResolveContext* resolve_context,
@@ -293,13 +293,12 @@ void HostResolverDnsTask::CreateAndStartTransaction(
   DCHECK(!transaction_info.transaction);
   DCHECK_NE(DnsQueryType::UNSPECIFIED, transaction_info.type);
 
-  std::string transaction_hostname(HostResolver::GetHostname(host_));
+  std::string transaction_hostname(host_.GetHostnameWithoutBrackets());
 
   // For HTTPS, prepend "_<port>._https." for any non-default port.
   uint16_t request_port = 0;
-  if (transaction_info.type == DnsQueryType::HTTPS &&
-      absl::holds_alternative<url::SchemeHostPort>(host_)) {
-    const auto& scheme_host_port = absl::get<url::SchemeHostPort>(host_);
+  if (transaction_info.type == DnsQueryType::HTTPS && host_.HasScheme()) {
+    const auto& scheme_host_port = host_.AsSchemeHostPort();
     transaction_hostname =
         dns_util::GetNameForHttpsQuery(scheme_host_port, &request_port);
   }
@@ -413,8 +412,8 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
              transaction_info.error_behavior ==
                  TransactionErrorBehavior::kSynthesizeEmpty);
       // For non-fatal failures, synthesize an empty response.
-      fake_response = CreateFakeEmptyResponse(HostResolver::GetHostname(host_),
-                                              transaction_info.type);
+      fake_response = CreateFakeEmptyResponse(
+          host_.GetHostnameWithoutBrackets(), transaction_info.type);
       response = &fake_response.value();
     }
   }
@@ -427,7 +426,7 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
     DnsResponseResultExtractor extractor(*response);
     results = extractor.ExtractDnsResults(
         transaction_info.type,
-        /*original_domain_name=*/HostResolver::GetHostname(host_),
+        /*original_domain_name=*/host_.GetHostnameWithoutBrackets(),
         request_port);
   }
 
@@ -1003,11 +1002,11 @@ bool HostResolverDnsTask::ShouldTriggerHttpToHttpsUpgrade(
   // Upgrade if at least one HTTPS record was compatible, and the host uses an
   // upgradable scheme.
 
-  if (!absl::holds_alternative<url::SchemeHostPort>(host_)) {
+  if (!host_.HasScheme()) {
     return false;
   }
 
-  base::StringPiece scheme = absl::get<url::SchemeHostPort>(host_).scheme();
+  const std::string& scheme = host_.GetScheme();
   if (scheme != url::kHttpScheme && scheme != url::kWsScheme) {
     return false;
   }

@@ -76,6 +76,10 @@ class NET_EXPORT HostResolver {
 
     const url::SchemeHostPort& AsSchemeHostPort() const;
 
+    bool operator==(const Host& other) const { return host_ == other.host_; }
+
+    bool operator<(const Host& other) const { return host_ < other.host_; }
+
    private:
     absl::variant<url::SchemeHostPort, HostPortPair> host_;
   };
@@ -522,13 +526,6 @@ class NET_EXPORT HostResolver {
   // guidance in section 10.1 of draft-ietf-dnsop-svcb-https-11.
   static bool AllProtocolEndpointsHaveEch(
       base::span<const HostResolverEndpointResult> endpoints);
-
-  // Returns the hostname part of `host`.
-  //
-  // TODO(crbug.com/1264933): Delete once `HostPortPair` usage is fully replaced
-  // in `HostResolver` and results.
-  static base::StringPiece GetHostname(
-      const absl::variant<url::SchemeHostPort, std::string>& host);
 
   // Returns true if NAT64 can be used in place of an IPv4 address during host
   // resolution.

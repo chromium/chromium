@@ -1072,44 +1072,6 @@ TEST_F(HostResolverManagerTest, DeDupeRequests) {
   }
 }
 
-// TODO(crbug.com/1206799): Delete/adapt once requests with different ports are
-// not deduped.
-TEST_F(HostResolverManagerTest, DeDupeRequestsWithDifferentPorts) {
-  // Start 5 requests, duplicating hosts "a" and "b". Since the resolver_proc is
-  // blocked, these should all pile up until we signal it.
-  std::vector<std::unique_ptr<ResolveHostResponseHelper>> responses;
-  responses.emplace_back(
-      std::make_unique<ResolveHostResponseHelper>(resolver_->CreateRequest(
-          HostPortPair("a", 80), NetworkAnonymizationKey(), NetLogWithSource(),
-          std::nullopt, resolve_context_.get())));
-  responses.emplace_back(
-      std::make_unique<ResolveHostResponseHelper>(resolver_->CreateRequest(
-          HostPortPair("b", 80), NetworkAnonymizationKey(), NetLogWithSource(),
-          std::nullopt, resolve_context_.get())));
-  responses.emplace_back(
-      std::make_unique<ResolveHostResponseHelper>(resolver_->CreateRequest(
-          HostPortPair("b", 81), NetworkAnonymizationKey(), NetLogWithSource(),
-          std::nullopt, resolve_context_.get())));
-  responses.emplace_back(
-      std::make_unique<ResolveHostResponseHelper>(resolver_->CreateRequest(
-          HostPortPair("a", 82), NetworkAnonymizationKey(), NetLogWithSource(),
-          std::nullopt, resolve_context_.get())));
-  responses.emplace_back(
-      std::make_unique<ResolveHostResponseHelper>(resolver_->CreateRequest(
-          HostPortPair("b", 83), NetworkAnonymizationKey(), NetLogWithSource(),
-          std::nullopt, resolve_context_.get())));
-
-  for (auto& response : responses) {
-    ASSERT_FALSE(response->complete());
-  }
-
-  proc_->SignalMultiple(2u);  // One for "a", one for "b".
-
-  for (auto& response : responses) {
-    EXPECT_THAT(response->result_error(), IsOk());
-  }
-}
-
 TEST_F(HostResolverManagerTest, CancelMultipleRequests) {
   std::vector<std::unique_ptr<ResolveHostResponseHelper>> responses;
   responses.emplace_back(
@@ -1264,11 +1226,11 @@ TEST_F(HostResolverManagerTest, DeleteWithinCallback) {
   // request will run first and cancel the rest.
   responses.emplace_back(
       std::make_unique<ResolveHostResponseHelper>(resolver_->CreateRequest(
-          HostPortPair("a", 81), NetworkAnonymizationKey(), NetLogWithSource(),
+          HostPortPair("a", 80), NetworkAnonymizationKey(), NetLogWithSource(),
           std::nullopt, resolve_context_.get())));
   responses.emplace_back(
       std::make_unique<ResolveHostResponseHelper>(resolver_->CreateRequest(
-          HostPortPair("a", 82), NetworkAnonymizationKey(), NetLogWithSource(),
+          HostPortPair("a", 80), NetworkAnonymizationKey(), NetLogWithSource(),
           std::nullopt, resolve_context_.get())));
 
   proc_->SignalMultiple(3u);

@@ -53,7 +53,7 @@ HostResolverManager::RequestImpl::RequestImpl(
                                       : ResolveHostParameters()),
       resolve_context_(std::move(resolve_context)),
       priority_(parameters_.initial_priority),
-      job_key_(JobKey(resolve_context_.get())),
+      job_key_(request_host_, resolve_context_.get()),
       resolver_(std::move(resolver)),
       tick_clock_(tick_clock) {}
 
@@ -302,9 +302,9 @@ int HostResolverManager::RequestImpl::DoIPv6Reachability() {
 }
 
 int HostResolverManager::RequestImpl::DoGetParameters() {
-  resolver_->InitializeJobKeyAndIPAddress(
-      request_host_, network_anonymization_key_, parameters_, source_net_log_,
-      job_key_, ip_address_);
+  resolver_->InitializeJobKeyAndIPAddress(network_anonymization_key_,
+                                          parameters_, source_net_log_,
+                                          job_key_, ip_address_);
 
   // A reachability probe to determine if the network is only reachable on
   // IPv6 will be scheduled if the parameters are met for using NAT64 in place
