@@ -1576,7 +1576,7 @@
             ]
         }
     ],
-    "AutofillGranularFillingAvailable": [
+    "AutofillGranularFillingAndManualFallbackForUnclassifiedFieldsAvailable": [
         {
             "platforms": [
                 "chromeos",
@@ -1587,8 +1587,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_GranularFillingOnly",
                     "enable_features": [
+                        "AutofillGranularFillingAvailable"
+                    ],
+                    "disable_features": [
+                        "AutofillForUnclassifiedFieldsAvailable"
+                    ]
+                },
+                {
+                    "name": "Enabled_GranularFillingAndManualFallbackForUnclassifiedFields",
+                    "enable_features": [
+                        "AutofillForUnclassifiedFieldsAvailable",
                         "AutofillGranularFillingAvailable"
                     ]
                 }
