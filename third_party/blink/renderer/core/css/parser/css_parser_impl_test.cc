@@ -477,7 +477,6 @@ TEST(CSSParserImplTest, ObserveNestedLayer) {
 
 TEST(CSSParserImplTest, NestedIdent) {
   test::TaskEnvironment task_environment;
-  ScopedCSSNestingIdentForTest enabled(true);
 
   String sheet_text = "div { p:hover { } }";
   auto* context = MakeGarbageCollected<CSSParserContext>(

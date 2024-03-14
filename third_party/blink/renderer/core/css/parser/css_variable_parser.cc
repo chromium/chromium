@@ -53,12 +53,10 @@ bool IsValidRestrictedDeclarationValue(CSSParserTokenRange range,
   bool has_top_level_brace = false;
 
   while (!range.AtEnd()) {
-    if (RuntimeEnabledFeatures::CSSNestingIdentEnabled()) {
-      if (block_stack_size == 0 && range.Peek().GetType() != kWhitespaceToken) {
-        ++top_level_component_values;
-        if (range.Peek().GetType() == kLeftBraceToken) {
-          has_top_level_brace = true;
-        }
+    if (block_stack_size == 0 && range.Peek().GetType() != kWhitespaceToken) {
+      ++top_level_component_values;
+      if (range.Peek().GetType() == kLeftBraceToken) {
+        has_top_level_brace = true;
       }
     }
 
@@ -126,10 +124,8 @@ bool IsValidRestrictedDeclarationValue(CSSParserTokenRange range,
     }
   }
 
-  if (RuntimeEnabledFeatures::CSSNestingIdentEnabled()) {
-    has_positioned_braces =
-        has_top_level_brace && (top_level_component_values > 1);
-  }
+  has_positioned_braces =
+      has_top_level_brace && (top_level_component_values > 1);
 
   return true;
 }

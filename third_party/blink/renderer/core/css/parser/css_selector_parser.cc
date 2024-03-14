@@ -719,23 +719,6 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     return {};
   }
 
-  // When nesting, the complex selector list cannot start with a tag,
-  // since that would cause ambiguous parsing without adding more
-  // lookahead. We normally cannot get here if so (since seeing an ident
-  // would cause us to parse it as a property declaration, not a selector),
-  // but if we tried to set the selector text via CSSOM, we could.
-  // Thus, we need the explicit test here.
-  //
-  // (This only covers the first rule in the complex selector list;
-  // see https://github.com/w3c/csswg-drafts/issues/7980.)
-  const bool disallow_tag_start =
-      !RuntimeEnabledFeatures::CSSNestingIdentEnabled() &&
-      (nesting_type == CSSNestingType::kNesting);
-  if (disallow_tag_start && first_in_complex_selector_list &&
-      compound_selector[0].Match() == CSSSelector::MatchType::kTag) {
-    return {};
-  }
-
   // Reverse the compound selector, so that it comes out properly
   // after we reverse everything below.
   std::reverse(compound_selector.begin(), compound_selector.end());

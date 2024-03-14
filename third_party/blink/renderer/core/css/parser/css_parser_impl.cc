@@ -2430,8 +2430,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
   //
   // https://drafts.csswg.org/css-syntax/#consume-qualified-rule
   bool custom_property_ambiguity = false;
-  if (RuntimeEnabledFeatures::CSSNestingIdentEnabled() &&
-      CSSVariableParser::IsValidVariableName(stream.Peek())) {
+  if (CSSVariableParser::IsValidVariableName(stream.Peek())) {
     CSSParserTokenStream::State state = stream.Save();
     stream.ConsumeIncludingWhitespace();  // <ident>
     custom_property_ambiguity = stream.Peek().GetType() == kColonToken;
@@ -2623,18 +2622,6 @@ void CSSParserImpl::ConsumeDeclarationList(
           if (child_rules && !child_rules->empty()) {
             // https://github.com/w3c/csswg-drafts/issues/8738
             context_->Count(WebFeature::kCSSDeclarationAfterNestedRule);
-          }
-          break;
-        } else if (!RuntimeEnabledFeatures::CSSNestingIdentEnabled() ||
-                   stream.UncheckedPeek().GetType() == kSemicolonToken) {
-          // Recover from an error when CSSNestingIdent is not enabled.
-          // When CSSNestingIdent is enabled, we would instead normally Restore
-          // the stream and retry as a nested style rule, but as an optimization
-          // we avoid this restart if we ended on a kSemicolonToken, as this
-          // situation can't produce a valid rule.
-          stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
-          if (!stream.AtEnd()) {
-            stream.UncheckedConsume();  // kSemicolonToken
           }
           break;
         }
@@ -3004,10 +2991,6 @@ CSSTokenizedValue CSSParserImpl::ConsumeValue(
 
 CSSTokenizedValue CSSParserImpl::ConsumeRestrictedPropertyValue(
     CSSParserTokenStream& stream) {
-  if (!RuntimeEnabledFeatures::CSSNestingIdentEnabled()) {
-    return ConsumeUnrestrictedPropertyValue(stream);
-  }
-
   if (stream.Peek().GetType() == kLeftBraceToken) {
     // '{}' must be the whole value, hence we simply consume a component
     // value from the stream, and consider this the whole value.

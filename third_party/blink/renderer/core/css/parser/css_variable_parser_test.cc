@@ -61,10 +61,9 @@ const char* invalid_variable_reference_value[] = {
 
 class ValidVariableReferenceTest
     : public testing::Test,
-      public testing::WithParamInterface<const char*>,
-      private ScopedCSSNestingIdentForTest {
+      public testing::WithParamInterface<const char*> {
  public:
-  ValidVariableReferenceTest() : ScopedCSSNestingIdentForTest(true) {}
+  ValidVariableReferenceTest() = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -92,10 +91,9 @@ TEST_P(ValidVariableReferenceTest, ParseUniversalSyntaxValue) {
 
 class InvalidVariableReferenceTest
     : public testing::Test,
-      public testing::WithParamInterface<const char*>,
-      private ScopedCSSNestingIdentForTest {
+      public testing::WithParamInterface<const char*> {
  public:
-  InvalidVariableReferenceTest() : ScopedCSSNestingIdentForTest(true) {}
+  InvalidVariableReferenceTest() = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -123,10 +121,9 @@ TEST_P(InvalidVariableReferenceTest, ParseUniversalSyntaxValue) {
 
 class CustomPropertyDeclarationTest
     : public testing::Test,
-      public testing::WithParamInterface<const char*>,
-      private ScopedCSSNestingIdentForTest {
+      public testing::WithParamInterface<const char*> {
  public:
-  CustomPropertyDeclarationTest() : ScopedCSSNestingIdentForTest(true) {}
+  CustomPropertyDeclarationTest() = default;
 };
 
 // Although these are invalid as var()-containing <declaration-value>s
