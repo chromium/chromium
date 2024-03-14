@@ -107,18 +107,22 @@ GURL GetGooglePasswordManagerURL(
     password_manager::ManagePasswordsReferrer referrer);
 
 #if !BUILDFLAG(IS_ANDROID)
-// Navigates to either the Google Password Manager or the Chrome Password
-// Settings page, depending on the user's password syncing state and whether the
-// corresponding feature flag is enabled.
+// Navigates to the Google Password Manager page.
 void NavigateToManagePasswordsPage(
     Browser* browser,
+    password_manager::ManagePasswordsReferrer referrer);
+
+// Navigates to the Google Password Manager subpage to show the credential
+// details for the `password_domain_name`.
+void NavigateToPasswordDetailsPage(
+    Browser* browser,
+    const std::string& password_domain_name,
     password_manager::ManagePasswordsReferrer referrer);
 
 // Navigates to the Password Manager settings page and focuses the account store
 // toggle.
 void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser);
 
-// Navigates to Passwords Checkup page.
 void NavigateToPasswordCheckupPage(Profile* profile);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

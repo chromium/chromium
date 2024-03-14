@@ -464,10 +464,11 @@ std::unique_ptr<views::View> CreateEditNoteRow(
   return row;
 }
 
-std::unique_ptr<RichHoverButton> CreateManagePasswordRow() {
-  base::RepeatingClosure callback = base::DoNothing();
+std::unique_ptr<RichHoverButton> CreateManagePasswordRow(
+    base::RepeatingClosure on_manage_password_clicked_callback) {
   auto manage_password_row = std::make_unique<RichHoverButton>(
-      std::move(callback),
+      /*callback=*/
+      std::move(on_manage_password_clicked_callback),
       /*main_image_icon=*/
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
                                      ui::kColorIcon),
@@ -526,7 +527,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
         username_exists_callback,
     base::RepeatingClosure switched_to_edit_mode_callback,
     base::RepeatingClosure on_activity_callback,
-    base::RepeatingCallback<void(bool)> on_input_validation_callback)
+    base::RepeatingCallback<void(bool)> on_input_validation_callback,
+    base::RepeatingClosure on_manage_password_clicked_callback)
     : username_exists_callback_(std::move(username_exists_callback)),
       switched_to_edit_mode_callback_(
           std::move(switched_to_edit_mode_callback)),
@@ -626,7 +628,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                              0)))
                          .Build());
 
-    manage_password_row_ = AddChildView(CreateManagePasswordRow());
+    manage_password_row_ = AddChildView(CreateManagePasswordRow(
+        std::move(on_manage_password_clicked_callback)));
   } else {
     // We need the bottom padding only if the "Manage password" button is not
     // added to the layout.

@@ -1048,6 +1048,34 @@ class PasswordBubbleWithManagePasswordButtonInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordBubbleWithManagePasswordButtonInteractiveUiTest,
+                       ClosesBubbleOnNavigationToPasswordDetailsSubpage) {
+  base::HistogramTester histogram_tester;
+
+  SetupManagingPasswords();
+  EXPECT_FALSE(IsBubbleShowing());
+  ExecuteManagePasswordsCommand();
+  ASSERT_TRUE(IsBubbleShowing());
+
+  static_cast<ManagePasswordsView*>(
+      PasswordBubbleViewBase::manage_password_bubble())
+      ->DisplayDetailsOfPasswordForTesting(*test_form());
+
+  ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+      static_cast<int>(
+          password_manager::ManagePasswordsViewIDs::kManagePasswordButton)));
+  EXPECT_FALSE(IsBubbleShowing());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordManagementBubble.UserAction",
+      password_manager::metrics_util::PasswordManagementBubbleInteractions::
+          kManagePasswordButtonClicked,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.UIDismissalReason",
+      password_manager::metrics_util::CLICKED_MANAGE_PASSWORD, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordBubbleWithManagePasswordButtonInteractiveUiTest,
                        NavigateToManagementDetailsViewAndTakeScreenshot) {
   const char kFirstCredentialsRow[] = "FirstCredentialsRow";
 

@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -239,6 +239,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
       case ManagePasswordsReferrer::kSharedPasswordsNotificationBubble:
       case ManagePasswordsReferrer::kSearchPasswordsWidget:
       case ManagePasswordsReferrer::kOmniboxPedalSuggestion:
+      case ManagePasswordsReferrer::kManagePasswordDetailsBubble:
         NOTREACHED_NORETURN();
     }
 
@@ -252,9 +253,17 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
 #if !BUILDFLAG(IS_ANDROID)
 void NavigateToManagePasswordsPage(Browser* browser,
                                    ManagePasswordsReferrer referrer) {
-  UMA_HISTOGRAM_ENUMERATION("PasswordManager.ManagePasswordsReferrer",
-                            referrer);
+  base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
+                                referrer);
   chrome::ShowPasswordManager(browser);
+}
+
+void NavigateToPasswordDetailsPage(Browser* browser,
+                                   const std::string& password_domain_name,
+                                   ManagePasswordsReferrer referrer) {
+  base::UmaHistogramEnumeration("PasswordManager.ManagePasswordsReferrer",
+                                referrer);
+  chrome::ShowPasswordDetailsPage(browser, password_domain_name);
 }
 
 void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser) {

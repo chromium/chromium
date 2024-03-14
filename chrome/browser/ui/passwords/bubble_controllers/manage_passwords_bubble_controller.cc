@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -96,6 +97,23 @@ void ManagePasswordsBubbleController::OnManageClicked(
   dismissal_reason_ = metrics_util::CLICKED_MANAGE;
   if (delegate_) {
     delegate_->NavigateToPasswordManagerSettingsPage(referrer);
+  }
+}
+
+void ManagePasswordsBubbleController::OnManagePasswordClicked(
+    password_manager::ManagePasswordsReferrer referrer) {
+  CHECK(currently_selected_password_.has_value());
+  dismissal_reason_ = metrics_util::CLICKED_MANAGE_PASSWORD;
+  if (delegate_) {
+    std::vector<password_manager::CredentialUIEntry::DomainInfo>
+        affiliated_domains = password_manager::CredentialUIEntry(
+                                 currently_selected_password_.value())
+                                 .GetAffiliatedDomains();
+    CHECK(!affiliated_domains.empty());
+    // Any `affiliated_domains[i].name` can used to navigate to the credential
+    // details page.
+    delegate_->NavigateToPasswordDetailsPageInPasswordManager(
+        affiliated_domains[0].name, referrer);
   }
 }
 

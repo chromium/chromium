@@ -46,6 +46,11 @@ class ManagePasswordsBubbleController : public PasswordBubbleControllerBase {
   // Called by the view code when the manage button is clicked by the user.
   void OnManageClicked(password_manager::ManagePasswordsReferrer referrer);
 
+  // Called by the view code when the user clicks the "Manage button" to open
+  // the details page for a particular credential.
+  void OnManagePasswordClicked(
+      password_manager::ManagePasswordsReferrer referrer);
+
   // Makes a request to the favicon service for the icon of current visible URL.
   // The request to the favicon store is canceled on destruction of the
   // controller.

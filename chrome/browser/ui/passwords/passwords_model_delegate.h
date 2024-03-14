@@ -146,6 +146,12 @@ class PasswordsModelDelegate {
   virtual void NavigateToPasswordManagerSettingsPage(
       password_manager::ManagePasswordsReferrer referrer) = 0;
 
+  // Open a new tab, pointing to the password manager subpage with the
+  // credential details for the `password_domain_name`.
+  virtual void NavigateToPasswordDetailsPageInPasswordManager(
+      const std::string& password_domain_name,
+      password_manager::ManagePasswordsReferrer referrer) = 0;
+
   // Opens password manager settings page and focuses account store toggle.
   virtual void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) = 0;

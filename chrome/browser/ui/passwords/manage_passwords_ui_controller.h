@@ -181,6 +181,9 @@ class ManagePasswordsUIController
       password_manager::CredentialType credential_type) override;
   void NavigateToPasswordManagerSettingsPage(
       password_manager::ManagePasswordsReferrer referrer) override;
+  void NavigateToPasswordDetailsPageInPasswordManager(
+      const std::string& password_domain_name,
+      password_manager::ManagePasswordsReferrer referrer) override;
   void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) override;
   void SignIn(const AccountInfo& account) override;

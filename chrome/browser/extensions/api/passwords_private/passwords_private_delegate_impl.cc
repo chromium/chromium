@@ -1202,7 +1202,12 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
                           std::back_inserter(entry.affiliated_domains),
                           [](const CredentialUIEntry::DomainInfo& domain) {
                             api::passwords_private::DomainInfo domain_info;
+                            // `domain.name` is used to redirect to the Password
+                            // Manager page for the password represented by the
+                            // current `CredentialUIEntry`.
+                            // LINT.IfChange
                             domain_info.name = domain.name;
+                            // LINT.ThenChange(//chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.cc)
                             domain_info.url = domain.url.spec();
                             domain_info.signon_realm = domain.signon_realm;
                             return domain_info;

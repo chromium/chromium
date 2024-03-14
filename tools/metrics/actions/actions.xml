@@ -28267,6 +28267,13 @@ should be able to be added at any place in this file.
   <description>Settings: passwords check</description>
 </action>
 
+<action name="Options_ShowPasswordDetailsInPasswordManager">
+  <owner>mamir@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <description>Settings: credential details for domain</description>
+</action>
+
 <action name="Options_ShowPasswordManager">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>

@@ -886,6 +886,14 @@ void ManagePasswordsUIController::NavigateToPasswordManagerSettingsPage(
 }
 
 void ManagePasswordsUIController::
+    NavigateToPasswordDetailsPageInPasswordManager(
+        const std::string& password_domain_name,
+        password_manager::ManagePasswordsReferrer referrer) {
+  NavigateToPasswordDetailsPage(chrome::FindBrowserWithTab(web_contents()),
+                                password_domain_name, referrer);
+}
+
+void ManagePasswordsUIController::
     NavigateToPasswordManagerSettingsAccountStoreToggle(
         password_manager::ManagePasswordsReferrer referrer) {
   NavigateToManagePasswordsSettingsAccountStoreToggle(

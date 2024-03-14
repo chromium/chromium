@@ -74,6 +74,7 @@ enum UIDismissalReason {
   AUTO_SIGNIN_TOAST_CLICKED_OBSOLETE = 10,  // obsolete.
   CLICKED_BRAND_NAME_OBSOLETE = 11,         // obsolete.
   CLICKED_PASSWORDS_DASHBOARD = 12,
+  CLICKED_MANAGE_PASSWORD = 13,
   NUM_UI_RESPONSES,
 };
 
@@ -579,7 +580,8 @@ enum class PasswordManagementBubbleInteractions {
   kNotePartiallyCopied = 15,
   kNoteFullyCopied = 16,
   kMovePasswordLinkClicked = 17,
-  kMaxValue = kMovePasswordLinkClicked,
+  kManagePasswordButtonClicked = 18,
+  kMaxValue = kManagePasswordButtonClicked,
 };
 
 // Represents different causes for showing the password migration warning.

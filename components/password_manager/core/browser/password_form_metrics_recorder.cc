@@ -55,6 +55,7 @@ PasswordFormMetricsRecorder::BubbleDismissalReason GetBubbleDismissalReason(
 
     // Ignore these for metrics collection:
     case metrics_util::CLICKED_MANAGE:
+    case metrics_util::CLICKED_MANAGE_PASSWORD:
     case metrics_util::CLICKED_PASSWORDS_DASHBOARD:
     case metrics_util::AUTO_SIGNIN_TOAST_TIMEOUT:
       break;

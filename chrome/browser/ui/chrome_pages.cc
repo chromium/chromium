@@ -512,6 +512,16 @@ void ShowPasswordManager(Browser* browser) {
                                          GURL(kChromeUIPasswordManagerURL));
 }
 
+void ShowPasswordDetailsPage(Browser* browser,
+                             const std::string& password_domain_name) {
+  base::RecordAction(
+      UserMetricsAction("Options_ShowPasswordDetailsInPasswordManager"));
+  std::string url =
+      base::StrCat({kChromeUIPasswordManagerURL, "/", kPasswordManagerSubPage,
+                    "/", password_domain_name});
+  ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(url));
+}
+
 void ShowPasswordCheck(Browser* browser) {
   base::RecordAction(UserMetricsAction("Options_ShowPasswordCheck"));
   ShowSingletonTabIgnorePathOverwriteNTP(

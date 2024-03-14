@@ -42,13 +42,16 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
   // is typing a note in the edit view, or copying a username.
   // `on_input_validation_callback` is invoked after validating user input to
   // inform the embedder if the current input is invalid.
+  // `on_manage_password_clicked_callback` callback is invoked when the user
+  // clicks on the "Manage password" button.
   ManagePasswordsDetailsView(
       password_manager::PasswordForm password_form,
       base::RepeatingCallback<bool(const std::u16string&)>
           username_exists_callback,
       base::RepeatingClosure switched_to_edit_mode_callback,
       base::RepeatingClosure on_activity_callback,
-      base::RepeatingCallback<void(bool)> on_input_validation_callback);
+      base::RepeatingCallback<void(bool)> on_input_validation_callback,
+      base::RepeatingClosure on_manage_password_clicked_callback);
 
   ManagePasswordsDetailsView(const ManagePasswordsDetailsView&) = delete;
   ManagePasswordsDetailsView& operator=(const ManagePasswordsDetailsView&) =
