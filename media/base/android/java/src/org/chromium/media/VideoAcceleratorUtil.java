@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A collection of SDK based helper functions for retrieving supported profiles
@@ -49,6 +50,10 @@ class VideoAcceleratorUtil {
         MediaCodecUtil.MimeTypes.VIDEO_DV,
     };
 
+    // Encoders known to support temporal layers.
+    private static final Set<String> TEMPORAL_SVC_SUPPORTING_ENCODERS =
+            Set.of("c2.qti.avc.encoder", "c2.exynos.h264.encoder");
+
     private static class SupportedProfileAdapter {
         public int profile;
         public int level;
@@ -64,6 +69,7 @@ class VideoAcceleratorUtil {
         public boolean isSoftwareCodec;
         public boolean supportsSecurePlayback;
         public boolean requiresSecurePlayback;
+        public int maxNumberOfTemporalLayers;
 
         @CalledByNative("SupportedProfileAdapter")
         public int getProfile() {
@@ -134,6 +140,11 @@ class VideoAcceleratorUtil {
         public boolean requiresSecurePlayback() {
             return this.requiresSecurePlayback;
         }
+
+        @CalledByNative("SupportedProfileAdapter")
+        public int getMaxNumberOfTemporalLayers() {
+            return this.maxNumberOfTemporalLayers;
+        }
     }
 
     // Currently our encoder only supports NV12.
@@ -168,6 +179,17 @@ class VideoAcceleratorUtil {
         var lowerName = name.toLowerCase(Locale.ROOT);
         // This is usually a hw decoder provided by the OEM vendors.
         return lowerName.endsWith(".low_latency");
+    }
+
+    private static int getNumberOfTemporalLayers(String name) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return 1;
+        }
+
+        if (TEMPORAL_SVC_SUPPORTING_ENCODERS.contains(name)) {
+            return 3;
+        }
+        return 1;
     }
 
     /**
@@ -250,6 +272,8 @@ class VideoAcceleratorUtil {
                     }
                 }
 
+                int maxNumberOfTemporalLayers =
+                        getNumberOfTemporalLayers(info.getName().toLowerCase(Locale.getDefault()));
                 ArrayList<SupportedProfileAdapter> profiles =
                         info.isHardwareAccelerated() ? hardwareProfiles : softwareProfiles;
                 for (int mediaProfile : supportedProfiles) {
@@ -266,6 +290,7 @@ class VideoAcceleratorUtil {
                     profile.supportsVbr = supportsVbr;
                     profile.name = info.getName();
                     profile.isSoftwareCodec = info.isSoftwareOnly();
+                    profile.maxNumberOfTemporalLayers = maxNumberOfTemporalLayers;
                     profiles.add(profile);
 
                     // Invert min/max height/width for a portrait mode entry if needed.
