@@ -113,11 +113,10 @@ class NetworkChangeNotifierAppleTest : public WithTaskEnvironment,
               base::apple::ScopedCFTypeRef<CFMutableArrayRef> array(
                   CFArrayCreateMutable(nullptr,
                                        /*capacity=*/0, &kCFTypeArrayCallBacks));
-              CFArrayAppendValue(
-                  array.get(),
+              base::apple::ScopedCFTypeRef<CFStringRef> entry_key(
                   SCDynamicStoreKeyCreateNetworkGlobalEntity(
                       nullptr, kSCDynamicStoreDomainState, entity));
-
+              CFArrayAppendValue(array.get(), entry_key.get());
               notifier.OnNetworkConfigChange(array.get());
               run_loop.Quit();
             }));

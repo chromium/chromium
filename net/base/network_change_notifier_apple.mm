@@ -39,15 +39,16 @@ std::string GetIPv6PrimaryInterfaceName(SCDynamicStoreRef store) {
   base::apple::ScopedCFTypeRef<CFStringRef> ipv6netkey(
       SCDynamicStoreKeyCreateNetworkGlobalEntity(
           nullptr, kSCDynamicStoreDomainState, kSCEntNetIPv6));
-  base::apple::ScopedCFTypeRef<CFDictionaryRef> ipv6netdict(
-      reinterpret_cast<CFDictionaryRef>(
-          const_cast<void*>(SCDynamicStoreCopyValue(store, ipv6netkey.get()))));
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> ipv6netdict_value(
+      SCDynamicStoreCopyValue(store, ipv6netkey.get()));
+  CFDictionaryRef ipv6netdict =
+      base::apple::CFCast<CFDictionaryRef>(ipv6netdict_value.get());
   if (!ipv6netdict) {
     return "";
   }
   CFStringRef primary_if_name_ref =
       base::apple::GetValueFromDictionary<CFStringRef>(
-          ipv6netdict.get(), kSCDynamicStorePropNetPrimaryInterface);
+          ipv6netdict, kSCDynamicStorePropNetPrimaryInterface);
   if (!primary_if_name_ref) {
     return "";
   }
