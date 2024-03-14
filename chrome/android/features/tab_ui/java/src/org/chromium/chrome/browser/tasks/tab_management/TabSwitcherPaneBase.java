@@ -30,6 +30,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -259,16 +260,27 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                     hubContainerView.getGlobalVisibleRect(hubRect);
                     Rect initialRect;
                     Rect finalRect;
+
+                    Rect recyclerViewRect = coordinator.getRecyclerViewRect();
+                    if (ChromeFeatureList.sDrawEdgeToEdge.isEnabled()) {
+                        // Extend the recyclerViewRect to include the bottom nav bar area on
+                        // edge-to-edge to align the animation with the start / end state.
+                        Rect rootViewRect = new Rect();
+                        mRootView.getRootView().getGlobalVisibleRect(rootViewRect);
+                        recyclerViewRect.bottom = rootViewRect.bottom;
+                    }
+
                     int leftOffset = 0;
                     if (isShrink) {
-                        initialRect = coordinator.getRecyclerViewRect();
+                        initialRect = recyclerViewRect;
                         finalRect = coordinator.getTabThumbnailRect(tabId);
                         leftOffset = initialRect.left;
                     } else {
                         initialRect = coordinator.getTabThumbnailRect(tabId);
-                        finalRect = coordinator.getRecyclerViewRect();
+                        finalRect = recyclerViewRect;
                         leftOffset = finalRect.left;
                     }
+
                     boolean useFallbackAnimation = false;
                     if (initialRect.isEmpty() || finalRect.isEmpty()) {
                         Log.d(TAG, "Geometry not ready using fallback animation.");

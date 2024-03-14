@@ -92,7 +92,7 @@ public class ShrinkExpandAnimator {
         if (bitmap == null) return;
 
         // Scale image to fill the width of the screen. Normalize the scale against the scaling of
-        // the view to ensure the image appears as if it is sacaling with the view. Scaling the
+        // the view to ensure the image appears as if it is scaling with the view. Scaling the
         // view by itself will not change the image size which would lead to the wrong appearance.
         final float scale = (float) rect.width() / bitmap.getWidth();
         final float xFactor = scale / scaleX;
