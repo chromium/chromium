@@ -44,7 +44,12 @@ jobs:
       matrix:
         # TODO(#876): Add Windows CI.
         os: [ubuntu-latest, macos-latest]
-        head: [headful, headless]
+        head: [headful, 'new-headless', 'old-headless']
+        exclude:
+          - os: macos-latest
+            head: new-headless
+          - os: macos-latest
+            head: old-headless
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -85,7 +90,7 @@ jobs:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Run E2E tests
-        if: matrix.os != 'ubuntu-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
+        if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
         run: npm run e2e:${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.

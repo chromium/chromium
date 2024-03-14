@@ -203,12 +203,6 @@ Use the `DEBUG_DEPTH` (default: `10`) environment variable to see debug deeply n
 DEBUG_DEPTH=100 DEBUG=* npm run server
 ```
 
-Use the CLI argument `--headless=false` to run browser in headful mode:
-
-```sh
-npm run server -- --headless=false
-```
-
 Use the `CHANNEL=...` environment variable or `--channel=...` argument with one of
 the following values to run the specific Chrome channel: `stable`,
 `beta`, `canary`, `dev`.
@@ -297,6 +291,13 @@ Use the `PORT` environment variable to connect to another port:
 
 ```sh
 PORT=8081 npm run e2e
+```
+
+Use the `HEADLESS` to run the tests in headless (new or old) or headful modes.
+Values: `new`, `old`, `false`, default: `new`.
+
+```sh
+HEADLESS=new npm run e2e
 ```
 
 #### Updating snapshots

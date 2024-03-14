@@ -74,9 +74,14 @@ async def websocket(request, _websocket_connection):
     # If the HEADLESS environment variable IS NOT set to "false", then add
     # capabilities to run chrome in headless mode.
     if maybe_headless != "false":
-        capabilities["goog:chromeOptions"]["args"] = [
-            "--headless=new", '--hide-scrollbars', '--mute-audio'
-        ]
+        if maybe_headless == "old":
+            capabilities["goog:chromeOptions"]["args"] = [
+                "--headless=old", '--hide-scrollbars', '--mute-audio'
+            ]
+        else:
+            # Default to new headless mode.
+            capabilities["goog:chromeOptions"]["args"] = ["--headless=new"]
+
     capabilities.update(request.param['capabilities'])
 
     await execute_command(

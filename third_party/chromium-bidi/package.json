@@ -5,9 +5,11 @@
   "scripts": {
     "build": "wireit",
     "clean": "node tools/clean.mjs",
-    "e2e:headful": "wireit",
-    "e2e:headless": "wireit",
-    "e2e": "npm run e2e:headless --",
+    "e2e:headful": "HEADLESS=false npm run e2e --",
+    "e2e:headless": "npm run e2e:new-headless --",
+    "e2e:new-headless": "HEADLESS=new npm run e2e --",
+    "e2e:old-headless": "HEADLESS=old npm run e2e --",
+    "e2e": "wireit",
     "flake8": "flake8 examples/ tests/",
     "format": "npm run pre-commit --",
     "format:eslint": "eslint --ext js --ext mjs --ext ts --fix .",
@@ -35,21 +37,7 @@
         "tsc"
       ]
     },
-    "e2e:headful": {
-      "command": "tools/run-e2e.mjs --headless=false",
-      "files": [
-        "tools/run-e2e.mjs ",
-        "pytest.ini",
-        "tests/**/*.py"
-      ],
-      "dependencies": [
-        "build"
-      ],
-      "env": {
-        "HEADLESS": "false"
-      }
-    },
-    "e2e:headless": {
+    "e2e": {
       "command": "tools/run-e2e.mjs",
       "files": [
         "tools/run-e2e.mjs ",
