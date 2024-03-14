@@ -729,26 +729,20 @@ template("single_apple_toolchain") {
         }
 
         if (swift_toolchain_path != "") {
-          _extra_flags += " -swift-toolchain-path " +
+          _extra_flags += " --swift-toolchain-path " +
                           rebase_path(swift_toolchain_path, root_build_dir)
         }
 
         if (swift_whole_module_optimization) {
-          _extra_flags += " -whole-module-optimization"
+          _extra_flags += " --whole-module-optimization"
         }
 
         if (swift_keep_intermediate_files) {
-          _extra_flags += " -derived-data-dir $_derived_data_dir"
+          _extra_flags += " --derived-data-dir $_derived_data_dir"
         }
 
         # The Swift compiler assumes that the generated header will be used by
         # Objective-C code compiled with module support enabled (-fmodules).
-        #
-        # The import looks like this in the generated header:
-        #
-        #     #if __has_feature(modules)
-        #     @import UIKit;
-        #     #endif
         #
         # As Chromium code is compiled without support for modules (i.e. the
         # code is compiled without `-fmodules`), the dependent modules are not
@@ -756,29 +750,28 @@ template("single_apple_toolchain") {
         # if the client code does not first import the required modules (see
         # https://crbug.com/1316061 for details).
         #
-        # Secondly, clang ToT always returns `1` when `__has_features(modules)`
-        # is evaluated, even if building with `-fno-modules` when building with
-        # `-std=c++20` (see https://crbug.com/1284275 for details). This causes
-        # the `@import` lines to be reached and the build to fail (since the
-        # support for modules is not enabled).
+        # Secondly, the Swift compiler uses absolute path when importing other
+        # modules' generated headers or Objective-C bridging headers. This
+        # causes issues with the distributed compiler (i.e. reclient or siso)
+        # as they want all paths to be relative to the source directory.
         #
-        # Instruct swiftc.py to rewrite the generated header to use the old
-        # import pre-processor instructions (#import <UIKit/UIKit.h>) to work
-        # around those two issues.
-        _extra_flags += " -fix-module-imports"
+        # Instruct swiftc.py to rewrite the generated header use relative
+        # import and to use the old #import syntax for system frameworks.
+        _extra_flags += " --fix-generated-header"
 
         _src_dir = rebase_path("//", root_build_dir)
+        _gen_dir = rebase_path(root_gen_dir, root_build_dir)
         _const_gather_protocols_file =
             rebase_path("//build/toolchain/ios/const_extract_protocols.json",
                         root_build_dir)
 
         command =
-            "$_env_vars $python_path $_tool -module-name {{module_name}} " +
-            "-header-path $_header_path -target-out-dir $_output_dir " +
-            "-const-gather-protocols-file $_const_gather_protocols_file " +
-            "-depfile-path $depfile -src-dir $_src_dir -bridge-header " +
-            "{{bridge_header}} {{include_dirs}} {{module_dirs}} " +
-            "{{swiftflags}} {{inputs}}$_extra_flags"
+            "$_env_vars $python_path $_tool --module-name {{module_name}} " +
+            "--header-path $_header_path --target-out-dir $_output_dir " +
+            "--const-gather-protocols-file $_const_gather_protocols_file " +
+            "--depfile-path $depfile --src-dir $_src_dir --gen-dir $_gen_dir " +
+            "--bridge-header {{bridge_header}} {{include_dirs}} " +
+            "{{module_dirs}} {{swiftflags}} {{inputs}}$_extra_flags"
 
         description = "SWIFT $_output_dir/{{module_name}}.swiftmodule"
       }
