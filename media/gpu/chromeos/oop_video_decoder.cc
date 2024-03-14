@@ -229,9 +229,7 @@ class OOPVideoDecoderSupportedConfigsManager {
     oop_video_decoder_.QueryVersion(base::BindOnce(
         &OOPVideoDecoderSupportedConfigsManager::OnGetInterfaceVersion,
         base::Unretained(this)));
-    oop_video_decoder_->GetSupportedConfigs(base::BindOnce(
-        &OOPVideoDecoderSupportedConfigsManager::OnGetSupportedConfigs,
-        base::Unretained(this)));
+    GetSupportedConfigs();
 
     // Eventually, we need to call |cb|. We can't store |oop_video_decoder| here
     // because it's been taken over by the |oop_video_decoder_|. For now, we'll
@@ -265,16 +263,35 @@ class OOPVideoDecoderSupportedConfigsManager {
     MaybeNotifyWaitingCallbacks();
   }
 
+  void GetSupportedConfigs() {
+    oop_video_decoder_->GetSupportedConfigs(base::BindOnce(
+        &OOPVideoDecoderSupportedConfigsManager::OnGetSupportedConfigs,
+        base::Unretained(this)));
+  }
+
   void OnGetSupportedConfigs(const SupportedVideoDecoderConfigs& configs,
                              VideoDecoderType decoder_type) {
     base::AutoLock lock(lock_);
     DCHECK(!configs_);
     DCHECK(!decoder_type_);
     CHECK(!disconnected_);
-
+    constexpr uint32_t kMaxConfigRetries = 20;
     if (decoder_type == VideoDecoderType::kVda ||
         decoder_type == VideoDecoderType::kVaapi ||
         decoder_type == VideoDecoderType::kV4L2) {
+      if (configs.empty() && config_retry_count_ < kMaxConfigRetries) {
+        // TODO(b/328092014): Redo this to not use a hacky delay.
+        VLOGF(1) << "OOPVD failed getting configs, retry after delay";
+        config_retry_count_++;
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &OOPVideoDecoderSupportedConfigsManager::GetSupportedConfigs,
+                base::Unretained(this)),
+            base::Milliseconds(250));
+
+        return;
+      }
       configs_ = configs;
       decoder_type_ = decoder_type;
     } else {
@@ -337,6 +354,7 @@ class OOPVideoDecoderSupportedConfigsManager {
   std::optional<SupportedVideoDecoderConfigs> configs_ GUARDED_BY(lock_);
   std::optional<VideoDecoderType> decoder_type_ GUARDED_BY(lock_);
   std::optional<uint32_t> interface_version_ GUARDED_BY(lock_);
+  uint32_t config_retry_count_ GUARDED_BY(lock_) = 0;
 
   // This tracks everything that's needed to call a callback passed to
   // NotifySupportKnown() that had to be queued because there was a query in
