@@ -197,49 +197,6 @@ template("cmc_compile") {
   }
 }
 
-# Validates a component manifest file
-#
-# The cmc_validate template will ensure that a given file is a valid
-# CML component manifest. A stamp file is generated to mark that a
-# given file has passed.
-#
-# Parameters:
-#
-#   manifest (required)
-#     [file] The path to the file that is to be validated
-#
-#   deps
-#   testonly
-#   visibility
-#
-template("cmc_validate") {
-  assert(defined(invoker.manifest), "manifest file required")
-
-  _cmc_tool(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "manifest",
-                             "deps",
-                             "testonly",
-                             "visibility",
-                           ])
-
-    _manifest_file = get_path_info(manifest, "file")
-    stamp_file = "$target_gen_dir/$_manifest_file.validated"
-
-    inputs = [ manifest ]
-
-    outputs = [ stamp_file ]
-
-    args = [
-      "--stamp",
-      rebase_path(stamp_file, root_build_dir),
-      "validate",
-      rebase_path(invoker.manifest),
-    ]
-  }
-}
-
 # Merges multiple component manifest files into one.
 #
 # Combines mutliple component manifests into a single manifest.
