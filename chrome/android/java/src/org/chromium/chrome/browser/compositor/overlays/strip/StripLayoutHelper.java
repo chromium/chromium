@@ -56,12 +56,15 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
@@ -2168,8 +2171,14 @@ public class StripLayoutHelper
     }
 
     private StripLayoutGroupTitle createGroupTitle(int rootId) {
-        StripLayoutGroupTitle groupTitle = new StripLayoutGroupTitle(mContext, mUpdateHost, rootId);
+        @TabGroupColorId
+        int colorId = TabGroupColorUtils.getOrCreateTabGroupColor(rootId, mTabGroupModelFilter);
+        int color = ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, colorId, mIncognito);
+
+        StripLayoutGroupTitle groupTitle =
+                new StripLayoutGroupTitle(mContext, mUpdateHost, rootId, color);
         pushPropertiesToGroupTitle(groupTitle);
+
         return groupTitle;
     }
 

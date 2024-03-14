@@ -10,7 +10,6 @@ import android.graphics.RectF;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
@@ -42,14 +41,17 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private float mWidth;
     private float mHeight;
 
-    // Tab group variables
+    // Tab group variables.
     int mRootId;
     String mTitle;
+    @ColorInt int mColor;
 
-    public StripLayoutGroupTitle(Context context, LayoutUpdateHost updateHost, int rootId) {
+    public StripLayoutGroupTitle(
+            Context context, LayoutUpdateHost updateHost, int rootId, @ColorInt int color) {
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
 
         mContext = context;
+        mColor = color;
         mUpdateHost = updateHost;
         mEffectiveMinWidth = MIN_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
         mEffectiveMaxWidth = MAX_VISUAL_WIDTH_DP + (DEFAULT_MARGIN_DP * 2);
@@ -130,8 +132,8 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @return The tint color resource that represents the tab group title indicator background.
      */
     public @ColorInt int getTint() {
-        // TODO(crbug.com/326488897): Pull color from Tab Group API.
-        return mContext.getColor(R.color.google_red_600);
+        // TODO(crbug.com/326492787): Update whenever tab group's color may have changed.
+        return mColor;
     }
 
     protected void updateTitle(String title, float width) {
