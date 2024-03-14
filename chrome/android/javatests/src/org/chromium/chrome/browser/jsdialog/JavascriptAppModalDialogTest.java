@@ -92,7 +92,7 @@ public class JavascriptAppModalDialogTest {
         // Click cancel and verify that the url is the same.
         JavascriptAppModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
-        onViewWaiting(withText(R.string.cancel)).perform(click());
+        onViewWaiting(withText(R.string.cancel), /* checkRootDialog= */ true).perform(click());
 
         Assert.assertEquals(
                 BEFORE_UNLOAD_URL,
@@ -110,7 +110,7 @@ public class JavascriptAppModalDialogTest {
         final TestCallbackHelperContainer.OnPageFinishedHelper onPageLoaded =
                 getActiveTabTestCallbackHelperContainer().getOnPageFinishedHelper();
         int callCount = onPageLoaded.getCallCount();
-        onViewWaiting(withText(R.string.leave)).perform(click());
+        onViewWaiting(withText(R.string.leave), /* checkRootDialog= */ true).perform(click());
         onPageLoaded.waitForCallback(callCount);
         Assert.assertEquals(
                 EMPTY_PAGE,
