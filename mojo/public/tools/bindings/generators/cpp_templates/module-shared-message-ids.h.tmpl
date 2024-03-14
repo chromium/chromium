@@ -13,21 +13,19 @@
 #include <stdint.h>
 
 {{namespace_begin(namespaces_as_array)}}
-namespace messages {
+namespace internal {
 
-{% for interface in interfaces %}
-enum class {{interface.name}} : uint32_t {
+{% for interface in interfaces -%}
 {%-   for method in interface.methods -%}
-{%-     set method_name = "k%s"|format(method.name) -%}
+{%-     set method_name = "k%s_%s_Name"|format(interface.name, method.name) -%}
 {%-     if method.ordinal_comment %}
 // {{method.ordinal_comment}}
 {%-     endif %}
-  {{method_name}} = {{method.ordinal}},
+constexpr uint32_t {{method_name}} = {{method.ordinal}};
 {%-  endfor %}
-};
 {%- endfor %}
 
-}  // namespace messages
+}  // namespace internal
 {{namespace_end(namespaces_as_array)}}
 
 #endif  // {{header_guard}}
