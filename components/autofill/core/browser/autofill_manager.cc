@@ -151,13 +151,11 @@ void AutofillManager::LogAutofillTypePredictionsAvailable(
                       << std::move(buffer);
 }
 
-AutofillManager::AutofillManager(AutofillDriver* driver, AutofillClient* client)
+AutofillManager::AutofillManager(AutofillDriver* driver)
     : driver_(CHECK_DEREF(driver)),
-      client_(CHECK_DEREF(client)),
-      log_manager_(client->GetLogManager()),
+      log_manager_(unsafe_client().GetLogManager()),
       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
-  translate::TranslateDriver* translate_driver = client->GetTranslateDriver();
-  if (translate_driver) {
+  if (auto* translate_driver = unsafe_client().GetTranslateDriver()) {
     translate_observation_.Observe(translate_driver);
   }
 }

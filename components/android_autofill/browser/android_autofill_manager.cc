@@ -23,9 +23,8 @@ namespace autofill {
 
 using base::TimeTicks;
 
-AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver,
-                                               AutofillClient* client)
-    : AutofillManager(driver, client) {
+AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver)
+    : AutofillManager(driver) {
   StartNewLoggingSession();
   autofill_manager_observation.Observe(this);
 }

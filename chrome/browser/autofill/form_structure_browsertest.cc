@@ -178,8 +178,8 @@ class FormStructureBrowserTest
  private:
   class TestAutofillManager : public BrowserAutofillManager {
    public:
-    TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-        : BrowserAutofillManager(driver, client, "en-US") {}
+    explicit TestAutofillManager(ContentAutofillDriver* driver)
+        : BrowserAutofillManager(driver, "en-US") {}
 
     TestAutofillManagerWaiter& waiter() { return waiter_; }
 

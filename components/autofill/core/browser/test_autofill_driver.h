@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
@@ -185,10 +186,11 @@ class TestAutofillDriverTemplate : public T {
 // Consider using TestAutofillDriverInjector in browser tests.
 class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
  public:
-  TestAutofillDriver();
+  explicit TestAutofillDriver(AutofillClient* client);
   ~TestAutofillDriver() override;
 
   // AutofillDriver
+  AutofillClient& GetAutofillClient() override;
   AutofillManager& GetAutofillManager() override;
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
@@ -196,6 +198,7 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   }
 
  private:
+  raw_ref<AutofillClient> autofill_client_;
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 };
 

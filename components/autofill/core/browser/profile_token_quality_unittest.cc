@@ -35,8 +35,6 @@ using testing::UnorderedElementsAre;
 
 class ProfileTokenQualityTest : public testing::Test {
  public:
-  ProfileTokenQualityTest() : bam_(&driver_, &client_) {}
-
   // Creates a form and registers it with the `bam_` as-if it had the given
   // `types` as predictions.
   FormData GetFormWithTypes(const std::vector<FieldType>& types) {
@@ -76,9 +74,9 @@ class ProfileTokenQualityTest : public testing::Test {
       features::kAutofillTrackProfileTokenQuality};
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  TestAutofillDriver driver_;
   TestAutofillClient client_;
-  TestBrowserAutofillManager bam_;
+  TestAutofillDriver driver_{&client_};
+  TestBrowserAutofillManager bam_{&driver_};
   TestPersonalDataManager pdm_;
 };
 

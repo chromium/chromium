@@ -49,9 +49,8 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
     : web_state_(web_state),
       web_frame_id_(web_frame ? web_frame->GetFrameId() : ""),
       bridge_(bridge),
-      client_(client),
-      manager_(
-          std::make_unique<BrowserAutofillManager>(this, client, app_locale)) {
+      client_(*client),
+      manager_(std::make_unique<BrowserAutofillManager>(this, app_locale)) {
   manager_observation_.Observe(manager_.get());
 
   if (base::FeatureList::IsEnabled(
@@ -87,6 +86,10 @@ std::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
 
 AutofillDriverIOS* AutofillDriverIOS::GetParent() {
   return parent_.get();
+}
+
+AutofillClient& AutofillDriverIOS::GetAutofillClient() {
+  return *client_;
 }
 
 BrowserAutofillManager& AutofillDriverIOS::GetAutofillManager() {

@@ -79,7 +79,7 @@ class MockAutofillClient : public TestAutofillClient {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  MockAutofillDriver() = default;
+  using TestAutofillDriver::TestAutofillDriver;
   MockAutofillDriver(const MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
 
@@ -133,9 +133,8 @@ class FormFillerTest : public testing::Test {
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(),
                 autofill_client_.GetPersonalDataManager()));
-
-    browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        &autofill_driver_, &autofill_client_);
+    browser_autofill_manager_ =
+        std::make_unique<TestBrowserAutofillManager>(&autofill_driver_);
 
     // Mandatory re-auth is required for credit card autofill on automotive, so
     // the authenticator response needs to be properly mocked.
@@ -273,7 +272,7 @@ class FormFillerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
-  NiceMock<MockAutofillDriver> autofill_driver_;
+  NiceMock<MockAutofillDriver> autofill_driver_{&autofill_client_};
   // TODO(b/41490871): Replace with FormFiller.
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
 };

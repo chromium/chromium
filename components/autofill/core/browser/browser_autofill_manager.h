@@ -133,7 +133,6 @@ inline constexpr char kAutocompleteSuppressionByPlusAddressUma[] =
 class BrowserAutofillManager : public AutofillManager {
  public:
   BrowserAutofillManager(AutofillDriver* driver,
-                         AutofillClient* client,
                          const std::string& app_locale);
 
   BrowserAutofillManager(const BrowserAutofillManager&) = delete;

@@ -164,7 +164,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     personal_data().SetSyncServiceForTest(&sync_service_);
 
     accessor_ = std::make_unique<TestAccessor>();
-    autofill_driver_ = std::make_unique<TestAutofillDriver>();
+    autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
 
     autofill_client_.GetPaymentsAutofillClient()
         ->set_test_payments_network_interface(
@@ -174,8 +174,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     autofill_client_.set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     autofill_driver_->set_autofill_manager(
-        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get(),
-                                                     &autofill_client_));
+        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get()));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     autofill_driver_->SetAuthenticator(new TestInternalAuthenticator());

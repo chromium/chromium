@@ -100,9 +100,8 @@ class AutofillPolicyTest : public PolicyTest {
  protected:
   class TestAutofillManager : public autofill::BrowserAutofillManager {
    public:
-    TestAutofillManager(autofill::ContentAutofillDriver* driver,
-                        autofill::AutofillClient* client)
-        : autofill::BrowserAutofillManager(driver, client, "en-US") {}
+    explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
+        : autofill::BrowserAutofillManager(driver, "en-US") {}
 
     void WaitForAskForValuesToFill() {
       base::RunLoop run_loop;

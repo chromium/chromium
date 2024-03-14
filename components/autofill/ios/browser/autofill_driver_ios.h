@@ -11,6 +11,7 @@
 #import "base/containers/flat_set.h"
 #import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
@@ -60,6 +61,7 @@ class AutofillDriverIOS : public AutofillDriver,
   LocalFrameToken GetFrameToken() const override;
   std::optional<LocalFrameToken> Resolve(FrameToken query) override;
   AutofillDriverIOS* GetParent() override;
+  AutofillClient& GetAutofillClient() override;
   BrowserAutofillManager& GetAutofillManager() override;
   bool IsInActiveFrame() const override;
   bool IsInAnyMainFrame() const override;
@@ -98,8 +100,6 @@ class AutofillDriverIOS : public AutofillDriver,
   void GetFourDigitCombinationsFromDOM(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
-
-  AutofillClient* client() { return client_; }
 
   void set_autofill_manager_for_testing(
       std::unique_ptr<BrowserAutofillManager> manager) {
@@ -183,7 +183,7 @@ class AutofillDriverIOS : public AutofillDriver,
   bool processed_ = false;
 
   // The embedder's AutofillClient instance.
-  raw_ptr<AutofillClient> client_;
+  raw_ref<AutofillClient> client_;
 
   std::unique_ptr<BrowserAutofillManager> manager_;
 

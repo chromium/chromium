@@ -82,9 +82,8 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
  protected:
   class TestAutofillManager : public autofill::BrowserAutofillManager {
    public:
-    TestAutofillManager(autofill::ContentAutofillDriver* driver,
-                        autofill::AutofillClient* client)
-        : autofill::BrowserAutofillManager(driver, client, "en-US") {}
+    explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
+        : autofill::BrowserAutofillManager(driver, "en-US") {}
 
     [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
         int min_num_awaited_calls) {

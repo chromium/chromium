@@ -408,7 +408,7 @@ content::WebContents& AndroidAutofillClient::GetWebContents() const {
 std::unique_ptr<autofill::AutofillManager> AndroidAutofillClient::CreateManager(
     base::PassKey<autofill::ContentAutofillDriver> pass_key,
     autofill::ContentAutofillDriver& driver) {
-  return base::WrapUnique(new autofill::AndroidAutofillManager(&driver, this));
+  return base::WrapUnique(new autofill::AndroidAutofillManager(&driver));
 }
 
 }  // namespace android_autofill

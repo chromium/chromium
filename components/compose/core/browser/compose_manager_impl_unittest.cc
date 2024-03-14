@@ -53,6 +53,7 @@ class MockComposeClient : public compose::ComposeClient {
 
 class MockAutofillDriver : public autofill::TestAutofillDriver {
  public:
+  using autofill::TestAutofillDriver::TestAutofillDriver;
   MOCK_METHOD(void,
               ExtractForm,
               (autofill::FormGlobalId form,
@@ -74,7 +75,7 @@ class ComposeManagerImplTest : public testing::Test {
     std::unique_ptr<testing::NiceMock<autofill::MockAutofillManager>>
         mock_autofill_manager =
             std::make_unique<testing::NiceMock<autofill::MockAutofillManager>>(
-                &mock_autofill_driver_, &test_autofill_client_);
+                &mock_autofill_driver_);
     mock_autofill_driver_.set_autofill_manager(
         std::move(mock_autofill_manager));
 
@@ -134,7 +135,8 @@ class ComposeManagerImplTest : public testing::Test {
   testing::NiceMock<MockComposeClient> mock_compose_client_;
   autofill::TestAutofillClient test_autofill_client_;
   autofill::FormFieldData last_form_field_to_client_;
-  testing::NiceMock<MockAutofillDriver> mock_autofill_driver_;
+  testing::NiceMock<MockAutofillDriver> mock_autofill_driver_{
+      &test_autofill_client_};
   std::unique_ptr<compose::PageUkmTracker> page_ukm_tracker_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<compose::ComposeManagerImpl> compose_manager_impl_;

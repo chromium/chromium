@@ -210,7 +210,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     personal_data().set_auto_accept_address_imports_for_testing(true);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
-    autofill_driver_ = std::make_unique<TestAutofillDriver>();
+    autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
     autofill_client_.GetPaymentsAutofillClient()
         ->set_test_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
@@ -231,8 +231,8 @@ class CreditCardSaveManagerTest : public testing::Test {
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
             /*iban_save_manager=*/nullptr, &personal_data(), "en-US"));
     autofill_client_.GetStrikeDatabase();
-    browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_);
+    browser_autofill_manager_ =
+        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
     browser_autofill_manager_->SetExpectedObservedSubmission(true);
   }
 

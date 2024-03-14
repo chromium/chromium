@@ -99,9 +99,8 @@ std::string GetProfileInfoFromAddressField(const AutofillProfile profile,
 // Adds waiting capabilities to BrowserAutofillManager.
 class TestAutofillManager : public autofill::BrowserAutofillManager {
  public:
-  TestAutofillManager(autofill::ContentAutofillDriver* driver,
-                      autofill::AutofillClient* client)
-      : BrowserAutofillManager(driver, client, "en-US") {}
+  explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
+      : BrowserAutofillManager(driver, "en-US") {}
 
   static TestAutofillManager& GetForRenderFrameHost(
       content::RenderFrameHost* rfh) {

@@ -1334,7 +1334,7 @@ std::unique_ptr<AutofillManager> ChromeAutofillClient::CreateManager(
     base::PassKey<ContentAutofillDriver> pass_key,
     ContentAutofillDriver& driver) {
   return std::make_unique<BrowserAutofillManager>(
-      &driver, this, g_browser_process->GetApplicationLocale());
+      &driver, g_browser_process->GetApplicationLocale());
 }
 
 }  // namespace autofill

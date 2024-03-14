@@ -103,6 +103,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
  private:
   friend class ContentAutofillDriverFactoryTestApi;
 
+  // The owning AutofillClient.
   const raw_ref<ContentAutofillClient> client_;
 
   // Routes events between different ContentAutofillDrivers.

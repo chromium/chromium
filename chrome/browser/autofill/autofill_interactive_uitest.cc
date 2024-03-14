@@ -3791,8 +3791,8 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
  public:
   class MockAutofillManager : public BrowserAutofillManager {
    public:
-    MockAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-        : BrowserAutofillManager(driver, client, "en-US") {}
+    explicit MockAutofillManager(ContentAutofillDriver* driver)
+        : BrowserAutofillManager(driver, "en-US") {}
     MOCK_METHOD(void,
                 OnFormSubmittedImpl,
                 (const FormData&, bool, mojom::SubmissionSource),

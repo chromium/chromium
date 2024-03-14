@@ -367,13 +367,7 @@ enum class FormExtractionStatus {
   if (!driver) {
     return false;
   }
-
-  autofill::AutofillClient* client = driver->client();
-  if (!client) {
-    return false;
-  }
-
-  return client->ShouldFormatForLargeKeyboardAccessory();
+  return driver->GetAutofillClient().ShouldFormatForLargeKeyboardAccessory();
 }
 
 // Completes all the pending form queries that were queued for the frame that

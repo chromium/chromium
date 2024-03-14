@@ -80,8 +80,8 @@ class CreditCardCvcAuthenticatorTest : public testing::Test {
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
 
     requester_ = std::make_unique<TestAuthenticationRequester>();
-    autofill_driver_ =
-        std::make_unique<testing::NiceMock<TestAutofillDriver>>();
+    autofill_driver_ = std::make_unique<testing::NiceMock<TestAutofillDriver>>(
+        &autofill_client_);
 
     payments::TestPaymentsNetworkInterface* payments_network_interface =
         new payments::TestPaymentsNetworkInterface(

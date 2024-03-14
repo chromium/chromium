@@ -26,9 +26,8 @@ namespace autofill {
 //
 //   class MockAutofillManager : BrowserAutofillManager {
 //    public:
-//     MockAutofillManager(AutofillDriverIOS* driver,
-//                         AutofillClient* client)
-//         : BrowserAutofillManager(driver, client, "en-US") {}
+//     explicit MockAutofillManager(AutofillDriverIOS* driver)
+//         : BrowserAutofillManager(driver, "en-US") {}
 //     MOCK_METHOD(...);
 //     ...
 //   };
@@ -84,13 +83,7 @@ class TestAutofillManagerInjector : public web::WebFramesManager::Observer,
   void Inject(web::WebFrame* web_frame) {
     AutofillDriverIOS* driver =
         AutofillDriverIOS::FromWebStateAndWebFrame(web_state_, web_frame);
-    AutofillClient* client = driver->client();
-    driver->set_autofill_manager_for_testing(CreateManager(driver, client));
-  }
-
-  std::unique_ptr<T> CreateManager(AutofillDriverIOS* driver,
-                                   AutofillClient* client) {
-    return std::make_unique<T>(driver, client);
+    driver->set_autofill_manager_for_testing(std::make_unique<T>(driver));
   }
 
   raw_ptr<web::WebState> web_state_;

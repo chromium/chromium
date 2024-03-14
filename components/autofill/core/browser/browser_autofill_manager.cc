@@ -539,29 +539,29 @@ bool IsTriggerSourceOnlyRelevantForCompose(
 }  // namespace
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
-                                               AutofillClient* client,
                                                const std::string& app_locale)
-    : AutofillManager(driver, client),
+    : AutofillManager(driver),
       external_delegate_(std::make_unique<AutofillExternalDelegate>(this)),
       app_locale_(app_locale),
       suggestion_generator_(
-          std::make_unique<AutofillSuggestionGenerator>(*client)),
+          std::make_unique<AutofillSuggestionGenerator>(unsafe_client())),
       form_filler_(
           std::make_unique<FormFiller>(*this, log_manager(), app_locale)) {
   address_form_event_logger_ =
       std::make_unique<autofill_metrics::AddressFormEventLogger>(
-          driver->IsInAnyMainFrame(), form_interactions_ukm_logger(), client);
+          driver->IsInAnyMainFrame(), form_interactions_ukm_logger(),
+          &unsafe_client());
   credit_card_form_event_logger_ =
       std::make_unique<autofill_metrics::CreditCardFormEventLogger>(
           driver->IsInAnyMainFrame(), form_interactions_ukm_logger(),
-          client->GetPersonalDataManager(), client);
+          unsafe_client().GetPersonalDataManager(), &unsafe_client());
   autocomplete_unrecognized_fallback_logger_ = std::make_unique<
       autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
   manual_fallback_logger_ =
       std::make_unique<autofill_metrics::ManualFallbackEventLogger>();
 
   credit_card_access_manager_ = std::make_unique<CreditCardAccessManager>(
-      driver, client, client->GetPersonalDataManager(),
+      driver, &unsafe_client(), unsafe_client().GetPersonalDataManager(),
       credit_card_form_event_logger_.get());
 }
 

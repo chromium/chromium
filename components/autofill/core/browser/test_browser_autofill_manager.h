@@ -27,7 +27,7 @@ class TestPersonalDataManager;
 
 class TestBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  TestBrowserAutofillManager(AutofillDriver* driver, AutofillClient* client);
+  explicit TestBrowserAutofillManager(AutofillDriver* driver);
 
   TestBrowserAutofillManager(const TestBrowserAutofillManager&) = delete;
   TestBrowserAutofillManager& operator=(const TestBrowserAutofillManager&) =

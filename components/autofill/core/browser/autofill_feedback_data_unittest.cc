@@ -126,9 +126,9 @@ class AutofillFeedbackDataUnitTest : public testing::Test {
  protected:
   AutofillFeedbackDataUnitTest() = default;
   void SetUp() override {
-    autofill_driver_ = std::make_unique<TestAutofillDriver>();
-    browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_);
+    autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
+    browser_autofill_manager_ =
+        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
   }
 
   base::test::TaskEnvironment task_environment_;

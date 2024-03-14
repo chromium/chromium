@@ -69,7 +69,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
-    autofill_driver_ = std::make_unique<TestAutofillDriver>();
+    autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
     payments_network_interface_ = new payments::TestPaymentsNetworkInterface(
         autofill_client_.GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data());
@@ -95,8 +95,9 @@ class LocalCardMigrationManagerTest : public testing::Test {
                 local_card_migration_manager_));
     autofill_client_.set_test_form_data_importer(
         std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
-    browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_);
+
+    browser_autofill_manager_ =
+        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
     browser_autofill_manager_->SetExpectedObservedSubmission(true);
   }
 

@@ -232,9 +232,8 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
 
 class BrowserAutofillManagerWithMockDelegate : public BrowserAutofillManager {
  public:
-  BrowserAutofillManagerWithMockDelegate(AutofillDriver* driver,
-                                         ContentAutofillClient* client)
-      : BrowserAutofillManager(driver, client, "en-US") {
+  explicit BrowserAutofillManagerWithMockDelegate(AutofillDriver* driver)
+      : BrowserAutofillManager(driver, "en-US") {
     test_api(*this).SetExternalDelegate(
         std::make_unique<NiceMock<MockAutofillExternalDelegate>>(this));
   }

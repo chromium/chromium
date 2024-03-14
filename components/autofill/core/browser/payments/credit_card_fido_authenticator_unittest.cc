@@ -94,8 +94,6 @@ std::string BytesToBase64(const std::vector<uint8_t> bytes) {
 
 class CreditCardFidoAuthenticatorTest : public testing::Test {
  public:
-  CreditCardFidoAuthenticatorTest() {}
-
   void SetUp() override {
     personal_data_manager().SetPrefService(autofill_client_.GetPrefs());
 
@@ -218,7 +216,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   TestAutofillClient autofill_client_;
-  TestAutofillDriver autofill_driver_;
+  TestAutofillDriver autofill_driver_{&autofill_client_};
   TestAuthenticationRequester requester_;
   std::unique_ptr<CreditCardFidoAuthenticator> fido_authenticator_;
 };

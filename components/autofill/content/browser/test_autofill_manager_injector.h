@@ -56,9 +56,8 @@ class TestAutofillManagerInjectorBase {
 //    public:
 //     class MockAutofillManager : BrowserAutofillManager {
 //      public:
-//       MockAutofillManager(ContentAutofillDriver* driver,
-//                           ContentAutofillClient* client)
-//           : BrowserAutofillManager(driver, client, "en-US") {}
+//       explicit MockAutofillManager(ContentAutofillDriver* driver)
+//           : BrowserAutofillManager(driver, "en-US") {}
 //       MOCK_METHOD(...);
 //       ...
 //     };
@@ -92,9 +91,8 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
   }
 
  private:
-  // Creates an AutofillManager using `T(ContentAutofillDriver*,
-  // ContentAutofillClient*)` for every navigated frame in a given
-  // `WebContents`.
+  // Creates an AutofillManager using `T(ContentAutofillDriver*)` for every
+  // navigated frame in a given `WebContents`.
   //
   // One challenge is that the ContentAutofillClient may not exist yet at the
   // time the Injector is created. (Because TabHelpers::AttachTabHelpers() is
@@ -148,7 +146,7 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
     void OnContentAutofillDriverCreated(
         ContentAutofillDriverFactory& factory,
         ContentAutofillDriver& driver) override {
-      std::unique_ptr<T> new_manager = CreateManager(&driver);
+      auto new_manager = std::make_unique<T>(&driver);
       owner_->managers_[driver.render_frame_host()] = new_manager.get();
       test_api(driver).set_autofill_manager(std::move(new_manager));
     }
@@ -160,12 +158,6 @@ class TestAutofillManagerInjector : public TestAutofillManagerInjectorBase {
     }
 
    private:
-    std::unique_ptr<T> CreateManager(ContentAutofillDriver* driver) {
-      auto* client = ContentAutofillClient::FromWebContents(web_contents());
-      DCHECK(client);
-      return std::make_unique<T>(driver, client);
-    }
-
     raw_ptr<TestAutofillManagerInjector> owner_;
 
     // Observed source. We can't use a ScopedObservation because we use

@@ -155,7 +155,7 @@ class MockPersonalDataManager : public TestPersonalDataManager {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  MockAutofillDriver() = default;
+  using TestAutofillDriver::TestAutofillDriver;
   MockAutofillDriver(const MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
   // Mock methods to enable testability.
@@ -224,8 +224,8 @@ class MockAutofillClient : public TestAutofillClient {
 
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
  public:
-  MockBrowserAutofillManager(AutofillDriver* driver, MockAutofillClient* client)
-      : TestBrowserAutofillManager(driver, client) {}
+  explicit MockBrowserAutofillManager(AutofillDriver* driver)
+      : TestBrowserAutofillManager(driver) {}
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
@@ -298,10 +298,11 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
         std::make_unique<MockPersonalDataManager>());
     client().set_plus_address_delegate(
         std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
-    autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
+    autofill_driver_ =
+        std::make_unique<NiceMock<MockAutofillDriver>>(&client());
     auto mock_browser_autofill_manager =
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
-            autofill_driver_.get(), &client());
+            autofill_driver_.get());
     test_api(*mock_browser_autofill_manager)
         .set_credit_card_access_manager(
             std::make_unique<NiceMock<MockCreditCardAccessManager>>(

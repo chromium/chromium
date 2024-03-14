@@ -6,9 +6,8 @@
 
 namespace autofill {
 
-MockAutofillManager::MockAutofillManager(AutofillDriver* driver,
-                                         AutofillClient* client)
-    : AutofillManager(driver, client) {}
+MockAutofillManager::MockAutofillManager(AutofillDriver* driver)
+    : AutofillManager(driver) {}
 
 MockAutofillManager::~MockAutofillManager() = default;
 

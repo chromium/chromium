@@ -55,7 +55,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   personal_data().SetPrefService(autofill_client_->GetPrefs());
   personal_data().SetSyncServiceForTest(&sync_service_);
 
-  autofill_driver_ = std::make_unique<TestAutofillDriver>();
+  autofill_driver_ =
+      std::make_unique<TestAutofillDriver>(autofill_client_.get());
   autofill_driver_->SetIsInAnyMainFrame(is_in_any_main_frame_);
 
   payments::TestPaymentsNetworkInterface* payments_network_interface =
@@ -77,8 +78,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
           &personal_data(), /*coupon_service_delegate=*/nullptr,
           /*shopping_service=*/nullptr));
 
-  auto browser_autofill_manager = std::make_unique<TestBrowserAutofillManager>(
-      autofill_driver_.get(), autofill_client_.get());
+  auto browser_autofill_manager =
+      std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
   autofill_driver_->set_autofill_manager(std::move(browser_autofill_manager));
 
   test_api(autofill_manager())

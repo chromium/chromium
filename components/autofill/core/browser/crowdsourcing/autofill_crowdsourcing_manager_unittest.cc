@@ -270,7 +270,7 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestAutofillClient client_;
-  TestAutofillDriver driver_;
+  TestAutofillDriver driver_{&client_};
 
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::list<ResponseData> responses_;
@@ -1238,7 +1238,7 @@ class AutofillServerCommunicationTest
   std::unique_ptr<base::RunLoop> run_loop_;
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory_;
   TestAutofillClient client_;
-  TestAutofillDriver driver_;
+  TestAutofillDriver driver_{&client_};
   base::TimeDelta cache_expiration_time_ = base::Seconds(100);
   int call_count_ = 0;
   std::vector<std::string> payloads_;

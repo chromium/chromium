@@ -194,12 +194,11 @@ class AutofillManager
   // The following will fail a DCHECK if called for a prerendered main frame.
   AutofillClient& client() {
     DCHECK(!driver().IsPrerendering());
-    return *client_;
+    return unsafe_client();
   }
 
   const AutofillClient& client() const {
-    DCHECK(!driver().IsPrerendering());
-    return *client_;
+    return const_cast<AutofillManager*>(this)->client();
   }
 
   AutofillClient& unsafe_client(
@@ -359,7 +358,6 @@ class AutofillManager
   }
 
   AutofillDriver& driver() { return *driver_; }
-  const AutofillDriver& driver() const { return *driver_; }
 
   // The return value shouldn't be cached, retrieve it as needed.
   AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
@@ -367,7 +365,7 @@ class AutofillManager
   }
 
  protected:
-  AutofillManager(AutofillDriver* driver, AutofillClient* client);
+  explicit AutofillManager(AutofillDriver* driver);
 
   LogManager* log_manager() { return log_manager_; }
 
@@ -376,8 +374,7 @@ class AutofillManager
 
   // The following do not check for prerendering. These should only used while
   // constructing or resetting the manager.
-  AutofillClient& unsafe_client() { return *client_; }
-  const AutofillClient& unsafe_client() const { return *client_; }
+  AutofillClient& unsafe_client() { return driver_->GetAutofillClient(); }
 
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
@@ -507,11 +504,6 @@ class AutofillManager
   // Provides driver-level context to the shared code of the component.
   // `*driver_` owns this object.
   const raw_ref<AutofillDriver> driver_;
-
-  // Do not access this directly. Instead, please use client() or
-  // unsafe_client(). These functions check (or explicitly don't check) that the
-  // client isn't accessed incorrectly.
-  const raw_ref<AutofillClient> client_;
 
   const raw_ptr<LogManager> log_manager_;
 

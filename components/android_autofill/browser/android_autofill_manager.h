@@ -26,7 +26,7 @@ class FormEventLoggerWeblayerAndroid;
 class AndroidAutofillManager : public AutofillManager,
                                public AutofillManager::Observer {
  public:
-  AndroidAutofillManager(AutofillDriver* driver, AutofillClient* client);
+  explicit AndroidAutofillManager(AutofillDriver* driver);
 
   AndroidAutofillManager(const AndroidAutofillManager&) = delete;
   AndroidAutofillManager& operator=(const AndroidAutofillManager&) = delete;

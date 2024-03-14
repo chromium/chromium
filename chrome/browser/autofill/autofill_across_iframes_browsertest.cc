@@ -77,8 +77,8 @@ constexpr char kCvc[] = "123";
 // Adds waiting capabilities to BrowserAutofillManager.
 class TestAutofillManager : public BrowserAutofillManager {
  public:
-  TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
-      : BrowserAutofillManager(driver, client, "en-US") {
+  explicit TestAutofillManager(ContentAutofillDriver* driver)
+      : BrowserAutofillManager(driver, "en-US") {
     test_api(*this).set_limit_before_refill(base::Minutes(1));
   }
 

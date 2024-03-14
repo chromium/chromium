@@ -72,9 +72,8 @@ class MockAutofillClient : public TestAutofillClient {
 
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
  public:
-  MockBrowserAutofillManager(TestAutofillDriver* driver,
-                             TestAutofillClient* client)
-      : TestBrowserAutofillManager(driver, client) {}
+  explicit MockBrowserAutofillManager(TestAutofillDriver* driver)
+      : TestBrowserAutofillManager(driver) {}
   MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
   MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
       delete;
@@ -131,10 +130,10 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.GetPersonalDataManager()->SetPrefService(
         autofill_client_.GetPrefs());
-    autofill_driver_ = std::make_unique<TestAutofillDriver>();
+    autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
     browser_autofill_manager_ =
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
-            autofill_driver_.get(), &autofill_client_);
+            autofill_driver_.get());
 
     auto touch_to_fill_delegate =
         std::make_unique<TouchToFillDelegateAndroidImpl>(

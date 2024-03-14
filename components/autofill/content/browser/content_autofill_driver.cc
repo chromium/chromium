@@ -84,7 +84,7 @@ ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
     ContentAutofillDriverFactory* owner)
     : render_frame_host_(*render_frame_host), owner_(*owner) {
-  autofill_manager_ = owner_->client().CreateManager(/*pass_key=*/{}, *this);
+  autofill_manager_ = GetAutofillClient().CreateManager(/*pass_key=*/{}, *this);
 }
 
 ContentAutofillDriver::~ContentAutofillDriver() {
@@ -154,6 +154,10 @@ ContentAutofillDriver* ContentAutofillDriver::GetParent() {
     return nullptr;
   }
   return owner_->DriverForFrame(parent_rfh);
+}
+
+ContentAutofillClient& ContentAutofillDriver::GetAutofillClient() {
+  return owner_->client();
 }
 
 AutofillManager& ContentAutofillDriver::GetAutofillManager() {

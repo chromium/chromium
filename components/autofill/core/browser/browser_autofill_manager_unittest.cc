@@ -632,7 +632,7 @@ auto FormStructureHasRendererId(FormRendererId form_renderer_id) {
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
-  MockAutofillDriver() = default;
+  using TestAutofillDriver::TestAutofillDriver;
   MockAutofillDriver(const MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
 
@@ -674,7 +674,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
 
-    autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
+    autofill_driver_ =
+        std::make_unique<NiceMock<MockAutofillDriver>>(&autofill_client_);
     autofill_client_.GetPaymentsAutofillClient()
         ->set_test_payments_network_interface(
             std::make_unique<payments::TestPaymentsNetworkInterface>(
@@ -954,8 +955,8 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void ResetBrowserAutofillManager() {
-    browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
-        autofill_driver_.get(), &autofill_client_);
+    browser_autofill_manager_ =
+        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
 
     test_api(*browser_autofill_manager_)
         .set_single_field_form_fill_router(

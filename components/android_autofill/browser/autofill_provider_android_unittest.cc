@@ -124,9 +124,8 @@ FormData CreateTestLoginForm() {
 
 class TestAndroidAutofillManager : public AndroidAutofillManager {
  public:
-  explicit TestAndroidAutofillManager(ContentAutofillDriver* driver,
-                                      ContentAutofillClient* client)
-      : AndroidAutofillManager(driver, client) {}
+  explicit TestAndroidAutofillManager(ContentAutofillDriver* driver)
+      : AndroidAutofillManager(driver) {}
 
   void OnFormsSeen(const std::vector<FormData>& updated_forms,
                    const std::vector<FormGlobalId>& removed_forms) override {

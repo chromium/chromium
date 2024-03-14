@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_forest.h"
 #include "components/autofill/core/browser/form_forest_test_api.h"
@@ -256,10 +257,11 @@ class FakeAutofillDriver : public TestAutofillDriver {
   enum class SharedAutofillPolicy { kDefault, kEnabled, kDisabled };
 
   static std::unique_ptr<FakeAutofillDriver> CreateChildFrame(
+      AutofillClient* client,
       const url::Origin& origin,
       FakeAutofillDriver* parent,
       SharedAutofillPolicy shared_autofill) {
-    auto driver = base::WrapUnique(new FakeAutofillDriver(origin));
+    auto driver = base::WrapUnique(new FakeAutofillDriver(client, origin));
     driver->SetParent(parent);
     driver->SetLocalFrameToken(test::MakeLocalFrameToken());
     if (parent && driver->origin() != parent->origin()) {
@@ -329,7 +331,8 @@ class FakeAutofillDriver : public TestAutofillDriver {
   bool is_sub_root() const { return is_sub_root_; }
 
  private:
-  explicit FakeAutofillDriver(const url::Origin& origin) : origin_(origin) {}
+  explicit FakeAutofillDriver(AutofillClient* client, const url::Origin& origin)
+      : TestAutofillDriver(client), origin_(origin) {}
 
   const url::Origin origin_;
   bool is_sub_root_ = false;
@@ -346,6 +349,7 @@ class FakeAutofillDriver : public TestAutofillDriver {
 // RemoteFrameTokens.)
 class FormForestTest : public testing::Test {
  private:
+  base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
@@ -400,7 +404,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
              : !parent_driver        ? kMainUrl
                                      : kIframeUrl);
     drivers_.push_back(FakeAutofillDriver::CreateChildFrame(
-        Origin(url), /*parent=*/parent_driver,
+        &client_, Origin(url), /*parent=*/parent_driver,
         /*shared_autofill=*/frame_info.policy));
     FakeAutofillDriver* driver = drivers_.back().get();
 
@@ -554,6 +558,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
   FormForest flattened_forms_;
 
  private:
+  TestAutofillClient client_;
   std::vector<std::unique_ptr<FakeAutofillDriver>> drivers_;
   std::map<std::string, FormGlobalId, std::less<>> forms_;
 };

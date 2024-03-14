@@ -41,8 +41,8 @@ namespace autofill {
 // providing the right inputs to the parsing process.
 class TestAutofillManager : public BrowserAutofillManager {
  public:
-  TestAutofillManager(AutofillDriverIOS* driver, AutofillClient* client)
-      : BrowserAutofillManager(driver, client, "en-US") {}
+  explicit TestAutofillManager(AutofillDriverIOS* driver)
+      : BrowserAutofillManager(driver, "en-US") {}
 
   [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
       int min_num_awaited_calls) {
