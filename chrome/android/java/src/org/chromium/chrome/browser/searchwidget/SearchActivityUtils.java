@@ -9,7 +9,6 @@ import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
 import org.chromium.url.GURL;
 
 /** Class facilitating interactions with the SearchActivity and the Omnibox. */
@@ -60,11 +58,12 @@ public class SearchActivityUtils implements SearchActivityClient {
                 };
 
         var intent = buildTrustedIntent(context, action);
-        intent.putExtra(EXTRA_ORIGIN, origin);
-        if (!GURL.isEmptyOrInvalid(url)) {
-            intent.putExtra(EXTRA_CURRENT_URL, url.getSpec());
-        }
-        intent.putExtra(EXTRA_SEARCH_TYPE, searchType);
+        intent.putExtra(EXTRA_ORIGIN, origin)
+                .putExtra(EXTRA_SEARCH_TYPE, searchType)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+                .putExtra(EXTRA_CURRENT_URL, GURL.isEmptyOrInvalid(url) ? null : url.getSpec());
+
         return intent;
     }
 
@@ -83,8 +82,10 @@ public class SearchActivityUtils implements SearchActivityClient {
         if (activity == null) return;
 
         var intent =
-                buildTrustedIntent(activity, SearchActivityConstants.ACTION_START_TEXT_SEARCH)
+                buildTrustedIntent(activity, ACTION_TEXT_SEARCH)
                         .putExtra(EXTRA_CURRENT_URL, currentUrl.getSpec())
+                        .putExtra(EXTRA_ORIGIN, IntentOrigin.CUSTOM_TAB)
+                        .putExtra(EXTRA_SEARCH_TYPE, SearchType.TEXT)
                         .addFlags(
                                 Intent.FLAG_ACTIVITY_NO_HISTORY
                                         | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
@@ -95,22 +96,6 @@ public class SearchActivityUtils implements SearchActivityClient {
                 ActivityOptions.makeCustomAnimation(
                                 activity, android.R.anim.fade_in, R.anim.no_anim)
                         .toBundle());
-    }
-
-    /**
-     * @return true if the intent represents a Search request for current activity.
-     */
-    private static boolean isOmniboxRequestForResult(@NonNull Intent intent) {
-        return IntentUtils.isTrustedIntentFromSelf(intent)
-                && IntentUtils.safeHasExtra(intent, EXTRA_CURRENT_URL);
-    }
-
-    /**
-     * @return true if the intent represents a Search request from old SearchWidget.
-     */
-    private static boolean isSearchWidgetRequest(@NonNull Intent intent) {
-        return IntentUtils.safeGetBooleanExtra(
-                intent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
     }
 
     /**
@@ -125,18 +110,11 @@ public class SearchActivityUtils implements SearchActivityClient {
             return IntentUtils.safeGetIntExtra(intent, EXTRA_ORIGIN, IntentOrigin.UNKNOWN);
         }
 
-        if (isSearchWidgetRequest(intent)) {
-            return IntentOrigin.SEARCH_WIDGET;
-        } else if (isOmniboxRequestForResult(intent)) {
-            return IntentOrigin.CUSTOM_TAB;
-        }
         return IntentOrigin.UNKNOWN;
     }
 
     /**
      * Retrieve the intent search type.
-     *
-     * <p>TODO(ender): link this to an explicit EXTRA, drop string comparison.
      *
      * @param intent intent received by SearchActivity
      * @return the requested search type
@@ -148,17 +126,7 @@ public class SearchActivityUtils implements SearchActivityClient {
             return IntentUtils.safeGetIntExtra(intent, EXTRA_SEARCH_TYPE, SearchType.TEXT);
         }
 
-        var action = intent.getAction();
-        switch (getIntentOrigin(intent)) {
-            case IntentOrigin.SEARCH_WIDGET:
-                if (TextUtils.equals(action, SearchActivityConstants.ACTION_START_VOICE_SEARCH)) {
-                    return SearchType.VOICE;
-                }
-                return SearchType.TEXT;
-
-            default:
-                return SearchType.TEXT;
-        }
+        return SearchType.TEXT;
     }
 
     /**

@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 
@@ -117,16 +117,17 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static PendingIntent createIntent(Context context, boolean startVoiceSearch) {
+        SearchActivityClient client = new SearchActivityUtils();
         // Launch the SearchActivity.
         Intent searchIntent =
-                new Intent(
+                client.createIntent(
+                        context,
+                        SearchActivityClient.IntentOrigin.SEARCH_WIDGET,
+                        null,
                         startVoiceSearch
-                                ? SearchActivityConstants.ACTION_START_VOICE_SEARCH
-                                : SearchActivityConstants.ACTION_START_TEXT_SEARCH);
+                                ? SearchActivityClient.SearchType.VOICE
+                                : SearchActivityClient.SearchType.TEXT);
 
-        searchIntent.setClass(context, SearchActivity.class);
-        searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         searchIntent.putExtra(EXTRA_FROM_SEARCH_WIDGET, true);
 
         Bundle optionsBundle =
