@@ -16,6 +16,18 @@ namespace enterprise_watermark {
 
 namespace {
 
+// This string checks that non-latin characters render correctly, and that extra
+// whitespaces/newlines are removed.
+constexpr char kWatermarkMessage[] = R"(
+
+    THIS IS CONFIDENTIAL!
+
+    😀😀😀 草草草 www
+
+    مضحك جداً
+
+)";
+
 class WatermarkBrowserTestBase : public UiBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -25,7 +37,7 @@ class WatermarkBrowserTestBase : public UiBrowserTest {
 
   void ShowUi(const std::string& name) override {
     BrowserView::GetBrowserViewForBrowser(browser())->SetWatermarkString(
-        "CONFIDENTIAL");
+        kWatermarkMessage);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(
                        "/enterprise/watermark/watermark_test_page.html")));
