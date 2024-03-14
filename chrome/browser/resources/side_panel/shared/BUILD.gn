@@ -30,4 +30,9 @@ build_webui("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  # Using "//" prefixed host to indicate that files in this folder should
+  # use only scheme-relative imports, as they may be used from either
+  # trusted or untrusted hosts.
+  webui_host = "//shared-side-panel.top_chrome"
 }

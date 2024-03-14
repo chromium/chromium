@@ -41,4 +41,6 @@ build_webui("build") {
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
+
+  webui_host = "chrome-untrusted://read-anything-side-panel.top-chrome"
 }

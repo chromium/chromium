@@ -32,4 +32,6 @@ build_webui("build") {
       [ "chrome://chrome-signin/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
                     target_gen_dir) ]
+
+  webui_host = "chrome-signin"
 }

@@ -43,4 +43,6 @@ build_webui("build") {
         rebase_path("//chrome/browser/resources/chromeos/arc_account_picker/*",
                     target_gen_dir),
   ]
+
+  webui_host = "chrome-signin"
 }

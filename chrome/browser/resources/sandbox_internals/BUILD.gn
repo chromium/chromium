@@ -19,4 +19,6 @@ build_webui("build") {
   if (is_android) {
     ts_definitions = [ "./sandbox_android.d.ts" ]
   }
+
+  webui_host = "privacy-sandbox-internals"
 }

@@ -21,4 +21,5 @@ build_webui("build") {
 
   generate_grdp = true
   grd_resource_path_prefix = "lens"
+  webui_host = "internals"
 }

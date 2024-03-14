@@ -22,11 +22,11 @@ build_webui("build") {
 
   ts_deps = [
     "./shared:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:library",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -43,4 +43,6 @@ build_webui("build") {
     "shared:build_grdp",
     "shared:build_json_grdp",
   ]
+
+  webui_host = "nearby"
 }
