@@ -77,7 +77,11 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
                  {ADDRESS_HOME_LINE1, ADDRESS_HOME_STREET_NAME},
                  AddressImportRequirement::kLine1RequirementFulfilled,
                  AddressImportRequirement::kLine1RequirementViolated);
-  ValidateAndLog(country.requires_city(), {ADDRESS_HOME_CITY},
+  std::vector<FieldType> city_types = {ADDRESS_HOME_CITY};
+  if (country.country_code() == "MX") {
+    city_types.push_back(ADDRESS_HOME_ADMIN_LEVEL2);
+  }
+  ValidateAndLog(country.requires_city(), city_types,
                  AddressImportRequirement::kCityRequirementFulfilled,
                  AddressImportRequirement::kCityRequirementViolated);
   ValidateAndLog(country.requires_state(), {ADDRESS_HOME_STATE},
