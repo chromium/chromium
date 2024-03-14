@@ -9,14 +9,12 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
@@ -34,11 +32,6 @@ import java.util.OptionalInt;
         shadows = {ShadowSystemClock.class})
 public class PasswordCheckupClientMetricsRecorderTest {
     private static final String PASSWORD_CHECKUP_HISTOGRAM_BASE = "PasswordManager.PasswordCheckup";
-
-    @Before
-    public void setUp() {
-        UmaRecorderHolder.resetForTesting();
-    }
 
     private String getSuffixForOperation(@PasswordCheckOperation int operation) {
         switch (operation) {

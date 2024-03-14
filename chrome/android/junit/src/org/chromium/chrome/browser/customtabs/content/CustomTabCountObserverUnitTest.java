@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -22,11 +20,6 @@ public class CustomTabCountObserverUnitTest {
     @Rule
     public CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
-
-    @After
-    public void tearDown() {
-        UmaRecorderHolder.resetForTesting();
-    }
 
     @Test
     public void observeBeforeInitialTab() {

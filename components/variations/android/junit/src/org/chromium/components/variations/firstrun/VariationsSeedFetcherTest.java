@@ -32,7 +32,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.components.variations.VariationsCompressionUtils;
@@ -79,7 +78,6 @@ public class VariationsSeedFetcherTest {
                                 .setChannel(sChannel)
                                 .build());
         mPrefs = ContextUtils.getAppSharedPreferences();
-        UmaRecorderHolder.resetForTesting();
     }
 
     /**

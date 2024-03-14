@@ -14,7 +14,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ import java.util.concurrent.TimeoutException;
 public class LanguageProfileControllerUnitTest {
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         ThreadUtils.setThreadAssertsDisabledForTesting(true);
         mController = new LanguageProfileController(mDelegate);
     }

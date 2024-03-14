@@ -39,7 +39,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -124,7 +123,6 @@ public class LocationBarTest {
                             .when(mSearchEngineUtils)
                             .getSearchEngineLogo(anyInt());
                 });
-        UmaRecorderHolder.resetForTesting();
         // Prevents recreating Chrome when the default search engine is changed.
         ToolbarManager.setSkipRecreateActivityWhenStartSurfaceEnabledStateChangesForTesting(true);
     }

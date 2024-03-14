@@ -25,14 +25,12 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -116,11 +114,6 @@ public class AccountManagementFragmentTest {
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.MIGRATE_ACCOUNT_MANAGEMENT_SETTINGS_TO_CAPABILITIES,
                 isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled);
-    }
-
-    @Before
-    public void setUp() {
-        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

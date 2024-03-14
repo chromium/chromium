@@ -24,7 +24,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,7 +48,6 @@ public class FirstRunAppRestrictionInfoTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        UmaRecorderHolder.resetForTesting();
         ShadowPostTask.setTestImpl(
                 new ShadowPostTask.TestImpl() {
                     @Override

@@ -33,7 +33,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -73,8 +72,6 @@ public final class SearchEngineChoiceNotificationTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ContextUtils.initApplicationContextForTests(mContext);
-
-        UmaRecorderHolder.resetForTesting();
 
         // Sets up appropriate responses from Template URL service.
         ProfileManager.setLastUsedProfileForTesting(mProfile);

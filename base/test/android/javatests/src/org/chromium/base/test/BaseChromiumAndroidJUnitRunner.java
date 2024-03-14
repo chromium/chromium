@@ -42,7 +42,6 @@ import org.chromium.base.LifetimeAssert;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.InMemorySharedPreferences;
@@ -486,7 +485,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         try {
             writeClangCoverageProfileIfEnabled();
             checkOrDeleteOnDiskSharedPreferences(true);
-            UmaRecorderHolder.resetForTesting();
 
             // There is a bug on L and below that DestroyActivitiesRule does not cause onStop and
             // onDestroy. On other versions, DestroyActivitiesRule may still fail flakily. Ignore

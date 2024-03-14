@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.version_info.VersionConstants;
@@ -51,11 +49,6 @@ public class UpdateSuccessMetricsTest {
     @Before
     public void setUp() {
         mMetrics = new UpdateSuccessMetrics(mProvider);
-    }
-
-    @After
-    public void tearDown() {
-        UmaRecorderHolder.resetForTesting();
     }
 
     /** Tests that StartTracking properly persists the right tracking information. */

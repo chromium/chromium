@@ -18,7 +18,6 @@ import android.text.TextUtils;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,7 +34,6 @@ import org.robolectric.shadows.ShadowNotificationManager;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo2;
@@ -84,12 +82,6 @@ public class ReengagementNotificationControllerTest {
                 Shadows.shadowOf(
                         (NotificationManager)
                                 mContext.getSystemService(Context.NOTIFICATION_SERVICE));
-        UmaRecorderHolder.resetForTesting();
-    }
-
-    @After
-    public void tearDown() {
-        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

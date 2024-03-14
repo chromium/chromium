@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,7 +29,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -99,7 +97,6 @@ public class SkipTosDialogPolicyListenerUnitTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         doCallback((Callback<OwnedState> callback) -> mEnterpriseInfoCallback = callback)
                 .when(mMockEnterpriseInfo)
                 .getDeviceEnterpriseInfo(any());
@@ -116,11 +113,6 @@ public class SkipTosDialogPolicyListenerUnitTest {
         assertPolicyCheckNotComplete();
         Mockito.verify(mMockEnterpriseInfo).getDeviceEnterpriseInfo(mEnterpriseInfoCallback);
         Mockito.verify(mMockPolicyLoadListener).onAvailable(mPolicyLoadListenerCallback);
-    }
-
-    @After
-    public void tearDown() {
-        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

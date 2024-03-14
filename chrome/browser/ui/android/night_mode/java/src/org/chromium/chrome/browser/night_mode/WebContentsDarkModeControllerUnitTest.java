@@ -23,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,7 +58,6 @@ public class WebContentsDarkModeControllerUnitTest {
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
 
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
-        UmaRecorderHolder.resetForTesting();
 
         Mockito.doAnswer(
                         invocation -> {
@@ -100,8 +98,6 @@ public class WebContentsDarkModeControllerUnitTest {
     @After
     public void tearDown() {
         ShadowColorUtils.sInNightMode = false;
-
-        UmaRecorderHolder.resetForTesting();
     }
 
     @Test

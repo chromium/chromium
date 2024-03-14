@@ -4,7 +4,6 @@
 
 package org.chromium.components.query_tiles;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for TileUmaLogger. */
@@ -24,13 +22,9 @@ public class TileUmaLoggerTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         mTileProvider = new TestTileProvider(2, 12);
         mTileUmaLogger = new TileUmaLogger("TestUiSurface");
     }
-
-    @After
-    public void tearDown() {}
 
     @Test
     public void testTileClicked() {

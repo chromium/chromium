@@ -24,7 +24,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.library_loader.Linker.PreferAddress;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link Linker}. */
@@ -38,7 +37,6 @@ public class LinkerTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         Linker.setLinkerNativesForTesting(mNativeMock);
     }
 

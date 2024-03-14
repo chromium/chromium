@@ -10,13 +10,11 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.StringRes;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
@@ -33,11 +31,6 @@ import java.util.List;
 public class ReadingListSectionHeaderTest {
     private static final int NEWER_CREATION_TIMESTAMP = 2;
     private static final int OLDER_CREATION_TIMESTAMP = 1;
-
-    @Before
-    public void setup() {
-        UmaRecorderHolder.resetForTesting();
-    }
 
     private BookmarkListEntry createReadingListEntry(long id, boolean read, int dateAdded) {
         BookmarkId bookmarkId = new BookmarkId(id, BookmarkType.READING_LIST);

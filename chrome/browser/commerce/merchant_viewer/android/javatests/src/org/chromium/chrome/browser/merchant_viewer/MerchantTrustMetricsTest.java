@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 
@@ -30,7 +29,6 @@ public class MerchantTrustMetricsTest {
 
     @Before
     public void setUp() {
-        UmaRecorderHolder.resetForTesting();
         mMetrics = new MerchantTrustMetrics();
     }
 

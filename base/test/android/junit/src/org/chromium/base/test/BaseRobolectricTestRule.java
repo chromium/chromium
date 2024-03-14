@@ -71,6 +71,7 @@ public class BaseRobolectricTestRule implements TestRule {
     static void setUp(Method method) {
         ResettersForTesting.beforeHooksWillExecute();
         UmaRecorderHolder.setUpNativeUmaRecorder(false);
+        UmaRecorderHolder.resetForTesting();
         ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());
         LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
         // Whether or not native is loaded is a global one-way switch, so do it automatically so
@@ -79,7 +80,6 @@ public class BaseRobolectricTestRule implements TestRule {
             LibraryLoader.getInstance().ensureMainDexInitialized();
         }
         ApplicationStatus.initialize(ApplicationProvider.getApplicationContext());
-        UmaRecorderHolder.resetForTesting();
         CommandLineFlags.setUpClass(method.getDeclaringClass());
         CommandLineFlags.setUpMethod(method);
         BundleUtils.resetForTesting();

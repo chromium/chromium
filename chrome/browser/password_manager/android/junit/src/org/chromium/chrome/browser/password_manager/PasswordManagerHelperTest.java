@@ -47,7 +47,6 @@ import org.robolectric.shadows.ShadowSystemClock;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -131,7 +130,6 @@ public class PasswordManagerHelperTest {
     public void setUp() throws PasswordCheckBackendException, CredentialManagerBackendException {
         // TODO(crbug.com/1511244): Parametrize the tests for account and local storage.
         // TODO(crbug.com/1500670): Parametrise the tests for local and account.
-        UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
