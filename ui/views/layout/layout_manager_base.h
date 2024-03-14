@@ -15,6 +15,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/types/pass_key.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,6 +35,8 @@ class View;
 class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
                                        public ViewObserver {
  public:
+  using PassKeyType = base::NonCopyablePassKey<LayoutManagerBase>;
+
   LayoutManagerBase(const LayoutManagerBase&) = delete;
   LayoutManagerBase& operator=(const LayoutManagerBase&) = delete;
 
@@ -45,6 +48,12 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
   // Fetches a proposed layout for a host view with size |host_size|. If the
   // result had already been calculated, a cached value may be returned.
   ProposedLayout GetProposedLayout(const gfx::Size& host_size) const;
+
+  // Fetches a proposed layout for a host view with `size_bounds`. This function
+  // does not require caching because it is generally used in combination with
+  // other LayoutManager.
+  ProposedLayout GetProposedLayout(const SizeBounds& size_bounds,
+                                   PassKeyType) const;
 
   // LayoutManager:
   gfx::Size GetPreferredSize(const View* host) const override;
@@ -69,6 +78,8 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
 
  protected:
   LayoutManagerBase();
+
+  PassKeyType PassKey() const { return PassKeyType(); }
 
   // LayoutManager:
   std::vector<raw_ptr<View, VectorExperimental>> GetChildViewsInPaintOrder(

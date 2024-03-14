@@ -141,6 +141,12 @@ ProposedLayout LayoutManagerBase::GetProposedLayout(
   return cached_layout_;
 }
 
+ProposedLayout LayoutManagerBase::GetProposedLayout(
+    const SizeBounds& size_bounds,
+    PassKeyType) const {
+  return CalculateProposedLayout(size_bounds);
+}
+
 LayoutManagerBase::LayoutManagerBase() = default;
 
 SizeBounds LayoutManagerBase::GetAvailableHostSize() const {
