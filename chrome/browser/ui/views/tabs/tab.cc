@@ -324,7 +324,7 @@ void Tab::Layout(PassKey) {
     // Height should go to the bottom of the tab for the crashed tab animation
     // to pop out of the bottom.
     favicon_bounds.set_y(contents_rect.y() +
-                         Center(contents_rect.height(), gfx::kFaviconSize));
+                         Center(gfx::kFaviconSize, gfx::kFaviconSize));
     if (center_icon_) {
       // When centering the favicon, the favicon is allowed to escape the normal
       // contents rect.

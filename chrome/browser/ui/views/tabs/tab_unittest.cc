@@ -135,8 +135,11 @@ class TabTest : public ChromeViewsTestBase {
       }
     }
 
-    // Check positioning of elements with respect to each other, and that they
-    // are fully within the contents bounds.
+    // Check the tab icon's positioning. Icons should be positioned at the
+    // start of the tab. Favicons should be centered within their icons. We
+    // extend the bounds vertically down along the tab so that the crashed tabs
+    // and alerts icons can be placed. This means that the true bounds are not
+    // centered on the contents bounds.
     const gfx::Rect contents_bounds = tab.GetContentsBounds();
     if (tab.showing_icon_) {
       if (tab.center_icon_) {
@@ -144,10 +147,13 @@ class TabTest : public ChromeViewsTestBase {
       } else {
         EXPECT_LE(contents_bounds.x(), tab.icon_->x());
       }
-      if (tab.title_->GetVisible())
+      if (tab.title_->GetVisible()) {
         EXPECT_LE(tab.icon_->bounds().right(), tab.title_->x());
-      EXPECT_LE(contents_bounds.y(), tab.icon_->y());
-      EXPECT_LE(tab.icon_->bounds().bottom(), contents_bounds.bottom());
+      }
+
+      // Tab Icon content now exactly fit the content bounds.
+      EXPECT_EQ(tab.icon_->bounds().y(), contents_bounds.y());
+      EXPECT_GE(tab.icon_->bounds().bottom(), contents_bounds.bottom());
     }
 
     if (tab.showing_icon_ && tab.showing_alert_indicator_) {
@@ -170,10 +176,13 @@ class TabTest : public ChromeViewsTestBase {
         EXPECT_LE(GetAlertIndicatorBounds(tab).right(),
                   contents_bounds.right());
       }
-      EXPECT_LE(contents_bounds.y(), GetAlertIndicatorBounds(tab).y());
-      EXPECT_LE(GetAlertIndicatorBounds(tab).bottom(),
-                contents_bounds.bottom());
+
+      // The alert indicator should be centered in the content bounds.
+      gfx::Rect alert_bounds = GetAlertIndicatorBounds(tab);
+      EXPECT_EQ(alert_bounds.CenterPoint().y(),
+                contents_bounds.CenterPoint().y());
     }
+
     if (tab.showing_alert_indicator_ && tab.showing_close_button_) {
       // Note: The alert indicator can overlap the left-insets of the close box,
       // but should otherwise be to the left of the close button.
@@ -189,15 +198,12 @@ class TabTest : public ChromeViewsTestBase {
                   tab.close_button_->bounds().x() +
                       tab.close_button_->GetInsets().left());
       }
-      // We need to use the close button contents bounds instead of its bounds,
-      // since it has an empty border around it to extend its clickable area for
-      // touch.
-      // Note: The close button right edge can be outside the nominal contents
-      // bounds, but shouldn't leave the local bounds.
+
+      // The close button has a larger hit target than the content bounds.
       const gfx::Rect close_bounds = tab.close_button_->GetContentsBounds();
       EXPECT_LE(close_bounds.right(), tab.GetLocalBounds().right());
-      EXPECT_LE(contents_bounds.y(), close_bounds.y());
-      EXPECT_LE(close_bounds.bottom(), contents_bounds.bottom());
+      EXPECT_LE(close_bounds.y(), contents_bounds.y());
+      EXPECT_LE(contents_bounds.bottom(), close_bounds.bottom());
     }
   }
 
@@ -348,10 +354,6 @@ TEST_F(TabTest, HitTest) {
 }
 
 TEST_F(TabTest, LayoutAndVisibilityOfElements) {
-  // TODO (crbug/1520660): Fix or remove test.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
   static const std::optional<TabAlertState> kAlertStatesToTest[] = {
       std::nullopt,
       TabAlertState::TAB_CAPTURING,
