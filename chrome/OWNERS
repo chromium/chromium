@@ -55,6 +55,7 @@ per-file browser/google/linkdoctor_internal=*
 per-file browser/internal=*
 per-file browser/media/engagement_internal=*
 per-file browser/nearby_sharing/internal=*
+per-file browser/platform_experience/win=*
 per-file browser/resources/chromeos/quickoffice=*
 per-file browser/resources/preinstalled_web_apps/internal=*
 per-file browser/resources/settings/internal=*
