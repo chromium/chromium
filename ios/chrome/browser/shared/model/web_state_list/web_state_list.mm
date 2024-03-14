@@ -950,12 +950,6 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
     return;
   }
 
-  // Prepare the status for the observers. The moves don't change the active
-  // web state.
-  web::WebState* const active_web_state = GetActiveWebState();
-  const WebStateListStatus status = {.old_active_web_state = active_web_state,
-                                     .new_active_web_state = active_web_state};
-
   // Update the pinned tabs count.
   if (pinned_state_changed) {
     if (pinned) {
@@ -1011,6 +1005,10 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
   }
 
   // Notify the observers of the change.
+  // The moves didn't change the active WebState.
+  web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
   if (index_changed) {
     const WebStateListChangeMove move_change(
         GetWebStateAt(to_index), from_index, to_index, pinned_state_changed,
