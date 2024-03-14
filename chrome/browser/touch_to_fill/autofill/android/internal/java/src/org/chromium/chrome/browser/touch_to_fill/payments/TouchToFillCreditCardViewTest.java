@@ -330,7 +330,7 @@ public class TouchToFillCreditCardViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        // Make sure touch events are ignored if something is drawn on top the the botton sheet.
+        // Make sure touch events are ignored if something is drawn on top the the bottom sheet.
         RecyclerView view = getCreditCards();
         for (int i = 0; i < view.getChildCount(); i++) {
             singleClickView(view.getChildAt(i), MotionEvent.FLAG_WINDOW_IS_OBSCURED);

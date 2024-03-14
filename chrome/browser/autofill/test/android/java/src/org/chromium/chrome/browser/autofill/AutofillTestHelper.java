@@ -469,18 +469,26 @@ public class AutofillTestHelper {
 
     // Sends click event at the center of the `view` with the provided `flags`.
     public static void singleClickView(View view, int flags) {
-        int x = view.getWidth() / 2;
-        int y = view.getHeight() / 2;
+        int[] windowXY = new int[2];
+        view.getLocationInWindow(windowXY);
+        windowXY[0] += view.getWidth() / 2;
+        windowXY[1] += view.getHeight() / 2;
+
+        View rootView = view.getRootView();
         runOnUiThreadBlocking(
                 () -> {
-                    view.dispatchTouchEvent(
-                            getMotionEventWithFlags(MotionEvent.ACTION_DOWN, flags, x, y));
-                    view.dispatchTouchEvent(
-                            getMotionEventWithFlags(MotionEvent.ACTION_UP, flags, x, y));
+                    rootView.dispatchTouchEvent(
+                            getMotionEventWithFlags(
+                                    MotionEvent.ACTION_DOWN, flags, windowXY[0], windowXY[1]));
+                    rootView.dispatchTouchEvent(
+                            getMotionEventWithFlags(
+                                    MotionEvent.ACTION_UP, flags, windowXY[0], windowXY[1]));
                 });
     }
 
     private static MotionEvent getMotionEventWithFlags(int action, int flags, int x, int y) {
+        MotionEvent.PointerProperties props = new MotionEvent.PointerProperties();
+        props.id = 0;
         MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
         coords.x = x;
         coords.y = y;
@@ -491,7 +499,7 @@ public class AutofillTestHelper {
                 /* eventTime= */ SystemClock.uptimeMillis(),
                 /* action= */ action,
                 /* pointerCount= */ 1,
-                new MotionEvent.PointerProperties[] {new MotionEvent.PointerProperties()},
+                new MotionEvent.PointerProperties[] {props},
                 new MotionEvent.PointerCoords[] {coords},
                 /* metaState= */ 0,
                 /* buttonState= */ 0,
