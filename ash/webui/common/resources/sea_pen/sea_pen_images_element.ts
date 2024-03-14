@@ -98,6 +98,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
   private thumbnailResponseStatusCode_: MantaStatusCode|null;
   private showError_: boolean;
+  private cameraFeed_: HTMLVideoElement|null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -148,6 +149,7 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   }
 
   private onTemplateIdChanged_() {
+    this.cameraFeed_ = null;
     clearSeaPenThumbnails(this.getStore());
   }
 
@@ -196,6 +198,10 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         /*newList=*/ thumbnails,
         /*identityBasedUpdate=*/ true,
     );
+
+    if (this.cameraFeed_) {
+      this.cameraFeed_.style.display = 'none';
+    }
   }
 
   private onThumbnailsLoadingChanged_(thumbnailsLoading: boolean) {
@@ -212,10 +218,46 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     );
   }
 
+  private createCameraFeed(): HTMLVideoElement {
+    const cameraFeed = document.createElement('video') as HTMLVideoElement;
+    // Stretch camera stream to cover the whole image.
+    cameraFeed.style.objectFit = 'cover';
+    // Align camera feed with the clicked image.
+    cameraFeed.style.position = 'relative';
+    // Flip left and right so that camera matches with the image.
+    cameraFeed.style.transform = 'scale(-1, 1)';
+
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({video: true})
+          .then(function(stream) {
+            cameraFeed.srcObject = stream;
+            cameraFeed.play();
+          })
+          .catch(function(err) {
+            console.log(err);
+          });
+    }
+
+    return cameraFeed;
+  }
+
   private onThumbnailSelected_(event: Event&{model: {item: Tile}}) {
     if (!this.isSeaPenThumbnail_(event.model.item)) {
       return;
     }
+
+    if (this.cameraFeed_ == null) {
+      this.cameraFeed_ = this.createCameraFeed();
+    }
+
+    // Attached cameraFeed_ to the selected image.
+    const item = ((event.target as Element)!.shadowRoot as
+                  ShadowRoot)!.querySelector<HTMLElement>('.item')!;
+    this.cameraFeed_.remove();
+    item.appendChild(this.cameraFeed_);
+    this.cameraFeed_.width = item.clientWidth;
+    this.cameraFeed_.height = item.clientHeight;
+    this.cameraFeed_.style.display = 'block';
 
     selectSeaPenWallpaper(
         event.model.item, getSeaPenProvider(), this.getStore());
