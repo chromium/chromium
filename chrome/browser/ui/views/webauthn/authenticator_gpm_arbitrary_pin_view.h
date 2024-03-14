@@ -12,10 +12,10 @@
 
 namespace views {
 class Textfield;
+class ToggleImageButton;
 }  // namespace views
 
 // View showing a textfield for entering an alphanumeric GPM pin.
-// TODO(rgod): Add eye icon for revealing the typed pin.
 class AuthenticatorGPMArbitraryPinView : public views::View,
                                          public views::TextfieldController {
   METADATA_HEADER(AuthenticatorGPMArbitraryPinView, views::View)
@@ -35,6 +35,8 @@ class AuthenticatorGPMArbitraryPinView : public views::View,
   ~AuthenticatorGPMArbitraryPinView() override;
 
  private:
+  void OnRevealButtonClicked();
+
   // views::View:
   void RequestFocus() override;
 
@@ -44,6 +46,8 @@ class AuthenticatorGPMArbitraryPinView : public views::View,
 
   const raw_ptr<Delegate> delegate_;
   raw_ptr<views::Textfield> pin_textfield_ = nullptr;
+  raw_ptr<views::ToggleImageButton> reveal_button_ = nullptr;
+  bool pin_revealed_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_GPM_ARBITRARY_PIN_VIEW_H_
