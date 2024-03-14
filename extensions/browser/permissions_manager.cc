@@ -523,12 +523,26 @@ bool PermissionsManager::HasWithheldHostPermissions(
 
 bool PermissionsManager::HasActiveTabAndCanAccess(const Extension& extension,
                                                   const GURL& url) const {
-  return extension.permissions_data()->HasAPIPermission(
-             mojom::APIPermissionID::kActiveTab) &&
-         !extension.permissions_data()->IsRestrictedUrl(url,
-                                                        /*error=*/nullptr) &&
-         (!url.SchemeIsFile() ||
-          util::AllowFileAccess(extension.id(), browser_context_));
+  if (!extension.permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kActiveTab)) {
+    return false;
+  }
+
+  if (extension.permissions_data()->IsRestrictedUrl(url,
+                                                    /*error=*/nullptr)) {
+    return false;
+  }
+
+  if (extension.permissions_data()->IsPolicyBlockedHost(url)) {
+    return false;
+  }
+
+  if (url.SchemeIsFile() &&
+      !util::AllowFileAccess(extension.id(), browser_context_)) {
+    return false;
+  }
+
+  return true;
 }
 
 std::unique_ptr<PermissionSet>

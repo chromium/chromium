@@ -44,12 +44,16 @@ class PermissionsManagerUnittest : public ExtensionsTest {
   scoped_refptr<const Extension> AddExtension(const std::string& name);
   scoped_refptr<const Extension> AddExtensionWithAPIPermission(
       const std::string& name,
-      const std::string& permission);
+      const std::string& permission,
+      extensions::mojom::ManifestLocation location =
+          extensions::mojom::ManifestLocation::kUnpacked);
   scoped_refptr<const Extension> AddExtensionWithHostPermission(
       const std::string& name,
       const std::string& host_permission);
   scoped_refptr<const Extension> AddExtensionWithActiveTab(
-      const std::string& name);
+      const std::string& name,
+      extensions::mojom::ManifestLocation location =
+          extensions::mojom::ManifestLocation::kUnpacked);
 
   // Returns the restricted sites stored in `manager_`.
   std::set<url::Origin> GetRestrictedSitesFromManager();
@@ -94,11 +98,13 @@ scoped_refptr<const Extension> PermissionsManagerUnittest::AddExtension(
 scoped_refptr<const Extension>
 PermissionsManagerUnittest::AddExtensionWithAPIPermission(
     const std::string& name,
-    const std::string& permission) {
+    const std::string& permission,
+    extensions::mojom::ManifestLocation location) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
           .SetManifestVersion(3)
           .AddPermission(permission)
+          .SetLocation(location)
           .Build();
   DCHECK(extension->permissions_data()->HasAPIPermission(permission));
 
@@ -126,8 +132,10 @@ PermissionsManagerUnittest::AddExtensionWithHostPermission(
 }
 
 scoped_refptr<const Extension>
-PermissionsManagerUnittest::AddExtensionWithActiveTab(const std::string& name) {
-  return AddExtensionWithAPIPermission(name, "activeTab");
+PermissionsManagerUnittest::AddExtensionWithActiveTab(
+    const std::string& name,
+    extensions::mojom::ManifestLocation location) {
+  return AddExtensionWithAPIPermission(name, "activeTab", location);
 }
 
 const base::Value* PermissionsManagerUnittest::GetRestrictedSitesFromPrefs() {
@@ -478,6 +486,43 @@ TEST_F(PermissionsManagerUnittest, CanUserSelectSiteAccess_ActiveTab) {
                                                  UserSiteAccess::kOnSite));
   EXPECT_FALSE(manager_->CanUserSelectSiteAccess(*extension, url,
                                                  UserSiteAccess::kOnAllSites));
+}
+
+TEST_F(PermissionsManagerUnittest, HasActiveTabAndCanAccess_PolicyUrl) {
+  auto extension = AddExtensionWithActiveTab("ActiveTab Extension");
+  auto enterprise_extension = AddExtensionWithActiveTab(
+      "ActiveTab Extension",
+      extensions::mojom::ManifestLocation::kExternalPolicy);
+
+  constexpr int kContextId = 0;
+  extension->permissions_data()->SetContextId(kContextId);
+  extension->permissions_data()->SetUsesDefaultHostRestrictions();
+  enterprise_extension->permissions_data()->SetContextId(kContextId);
+  enterprise_extension->permissions_data()->SetUsesDefaultHostRestrictions();
+
+  // Add a policy-blocked site.
+  URLPattern default_policy_blocked_pattern =
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
+  extensions::URLPatternSet default_allowed_hosts;
+  extensions::URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      extensions::util::GetBrowserContextId(browser_context()),
+      default_blocked_hosts, default_allowed_hosts);
+
+  // Allow enterprise extension access to policy-blocked site.
+  extensions::URLPatternSet allowed_hosts;
+  extensions::URLPatternSet blocked_hosts;
+  allowed_hosts.AddPattern(default_policy_blocked_pattern);
+  enterprise_extension->permissions_data()->SetPolicyHostRestrictions(
+      blocked_hosts, allowed_hosts);
+
+  // Verify only enterprise extension can have access with activeTab to
+  // policy-blocked site.
+  const GURL policy_url("http://www.policy-blocked.com");
+  EXPECT_FALSE(manager_->HasActiveTabAndCanAccess(*extension, policy_url));
+  EXPECT_TRUE(
+      manager_->HasActiveTabAndCanAccess(*enterprise_extension, policy_url));
 }
 
 TEST_F(PermissionsManagerUnittest,

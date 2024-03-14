@@ -1133,11 +1133,13 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
       extensions::util::GetBrowserContextId(browser()->profile()),
       default_blocked_hosts, default_allowed_hosts);
 
-  // Install extensions requesting host permissions.
+  // Install extensions requesting host permissions or activeTab.
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  auto activeTab_extension =
+      InstallExtensionWithPermissions("Extension: activeTab", {"activeTab"});
   auto enterprise_extension =
-      InstallEnterpriseExtension("Enterprise extension",
+      InstallEnterpriseExtension("Extension: enterprise",
                                  /*host_permissions=*/{"<all_urls>"});
 
   // Allow enterprise extension access to policy-blocked site.
@@ -1153,47 +1155,63 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
   web_contents_tester()->NavigateAndCommit(policy_blocked_url);
 
   ShowMenu();
-  ASSERT_EQ(menu_items().size(), 2u);
+  ASSERT_EQ(menu_items().size(), 3u);
 
   // Verify site setting toggle is not visible, since no extension can customize
   // a policy-blocked site.
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
 
   // Retrieve menu items.
-  ExtensionMenuItemView* enterprise_extension_item = menu_items()[0];
-  ExtensionMenuItemView* extension_item = menu_items()[1];
-  ASSERT_EQ(enterprise_extension_item->primary_action_button_for_testing()
-                ->label_text_for_testing(),
-            u"Enterprise extension");
+  ExtensionMenuItemView* extension_item = menu_items()[0];
+  ExtensionMenuItemView* activeTab_extension_item = menu_items()[1];
+  ExtensionMenuItemView* enterprise_extension_item = menu_items()[2];
   ASSERT_EQ(extension_item->primary_action_button_for_testing()
                 ->label_text_for_testing(),
             u"Extension");
+  ASSERT_EQ(activeTab_extension_item->primary_action_button_for_testing()
+                ->label_text_for_testing(),
+            u"Extension: activeTab");
+  ASSERT_EQ(enterprise_extension_item->primary_action_button_for_testing()
+                ->label_text_for_testing(),
+            u"Extension: enterprise");
 
-  // Verify both extensions':
+  // Verify all extensions':
   //   - site access toggle is hidden, since site access cannot be changed
   //   - site permissions button is visible and disabled. We leave them visible
   //     because enterprise extensions can still have access to the site, but
   //     disabled because site access cannot be changed.
   EXPECT_FALSE(extension_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(
+      activeTab_extension_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(enterprise_extension_item->site_access_toggle_for_testing()
                    ->GetVisible());
   EXPECT_TRUE(
       extension_item->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_TRUE(activeTab_extension_item->site_permissions_button_for_testing()
+                  ->GetVisible());
   EXPECT_TRUE(enterprise_extension_item->site_permissions_button_for_testing()
                   ->GetVisible());
   EXPECT_FALSE(
       extension_item->site_permissions_button_for_testing()->GetEnabled());
+  EXPECT_FALSE(activeTab_extension_item->site_permissions_button_for_testing()
+                   ->GetEnabled());
   EXPECT_FALSE(enterprise_extension_item->site_permissions_button_for_testing()
                    ->GetEnabled());
 
   // Verify site permission button text for:
-  //   - extension is "none", since site is blocked by policy
+  //   - extension and activeTab extension is "none", since site is blocked by
+  //   policy
   //   - enterprise extension is "on all sites", since site is allowed to the
   //     extension by policy.
   EXPECT_EQ(
       extension_item->site_permissions_button_for_testing()->title()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
+  EXPECT_EQ(activeTab_extension_item->site_permissions_button_for_testing()
+                ->title()
+                ->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_NONE));
   EXPECT_EQ(
       enterprise_extension_item->site_permissions_button_for_testing()
           ->title()
