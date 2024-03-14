@@ -14,6 +14,7 @@
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
+#include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_request_id.h"
@@ -229,6 +230,8 @@ void PrefetchManager::PrefetchUrl(
   request.referrer_policy = net::ReferrerPolicy::NO_REFERRER;
 
   request.headers.SetHeader("Purpose", "prefetch");
+  request.headers.SetHeader(prefetch::headers::kSecPurposeHeaderName,
+                            prefetch::headers::kSecPurposePrefetchHeaderValue);
 
   request.load_flags = net::LOAD_PREFETCH;
   request.destination = job->destination;
