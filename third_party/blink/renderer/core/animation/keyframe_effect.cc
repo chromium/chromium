@@ -254,6 +254,7 @@ void KeyframeEffect::setPseudoElement(String pseudo,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "A valid pseudo-selector must be null or start with ::.");
+    return;
   }
 
   RefreshTarget();
