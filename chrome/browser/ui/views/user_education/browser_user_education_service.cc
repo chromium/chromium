@@ -347,7 +347,8 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleTitleText(IDS_IPH_EXPERIMENTAL_AI_PROMO)
           .SetCustomActionDismissText(IDS_NO_THANKS)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetCustomActionIsDefault(true)));
+          .SetCustomActionIsDefault(true)
+          .OverrideFocusOnShow(false)));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // kIPHExtensionsMenuFeature:
