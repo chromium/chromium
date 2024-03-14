@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncUtils;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
@@ -72,9 +71,8 @@ public abstract class FirstRunFlowSequencer {
             Profile profile = mProfileSupplier.get().getOriginalProfile();
             final IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(profile);
-            if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
-                // No need to show the sync consent page if users already consented to sync or
-                // if sync is not allowed.
+            if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) {
+                // No need to show the sync consent page if users already consented to sync.
                 return false;
             }
             // Show the sync consent page only to the signed-in users.
@@ -88,7 +86,6 @@ public abstract class FirstRunFlowSequencer {
                 return !HistorySyncUtils.isHistorySyncDisabledByCustodian(profile);
             }
             if (HistorySyncUtils.isHistorySyncDisabledByPolicy(profile)
-                    || !isSyncAllowed()
                     || HistorySyncUtils.didAlreadyOptIn(profile)) {
                 return false;
             }
@@ -105,16 +102,6 @@ public abstract class FirstRunFlowSequencer {
             int searchPromoType = LocaleManager.getInstance().getSearchEnginePromoShowType();
             return searchPromoType == SearchEnginePromoType.SHOW_NEW
                     || searchPromoType == SearchEnginePromoType.SHOW_EXISTING;
-        }
-
-        /** @return true if Sync is allowed for the current user. */
-        @VisibleForTesting
-        protected boolean isSyncAllowed() {
-            Profile profile = mProfileSupplier.get().getOriginalProfile();
-            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-            return FirstRunUtils.canAllowSync()
-                    && !signinManager.isSigninDisabledByPolicy()
-                    && signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false);
         }
     }
 

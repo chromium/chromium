@@ -70,26 +70,18 @@ public class FirstRunFlowSequencerTest {
     /** Testing version of FirstRunFlowSequencer that allows us to override all needed checks. */
     private static class TestFirstRunFlowSequencerDelegate
             extends FirstRunFlowSequencer.FirstRunFlowSequencerDelegate {
-        private final boolean mIsSyncAllowed;
         private final boolean mShouldShowSearchEnginePage;
 
         TestFirstRunFlowSequencerDelegate(
                 OneshotSupplier<ProfileProvider> profileSupplier,
-                boolean isSyncAllowed,
                 boolean shouldShowSearchEnginePage) {
             super(profileSupplier);
-            mIsSyncAllowed = isSyncAllowed;
             mShouldShowSearchEnginePage = shouldShowSearchEnginePage;
         }
 
         @Override
         public boolean shouldShowSearchEnginePage() {
             return mShouldShowSearchEnginePage;
-        }
-
-        @Override
-        public boolean isSyncAllowed() {
-            return mIsSyncAllowed;
         }
     }
 
@@ -125,6 +117,7 @@ public class FirstRunFlowSequencerTest {
     public void setUp() {
         Profile profile = mock(Profile.class);
         ProfileProvider profileProvider = mock(ProfileProvider.class);
+
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(profile))
                 .thenReturn(mIdentityManagerMock);
@@ -149,11 +142,11 @@ public class FirstRunFlowSequencerTest {
         mActivityController.pause().stop().destroy();
     }
 
-    private void setDelegateFactory(boolean isSyncAllowed, boolean shouldShowSearchEnginePage) {
+    private void setDelegateFactory(boolean shouldShowSearchEnginePage) {
         FirstRunFlowSequencer.setDelegateFactoryForTesting(
                 (profileSupplier) -> {
                     return new TestFirstRunFlowSequencerDelegate(
-                            profileSupplier, isSyncAllowed, shouldShowSearchEnginePage);
+                            profileSupplier, shouldShowSearchEnginePage);
                 });
     }
 
@@ -162,7 +155,7 @@ public class FirstRunFlowSequencerTest {
     @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowOneChildAccount() {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -187,7 +180,7 @@ public class FirstRunFlowSequencerTest {
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowOneChildAccount_historySyncEnabled() {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -213,7 +206,7 @@ public class FirstRunFlowSequencerTest {
     public void testFlowOneChildAccount_historySyncManagedByCustodian_historySyncEnabled() {
         when(mSyncServiceMock.isTypeManagedByCustodian(anyInt())).thenReturn(true);
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -237,7 +230,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowShowSearchEnginePage() {
-        setDelegateFactory(true, true);
+        setDelegateFactory(true);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
@@ -261,7 +254,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowShowSearchEnginePage_historySyncEnabled() {
-        setDelegateFactory(true, true);
+        setDelegateFactory(true);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
@@ -285,7 +278,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowHideSyncConsentPageWhenUserIsNotSignedIn() {
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
@@ -308,7 +301,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowHideHistorySyncPageWhenUserIsNotSignedIn() {
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
@@ -333,7 +326,7 @@ public class FirstRunFlowSequencerTest {
     public void testFlowShowSyncConsentPageWhenUserIsSignedIn() {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -358,7 +351,7 @@ public class FirstRunFlowSequencerTest {
     public void testFlowShowHistorySyncPageWhenUserIsSignedIn() {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -384,7 +377,7 @@ public class FirstRunFlowSequencerTest {
         when(mSyncServiceMock.isSyncDisabledByEnterprisePolicy()).thenReturn(true);
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -410,7 +403,7 @@ public class FirstRunFlowSequencerTest {
         when(mSyncServiceMock.isSyncDisabledByEnterprisePolicy()).thenReturn(true);
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -436,7 +429,7 @@ public class FirstRunFlowSequencerTest {
         when(mSyncServiceMock.isTypeManagedByPolicy(anyInt())).thenReturn(true);
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -461,7 +454,7 @@ public class FirstRunFlowSequencerTest {
     public void testFlowUserIsSignedInAndSyncing() {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SYNC)).thenReturn(true);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
@@ -488,7 +481,7 @@ public class FirstRunFlowSequencerTest {
                 .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        setDelegateFactory(true, false);
+        setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);

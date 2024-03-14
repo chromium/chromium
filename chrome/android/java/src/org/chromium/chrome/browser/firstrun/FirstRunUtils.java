@@ -4,30 +4,20 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.Bundle;
-import android.os.UserManager;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /** Provides first run related utility functions. */
 public class FirstRunUtils {
-    private static Boolean sHasGoogleAccountAuthenticator;
     private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
 
     private static boolean sDisableDelayOnExitFreForTest;
@@ -78,44 +68,6 @@ public class FirstRunUtils {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();
-    }
-
-    /**
-     * Determines whether or not the user has a Google account (so we can sync) or can add one.
-     * @return Whether or not sync is allowed on this device.
-     */
-    static boolean canAllowSync() {
-        return (hasGoogleAccountAuthenticator() && hasSyncPermissions()) || hasGoogleAccounts();
-    }
-
-    @VisibleForTesting
-    static boolean hasGoogleAccountAuthenticator() {
-        if (sHasGoogleAccountAuthenticator == null) {
-            AccountManagerFacade accountHelper = AccountManagerFacadeProvider.getInstance();
-            sHasGoogleAccountAuthenticator = accountHelper.hasGoogleAccountAuthenticator();
-        }
-        return sHasGoogleAccountAuthenticator;
-    }
-
-    @VisibleForTesting
-    static void resetHasGoogleAccountAuthenticator() {
-        sHasGoogleAccountAuthenticator = null;
-    }
-
-    @VisibleForTesting
-    static boolean hasGoogleAccounts() {
-        return !AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos())
-                .isEmpty();
-    }
-
-    @SuppressLint("InlinedApi")
-    private static boolean hasSyncPermissions() {
-        UserManager manager =
-                (UserManager)
-                        ContextUtils.getApplicationContext().getSystemService(Context.USER_SERVICE);
-        Bundle userRestrictions = manager.getUserRestrictions();
-        return !userRestrictions.getBoolean(UserManager.DISALLOW_MODIFY_ACCOUNTS, false);
     }
 
     /**
