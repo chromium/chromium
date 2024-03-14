@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+[FAIL] testing outline: blue
+  assert_equals: expected "0px none rgb(0, 0, 255)" but got "rgb(0, 0, 255) none 0px"
+[FAIL] testing outline: invert
+  assert_equals: expected "0px none invert" but got "rgb(0, 0, 255) none 0px"
+[FAIL] testing outline: 4px
+  assert_equals: expected "0px none invert" but got "rgb(0, 0, 0) none 0px"
+[FAIL] testing outline: solid
+  assert_equals: expected "3px solid invert" but got "rgb(0, 0, 0) solid 3px"
+[FAIL] testing outline: solid 5px
+  assert_equals: expected "5px solid invert" but got "rgb(0, 0, 0) solid 5px"
+[FAIL] testing outline: 6px dashed
+  assert_equals: expected "6px dashed invert" but got "rgb(0, 0, 0) dashed 6px"
+[FAIL] testing outline: dotted blue
+  assert_equals: expected "3px dotted rgb(0, 0, 255)" but got "rgb(0, 0, 255) dotted 3px"
+[FAIL] testing outline: dotted invert
+  assert_equals: expected "3px dotted invert" but got "rgb(0, 0, 255) dotted 3px"
+[FAIL] testing outline: blue solid
+  assert_equals: expected "3px solid rgb(0, 0, 255)" but got "rgb(0, 0, 255) solid 3px"
+[FAIL] testing outline: invert solid
+  assert_equals: expected "3px solid invert" but got "rgb(0, 0, 255) solid 3px"
+[FAIL] testing outline: black 4px
+  assert_equals: expected "0px none rgb(0, 0, 0)" but got "rgb(0, 0, 0) none 0px"
+[FAIL] testing outline: invert 4px
+  assert_equals: expected "0px none invert" but got "rgb(0, 0, 0) none 0px"
+[FAIL] testing outline: 5px blue
+  assert_equals: expected "0px none rgb(0, 0, 255)" but got "rgb(0, 0, 255) none 0px"
+[FAIL] testing outline: 5px invert
+  assert_equals: expected "0px none invert" but got "rgb(0, 0, 255) none 0px"
+[FAIL] testing outline: black solid 6px
+  assert_equals: expected "6px solid rgb(0, 0, 0)" but got "rgb(0, 0, 0) solid 6px"
+[FAIL] testing outline: invert solid 6px
+  assert_equals: expected "6px solid invert" but got "rgb(0, 0, 0) solid 6px"
+[FAIL] testing outline: blue 4px dotted
+  assert_equals: expected "4px dotted rgb(0, 0, 255)" but got "rgb(0, 0, 255) dotted 4px"
+[FAIL] testing outline: invert 4px dotted
+  assert_equals: expected "4px dotted invert" but got "rgb(0, 0, 255) dotted 4px"
+[FAIL] testing outline: dashed 5px black
+  assert_equals: expected "5px dashed rgb(0, 0, 0)" but got "rgb(0, 0, 0) dashed 5px"
+[FAIL] testing outline: dashed 5px invert
+  assert_equals: expected "5px dashed invert" but got "rgb(0, 0, 0) dashed 5px"
+[FAIL] testing outline: solid blue 6px
+  assert_equals: expected "6px solid rgb(0, 0, 255)" but got "rgb(0, 0, 255) solid 6px"
+[FAIL] testing outline: solid invert 6px
+  assert_equals: expected "6px solid invert" but got "rgb(0, 0, 255) solid 6px"
+[FAIL] testing outline: 4px dotted black
+  assert_equals: expected "4px dotted rgb(0, 0, 0)" but got "rgb(0, 0, 0) dotted 4px"
+[FAIL] testing outline: 4px dotted invert
+  assert_equals: expected "4px dotted invert" but got "rgb(0, 0, 0) dotted 4px"
+[FAIL] testing outline: 5px blue dashed
+  assert_equals: expected "5px dashed rgb(0, 0, 255)" but got "rgb(0, 0, 255) dashed 5px"
+[FAIL] testing outline: 5px invert dashed
+  assert_equals: expected "5px dashed invert" but got "rgb(0, 0, 255) dashed 5px"
+Harness: the test ran to completion.
+

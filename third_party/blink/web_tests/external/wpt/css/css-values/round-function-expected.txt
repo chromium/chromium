@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] round(1.5) should be used-value-equivalent to 2
+  assert_not_equals: round(1.5) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] round(up, 1.5) should be used-value-equivalent to 2
+  assert_not_equals: round(up, 1.5) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] round(down, 1.5) should be used-value-equivalent to 1
+  assert_not_equals: round(down, 1.5) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] round(to-zero, 1.5) should be used-value-equivalent to 1
+  assert_not_equals: round(to-zero, 1.5) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] round(-1.5) should be used-value-equivalent to -1
+  assert_not_equals: round(-1.5) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] round(up, -1.5) should be used-value-equivalent to -1
+  assert_not_equals: round(up, -1.5) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] round(down, -1.5) should be used-value-equivalent to -2
+  assert_not_equals: round(down, -1.5) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] round(to-zero, -1.5) should be used-value-equivalent to -1
+  assert_not_equals: round(to-zero, -1.5) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+Harness: the test ran to completion.
+

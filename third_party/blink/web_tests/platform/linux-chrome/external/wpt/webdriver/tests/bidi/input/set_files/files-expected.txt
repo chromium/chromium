@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_set_files_something_then_empty
+  AssertionError: assert [{'type': 'input', 'files': ['noop.txt']}, {'type': 'change', 'files': ['noop.txt']}, {'type': 'cancel', 'files': ['noop.txt']}] == [{'files': ['noop.txt'], 'type': 'input'}, {'files': ['noop.txt'], 'type': 'change'}, {'files': [], 'type': 'input'}, {'files': [], 'type': 'change'}]
+[FAIL] test_set_files_twice_same
+  AssertionError: assert [{'type': 'input', 'files': ['noop.txt']}, {'type': 'change', 'files': ['noop.txt']}, {'type': 'input', 'files': ['noop.txt']}, {'type': 'change', 'files': ['noop.txt']}] == [{'files': ['noop.txt'], 'type': 'input'}, {'files': ['noop.txt'], 'type': 'change'}, {'files': ['noop.txt'], 'type': 'cancel'}]
+Harness: the test ran to completion.
