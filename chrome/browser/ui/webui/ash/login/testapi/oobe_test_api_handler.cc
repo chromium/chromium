@@ -35,6 +35,8 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/login/localized_values_builder.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/user_manager/user_manager.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 #include "ui/display/screen.h"
@@ -73,6 +75,8 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::HandleGetShouldSkipChoobe);
   AddCallback("OobeTestApi.getShouldSkipTouchpadScroll",
               &OobeTestAPIHandler::HandleGetShouldSkipTouchpadScroll);
+  AddCallback("OobeTestApi.getMetricsClientID",
+              &OobeTestAPIHandler::HandleGetMetricsClientID);
 }
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
@@ -272,6 +276,23 @@ void OobeTestAPIHandler::HandleGetShouldSkipTouchpadScroll(
                                 InputDeviceSettingsController::Get()
                                     ->GetConnectedTouchpads()
                                     .empty());
+}
+
+void OobeTestAPIHandler::HandleGetMetricsClientID(
+    const std::string& callback_id) {
+  std::string client_id;
+  if (g_browser_process->metrics_service()) {
+    client_id = g_browser_process->metrics_service()->GetClientId();
+  }
+
+  // Early in OOBE `metrics_service()->GetClientId()` will return an empty
+  // string. If that's the case look for the client ID in the preference
+  // `kMetricsProvisionalClientID`.
+  if (client_id.empty()) {
+    client_id = g_browser_process->local_state()->GetString(
+        metrics::prefs::kMetricsProvisionalClientID);
+  }
+  ResolveJavascriptCallback(base::Value(callback_id), client_id);
 }
 
 }  // namespace ash

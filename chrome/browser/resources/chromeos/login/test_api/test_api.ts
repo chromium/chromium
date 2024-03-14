@@ -1365,6 +1365,8 @@ class HwDataCollectionScreenTester extends ScreenElementApi {
 
 export class OobeApiProvider {
   private screens: Record<string, ScreenElementApi>;
+  private metricsClientID: string;
+
   private loginWithPin: (username: string, pin: string) => void;
   private advanceToScreen: (screen: string) => void;
   private skipToLoginForTesting: () => void;
@@ -1380,6 +1382,10 @@ export class OobeApiProvider {
   private getOobeActiveDialogTitleText: () => string;
   private getOobeActiveDialogSubtitleText: () => string;
   private getOobeActiveDialogContentText: () => string;
+
+  private requestMetricsClientID: () => void;
+  private isMetricsClientIdAvailable: () => boolean;
+  private getMetricsClientID: () => string;
 
   constructor() {
     this.screens = {
@@ -1580,5 +1586,34 @@ export class OobeApiProvider {
     this.getOobeActiveDialogContentText = function(): string {
       return this.combineTextOfAdaptiveDialogSlots('content');
     };
+
+    this.isMetricsClientIdAvailable = function(): boolean {
+      return this.metricsClientID !== '';
+    };
+
+    this.requestMetricsClientID = function(): void {
+      sendWithPromise('OobeTestApi.getMetricsClientID')
+          .then(clientID => this.onMetricsClientIdReceived(clientID));
+    };
+
+    this.getMetricsClientID = function(): string {
+      assert(
+          this.isMetricsClientIdAvailable(),
+          '`getMetricsClientID()` should only be called after ' +
+              '`requestMetricsClientID()` is called, and ' +
+              '`isMetricsClientIdAvailable()` starts returning true');
+
+      const id = this.metricsClientID;
+
+      // Reset `this.metricsClientID` when it is consumed to force
+      // the next caller to call first this.requestMetricsClientID().
+      this.metricsClientID = '';
+
+      return id;
+    };
+  }
+
+  onMetricsClientIdReceived(clientID: string): void {
+    this.metricsClientID = clientID;
   }
 }
