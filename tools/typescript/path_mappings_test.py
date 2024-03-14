@@ -68,11 +68,22 @@ class PathMappingsTest(unittest.TestCase):
     self._assert_output(gen_dir, 'trusted_mappings_expected.json')
 
   def testUntrusted(self):
-    self._additional_flags = ['--is_untrusted']
+    self._additional_flags = ['--webui_context_type', 'untrusted']
     self._out_folder = tempfile.mkdtemp(dir=_CWD)
     gen_dir = self._build_path_map()
     self._assert_output(gen_dir, 'untrusted_mappings_expected.json')
 
+  def testRelative(self):
+    self._additional_flags = ['--webui_context_type', 'relative']
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
+    gen_dir = self._build_path_map()
+    self._assert_output(gen_dir, 'relative_only_mappings_expected.json')
+
+  def testTrustedOnly(self):
+    self._additional_flags = ['--webui_context_type', 'trusted_only']
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
+    gen_dir = self._build_path_map()
+    self._assert_output(gen_dir, 'trusted_only_mappings_expected.json')
 
 if __name__ == '__main__':
   unittest.main()

@@ -266,9 +266,13 @@ in path_mappings.py (e.g. //ui/webui/resources/ deps).
 #### **Arguments**
 ```
 ts_deps: List of ts_library() dependencies to generate path mappings for.
-is_untrusted: Whether the WebUI being compiled is a chrome-untrusted:// UI.
-              Used to determine the correct URLs for path mappings, e.g.
-              chrome-untrusted:// resources vs chrome://resources.
+webui_context_type: What import scheme(s) should be mapped for the UI. Options:
+                    'trusted': Maps chrome:// and scheme-relative imports.
+                               Default value.
+                    'untrusted': Maps chrome-untrusted:// and scheme-relative
+                                 imports.
+                    'relative': Maps scheme-relative imports only.
+                    'trusted_only': Maps chrome:// imports only.
 ```
 
 ### **webui_ts_library**
@@ -283,9 +287,7 @@ This rule is a thin wrapper around ts_library() that defines 2 targets:
 webui_ts_library uses all the same arguments as ts_library, in addition to
 the following:
 ```
-is_untrusted: Whether the WebUI being compiled is a chrome-untrusted:// UI.
-              Used to determine the correct URLs for path mappings, e.g.
-              chrome-untrusted:// resources vs chrome://resources.
+webui_context_type: See |webui_context_type| in webui_path_mappings().
 ```
 
 ### **bundle_js**
@@ -612,12 +614,19 @@ optimize_webui_external_paths: See |external_paths| in optimize_webui().
 optimize_webui_in_files: See |in_files| in bundle_js().
 
 Other params:
-webui_host: Used to determine whether the UI is untrusted, to set
-            |is_untrusted| for webui_path_mappings(). When |optimize| is set
-            to true, also used for bundling; see |host| in bundle_js().
+webui_host: Used to set |webui_context_type| in webui_path_mappings(), as
+            follows:
+            - Shared code used by trusted and untrusted UIs should use a "//"
+              prefix (e.g. "//resources").
+            - Untrusted UIs should use a "chrome-untrusted://" prefix.
+            - Trusted UIs should use no prefix (e.g. "settings")
+            - Component extensions that can only use absolute chrome:// import
+              paths should use a "chrome-extension://" prefix (e.g. PDF).
+            When |optimize| is set to true, this parameter is also used for
+            bundling; see |host| in bundle_js().
             Required when |optimize| is set. Optional otherwise. If this
             parameter is not set and |ts_deps| are non-empty, a chrome://
-            context will be assumed for import path mappings.
+            (trusted) context will be assumed for import path mappings.
 generate_grdp: Whether to generate grdp file instead of a grd file. Defaults to
                false.
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
@@ -718,8 +727,9 @@ to from other parts of the build.
 is_chrome_untrusted: Set to true if testing a chrome-untrusted:// UI. Optional
                      parameter. Allows importing shared test files from
                      chrome-untrusted://webui-test/ instead of
-                     chrome://webui-test. Also passed as |is_untrusted| to
-                     webui_ts_library().
+                     chrome://webui-test. Passing true will set
+                     |webui_context_type| to 'untrusted' rather than 'trusted'
+                     for webui_ts_library().
 
 List of files params:
 files: Required parameter. List of all test related files.

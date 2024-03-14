@@ -1,0 +1,17 @@
+{
+  "//resources/js/*": [
+    "./../../../../ui/webui/resources/tsc/js/*"
+  ],
+  "//resources/cr_components/localized_link/*": [
+    "./../../../../ui/webui/resources/tsc/cr_components/localized_link/*"
+  ],
+  "//resources/polymer/v3_0/polymer/polymer_bundled.min.js": [
+    "./../../../../../tests/third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts"
+  ],
+  "//resources/polymer/v3_0/*": [
+    "./../../../../../tests/third_party/polymer/v3_0/components-chromium/*"
+  ],
+  "//resources/lit/v3_0/lit.rollup.js": [
+    "./../../../../third_party/lit/v3_0/lit.d.ts"
+  ]
+}

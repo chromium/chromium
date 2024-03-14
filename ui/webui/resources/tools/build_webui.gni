@@ -295,9 +295,20 @@ template("build_webui") {
       visibility = [ ":build_ts" ]
 
       if (defined(invoker.webui_host)) {
-        is_untrusted =
-            string_replace(invoker.webui_host, "chrome-untrusted://", "") !=
-            invoker.webui_host
+        if (string_replace(invoker.webui_host, "chrome-untrusted://", "") !=
+            invoker.webui_host) {
+          webui_context_type = "untrusted"
+        } else if (string_replace(invoker.webui_host,
+                                  "chrome-extension://",
+                                  "") != invoker.webui_host) {
+          # chrome-extension:// UIs (PDF viewer) use chrome://resources imports
+          webui_context_type = "trusted_only"
+        } else if (string_replace(invoker.webui_host, "//", "") !=
+                   invoker.webui_host) {
+          webui_context_type = "relative"
+        } else {
+          webui_context_type = "trusted"
+        }
       }
     }
   }

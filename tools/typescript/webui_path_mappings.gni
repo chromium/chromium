@@ -11,6 +11,7 @@ template("webui_path_mappings") {
 
     forward_variables_from(invoker,
                            [
+                             "webui_context_type",
                              "ts_deps",
                              "testonly",
                              "visibility",
@@ -60,8 +61,11 @@ template("webui_path_mappings") {
       ]
     }
 
-    if (defined(invoker.is_untrusted) && invoker.is_untrusted) {
-      args += [ "--is_untrusted" ]
+    if (defined(webui_context_type)) {
+      args += [
+        "--webui_context_type",
+        webui_context_type,
+      ]
     }
   }
 }

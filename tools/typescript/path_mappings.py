@@ -164,7 +164,10 @@ def main(argv):
   parser.add_argument('--root_src_dir', required=True)
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--output_suffix', required=True)
-  parser.add_argument('--is_untrusted', action='store_true')
+  parser.add_argument(
+      '--webui_context_type',
+      choices=['trusted', 'untrusted', 'relative', 'trusted_only'],
+      default='trusted')
   parser.add_argument('--pretty_print', action='store_true')
   parser.add_argument('--platform',
                       choices=['other', 'ios', 'chromeos_ash'],
@@ -195,10 +198,12 @@ def main(argv):
       continue
 
     mappings = dep_to_path_mappings[dep]
-    scheme = 'chrome-untrusted:' if args.is_untrusted else 'chrome:'
+    scheme = \
+        'chrome-untrusted:' if args.webui_context_type == 'untrusted' else 'chrome:'
     for (url, dir) in mappings:
-      path_mappings[url].append(os.path.join('./', dir).replace('\\', '/'))
-      if (url.startswith("//")):
+      if (args.webui_context_type != 'trusted_only'):
+        path_mappings[url].append(os.path.join('./', dir).replace('\\', '/'))
+      if (url.startswith("//") and args.webui_context_type != 'relative'):
         path_mappings[scheme + url].append(
             os.path.join('./', dir).replace('\\', '/'))
 

@@ -18,7 +18,7 @@ template("webui_ts_library") {
                            "path_mappings",
                            "manifest_excludes",
                            "enable_source_maps",
-                           "is_untrusted",
+                           "webui_context_type",
                            "testonly",
                          ])
 
