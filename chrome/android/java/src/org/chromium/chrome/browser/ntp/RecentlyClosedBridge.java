@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.url.GURL;
@@ -105,7 +106,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     }
 
     @CalledByNative
-    private void restoreTabGroup(TabModel tabModel, String title, int[] tabIds) {
+    private void restoreTabGroup(TabModel tabModel, String title, int color, int[] tabIds) {
         if (tabIds.length == 0) return;
 
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
@@ -128,6 +129,10 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
                 groupFilter.mergeTabsToGroup(id, rootId);
             }
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            TabGroupColorUtils.storeTabGroupColor(rootId, color);
         }
 
         if (title == null || title.isEmpty()) return;

@@ -465,6 +465,7 @@ void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
     Java_RecentlyClosedBridge_restoreTabGroup(
         env, bridge_, jtab_model,
         ConvertUTF16ToJavaString(env, group.second.visual_data.title()),
+        (int)group.second.visual_data.color(),
         base::android::ToJavaIntArray(env, group.second.tab_ids));
   }
 }
