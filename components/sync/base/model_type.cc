@@ -226,6 +226,11 @@ static_assert(52 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
+static_assert(52 == syncer::GetNumModelTypes(),
+              "When adding a new type, follow the integration checklist in "
+              "https://www.chromium.org/developers/design-documents/sync/"
+              "integration-checklist/");
+
 // kSpecificsFieldNumberToModelTypeMap must exactly match the kModelTypeInfoMap,
 // so its size must be syncer::GetNumModelTypes().
 //
