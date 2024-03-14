@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/hash_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -149,6 +148,17 @@ std::unique_ptr<EntityData> CreateEntityDataFromBankAccount(
       entity_data->specifics.mutable_autofill_wallet();
   SetAutofillWalletSpecificsFromBankAccount(bank_account, wallet_specifics);
   return entity_data;
+}
+
+// Sets a EntityData object corresponding to the specified `benefit`.
+void SetEntityDataFromBenefit(const CreditCardBenefit& benefit,
+                              bool enforce_utf8,
+                              EntityData& entity_data) {
+  AutofillWalletSpecifics* wallet_specifics =
+      entity_data.specifics.mutable_autofill_wallet();
+  CHECK(wallet_specifics);
+  SetAutofillWalletSpecificsFromCardBenefit(benefit, enforce_utf8,
+                                            *wallet_specifics);
 }
 
 }  // namespace
@@ -290,9 +300,24 @@ void AutofillWalletSyncBridge::GetAllDataImpl(DataCallback callback,
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::unique_ptr<CreditCard>& entry : cards) {
+    std::unique_ptr<EntityData> card_data =
+        CreateEntityDataFromCard(*entry, enforce_utf8);
+    std::vector<CreditCardBenefit> benefits;
+    if (!GetAutofillTable()->GetCreditCardBenefitsForInstrumentId(
+            entry->instrument_id(), benefits)) {
+      change_processor()->ReportError(
+          {FROM_HERE, "Failed to load entries from table."});
+      return;
+    }
+    for (const CreditCardBenefit& benefit : benefits) {
+      CHECK(*absl::visit(
+                [](const auto& a) { return a.linked_card_instrument_id(); },
+                benefit) == entry->instrument_id());
+      SetEntityDataFromBenefit(benefit, enforce_utf8, *card_data);
+    }
     batch->Put(
         GetStorageKeyForWalletDataClientTag(GetClientTagFromCreditCard(*entry)),
-        CreateEntityDataFromCard(*entry, enforce_utf8));
+        std::move(card_data));
   }
   for (const std::unique_ptr<CreditCardCloudTokenData>& entry :
        cloud_token_data) {
@@ -341,6 +366,7 @@ void AutofillWalletSyncBridge::SetSyncData(
 
   wallet_data_changed |=
       SetWalletCards(std::move(wallet_cards), notify_webdata_backend);
+  wallet_data_changed |= SetCardBenefits(std::move(card_benefits));
   wallet_data_changed |=
       SetWalletIbans(std::move(wallet_ibans), notify_webdata_backend);
   wallet_data_changed |= SetPaymentsCustomerData(std::move(customer_data));
@@ -414,6 +440,21 @@ bool AutofillWalletSyncBridge::SetWalletCards(
     LogVirtualCardMetadataChanges(existing_cards, wallet_cards);
   }
   return found_diff;
+}
+
+bool AutofillWalletSyncBridge::SetCardBenefits(
+    std::vector<CreditCardBenefit> card_benefits) {
+  PaymentsAutofillTable* table = GetAutofillTable();
+
+  std::vector<CreditCardBenefit> existing_benefits;
+  if (!table->GetAllCreditCardBenefits(existing_benefits)) {
+    return false;
+  }
+
+  if (AreAnyItemsDifferent(existing_benefits, card_benefits)) {
+    return table->SetCreditCardBenefits(card_benefits);
+  }
+  return false;
 }
 
 bool AutofillWalletSyncBridge::SetWalletIbans(std::vector<Iban> wallet_ibans,
