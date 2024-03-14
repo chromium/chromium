@@ -36,18 +36,27 @@ void UpdateSafetyHubServiceAsync(SafetyHubService* service);
 void UpdatePasswordCheckServiceAsync(
     PasswordStatusCheckService* password_service);
 
-// Creates a mock service that returns mock results for the CWS info service. In
-// total six extensions with different properties are mocked: malware, policy
-// violation, unpublished, combination of malware and unpublished, no violation,
-// and an extension that is not present.
+// Creates a mock service that returns mock results for the CWS info service. If
+// |with_calls| is true, total six extensions with different properties are
+// mocked: malware, policy violation, unpublished, combination of malware and
+// unpublished, no violation, and an extension that is not present.
 std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
-    Profile* profile);
+    Profile* profile,
+    bool with_calls = true);
+
+// Adds a testing extension with |name| and |location| to |profile|.
+void AddExtension(const std::string& name,
+                  extensions::mojom::ManifestLocation location,
+                  Profile* profile);
 
 // Adds seven extensions, of which one is installed by an external policy.
 void CreateMockExtensions(Profile* profile);
 
 // Deletes all mock extensions that are added by CreateMockExtensions.
 void CleanAllMockExtensions(Profile* profile);
+
+// Creates and returns a CWSInfo without any triggers.
+extensions::CWSInfoService::CWSInfo GetCWSInfoNoTrigger();
 
 }  // namespace safety_hub_test_util
 

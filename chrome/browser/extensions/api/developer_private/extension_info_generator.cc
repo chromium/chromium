@@ -553,14 +553,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   Profile* profile = Profile::FromBrowserContext(browser_context_);
 
   // Safety Hub Strings
-  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
-    std::optional<CWSInfoService::CWSInfo> cws_info =
-        cws_info_service_->GetCWSInfo(extension);
-    if (cws_info.has_value()) {
-      info->safety_check_text =
-          CreateSafetyCheckDisplayString(*cws_info, state, blocklist_state);
-    }
-  }
+  info->safety_check_text =
+      CreateSafetyCheckDisplayString(extension, state, blocklist_state);
 
   // ControlledInfo.
   bool is_policy_location = Manifest::IsPolicyLocation(extension.location());
@@ -824,40 +818,51 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
 developer::SafetyCheckStrings
 ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
-    const CWSInfoService::CWSInfo& cws_info,
+    const Extension& extension,
     developer::ExtensionState state,
     BitMapBlocklistState blocklist_state) {
   developer::SafetyCheckStrings display_strings;
-  std::string detail_page_string;
-  std::string panel_page_string;
-  if (cws_info.is_present) {
-    if (blocklist_state == BitMapBlocklistState::BLOCKLISTED_MALWARE ||
-        cws_info.violation_type == CWSInfoService::CWSViolationType::kMalware) {
-      detail_page_string =
-          l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE);
-      panel_page_string = l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_MALWARE);
-    } else if (blocklist_state ==
-                   BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION ||
-               cws_info.violation_type ==
-                   CWSInfoService::CWSViolationType::kPolicy) {
-      detail_page_string = l10n_util::GetStringUTF8(
-          IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION);
-      panel_page_string =
-          state == developer::ExtensionState::kEnabled
-              ? l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON)
-              : l10n_util::GetStringUTF8(
-                    IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF);
-    } else if (cws_info.unpublished_long_ago) {
-      detail_page_string =
-          l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED);
-      panel_page_string =
-          state == developer::ExtensionState::kEnabled
-              ? l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_ON)
-              : l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_OFF);
-    }
+  int detail_string_id = -1;
+  int panel_string_id = -1;
+  std::optional<CWSInfoService::CWSInfo> cws_info;
+  bool valid_cws_info = false;
+
+  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
+    cws_info = cws_info_service_->GetCWSInfo(extension);
+    valid_cws_info = cws_info.has_value() && cws_info->is_present;
   }
-  display_strings.detail_string = detail_page_string;
-  display_strings.panel_string = panel_page_string;
+
+  bool malware =
+      blocklist_state == BitMapBlocklistState::BLOCKLISTED_MALWARE ||
+      (valid_cws_info &&
+       cws_info->violation_type == CWSInfoService::CWSViolationType::kMalware);
+  bool policy_violation =
+      blocklist_state ==
+          BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION ||
+      (valid_cws_info &&
+       cws_info->violation_type == CWSInfoService::CWSViolationType::kPolicy);
+
+  if (malware) {
+    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_MALWARE;
+    panel_string_id = IDS_EXTENSIONS_SC_MALWARE;
+  } else if (policy_violation) {
+    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
+    panel_string_id = state == developer::ExtensionState::kEnabled
+                          ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
+                          : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
+  } else if (valid_cws_info && cws_info->unpublished_long_ago) {
+    detail_string_id = IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED;
+    panel_string_id = state == developer::ExtensionState::kEnabled
+                          ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
+                          : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+  }
+
+  if (detail_string_id != -1) {
+    display_strings.detail_string = l10n_util::GetStringUTF8(detail_string_id);
+  }
+  if (panel_string_id != -1) {
+    display_strings.panel_string = l10n_util::GetStringUTF8(panel_string_id);
+  }
   return display_strings;
 }
 
@@ -895,6 +900,11 @@ void ExtensionInfoGenerator::OnImageLoaded(
     std::move(callback_).Run(std::move(list));
     // WARNING: |this| is possibly deleted after this line!
   }
+}
+
+void ExtensionInfoGenerator::SetCWSInfoServiceForTesting(
+    extensions::CWSInfoService* cws_info_service) {
+  cws_info_service_ = cws_info_service;
 }
 
 }  // namespace extensions

@@ -236,6 +236,14 @@ void ExtensionService::BlocklistExtensionForTest(
   OnBlocklistStateAdded(extension_id);
 }
 
+void ExtensionService::GreylistExtensionForTest(
+    const std::string& extension_id,
+    const BitMapBlocklistState& state) {
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(extension_id, state,
+                                                          extension_prefs_);
+  OnGreylistStateAdded(extension_id, state);
+}
+
 bool ExtensionService::OnExternalExtensionUpdateUrlFound(
     const ExternalInstallInfoUpdateUrl& info,
     bool force_update) {

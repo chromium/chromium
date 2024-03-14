@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -60,22 +61,40 @@ bool SafetyCheckExtensionsHandler::CheckExtensionForTrigger(
   if (warning_acked || !is_extension) {
     return false;
   }
-  std::optional<extensions::CWSInfoService::CWSInfo> extension_info =
+  std::optional<extensions::CWSInfoService::CWSInfo> cws_info =
       cws_info_service_->GetCWSInfo(extension);
-  if (extension_info.has_value() && extension_info->is_present) {
-    switch (extension_info->violation_type) {
+  if (cws_info.has_value() && cws_info->is_present) {
+    switch (cws_info->violation_type) {
       case extensions::CWSInfoService::CWSViolationType::kMalware:
       case extensions::CWSInfoService::CWSViolationType::kPolicy:
         return true;
       case extensions::CWSInfoService::CWSViolationType::kNone:
       case extensions::CWSInfoService::CWSViolationType::kMinorPolicy:
       case extensions::CWSInfoService::CWSViolationType::kUnknown:
-        if (extension_info->unpublished_long_ago) {
+        if (cws_info->unpublished_long_ago) {
           return true;
         }
         break;
     }
   }
+
+  // If an extension appears on the blocklist, that extension will be
+  // triggered. Currently, only malware and policy violation blocklist
+  // states are triggered.
+  extensions::BitMapBlocklistState blocklist_state =
+      extensions::blocklist_prefs::GetExtensionBlocklistState(extension.id(),
+                                                              extension_prefs);
+  switch (blocklist_state) {
+    case extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION:
+      return true;
+    case extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
+    case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
+      // no-op.
+      break;
+  }
+
   return false;
 }
 

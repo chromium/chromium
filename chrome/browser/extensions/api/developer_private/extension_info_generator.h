@@ -69,12 +69,9 @@ class ExtensionInfoGenerator {
   static std::vector<URLPattern> GetDistinctHosts(
       const URLPatternSet& patterns);
 
-  // Construct the needed strings for the safety check on the
-  // extensions page.
-  static api::developer_private::SafetyCheckStrings
-  CreateSafetyCheckDisplayString(const CWSInfoService::CWSInfo& cws_info,
-                                 api::developer_private::ExtensionState state,
-                                 BitMapBlocklistState blocklist_state);
+  // Sets the |cws_info_service| for testing.
+  void SetCWSInfoServiceForTesting(
+      extensions::CWSInfoService* cws_info_service);
 
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
@@ -92,6 +89,13 @@ class ExtensionInfoGenerator {
 
   // Returns an icon url from the given image.
   std::string GetIconUrlFromImage(const gfx::Image& image);
+
+  // Construct the needed strings for the safety check on the
+  // extensions page.
+  api::developer_private::SafetyCheckStrings CreateSafetyCheckDisplayString(
+      const Extension& extension,
+      api::developer_private::ExtensionState state,
+      BitMapBlocklistState blocklist_state);
 
   // Various systems, cached for convenience.
   raw_ptr<content::BrowserContext> browser_context_;

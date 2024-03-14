@@ -11,16 +11,25 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/extension_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SafetyHubExtensionsResultTest : public testing::Test {
+ public:
+  void SetUp() override {
+    extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
+  }
+
  protected:
   TestingProfile* profile() { return &profile_; }
+  extensions::ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
 };
 
 TEST_F(SafetyHubExtensionsResultTest, CloneResult) {
@@ -65,4 +74,44 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult) {
   auto* menu_result =
       static_cast<SafetyHubExtensionsResult*>(sh_menu_result->get());
   EXPECT_EQ(2U, menu_result->GetNumTriggeringExtensions());
+}
+
+TEST_F(SafetyHubExtensionsResultTest, GetResult_BlocklistPrefs) {
+  // Create 3 mock extensions, of which 2 are a blocklist triggers for review
+  // (malware, policy violation).
+  const std::string extension_name_malware = "TestExtensionMalware";
+  const std::string extension_name_policy = "TestExtensionPolicy";
+  safety_hub_test_util::AddExtension(
+      extension_name_malware, extensions::mojom::ManifestLocation::kInternal,
+      profile());
+  safety_hub_test_util::AddExtension(
+      extension_name_policy, extensions::mojom::ManifestLocation::kInternal,
+      profile());
+  safety_hub_test_util::AddExtension(
+      "TestExtension", extensions::mojom::ManifestLocation::kInternal,
+      profile());
+
+  extensions::blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      crx_file::id_util::GenerateId(extension_name_malware),
+      extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE, extension_prefs());
+  extensions::blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      crx_file::id_util::GenerateId(extension_name_policy),
+      extensions::BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs());
+
+  std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
+      cws_info_service = safety_hub_test_util::GetMockCWSInfoService(
+          profile(), /*with_calls=*/false);
+  EXPECT_CALL(*cws_info_service, GetCWSInfo)
+      .Times(3)
+      .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()))
+      .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()))
+      .WillOnce(testing::Return(safety_hub_test_util::GetCWSInfoNoTrigger()));
+
+  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+      SafetyHubExtensionsResult::GetResult(cws_info_service.get(), profile(),
+                                           false);
+  ASSERT_TRUE(sh_result.has_value());
+  auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
+  EXPECT_EQ(2U, result->GetNumTriggeringExtensions());
 }

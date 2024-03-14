@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/grit/generated_resources.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -66,6 +67,24 @@ bool ShouldExtensionBeReviewed(
         break;
     }
   }
+
+  // If an extension appears on the blocklist, that extension will be
+  // marked for review. Currently, only malware and policy violation blocklist
+  // states are marked for review.
+  extensions::BitMapBlocklistState blocklist_state =
+      extensions::blocklist_prefs::GetExtensionBlocklistState(extension.id(),
+                                                              extension_prefs);
+  switch (blocklist_state) {
+    case extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION:
+      return true;
+    case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
+    case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
+      // no-op.
+      break;
+  }
+
   return false;
 }
 }  // namespace

@@ -35,23 +35,6 @@ class TestObserver : public SafetyHubService::Observer {
   base::RepeatingClosure callback_;
 };
 
-void AddExtension(const std::string& name,
-                  extensions::mojom::ManifestLocation location,
-                  Profile* profile) {
-  const std::string kId = crx_file::id_util::GenerateId(name);
-  scoped_refptr<const extensions::Extension> extension =
-      extensions::ExtensionBuilder(name)
-          .SetManifestKey("host_permissions",
-                          base::Value::List().Append(kAllHostsPermission))
-          .SetLocation(location)
-          .SetID(kId)
-          .Build();
-  extensions::ExtensionPrefs::Get(profile)->OnExtensionInstalled(
-      extension.get(), extensions::Extension::State::ENABLED,
-      syncer::StringOrdinal(), "");
-  extensions::ExtensionRegistry::Get(profile)->AddEnabled(extension);
-}
-
 void RemoveExtension(const std::string& name,
                      extensions::mojom::ManifestLocation location,
                      Profile* profile) {
@@ -146,19 +129,39 @@ void UpdatePasswordCheckServiceAsync(
 }
 
 std::unique_ptr<testing::NiceMock<MockCWSInfoService>> GetMockCWSInfoService(
-    Profile* profile) {
+    Profile* profile,
+    bool with_calls) {
   // Ensure that the mock CWSInfo service returns the needed information.
   std::unique_ptr<testing::NiceMock<MockCWSInfoService>> mock_cws_info_service(
       new testing::NiceMock<MockCWSInfoService>(profile));
-  EXPECT_CALL(*mock_cws_info_service, GetCWSInfo)
-      .Times(6)
-      .WillOnce(testing::Return(cws_info_malware))
-      .WillOnce(testing::Return(cws_info_policy))
-      .WillOnce(testing::Return(cws_info_unpublished))
-      .WillOnce(testing::Return(cws_info_multi))
-      .WillOnce(testing::Return(cws_info_no_data))
-      .WillOnce(testing::Return(cws_info_no_trigger));
+  if (with_calls) {
+    EXPECT_CALL(*mock_cws_info_service, GetCWSInfo)
+        .Times(6)
+        .WillOnce(testing::Return(cws_info_malware))
+        .WillOnce(testing::Return(cws_info_policy))
+        .WillOnce(testing::Return(cws_info_unpublished))
+        .WillOnce(testing::Return(cws_info_multi))
+        .WillOnce(testing::Return(cws_info_no_data))
+        .WillOnce(testing::Return(cws_info_no_trigger));
+  }
   return mock_cws_info_service;
+}
+
+void AddExtension(const std::string& name,
+                  extensions::mojom::ManifestLocation location,
+                  Profile* profile) {
+  const std::string kId = crx_file::id_util::GenerateId(name);
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder(name)
+          .SetManifestKey("host_permissions",
+                          base::Value::List().Append(kAllHostsPermission))
+          .SetLocation(location)
+          .SetID(kId)
+          .Build();
+  extensions::ExtensionPrefs::Get(profile)->OnExtensionInstalled(
+      extension.get(), extensions::Extension::State::ENABLED,
+      syncer::StringOrdinal(), "");
+  extensions::ExtensionRegistry::Get(profile)->AddEnabled(extension);
 }
 
 void CreateMockExtensions(Profile* profile) {
@@ -190,6 +193,16 @@ void CleanAllMockExtensions(Profile* profile) {
           ->GenerateInstalledExtensionsSet(
               extensions::ExtensionRegistry::ENABLED);
   EXPECT_TRUE(extensions.empty());
+}
+
+extensions::CWSInfoService::CWSInfo GetCWSInfoNoTrigger() {
+  return extensions::CWSInfoService::CWSInfo{
+      true,
+      false,
+      base::Time::Now(),
+      extensions::CWSInfoService::CWSViolationType::kNone,
+      false,
+      false};
 }
 
 }  // namespace safety_hub_test_util

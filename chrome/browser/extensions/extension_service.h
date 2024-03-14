@@ -484,6 +484,10 @@ class ExtensionService : public ExtensionServiceInterface,
   // Simulate an extension being blocklisted for tests.
   void BlocklistExtensionForTest(const std::string& extension_id);
 
+  // Simulate an extension being greylisted for tests.
+  void GreylistExtensionForTest(const std::string& extension_id,
+                                const BitMapBlocklistState& state);
+
 #if defined(UNIT_TEST)
   void FinishInstallationForTest(const Extension* extension) {
     FinishInstallation(extension);

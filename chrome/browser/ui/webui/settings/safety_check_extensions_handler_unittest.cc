@@ -12,6 +12,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -110,6 +111,8 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
     return safety_check_handler_->GetNumberOfExtensionsThatNeedReview();
   }
 
+  ExtensionPrefs* extension_prefs() { return extension_prefs_; }
+
  protected:
   void AddExtension(const std::string& name, mojom::ManifestLocation location) {
     const std::string kId = crx_file::id_util::GenerateId(name);
@@ -152,6 +155,7 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service_;
   std::unique_ptr<settings::SafetyCheckExtensionsHandler> safety_check_handler_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 };
 
 void SafetyCheckExtensionsHandlerTest::SetUp() {
@@ -162,6 +166,7 @@ void SafetyCheckExtensionsHandlerTest::SetUp() {
   safety_check_handler_->SetCWSInfoServiceForTest(&mock_cws_info_service_);
   safety_check_handler_.get()->set_web_ui(&web_ui_);
   safety_check_handler_.get()->AllowJavascript();
+  extension_prefs_ = ExtensionPrefs::Get(profile_.get());
 }
 
 TEST_F(SafetyCheckExtensionsHandlerTest,
@@ -188,6 +193,35 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
   // There should be 4 triggering extensions based on the various cws_info
   // variables.
   EXPECT_EQ(4, GetNumberOfExtensionsThatNeedReview());
+}
+
+TEST_F(SafetyCheckExtensionsHandlerTest,
+       GetNumberOfExtensionsThatNeedReview_BlocklistPrefs) {
+  // Create 3 mock extensions, of which 2 are a blocklist triggers for review
+  // (malware, policy violation).
+  const std::string extension_name_malware = "TestExtensionMalware";
+  const std::string extension_name_policy = "TestExtensionPolicy";
+  AddExtension(extension_name_malware, ManifestLocation::kInternal);
+  AddExtension(extension_name_policy, ManifestLocation::kInternal);
+  AddExtension("TestExtension3", ManifestLocation::kInternal);
+
+  // Add blocklist states to 2 extensions.
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      crx_file::id_util::GenerateId(extension_name_malware),
+      BitMapBlocklistState::BLOCKLISTED_MALWARE, extension_prefs());
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      crx_file::id_util::GenerateId(extension_name_policy),
+      BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
+      extension_prefs());
+
+  EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+      .Times(3)
+      .WillOnce(testing::Return(cws_info_no_trigger))
+      .WillOnce(testing::Return(cws_info_no_trigger))
+      .WillOnce(testing::Return(cws_info_no_trigger));
+
+  // 2 triggering extensions based on blocklist prefs.
+  EXPECT_EQ(2, GetNumberOfExtensionsThatNeedReview());
 }
 
 TEST_F(SafetyCheckExtensionsHandlerTest, OnExtensionPrefsDeletedTest) {
