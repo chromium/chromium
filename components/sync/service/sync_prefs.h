@@ -37,11 +37,8 @@ class SyncPrefObserver {
       bool is_initial_sync_feature_setup_complete) = 0;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   // Called when any of the prefs related to the user's selected data types has
-  // changed. `payments_integration_enabled_changed` indicates whether the
-  // setting for "Payments" *may* have changed, but this may contain false
-  // positives!
-  virtual void OnSelectedTypesPrefChange(
-      bool payments_integration_enabled_changed) = 0;
+  // changed.
+  virtual void OnSelectedTypesPrefChange() = 0;
 
  protected:
   virtual ~SyncPrefObserver();

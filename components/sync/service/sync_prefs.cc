@@ -404,10 +404,8 @@ void SyncPrefs::SetSelectedTypesForSyncingUser(
     }
   }
 
-  // Payments integration might have changed, so report as true.
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnSelectedTypesPrefChange(
-        /*payments_integration_enabled_changed=*/true);
+    observer.OnSelectedTypesPrefChange();
   }
 }
 
@@ -514,9 +512,7 @@ void SyncPrefs::SetSelectedOsTypes(bool sync_all_os_types,
     }
   }
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    // Payments is a browser type (not an OS type) so can't have changed here.
-    observer.OnSelectedTypesPrefChange(
-        /*payments_integration_enabled_changed=*/false);
+    observer.OnSelectedTypesPrefChange();
   }
 }
 
@@ -783,13 +779,8 @@ void SyncPrefs::OnSelectedTypesPrefChanged(const std::string& pref_name) {
     return;
   }
 
-  // Note: If `kSelectedTypesPerAccount` gets changed, this potentially
-  // over-notifies that "payments integration enabled" may have changed.
-  bool payments_integration_enabled_changed =
-      pref_name == GetPrefNameForType(UserSelectableType::kPayments) ||
-      pref_name == prefs::internal::kSelectedTypesPerAccount;
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnSelectedTypesPrefChange(payments_integration_enabled_changed);
+    observer.OnSelectedTypesPrefChange();
   }
 }
 
@@ -1179,8 +1170,7 @@ void SyncPrefs::SetPasswordSyncAllowed(bool allowed) {
 
   password_sync_allowed_ = allowed;
   for (SyncPrefObserver& observer : sync_pref_observers_) {
-    observer.OnSelectedTypesPrefChange(
-        /*payments_integration_enabled_changed=*/false);
+    observer.OnSelectedTypesPrefChange();
   }
 }
 

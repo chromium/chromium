@@ -135,7 +135,7 @@ class MockSyncPrefObserver : public SyncPrefObserver {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  MOCK_METHOD(void, OnSelectedTypesPrefChange, (bool), (override));
+  MOCK_METHOD(void, OnSelectedTypesPrefChange, (), (override));
 };
 
 TEST_F(SyncPrefsTest, ObservedPrefs) {
@@ -190,9 +190,7 @@ TEST_F(SyncPrefsTest, SyncFeatureDisabledViaDashboard) {
 
 TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  EXPECT_CALL(mock_sync_pref_observer,
-              OnSelectedTypesPrefChange(
-                  /*payments_integration_enabled_changed=*/false));
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
 
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
   sync_prefs_->SetSelectedOsTypes(/*sync_all_os_types=*/false,
@@ -235,7 +233,7 @@ TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSynced) {
     // SetSelectedTypesForSyncingUser() should result in at most one observer
     // notification: Never more than one, and in this case, since nothing
     // actually changes, zero calls would also be okay.
-    EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_))
+    EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange)
         .Times(AtMost(1));
 
     sync_prefs_->SetSelectedTypesForSyncingUser(
@@ -257,7 +255,7 @@ TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSyncedButPolicyRestricted) {
 
   // Setting a managed pref value should trigger an
   // OnSelectedTypesPrefChange() notification.
-  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
   pref_service_.SetManagedPref(prefs::internal::kSyncPreferences,
                                base::Value(false));
 
@@ -283,7 +281,7 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
     // SetSelectedTypesForSyncingUser() should result in exactly one call to
     // OnSelectedTypesPrefChange(), even when multiple data types change
     // state (here, usually one gets enabled and one gets disabled).
-    EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
+    EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
 
     sync_prefs_->SetSelectedTypesForSyncingUser(
         /*keep_everything_synced=*/false,
@@ -552,9 +550,7 @@ TEST_F(SyncPrefsTest, SetSelectedTypesForAccountInTransportMode) {
 
   // Change one of the default values, for example kPayments. This should
   // result in an observer notification.
-  EXPECT_CALL(mock_sync_pref_observer,
-              OnSelectedTypesPrefChange(
-                  /*payments_integration_enabled_changed=*/true));
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
   sync_prefs_->SetSelectedTypeForAccount(UserSelectableType::kPayments, false,
                                          gaia_id_hash_);
 
@@ -580,7 +576,7 @@ TEST_F(SyncPrefsTest,
 
   // Passwords gets disabled by policy. This should result in an observer
   // notification.
-  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange(_));
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
   pref_service_.SetManagedPref(prefs::internal::kSyncPasswords,
                                base::Value(false));
 
@@ -764,16 +760,12 @@ TEST_F(SyncPrefsTest, ShouldChangeAppsSyncEnabledByOsAndNotifyObservers) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
 
-  EXPECT_CALL(mock_sync_pref_observer,
-              OnSelectedTypesPrefChange(
-                  /*payments_integration_enabled_changed=*/false));
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
   sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/true);
   EXPECT_TRUE(sync_prefs_->IsAppsSyncEnabledByOs());
 
   testing::Mock::VerifyAndClearExpectations(&mock_sync_pref_observer);
-  EXPECT_CALL(mock_sync_pref_observer,
-              OnSelectedTypesPrefChange(
-                  /*payments_integration_enabled_changed=*/false));
+  EXPECT_CALL(mock_sync_pref_observer, OnSelectedTypesPrefChange);
   sync_prefs_->SetAppsSyncEnabledByOs(/*apps_sync_enabled=*/false);
   EXPECT_FALSE(sync_prefs_->IsAppsSyncEnabledByOs());
 }
@@ -847,8 +839,7 @@ TEST_F(SyncPrefsTest, PasswordSyncAllowed_DefaultValue) {
       UserSelectableType::kPasswords));
   StrictMock<MockSyncPrefObserver> observer;
   sync_prefs_->AddObserver(&observer);
-  EXPECT_CALL(observer, OnSelectedTypesPrefChange(
-                            /*payments_integration_enabled_changed=*/false));
+  EXPECT_CALL(observer, OnSelectedTypesPrefChange);
 
   sync_prefs_->SetPasswordSyncAllowed(false);
 
