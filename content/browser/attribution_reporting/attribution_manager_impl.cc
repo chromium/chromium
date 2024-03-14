@@ -1710,6 +1710,10 @@ void AttributionManagerImpl::ReportRegistrationHeaderError(
     const attribution_reporting::SuitableOrigin& context_origin,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id) {
+  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
+    return;
+  }
+
   if (!GetContentClient()->browser()->IsAttributionReportingAllowedForContext(
           storage_partition_->browser_context(),
           RenderFrameHost::FromID(render_frame_id), *context_origin,
