@@ -1,6 +1,13 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CrInputElement} from './cr_input.js';
 import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
-#html_wrapper_imports_end -->
+
+export function getHtml(this: CrInputElement) {
+  return html`
 <div id="label" class="cr-form-field-label" ?hidden="${!this.label}"
     aria-hidden="true">
   ${this.label}
@@ -37,4 +44,5 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   <slot name="suffix"></slot>
 </div>
 <div id="error" role="${this.getErrorRole_() || nothing}"
-     aria-live="assertive">${this.getErrorMessage_()}</div>
+    aria-live="assertive">${this.getErrorMessage_()}</div>`;
+}

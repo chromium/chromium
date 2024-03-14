@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CrToolbarSearchFieldElement} from './cr_toolbar_search_field.js';
+
+export function getHtml(this: CrToolbarSearchFieldElement) {
+  return html`
 <div id="background"></div>
 <div id="stateBackground"></div>
 <div id="content">
@@ -9,7 +18,9 @@
         @click="${this.onSearchIconClicked_}" ?disabled="${this.disabled}">
   </cr-icon-button>
   <div id="searchTerm">
-    <label id="prompt" for="searchInput" aria-hidden="true">${this.label}</label>
+    <label id="prompt" for="searchInput" aria-hidden="true">
+      ${this.label}
+    </label>
     <input id="searchInput"
         aria-labelledby="prompt"
         autocapitalize="off"
@@ -28,4 +39,5 @@
     <cr-icon-button id="clearSearch" iron-icon="cr:cancel"
         title="${this.clearLabel}" @click="${this.clearSearch_}"
         ?disabled="${this.disabled}"></cr-icon-button>` : ''}
-</div>
+</div>`;
+}

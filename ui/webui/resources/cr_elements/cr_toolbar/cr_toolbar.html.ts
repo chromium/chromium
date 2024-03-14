@@ -1,6 +1,13 @@
-<!-- #html_wrapper_imports_start
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {CrToolbarElement} from './cr_toolbar.js';
 import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
-#html_wrapper_imports_end -->
+
+export function getHtml(this: CrToolbarElement) {
+  return html`
 <div id="leftContent">
   <div id="leftSpacer">
     ${this.showMenu ? html`
@@ -41,4 +48,5 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   <div id="rightSpacer">
     <slot></slot>
   </div>
-</div>
+</div>`;
+}
