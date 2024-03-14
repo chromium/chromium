@@ -102,13 +102,7 @@ try_.builder(
             "ci/Cast Linux ARM64",
         ],
     ),
-    main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "chromecast/.+",
-        ],
-    ),
 )
 
 try_.builder(
@@ -517,9 +511,7 @@ try_.builder(
         # crbug/940930
         "chromium.enable_cleandead": 100,
     },
-    main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -533,13 +525,7 @@ try_.builder(
             "ci/Cast Linux Debug",
         ],
     ),
-    main_list_view = "try",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "chromecast/.+",
-        ],
-    ),
 )
 
 try_.builder(

@@ -67,8 +67,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [linux-rel](https://ci.chromium.org/p/chromium/builders/try/linux-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel""))
 
-* [linux-x64-castos](https://ci.chromium.org/p/chromium/builders/try/linux-x64-castos) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-castos""))
-
 * [linux_chromium_asan_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_asan_rel_ng""))
 
 * [linux_chromium_compile_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_compile_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_compile_dbg_ng""))
@@ -401,11 +399,6 @@ builder.
   Location filters:
   * [`//third_party/crashpad/crashpad/.+`](https://cs.chromium.org/chromium/src/third_party/crashpad/crashpad/)
 
-* [linux-arm64-castos](https://ci.chromium.org/p/chromium/builders/try/linux-arm64-castos) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-arm64-castos""))
-
-  Location filters:
-  * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
-
 * [linux-blink-web-tests-force-accessibility-rel](https://ci.chromium.org/p/chromium/builders/try/linux-blink-web-tests-force-accessibility-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-blink-web-tests-force-accessibility-rel""))
 
   Location filters:
@@ -465,11 +458,6 @@ builder.
   * [`//chrome/browser/.+(ui|browser)test.+`](https://cs.chromium.org/search?q=+file:chrome/browser/.+(ui|browser)test)
   * [`//chrome/browser/ui/views/.+test.+`](https://cs.chromium.org/search?q=+file:chrome/browser/ui/views/.+test)
   * [`//ui/views/widget/.+test.+`](https://cs.chromium.org/search?q=+file:ui/views/widget/.+test)
-
-* [linux-x64-castos-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-x64-castos-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-castos-dbg""))
-
-  Location filters:
-  * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
 * [linux_chromium_cfi_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_cfi_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_cfi_rel_ng""))
 
