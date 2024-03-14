@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -290,8 +289,6 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
 
   // How much system memory is actively available for use right now, in MBs.
   int phys_free = static_cast<int>(mem_status.ullAvailPhys / kMBBytes);
-
-  base::UmaHistogramMemoryLargeMB("Memory.System.AvailableMB", phys_free);
 
   // TODO(chrisha): This should eventually care about address space pressure,
   // but the browser process (where this is running) effectively never runs out
