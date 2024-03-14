@@ -138,11 +138,13 @@ void PredictionModelFetcherImpl::HandleResponse(
       get_models_response =
           std::make_unique<optimization_guide::proto::GetModelsResponse>();
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "OptimizationGuide.PredictionModelFetcher."
-      "GetModelsResponse.Status",
-      static_cast<net::HttpStatusCode>(response_code),
-      net::HTTP_VERSION_NOT_SUPPORTED);
+  if (response_code >= 0 && response_code <= net::HTTP_VERSION_NOT_SUPPORTED) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "OptimizationGuide.PredictionModelFetcher."
+        "GetModelsResponse.Status",
+        static_cast<net::HttpStatusCode>(response_code),
+        net::HTTP_VERSION_NOT_SUPPORTED);
+  }
   // Net error codes are negative but histogram enums must be positive.
   base::UmaHistogramSparse(
       "OptimizationGuide.PredictionModelFetcher."

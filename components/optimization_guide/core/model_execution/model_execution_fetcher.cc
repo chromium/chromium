@@ -11,6 +11,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -158,7 +159,9 @@ ModelExecutionFetcher::ModelExecutionFetcher(
     : optimization_guide_service_url_(optimization_guide_service_url),
       url_loader_factory_(url_loader_factory),
       optimization_guide_logger_(optimization_guide_logger) {
-  CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme));
+  if (!net::IsLocalhost(optimization_guide_service_url_)) {
+    CHECK(optimization_guide_service_url_.SchemeIs(url::kHttpsScheme));
+  }
 }
 
 ModelExecutionFetcher::~ModelExecutionFetcher() {
