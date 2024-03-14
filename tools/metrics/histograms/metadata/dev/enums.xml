@@ -785,6 +785,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="140" label="Autofill event received"/>
   <int value="141"
       label="Autofill event received and auto-opening Autofill tab"/>
+  <int value="142" label="Animations panel - Animation group selected"/>
+  <int value="143"
+      label="Animations panel - Scroll driven animation group selected"/>
+  <int value="144"
+      label="Animations panel - Scroll driven animation group scrubbed"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
