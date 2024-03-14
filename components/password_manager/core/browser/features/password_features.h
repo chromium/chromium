@@ -136,6 +136,8 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore);
 inline constexpr char kLocalUpmMinGmsVersionParam[] = "min_gms_version";
 // Default value of kLocalUpmMinGmsVersionParam.
 inline constexpr int kDefaultLocalUpmMinGmsVersion = 240212000;
+// The min GMS version, which supports UPM for syncing users.
+inline constexpr int kAccountUpmMinGmsVersion = 223012000;
 
 // Same as above, but for automotive.
 inline constexpr char kLocalUpmMinGmsVersionParamForAuto[] =
