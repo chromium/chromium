@@ -1033,6 +1033,26 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
           trigger_field_type, field_value_for_filtering,
           trigger_field.is_autofilled, field_types, trigger_source);
 
+  // If autofill for addresses is triggered from the context menu on an address
+  // field and no suggestions can be shown (i.e. if a user has only addresses
+  // without emails and then triggers autofill from the context menu on an email
+  // field), then default to the same behaviour as if the user triggers autofill
+  // on a non-address field. This is done to avoid a situation when the user
+  // would trigger autofill from the context menu, and then no suggestions
+  // appear.
+  // The "if condition" is satisfied only if `trigger_field_type` is an address
+  // field. Then, `GetSuggestionsForProfiles()` is called with `UNKOWN_TYPE` for
+  // the `trigger_field_type`. This guarantees no infinite recursion occurs.
+  if (profiles_to_suggest.empty() && IsAddressType(trigger_field_type) &&
+      trigger_source ==
+          AutofillSuggestionTriggerSource::kManualFallbackAddress &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillForUnclassifiedFieldsAvailable)) {
+    return GetSuggestionsForProfiles(
+        {UNKNOWN_TYPE}, trigger_field, UNKNOWN_TYPE,
+        std::move(last_targeted_fields), trigger_source);
+  }
+
   // Find the profiles that were hidden prior to the effects of the feature
   // kAutofillUseAddressRewriterInProfileSubsetComparison.
   std::set<std::string> previously_hidden_profiles_guid;
@@ -1418,6 +1438,30 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
               AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*prefix_match=*/!is_manual_fallback_for_non_credit_card_field,
       /*include_virtual_cards=*/true);
+
+  // If autofill for cards is triggered from the context menu on a credit card
+  // field and no suggestions can be shown (i.e. if a user has only cards
+  // without names and then triggers autofill from the context menu on a card
+  // name field), then default to the same behaviour as if the user triggers
+  // autofill for card on a non-payments field. This is done to avoid a
+  // situation when the user would trigger autofill from the context menu, and
+  // then no suggestions appear.
+  // The "if condition" is satisfied only if `trigger_field_type` is a credit
+  // card field. Then, `GetSuggestionsForCreditCards()` is called with
+  // `UNKOWN_TYPE` for the `trigger_field_type`. This guarantees no infinite
+  // recursion occurs.
+  if (cards_to_suggest.empty() &&
+      !is_manual_fallback_for_non_credit_card_field &&
+      trigger_source ==
+          AutofillSuggestionTriggerSource::kManualFallbackPayments &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillForUnclassifiedFieldsAvailable)) {
+    return GetSuggestionsForCreditCards(
+        trigger_field, UNKNOWN_TYPE, trigger_source,
+        should_show_scan_credit_card, should_show_cards_from_account,
+        with_offer, with_cvc, metadata_logging_context);
+  }
+
   std::vector<Suggestion> suggestions;
   for (const CreditCard& credit_card : cards_to_suggest) {
     suggestions.push_back(CreateCreditCardSuggestion(

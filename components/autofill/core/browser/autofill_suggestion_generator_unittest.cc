@@ -1980,6 +1980,84 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
           EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
 }
 
+// Tests the scenario when:
+// - autofill is triggered from the context menu on a field which is classified
+// as an address field;
+// - there is no profile which has values to fill the respective field.
+// In this scenario, suggestions should look the same as the ones for an
+// unclassified field.
+TEST_F(AutofillSuggestionGeneratorTest,
+       NoProfilesHaveValuesForClassifiedField_AddressManualFallback) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillForUnclassifiedFieldsAvailable);
+  AutofillProfile profile = test::GetIncompleteProfile1();
+  ASSERT_FALSE(profile.HasRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  personal_data().AddProfile(profile);
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator().GetSuggestionsForProfiles(
+          {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, PHONE_HOME_WHOLE_NUMBER},
+          FormFieldData(), PHONE_HOME_WHOLE_NUMBER,
+          /*last_targeted_fields=*/std::nullopt,
+          AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  ASSERT_EQ(3u, suggestions.size());
+  EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
+  // This is the check which actually verifies that the suggestion looks the
+  // same as the ones for an unclassified field (such a suggestion has
+  // `is_acceptable` false).
+  EXPECT_EQ(suggestions[0].is_acceptable, false);
+  EXPECT_THAT(suggestions, ContainsAddressFooterSuggestions());
+}
+
+// Tests the scenario when:
+// - autofill is triggered from the context menu on a field which is classified
+// as a credit card field;
+// - there is no card which has values to fill the respective field (or the
+// field is a CVC which cannot be filled this way).
+// In this scenario, suggestions should look the same as the ones for an
+// unclassified field.
+TEST_F(AutofillSuggestionGeneratorTest,
+       NoProfilesHaveValuesForClassifiedField_PaymentsManualFallback) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillForUnclassifiedFieldsAvailable);
+  CreditCard card = test::GetIncompleteCreditCard();
+  ASSERT_FALSE(card.HasRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  personal_data().AddCreditCard(card);
+
+  bool with_offer;
+  bool with_cvc;
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  std::vector<Suggestion> suggestions =
+      suggestion_generator().GetSuggestionsForCreditCards(
+          FormFieldData(), CREDIT_CARD_NAME_FULL,
+          AutofillSuggestionTriggerSource::kManualFallbackPayments,
+          /*should_show_scan_credit_card=*/false,
+          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+          metadata_logging_context);
+
+  ASSERT_EQ(3u, suggestions.size());
+  EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kCreditCardEntry);
+  // This is the check which actually verifies that the suggestion looks the
+  // same as the ones for an unclassified field (such a suggestion has
+  // `is_acceptable` false).
+  EXPECT_EQ(suggestions[0].is_acceptable, false);
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
+
+  suggestions = suggestion_generator().GetSuggestionsForCreditCards(
+      FormFieldData(), CREDIT_CARD_VERIFICATION_CODE,
+      AutofillSuggestionTriggerSource::kManualFallbackPayments,
+      /*should_show_scan_credit_card=*/false,
+      /*should_show_cards_from_account=*/false, with_offer, with_cvc,
+      metadata_logging_context);
+
+  ASSERT_EQ(3u, suggestions.size());
+  EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kCreditCardEntry);
+  EXPECT_EQ(suggestions[0].is_acceptable, false);
+  EXPECT_THAT(suggestions,
+              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
+}
+
 // Tests that regular suggestions are filtered by the triggering field's value,
 // but manual fallback suggestions are not.
 TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
