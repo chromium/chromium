@@ -6953,6 +6953,13 @@ const char kLockScreenNotificationName[] = "Lock screen notification";
 const char kLockScreenNotificationDescription[] =
     "Enable notifications on the lock screen.";
 
+const char kMahiName[] = "Mahi feature";
+const char kMahiDescription[] = "Enable Mahi feature on ChromeOS.";
+
+const char kMahiFeatureKeyName[] = "Feature key for Mahi feature";
+const char kMahiFeatureKeyDescription[] =
+    "Feature key to use the Mahi feature on ChromeOS.";
+
 const char kMediaAppPdfA11yOcrName[] = "Media App PDF A11y via OCR";
 const char kMediaAppPdfA11yOcrDescription[] =
     "Enable ChromeVox A11y support for PDF content in Gallery app, using OCR.";

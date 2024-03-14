@@ -5416,6 +5416,16 @@
     "expiry_milestone": 88
   },
   {
+    "name": "mahi",
+    "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
+    "name": "mahi-feature-key",
+    "owners": [ "thanhdng@chromium.org", "chrome-knowledge-eng@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "main-thread-compositing-priority",
     "owners": [ "youssefesmat@chromium.org", "baseos-perf@google.com"],
     "expiry_milestone": 120

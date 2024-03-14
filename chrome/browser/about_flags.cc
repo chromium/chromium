@@ -10944,6 +10944,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAssistantIphDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
 
+    {"mahi", flag_descriptions::kMahiName, flag_descriptions::kMahiDescription,
+     kOsCrOS, FEATURE_VALUE_TYPE(chromeos::features::kMahi)},
+
+    {"mahi-feature-key", flag_descriptions::kMahiFeatureKeyName,
+     flag_descriptions::kMahiFeatureKeyDescription, kOsCrOS,
+     STRING_VALUE_TYPE(ash::switches::kMahiFeatureKey, "")},
+
     {"ash-picker", flag_descriptions::kAshPickerName,
      flag_descriptions::kAshPickerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPicker)},
