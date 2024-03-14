@@ -489,7 +489,8 @@ void ExtensionTelemetryService::Shutdown() {
     std::string write_string;
     active_report_->SerializeToString(&write_string);
     persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-        .WithArgs(std::move(write_string));
+        .WithArgs(std::move(write_string),
+                  ExtensionTelemetryPersister::WriteReportTrigger::kAtShutdown);
 
     RecordWhenFileWasPersisted(/*persisted_at_write_interval=*/false);
   }
@@ -589,7 +590,10 @@ void ExtensionTelemetryService::OnUploadComplete(
       std::string write_string;
       active_report_->SerializeToString(&write_string);
       persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-          .WithArgs(std::move(write_string));
+          .WithArgs(std::move(write_string),
+                    ExtensionTelemetryPersister::WriteReportTrigger::
+                        kAtWriteInterval);
+      RecordWhenFileWasPersisted(/*persisted_at_write_interval=*/true);
     }
   }
   active_report_.reset();
@@ -657,7 +661,9 @@ void ExtensionTelemetryService::PersistOrUploadData() {
       return;
     }
     persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-        .WithArgs(std::move(write_string));
+        .WithArgs(
+            std::move(write_string),
+            ExtensionTelemetryPersister::WriteReportTrigger::kAtWriteInterval);
     RecordWhenFileWasPersisted(/*persisted_at_write_interval=*/true);
   }
 }

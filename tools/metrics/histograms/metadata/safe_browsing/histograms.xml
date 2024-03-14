@@ -730,15 +730,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.ExtensionPersister.WriteResult"
+<histogram name="SafeBrowsing.ExtensionPersister.WriteResult{Trigger}"
     enum="BooleanSuccess" expires_after="2024-07-01">
   <owner>psarouthakis@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Whether the write request succeeded or not. This is recorded once for every
-    file written. Write requests happen on Chrome shutdown and when an extension
-    telemetry upload is not successful.
+    file written{Trigger}. Write requests happen on Chrome shutdown and when an
+    extension telemetry upload is not successful.
   </summary>
+  <token key="Trigger">
+    <variant name="" summary=""/>
+    <variant name=".AtShutdown" summary="at shutdown"/>
+    <variant name=".AtWriteInterval" summary="at write interval"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.ExtensionTelemetry.FileData.CollectionDuration"

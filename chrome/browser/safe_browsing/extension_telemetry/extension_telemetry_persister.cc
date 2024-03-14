@@ -22,6 +22,9 @@
 namespace safe_browsing {
 
 namespace {
+
+using WriteReportTrigger = ExtensionTelemetryPersister::WriteReportTrigger;
+
 // If a file is older than `kMaxFileAge` it will be deleted instead
 // of read.
 constexpr base::TimeDelta kMaxFileAge = base::Days(3);
@@ -34,9 +37,19 @@ constexpr char kPersistedFileNamePrefix[] = "CRXTelemetry_";
 // there are no plans for the persister to have a cache this large.
 constexpr int kMaxCacheSize = 48;
 
-void RecordWriteResult(bool success) {
-  base::UmaHistogramBoolean("SafeBrowsing.ExtensionPersister.WriteResult",
-                            success);
+void RecordWriteResult(bool success, WriteReportTrigger trigger) {
+  std::string metric = "SafeBrowsing.ExtensionPersister.WriteResult";
+  std::string suffix;
+  switch (trigger) {
+    case WriteReportTrigger::kAtWriteInterval:
+      suffix = ".AtWriteInterval";
+      break;
+    case WriteReportTrigger::kAtShutdown:
+      suffix = ".AtShutdown";
+      break;
+  }
+  base::UmaHistogramBoolean(metric, success);
+  base::UmaHistogramBoolean(metric + suffix, success);
 }
 
 void RecordReadResult(bool success) {
@@ -97,7 +110,8 @@ void ExtensionTelemetryPersister::PersisterInit() {
   RecordNumberOfFilesInCacheOnStartup(read_index_);
 }
 
-void ExtensionTelemetryPersister::WriteReport(const std::string write_string) {
+void ExtensionTelemetryPersister::WriteReport(const std::string write_string,
+                                              WriteReportTrigger trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialization_complete_) {
     if (!base::DirectoryExists(dir_path_)) {
@@ -115,7 +129,7 @@ void ExtensionTelemetryPersister::WriteReport(const std::string write_string) {
       if (write_index_ >= max_num_files_)
         write_index_ = 0;
     }
-    RecordWriteResult(success);
+    RecordWriteResult(success, trigger);
   }
 }
 

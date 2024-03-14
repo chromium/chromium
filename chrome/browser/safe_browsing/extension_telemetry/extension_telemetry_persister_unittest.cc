@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -18,6 +19,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+namespace {
+
+using WriteReportTrigger = ExtensionTelemetryPersister::WriteReportTrigger;
+
+}  // namespace
 
 class ExtensionTelemetryPersisterTest : public ::testing::Test {
  public:
@@ -36,6 +43,7 @@ class ExtensionTelemetryPersisterTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::string read_string_;
+  base::HistogramTester histogram_tester_;
   base::WeakPtrFactory<ExtensionTelemetryPersisterTest> weak_factory_{this};
 };
 
@@ -53,7 +61,7 @@ ExtensionTelemetryPersisterTest::ExtensionTelemetryPersisterTest()
 TEST_F(ExtensionTelemetryPersisterTest, WriteReadCheck) {
   std::string written_string = "Test String 1";
   persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-      .WithArgs(written_string);
+      .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
   auto callback =
       base::BindOnce(&ExtensionTelemetryPersisterTest::CallbackHelper,
                      weak_factory_.GetWeakPtr());
@@ -68,7 +76,7 @@ TEST_F(ExtensionTelemetryPersisterTest, WritePastFullCacheCheck) {
   std::string written_string = "Test String 1";
   for (int i = 0; i < 12; i++) {
     persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-        .WithArgs(written_string);
+        .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
   }
   persister_.AsyncCall(&ExtensionTelemetryPersister::ClearPersistedFiles);
   // After a clear no file should be there to read from.
@@ -86,13 +94,13 @@ TEST_F(ExtensionTelemetryPersisterTest, ReadFullCache) {
   std::string written_string = "Test String 1";
   for (int i = 0; i < 10; i++) {
     persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-        .WithArgs(written_string);
+        .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
   }
   written_string = "Test String 2";
   // Overwrite first 5 files.
   for (int i = 0; i < 5; i++) {
     persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-        .WithArgs(written_string);
+        .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
   }
   //  Read should start at highest numbered file.
   for (int i = 0; i < 5; i++) {
@@ -138,13 +146,13 @@ TEST_F(ExtensionTelemetryPersisterTest, MultiProfile) {
   std::string written_string = "Test String 1";
   std::string written_string_2 = "Test String 2";
   persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-      .WithArgs(written_string);
+      .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
   persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-      .WithArgs(written_string);
+      .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
   persister_2.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-      .WithArgs(written_string_2);
+      .WithArgs(written_string_2, WriteReportTrigger::kAtWriteInterval);
   persister_2.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
-      .WithArgs(written_string_2);
+      .WithArgs(written_string_2, WriteReportTrigger::kAtWriteInterval);
   // Read through profile one persisted files
   for (int i = 0; i < 2; i++) {
     auto callback =
@@ -181,4 +189,21 @@ TEST_F(ExtensionTelemetryPersisterTest, MultiProfile) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ("", read_string_);
 }
+
+TEST_F(ExtensionTelemetryPersisterTest, VerifyWriteResultHistograms) {
+  std::string written_string = "Test String 1";
+  persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
+      .WithArgs(written_string, WriteReportTrigger::kAtWriteInterval);
+  persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
+      .WithArgs(written_string, WriteReportTrigger::kAtShutdown);
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.ExtensionPersister.WriteResult", true, 2);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.ExtensionPersister.WriteResult.AtWriteInterval", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SafeBrowsing.ExtensionPersister.WriteResult.AtShutdown", true, 1);
+}
+
 }  // namespace safe_browsing
