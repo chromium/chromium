@@ -136,13 +136,6 @@ class OfferNotificationControllerAndroidBrowserTestForMessagesUi
  public:
   OfferNotificationControllerAndroidBrowserTestForMessagesUi() = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{messages::kMessagesForAndroidOfferNotification},
-        /*disabled_features=*/{});
-    OfferNotificationControllerAndroidBrowserTest::SetUp();
-  }
-
   void VerifyMessageShownCountMetric(int count) {
     histogram_tester_.ExpectBucketCount(
         messages::IsStackingAnimationEnabled()
@@ -153,9 +146,6 @@ class OfferNotificationControllerAndroidBrowserTestForMessagesUi
   }
 
   messages::MessagesTestHelper messages_test_helper_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(

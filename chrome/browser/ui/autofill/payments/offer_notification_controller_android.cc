@@ -12,7 +12,6 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
-#include "components/messages/android/messages_feature.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"

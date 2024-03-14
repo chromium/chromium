@@ -16444,7 +16444,6 @@ from previous Chrome versions.
   <int value="-1970672551" label="CanvasContextLostInBackground:disabled"/>
   <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
   <int value="-1969627578" label="EnableVariableRefreshRateAlwaysOn:disabled"/>
-  <int value="-1969625771" label="MessagesForAndroidOfferNotification:enabled"/>
   <int value="-1968796101"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:disabled"/>
   <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
@@ -20997,7 +20996,6 @@ from previous Chrome versions.
       label="ChromeHomePersonalizedOmniboxSuggestions:enabled"/>
   <int value="83893372" label="SigninInterceptBubbleV2:disabled"/>
   <int value="84911198" label="ScanCardsInWebPayments:disabled"/>
-  <int value="86233339" label="MessagesForAndroidOfferNotification:disabled"/>
   <int value="86563978" label="CCTTextFragmentLookupApiEnabled:enabled"/>
   <int value="86900696" label="SanitizerAPIv0:enabled"/>
   <int value="86996919" label="UseServerPredictionsOnSaveParsing:disabled"/>

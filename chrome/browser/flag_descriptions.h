@@ -2466,9 +2466,6 @@ extern const char kMediaPickerAdoptionStudyDescription[];
 extern const char kMessagesForAndroidAdsBlockedName[];
 extern const char kMessagesForAndroidAdsBlockedDescription[];
 
-extern const char kMessagesForAndroidOfferNotificationName[];
-extern const char kMessagesForAndroidOfferNotificationDescription[];
-
 extern const char kMessagesForAndroidPermissionUpdateName[];
 extern const char kMessagesForAndroidPermissionUpdateDescription[];
 

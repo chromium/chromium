@@ -5499,11 +5499,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "messages-for-android-offer-notification",
-    "owners": [ "vishwasuppoor@chromium.org", "siashah@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "messages-for-android-permission-update",
     "owners": [ "pavely@chromium.org", "lazzzis@chromium.org" ],
     "expiry_milestone": 105

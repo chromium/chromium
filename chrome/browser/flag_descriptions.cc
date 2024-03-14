@@ -4191,11 +4191,6 @@ const char kMessagesForAndroidAdsBlockedName[] = "Ads Blocked Messages UI";
 const char kMessagesForAndroidAdsBlockedDescription[] =
     "When enabled, ads blocked message will use the new Messages UI.";
 
-const char kMessagesForAndroidOfferNotificationName[] =
-    "Offer Notification Messages UI";
-const char kMessagesForAndroidOfferNotificationDescription[] =
-    "When enabled, offer notification will use the new Messages UI";
-
 const char kMessagesForAndroidPermissionUpdateName[] =
     "Permission Update Messages UI";
 const char kMessagesForAndroidPermissionUpdateDescription[] =

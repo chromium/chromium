@@ -33,10 +33,6 @@ BASE_FEATURE(kMessagesForAndroidAdsBlocked,
              "MessagesForAndroidAdsBlocked",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesForAndroidOfferNotification,
-             "MessagesForAndroidOfferNotification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMessagesForAndroidPermissionUpdate,
              "MessagesForAndroidPermissionUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -64,10 +60,6 @@ BASE_FEATURE(kMessagesAndroidExtraHistograms,
 
 bool IsAdsBlockedMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
-}
-
-bool IsOfferNotificationMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidOfferNotification);
 }
 
 bool IsPopupBlockedMessagesUiEnabled() {

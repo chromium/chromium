@@ -13,10 +13,6 @@ namespace messages {
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
 
-// Feature that controls whether offer notifications use Messages or Infobars
-// infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidOfferNotification);
-
 // Feature that controls whether permission update prompts use Messages or
 // Infobars infrastructure.
 BASE_DECLARE_FEATURE(kMessagesForAndroidPermissionUpdate);
@@ -41,8 +37,6 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
 BASE_DECLARE_FEATURE(kMessagesAndroidExtraHistograms);
 
 bool IsAdsBlockedMessagesUiEnabled();
-
-bool IsOfferNotificationMessagesUiEnabled();
 
 bool IsPermissionUpdateMessagesUiEnabled();
 
