@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "dcheck_always_on": true,
+    "fail_on_san_warnings": true,
     "is_component_build": false,
     "is_debug": false,
     "is_tsan": true,
