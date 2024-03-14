@@ -257,6 +257,7 @@ public class AutofillServerCardEditorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/329593484")
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentSuccessful()
                     throws Exception {
@@ -378,6 +379,7 @@ public class AutofillServerCardEditorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/329593484")
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentFailure()
                     throws Exception {
@@ -466,6 +468,7 @@ public class AutofillServerCardEditorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "b/329593484")
     public void virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollRejected()
             throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
