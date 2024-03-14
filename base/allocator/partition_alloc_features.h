@@ -193,11 +193,6 @@ extern const base::FeatureParam<bool>
     kPartialLowEndModeExcludePartitionAllocSupport;
 #endif
 
-// Name of the synthetic trial associated with forcibly enabling BRP in
-// all processes.
-inline constexpr base::StringPiece kRendererLiveBRPSyntheticTrialName =
-    "BackupRefPtrRendererLive";
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableConfigurableThreadCacheMultiplier);
 BASE_EXPORT double GetThreadCacheMultiplier();
 BASE_EXPORT double GetThreadCacheMultiplierForAndroid();

@@ -85,14 +85,10 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   const auto brp_mode = base::features::kBackupRefPtrModeParam.Get();
   const bool process_affected_by_brp_flag =
-#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
-      true;
-#else
       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
           BackupRefPtrEnabledProcesses::kAllProcesses ||
       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
           BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
-#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
   const bool enable_brp = base::FeatureList::IsEnabled(
                               base::features::kPartitionAllocBackupRefPtr) &&
                           (brp_mode == BackupRefPtrMode::kEnabled) &&

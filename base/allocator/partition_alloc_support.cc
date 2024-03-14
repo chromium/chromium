@@ -345,12 +345,6 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   // manually in binary experiment patches.
   trials.emplace("VectorRawPtrExperiment", "Disabled");
 
-#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
-  trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Enabled");
-#else
-  trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Control");
-#endif
-
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocMemoryTagging)) {
@@ -950,9 +944,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
     BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
-#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
-  process_affected_by_brp_flag = true;
-#else
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
     // No specified process type means this is the Browser process.
@@ -974,7 +965,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         break;
     }
   }
-#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
 #endif  // (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
         // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
