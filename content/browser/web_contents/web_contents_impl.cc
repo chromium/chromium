@@ -3958,6 +3958,9 @@ void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
     static_cast<RenderWidgetHostViewBase*>(view)->ExitFullscreenMode();
   }
 
+  // Block automatic fullscreen temporarily, e.g. match kActivationLifespan.
+  block_automatic_fullscreen_until_ = base::TimeTicks::Now() + base::Seconds(5);
+
   if (delegate_) {
     // This may spin the message loop and destroy this object crbug.com/1506535
     base::WeakPtr<WebContentsImpl> weak_ptr = weak_factory_.GetWeakPtr();
@@ -10068,12 +10071,20 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
     return false;
   }
 
-  RenderFrameHost* host = GetPrimaryMainFrame();
+  RenderFrameHostImpl* host = GetPrimaryMainFrame();
   if (base::FeatureList::IsEnabled(
           blink::features::kWindowPlacementFullscreenOnScreensChange) &&
       IsWindowManagementGranted(host) &&
       transient_allow_fullscreen_.IsActive()) {
     return false;
+  }
+
+  // Require transient activation shortly after any related WebContents exited.
+  for (auto* rfhi : GetActiveTopLevelDocumentsInBrowsingContextGroup(host)) {
+    auto* related = WebContentsImpl::FromRenderFrameHostImpl(rfhi);
+    if (base::TimeTicks::Now() < related->block_automatic_fullscreen_until_) {
+      return true;
+    }
   }
 
   return GetContentClient()

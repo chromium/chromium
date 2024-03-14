@@ -106,6 +106,10 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
 
   void Trace(Visitor*) const override;
 
+  base::TimeTicks block_automatic_fullscreen_until() const {
+    return block_automatic_fullscreen_until_;
+  }
+
  private:
   static Fullscreen& From(LocalDOMWindow&);
 
@@ -158,6 +162,9 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
   using PendingExit = ScriptPromiseResolverTyped<IDLUndefined>;
   using PendingExits = HeapVector<Member<PendingExit>>;
   PendingExits pending_exits_;
+
+  // Used to block automatic fullscreen for a short time after exit.
+  base::TimeTicks block_automatic_fullscreen_until_;
 };
 
 inline bool Fullscreen::IsFullscreenElement(const Element& element) {
