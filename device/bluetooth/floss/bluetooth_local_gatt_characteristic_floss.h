@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/floss/bluetooth_local_gatt_descriptor_floss.h"
 #include "device/bluetooth/floss/bluetooth_local_gatt_service_floss.h"
@@ -18,12 +17,6 @@
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace floss {
-
-struct GattRequest {
-  std::string address;
-  int32_t request_id;
-  int32_t offset;
-};
 
 class BluetoothLocalGattDescriptorFloss;
 

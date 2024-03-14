@@ -11,6 +11,14 @@
 
 namespace floss {
 
+const base::TimeDelta kResponseTimeout = base::Seconds(1);
+
+struct GattRequest {
+  std::string address;
+  int32_t request_id;
+  int32_t offset;
+};
+
 class BluetoothAdapterFloss;
 
 // Subclass of |BluetoothGattService| for platforms that use Floss.

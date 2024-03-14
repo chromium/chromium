@@ -16,12 +16,6 @@
 
 namespace floss {
 
-namespace {
-
-const base::TimeDelta kResponseTimeout = base::Seconds(1);
-
-}  // namespace
-
 // static
 base::WeakPtr<BluetoothLocalGattCharacteristicFloss>
 BluetoothLocalGattCharacteristicFloss::Create(

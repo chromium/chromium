@@ -9,10 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
 #include "device/bluetooth/floss/bluetooth_local_gatt_characteristic_floss.h"
-#include "device/bluetooth/floss/bluetooth_remote_gatt_descriptor_floss.h"
+#include "device/bluetooth/floss/bluetooth_local_gatt_service_floss.h"
 #include "device/bluetooth/floss/floss_gatt_manager_client.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
@@ -62,9 +63,6 @@ class BluetoothLocalGattDescriptorFloss
                                         bool needs_response,
                                         int32_t handle,
                                         std::vector<uint8_t> value) override;
-  void GattServerExecuteWrite(std::string address,
-                              int32_t request_id,
-                              bool execute_write) override;
 
   void ResolveInstanceId(const GattCharacteristic& characteristic);
 
@@ -78,6 +76,26 @@ class BluetoothLocalGattDescriptorFloss
 
   // Convert this descriptor to GattDescriptor struct.
   GattDescriptor ToGattDescriptor();
+
+  // Runs after the browser client has processed the read request and has sent a
+  // response.
+  void OnReadRequestCallback(
+      int32_t request_id,
+      std::optional<BluetoothGattServiceFloss::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
+
+  // Runs after the browser client has processed the write request and has sent
+  // a response.
+  void OnWriteRequestCallback(int32_t request_id,
+                              std::vector<uint8_t>& value,
+                              bool needs_response,
+                              bool success);
+
+  // Cached instance of the latest pending read/write request, if one exists.
+  std::optional<GattRequest> pending_request_;
+
+  // Timer to stop waiting for a callback response.
+  base::OneShotTimer response_timer_;
 
   // UUID of this descriptor.
   device::BluetoothUUID uuid_;
