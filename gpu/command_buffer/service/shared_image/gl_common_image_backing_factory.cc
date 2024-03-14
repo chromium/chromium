@@ -34,8 +34,8 @@ std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     const GLFormatCaps& caps) {
   if (plane_format == viz::SinglePlaneFormat::kR_8 &&
       (!caps.ext_texture_rg() || caps.disable_r8_shared_images())) {
-    // Fallback to LUMINANCE_8 for R_8 format.
-    return viz::SinglePlaneFormat::kLUMINANCE_8;
+    // Fallback to ALPHA_8 for R_8 format.
+    return viz::SinglePlaneFormat::kALPHA_8;
   }
   if (plane_format == viz::SinglePlaneFormat::kRG_88 &&
       !caps.ext_texture_rg()) {

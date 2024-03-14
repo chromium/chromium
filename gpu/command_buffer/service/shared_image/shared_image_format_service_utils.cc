@@ -337,15 +337,15 @@ GLFormatDesc GLFormatCaps::ToGLFormatDescOverrideHalfFloatType(
 }
 
 GLenum GLFormatCaps::GetFallbackFormatIfNotSupported(GLenum gl_format) const {
-  // Fallback to GL_LUMINANCE for unsized RED format.
+  // Fallback to GL_ALPHA for unsized RED format.
   if (gl_format == GL_RED_EXT &&
       (disable_r8_shared_images_ || !ext_texture_rg_)) {
-    return GL_LUMINANCE;
+    return GL_ALPHA;
   }
-  // Fallback to GL_LUMINANCE8 for sized R8 format.
+  // Fallback to GL_ALPHA8 for sized R8 format.
   if (gl_format == GL_R8_EXT &&
       (disable_r8_shared_images_ || !ext_texture_rg_)) {
-    return GL_LUMINANCE8_EXT;
+    return GL_ALPHA8_EXT;
   }
   // No fallback for sized/unsize RG8 format without texture_rg extension.
   if ((gl_format == GL_RG_EXT || gl_format == GL_RG8_EXT) && !ext_texture_rg_) {
