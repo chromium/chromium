@@ -3026,6 +3026,22 @@ chromium-metrics-reviews@google.com.
       variants="ContentAnalysisRequestType"/>
 </histogram>
 
+<histogram
+    name="Enterprise.{ContentAnalysisProtocol}Request.{ContentAnalysisRequestType}.Result"
+    enum="SafeBrowsingBinaryUploadResult" expires_after="2025-03-11">
+  <owner>nancylanxiao@google.com</owner>
+  <owner>domfc@chromium.org</owner>
+  <owner>dpr-eng@google.com</owner>
+  <summary>
+    Records the result of scanning requests, parametrized by the protocol used
+    and the type of content that's uploaded. Is is logged once per user action
+    that would trigger this Connector.
+  </summary>
+  <token key="ContentAnalysisProtocol" variants="ContentAnalysisProtocol"/>
+  <token key="ContentAnalysisRequestType"
+      variants="ContentAnalysisRequestType"/>
+</histogram>
+
 <histogram name="EnterpriseCheck.AzureADJoinStatusCheckTime" units="ms"
     expires_after="2025-03-01">
   <owner>igorruvinov@chromium.org</owner>

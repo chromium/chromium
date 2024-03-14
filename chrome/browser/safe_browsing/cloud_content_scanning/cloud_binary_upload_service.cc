@@ -751,10 +751,15 @@ void CloudBinaryUploadService::RecordRequestMetrics(Request::Id request_id,
     // Example values:
     //   "Enterprise.ResumableRequest.Print.Duration
     //   "Enterprise.MultipartRequest.Text.Duration
+    //   "Enterprise.ResumableRequest.File.Result
     base::UmaHistogramCustomTimes(
         base::StrCat(
             {"Enterprise.", protocol, "Request.", request_type, ".Duration"}),
         duration, base::Milliseconds(1), base::Minutes(6), 50);
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"Enterprise.", protocol, "Request.", request_type, ".Result"}),
+        result);
   }
 }
 
