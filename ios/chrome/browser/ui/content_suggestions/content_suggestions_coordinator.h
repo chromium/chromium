@@ -57,11 +57,6 @@ class WebState;
 // Refreshes the contents owned by this coordinator.
 - (void)refresh;
 
-// Configure Content Suggestions if showing the Start Surface. NOTE: this should
-// only be called once for every Start configuration. Calling it multiple times
-// in sequence can lead to unpredictable outcomes.
-- (void)configureStartSurfaceIfNeeded;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_COORDINATOR_H_

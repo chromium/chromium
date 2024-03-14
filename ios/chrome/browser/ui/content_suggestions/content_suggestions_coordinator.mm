@@ -99,6 +99,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
@@ -114,9 +115,6 @@
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -155,9 +153,6 @@
 @end
 
 @implementation ContentSuggestionsCoordinator {
-  // Observer bridge for mediator to listen to
-  // StartSurfaceRecentTabObserverBridge.
-  std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;
 
   // The coordinator that displays the Default Browser Promo for the Set Up
   // List.
@@ -253,10 +248,7 @@
       commerce::ShoppingServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  self.contentSuggestionsMediator =
-      [[ContentSuggestionsMediator alloc] initWithBrowser:self.browser];
-  self.contentSuggestionsMediator.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
+  self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc] init];
 
   NSMutableArray* moduleMediators = [NSMutableArray array];
 
@@ -358,12 +350,8 @@
     }
   }
 
-  self.contentSuggestionsMediator.NTPMetricsDelegate = self.NTPMetricsDelegate;
-
   self.contentSuggestionsViewController =
       [[ContentSuggestionsViewController alloc] init];
-  self.contentSuggestionsViewController.suggestionCommandHandler =
-      self.contentSuggestionsMediator;
   self.contentSuggestionsViewController.audience = self;
   self.contentSuggestionsViewController.urlLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
@@ -399,13 +387,6 @@
 }
 
 - (void)stop {
-  // Reset the observer bridge object before setting
-  // `contentSuggestionsMediator` nil.
-  if (_startSurfaceObserver) {
-    StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-        ->RemoveObserver(_startSurfaceObserver.get());
-    _startSurfaceObserver.reset();
-  }
   [self.parcelTrackingMediator disconnect];
   self.parcelTrackingMediator = nil;
   [_shortcutsMediator disconnect];
@@ -456,12 +437,6 @@
   DiscoverFeedServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState())
       ->SetIsShownOnStartSurface(false);
-  [self.contentSuggestionsMediator hideRecentTabTile];
-}
-
-- (void)returnToRecentTabWasAdded {
-  [self.NTPDelegate updateFeedLayout];
-  [self.NTPDelegate setContentOffsetToTop];
 }
 
 - (void)moduleWasRemoved {
@@ -939,34 +914,6 @@
 }
 
 #pragma mark - Helpers
-
-- (void)configureStartSurfaceIfNeeded {
-  SceneState* scene = self.browser->GetSceneState();
-  if (!NewTabPageTabHelper::FromWebState(self.webState)
-           ->ShouldShowStartSurface()) {
-    return;
-  }
-
-  web::WebState* most_recent_tab =
-      StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-          ->most_recent_tab();
-  CHECK(most_recent_tab);
-  [self.contentSuggestionsMetricsRecorder recordReturnToRecentTabTileShown];
-  DiscoverFeedServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState())
-      ->SetIsShownOnStartSurface(true);
-  NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
-  [self.contentSuggestionsMediator
-      configureMostRecentTabItemWithWebState:most_recent_tab
-                                   timeLabel:time_label];
-  if (!_startSurfaceObserver) {
-    _startSurfaceObserver =
-        std::make_unique<StartSurfaceRecentTabObserverBridge>(
-            self.contentSuggestionsMediator);
-    StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-        ->AddObserver(_startSurfaceObserver.get());
-  }
-}
 
 // Presents the parcel tracking alert modal.
 - (void)presentParcelTrackingAlertCoordinator {

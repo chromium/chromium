@@ -1134,11 +1134,6 @@
          !IsStickyHeaderDisabledForFollowingFeed();
 }
 
-- (BOOL)isRecentTabTileVisible {
-  return [self.contentSuggestionsCoordinator.contentSuggestionsMediator
-              mostRecentTabStartSurfaceTileIsShowing];
-}
-
 - (void)signinPromoHasChangedVisibility:(BOOL)visible {
   [self.feedTopSectionCoordinator signinPromoHasChangedVisibility:visible];
 }
@@ -1476,7 +1471,9 @@
 - (void)updateStartForVisibilityChange:(BOOL)visible {
   if (visible && NewTabPageTabHelper::FromWebState(self.webState)
                      ->ShouldShowStartSurface()) {
-    [self.contentSuggestionsCoordinator configureStartSurfaceIfNeeded];
+    DiscoverFeedServiceFactory::GetForBrowserState(
+        self.browser->GetBrowserState())
+        ->SetIsShownOnStartSurface(true);
   }
   if (!visible && NewTabPageTabHelper::FromWebState(self.webState)
                       ->ShouldShowStartSurface()) {

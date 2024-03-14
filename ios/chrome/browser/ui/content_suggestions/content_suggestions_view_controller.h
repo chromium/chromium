@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 
-@protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol ParcelTrackingOptInCommands;
 @protocol SetUpListViewDelegate;
@@ -27,10 +26,6 @@ class UrlLoadingBrowserAgent;
 - (instancetype)initWithNibName:(NSString*)name
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-
-// Handler for the commands sent by the ContentSuggestionsViewController.
-@property(nonatomic, weak) id<ContentSuggestionsCommands>
-    suggestionCommandHandler;
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience,
                               SetUpListViewDelegate>
     audience;

@@ -15,9 +15,6 @@ enum class SafetyCheckItemType;
 // Notifies the audience of the UIKit viewWillDisappear: callback.
 - (void)viewWillDisappear;
 
-// Notifies the audience that the Return to Recent Tab tile has been added.
-- (void)returnToRecentTabWasAdded;
-
 // Notifies the audience that a module was removed.
 - (void)moduleWasRemoved;
 

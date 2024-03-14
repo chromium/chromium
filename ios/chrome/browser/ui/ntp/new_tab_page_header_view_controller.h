@@ -13,7 +13,6 @@
 
 @protocol ApplicationCommands;
 @protocol BrowserCoordinatorCommands;
-@protocol ContentSuggestionsCommands;
 @protocol FakeboxFocuser;
 @protocol NewTabPageControllerDelegate;
 @protocol NewTabPageHeaderCommands;

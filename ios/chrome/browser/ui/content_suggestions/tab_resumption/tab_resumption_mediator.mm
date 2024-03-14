@@ -16,6 +16,7 @@
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
@@ -184,6 +185,7 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
       break;
     case TabResumptionItemType::kMostRecentTab: {
       [self.NTPMetricsDelegate recentTabTileOpened];
+      [IntentDonationHelper donateIntent:IntentType::kOpenLatestTab];
       web::NavigationManager::WebLoadParams webLoadParams =
           web::NavigationManager::WebLoadParams(item.tabURL);
       UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);

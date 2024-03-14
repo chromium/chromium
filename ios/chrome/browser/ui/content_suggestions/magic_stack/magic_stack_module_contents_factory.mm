@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_consumer_source.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"

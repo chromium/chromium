@@ -8,7 +8,6 @@
 #import "base/ios/block_types.h"
 
 enum class ContentSuggestionsModuleType;
-@class ContentSuggestionsReturnToRecentTabItem;
 @class ContentSuggestionsWhatsNewItem;
 @class MostVisitedTilesConfig;
 @class SafetyCheckState;
@@ -39,19 +38,6 @@ struct MagicStackOrderChange {
 // Supports adding/removing/updating UI elements to the ContentSuggestions
 // UIViewController.
 @protocol ContentSuggestionsConsumer
-
-// Indicates to the consumer to present the Return to Recent Tab tile with
-// `config`.
-- (void)showReturnToRecentTabTileWithConfig:
-    (ContentSuggestionsReturnToRecentTabItem*)config;
-
-// Indicates to the consumer to update the Return to Recent Tab tile with
-// `config`.
-- (void)updateReturnToRecentTabTileWithConfig:
-    (ContentSuggestionsReturnToRecentTabItem*)config;
-
-// Indicates to the consumer to hide the Return to Recent Tab tile.
-- (void)hideReturnToRecentTabTile;
 
 // Indicates to the consumer the current Most Visited tiles to show with
 // `config`.

@@ -419,35 +419,9 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
       std::make_unique<ScopedBlockSwizzler>([NewTabPageMediator class],
                                             @selector(setUp), swizzle_block);
 
-  id coordinator_mock = OCMClassMock([ContentSuggestionsCoordinator class]);
-  ContentSuggestionsCoordinator* mockContentSuggestionsCoordinator =
-      coordinator_mock;
-
-  // Set next NTP as start surface. Test that starting the NTP and navigating to
-  // it configures the start surface.
-  OCMExpect([coordinator_mock alloc]).andReturn(coordinator_mock);
-  OCMExpect([coordinator_mock initWithBaseViewController:[OCMArg any]
-                                                 browser:browser_.get()])
-      .andReturn(mockContentSuggestionsCoordinator);
   NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
-  OCMExpect([coordinator_mock configureStartSurfaceIfNeeded]);
   [coordinator_ start];
   [coordinator_ didNavigateToNTPInWebState:web_state_];
-
-  // Test opening a Start surface with another NTP tab opened in the background
-  // (e.g. the NTP coordinator is already started).
-  [coordinator_ didNavigateAwayFromNTP];
-  [coordinator_ stop];
-  OCMExpect([coordinator_mock alloc]).andReturn(coordinator_mock);
-  OCMExpect([coordinator_mock initWithBaseViewController:[OCMArg any]
-                                                 browser:browser_.get()])
-      .andReturn(mockContentSuggestionsCoordinator);
-  [coordinator_ start];
-  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
-  OCMExpect([coordinator_mock configureStartSurfaceIfNeeded]);
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
-  EXPECT_OCMOCK_VERIFY(coordinator_mock);
-
   // Test `-didNavigateAwayFromNTPWithinWebState` when currently showing Start
   // resets the configuration.
   [coordinator_ didNavigateAwayFromNTP];
@@ -457,16 +431,9 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
 
   // Test the active WebState updates NTP Start state to false if it
   // began as true.
-  // NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
-  OCMExpect([coordinator_mock alloc]).andReturn(coordinator_mock);
-  OCMExpect([coordinator_mock initWithBaseViewController:[OCMArg any]
-                                                 browser:browser_.get()])
-      .andReturn(mockContentSuggestionsCoordinator);
-  OCMExpect([coordinator_mock configureStartSurfaceIfNeeded]);
   NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(true);
   [coordinator_ start];
   [coordinator_ didNavigateToNTPInWebState:web_state_];
-  EXPECT_OCMOCK_VERIFY(coordinator_mock);
   // Save reference before `web_state_` is set to new active WebState.
   web::WebState* start_web_state = web_state_;
   // Simulate the active WebState change callback.
@@ -476,16 +443,6 @@ TEST_F(NewTabPageCoordinatorTest, StartIsStartShowing) {
   // original WebState's TabHelper should be NO.
   EXPECT_FALSE(NewTabPageTabHelper::FromWebState(start_web_state)
                    ->ShouldShowStartSurface());
-  [coordinator_ stop];
-
-  // Test `-start` doesn't set `isStartShowing` if NTPTabHelper's
-  // `-ShouldShowStartSurface` is false.
-  NewTabPageTabHelper::FromWebState(web_state_)->SetShowStartSurface(false);
-  [[coordinator_mock reject] configureStartSurfaceIfNeeded];
-  SetNTPAsCurrentURL();
-  [coordinator_ start];
-  [coordinator_ didNavigateToNTPInWebState:web_state_];
-  EXPECT_OCMOCK_VERIFY(coordinator_mock);
   [coordinator_ stop];
 }
 

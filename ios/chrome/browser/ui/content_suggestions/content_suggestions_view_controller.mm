@@ -26,9 +26,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_selection_actions.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
@@ -36,7 +33,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
@@ -89,7 +85,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
-    ContentSuggestionsSelectionActions,
     MagicStackModuleContainerDelegate,
     SetUpListItemViewTapDelegate,
     URLDropDelegate,
@@ -104,13 +99,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // List of all UITapGestureRecognizers created for the Most Visisted tiles.
 @property(nonatomic, strong)
     NSMutableArray<UITapGestureRecognizer*>* mostVisitedTapRecognizers;
-// The UITapGestureRecognizer for the Return To Recent Tab tile.
-@property(nonatomic, strong)
-    UITapGestureRecognizer* returnToRecentTabTapRecognizer;
 
-// The Return To Recent Tab view.
-@property(nonatomic, strong)
-    ContentSuggestionsReturnToRecentTabView* returnToRecentTabTile;
 // StackView holding all of `mostVisitedViews`.
 @property(nonatomic, strong) UIStackView* mostVisitedStackView;
 // Module Container for the `mostVisitedViews` when being shown in Magic Stack.
@@ -222,14 +211,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                        constant:-bottomSpacing]
   ]];
 
-  if (self.returnToRecentTabTile) {
-    [self addUIElement:self.returnToRecentTabTile
-        withCustomBottomSpacing:
-            IsMagicStackEnabled()
-                ? kMostVisitedBottomMargin
-                : content_suggestions::kReturnToRecentTabSectionBottomMargin];
-    [self layoutReturnToRecentTabTile];
-  }
   if (_mostVisitedTileConfig) {
     if (!IsMagicStackEnabled()) {
       [self createAndInsertMostVisitedModule];
@@ -317,64 +298,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 #pragma mark - ContentSuggestionsConsumer
-
-- (void)showReturnToRecentTabTileWithConfig:
-    (ContentSuggestionsReturnToRecentTabItem*)config {
-  if (self.returnToRecentTabTile) {
-    [self.returnToRecentTabTile removeFromSuperview];
-  }
-
-  self.returnToRecentTabTile = [[ContentSuggestionsReturnToRecentTabView alloc]
-      initWithConfiguration:config];
-  self.returnToRecentTabTapRecognizer = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(contentSuggestionsElementTapped:)];
-  [self.returnToRecentTabTile
-      addGestureRecognizer:self.returnToRecentTabTapRecognizer];
-  self.returnToRecentTabTapRecognizer.enabled = YES;
-  // If the Content Suggestions is already shown, add the Return to Recent Tab
-  // tile to the StackView, otherwise, add to the verticalStackView.
-  if (self.isViewLoaded) {
-    [self.verticalStackView insertArrangedSubview:self.returnToRecentTabTile
-                                          atIndex:0];
-    [self.verticalStackView
-        setCustomSpacing:IsMagicStackEnabled()
-                             ? kMostVisitedBottomMargin
-                             : content_suggestions::
-                                   kReturnToRecentTabSectionBottomMargin
-               afterView:self.returnToRecentTabTile];
-    [self layoutReturnToRecentTabTile];
-    [self.audience returnToRecentTabWasAdded];
-  }
-  // Trigger a relayout so that the Return To Recent Tab view will be counted in
-  // the Content Suggestions height. Upon app startup when this is often added
-  // asynchronously as the NTP is constructing the entire surface, so accurate
-  // height info is very important to prevent pushing content below the Return
-  // To Recent Tab view down as opposed to pushing the content above the view up
-  // if it is not counted in the height.
-  // This only has to happen after `-viewDidLoad` has completed since it is
-  // adding views after the initial layout construction in `-viewDidLoad`.
-  if (self.viewLoaded) {
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
-  }
-}
-
-- (void)updateReturnToRecentTabTileWithConfig:
-    (ContentSuggestionsReturnToRecentTabItem*)config {
-  if (config.icon) {
-    self.returnToRecentTabTile.iconImageView.image = config.icon;
-    self.returnToRecentTabTile.iconImageView.hidden = NO;
-  }
-  if (config.title) {
-    self.returnToRecentTabTile.subtitleLabel.text = config.subtitle;
-  }
-}
-
-- (void)hideReturnToRecentTabTile {
-  [self.returnToRecentTabTile removeFromSuperview];
-  self.returnToRecentTabTile = nil;
-}
 
 - (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config {
   _mostVisitedTileConfig = config;
@@ -640,10 +563,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
   NSUInteger index = [self.verticalStackView.arrangedSubviews
       indexOfObject:self.mostVisitedStackView];
-  if (index == NSNotFound && self.returnToRecentTabTile) {
-    index = [self.verticalStackView.arrangedSubviews
-        indexOfObject:self.returnToRecentTabTile];
-  }
   if (index == NSNotFound) {
     index = 0;
   } else {
@@ -840,51 +759,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   [self.audience didSelectSetUpListItem:view.type];
 }
 
-#pragma mark - ContentSuggestionsSelectionActions
-
-- (void)contentSuggestionsElementTapped:(UIGestureRecognizer*)sender {
-  if ([sender.view
-          isKindOfClass:[ContentSuggestionsReturnToRecentTabView class]]) {
-    ContentSuggestionsReturnToRecentTabView* returnToRecentTabView =
-        static_cast<ContentSuggestionsReturnToRecentTabView*>(sender.view);
-    __weak ContentSuggestionsReturnToRecentTabView* weakRecentTabView =
-        returnToRecentTabView;
-    UIGestureRecognizerState state = sender.state;
-    if (state == UIGestureRecognizerStateChanged ||
-        state == UIGestureRecognizerStateCancelled) {
-      // Do nothing if isn't a gesture start or end.
-      // If the gesture was cancelled by the system, then reset the background
-      // color since UIGestureRecognizerStateEnded will not be received.
-      if (state == UIGestureRecognizerStateCancelled) {
-        returnToRecentTabView.backgroundColor = [UIColor clearColor];
-      }
-      return;
-    }
-    BOOL touchBegan = state == UIGestureRecognizerStateBegan;
-    [UIView transitionWithView:returnToRecentTabView
-                      duration:kMaterialDuration8
-                       options:UIViewAnimationOptionCurveEaseInOut
-                    animations:^{
-                      weakRecentTabView.backgroundColor =
-                          touchBegan ? [UIColor colorNamed:kGrey100Color]
-                                     : [UIColor clearColor];
-                    }
-                    completion:nil];
-    if (state == UIGestureRecognizerStateEnded) {
-      CGPoint point = [sender locationInView:returnToRecentTabView];
-      if (point.x < 0 || point.y < 0 ||
-          point.x > kReturnToRecentTabSize.width ||
-          point.y > ReturnToRecentTabHeight()) {
-        // Reset the highlighted state and do nothing if the gesture ended
-        // outside of the tile.
-        returnToRecentTabView.backgroundColor = [UIColor clearColor];
-        return;
-      }
-      [self.suggestionCommandHandler openMostRecentTab];
-    }
-  }
-}
-
 #pragma mark - UITraitEnvironment
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -960,15 +834,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
-- (void)layoutReturnToRecentTabTile {
-  [NSLayoutConstraint activateConstraints:@[
-    [_returnToRecentTabTile.widthAnchor
-        constraintEqualToAnchor:self.view.widthAnchor],
-    [_returnToRecentTabTile.heightAnchor
-        constraintEqualToConstant:ReturnToRecentTabHeight()],
-  ]];
-}
-
 - (void)createAndInsertMostVisitedModule {
   CGFloat horizontalSpacing =
       ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
@@ -978,11 +843,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   self.mostVisitedStackView.spacing = horizontalSpacing;
   self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
 
-  // Find correct insertion position in the stack.
-  int insertionIndex = 0;
-  if (self.returnToRecentTabTile) {
-    insertionIndex++;
-  }
   if (IsMagicStackEnabled()) {
     if (ShouldPutMostVisitedSitesInMagicStack()) {
       // Only add it to the Magic Stack here if it is after the inital
@@ -993,7 +853,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     } else {
       [self.verticalStackView
           insertArrangedSubview:self.mostVisitedModuleContainer
-                        atIndex:insertionIndex];
+                        atIndex:0];
       [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
                                      afterView:self.mostVisitedModuleContainer];
       [NSLayoutConstraint activateConstraints:@[
@@ -1005,7 +865,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     }
   } else {
     [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
-                                          atIndex:insertionIndex];
+                                          atIndex:0];
     [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
                                    afterView:self.mostVisitedStackView];
     CGFloat width =

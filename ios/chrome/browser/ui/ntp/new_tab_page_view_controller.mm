@@ -1701,14 +1701,6 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     return;
   }
   CGFloat scrollPositionToSave = [self scrollPosition];
-  if ([self.NTPContentDelegate isRecentTabTileVisible]) {
-    CGFloat tileSectionHeight =
-        ReturnToRecentTabHeight() +
-        content_suggestions::kReturnToRecentTabSectionBottomMargin;
-    if ([self scrollPosition] > tileSectionHeight + [self pinnedOffsetY]) {
-      scrollPositionToSave -= tileSectionHeight;
-    }
-  }
   scrollPositionToSave -= self.collectionShiftingOffset;
   self.mutator.scrollPositionToSave = scrollPositionToSave;
 }
