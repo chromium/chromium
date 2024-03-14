@@ -986,6 +986,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         # Test base::span<> compatibility against std::span<>.
         r'base/containers/span_unittest.cc',
         # Needed to use QUICHE API.
+        r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',
         r'services/network/web_transport\.cc',
         r'chrome/browser/ip_protection/.*',
         # Not an error in third_party folders.
