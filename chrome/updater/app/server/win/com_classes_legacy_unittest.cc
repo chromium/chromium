@@ -108,10 +108,12 @@ TEST_F(LegacyAppCommandWebImplTest, Execute) {
           {cmd_exe_command_line_.GetCommandLineString(), L" /c \"exit 7\""}),
       base::BindLambdaForTesting(
           [&ping_sent](UpdaterScope scope, const std::string& app_id,
+                       const std::string& command_id,
                        LegacyAppCommandWebImpl::ErrorParams error_params) {
             ping_sent = true;
             EXPECT_EQ(GetTestScope(), scope);
             EXPECT_EQ(app_id, base::WideToASCII(kAppId1));
+            EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
             EXPECT_EQ(error_params.error_code, 7);
             EXPECT_EQ(error_params.extra_code1, 0);
           }),
@@ -151,10 +153,12 @@ TEST_F(LegacyAppCommandWebImplTest, ExecuteParameterizedCommand) {
           {cmd_exe_command_line_.GetCommandLineString(), L" /c \"exit %1\""}),
       base::BindLambdaForTesting(
           [&ping_sent](UpdaterScope scope, const std::string& app_id,
+                       const std::string& command_id,
                        LegacyAppCommandWebImpl::ErrorParams error_params) {
             ping_sent = true;
             EXPECT_EQ(GetTestScope(), scope);
             EXPECT_EQ(app_id, base::WideToASCII(kAppId1));
+            EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
             EXPECT_EQ(error_params.error_code, 5420);
             EXPECT_EQ(error_params.extra_code1, 0);
           }),
@@ -185,10 +189,12 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
       kAppId1, kCmdId1, kBadCmdLine,
       base::BindLambdaForTesting(
           [&ping_sent](UpdaterScope scope, const std::string& app_id,
+                       const std::string& command_id,
                        LegacyAppCommandWebImpl::ErrorParams error_params) {
             ping_sent = true;
             EXPECT_EQ(GetTestScope(), scope);
             EXPECT_EQ(app_id, base::WideToASCII(kAppId1));
+            EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
             EXPECT_EQ(error_params.error_code,
                       HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
             EXPECT_EQ(error_params.extra_code1, 105);
@@ -229,10 +235,12 @@ TEST_F(LegacyAppCommandWebImplTest, CommandRunningStatus) {
       command_line.GetCommandLineStringWithUnsafeInsertSequences(),
       base::BindLambdaForTesting(
           [&ping_sent](UpdaterScope scope, const std::string& app_id,
+                       const std::string& command_id,
                        LegacyAppCommandWebImpl::ErrorParams error_params) {
             ping_sent = true;
             EXPECT_EQ(GetTestScope(), scope);
             EXPECT_EQ(app_id, base::WideToASCII(kAppId1));
+            EXPECT_EQ(command_id, base::WideToASCII(kCmdId1));
             EXPECT_EQ(error_params.error_code, 999);
             EXPECT_EQ(error_params.extra_code1, 0);
           }),

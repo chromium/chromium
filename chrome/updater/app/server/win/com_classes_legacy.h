@@ -261,6 +261,7 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
 
   using PingSender = base::RepeatingCallback<void(UpdaterScope scope,
                                                   const std::string& app_id,
+                                                  const std::string& command_id,
                                                   ErrorParams error_params)>;
   LegacyAppCommandWebImpl();
   LegacyAppCommandWebImpl(const LegacyAppCommandWebImpl&) = delete;
@@ -305,6 +306,7 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
 
   static void SendPing(UpdaterScope scope,
                        const std::string& app_id,
+                       const std::string& command_id,
                        ErrorParams error_params);
 
   ~LegacyAppCommandWebImpl() override;
@@ -313,6 +315,7 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
   HResultOr<AppCommandRunner> app_command_runner_;
   UpdaterScope scope_ = UpdaterScope::kSystem;
   std::string app_id_;
+  std::string command_id_;
   PingSender ping_sender_ = base::DoNothing();
 };
 

@@ -1049,6 +1049,7 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
       AppCommandRunner::LoadAppCommand(scope, app_id, command_id);
   scope_ = scope;
   app_id_ = base::WideToUTF8(app_id);
+  command_id_ = base::WideToUTF8(command_id);
   ping_sender_ = std::move(ping_sender);
   return app_command_runner_.error_or(S_OK);
 }
@@ -1123,7 +1124,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   const HRESULT hr = app_command_runner_->Run(substitutions, process_);
   if (FAILED(hr)) {
     VLOG(2) << __func__ << ": AppCommand failed to launch: " << hr;
-    ping_sender_.Run(scope_, app_id_,
+    ping_sender_.Run(scope_, app_id_, command_id_,
                      {
                          .error_code = hr,
                          .extra_code1 = kErrorAppCommandLaunchFailed,
@@ -1152,16 +1153,18 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                        };
                      },
                      process_.Duplicate())
-                     .Then(base::BindOnce(ping_sender_, scope_, app_id_)));
+                     .Then(base::BindOnce(ping_sender_, scope_, app_id_,
+                                          command_id_)));
   return hr;
 }
 
 void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                                        const std::string& app_id,
+                                       const std::string& command_id,
                                        ErrorParams error_params) {
   AppServerWin::PostRpcTask(base::BindOnce(
       [](UpdaterScope scope, const std::string& app_id,
-         ErrorParams error_params) {
+         const std::string& command_id, ErrorParams error_params) {
         scoped_refptr<Configurator> config =
             GetAppServerWinInstance()->config();
         scoped_refptr<PersistedData> persisted_data =
@@ -1175,6 +1178,7 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
         app_command_data.ap = persisted_data->GetAP(app_id);
         app_command_data.app_id = app_id;
         app_command_data.brand = persisted_data->GetBrandCode(app_id);
+        app_command_data.name = command_id;
         app_command_data.requires_network_encryption = false;
         app_command_data.version = persisted_data->GetProductVersion(app_id);
 
@@ -1187,7 +1191,7 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
              .extra_code1 = error_params.extra_code1},
             base::DoNothing());
       },
-      scope, app_id, error_params));
+      scope, app_id, command_id, error_params));
 }
 
 PolicyStatusImpl::PolicyStatusImpl()
