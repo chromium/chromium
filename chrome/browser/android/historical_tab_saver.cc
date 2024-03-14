@@ -119,6 +119,7 @@ void CreateHistoricalGroup(
     TabModel* model,
     const std::optional<tab_groups::TabGroupId>& optional_tab_group_id,
     const std::u16string& group_title,
+    int group_color,
     std::vector<raw_ptr<TabAndroid, VectorExperimental>> tabs,
     std::vector<WebContentsStateByteBuffer> web_contents_state) {
   DCHECK(model);
@@ -143,8 +144,9 @@ void CreateHistoricalGroup(
   AndroidLiveTabContextCloseWrapper context(
       model, std::move(tabs), std::move(tab_id_to_group_id),
       std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>(
-          {{group_id,
-            tab_groups::TabGroupVisualData(group_title, /*color_int=*/0)}}),
+          {{group_id, tab_groups::TabGroupVisualData(
+                          group_title, /*color_int=*/(
+                              tab_groups::TabGroupColorId)group_color)}}),
       std::move(web_contents_state));
 
   service->CreateHistoricalGroup(&context, group_id);
@@ -156,11 +158,13 @@ void CreateHistoricalBulkClosure(
     std::vector<int> root_ids,
     std::vector<std::optional<tab_groups::TabGroupId>> optional_tab_group_ids,
     std::vector<std::u16string> group_titles,
+    std::vector<int> group_colors,
     std::vector<int> per_tab_root_id,
     std::vector<raw_ptr<TabAndroid, VectorExperimental>> tabs,
     std::vector<WebContentsStateByteBuffer> web_contents_state) {
   DCHECK(model);
   DCHECK_EQ(root_ids.size(), group_titles.size());
+  DCHECK_EQ(root_ids.size(), group_colors.size());
   DCHECK_EQ(root_ids.size(), optional_tab_group_ids.size());
   DCHECK_EQ(per_tab_root_id.size(), tabs.size());
 
@@ -196,8 +200,9 @@ void CreateHistoricalBulkClosure(
     group_id_mapping.insert({root_id, group_id});
 
     const std::u16string title = group_titles[i];
-    native_groups[group_id] =
-        tab_groups::TabGroupVisualData(title, /*color_int=*/0);
+    int color = group_colors[i];
+    native_groups[group_id] = tab_groups::TabGroupVisualData(
+        title, /*color_int=*/(tab_groups::TabGroupColorId)color);
   }
 
   // Map Android Tabs by ID to their new or existing native
@@ -293,6 +298,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
     const JavaParamRef<jobject>& jtab_model,
     const JavaParamRef<jobject>& jtab_group_id,
     const JavaParamRef<jstring>& jtitle,
+    jint jcolor,
     const JavaParamRef<jobjectArray>& jtabs_android,
     const JavaParamRef<jobjectArray>& jbyte_buffers,
     const JavaParamRef<jintArray>& jsaved_state_versions) {
@@ -310,7 +316,8 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalGroup(
                                         jsaved_state_versions);
   CreateHistoricalGroup(TabModelList::FindNativeTabModelForJavaObject(
                             ScopedJavaLocalRef<jobject>(env, jtab_model.obj())),
-                        tab_group_id, title, std::move(tabs_android),
+                        tab_group_id, title, (int)jcolor,
+                        std::move(tabs_android),
                         std::move(web_contents_states));
 }
 
@@ -320,6 +327,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
     const JavaParamRef<jintArray>& jroot_ids,
     const JavaParamRef<jobjectArray>& jtab_group_ids,
     const JavaParamRef<jobjectArray>& jgroup_titles,
+    const JavaParamRef<jintArray>& jgroup_colors,
     const JavaParamRef<jintArray>& jper_tab_root_id,
     const JavaParamRef<jobjectArray>& jtabs_android,
     const JavaParamRef<jobjectArray>& jbyte_buffers,
@@ -331,6 +339,8 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
   std::vector<std::u16string> group_titles;
   base::android::AppendJavaStringArrayToStringVector(env, jgroup_titles,
                                                      &group_titles);
+  std::vector<int> group_colors;
+  base::android::JavaIntArrayToIntVector(env, jgroup_colors, &group_colors);
   std::vector<int> per_tab_root_id;
   base::android::JavaIntArrayToIntVector(env, jper_tab_root_id,
                                          &per_tab_root_id);
@@ -345,7 +355,7 @@ static void JNI_HistoricalTabSaverImpl_CreateHistoricalBulkClosure(
       TabModelList::FindNativeTabModelForJavaObject(
           ScopedJavaLocalRef<jobject>(env, jtab_model.obj())),
       std::move(root_ids), std::move(tab_group_ids), std::move(group_titles),
-      std::move(per_tab_root_id),
+      std::move(group_colors), std::move(per_tab_root_id),
       TabAndroid::GetAllNativeTabs(
           env, base::android::ScopedJavaLocalRef<jobjectArray>(jtabs_android)),
       std::move(web_contents_states));

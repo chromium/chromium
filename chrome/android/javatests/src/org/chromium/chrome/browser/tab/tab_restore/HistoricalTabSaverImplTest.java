@@ -36,6 +36,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.TabRestoreServiceUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -162,7 +163,12 @@ public class HistoricalTabSaverImplTest {
                 sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_2), /* incognito= */ false);
 
         HistoricalEntry group =
-                new HistoricalEntry(0, null, "Foo", Arrays.asList(new Tab[] {tab0, tab1}));
+                new HistoricalEntry(
+                        0,
+                        null,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab0, tab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -191,7 +197,11 @@ public class HistoricalTabSaverImplTest {
 
         HistoricalEntry group =
                 new HistoricalEntry(
-                        0, null, "Foo", Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
+                        0,
+                        null,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -224,7 +234,11 @@ public class HistoricalTabSaverImplTest {
 
         HistoricalEntry group =
                 new HistoricalEntry(
-                        0, null, "Foo", Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
+                        0,
+                        null,
+                        "Foo",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         List<List<HistoricalEntry>> empty = new ArrayList<List<HistoricalEntry>>();
@@ -244,7 +258,8 @@ public class HistoricalTabSaverImplTest {
                 sActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_2), /* incognito= */ false);
 
         HistoricalEntry group =
-                new HistoricalEntry(0, null, null, Arrays.asList(new Tab[] {tab0, tab1}));
+                new HistoricalEntry(
+                        0, null, null, TabGroupColorId.GREY, Arrays.asList(new Tab[] {tab0, tab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -271,7 +286,12 @@ public class HistoricalTabSaverImplTest {
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
         expectedEntries.add(new HistoricalEntry(tab0));
         expectedEntries.add(
-                new HistoricalEntry(1, null, "baz", Arrays.asList(new Tab[] {tab1, tab2})));
+                new HistoricalEntry(
+                        1,
+                        null,
+                        "baz",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab1, tab2})));
         expectedEntries.add(new HistoricalEntry(tab3));
         TabRestoreServiceUtils.createWindowEntry(mTabModel, expectedEntries);
 
@@ -354,12 +374,23 @@ public class HistoricalTabSaverImplTest {
 
         ArrayList<HistoricalEntry> window = new ArrayList<>();
         window.add(new HistoricalEntry(tab0));
-        window.add(new HistoricalEntry(5, null, "baz", Arrays.asList(new Tab[] {tab1, tab2})));
+        window.add(
+                new HistoricalEntry(
+                        5,
+                        null,
+                        "baz",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab1, tab2})));
         TabRestoreServiceUtils.createWindowEntry(mTabModel, window);
         expectedEntries.add(window);
 
         HistoricalEntry group =
-                new HistoricalEntry(3, null, "group", Arrays.asList(new Tab[] {tab3, tab2}));
+                new HistoricalEntry(
+                        3,
+                        null,
+                        "group",
+                        TabGroupColorId.BLUE,
+                        Arrays.asList(new Tab[] {tab3, tab2}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
         expectedEntries.add(Arrays.asList(new HistoricalEntry[] {group}));
 
@@ -391,7 +422,12 @@ public class HistoricalTabSaverImplTest {
         assertEntriesAre(empty);
 
         HistoricalEntry group =
-                new HistoricalEntry(0, null, "bar", Arrays.asList(new Tab[] {tab1, tab2}));
+                new HistoricalEntry(
+                        0,
+                        null,
+                        "bar",
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab1, tab2}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
         assertEntriesAre(empty);
 

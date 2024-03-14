@@ -93,6 +93,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         List<Token> tabGroupIds = new ArrayList<>();
         // Titles corresponding to each element in rootIds.
         List<String> groupTitles = new ArrayList<>();
+        // Colors corresponding to each element in rootIds.
+        List<Integer> groupColors = new ArrayList<>();
 
         // Byte buffer associated with WebContentsState per tab by index.
         List<ByteBuffer> byteBuffers = new ArrayList<>();
@@ -112,6 +114,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             rootIds.add(entry.getRootId());
             tabGroupIds.add(entry.getTabGroupId());
             groupTitles.add(entry.getGroupTitle() == null ? "" : entry.getGroupTitle());
+            groupColors.add(entry.getGroupColor());
             for (Tab tab : entry.getTabs()) {
                 WebContentsState tabWebContentsState = getWebContentsState(tab);
                 allTabs.add(tab);
@@ -138,6 +141,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                             mTabModel,
                             tabGroupIds.get(0),
                             groupTitles.get(0),
+                            groupColors.get(0),
                             allTabs.toArray(new Tab[0]),
                             byteBuffers.toArray(new ByteBuffer[0]),
                             CollectionUtil.integerCollectionToIntArray(savedStateVersions));
@@ -154,6 +158,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                         CollectionUtil.integerCollectionToIntArray(rootIds),
                         tabGroupIds.toArray(new Token[0]),
                         groupTitles.toArray(new String[0]),
+                        CollectionUtil.integerCollectionToIntArray(groupColors),
                         CollectionUtil.integerCollectionToIntArray(perTabRootId),
                         allTabs.toArray(new Tab[0]),
                         byteBuffers.toArray(new ByteBuffer[0]),
@@ -233,6 +238,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                             entry.getRootId(),
                             entry.getTabGroupId(),
                             entry.getGroupTitle(),
+                            entry.getGroupColor(),
                             validTabs));
         }
         return validatedEntries;
@@ -261,6 +267,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 TabModel model,
                 Token token,
                 String title,
+                int color,
                 Tab[] tabs,
                 ByteBuffer[] byteBuffers,
                 int[] savedStationsVersions);
@@ -270,6 +277,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 int[] rootIds,
                 Token[] tabGroupIds,
                 String[] titles,
+                int[] colors,
                 int[] perTabRootId,
                 Tab[] tabs,
                 ByteBuffer[] byteBuffers,

@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.tab.tab_restore;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,10 +79,15 @@ public class HistoricalTabModelObserver implements TabModelObserver {
             }
             // null title for default title is handled in HistoricalTabSaver.
             String title = TabGroupTitleUtils.getTabGroupTitle(rootId);
+            // Give a tab group the first color in the color list as a placeholder.
+            @TabGroupColorId int color = TabGroupColorId.GREY;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+                color = TabGroupColorUtils.getOrCreateTabGroupColor(rootId, mTabGroupModelFilter);
+            }
             List<Tab> groupTabs = new ArrayList<Tab>();
             groupTabs.add(tab);
             HistoricalEntry historicalGroup =
-                    new HistoricalEntry(rootId, tab.getTabGroupId(), title, groupTabs);
+                    new HistoricalEntry(rootId, tab.getTabGroupId(), title, color, groupTabs);
             entries.add(historicalGroup);
             idToGroup.put(rootId, historicalGroup);
         }

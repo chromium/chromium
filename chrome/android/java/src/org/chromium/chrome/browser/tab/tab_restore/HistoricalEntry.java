@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +19,7 @@ public class HistoricalEntry {
     private final int mRootId;
     private final @Nullable Token mTabGroupId;
     private final @Nullable String mGroupTitle;
-    // TODO(crbug/41490324): Add tab group color here.
+    private final @TabGroupColorId int mGroupColor;
     private final List<Tab> mTabs;
 
     /**
@@ -34,6 +35,9 @@ public class HistoricalEntry {
         // through the native TabAndroid object rather than here. For now assume this is unused.
         mTabGroupId = null;
         mGroupTitle = null;
+        // Apply the first color in the color list as the default, since a single tab item should
+        // not have a color associated with it anyways.
+        mGroupColor = TabGroupColorId.GREY;
         mTabs = Collections.singletonList(tab);
     }
 
@@ -44,10 +48,15 @@ public class HistoricalEntry {
      *     saved.
      * @param tabGroupId The tab group id of the group. This is saved if it is used.
      * @param groupTitle The title of the group or null if the default group name should be used.
+     * @param groupColor The {@TabGroupColorId} of the group.
      * @param tabs The list of {@link Tab} in this group.
      */
     public HistoricalEntry(
-            int rootId, @Nullable Token tabGroupId, @Nullable String groupTitle, List<Tab> tabs) {
+            int rootId,
+            @Nullable Token tabGroupId,
+            @Nullable String groupTitle,
+            @TabGroupColorId int groupColor,
+            List<Tab> tabs) {
         assert rootId != Tab.INVALID_TAB_ID;
         mRootId = rootId;
         if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
@@ -56,6 +65,7 @@ public class HistoricalEntry {
             mTabGroupId = null;
         }
         mGroupTitle = groupTitle;
+        mGroupColor = groupColor;
         mTabs = tabs;
     }
 
@@ -81,6 +91,11 @@ public class HistoricalEntry {
     /** Returns the title of the group this entry represents. */
     public String getGroupTitle() {
         return mGroupTitle;
+    }
+
+    /** Returns the color of the group this entry represents. */
+    public @TabGroupColorId int getGroupColor() {
+        return mGroupColor;
     }
 
     /** Returns the list of tabs in this group. */
