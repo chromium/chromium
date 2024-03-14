@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_SNIFFERS_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_SNIFFERS_H_
+#ifndef SERVICES_NETWORK_ORB_ORB_SNIFFERS_H_
+#define SERVICES_NETWORK_ORB_ORB_SNIFFERS_H_
 
 #include <string_view>
 
@@ -26,19 +26,20 @@ enum SniffingResult {
   kYes,
 };
 
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_SERVICE)
 SniffingResult SniffForHTML(std::string_view data);
-COMPONENT_EXPORT(NETWORK_CPP) SniffingResult SniffForXML(std::string_view data);
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_SERVICE)
+SniffingResult SniffForXML(std::string_view data);
+COMPONENT_EXPORT(NETWORK_SERVICE)
 SniffingResult SniffForJSON(std::string_view data);
 
 // Sniff for patterns that indicate |data| only ought to be consumed by XHR()
 // or fetch(). This detects Javascript parser-breaker and particular JS
 // infinite-loop patterns, which are used conventionally as a defense against
 // JSON data exfiltration by means of a <script> tag.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_SERVICE)
 SniffingResult SniffForFetchOnlyResource(std::string_view data);
 
 }  // namespace network::orb
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_SNIFFERS_H_
+#endif  // SERVICES_NETWORK_ORB_ORB_SNIFFERS_H_

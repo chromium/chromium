@@ -6,7 +6,7 @@
 // analyzer's behavior in several parameterized test scenarios) and at the end
 // includes the CrossOriginReadBlockingTests, which are more typical unittests.
 
-#include "services/network/public/cpp/orb/orb_mimetypes.h"
+#include "services/network/orb/orb_mimetypes.h"
 
 #include <initializer_list>
 #include <memory>

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_IMPL_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_IMPL_H_
+#ifndef SERVICES_NETWORK_ORB_ORB_IMPL_H_
+#define SERVICES_NETWORK_ORB_ORB_IMPL_H_
 
 #include <optional>
 #include <string_view>
@@ -22,7 +22,7 @@
 
 namespace network::orb {
 
-class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
+class COMPONENT_EXPORT(NETWORK_SERVICE) OpaqueResponseBlockingAnalyzer final
     : public ResponseAnalyzer {
  public:
   explicit OpaqueResponseBlockingAnalyzer(PerFactoryState& state);
@@ -103,4 +103,4 @@ class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer final
 
 }  // namespace network::orb
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_IMPL_H_
+#endif  // SERVICES_NETWORK_ORB_ORB_IMPL_H_

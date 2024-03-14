@@ -6,7 +6,7 @@
 // analyzer's behavior in several parameterized test scenarios) and at the end
 // includes the CrossOriginReadBlockingTests, which are more typical unittests.
 
-#include "services/network/public/cpp/orb/orb_sniffers.h"
+#include "services/network/orb/orb_sniffers.h"
 
 #include <initializer_list>
 #include <memory>

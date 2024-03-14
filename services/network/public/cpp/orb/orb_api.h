@@ -22,7 +22,7 @@
 namespace network::orb {
 
 // Used to strip response headers if CORB made a decision to block the response.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_SERVICE)
 void SanitizeBlockedResponseHeaders(network::mojom::URLResponseHead& response);
 
 // Per-URLLoaderFactory state (used by ORB for marking specific URLs as media
@@ -32,7 +32,7 @@ using PerFactoryState = std::set<GURL>;
 
 // ResponseAnalyzer is a pure, virtual interface that can be implemented by
 // either CORB or ORB.
-class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
+class COMPONENT_EXPORT(NETWORK_SERVICE) ResponseAnalyzer {
  public:
   // Creates a ResponseAnalyzer.
   //

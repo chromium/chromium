@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/orb/orb_impl.h"
+#include "services/network/orb/orb_impl.h"
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -12,9 +12,9 @@
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
+#include "services/network/orb/orb_mimetypes.h"
+#include "services/network/orb/orb_sniffers.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/orb/orb_mimetypes.h"
-#include "services/network/public/cpp/orb/orb_sniffers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 

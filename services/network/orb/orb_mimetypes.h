@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_MIMETYPES_H_
-#define SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_MIMETYPES_H_
+#ifndef SERVICES_NETWORK_ORB_ORB_MIMETYPES_H_
+#define SERVICES_NETWORK_ORB_ORB_MIMETYPES_H_
 
 #include <string_view>
 
@@ -44,14 +44,14 @@ enum class MimeType {
 
 // Returns whether `mime_type` is a Javascript MIME type based on
 // https://mimesniff.spec.whatwg.org/#javascript-mime-type
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_SERVICE)
 bool IsJavascriptMimeType(std::string_view mime_type);
 
 // Returns the representative mime type enum value of the mime type of
 // response. For example, this returns the same value for all text/xml mime
 // type families such as application/xml, application/rss+xml.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_SERVICE)
 MimeType GetCanonicalMimeType(std::string_view mime_type);
 }  // namespace network::orb
 
-#endif  // SERVICES_NETWORK_PUBLIC_CPP_ORB_ORB_MIMETYPES_H_
+#endif  // SERVICES_NETWORK_ORB_ORB_MIMETYPES_H_
