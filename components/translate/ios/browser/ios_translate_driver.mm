@@ -18,7 +18,6 @@
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
-#import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
 #include "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_controller.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
@@ -77,8 +76,7 @@ void IOSTranslateDriver::Initialize(
   language::IOSLanguageDetectionTabHelper::FromWebState(web_state_)
       ->AddObserver(this);
 
-  TranslateController::CreateForWebState(
-      web_state_, JSTranslateWebFrameManagerFactory::GetInstance());
+  TranslateController::CreateForWebState(web_state_);
   TranslateController::FromWebState(web_state_)->set_observer(this);
 }
 

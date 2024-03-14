@@ -139,21 +139,12 @@ void TranslateScript::OnScriptFetchComplete(bool success,
                         server_params.c_str());
 
     GURL security_origin = translate::GetTranslateSecurityOrigin();
-    base::StringAppendF(&data_, "var securityOrigin = '%s';",
+    base::StringAppendF(&data_, "var securityOrigin = '%s';\n",
                         security_origin.spec().c_str());
 
     // Load embedded translate.js.
     data_.append(ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
         IDR_TRANSLATE_JS));
-
-#if BUILDFLAG(IS_IOS)
-    // Append snippet to install callbacks on translate.js if available.
-    const char* install_callbacks =
-        "try {"
-        "  __gCrWeb.translate.installCallbacks();"
-        "} catch (error) {};";
-    data_.append(install_callbacks);
-#endif  // BUILDFLAG(IS_IOS)
 
     // Wrap |data| in try/catch block to handle unexpected script errors.
     static constexpr char kFormat[] =

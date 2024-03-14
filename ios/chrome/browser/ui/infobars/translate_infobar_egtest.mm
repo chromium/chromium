@@ -101,7 +101,33 @@ const char kFrenchPageWithLinkPath[] = "/frenchpagewithlink/";
 const char kFrenchPageNoTranslateContent[] = "/frenchpagenotranslatecontent/";
 const char kFrenchPageNoTranslateValue[] = "/frenchpagenotranslatevalue/";
 const char kTranslateScriptPath[] = "/translatescript/";
-const char kTranslateScript[] = "Fake_Translate_Script";
+// Fakes the translate element script by adding a button with the 'Translated'
+// label to the web page. The test can check it to determine if the page was
+// translated. See translate.js for details.
+const char kTranslateScript[] =
+    "var google = {"
+    "  translate: {"
+    "    TranslateService: function(config) {"
+    "      return {"
+    "        isAvailable: function() {"
+    "          return true;"
+    "        },"
+    "        translatePage: function(source, target, callback) {"
+    "          myButton = document.createElement('button');"
+    "          myButton.setAttribute('id', 'translated-button');"
+    "          myButton.appendChild(document.createTextNode('Translated'));"
+    "          document.body.prepend(myButton);"
+    "          setTimeout(callback, 1.0, 1.0, true)"
+    "        },"
+    "        restore: function() {"
+    "          myButton = document.getElementById('translated-button');"
+    "          myButton.remove();"
+    "        }"
+    "      }"
+    "    }"
+    "  }"
+    "};"
+    "setTimeout(cr.googleTranslate.onTranslateElementLoad, 1.0);";
 
 // Body text for /languagepath/.
 const char kLanguagePathText[] = "123456";
@@ -686,9 +712,6 @@ void TestResponseProvider::GetLanguageResponse(
   [TranslateAppInterface tearDownLanguageDetectionTabHelperObserver];
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:URL];
-  // Since current web state has changed to Incognito, a new fake translation
-  // manager has to be set up for the rest of this test.
-  [TranslateAppInterface setUpFakeJSTranslateManagerInCurrentTab];
 
   // Check Banner was presented.
   GREYAssertTrue([self isBeforeTranslateBannerVisible],

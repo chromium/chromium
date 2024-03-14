@@ -15,8 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/translate/core/common/translate_util.h"
-#import "components/translate/ios/browser/js_translate_web_frame_manager.h"
-#import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -67,13 +65,8 @@ std::optional<TranslateErrors> FindTranslateErrorsKey(
 
 WEB_STATE_USER_DATA_KEY_IMPL(TranslateController)
 
-TranslateController::TranslateController(
-    web::WebState* web_state,
-    JSTranslateWebFrameManagerFactory* js_manager_factory)
-    : web_state_(web_state),
-      observer_(nullptr),
-      js_manager_factory_(js_manager_factory),
-      weak_method_factory_(this) {
+TranslateController::TranslateController(web::WebState* web_state)
+    : web_state_(web_state), observer_(nullptr), weak_method_factory_(this) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
   if (web_state_->IsRealized()) {
@@ -95,35 +88,18 @@ TranslateController::~TranslateController() {
 
 void TranslateController::InjectTranslateScript(
     const std::string& translate_script) {
-  if (!main_web_frame_) {
-    return;
-  }
-
-  js_manager_factory_->FromWebFrame(main_web_frame_)
-      ->InjectTranslateScript(translate_script);
+  TranslateJavaScriptFeature::GetInstance()->InjectTranslateScript(
+      main_web_frame_, translate_script);
 }
 
 void TranslateController::RevertTranslation() {
-  if (!main_web_frame_) {
-    return;
-  }
-
-  js_manager_factory_->FromWebFrame(main_web_frame_)->RevertTranslation();
+  TranslateJavaScriptFeature::GetInstance()->RevertTranslation(main_web_frame_);
 }
 
 void TranslateController::StartTranslation(const std::string& source_language,
                                            const std::string& target_language) {
-  if (!main_web_frame_) {
-    return;
-  }
-
-  js_manager_factory_->FromWebFrame(main_web_frame_)
-      ->StartTranslation(source_language, target_language);
-}
-
-void TranslateController::SetJsTranslateWebFrameManagerFactoryForTesting(
-    JSTranslateWebFrameManagerFactory* manager) {
-  js_manager_factory_ = manager;
+  TranslateJavaScriptFeature::GetInstance()->StartTranslation(
+      main_web_frame_, source_language, target_language);
 }
 
 void TranslateController::OnJavascriptCommandReceived(
@@ -137,10 +113,6 @@ void TranslateController::OnJavascriptCommandReceived(
     OnTranslateReady(payload);
   } else if (*command == "status") {
     OnTranslateComplete(payload);
-  } else if (*command == "loadjavascript") {
-    OnTranslateLoadJavaScript(payload);
-  } else if (*command == "sendrequest") {
-    OnTranslateSendRequest(payload);
   }
 }
 
@@ -189,112 +161,6 @@ void TranslateController::OnTranslateComplete(
   }
 }
 
-void TranslateController::OnTranslateLoadJavaScript(
-    const base::Value::Dict& payload) {
-  const std::string* url = payload.FindString("url");
-  if (!url) {
-    return;
-  }
-
-  GURL security_origin = translate::GetTranslateSecurityOrigin();
-  if (url->find(security_origin.spec()) || script_fetcher_) {
-    return;
-  }
-
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(*url);
-
-  script_fetcher_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), NO_TRAFFIC_ANNOTATION_YET);
-  script_fetcher_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      web_state_->GetBrowserState()->GetURLLoaderFactory(),
-      base::BindOnce(&TranslateController::OnScriptFetchComplete,
-                     base::Unretained(this)));
-}
-
-void TranslateController::OnTranslateSendRequest(
-    const base::Value::Dict& payload) {
-  const std::string* method = payload.FindString("method");
-  const std::string* url = payload.FindString("url");
-  const std::string* body = payload.FindString("body");
-
-  if (!method || !url || !body) {
-    return;
-  }
-  std::optional<double> request_id = payload.FindDouble("requestID");
-  if (!request_id.has_value()) {
-    return;
-  }
-
-  GURL security_origin = translate::GetTranslateSecurityOrigin();
-  if (url->find(security_origin.spec())) {
-    return;
-  }
-
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->method = *method;
-  request->url = GURL(*url);
-  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  auto fetcher = network::SimpleURLLoader::Create(std::move(request),
-                                                  NO_TRAFFIC_ANNOTATION_YET);
-  fetcher->AttachStringForUpload(*body, "application/x-www-form-urlencoded");
-  auto* raw_fetcher = fetcher.get();
-  auto pair = request_fetchers_.insert(std::move(fetcher));
-  raw_fetcher->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      web_state_->GetBrowserState()->GetURLLoaderFactory(),
-      base::BindOnce(&TranslateController::OnRequestFetchComplete,
-                     base::Unretained(this), pair.first, *url,
-                     static_cast<int>(*request_id)));
-}
-
-void TranslateController::OnScriptFetchComplete(
-    std::unique_ptr<std::string> response_body) {
-  if (main_web_frame_ && response_body) {
-    main_web_frame_->ExecuteJavaScript(base::UTF8ToUTF16(*response_body));
-  }
-  script_fetcher_.reset();
-}
-
-void TranslateController::OnRequestFetchComplete(
-    std::set<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
-    std::string url,
-    int request_id,
-    std::unique_ptr<std::string> response_body) {
-  if (!main_web_frame_) {
-    return;
-  }
-
-  const std::unique_ptr<network::SimpleURLLoader>& url_loader = *it;
-
-  int response_code = 0;
-  std::string status_text;
-  const network::mojom::URLResponseHead* response_head =
-      url_loader->ResponseInfo();
-  int net_error_code = url_loader->NetError();
-
-  // |ResponseInfo()| may be a nullptr if response is incomplete.
-  if (net_error_code == net::Error::OK && response_head &&
-      response_head->headers) {
-    net::HttpResponseHeaders* headers = response_head->headers.get();
-    response_code = headers->response_code();
-    status_text = headers->GetStatusText();
-  } else {
-    response_code = net::HttpStatusCode::HTTP_BAD_REQUEST;
-  }
-
-  // Escape the returned string so it can be parsed by JSON.parse.
-  std::string response_text = response_body ? *response_body : "";
-  std::string escaped_response_text;
-  base::EscapeJSONString(response_text, /*put_in_quotes=*/false,
-                         &escaped_response_text);
-
-  std::string final_url = url_loader->GetFinalURL().spec();
-  js_manager_factory_->FromWebFrame(main_web_frame_)
-      ->HandleTranslateResponse(url, request_id, response_code, status_text,
-                                final_url, escaped_response_text);
-  request_fetchers_.erase(it);
-}
-
 #pragma mark - web::WebStateObserver implementation
 
 void TranslateController::WebStateDestroyed(web::WebState* web_state) {
@@ -307,18 +173,6 @@ void TranslateController::WebStateDestroyed(web::WebState* web_state) {
   }
   web_state_ = nullptr;
   main_web_frame_ = nullptr;
-
-  request_fetchers_.clear();
-  script_fetcher_.reset();
-}
-
-void TranslateController::DidStartNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  if (!navigation_context->IsSameDocument()) {
-    request_fetchers_.clear();
-    script_fetcher_.reset();
-  }
 }
 
 void TranslateController::WebStateRealized(web::WebState* web_state) {
@@ -333,7 +187,6 @@ void TranslateController::WebFrameBecameAvailable(
     web::WebFramesManager* web_frames_manager,
     web::WebFrame* web_frame) {
   if (web_frame->IsMainFrame()) {
-    js_manager_factory_->CreateForWebFrame(web_frame);
     main_web_frame_ = web_frame;
   }
 }

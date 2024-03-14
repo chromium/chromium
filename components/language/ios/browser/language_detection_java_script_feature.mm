@@ -32,10 +32,7 @@ LanguageDetectionJavaScriptFeature::GetInstance() {
 
 LanguageDetectionJavaScriptFeature::LanguageDetectionJavaScriptFeature()
     : web::JavaScriptFeature(
-          // TODO(crbug.com/1380918): Move language detection feature to
-          // kIsolatedWorld once WebFrameManager supports tracking frames in
-          // an isolated world.
-          web::ContentWorld::kPageContentWorld,
+          web::ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,

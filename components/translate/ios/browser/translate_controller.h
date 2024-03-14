@@ -19,13 +19,6 @@
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
-#include "services/network/public/cpp/simple_url_loader.h"
-
-class JSTranslateWebFrameManagerFactory;
-
-namespace web {
-class NavigationContext;
-}  // namespace web
 
 namespace translate {
 
@@ -73,14 +66,8 @@ class TranslateController : public web::WebFramesManager::Observer,
   // Called when a JavaScript command is received.
   void OnJavascriptCommandReceived(const base::Value::Dict& payload);
 
-  // Changes the JSTranslateWebFrameManagerFactory used by this
-  // TranslateController. Only used for testing.
-  void SetJsTranslateWebFrameManagerFactoryForTesting(
-      JSTranslateWebFrameManagerFactory* manager);
-
  private:
-  TranslateController(web::WebState* web_state,
-                      JSTranslateWebFrameManagerFactory* js_manager_factory);
+  TranslateController(web::WebState* web_state);
   friend class web::WebStateUserData<TranslateController>;
   WEB_STATE_USER_DATA_KEY_DECL();
 
@@ -106,22 +93,9 @@ class TranslateController : public web::WebFramesManager::Observer,
   // The command is ignored if `payload` format is unexpected.
   void OnTranslateReady(const base::Value::Dict& payload);
   void OnTranslateComplete(const base::Value::Dict& payload);
-  void OnTranslateLoadJavaScript(const base::Value::Dict& payload);
-  void OnTranslateSendRequest(const base::Value::Dict& payload);
-
-  // The callback when the script is fetched or a server error occurred.
-  void OnScriptFetchComplete(std::unique_ptr<std::string> response_body);
-  // The callback when translate requests have completed.
-  void OnRequestFetchComplete(
-      std::set<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
-      std::string url,
-      int request_id,
-      std::unique_ptr<std::string> response_body);
 
   // web::WebStateObserver implementation:
   void WebStateDestroyed(web::WebState* web_state) override;
-  void DidStartNavigation(web::WebState* web_state,
-                          web::NavigationContext* navigation_context) override;
   void WebStateRealized(web::WebState* web_state) override;
 
   // web::WebFramesManager implementation:
@@ -137,13 +111,7 @@ class TranslateController : public web::WebFramesManager::Observer,
   // The current main web frame of `web_state_`, if one exists.
   raw_ptr<web::WebFrame> main_web_frame_ = nullptr;
 
-  // Used to fetch translate requests. There may be multiple requests in flight.
-  std::set<std::unique_ptr<network::SimpleURLLoader>> request_fetchers_;
-  // Used to fetch additional scripts needed for translate.
-  std::unique_ptr<network::SimpleURLLoader> script_fetcher_;
-
   raw_ptr<Observer> observer_;
-  raw_ptr<JSTranslateWebFrameManagerFactory> js_manager_factory_;
   base::WeakPtrFactory<TranslateController> weak_method_factory_;
 };
 

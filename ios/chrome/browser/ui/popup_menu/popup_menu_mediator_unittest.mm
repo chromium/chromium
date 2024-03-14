@@ -164,7 +164,10 @@ class PopupMenuMediatorTest : public PlatformTest {
         /*security_origin=*/url);
     main_frame->set_browser_state(browser_state_.get());
     frames_manager->AddWebFrame(std::move(main_frame));
-    web_state_->SetWebFramesManager(std::move(frames_manager));
+    web::ContentWorld content_world =
+        language::LanguageDetectionJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_->SetWebFramesManager(content_world, std::move(frames_manager));
 
     browser_->GetWebStateList()->InsertWebState(
         std::move(test_web_state), WebStateList::InsertionParams::AtIndex(0));
@@ -238,7 +241,10 @@ class PopupMenuMediatorTest : public PlatformTest {
         /*security_origin=*/url);
     main_frame->set_browser_state(browser_state_.get());
     frames_manager->AddWebFrame(std::move(main_frame));
-    web_state->SetWebFramesManager(std::move(frames_manager));
+    web::ContentWorld content_world =
+        language::LanguageDetectionJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_->SetWebFramesManager(content_world, std::move(frames_manager));
 
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state), WebStateList::InsertionParams::AtIndex(index));

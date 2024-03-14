@@ -9,10 +9,6 @@ source_set("browser") {
   sources = [
     "ios_translate_driver.h",
     "ios_translate_driver.mm",
-    "js_translate_web_frame_manager.h",
-    "js_translate_web_frame_manager.mm",
-    "js_translate_web_frame_manager_factory.h",
-    "js_translate_web_frame_manager_factory.mm",
     "language_detection_model_service.h",
     "language_detection_model_service.mm",
     "translate_controller.h",
@@ -57,7 +53,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_translate_driver_unittest.mm",
-    "js_translate_web_frame_manager_unittest.mm",
     "translate_controller_unittest.mm",
   ]
 

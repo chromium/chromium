@@ -42,10 +42,6 @@
 // Returns the language code for the language determined from the webpage.
 + (NSString*)adoptedLanguage;
 
-// Sets up a fake translation manager for the current WebState. This translation
-// manager fakes the translation and does not depend on the real JavaScript.
-+ (void)setUpFakeJSTranslateManagerInCurrentTab;
-
 /// Whether user has set a preference to translate from `source` language to
 // `target` language.
 + (BOOL)shouldAutoTranslateFromLanguage:(NSString*)source
