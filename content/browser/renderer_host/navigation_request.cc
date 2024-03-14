@@ -2239,6 +2239,8 @@ NavigationRequest::~NavigationRequest() {
         }
       }
     }
+  } else {
+    GetDelegate()->DidCancelNavigationBeforeStart(this);
   }
 }
 

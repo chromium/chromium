@@ -15,7 +15,8 @@ namespace gesturenav {
 
 namespace {
 
-using NavType = content::BackForwardTransitionAnimationManager::NavigationType;
+using NavDirection =
+    content::BackForwardTransitionAnimationManager::NavigationDirection;
 
 void AssertHasWindowAndCompositor(content::WebContents* web_contents) {
   CHECK(web_contents);
@@ -47,7 +48,7 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
 
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureStarted(
       back_gesture, static_cast<ui::BackGestureEventSwipeEdge>(edge),
-      forward ? NavType::kForward : NavType::kBackward);
+      forward ? NavDirection::kForward : NavDirection::kBackward);
 }
 
 void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,

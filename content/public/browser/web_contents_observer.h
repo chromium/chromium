@@ -742,6 +742,10 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
 
   // Invoked when the beforeunload handler fires. |proceed| is set to true if
   // the beforeunload can safely proceed, otherwise it should be interrupted.
+  //
+  // Note: this is used to observe when the window/tab is being closed, or a
+  // GuestView is being attached to the current frame, and NOT used to observe
+  // the BeforeUnload events triggered by navigations.
   virtual void BeforeUnloadFired(bool proceed) {}
 
   // Invoked when a user cancels a before unload dialog.

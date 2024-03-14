@@ -29,6 +29,7 @@
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_frame_navigation_observer.h"
+#include "content/public/test/update_user_activation_state_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
@@ -36,6 +37,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -45,7 +47,7 @@ namespace content {
 namespace {
 
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
-using NavType = BackForwardTransitionAnimationManager::NavigationType;
+using NavType = BackForwardTransitionAnimationManager::NavigationDirection;
 
 // TODO(liuwilliam): 99 seconds seems aribturary. Pick a meaningful constant
 // instead.
@@ -218,7 +220,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
       WebContentsViewAndroid* web_contents_view_android,
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
-      BackForwardTransitionAnimationManager::NavigationType nav_type,
+      BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       int destination_entry_id,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
       : BackForwardTransitionAnimator(web_contents_view_android,
@@ -303,7 +305,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     pause_on_animate_at_state_ = State::kDisplayingInvokeAnimation;
   }
 
-  void UnpauseAnimation() { pause_on_animate_at_state_ = std::nullopt; }
+  void UnpauseAnimation() {
+    pause_on_animate_at_state_ = std::nullopt;
+    OnAnimate(base::TimeTicks{});
+  }
 
   void ExpectWaitingForNewFrame() {
     ExpectState(State::kWaitingForNewRendererToDraw);
@@ -315,6 +320,10 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
 
   void ExpectDisplayingCancelAnimation() {
     ExpectState(State::kDisplayingCancelAnimation);
+  }
+
+  void ExpectWaitingForBeforeUnloadResponse() {
+    ExpectState(State::kWaitingForBeforeUnloadResponse);
   }
 
   void SetFinishedStateToDisplayingInvokeAnimation() {
@@ -397,7 +406,7 @@ class FactoryForTesting : public BackForwardTransitionAnimator::Factory {
       WebContentsViewAndroid* web_contents_view_android,
       NavigationControllerImpl* controller,
       const ui::BackGestureEvent& gesture,
-      BackForwardTransitionAnimationManager::NavigationType nav_type,
+      BackForwardTransitionAnimationManager::NavigationDirection nav_type,
       int destination_entry_id,
       BackForwardTransitionAnimationManagerAndroid* animation_manager)
       override {
@@ -802,7 +811,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
     // Force the cancel animation to finish playing, by unpausing it and
     // calling OnAnimate on it.
     GetAnimatorForTesting()->UnpauseAnimation();
-    GetAnimatorForTesting()->OnAnimate(base::TimeTicks{});
     cancel_played.Run();
     ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   }
@@ -1361,6 +1369,415 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
   ASSERT_EQ(nav_controller.GetEntryCount(), 3);
   ASSERT_EQ(nav_controller.GetCurrentEntryIndex(), 0);
+}
+
+namespace {
+
+// Wait for the main frame to receive a UpdateUserActivationState from the
+// renderer with the expected new state.
+class BrowserUserActivationWaiter
+    : public UpdateUserActivationStateInterceptor {
+ public:
+  BrowserUserActivationWaiter(
+      RenderFrameHost* rfh,
+      blink::mojom::UserActivationNotificationType expected_type)
+      : UpdateUserActivationStateInterceptor(rfh),
+        expected_type_(expected_type) {}
+  ~BrowserUserActivationWaiter() override = default;
+
+  // Blocks until the renderer sends the expected user activation via
+  // `UpdateUserActivationState()`.
+  void Wait() { run_loop_.Run(); }
+
+  void UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType update_type,
+      blink::mojom::UserActivationNotificationType notification_type) override {
+    if (notification_type == expected_type_) {
+      run_loop_.Quit();
+    }
+    UpdateUserActivationStateInterceptor::UpdateUserActivationState(
+        update_type, notification_type);
+  }
+
+ private:
+  const blink::mojom::UserActivationNotificationType expected_type_;
+  base::RunLoop run_loop_;
+};
+
+// Inject a BeforeUnload handler into the main frame. Does NOT update the user
+// activation.
+void InjectBeforeUnloadForMainFrame(WebContentsImpl* web_contents,
+                                    EvalJsOptions option) {
+  static constexpr base::StringPiece kScript = R"(
+    window.onbeforeunload = (event) => {
+      // Recommended
+      event.preventDefault();
+
+      // Included for legacy support, e.g. Chrome/Edge < 119
+      event.returnValue = true;
+    };
+  )";
+  ASSERT_TRUE(ExecJs(web_contents, kScript, option));
+
+  auto* main_frame =
+      static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
+
+  if (option == EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE) {
+    ASSERT_TRUE(
+        main_frame->ShouldDispatchBeforeUnload(/*check_subframes_only=*/false));
+    ASSERT_FALSE(main_frame->HasStickyUserActivation());
+  } else {
+    // Set the sticky user activation and let the bit propagate from renderer to
+    // the browser.
+    BrowserUserActivationWaiter wait_for_expected_user_activation(
+        main_frame, blink::mojom::UserActivationNotificationType::kInteraction);
+    SimulateMouseClick(web_contents, 0,
+                       blink::WebPointerProperties::Button::kLeft);
+    wait_for_expected_user_activation.Wait();
+    ASSERT_TRUE(main_frame->ShouldDispatchBeforeUnload(
+        /*check_subframes_only=*/false));
+    ASSERT_TRUE(main_frame->HasStickyUserActivation());
+  }
+}
+
+// Intercept the BeforeUnload dialog. Used to block the execution until the
+// confirmation dialog shows up, and to interact with the dialog to either
+// cancel or start the navigation.
+class BeforeUnloadDialogObserver
+    : public blink::mojom::LocalFrameHostInterceptorForTesting {
+ public:
+  explicit BeforeUnloadDialogObserver(RenderFrameHostImpl* main_frame)
+      : main_frame_(main_frame), impl_(receiver().SwapImplForTesting(this)) {}
+  ~BeforeUnloadDialogObserver() override = default;
+
+  // `blink::mojom::LocalFrameHostInterceptorForTesting`:
+  LocalFrameHost* GetForwardingInterface() override { return impl_; }
+  void RunBeforeUnloadConfirm(
+      bool is_reload,
+      RunBeforeUnloadConfirmCallback callback) override {
+    CHECK(!is_reload);
+    ack_ = std::move(callback);
+    run_loop_.Quit();
+    // Reset immediately. `main_frame_` and `impl_` will be destroyed once
+    // `ack_` is executed with "proceed".
+    std::ignore = receiver().SwapImplForTesting(impl_);
+    main_frame_ = nullptr;
+    impl_ = nullptr;
+  }
+
+  void WaitForDialog() { run_loop_.Run(); }
+
+  void RespondToDialogue(bool proceed) { std::move(ack_).Run(proceed); }
+
+  [[nodiscard]] bool shown() const { return !main_frame_; }
+
+ private:
+  mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>& receiver() {
+    return main_frame_->local_frame_host_receiver_for_testing();
+  }
+
+  raw_ptr<RenderFrameHostImpl> main_frame_;
+  raw_ptr<blink::mojom::LocalFrameHost> impl_;
+  base::RunLoop run_loop_;
+  RunBeforeUnloadConfirmCallback ack_;
+};
+
+}  // namespace
+
+// Test the case where the renderer acks the BeforeUnload message without
+// showing a prompt.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       BeforeUnload_Proceed_NoPrompt) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  InjectBeforeUnloadForMainFrame(web_contents(),
+                                 EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  base::RunLoop did_finish_nav;
+  GetAnimatorForTesting()->set_did_finish_navigation_callback(
+      did_finish_nav.QuitClosure());
+  base::RunLoop invoke_played;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_played.QuitClosure());
+  bool cancel_displayed = false;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      base::BindLambdaForTesting([&]() { cancel_displayed = true; }));
+
+  BeforeUnloadDialogObserver dialog_observer(
+      web_contents()->GetPrimaryMainFrame());
+  TestFrameNavigationObserver back_to_red(web_contents());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  invoke_played.Run();
+  did_finish_nav.Run();
+  destroyed.Run();
+  back_to_red.Wait();
+  ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
+
+  ASSERT_FALSE(dialog_observer.shown());
+  ASSERT_FALSE(cancel_displayed);
+}
+
+// Test the case where the renderer shows a prompt for the BeforeUnload message,
+// and the user decides to proceed.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       BeforeUnload_Proceed_WithPrompt) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+  InjectBeforeUnloadForMainFrame(web_contents(),
+                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  base::RunLoop did_finish_nav;
+  GetAnimatorForTesting()->set_did_finish_navigation_callback(
+      did_finish_nav.QuitClosure());
+  base::RunLoop invoke_played;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      invoke_played.QuitClosure());
+  base::RunLoop cancel_displayed;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      cancel_displayed.QuitClosure());
+
+  BeforeUnloadDialogObserver dialog_observer(
+      web_contents()->GetPrimaryMainFrame());
+  TestFrameNavigationObserver back_to_red(web_contents());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  cancel_displayed.Run();
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectWaitingForBeforeUnloadResponse();
+  dialog_observer.RespondToDialogue(/*proceed=*/true);
+
+  invoke_played.Run();
+  did_finish_nav.Run();
+  destroyed.Run();
+  back_to_red.Wait();
+  ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
+
+  ASSERT_TRUE(dialog_observer.shown());
+}
+
+// Test the case where the user cancels the navigation via the prompt, after
+// the cancel animation finishes.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       BeforeUnload_Cancel_AfterCancelAnimationFinishes) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  InjectBeforeUnloadForMainFrame(web_contents(),
+                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  bool invoke_played = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_played = true; }));
+  base::RunLoop cancel_displayed;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      cancel_displayed.QuitClosure());
+
+  BeforeUnloadDialogObserver dialog_observer(
+      web_contents()->GetPrimaryMainFrame());
+  TestFrameNavigationObserver back_to_red(web_contents());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  cancel_displayed.Run();
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectWaitingForBeforeUnloadResponse();
+  dialog_observer.RespondToDialogue(/*proceed=*/false);
+
+  destroyed.Run();
+  ASSERT_FALSE(back_to_red.last_navigation_succeeded());
+
+  ASSERT_FALSE(invoke_played);
+  ASSERT_TRUE(dialog_observer.shown());
+}
+
+// Test the case where the user cancels the navigation via the prompt, before
+// the cancel animation finishes.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       BeforeUnload_Cancel_BeforeCancelAnimationFinishes) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  InjectBeforeUnloadForMainFrame(web_contents(),
+                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  bool invoke_played = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_played = true; }));
+  base::RunLoop cancel_displayed;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      cancel_displayed.QuitClosure());
+
+  BeforeUnloadDialogObserver dialog_observer(
+      web_contents()->GetPrimaryMainFrame());
+  TestFrameNavigationObserver back_to_red(web_contents());
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingCancelAnimation();
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectDisplayingCancelAnimation();
+  dialog_observer.RespondToDialogue(/*proceed=*/false);
+  GetAnimatorForTesting()->UnpauseAnimation();
+
+  cancel_displayed.Run();
+  destroyed.Run();
+  ASSERT_FALSE(back_to_red.last_navigation_succeeded());
+
+  ASSERT_FALSE(invoke_played);
+  ASSERT_TRUE(dialog_observer.shown());
+}
+
+// Test that when the user has decided not leave the current page by interacting
+// with the prompt and the cancel animation is still playing, another navigation
+// commits in the main frame. We should destroy the animator when the other
+// navigation commits.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       BeforeUnload_RequestCancelledBeforeStart) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  InjectBeforeUnloadForMainFrame(web_contents(),
+                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  bool invoke_played = false;
+  GetAnimatorForTesting()->set_on_invoke_animation_displayed(
+      base::BindLambdaForTesting([&]() { invoke_played = true; }));
+  bool cancel_finished_playing = false;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      base::BindLambdaForTesting([&]() { cancel_finished_playing = true; }));
+
+  BeforeUnloadDialogObserver dialog_observer(
+      web_contents()->GetPrimaryMainFrame());
+  TestFrameNavigationObserver back_to_red(web_contents());
+  GetAnimatorForTesting()->set_duration_between_frames(base::Microseconds(1));
+  GetAnimatorForTesting()->PauseAnimationAtDisplayingCancelAnimation();
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectDisplayingCancelAnimation();
+  // Expectation the animator will be destroyed while playin the cancel
+  // animation.
+  GetAnimatorForTesting()->SetFinishedStateToDisplayingCancelAnimation();
+  dialog_observer.RespondToDialogue(/*proceed=*/false);
+  GetAnimatorForTesting()->UnpauseAnimation();
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+  destroyed.Run();
+
+  ASSERT_FALSE(invoke_played);
+  ASSERT_FALSE(cancel_finished_playing);
+  ASSERT_TRUE(dialog_observer.shown());
+
+  ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 3);
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntryIndex(), 2);
+}
+
+namespace {
+class FailBeginNavigationImpl : public ContentBrowserTestContentBrowserClient {
+ public:
+  FailBeginNavigationImpl() = default;
+  ~FailBeginNavigationImpl() override = default;
+
+  // `ContentBrowserTestContentBrowserClient`:
+  bool ShouldOverrideUrlLoading(int frame_tree_node_id,
+                                bool browser_initiated,
+                                const GURL& gurl,
+                                const std::string& request_method,
+                                bool has_user_gesture,
+                                bool is_redirect,
+                                bool is_outermost_main_frame,
+                                ui::PageTransition transition,
+                                bool* ignore_navigation) final {
+    // See `NavigationRequest::BeginNavigationImpl()`.
+    *ignore_navigation = true;
+    return true;
+  }
+};
+}  // namespace
+
+// Test that the animator is behaving correctly, even after the renderer acks
+// the BeforeUnload message to proceed (begin) the navigation, but
+// `BeginNavigationImpl()` hits an early out so we never each
+// `DidStartNavigation()`.
+IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBrowserTest,
+                       BeforeUnload_BeginNavigationImplFails) {
+  FailBeginNavigationImpl fail_begin_navigation_client;
+
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  InjectBeforeUnloadForMainFrame(web_contents(),
+                                 EvalJsOptions::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
+
+  std::vector<GestureAndScreenChanged> expected;
+  expected.push_back({.gesture = GestureType::kStart});
+  expected.push_back({.gesture = GestureType::k60ViewportWidth});
+  HistoryBackNavAndAssertAnimatedTransition(expected);
+
+  base::RunLoop destroyed;
+  GetAnimatorForTesting()->set_on_impl_destroyed(destroyed.QuitClosure());
+  base::RunLoop cancel_displayed;
+  GetAnimatorForTesting()->set_on_cancel_animation_displayed(
+      cancel_displayed.QuitClosure());
+
+  BeforeUnloadDialogObserver dialog_observer(
+      web_contents()->GetPrimaryMainFrame());
+  GetAnimationManager(web_contents())->OnGestureInvoked();
+
+  cancel_displayed.Run();
+  dialog_observer.WaitForDialog();
+  GetAnimatorForTesting()->ExpectWaitingForBeforeUnloadResponse();
+  dialog_observer.RespondToDialogue(/*proceed=*/true);
+
+  destroyed.Run();
+  ASSERT_TRUE(dialog_observer.shown());
+
+  // Still on the green page.
+  ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntryIndex(), 1);
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            GreenURL());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

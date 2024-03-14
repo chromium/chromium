@@ -13,14 +13,17 @@ namespace content {
 
 namespace {
 
-using HistoryNavType = BackForwardTransitionAnimationManager::NavigationType;
+using NavigationDirection =
+    BackForwardTransitionAnimationManager::NavigationDirection;
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
 
-bool ShouldSkipDefaultNavTransitionForPendingUX(HistoryNavType nav_type,
-                                                SwipeEdge edge) {
+bool ShouldSkipDefaultNavTransitionForPendingUX(
+    NavigationDirection nav_direction,
+    SwipeEdge edge) {
   // Currently we only have approved UX for the history back navigation on the
   // left edge, in both gesture mode and 3-button mode.
-  if (nav_type == HistoryNavType::kBackward && edge == SwipeEdge::LEFT) {
+  if (nav_direction == NavigationDirection::kBackward &&
+      edge == SwipeEdge::LEFT) {
     return false;
   }
   return true;
@@ -62,9 +65,9 @@ BackForwardTransitionAnimationManagerAndroid::
 void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     const ui::BackGestureEvent& gesture,
     SwipeEdge edge,
-    HistoryNavType navigation_type) {
+    NavigationDirection navigation_direction) {
   std::optional<int> index =
-      navigation_type == HistoryNavType::kForward
+      navigation_direction == NavigationDirection::kForward
           ? navigation_controller_->GetIndexForGoForward()
           : navigation_controller_->GetIndexForGoBack();
   CHECK(index.has_value());
@@ -84,7 +87,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     animator_.reset();
   }
 
-  if (ShouldSkipDefaultNavTransitionForPendingUX(navigation_type, edge) ||
+  if (ShouldSkipDefaultNavTransitionForPendingUX(navigation_direction, edge) ||
       ShouldSkipDefaultNavTransition(
           web_contents_view_android_->GetNativeView()->GetPhysicalBackingSize(),
           destination_entry)) {
@@ -98,7 +101,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
   CHECK(animator_factory_);
   animator_ = animator_factory_->Create(
       web_contents_view_android_.get(), navigation_controller_.get(), gesture,
-      navigation_type, destination_entry->GetUniqueID(), this);
+      navigation_direction, destination_entry->GetUniqueID(), this);
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureProgressed(
@@ -134,6 +137,13 @@ void BackForwardTransitionAnimationManagerAndroid::
   if (animator_) {
     animator_->OnDidNavigatePrimaryMainFramePreCommit(navigation_request,
                                                       old_host, new_host);
+  }
+}
+
+void BackForwardTransitionAnimationManagerAndroid::
+    OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle) {
+  if (animator_) {
+    animator_->OnNavigationCancelledBeforeStart(navigation_handle);
   }
 }
 

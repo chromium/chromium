@@ -45,7 +45,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // `NavigationTransitionAnimationManager`:
   void OnGestureStarted(const ui::BackGestureEvent& gesture,
                         ui::BackGestureEventSwipeEdge edge,
-                        NavigationType navigation_type) override;
+                        NavigationDirection navigation_direction) override;
   void OnGestureProgressed(const ui::BackGestureEvent& gesture) override;
   void OnGestureCancelled() override;
   void OnGestureInvoked() override;
@@ -73,6 +73,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
       const NavigationRequest& navigation_request,
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);
+
+  // Notified when a unstarted navigation request is destroyed.
+  void OnNavigationCancelledBeforeStart(NavigationHandle* navigation_handle);
 
   // `animator_` invokes this callback to destroy itself, when all the animation
   // has finished in the browser UI. Also use this to abort processing the

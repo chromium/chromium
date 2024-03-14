@@ -212,8 +212,9 @@ TEST_F(PhysicsModelUnittest, ProgressInvoke_LiftBeforeCommitStop) {
 
   // This simulates a busy browser UI thread where `PhysicsModel::OnAnimate()`
   // isn't even called once after the user lifts the finger.
-  physics_model()->OnGestureDone(/*commit=*/true);
-  physics_model()->OnDidFinishNavigation(/*navigation_committed=*/true);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureInvoked);
+  physics_model()->OnNavigationFinished(/*navigation_committed=*/true);
 
   for (const auto& invoke : config.invoke) {
     PhysicsModel::Result r = physics_model()->OnAnimate(invoke.timestamp);
@@ -263,8 +264,9 @@ TEST_F(PhysicsModelUnittest, ProgressInvoke_LiftAfterCommitStop) {
     EXPECT_EQ(r, gesture_progress.expected);
   }
 
-  physics_model()->OnGestureDone(/*commit=*/true);
-  physics_model()->OnDidFinishNavigation(/*navigation_committed=*/true);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureInvoked);
+  physics_model()->OnNavigationFinished(/*navigation_committed=*/true);
 
   for (const auto& invoke : config.invoke) {
     PhysicsModel::Result r = physics_model()->OnAnimate(invoke.timestamp);
@@ -357,14 +359,15 @@ TEST_F(PhysicsModelUnittest, ProgressCommitStopInvoke_LiftBeforeCommitStop) {
     EXPECT_EQ(r, gesture_progress.expected);
   }
 
-  physics_model()->OnGestureDone(/*commit=*/true);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureInvoked);
 
   for (const auto& commit_stop : config.commit_stop) {
     PhysicsModel::Result r = physics_model()->OnAnimate(commit_stop.timestamp);
     EXPECT_EQ(r, commit_stop.expected);
   }
 
-  physics_model()->OnDidFinishNavigation(/*navigation_committed=*/true);
+  physics_model()->OnNavigationFinished(/*navigation_committed=*/true);
 
   for (const auto& invoke : config.invoke) {
     PhysicsModel::Result r = physics_model()->OnAnimate(invoke.timestamp);
@@ -458,14 +461,15 @@ TEST_F(PhysicsModelUnittest, ProgressCommitStopInvoke_LiftAfterCommitStop) {
     EXPECT_EQ(r, gesture_progress.expected);
   }
 
-  physics_model()->OnGestureDone(/*commit=*/true);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureInvoked);
 
   for (const auto& commit_stop : config.commit_stop) {
     PhysicsModel::Result r = physics_model()->OnAnimate(commit_stop.timestamp);
     EXPECT_EQ(r, commit_stop.expected);
   }
 
-  physics_model()->OnDidFinishNavigation(/*navigation_committed=*/true);
+  physics_model()->OnNavigationFinished(/*navigation_committed=*/true);
 
   for (const auto& invoke : config.invoke) {
     PhysicsModel::Result r = physics_model()->OnAnimate(invoke.timestamp);
@@ -513,7 +517,8 @@ TEST_F(PhysicsModelUnittest, ProgressCancel_LiftBeforeCommitStop) {
     EXPECT_EQ(r, gesture_progress.expected);
   }
 
-  physics_model()->OnGestureDone(/*commit=*/false);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureCancelled);
 
   for (const auto& cancel : config.cancel) {
     PhysicsModel::Result r = physics_model()->OnAnimate(cancel.timestamp);
@@ -561,7 +566,8 @@ TEST_F(PhysicsModelUnittest, ProgressCancel_LiftAfterCommitStop) {
     EXPECT_EQ(r, gesture_progress.expected);
   }
 
-  physics_model()->OnGestureDone(/*commit=*/false);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureCancelled);
 
   for (const auto& cancel : config.cancel) {
     PhysicsModel::Result r = physics_model()->OnAnimate(cancel.timestamp);
@@ -615,8 +621,9 @@ TEST_F(PhysicsModelUnittest, ProgressAndCancelNav) {
     EXPECT_EQ(r, gesture_progress.expected);
   }
 
-  physics_model()->OnGestureDone(/*commit=*/true);
-  physics_model()->OnDidFinishNavigation(/*navigation_committed=*/false);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureInvoked);
+  physics_model()->OnNavigationFinished(/*navigation_committed=*/false);
 
   for (const auto& cancel : config.cancel) {
     PhysicsModel::Result r = physics_model()->OnAnimate(cancel.timestamp);
@@ -688,14 +695,15 @@ TEST_F(PhysicsModelUnittest, ProgressCommitPendingAndCancelNav) {
     EXPECT_EQ(r, gesture_progress.expected);
   }
 
-  physics_model()->OnGestureDone(/*commit=*/true);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureInvoked);
 
   for (const auto& commit_stop : config.commit_stop) {
     PhysicsModel::Result r = physics_model()->OnAnimate(commit_stop.timestamp);
     EXPECT_EQ(r, commit_stop.expected);
   }
 
-  physics_model()->OnDidFinishNavigation(/*navigation_committed=*/false);
+  physics_model()->OnNavigationFinished(/*navigation_committed=*/false);
 
   for (const auto& cancel : config.cancel) {
     PhysicsModel::Result r = physics_model()->OnAnimate(cancel.timestamp);
@@ -720,7 +728,8 @@ TEST_F(PhysicsModelUnittest, CommitPendingSpringOvershootLeftEdge) {
   // spring. The spring will have initial position at the left edge, and with
   // the initial velocity towards the left. Without the clampping, the spring
   // will keep moving to the left, which is incorrect.
-  physics_model()->OnGestureDone(/*commit=*/true);
+  physics_model()->SwitchSpringForReason(
+      PhysicsModel::SwitchSpringReason::kGestureInvoked);
   PhysicsModel::Result first_frame =
       physics_model()->OnAnimate(NextTimeTickAfter(base::Milliseconds(100)));
   EXPECT_GE(first_frame.foreground_offset_physical, 0.f);

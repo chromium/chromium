@@ -344,39 +344,121 @@ PhysicsModel::Result PhysicsModel::OnGestureProgressed(
   };
 }
 
-void PhysicsModel::OnGestureDone(bool commit) {
-  // The user has lifted the finger. The previous animations must be driven by
-  // the finger drag curve.
-  CHECK_EQ(animation_driver_, Driver::kDragCurve);
-  // We don't store the dummy timeticks for finger drag curve.
-  CHECK(last_request_animation_frame_.is_null());
-  // The navigation just started by the caller in the same atomic callstack. The
-  // navigation hasn't committed or been cancelled yet.
-  CHECK_EQ(navigation_state_, NavigationTerminalState::kNotSet);
+void PhysicsModel::SwitchSpringForReason(SwitchSpringReason reason) {
+  switch (reason) {
+    case kGestureCancelled:
+    case kGestureInvoked: {
+      // The user has lifted the finger. The previous animations must be driven
+      // by the finger drag curve.
+      CHECK_EQ(animation_driver_, Driver::kDragCurve);
+      // We don't store the fitted timeticks for finger drag curve.
+      CHECK(last_request_animation_frame_.is_null());
+      // The navigation just started by the caller in the same atomic callstack
+      // if the user decides to start the navigation. The navigation hasn't
+      // committed or been cancelled yet.
+      CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
 
-  display_cancel_animation_ = !commit;
+      if (reason == kGestureCancelled) {
+        navigation_state_ = NavigationState::kNeverStarted;
+      }
+      if (reason == kGestureInvoked) {
+        navigation_state_ = NavigationState::kStarted;
+      }
+      // Next `OnAnimate()` call will switch to `kSpringCancel` or
+      // `kSpringCommitPending`.
+      break;
+    }
+    case kBeforeUnloadDispatched: {
+      // The browser sends the BeforeUnload message to the renderer right after
+      // the user lifts the finger, signalling the start of a navigation. The
+      // previous animations must be driven by the finger drag curve.
+      CHECK_EQ(animation_driver_, Driver::kDragCurve);
+      // We don't store the fitted timeticks for finger drag curve.
+      CHECK(last_request_animation_frame_.is_null());
+      // Shouldn't have a terminal state because the navigation hasn't even
+      // started.
+      CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
 
-  // We will switch to `OnAnimate()`, where we drive the animation one of the
-  // spring models.
+      // On next `OnAnimate()`, `animation_driver_` will switch to
+      // `kSpringCancel`.
+      navigation_state_ = NavigationState::kBeforeUnloadDispatched;
+      break;
+    }
+    case kBeforeUnloadAckProceed: {
+      // `kBeforeUnloadDispatched` sets the `animation_driver_` to
+      // `Driver::kSpringCancel`. However, if the renderer acks to BeforeUnload
+      // instantly, we might still be at `Driver::kDragCurve`.
+      CHECK(animation_driver_ == Driver::kSpringCancel ||
+            UNLIKELY(animation_driver_ == Driver::kDragCurve));
+      CHECK_EQ(navigation_state_, NavigationState::kBeforeUnloadDispatched);
+      navigation_state_ = NavigationState::kBeforeUnloadAckedProceed;
+      // On next `OnAnimate()`, `animation_driver_` will switch to
+      // `kSpringCommitPending`.
+      break;
+    }
+  }
 }
 
-void PhysicsModel::OnDidFinishNavigation(bool committed) {
-  // Can only be called once.
-  CHECK_EQ(navigation_state_, NavigationTerminalState::kNotSet);
-  // Only allowed to call this API for commit-pending state. This is because the
-  // navigation only starts after the user lifts the finger
-  // (Driver::kDragCurve) and the physics model won't switch to any other driver
-  // until this API is called.
-  //
-  // The navigation can also be fast enough for the commit-pending to not play
-  // even a single frame (i.e., OnAnimate() not even called once by the OS,
-  // after the user lifts the finger, so that PhysicsModel never gets to
-  // advance from kDragCurve to kSpringCommitPending).
-  CHECK(animation_driver_ == Driver::kSpringCommitPending ||
-        animation_driver_ == Driver::kDragCurve);
+void PhysicsModel::OnNavigationFinished(bool committed) {
+  switch (navigation_state_) {
+    case NavigationState::kStarted: {
+      // For a gesture navigation that doesn't have a BeforeUnload handler.
+      //
+      // Only allowed to reach here from the commit-pending state. This is
+      // because the navigation only starts after the user lifts the finger
+      // (Driver::kDragCurve) and the physics model won't switch to any other
+      // driver until this API is called.
+      //
+      // The navigation can also be fast enough for the commit-pending to not
+      // play even a single frame (i.e., OnAnimate() not even called once by the
+      // OS after the user lifts the finger, so that PhysicsModel never gets to
+      // advance from kDragCurve to kSpringCommitPending).
+      CHECK(animation_driver_ == Driver::kSpringCommitPending ||
+            UNLIKELY(animation_driver_ == Driver::kDragCurve));
+      break;
+    }
+    case NavigationState::kBeforeUnloadAckedProceed: {
+      // For a gesture navigation that navigates away from a page with a
+      // BeforeUnload handler. When the navigation finishes, the previous frames
+      // must be driven by `kSpringCommitPending`, because the renderer's ack
+      // will advance the physics model from `kSpringCancel` to
+      // `kSpringCommitPending`.
+      //
+      // In the rare cases where `OnAnimate()` was never called, the physics
+      // model is then still in `kSpringCancel` (i.e. if the renderer acks
+      // before kSpringCommitPending produces a single frame), or even
+      // `kDragCurve`.
+      CHECK(animation_driver_ == Driver::kSpringCommitPending ||
+            UNLIKELY(animation_driver_ == Driver::kSpringCancel) ||
+            UNLIKELY(animation_driver_ == Driver::kDragCurve));
+      break;
+    }
+    case NavigationState::kNotStarted:
+    case NavigationState::kNeverStarted: {
+      // A navigation needs to start first.
+      NOTREACHED();
+      break;
+    }
+    case NavigationState::kBeforeUnloadDispatched: {
+      // Not reachable because the browser is waiting for the ack from the
+      // renderer.
+      NOTREACHED();
+      break;
+    }
+    case NavigationState::kCancelled: {
+      // A cancelled navigation should never commit.
+      NOTREACHED();
+      break;
+    }
+    case NavigationState::kCommitted: {
+      // A navigation can only commit (finish) once.
+      NOTREACHED();
+      break;
+    }
+  }
 
-  navigation_state_ = committed ? NavigationTerminalState::kCommitted
-                                : NavigationTerminalState::kCancelled;
+  navigation_state_ =
+      committed ? NavigationState::kCommitted : NavigationState::kCancelled;
 }
 
 void PhysicsModel::StartAnimating(base::TimeTicks time) {
@@ -433,7 +515,7 @@ float PhysicsModel::CalculateVelocity() {
 void PhysicsModel::RecordCommitPendingAccelerationStartIfNeeded(
     base::TimeTicks request_animation_frame) {
   if (animation_driver_ == Driver::kSpringCommitPending &&
-      navigation_state_ == NavigationTerminalState::kCommitted) {
+      navigation_state_ == NavigationState::kCommitted) {
     float vel = spring_commit_pending_->ComputeVelocity();
     if (IsValidVelocity(vel) && vel > kFloatTolerance) {
       // If the navigation is committed and `spring_commit_pending_` is moving
@@ -461,18 +543,27 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
       CHECK(last_request_animation_frame_.is_null());
       StartAnimating(request_animation_frame);
       float finger_vel = CalculateVelocity();
-      if (display_cancel_animation_ ||
-          navigation_state_ == NavigationTerminalState::kCancelled) {
+      if (navigation_state_ == NavigationState::kNeverStarted ||
+          navigation_state_ == NavigationState::kCancelled ||
+          navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
         animation_driver_ = Driver::kSpringCancel;
         // TODO(https://crbug.com/1504838): Least square can interpolate the
         // velocity in the wrong direction if the user swipes to the invoke
         // direction in the "cancel region" of the screen. For now, just use a
         // constant velocity.
         spring_cancel_->set_initial_velocity(1.f);
-      } else if (navigation_state_ == NavigationTerminalState::kCommitted) {
+      } else if (navigation_state_ == NavigationState::kCommitted) {
         animation_driver_ = Driver::kSpringInvoke;
         spring_invoke_->set_initial_velocity(finger_vel);
       } else {
+        CHECK(navigation_state_ == NavigationState::kStarted ||
+              // This can happen when the renderer sends the BeforeUnload ack
+              // back to the browser so fast, that the cancel spring hasn't
+              // played a single frame thus we are still at
+              //`Driver::kDragCurve`. Typically this happens when the renderer
+              // doesn't have a sticky UserActivation.
+              UNLIKELY(navigation_state_ ==
+                       NavigationState::kBeforeUnloadAckedProceed));
         animation_driver_ = Driver::kSpringCommitPending;
         spring_commit_pending_->set_initial_velocity(finger_vel);
       }
@@ -485,7 +576,7 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
                                      ? last_request_animation_frame_
                                      : request_animation_frame;
       if (commit_pending_acceleration_start_.is_null() &&
-          navigation_state_ == NavigationTerminalState::kCommitted) {
+          navigation_state_ == NavigationState::kCommitted) {
         // Only switch from commit-pending spring to the invoke spring when:
         // - The commit-pending is moving in the same direction as the invoke
         //   animation, for which `commit_pending_acceleration_start_` is null.
@@ -494,7 +585,7 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
         animation_driver_ = Driver::kSpringInvoke;
         spring_invoke_->set_initial_velocity(
             spring_commit_pending_->ComputeVelocity());
-      } else if (navigation_state_ == NavigationTerminalState::kCancelled) {
+      } else if (navigation_state_ == NavigationState::kCancelled) {
         StartAnimating(start_animating_raf);
         animation_driver_ = Driver::kSpringCancel;
         // TODO(https://crbug.com/1504838): Ditto.
@@ -507,16 +598,50 @@ void PhysicsModel::AdvanceToNextAnimationDriver(
         //   (`OnDidFinishNavigation()` not yet called).
         const bool commit_pending_being_accelerated =
             (!last_request_animation_frame_.is_null() &&
-             navigation_state_ == NavigationTerminalState::kCommitted);
-        const bool nav_not_finish =
-            navigation_state_ == NavigationTerminalState::kNotSet;
-        CHECK(commit_pending_being_accelerated || nav_not_finish);
+             navigation_state_ == NavigationState::kCommitted);
+        const bool nav_on_going =
+            navigation_state_ == NavigationState::kStarted ||
+            navigation_state_ == NavigationState::kBeforeUnloadAckedProceed;
+        CHECK(commit_pending_being_accelerated || nav_on_going);
+      }
+      break;
+    }
+    case Driver::kSpringCancel: {
+      // The commit-pending or invoke spring must have the opposite velocity
+      // from the cancel spring.
+      float next_spring_initial_vel = -1.f * spring_cancel_->ComputeVelocity();
+      // Make sure the next spring's initial velocity is at least 1, towards the
+      // right edge (e.g., -1.5, -2.0 etc).
+      next_spring_initial_vel = std::min(next_spring_initial_vel, -1.f);
+
+      if (navigation_state_ == NavigationState::kBeforeUnloadAckedProceed) {
+        // We only switch away from `kSpringCancel` when the renderer has acked
+        // the BeforeUnload message and navigation should proceed. When the
+        // BeforeUnload message is dispatched to the renderer, `kSpringCancel`
+        // drives the animation. When the renderer acks to proceed the
+        // navigation, we switch from `kSpringCancel` to `kSpringCommitPending`.
+
+        // It's visually incorrect to use `last_request_animation_frame_` here.
+        // Say the last frame is animated by `kSpringCancel` at time T and the
+        // user interacts with the BeforeUnload prompt at T+10s to begin the
+        // navigation. It's incorrect to tell `kSpringCommitPending` to animate
+        // the first frame as if it has been 10 seconds since the last frame.
+        StartAnimating(request_animation_frame);
+        animation_driver_ = Driver::kSpringCommitPending;
+        spring_commit_pending_->set_initial_velocity(next_spring_initial_vel);
+      } else if (UNLIKELY(navigation_state_ == NavigationState::kCommitted)) {
+        // Also rare but possible (e.g., in tests) for the navigation to commit
+        // so fast that the commit-pending spring hasn't played a single frame,
+        // after BeforeUnload is executed with "proceed". Directly switch to the
+        // invoke spring in this case.
+        StartAnimating(request_animation_frame);
+        animation_driver_ = Driver::kSpringInvoke;
+        spring_invoke_->set_initial_velocity(next_spring_initial_vel);
       }
       break;
     }
     // Shouldn't switch from the terminal states.
     case Driver::kSpringInvoke:
-    case Driver::kSpringCancel:
       return;
   }
 
@@ -541,7 +666,7 @@ base::TimeDelta PhysicsModel::CalculateRequestAnimationFrameSinceStart(
 
   // Accelerate the commit-pending animation if necessary.
   if (!commit_pending_acceleration_start_.is_null()) {
-    CHECK_EQ(navigation_state_, NavigationTerminalState::kCommitted);
+    CHECK_EQ(navigation_state_, NavigationState::kCommitted);
     CHECK_EQ(animation_driver_, Driver::kSpringCommitPending);
     // Add a delta to all the left-moving frames. This is to "speed up" the
     // spring animation, so it can start to move to the right sooner, to display
