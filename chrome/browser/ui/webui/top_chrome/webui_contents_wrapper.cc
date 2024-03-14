@@ -16,15 +16,16 @@
 
 namespace {
 
+using MakeContentsResult = WebUIContentsPreloadManager::MakeContentsResult;
+
 bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
   return event.GetType() ==
              content::NativeWebKeyboardEvent::Type::kRawKeyDown &&
          event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
-std::unique_ptr<content::WebContents> MakeContents(
-    const GURL& webui_url,
-    content::BrowserContext* browser_context) {
+MakeContentsResult MakeContents(const GURL& webui_url,
+                                content::BrowserContext* browser_context) {
   // Currently we will always use the preload manager because it is always
   // available, but we make a fallback just in case this assumption no longer
   // holds.
@@ -37,7 +38,11 @@ std::unique_ptr<content::WebContents> MakeContents(
   create_params.initially_hidden = true;
   create_params.site_instance =
       content::SiteInstance::CreateForURL(browser_context, webui_url);
-  return content::WebContents::Create(create_params);
+
+  MakeContentsResult result;
+  result.web_contents = content::WebContents::Create(create_params),
+  result.is_ready_to_show = false;
+  return result;
 }
 
 }  // namespace
@@ -68,9 +73,11 @@ WebUIContentsWrapper::WebUIContentsWrapper(
     bool webui_resizes_host,
     bool esc_closes_ui,
     const std::string& webui_name)
-    : webui_resizes_host_(webui_resizes_host),
-      esc_closes_ui_(esc_closes_ui),
-      web_contents_(MakeContents(webui_url, browser_context)) {
+    : webui_resizes_host_(webui_resizes_host), esc_closes_ui_(esc_closes_ui) {
+  MakeContentsResult make_contents_result =
+      MakeContents(webui_url, browser_context);
+  web_contents_ = std::move(make_contents_result.web_contents);
+
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
 

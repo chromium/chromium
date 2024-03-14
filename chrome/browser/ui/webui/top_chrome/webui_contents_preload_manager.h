@@ -29,6 +29,21 @@ class WebUIContentsPreloadManager {
     kPreloadOnMakeContents = 1,
   };
 
+  struct MakeContentsResult {
+    MakeContentsResult();
+    MakeContentsResult(MakeContentsResult&&);
+    MakeContentsResult& operator=(MakeContentsResult&&);
+    MakeContentsResult(const MakeContentsResult&) = delete;
+    MakeContentsResult& operator=(const MakeContentsResult&) = delete;
+    ~MakeContentsResult();
+
+    std::unique_ptr<content::WebContents> web_contents;
+    // True if `web_contents` is ready to be shown on screen. This boolean only
+    // reflects the state when this struct is constructed. The `web_contents`
+    // will cease to be ready to show, for example, if it reloads.
+    bool is_ready_to_show;
+  };
+
   WebUIContentsPreloadManager();
   ~WebUIContentsPreloadManager();
 
@@ -50,9 +65,8 @@ class WebUIContentsPreloadManager {
   // Reuses the preloaded contents if it is under the same `browser_context`.
   // A new preloaded contents will be created, unless we are under heavy
   // memory pressure.
-  std::unique_ptr<content::WebContents> MakeContents(
-      const GURL& webui_url,
-      content::BrowserContext* browser_context);
+  MakeContentsResult MakeContents(const GURL& webui_url,
+                                  content::BrowserContext* browser_context);
 
   content::WebContents* preloaded_web_contents() {
     return preloaded_web_contents_.get();
@@ -68,6 +82,7 @@ class WebUIContentsPreloadManager {
       content::BrowserContext* browser_context);
 
  private:
+  class WebUIControllerEmbedderStub;
   static const char* const kPreloadedWebUIURL;
 
   // Preload a WebContents for `browser_context`.
@@ -101,6 +116,8 @@ class WebUIContentsPreloadManager {
   bool is_navigation_disabled_for_test_ = false;
 
   std::unique_ptr<content::WebContents> preloaded_web_contents_;
+  // A stub WebUI page embdeder that captures the ready-to-show signal.
+  std::unique_ptr<WebUIControllerEmbedderStub> webui_controller_embedder_stub_;
 
   base::CallbackListSubscription browser_context_shutdown_subscription_;
 };

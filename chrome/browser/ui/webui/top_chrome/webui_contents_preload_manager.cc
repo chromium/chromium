@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
@@ -15,6 +16,8 @@
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/navigation_controller.h"
+#include "ui/base/models/menu_model.h"
+#include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace {
 
@@ -55,6 +58,20 @@ content::WebContents::CreateParams GetWebContentsCreateParams(
   return create_params;
 }
 
+content::WebUIController* GetWebUIController(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  content::WebUI* webui = web_contents->GetWebUI();
+  if (!webui) {
+    return nullptr;
+  }
+
+  return webui->GetController();
+}
+
 }  // namespace
 
 // Currently we preloads Tab Search. In practice, this also benefits other
@@ -63,9 +80,77 @@ content::WebContents::CreateParams GetWebContentsCreateParams(
 const char* const WebUIContentsPreloadManager::kPreloadedWebUIURL =
     chrome::kChromeUITabSearchURL;
 
+// A stub WebUI page embdeder that captures the ready-to-show signal.
+class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
+    : public ui::MojoBubbleWebUIController::Embedder {
+ public:
+  WebUIControllerEmbedderStub() = default;
+  ~WebUIControllerEmbedderStub() = default;
+
+  // ui::MojoBubbleWebUIController::Embedder:
+  void CloseUI() override {}
+  void ShowContextMenu(gfx::Point point,
+                       std::unique_ptr<ui::MenuModel> menu_model) override {}
+  void HideContextMenu() override {}
+  void ShowUI() override { is_ready_to_show_ = true; }
+
+  // Attach this stub as the embedder of `web_contents`, assuming that the
+  // contents is not yet ready to be shown.
+  void AttachTo(content::WebContents* web_contents) {
+    CHECK_NE(web_contents, nullptr);
+    content::WebUIController* webui_controller =
+        GetWebUIController(web_contents);
+    if (!webui_controller) {
+      return;
+    }
+    // TODO(40168622): Add type check. This is currently not possible because a
+    // WebUIController subclass does not retain its parent class' type info.
+    auto* bubble_controller =
+        static_cast<ui::MojoBubbleWebUIController*>(webui_controller);
+    bubble_controller->set_embedder(this->GetWeakPtr());
+    web_contents_ = web_contents;
+    is_ready_to_show_ = false;
+  }
+
+  // Detach from the previously attached `web_contents`, returns true if the
+  // contents is ready to be shown.
+  bool Detach() {
+    content::WebUIController* webui_controller =
+        GetWebUIController(web_contents_);
+    if (!webui_controller) {
+      return false;
+    }
+
+    auto* bubble_controller =
+        static_cast<ui::MojoBubbleWebUIController*>(webui_controller);
+    bubble_controller->set_embedder(nullptr);
+    web_contents_ = nullptr;
+
+    return is_ready_to_show_;
+  }
+
+  base::WeakPtr<WebUIControllerEmbedderStub> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  bool is_ready_to_show_ = false;
+  base::WeakPtrFactory<WebUIControllerEmbedderStub> weak_ptr_factory_{this};
+};
+
+using MakeContentsResult = WebUIContentsPreloadManager::MakeContentsResult;
+
+MakeContentsResult::MakeContentsResult() = default;
+MakeContentsResult::~MakeContentsResult() = default;
+MakeContentsResult& MakeContentsResult::operator=(MakeContentsResult&&) =
+    default;
+
 WebUIContentsPreloadManager::WebUIContentsPreloadManager()
-    : preload_mode_(static_cast<PreloadMode>(
-          features::kPreloadTopChromeWebUIMode.Get())) {}
+    : preload_mode_(
+          static_cast<PreloadMode>(features::kPreloadTopChromeWebUIMode.Get())),
+      webui_controller_embedder_stub_(
+          std::make_unique<WebUIControllerEmbedderStub>()) {}
 
 WebUIContentsPreloadManager::~WebUIContentsPreloadManager() = default;
 
@@ -108,10 +193,11 @@ void WebUIContentsPreloadManager::PreloadForBrowserContext(
   ObserveBrowserContextShutdown();
 }
 
-std::unique_ptr<content::WebContents> WebUIContentsPreloadManager::MakeContents(
+MakeContentsResult WebUIContentsPreloadManager::MakeContents(
     const GURL& webui_url,
     content::BrowserContext* browser_context) {
   std::unique_ptr<content::WebContents> web_contents_ret;
+  bool is_ready_to_show = false;
   // Use preloaded contents if requested the same WebUI under the same browser
   // context. Navigating to or from a blank page is also allowed.
   // TODO(325836830): allow navigations between WebUIs.
@@ -125,19 +211,26 @@ std::unique_ptr<content::WebContents> WebUIContentsPreloadManager::MakeContents(
       LoadURLForContents(preloaded_web_contents_.get(), webui_url);
     }
     web_contents_ret = std::move(preloaded_web_contents_);
+    is_ready_to_show = webui_controller_embedder_stub_->Detach();
     StopObserveBrowserContextShutdown();
   } else {
     web_contents_ret = CreateNewContents(browser_context, webui_url);
+    is_ready_to_show = false;
   }
 
   if (ShouldPreloadForBrowserContext(browser_context)) {
     // Preloads a new contents.
     preloaded_web_contents_ = CreateNewContents(browser_context);
+    webui_controller_embedder_stub_->AttachTo(preloaded_web_contents_.get());
     ObserveBrowserContextShutdown();
   }
 
   task_manager::WebContentsTags::ClearTag(web_contents_ret.get());
-  return web_contents_ret;
+
+  MakeContentsResult result;
+  result.web_contents = std::move(web_contents_ret);
+  result.is_ready_to_show = is_ready_to_show;
+  return result;
 }
 
 GURL WebUIContentsPreloadManager::GetPreloadedURLForTesting() const {
@@ -227,6 +320,7 @@ void WebUIContentsPreloadManager::OnBrowserContextShutdown(
     return;
   }
 
+  webui_controller_embedder_stub_->Detach();
   CHECK_EQ(preloaded_web_contents_->GetBrowserContext(), browser_context);
   preloaded_web_contents_.reset();
 }
