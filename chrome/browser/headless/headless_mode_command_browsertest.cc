@@ -376,14 +376,8 @@ class HeadlessModeScreenshotCommandBrowserTest
   base::FilePath screenshot_filename_;
 };
 
-// Disabled on Mac due to flakes; see https://crbug.com/328954152.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_HeadlessScreenshot DISABLED_HeadlessScreenshot
-#else
-#define MAYBE_HeadlessScreenshot HeadlessScreenshot
-#endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
-                       MAYBE_HeadlessScreenshot) {
+                       HeadlessScreenshot) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -414,15 +408,8 @@ class HeadlessModeScreenshotCommandWithWindowSizeBrowserTest
   }
 };
 
-// Disabled on Mac due to flakes; see https://crbug.com/328954152.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_HeadlessScreenshotWithWindowSize \
-  DISABLED_HeadlessScreenshotWithWindowSize
-#else
-#define MAYBE_HeadlessScreenshotWithWindowSize HeadlessScreenshotWithWindowSize
-#endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithWindowSizeBrowserTest,
-                       MAYBE_HeadlessScreenshotWithWindowSize) {
+                       HeadlessScreenshotWithWindowSize) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -456,9 +443,8 @@ class HeadlessModeScreenshotCommandWithBackgroundBrowserTest
   }
 };
 
-// TODO: crbug.com/329138763 - The test is flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithBackgroundBrowserTest,
-                       DISABLED_HeadlessScreenshotWithBackground) {
+                       HeadlessScreenshotWithBackground) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 

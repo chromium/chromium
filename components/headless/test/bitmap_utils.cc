@@ -4,12 +4,40 @@
 
 #include "components/headless/test/bitmap_utils.h"
 
+#include <cstdlib>
+
 #include "base/logging.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace headless {
+
+namespace {
+
+constexpr int kColorChannelTolerance = 2;
+
+bool IsDifferentColorChannel(U8CPU channel, U8CPU base_channel) {
+  if (channel == base_channel) {
+    return false;
+  }
+
+  int diff = static_cast<int>(channel) - static_cast<int>(base_channel);
+  return std::abs(diff) > kColorChannelTolerance;
+}
+
+bool IsDifferentColor(SkColor color, SkColor base_color) {
+  if (color == base_color) {
+    return false;
+  }
+
+  return IsDifferentColorChannel(SkColorGetA(base_color), SkColorGetA(color)) ||
+         IsDifferentColorChannel(SkColorGetR(base_color), SkColorGetR(color)) ||
+         IsDifferentColorChannel(SkColorGetG(base_color), SkColorGetG(color)) ||
+         IsDifferentColorChannel(SkColorGetB(base_color), SkColorGetB(color));
+}
+
+}  // namespace
 
 bool CheckColoredRect(const SkBitmap& bitmap,
                       SkColor rect_color,
@@ -54,7 +82,7 @@ bool CheckColoredRect(const SkBitmap& bitmap,
       SkColor color = bitmap.getColor(x, y);
       gfx::Point pt(x, y);
       if (rect.Contains(pt)) {
-        if (color != rect_color) {
+        if (IsDifferentColor(color, rect_color)) {
           LOG(ERROR) << "pt=" << pt.ToString() << " color=" << std::hex << color
                      << ", expected rect color=" << std::hex << rect_color
                      << ", color rect=" << rect.ToString();
@@ -63,7 +91,8 @@ bool CheckColoredRect(const SkBitmap& bitmap,
       } else {
         // Expect background color unless the pixel is in anti aliasing
         // rectangle which is adjacent to the actual color rectangle.
-        if (color != bkgr_color && !anti_aliasing_rect.Contains(pt)) {
+        if (IsDifferentColor(color, bkgr_color) &&
+            !anti_aliasing_rect.Contains(pt)) {
           LOG(ERROR) << "pt=" << pt.ToString() << " color=" << std::hex << color
                      << ", expected bkgr color=" << std::hex << bkgr_color
                      << ", color rect=" << rect.ToString();
