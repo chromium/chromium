@@ -695,21 +695,6 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
       return result;
   }
 
-  // Allow the renderer, gpu and utility processes to access the log file.
-  if (process_type == switches::kRendererProcess ||
-      process_type == switches::kGpuProcess ||
-      process_type == switches::kUtilityProcess) {
-    if (logging::IsLoggingToFileEnabled()) {
-      auto log_path = logging::GetLogFileFullPath();
-      DCHECK(base::FilePath(log_path).IsAbsolute());
-      result =
-          config->AllowFileAccess(FileSemantics::kAllowAny, log_path.c_str());
-      if (result != SBOX_ALL_OK) {
-        return result;
-      }
-    }
-  }
-
   if (sandbox_type == Sandbox::kMediaFoundationCdm) {
     // Set a policy that would normally allow for process creation. This allows
     // the mf cdm process to launch the protected media pipeline process
