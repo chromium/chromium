@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import UIKit
+import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
 
 /// UIView that contains two decoration separators for tab strip collection
 /// view. They are visible when the selected cell reaches an edge of the

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import UIKit
+import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
 
 /// Layout used for the TabStrip.
 class TabStripLayout: UICollectionViewFlowLayout {

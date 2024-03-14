@@ -7,7 +7,6 @@ import("//build/config/ios/swift_source_set.gni")
 swift_source_set("swift") {
   bridge_header = "tab_strip_ui_swift_bridge.h"
   sources = [
-    "tab_strip_constants.swift",
     "tab_strip_consumer.swift",
     "tab_strip_decoration_view.swift",
     "tab_strip_item_identifier.swift",
@@ -18,6 +17,7 @@ swift_source_set("swift") {
     "tab_strip_view_controller_delegate.swift",
   ]
   deps = [
+    ":swift_constants",
     ":ui",
     ":utils",
     "//ios/chrome/app/strings",
@@ -46,6 +46,7 @@ source_set("ui") {
     "tab_strip_tab_cell.mm",
   ]
   deps = [
+    ":swift_constants_for_objective_c",
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -82,4 +83,13 @@ source_set("unit_tests") {
     "//ios/web/public:public",
     "//testing/gtest",
   ]
+}
+
+swift_source_set("swift_constants") {
+  sources = [ "tab_strip_constants.swift" ]
+}
+
+swift_source_set("swift_constants_for_objective_c") {
+  sources = [ "tab_strip_constants_for_objective_c.swift" ]
+  deps = [ ":swift_constants" ]
 }

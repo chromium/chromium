@@ -4,16 +4,14 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/tab_strip_group_cell.h"
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
 constexpr CGFloat kTitleContainerCornerRadius = 12;
-constexpr CGFloat kTitleContainerHorizontalPadding = 10;
 constexpr CGFloat kTitleContainerVerticalPadding = 4;
-constexpr CGFloat kTitleContainerHorizontalMargin = 4;
-constexpr CGFloat kFontSize = 14;
 constexpr CGFloat kTitleContainerCenterYOffset = -2;
 
 }  // namespace
@@ -52,7 +50,7 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
 - (UILabel*)createTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [UIFont systemFontOfSize:kFontSize
+  titleLabel.font = [UIFont systemFontOfSize:TabStripTabItemConstants.fontSize
                                       weight:UIFontWeightMedium];
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -76,8 +74,9 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
   AddSameConstraintsToSidesWithInsets(
       _titleContainer, contentView,
       LayoutSides::kLeading | LayoutSides::kTrailing,
-      NSDirectionalEdgeInsetsMake(0, kTitleContainerHorizontalMargin, 0,
-                                  kTitleContainerHorizontalMargin));
+      NSDirectionalEdgeInsetsMake(
+          0, TabStripGroupItemConstants.titleContainerHorizontalMargin, 0,
+          TabStripGroupItemConstants.titleContainerHorizontalMargin));
   [_titleContainer.centerYAnchor
       constraintEqualToAnchor:contentView.centerYAnchor
                      constant:kTitleContainerCenterYOffset]
@@ -85,8 +84,10 @@ constexpr CGFloat kTitleContainerCenterYOffset = -2;
   AddSameConstraintsWithInsets(
       _titleLabel, _titleContainer,
       NSDirectionalEdgeInsetsMake(
-          kTitleContainerVerticalPadding, kTitleContainerHorizontalPadding,
-          kTitleContainerVerticalPadding, kTitleContainerHorizontalPadding));
+          kTitleContainerVerticalPadding,
+          TabStripGroupItemConstants.titleContainerHorizontalPadding,
+          kTitleContainerVerticalPadding,
+          TabStripGroupItemConstants.titleContainerHorizontalPadding));
 }
 
 @end

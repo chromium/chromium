@@ -5,73 +5,73 @@
 import Foundation
 
 /// Struct that contains constants used in the Tab Strip UI.
-struct TabStripConstants {
+public struct TabStripConstants {
 
   /// Collection view constants.
-  struct CollectionView {
-    static let tabStripTabCellReuseIdentifier = "tabStripTabCellReuseIdentifier"
-    static let tabStripTabCellPrefixIdentifier = "tabStripTabCellPrefixIdentifier"
-    static let tabStripGroupCellPrefixIdentifier = "tabStripGroupCellPrefixIdentifier"
-    static let topInset: CGFloat = 4
-    static let horizontalInset: CGFloat = 16
-    static let scrollDelayAfterInsert: DispatchTimeInterval = .milliseconds(500)
+  public struct CollectionView {
+    public static let tabStripTabCellReuseIdentifier = "tabStripTabCellReuseIdentifier"
+    public static let tabStripTabCellPrefixIdentifier = "tabStripTabCellPrefixIdentifier"
+    public static let tabStripGroupCellPrefixIdentifier = "tabStripGroupCellPrefixIdentifier"
+    public static let topInset: CGFloat = 4
+    public static let horizontalInset: CGFloat = 16
+    public static let scrollDelayAfterInsert: DispatchTimeInterval = .milliseconds(500)
   }
 
   /// Tab item constants.
-  struct TabItem {
-    static let height: CGFloat = 40
-    static let minWidth: CGFloat = 132
-    static let maxWidth: CGFloat = 233
-    static let horizontalSpacing: CGFloat = 6
-    static let leadingSeparatorMinInset: CGFloat = 8
-    static let horizontalInset: CGFloat = 4
-    static let horizontalSelectedInset: CGFloat = 4
-    static let selectedZIndex: Int = 10
+  public struct TabItem {
+    public static let height: CGFloat = 40
+    public static let minWidth: CGFloat = 132
+    public static let maxWidth: CGFloat = 233
+    public static let horizontalSpacing: CGFloat = 6
+    public static let leadingSeparatorMinInset: CGFloat = 8
+    public static let horizontalInset: CGFloat = 4
+    public static let horizontalSelectedInset: CGFloat = 4
+    public static let selectedZIndex: Int = 10
+    public static let fontSize: CGFloat = 14
   }
 
   /// Group item constants.
-  struct GroupItem {
-    static let height: CGFloat = TabItem.height
-    static let titleContainerCornerRadius: CGFloat = 12
-    static let titleContainerHorizontalPadding: CGFloat = 10
-    static let titleContainerVerticalPadding: CGFloat = 4
-    static let titleContainerHorizontalMargin: CGFloat = 4
-    static let fontSize: CGFloat = 14
+  public struct GroupItem {
+    public static let height: CGFloat = TabItem.height
+    public static let titleContainerHorizontalPadding: CGFloat = 10
+    public static let titleContainerHorizontalMargin: CGFloat = 4
+    public static let fontSize: CGFloat = TabItem.fontSize
   }
 
   /// New tab button constants.
-  struct NewTabButton {
-    static let accessibilityIdentifier: String = "TabStripNewTabButtonAccessibilityIdentifier"
-    static let width: CGFloat = 46
-    static let topInset: CGFloat = 4
-    static let bottomInset: CGFloat = 8
-    static let leadingInset: CGFloat = 4
-    static let trailingInset: CGFloat = 10
-    static let cornerRadius: CGFloat = 16
-    static let symbolPointSize: CGFloat = 16
-    static let constraintUpdateAnimationDuration: CGFloat = 0.3
+  public struct NewTabButton {
+    public static let accessibilityIdentifier: String =
+      "TabStripNewTabButtonAccessibilityIdentifier"
+    public static let width: CGFloat = 46
+    public static let topInset: CGFloat = 4
+    public static let bottomInset: CGFloat = 8
+    public static let leadingInset: CGFloat = 4
+    public static let trailingInset: CGFloat = 10
+    public static let cornerRadius: CGFloat = 16
+    public static let symbolPointSize: CGFloat = 16
+    public static let constraintUpdateAnimationDuration: CGFloat = 0.3
   }
 
   /// Animated separator constants.
-  struct AnimatedSeparator {
-    static let regularSeparatorHeight: CGFloat = 18
-    static let minSeparatorHeight: CGFloat = 12
+  public struct AnimatedSeparator {
+    public static let regularSeparatorHeight: CGFloat = 18
+    public static let minSeparatorHeight: CGFloat = 12
     // The Cell separator is animated below this threshold.
-    static let collapseHorizontalInsetThreshold: CGFloat = 8
-    static let collapseHorizontalInset: CGFloat = 6
+    public static let collapseHorizontalInsetThreshold: CGFloat = 8
+    public static let collapseHorizontalInset: CGFloat = 6
   }
 
   /// Static separator constants.
-  struct StaticSeparator {
-    static let viewHeight: CGFloat = 36
-    static let separatorWidth: CGFloat = 2
-    static let separatorCornerRadius: CGFloat = 1
-    static let smallSeparatorHeight: CGFloat = 12
-    static let regularSeparatorHeight: CGFloat = 18
-    static let horizontalInset: CGFloat = 4
-    static let leadingInset: CGFloat = 6
-    static let bottomInset: CGFloat = 4
-    static let backgroundColorAlpha: CGFloat = 0.3
+  public struct StaticSeparator {
+    public static let viewHeight: CGFloat = 36
+    public static let separatorWidth: CGFloat = 2
+    public static let separatorCornerRadius: CGFloat = 1
+    public static let smallSeparatorHeight: CGFloat = 12
+    public static let regularSeparatorHeight: CGFloat = 18
+    public static let horizontalInset: CGFloat = 4
+    public static let leadingInset: CGFloat = 6
+    public static let bottomInset: CGFloat = 4
+    public static let backgroundColorAlpha: CGFloat = 0.3
   }
 
 }

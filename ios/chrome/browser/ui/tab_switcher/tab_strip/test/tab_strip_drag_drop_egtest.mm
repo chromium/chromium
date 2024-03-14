@@ -6,6 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -21,8 +22,10 @@ namespace {
 
 // Identifer for cell at given `index` in the tab grid.
 NSString* IdentifierForRegularCellAtIndex(unsigned int index) {
-  return [NSString
-      stringWithFormat:@"%@%u", @"tabStripCellPrefixIdentifier", index];
+  return [NSString stringWithFormat:@"%@%u",
+                                    TabStripCollectionViewConstants
+                                        .tabStripTabCellPrefixIdentifier,
+                                    index];
 }
 
 // Matcher for the reguar cell at the given `index`.
@@ -98,7 +101,14 @@ void AssertRegularCellMovedToNewPosition(unsigned int tab_index,
 // Checks that dragging a regular cell to a new position correctly moves the
 // cell.
 // TODO(crbug.com/1493679): Test is flaky on simluator.
-- (void)FLAKY_testDragTabStripTabCellInTabStripView {
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testDragTabStripTabCellInTabStripView \
+  FLAKY_testDragTabStripTabCellInTabStripView
+#else
+#define MAYBE_testDragTabStripTabCellInTabStripView \
+  testDragTabStripTabCellInTabStripView
+#endif
+- (void)MAYBE_testDragTabStripTabCellInTabStripView {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }

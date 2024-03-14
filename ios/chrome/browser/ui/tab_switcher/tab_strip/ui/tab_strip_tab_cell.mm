@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -33,9 +34,6 @@ const CGFloat kCornerSize = 16;
 const CGFloat kCollapsedWidthThreshold = 150;
 
 // Separator constraints.
-const CGFloat kSeparatorWidth = 2;
-const CGFloat kSeparatorCornerRadius = 1;
-const CGFloat kSeparatorHeight = 18;
 const CGFloat kSeparatorHorizontalInset = 2;
 const CGFloat kSeparatorGradientWidth = 4;
 
@@ -43,16 +41,12 @@ const CGFloat kSeparatorGradientWidth = 4;
 const CGFloat kFaviconLeadingMargin = 10;
 const CGFloat kCloseButtonMargin = 10;
 const CGFloat kTitleInset = 10;
-const CGFloat kFontSize = 14;
 const CGFloat kFaviconSize = 16;
 const CGFloat kTitleGradientWidth = 16;
 const CGFloat kContentViewBottomInset = 4;
 
 // Selected border background view constants.
 const CGFloat kSelectedBorderBackgroundViewWidth = 8;
-
-// Z-Index of the selected cell.
-const NSInteger kSelectedZIndex = 10;
 
 // Returns the default favicon image.
 UIImage* DefaultFavicon() {
@@ -284,7 +278,7 @@ UIImage* DefaultFavicon() {
   [self updateColors];
 
   // Make the selected cell on top of other cells.
-  self.layer.zPosition = selected ? kSelectedZIndex : 0;
+  self.layer.zPosition = selected ? TabStripTabItemConstants.selectedZIndex : 0;
 
   // Update decoration views visibility.
   _leftTailView.hidden = !selected;
@@ -634,7 +628,8 @@ UIImage* DefaultFavicon() {
         constraintEqualToAnchor:contentView.leadingAnchor
                        constant:-kSeparatorHorizontalInset],
     [_leadingSeparatorView.widthAnchor
-        constraintEqualToConstant:kSeparatorWidth],
+        constraintEqualToConstant:TabStripStaticSeparatorConstants
+                                      .separatorWidth],
     [_leadingSeparatorView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
@@ -645,12 +640,14 @@ UIImage* DefaultFavicon() {
         constraintEqualToAnchor:contentView.trailingAnchor
                        constant:kSeparatorHorizontalInset],
     [_trailingSeparatorView.widthAnchor
-        constraintEqualToConstant:kSeparatorWidth],
+        constraintEqualToConstant:TabStripStaticSeparatorConstants
+                                      .separatorWidth],
     [_trailingSeparatorView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 
-  [self setSeparatorsHeight:kSeparatorHeight];
+  [self setSeparatorsHeight:TabStripStaticSeparatorConstants
+                                .regularSeparatorHeight];
 
   /// `_leadingSeparatorGradientView` constraints.
   [NSLayoutConstraint activateConstraints:@[
@@ -718,7 +715,7 @@ UIImage* DefaultFavicon() {
 - (UILabel*)createTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [UIFont systemFontOfSize:kFontSize
+  titleLabel.font = [UIFont systemFontOfSize:TabStripTabItemConstants.fontSize
                                       weight:UIFontWeightMedium];
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   titleLabel.adjustsFontForContentSizeCategory = YES;
@@ -778,7 +775,8 @@ UIImage* DefaultFavicon() {
   separatorView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   separatorView.translatesAutoresizingMaskIntoConstraints = NO;
-  separatorView.layer.cornerRadius = kSeparatorCornerRadius;
+  separatorView.layer.cornerRadius =
+      TabStripStaticSeparatorConstants.separatorCornerRadius;
   separatorView.layer.masksToBounds = YES;
 
   UIView* backgroundView = [[UIView alloc] init];

@@ -4,6 +4,7 @@
 
 import UIKit
 import ios_chrome_browser_shared_ui_util_util_swift
+import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
 
 /// View Controller displaying the TabStrip.
 @objcMembers
