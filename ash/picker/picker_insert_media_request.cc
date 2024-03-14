@@ -23,6 +23,8 @@ PickerInsertMediaRequest::Result ConvertInsertMediaResult(
       return PickerInsertMediaRequest::Result::kSuccess;
     case InsertMediaResult::kUnsupported:
       return PickerInsertMediaRequest::Result::kUnsupported;
+    case InsertMediaResult::kNotFound:
+      return PickerInsertMediaRequest::Result::kNotFound;
   }
 }
 

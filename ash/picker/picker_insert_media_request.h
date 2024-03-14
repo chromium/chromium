@@ -34,6 +34,8 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
     kTimeout,
     // The insertion failed because the input field was incompatible.
     kUnsupported,
+    // The media was not found.
+    kNotFound,
   };
 
   using OnCompleteCallback = base::OnceCallback<void(Result)>;

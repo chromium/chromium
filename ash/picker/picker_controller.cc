@@ -140,7 +140,7 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
           [](const PickerSearchResult::BrowsingHistoryData& data)
               -> ReturnType { return PickerLinkMedia(data.url); },
           [](const PickerSearchResult::LocalFileData& data) -> ReturnType {
-            return PickerTextMedia(base::UTF8ToUTF16(data.file_path.value()));
+            return PickerLocalFileMedia(data.file_path);
           },
           [](const PickerSearchResult::DriveFileData& data) -> ReturnType {
             return PickerLinkMedia(data.url);

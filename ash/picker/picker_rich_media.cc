@@ -32,4 +32,7 @@ PickerImageMedia::PickerImageMedia(GURL url,
 
 PickerLinkMedia::PickerLinkMedia(GURL url) : url(std::move(url)) {}
 
+PickerLocalFileMedia::PickerLocalFileMedia(base::FilePath path)
+    : path(std::move(path)) {}
+
 }  // namespace ash

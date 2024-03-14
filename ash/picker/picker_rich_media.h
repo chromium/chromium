@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "ash/ash_export.h"
+#include "base/files/file_path.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -41,9 +42,17 @@ struct ASH_EXPORT PickerLinkMedia {
   explicit PickerLinkMedia(GURL url);
 };
 
+struct ASH_EXPORT PickerLocalFileMedia {
+  base::FilePath path;
+
+  explicit PickerLocalFileMedia(base::FilePath path);
+};
+
 // Rich media that can be inserted or copied, such as text and images.
-using PickerRichMedia =
-    std::variant<PickerTextMedia, PickerImageMedia, PickerLinkMedia>;
+using PickerRichMedia = std::variant<PickerTextMedia,
+                                     PickerImageMedia,
+                                     PickerLinkMedia,
+                                     PickerLocalFileMedia>;
 
 }  // namespace ash
 

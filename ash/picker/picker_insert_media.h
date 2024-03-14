@@ -22,6 +22,7 @@ ASH_EXPORT bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
 enum class ASH_EXPORT InsertMediaResult {
   kSuccess,
   kUnsupported,
+  kNotFound,
 };
 
 using OnInsertMediaCompleteCallback =

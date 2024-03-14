@@ -91,6 +91,10 @@ void CopyMediaToClipboard(const PickerRichMedia& media) {
                    // TODO(b/322729192): Copy a real hyperlink.
                    clipboard->WriteText(base::UTF8ToUTF16(media.url.spec()));
                  },
+                 [&clipboard](const PickerLocalFileMedia& media) {
+                   // TODO(b/325872346): Copy the file or its contents.
+                   clipboard->WriteText(media.path.AsUTF16Unsafe());
+                 },
              },
              media);
 
