@@ -337,6 +337,7 @@ source_set("crosapi") {
     "//chrome/browser/ash/telemetry_extension/telemetry",
     "//chrome/browser/image_decoder:image_decoder",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings",

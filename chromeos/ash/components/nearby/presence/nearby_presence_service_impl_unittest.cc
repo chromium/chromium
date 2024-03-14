@@ -49,17 +49,17 @@ class FakeScanDelegate : public NearbyPresenceService::ScanDelegate {
   ~FakeScanDelegate() override = default;
 
   void OnPresenceDeviceFound(
-      NearbyPresenceService::PresenceDevice presence_device) override {
+      ::nearby::presence::PresenceDevice presence_device) override {
     found_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }
   void OnPresenceDeviceChanged(
-      NearbyPresenceService::PresenceDevice presence_device) override {
+      ::nearby::presence::PresenceDevice presence_device) override {
     changed_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }
   void OnPresenceDeviceLost(
-      NearbyPresenceService::PresenceDevice presence_device) override {
+      ::nearby::presence::PresenceDevice presence_device) override {
     lost_called = true;
     std::move(next_scan_delegate_callback_).Run();
   }
@@ -126,8 +126,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
     EXPECT_FALSE(fake_credential_manager_ptr_->WasUpdateCredentialsCalled());
   }
 
-  void TestStartScan(ash::nearby::presence::NearbyPresenceService::IdentityType
-                         identity_type) {
+  void TestStartScan(::nearby::internal::IdentityType identity_type) {
     NearbyPresenceService::ScanFilter filter(identity_type,
                                              /*actions=*/{});
     FakeScanDelegate scan_delegate;
@@ -203,23 +202,20 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 };
 
 TEST_F(NearbyPresenceServiceImplTest, StartPrivateScan) {
-  TestStartScan(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate);
+  TestStartScan(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE);
 }
 
 TEST_F(NearbyPresenceServiceImplTest, StartPublicScan) {
-  TestStartScan(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kPublic);
+  TestStartScan(::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC);
 }
 
 TEST_F(NearbyPresenceServiceImplTest, StartTrustedScan) {
-  TestStartScan(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kTrusted);
+  TestStartScan(::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED);
 }
 
 TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
   NearbyPresenceService::ScanFilter filter(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
   {
@@ -258,7 +254,7 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {
 
 TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
   NearbyPresenceService::ScanFilter filter(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
   {
@@ -294,7 +290,7 @@ TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceLost) {
 
 TEST_F(NearbyPresenceServiceImplTest, EndScan) {
   NearbyPresenceService::ScanFilter filter(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
 
@@ -343,7 +339,7 @@ TEST_F(NearbyPresenceServiceImplTest, EndScan) {
 
 TEST_F(NearbyPresenceServiceImplTest, EndScanBeforeStart) {
   NearbyPresenceService::ScanFilter filter(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
 
@@ -421,7 +417,7 @@ TEST_F(NearbyPresenceServiceImplTest, InvalidPushNotificationClientId) {
 
 TEST_F(NearbyPresenceServiceImplTest, NullProcessReference) {
   NearbyPresenceService::ScanFilter filter(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
+      ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
       /*actions=*/{});
   FakeScanDelegate scan_delegate;
 

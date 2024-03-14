@@ -21,4 +21,6 @@ static_library("cpp") {
     "//chromeos/ash/services/nearby/public/mojom",
     "//third_party/abseil-cpp:absl",
   ]
+
+  public_deps = [ "//third_party/nearby:presence_types" ]
 }

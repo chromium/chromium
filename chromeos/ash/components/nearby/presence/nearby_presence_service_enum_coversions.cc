@@ -31,20 +31,23 @@ namespace ash::nearby::presence {
 }
 
 NearbyPresenceService::PresenceIdentityType ConvertToMojomIdentityType(
-    NearbyPresenceService::IdentityType identity_type) {
+    ::nearby::internal::IdentityType identity_type) {
   switch (identity_type) {
-    case NearbyPresenceService::IdentityType::kUnspecified:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
       return NearbyPresenceService::PresenceIdentityType::
           kIdentityTypeUnspecified;
-    case NearbyPresenceService::IdentityType::kPrivate:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE:
       return NearbyPresenceService::PresenceIdentityType::kIdentityTypePrivate;
-    case NearbyPresenceService::IdentityType::kTrusted:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED:
       return NearbyPresenceService::PresenceIdentityType::kIdentityTypeTrusted;
-    case NearbyPresenceService::IdentityType::kPublic:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC:
       return NearbyPresenceService::PresenceIdentityType::kIdentityTypePublic;
-    case NearbyPresenceService::IdentityType::kProvisioned:
+    case ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED:
       return NearbyPresenceService::PresenceIdentityType::
           kIdentityTypeProvisioned;
+    default:
+      return NearbyPresenceService::PresenceIdentityType::
+          kIdentityTypeUnspecified;
   }
 }
 

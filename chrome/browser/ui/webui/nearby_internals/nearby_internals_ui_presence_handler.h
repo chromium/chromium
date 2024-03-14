@@ -34,14 +34,11 @@ class NearbyInternalsPresenceHandler
  private:
   // ash::nearby::presence::NearbyPresenceService::ScanDelegate:
   void OnPresenceDeviceFound(
-      ash::nearby::presence::NearbyPresenceService::PresenceDevice
-          presence_device) override;
+      nearby::presence::PresenceDevice presence_device) override;
   void OnPresenceDeviceChanged(
-      ash::nearby::presence::NearbyPresenceService::PresenceDevice
-          presence_device) override;
+      nearby::presence::PresenceDevice presence_device) override;
   void OnPresenceDeviceLost(
-      ash::nearby::presence::NearbyPresenceService::PresenceDevice
-          presence_device) override;
+      nearby::presence::PresenceDevice presence_device) override;
   void OnScanSessionInvalidated() override;
 
   void Initialize(const base::Value::List& args);

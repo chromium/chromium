@@ -1466,8 +1466,7 @@ void NearbySharingServiceImpl::OnBandwidthUpgrade(
 }
 
 void NearbySharingServiceImpl::OnBandwidthUpgradeV3(
-    const ash::nearby::presence::NearbyPresenceService::PresenceDevice
-        remote_device,
+    nearby::presence::PresenceDevice remote_device,
     const Medium medium) {
   // Because `NearbySharingServiceImpl` is currently only consuming V1 APIs from
   // `NearbyConnections`, this function is to be left as `NOTIMPLEMENTED()` as

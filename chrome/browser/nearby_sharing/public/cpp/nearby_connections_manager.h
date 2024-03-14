@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NEARBY_SHARING_PUBLIC_CPP_NEARBY_CONNECTIONS_MANAGER_H_
 
 #include <stdint.h>
-
 #include <optional>
 #include <string>
 #include <vector>
@@ -22,8 +21,7 @@
 // A wrapper around the Nearby Connections mojo API.
 class NearbyConnectionsManager {
  public:
-  using PresenceDevice =
-      ash::nearby::presence::NearbyPresenceService::PresenceDevice;
+  using PresenceDevice = nearby::presence::PresenceDevice;
   using Payload = nearby::connections::mojom::Payload;
   using PayloadPtr = nearby::connections::mojom::PayloadPtr;
   using ConnectionsStatus = nearby::connections::mojom::Status;

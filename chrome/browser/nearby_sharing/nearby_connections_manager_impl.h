@@ -79,12 +79,11 @@ class NearbyConnectionsManagerImpl
       base::WeakPtr<BandwidthUpgradeListener> listener) override;
   void UpgradeBandwidth(const std::string& endpoint_id) override;
   base::WeakPtr<NearbyConnectionsManager> GetWeakPtr() override;
-  void ConnectV3(ash::nearby::presence::NearbyPresenceService::PresenceDevice
-                     remote_presence_device,
+  void ConnectV3(nearby::presence::PresenceDevice remote_presence_device,
                  DataUsage data_usage,
                  NearbyConnectionCallback callback) override;
-  void DisconnectV3(ash::nearby::presence::NearbyPresenceService::PresenceDevice
-                        remote_presence_device) override;
+  void DisconnectV3(
+      nearby::presence::PresenceDevice remote_presence_device) override;
 
  private:
   using AdvertisingOptions = nearby::connections::mojom::AdvertisingOptions;
@@ -151,8 +150,7 @@ class NearbyConnectionsManagerImpl
   void OnConnectionRequested(const std::string& endpoint_id,
                              ConnectionsStatus status);
   void OnConnectionRequestedV3(
-      ash::nearby::presence::NearbyPresenceService::PresenceDevice
-          remote_presence_device,
+      nearby::presence::PresenceDevice remote_presence_device,
       ConnectionsStatus status);
   void OnNearbyProcessStopped(
       ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason

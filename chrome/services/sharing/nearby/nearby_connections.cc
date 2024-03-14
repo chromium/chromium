@@ -690,6 +690,8 @@ void NearbyConnections::AcceptConnectionV3(
                 buffer_manager_.StopTrackingFailedPayload(info.payload_id);
                 break;
               case PayloadProgressInfo::Status::kInProgress:
+                // Note that `info.bytes_transferred` is a cumulative measure of
+                // bytes that have been sent so far in the payload.
                 buffer_manager_.HandleBytesTransferred(info.payload_id,
                                                        info.bytes_transferred);
                 break;

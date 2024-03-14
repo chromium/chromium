@@ -13,7 +13,7 @@ namespace ash::nearby::presence {
     mojom::PresenceDeviceType mojom_type);
 
 NearbyPresenceService::PresenceIdentityType ConvertToMojomIdentityType(
-    NearbyPresenceService::IdentityType identity_type_);
+    ::nearby::internal::IdentityType identity_type_);
 
 NearbyPresenceService::StatusCode ConvertToPresenceStatus(
     mojo_base::mojom::AbslStatusCode status_code);

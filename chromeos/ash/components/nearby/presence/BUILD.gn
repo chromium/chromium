@@ -37,6 +37,7 @@ static_library("presence") {
     "//components/prefs",
     "//components/push_notification:push_notification",
     "//content/public/browser",
+    "//third_party/nearby:presence_types",
   ]
 
   public_deps = [ "//third_party/nearby:connections_metadata_proto" ]

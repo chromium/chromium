@@ -24,8 +24,6 @@
 
 namespace {
 
-using NearbyPresenceService = ash::nearby::presence::NearbyPresenceService;
-
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
 const nearby::connections::mojom::Strategy kStrategy =
@@ -110,29 +108,28 @@ std::string MediumSelectionToString(
   return ss.str();
 }
 
-// TODO(b/311040986): Migrate these to a conversions class. This requires moving
-// NearbyPresenceService::PresenceDevice and NearbyPresenceService::Action out
-// of NearbyPresenceService to avoid a dependency cycle.
-ash::nearby::presence::mojom::ActionType ConvertPresenceServiceActionToMojom(
-    NearbyPresenceService::Action action) {
-  switch (action) {
-    case NearbyPresenceService::Action::kActiveUnlock:
+// TODO(b/311040986): Migrate these to a conversions class.
+// `NearbyConnectionsManagerImpl` can't use the same conversion functions from
+// //chrome/services/sharing/nearby/nearby_presence_conversions.h.
+ash::nearby::presence::mojom::ActionType ActionTypeToMojom(uint32_t action) {
+  switch (::nearby::presence::ActionBit(action)) {
+    case ::nearby::presence::ActionBit::kActiveUnlockAction:
       return ash::nearby::presence::mojom::ActionType::kActiveUnlockAction;
-    case NearbyPresenceService::Action::kNearbyShare:
+    case ::nearby::presence::ActionBit::kNearbyShareAction:
       return ash::nearby::presence::mojom::ActionType::kNearbyShareAction;
-    case NearbyPresenceService::Action::kInstantTethering:
+    case ::nearby::presence::ActionBit::kInstantTetheringAction:
       return ash::nearby::presence::mojom::ActionType::kInstantTetheringAction;
-    case NearbyPresenceService::Action::kPhoneHub:
+    case ::nearby::presence::ActionBit::kPhoneHubAction:
       return ash::nearby::presence::mojom::ActionType::kPhoneHubAction;
-    case NearbyPresenceService::Action::kPresenceManager:
+    case ::nearby::presence::ActionBit::kPresenceManagerAction:
       return ash::nearby::presence::mojom::ActionType::kPresenceManagerAction;
-    case NearbyPresenceService::Action::kFinder:
+    case ::nearby::presence::ActionBit::kFinderAction:
       return ash::nearby::presence::mojom::ActionType::kFinderAction;
-    case NearbyPresenceService::Action::kFastPairSass:
+    case ::nearby::presence::ActionBit::kFastPairSassAction:
       return ash::nearby::presence::mojom::ActionType::kFastPairSassAction;
-    case NearbyPresenceService::Action::kTapToTransfer:
+    case ::nearby::presence::ActionBit::kTapToTransferAction:
       return ash::nearby::presence::mojom::ActionType::kTapToTransferAction;
-    case NearbyPresenceService::Action::kLast:
+    case ::nearby::presence::ActionBit::kLastAction:
       return ash::nearby::presence::mojom::ActionType::kLastAction;
   }
 }
@@ -147,17 +144,16 @@ ash::nearby::presence::mojom::MetadataPtr MetadataToMojom(
                            metadata.bluetooth_mac_address().end()));
 }
 
-ash::nearby::presence::mojom::PresenceDevicePtr
-BuildPresenceMojomFromServiceDevice(
-    NearbyPresenceService::PresenceDevice device) {
+ash::nearby::presence::mojom::PresenceDevicePtr BuildPresenceMojomDevice(
+    nearby::presence::PresenceDevice device) {
   std::vector<ash::nearby::presence::mojom::ActionType> actions;
   for (auto action : device.GetActions()) {
-    actions.push_back(ConvertPresenceServiceActionToMojom(action));
+    actions.push_back(ActionTypeToMojom(action.GetActionIdentifier()));
   }
 
   return ash::nearby::presence::mojom::PresenceDevice::New(
-      device.GetEndpointId(), std::move(actions), device.GetStableId(),
-      MetadataToMojom(device.GetMetadata()));
+      device.GetEndpointId(), std::move(actions),
+      /*stable_device_id=*/std::nullopt, MetadataToMojom(device.GetMetadata()));
 }
 
 }  // namespace
@@ -385,13 +381,13 @@ void NearbyConnectionsManagerImpl::OnConnectionRequested(
 }
 
 void NearbyConnectionsManagerImpl::OnConnectionRequestedV3(
-    NearbyPresenceService::PresenceDevice remote_device,
+    nearby::presence::PresenceDevice remote_device,
     ConnectionsStatus status) {
   if (status != ConnectionsStatus::kSuccess) {
     CD_LOG(ERROR, Feature::NC)
         << "Failed to connect (v3) to remote device with result: "
         << ConnectionsStatusToString(status);
-    DisconnectV3(std::move(remote_device));
+    DisconnectV3(remote_device);
     return;
   }
 }
@@ -596,7 +592,7 @@ void NearbyConnectionsManagerImpl::UpgradeBandwidth(
 }
 
 void NearbyConnectionsManagerImpl::ConnectV3(
-    NearbyPresenceService::PresenceDevice remote_presence_device,
+    nearby::presence::PresenceDevice remote_presence_device,
     DataUsage data_usage,
     NearbyConnectionCallback callback) {
   nearby::connections::mojom::NearbyConnections* nearby_connections =
@@ -629,7 +625,7 @@ void NearbyConnectionsManagerImpl::ConnectV3(
                                   std::move(timeout_timer));
 
   nearby_connections->RequestConnectionV3(
-      service_id_, BuildPresenceMojomFromServiceDevice(remote_presence_device),
+      service_id_, BuildPresenceMojomDevice(remote_presence_device),
       ConnectionOptions::New(std::move(allowed_mediums),
                              /*bluetooth_mac_address=*/std::nullopt,
                              /*keep_alive_interval_millis=*/std::nullopt,
@@ -640,13 +636,13 @@ void NearbyConnectionsManagerImpl::ConnectV3(
 }
 
 void NearbyConnectionsManagerImpl::DisconnectV3(
-    NearbyPresenceService::PresenceDevice remote_presence_device) {
+    nearby::presence::PresenceDevice remote_presence_device) {
   if (!process_reference_) {
     return;
   }
 
   ash::nearby::presence::mojom::PresenceDevicePtr presence_device_mojom =
-      BuildPresenceMojomFromServiceDevice(remote_presence_device);
+      BuildPresenceMojomDevice(remote_presence_device);
 
   process_reference_->GetNearbyConnections()->DisconnectFromDeviceV3(
       service_id_, presence_device_mojom.Clone(),
@@ -1080,8 +1076,7 @@ void NearbyConnectionsManagerImpl::OnBandwidthChanged(
     // `PresenceDevice` with only an `endpoint_id`.
     if (bandwidth_upgrade_listener_) {
       bandwidth_upgrade_listener_->OnBandwidthUpgradeV3(
-          ash::nearby::presence::NearbyPresenceService::PresenceDevice(
-              endpoint_id),
+          nearby::presence::PresenceDevice(endpoint_id),
           bandwidth_info->medium);
     }
   }

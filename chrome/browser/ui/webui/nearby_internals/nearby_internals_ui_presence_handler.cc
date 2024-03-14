@@ -17,7 +17,6 @@ namespace {
 
 // Keys in the JSON representation of a device.
 const char kDeviceNameKey[] = "name";
-const char kDeviceIdKey[] = "id";
 const char kTypeKey[] = "type";
 const char kEndpointKey[] = "endpoint_id";
 const char kActionsKey[] = "actions";
@@ -38,27 +37,25 @@ const char kNotificationTypeIdKey[] = "type_id";
 const char kNotificationClientIdKey[] = "client_id";
 const char kNotificationClientIdValue[] = "nearby";
 
-std::string PresenceActionToString(
-    ash::nearby::presence::NearbyPresenceService::Action action_enum) {
-  switch (action_enum) {
-    case ash::nearby::presence::NearbyPresenceService::Action::kActiveUnlock:
+std::string PresenceActionToString(nearby::presence::PresenceAction action) {
+  switch (nearby::presence::ActionBit(action.GetActionIdentifier())) {
+    case nearby::presence::ActionBit::kActiveUnlockAction:
       return kActiveUnlockAction;
-    case ash::nearby::presence::NearbyPresenceService::Action::kNearbyShare:
+    case nearby::presence::ActionBit::kNearbyShareAction:
       return kNearbyShareAction;
-    case ash::nearby::presence::NearbyPresenceService::Action::
-        kInstantTethering:
+    case nearby::presence::ActionBit::kInstantTetheringAction:
       return kInstantTetheringAction;
-    case ash::nearby::presence::NearbyPresenceService::Action::kPhoneHub:
+    case nearby::presence::ActionBit::kPhoneHubAction:
       return kPhoneHubAction;
-    case ash::nearby::presence::NearbyPresenceService::Action::kPresenceManager:
+    case nearby::presence::ActionBit::kPresenceManagerAction:
       return kPresenceManagerAction;
-    case ash::nearby::presence::NearbyPresenceService::Action::kFinder:
+    case nearby::presence::ActionBit::kFinderAction:
       return kFinderAction;
-    case ash::nearby::presence::NearbyPresenceService::Action::kFastPairSass:
+    case nearby::presence::ActionBit::kFastPairSassAction:
       return kFastPairSassAction;
-    case ash::nearby::presence::NearbyPresenceService::Action::kTapToTransfer:
+    case nearby::presence::ActionBit::kTapToTransferAction:
       return kTapToTransferAction;
-    case ash::nearby::presence::NearbyPresenceService::Action::kLast:
+    case nearby::presence::ActionBit::kLastAction:
       return kLastAction;
   }
 }
@@ -66,17 +63,13 @@ std::string PresenceActionToString(
 // Converts |presence_device| to a raw dictionary value used as a JSON argument
 // to JavaScript functions.
 base::Value::Dict PresenceDeviceToDictionary(
-    ash::nearby::presence::NearbyPresenceService::PresenceDevice
-        presence_device) {
+    nearby::presence::PresenceDevice presence_device) {
   base::Value::Dict dictionary;
-  dictionary.Set(kDeviceNameKey, presence_device.GetName());
+  dictionary.Set(kDeviceNameKey, presence_device.GetMetadata().device_name());
   // TODO(b/277820435): add other device type options.
-  if (presence_device.GetType() ==
+  if (presence_device.GetMetadata().device_type() ==
       nearby::internal::DeviceType::DEVICE_TYPE_PHONE) {
     dictionary.Set(kTypeKey, "DEVICE_TYPE_PHONE");
-  }
-  if (presence_device.GetStableId().has_value()) {
-    dictionary.Set(kDeviceIdKey, presence_device.GetStableId().value());
   }
 
   dictionary.Set(kEndpointKey, presence_device.GetEndpointId());
@@ -156,7 +149,7 @@ void NearbyInternalsPresenceHandler::HandleStartPresenceScan(
     CD_LOG(VERBOSE, Feature::NP)
         << __func__ << ": NearbyPresenceService was retrieved successfully";
     ash::nearby::presence::NearbyPresenceService::ScanFilter filter(
-        ash::nearby::presence::NearbyPresenceService::IdentityType::kPublic,
+        nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC,
         /*actions=*/{});
     service->StartScan(
         filter, /*scan_delegate=*/this,
@@ -227,22 +220,19 @@ void NearbyInternalsPresenceHandler::
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceFound(
-    ash::nearby::presence::NearbyPresenceService::PresenceDevice
-        presence_device) {
+    nearby::presence::PresenceDevice presence_device) {
   FireWebUIListener("presence-device-found",
                     PresenceDeviceToDictionary(presence_device));
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceChanged(
-    ash::nearby::presence::NearbyPresenceService::PresenceDevice
-        presence_device) {
+    nearby::presence::PresenceDevice presence_device) {
   FireWebUIListener("presence-device-changed",
                     PresenceDeviceToDictionary(presence_device));
 }
 
 void NearbyInternalsPresenceHandler::OnPresenceDeviceLost(
-    ash::nearby::presence::NearbyPresenceService::PresenceDevice
-        presence_device) {
+    nearby::presence::PresenceDevice presence_device) {
   FireWebUIListener("presence-device-lost",
                     PresenceDeviceToDictionary(presence_device));
 }

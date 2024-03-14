@@ -60,46 +60,19 @@ namespace {
   return proto;
 }
 
-ash::nearby::presence::NearbyPresenceService::Action ConvertActionToActionType(
-    ash::nearby::presence::mojom::ActionType action_type) {
-  switch (action_type) {
-    case ash::nearby::presence::mojom::ActionType::kActiveUnlockAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::
-          kActiveUnlock;
-    case ash::nearby::presence::mojom::ActionType::kNearbyShareAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::kNearbyShare;
-    case ash::nearby::presence::mojom::ActionType::kInstantTetheringAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::
-          kInstantTethering;
-    case ash::nearby::presence::mojom::ActionType::kPhoneHubAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::kPhoneHub;
-    case ash::nearby::presence::mojom::ActionType::kPresenceManagerAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::
-          kPresenceManager;
-    case ash::nearby::presence::mojom::ActionType::kFinderAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::kFinder;
-    case ash::nearby::presence::mojom::ActionType::kFastPairSassAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::
-          kFastPairSass;
-    case ash::nearby::presence::mojom::ActionType::kTapToTransferAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::
-          kTapToTransfer;
-    case ash::nearby::presence::mojom::ActionType::kLastAction:
-      return ash::nearby::presence::NearbyPresenceService::Action::kLast;
-  }
-}
-
-ash::nearby::presence::NearbyPresenceService::PresenceDevice
-BuildPresenceDevice(ash::nearby::presence::mojom::PresenceDevicePtr device) {
-  std::vector<ash::nearby::presence::NearbyPresenceService::Action> actions;
+::nearby::presence::PresenceDevice BuildPresenceDevice(
+    ash::nearby::presence::mojom::PresenceDevicePtr device) {
+  ::nearby::presence::PresenceDevice presence_device(device->endpoint_id);
+  presence_device.SetMetadata(ConvertMetadataFromMojom(device->metadata.get()));
   for (auto action : device->actions) {
-    actions.push_back(ConvertActionToActionType(action));
+    presence_device.AddAction(static_cast<uint32_t>(action));
   }
 
-  // TODO(b/276642472): Populate actions and rssi fields.
-  return ash::nearby::presence::NearbyPresenceService::PresenceDevice(
-      ConvertMetadataFromMojom(device->metadata.get()),
-      device->stable_device_id, device->endpoint_id, actions, /*rssi_=*/-65);
+  // TODO(b/328450930): Introduce decrypted shared credential to the mojom
+  // representation of `PresenceDevice` and properly convert it via
+  // `SetDecryptSharedCredential()` here.
+
+  return presence_device;
 }
 
 }  // namespace
