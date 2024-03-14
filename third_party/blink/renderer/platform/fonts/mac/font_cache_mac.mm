@@ -127,8 +127,7 @@ bool IsLastResortFont(CTFontRef font) {
 }
 
 ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
-                                             UChar32 character,
-                                             float size) {
+                                             UChar32 character) {
   DCHECK(RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled());
 
   auto bytes = base::bit_cast<std::array<UInt8, 4>>(character);
@@ -136,22 +135,8 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
       kCFAllocatorDefault, std::data(bytes), std::size(bytes),
       kCFStringEncodingUTF32LE, false));
   CFRange range = CFRangeMake(0, CFStringGetLength(string.get()));
-
   ScopedCFTypeRef<CTFontRef> substitute_font(
       CTFontCreateForString(ct_font, string.get(), range));
-
-  if (!substitute_font && !ct_font) {
-    // For some web fonts for which we use FreeType backend (for instance some
-    // color fonts), `ct_font` is null. For these fonts we still want to have a
-    // substitute font for a character. We are using the default value of
-    // standard font from user settings defined in
-    // `chrome/app/resources/locale_settings_mac.grd` as the font to substitute
-    // from in `CTFontCreateForString`.
-    ScopedCFTypeRef<CTFontRef> font_to_substitute(
-        CTFontCreateWithName(CFSTR("Times"), size, nullptr));
-    return ScopedCFTypeRef<CTFontRef>(
-        CTFontCreateForString(font_to_substitute.get(), string.get(), range));
-  }
 
   if (!substitute_font || IsLastResortFont(substitute_font.get())) {
     return ScopedCFTypeRef<CTFontRef>(nullptr);
@@ -179,10 +164,8 @@ const FontPlatformData* GetAlternateFontPlatformData(
   DCHECK(RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled());
   CTFontRef ct_font = platform_data.CtFont();
 
-  float size = font_description.ComputedPixelSize();
-
   ScopedCFTypeRef<CTFontRef> substitute_font(
-      GetSubstituteFont(ct_font, character, size));
+      GetSubstituteFont(ct_font, character));
   if (!substitute_font) {
     return nullptr;
   }
@@ -203,6 +186,7 @@ const FontPlatformData* GetAlternateFontPlatformData(
 
   CTFontSymbolicTraits traits;
   float weight = ToCTFontWeight(font_description.Weight());
+  float size = font_description.ComputedPixelSize();
   if (ct_font) {
     traits = CTFontGetSymbolicTraits(ct_font);
     if (platform_data.synthetic_bold_) {
