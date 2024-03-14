@@ -21,7 +21,6 @@ class ChromeExtensionsDispatcherDelegate
 
  private:
   // extensions::DispatcherDelegate implementation.
-  void RequireWebViewModules(extensions::ScriptContext* context) override;
   void OnActiveExtensionsUpdated(
       const std::set<std::string>& extensions_ids) override;
 };

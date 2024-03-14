@@ -1354,7 +1354,6 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
     for (const auto& api_provider : api_providers_) {
       api_provider->RequireWebViewModules(context);
     }
-    delegate_->RequireWebViewModules(context);
   } else if (web_view_permission_exists) {
     module_system->Require("webViewDeny");
   }

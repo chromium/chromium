@@ -157,6 +157,8 @@ source_set("app_shell_lib") {
     "common/shell_extensions_client.h",
     "common/switches.cc",
     "common/switches.h",
+    "renderer/api/shell_extensions_renderer_api_provider.cc",
+    "renderer/api/shell_extensions_renderer_api_provider.h",
     "renderer/shell_content_renderer_client.cc",
     "renderer/shell_content_renderer_client.h",
     "renderer/shell_extensions_renderer_client.cc",

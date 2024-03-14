@@ -220,6 +220,11 @@ void ChromeExtensionsRendererAPIProvider::EnableCustomElementAllowlist() const {
 }
 
 void ChromeExtensionsRendererAPIProvider::RequireWebViewModules(
-    ScriptContext* context) const {}
+    ScriptContext* context) const {
+  DCHECK(context->GetAvailability("webViewInternal").is_available());
+  if (context->GetAvailability("chromeWebViewTag").is_available()) {
+    context->module_system()->Require("chromeWebViewElement");
+  }
+}
 
 }  // namespace extensions

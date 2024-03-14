@@ -112,7 +112,6 @@ source_set("renderer") {
     "content_watcher.h",
     "dispatcher.cc",
     "dispatcher.h",
-    "dispatcher_delegate.cc",
     "dispatcher_delegate.h",
     "dom_activity_logger.cc",
     "dom_activity_logger.h",

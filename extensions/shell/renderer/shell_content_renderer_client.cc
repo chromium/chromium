@@ -17,6 +17,7 @@
 #include "extensions/renderer/dispatcher.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/shell/common/shell_extensions_client.h"
+#include "extensions/shell/renderer/api/shell_extensions_renderer_api_provider.h"
 #include "extensions/shell/renderer/shell_extensions_renderer_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -43,7 +44,9 @@ void ShellContentRendererClient::RenderThreadStarted() {
   extensions_renderer_client_ =
       std::make_unique<ShellExtensionsRendererClient>();
   extensions_renderer_client_->AddAPIProvider(
-      std::make_unique<extensions::CoreExtensionsRendererAPIProvider>());
+      std::make_unique<CoreExtensionsRendererAPIProvider>());
+  extensions_renderer_client_->AddAPIProvider(
+      std::make_unique<ShellExtensionsRendererAPIProvider>());
   ExtensionsRendererClient::Set(extensions_renderer_client_.get());
   extensions_renderer_client_->RenderThreadStarted();
 

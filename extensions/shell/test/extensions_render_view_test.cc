@@ -11,6 +11,7 @@
 #include "extensions/shell/browser/shell_content_browser_client.h"
 #include "extensions/shell/common/shell_content_client.h"
 #include "extensions/shell/common/shell_extensions_client.h"
+#include "extensions/shell/renderer/api/shell_extensions_renderer_api_provider.h"
 #include "extensions/shell/renderer/shell_content_renderer_client.h"
 #include "extensions/shell/renderer/shell_extensions_renderer_client.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -55,6 +56,8 @@ ExtensionsRenderViewTest::CreateContentRendererClient() {
   auto extensions_client = std::make_unique<ShellExtensionsRendererClient>();
   extensions_client->AddAPIProvider(
       std::make_unique<CoreExtensionsRendererAPIProvider>());
+  extensions_client->AddAPIProvider(
+      std::make_unique<ShellExtensionsRendererAPIProvider>());
   extensions_client->RenderThreadStarted();
 
   // Note that creation order is important here. The Dispatcher needs to be

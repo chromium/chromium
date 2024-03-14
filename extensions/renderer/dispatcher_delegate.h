@@ -9,7 +9,6 @@
 #include <string>
 
 namespace extensions {
-class ScriptContext;
 
 // Base class and default implementation for an extensions::Dispacher delegate.
 // DispatcherDelegate can be used to override and extend the behavior of the
@@ -17,10 +16,6 @@ class ScriptContext;
 class DispatcherDelegate {
  public:
   virtual ~DispatcherDelegate() {}
-
-  // Requires modules for defining <webview> within an extension context's
-  // module system.
-  virtual void RequireWebViewModules(ScriptContext* context);
 
   // Allows the delegate to respond to an updated set of active extensions in
   // the Dispatcher.

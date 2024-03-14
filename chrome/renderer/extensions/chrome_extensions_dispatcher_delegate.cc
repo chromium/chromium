@@ -7,20 +7,10 @@
 #include "base/command_line.h"
 #include "chrome/common/crash_keys.h"
 #include "content/public/common/content_switches.h"
-#include "extensions/renderer/module_system.h"
-#include "extensions/renderer/script_context.h"
 
 ChromeExtensionsDispatcherDelegate::ChromeExtensionsDispatcherDelegate() {}
 
 ChromeExtensionsDispatcherDelegate::~ChromeExtensionsDispatcherDelegate() {}
-
-void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(
-    extensions::ScriptContext* context) {
-  DCHECK(context->GetAvailability("webViewInternal").is_available());
-  if (context->GetAvailability("chromeWebViewTag").is_available()) {
-    context->module_system()->Require("chromeWebViewElement");
-  }
-}
 
 void ChromeExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(
     const std::set<std::string>& extension_ids) {
