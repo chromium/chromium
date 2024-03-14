@@ -767,7 +767,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_ReplaceExistingSyncEntry) {
         run_loop.Quit();
       });
 
-  sync_bridge().OnWebApkUsed(std::move(used_specifics));
+  sync_bridge().OnWebApkUsed(std::move(used_specifics), false /* is_install */);
 
   run_loop.Run();
 
@@ -836,7 +836,7 @@ TEST_F(WebApkSyncBridgeTest, OnWebApkUsed_CreateNewSyncEntry) {
         run_loop.Quit();
       });
 
-  sync_bridge().OnWebApkUsed(std::move(used_specifics));
+  sync_bridge().OnWebApkUsed(std::move(used_specifics), false /* is_install */);
 
   run_loop.Run();
 

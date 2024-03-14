@@ -89,7 +89,8 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
           installed_apps,
       const syncer::EntityChangeList& sync_changes) const;
 
-  void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics);
+  void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics,
+                    bool is_install);
   void OnWebApkUninstalled(const std::string& manifest_id);
 
   void SetClockForTesting(std::unique_ptr<base::Clock> clock);
@@ -100,6 +101,19 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   GetModelTypeControllerDelegate();
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AddOrModifyType {
+    // Note that the "Modification" items refer to _any_ modification of the
+    // specifics proto - even just a timestamp change. This does not necessarily
+    // imply that there is any change in the actual WebAPK.
+    kNewInstallOnDeviceAndNewAddToSync = 0,
+    kNewInstallOnDeviceAndModificationToSync = 1,
+    kLaunchOnDeviceAndNewAddToSync = 2,
+    kLaunchOnDeviceAndModificationToSync = 3,
+    kMaxValue = kLaunchOnDeviceAndModificationToSync,
+  };
+
   void ReportErrorToChangeProcessor(const syncer::ModelError& error);
   void OnDatabaseOpened(base::OnceClosure callback,
                         Registry registry,
@@ -111,8 +125,12 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   void ApplyIncrementalSyncChangesToRegistry(
       std::unique_ptr<RegistryUpdateData> update_data);
 
-  void AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app);
+  void AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app, bool is_install);
   void DeleteAppsFromSync(const std::vector<webapps::AppId>& app_ids);
+
+  void RecordSyncedWebApkAdditionHistogram(bool is_install,
+                                           bool already_exists_in_sync) const;
+  void RecordSyncedWebApkRemovalCountHistogram(int num_web_apks_removed) const;
 
   WebApkDatabase database_;
   Registry registry_;

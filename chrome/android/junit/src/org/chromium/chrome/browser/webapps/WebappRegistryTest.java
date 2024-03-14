@@ -98,7 +98,7 @@ public class WebappRegistryTest {
 
     private static class TestWebApkSyncServiceJni implements WebApkSyncService.Natives {
         @Override
-        public void onWebApkUsed(byte[] webApkSpecifics) {}
+        public void onWebApkUsed(byte[] webApkSpecifics, boolean isInstall) {}
 
         @Override
         public void onWebApkUninstalled(String manifestId) {}

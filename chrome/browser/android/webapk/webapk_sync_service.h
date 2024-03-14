@@ -35,7 +35,8 @@ class WebApkSyncService : public KeyedService {
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetModelTypeControllerDelegate();
 
-  void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics);
+  void OnWebApkUsed(std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics,
+                    bool is_install);
   void OnWebApkUninstalled(const std::string& manifest_id);
   void RemoveOldWebAPKsFromSync(int64_t current_time_ms_since_unix_epoch);
 

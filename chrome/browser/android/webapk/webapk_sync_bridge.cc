@@ -59,6 +59,8 @@ webapps::AppId ManifestIdStrToAppId(const std::string& manifest_id) {
 namespace {
 
 constexpr base::TimeDelta kRecentAppMaxAge = base::Days(30);
+constexpr char kSyncedWebApkAdditionHistogramName[] =
+    "WebApk.Sync.SyncedWebApkAddition";
 
 const WebApkProto* GetAppById(const Registry& registry,
                               const webapps::AppId& app_id) {
@@ -333,13 +335,15 @@ std::optional<syncer::ModelError> WebApkSyncBridge::ApplyIncrementalSyncChanges(
 }
 
 void WebApkSyncBridge::OnWebApkUsed(
-    std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics) {
+    std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics,
+    bool is_install) {
   if (!change_processor()->IsTrackingMetadata()) {
     return;
   }
 
   AddOrModifyAppInSync(
-      WebApkProtoFromSpecifics(app_specifics.get(), true /* installed */));
+      WebApkProtoFromSpecifics(app_specifics.get(), true /* installed */),
+      is_install);
 }
 
 void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
@@ -440,8 +444,11 @@ void WebApkSyncBridge::RemoveOldWebAPKsFromSync(
   DeleteAppsFromSync(app_ids);
 }
 
-void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app) {
+void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app,
+                                            bool is_install) {
   webapps::AppId app_id = ManifestIdStrToAppId(app->sync_data().manifest_id());
+  RecordSyncedWebApkAdditionHistogram(is_install, registry_.count(app_id) > 0);
+
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateSyncEntityDataFromSpecifics(app->sync_data());
 
@@ -464,6 +471,10 @@ void WebApkSyncBridge::AddOrModifyAppInSync(std::unique_ptr<WebApkProto> app) {
 
 void WebApkSyncBridge::DeleteAppsFromSync(
     const std::vector<webapps::AppId>& app_ids) {
+  if (app_ids.size() > 0) {
+    RecordSyncedWebApkRemovalCountHistogram(app_ids.size());
+  }
+
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
   std::unique_ptr<RegistryUpdateData> registry_update =
@@ -493,6 +504,34 @@ const Registry& WebApkSyncBridge::GetRegistryForTesting() const {
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 WebApkSyncBridge::GetModelTypeControllerDelegate() {
   return change_processor()->GetControllerDelegate();
+}
+
+void WebApkSyncBridge::RecordSyncedWebApkAdditionHistogram(
+    bool is_install,
+    bool already_exists_in_sync) const {
+  if (is_install && !already_exists_in_sync) {
+    base::UmaHistogramEnumeration(
+        kSyncedWebApkAdditionHistogramName,
+        AddOrModifyType::kNewInstallOnDeviceAndNewAddToSync);
+  } else if (is_install && already_exists_in_sync) {
+    base::UmaHistogramEnumeration(
+        kSyncedWebApkAdditionHistogramName,
+        AddOrModifyType::kNewInstallOnDeviceAndModificationToSync);
+  } else if (!is_install && !already_exists_in_sync) {
+    base::UmaHistogramEnumeration(
+        kSyncedWebApkAdditionHistogramName,
+        AddOrModifyType::kLaunchOnDeviceAndNewAddToSync);
+  } else {
+    base::UmaHistogramEnumeration(
+        kSyncedWebApkAdditionHistogramName,
+        AddOrModifyType::kLaunchOnDeviceAndModificationToSync);
+  }
+}
+
+void WebApkSyncBridge::RecordSyncedWebApkRemovalCountHistogram(
+    int num_web_apks_removed) const {
+  base::UmaHistogramExactLinear("WebApk.Sync.SyncedWebApkRemovalCount",
+                                num_web_apks_removed, 51 /* max_count */);
 }
 
 }  // namespace webapk

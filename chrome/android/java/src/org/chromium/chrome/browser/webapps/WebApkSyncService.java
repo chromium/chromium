@@ -21,11 +21,13 @@ public class WebApkSyncService {
     private static final long UNIX_OFFSET_MICROS = 11644473600000000L;
 
     static void onWebApkUsed(
-            BrowserServicesIntentDataProvider intendDataProvider, WebappDataStorage storage) {
+            BrowserServicesIntentDataProvider intendDataProvider,
+            WebappDataStorage storage,
+            boolean isInstall) {
         WebApkSpecifics specifics =
                 getWebApkSpecifics(WebappInfo.create(intendDataProvider), storage);
         if (specifics != null) {
-            WebApkSyncServiceJni.get().onWebApkUsed(specifics.toByteArray());
+            WebApkSyncServiceJni.get().onWebApkUsed(specifics.toByteArray(), isInstall);
         }
     }
 
@@ -101,7 +103,7 @@ public class WebApkSyncService {
 
     @NativeMethods
     interface Natives {
-        void onWebApkUsed(byte[] webApkSpecifics);
+        void onWebApkUsed(byte[] webApkSpecifics, boolean isInstall);
 
         void onWebApkUninstalled(String manifestId);
 

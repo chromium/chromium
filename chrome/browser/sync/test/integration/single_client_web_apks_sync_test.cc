@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, UploadsAllFields) {
   sync_pb::WebApkIconInfo icon_info_copy = *icon_info;
 
   webapk::WebApkSyncService::GetForProfile(GetProfile(0))
-      ->OnWebApkUsed(std::move(app));
+      ->OnWebApkUsed(std::move(app), /*is_install=*/false);
 
   // Note: the local proto says is_locally_installed = true because of the call
   // to OnWebApkUsed().
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
   app1->set_manifest_id("https://example.com/app1");
   app1->set_name("app1");
 
-  web_apk_sync_service->OnWebApkUsed(std::move(app1));
+  web_apk_sync_service->OnWebApkUsed(std::move(app1), /*is_install=*/false);
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
   app2->set_manifest_id(manifest_id_2);
   app2->set_name("app2");
 
-  web_apk_sync_service->OnWebApkUsed(std::move(app2));
+  web_apk_sync_service->OnWebApkUsed(std::move(app2), /*is_install=*/false);
 
   // Only the WebAPK accessed after sync was turned on is uploaded.
   EXPECT_TRUE(WaitForServerWebApks(
@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
   webapk::WebApkSyncService* web_apk_sync_service =
       webapk::WebApkSyncService::GetForProfile(GetProfile(0));
 
-  web_apk_sync_service->OnWebApkUsed(std::move(app));
+  web_apk_sync_service->OnWebApkUsed(std::move(app), /*is_install=*/false);
 
   EXPECT_TRUE(WaitForLocalWebApks(
       UnorderedElementsAre(LocalManifestIdIs(manifest_id))));
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest,
 
   webapk::WebApkSyncService* web_apk_sync_service =
       webapk::WebApkSyncService::GetForProfile(GetProfile(0));
-  web_apk_sync_service->OnWebApkUsed(std::move(app));
+  web_apk_sync_service->OnWebApkUsed(std::move(app), /*is_install=*/false);
 
   EXPECT_TRUE(WaitForLocalWebApks(UnorderedElementsAre(
       AllOf(LocalIsLocallyInstalledIs(true), LocalManifestIdIs(manifest_id)))));
@@ -377,7 +377,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, MergesSyncConflicts) {
       std::make_unique<WebApkSpecifics>();
   client_app_2->set_manifest_id(manifest_id_2);
   client_app_2->set_name(client_name_2);
-  web_apk_sync_service->OnWebApkUsed(std::move(client_app_2));
+  web_apk_sync_service->OnWebApkUsed(std::move(client_app_2),
+                                     /*is_install=*/false);
 
   const std::string manifest_id_3 = "https://example.com/app3";
   const std::string client_name_3 = "app3 client";
@@ -385,7 +386,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, MergesSyncConflicts) {
       std::make_unique<WebApkSpecifics>();
   client_app_3->set_manifest_id(manifest_id_3);
   client_app_3->set_name(client_name_3);
-  web_apk_sync_service->OnWebApkUsed(std::move(client_app_3));
+  web_apk_sync_service->OnWebApkUsed(std::move(client_app_3),
+                                     /*is_install=*/false);
 
   const std::string manifest_id_4 = "https://example.com/app4";
   const std::string client_name_4 = "app4 client";
@@ -393,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebApksSyncTest, MergesSyncConflicts) {
       std::make_unique<WebApkSpecifics>();
   client_app_4->set_manifest_id(manifest_id_4);
   client_app_4->set_name(client_name_4);
-  web_apk_sync_service->OnWebApkUsed(std::move(client_app_4));
+  web_apk_sync_service->OnWebApkUsed(std::move(client_app_4),
+                                     /*is_install=*/false);
 
   EXPECT_TRUE(WaitForLocalWebApks(UnorderedElementsAre(
       AllOf(LocalManifestIdIs(manifest_id_1), LocalNameIs(server_name_1)),

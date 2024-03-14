@@ -151,6 +151,13 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Download icon and hash error"/>
 </enum>
 
+<enum name="WebApkSyncAddOrModifyType">
+  <int value="0" label="New install on device, and new addition to Sync"/>
+  <int value="1" label="New install on device, and modification to Sync"/>
+  <int value="2" label="Launch on device, and new addition to Sync"/>
+  <int value="3" label="Launch on device, and modification to Sync"/>
+</enum>
+
 <enum name="WebApkUpdateRequestQueued">
   <int value="0" label="Queued for the first time"/>
   <int value="1" label="Queued for the second time"/>

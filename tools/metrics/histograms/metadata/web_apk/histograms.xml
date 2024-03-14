@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Database.WriteResult" enum="Boolean"
-    expires_after="2024-06-01">
+    expires_after="2025-03-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>Records the write result (boolean) in WebApkDatabase.</summary>
@@ -254,6 +254,42 @@ chromium-metrics-reviews@google.com.
     been sent to the background since launch. - There was no recents entry for
     Chrome (android replays intents if a recents entry exists), which otherwise
     adds noise/long-tail to this histogram.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Sync.SyncedWebApkAddition"
+    enum="WebApkSyncAddOrModifyType" expires_after="2025-03-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records additions and modifications to the WebAPK Sync database. In
+    particular, this keeps track of whether the addition is new on the device
+    (vs just a launch of an existing WebAPK) and whether it's new to the Sync
+    database (vs a modification of an existing item). Recorded every time a
+    WebAPK is installed or launched.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Sync.SyncedWebApkCount" units="WebApks"
+    expires_after="2025-03-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records a count of the number of WebAPKs in the WebAPK Sync database.
+    Recorded when the WebAPK Database is opened, which happens on every Chrome
+    launch on Android.
+  </summary>
+</histogram>
+
+<histogram name="WebApk.Sync.SyncedWebApkRemovalCount" units="WebApks"
+    expires_after="2025-03-01">
+  <owner>hartmanng@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    Records the number of WebAPKs that get removed from the WebAPK Sync
+    database. Recorded when removing a WebAPK from the Sync database, which
+    happens when an unused WebAPK is uninstalled, or when Chrome is launched on
+    Android when expired WebAPK entries exist in Sync.
   </summary>
 </histogram>
 

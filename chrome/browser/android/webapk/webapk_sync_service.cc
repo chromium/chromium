@@ -62,8 +62,9 @@ WebApkSyncService::GetModelTypeControllerDelegate() {
 }
 
 void WebApkSyncService::OnWebApkUsed(
-    std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics) {
-  sync_bridge_->OnWebApkUsed(std::move(app_specifics));
+    std::unique_ptr<sync_pb::WebApkSpecifics> app_specifics,
+    bool is_install) {
+  sync_bridge_->OnWebApkUsed(std::move(app_specifics), is_install);
 }
 
 void WebApkSyncService::OnWebApkUninstalled(const std::string& manifest_id) {
@@ -78,7 +79,8 @@ void WebApkSyncService::RemoveOldWebAPKsFromSync(
 // static
 static void JNI_WebApkSyncService_OnWebApkUsed(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& java_webapk_specifics) {
+    const JavaParamRef<jbyteArray>& java_webapk_specifics,
+    jboolean is_install) {
   if (!base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
     return;
   }
@@ -98,7 +100,8 @@ static void JNI_WebApkSyncService_OnWebApkUsed(
     LOG(ERROR) << "failed to parse WebApkSpecifics proto";
     return;
   }
-  WebApkSyncService::GetForProfile(profile)->OnWebApkUsed(std::move(specifics));
+  WebApkSyncService::GetForProfile(profile)->OnWebApkUsed(
+      std::move(specifics), static_cast<bool>(is_install));
 }
 
 static void JNI_WebApkSyncService_OnWebApkUninstalled(

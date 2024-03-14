@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/android/webapk/proto/webapk_database.pb.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
@@ -140,6 +141,8 @@ void WebApkDatabase::OnAllMetadataRead(
     registry.emplace(record.id, std::move(proto));
   }
 
+  RecordSyncedWebApkCountHistogram(registry.size());
+
   opened_ = true;
   // This should be a tail call: a callback code may indirectly call |this|
   // methods, like WebApkDatabase::Write()
@@ -156,6 +159,11 @@ void WebApkDatabase::OnDataWritten(
   }
 
   std::move(callback).Run(!error);
+}
+
+void WebApkDatabase::RecordSyncedWebApkCountHistogram(int num_web_apks) const {
+  base::UmaHistogramExactLinear("WebApk.Sync.SyncedWebApkCount", num_web_apks,
+                                51 /* max_count */);
 }
 
 }  // namespace webapk

@@ -64,7 +64,7 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         assert storage != null;
         storage.incrementLaunchCount();
 
-        WebApkSyncService.onWebApkUsed(mIntentDataProvider, storage);
+        WebApkSyncService.onWebApkUsed(mIntentDataProvider, storage, false /* isInstall */);
         mWebApkUpdateManager.get().updateIfNeeded(storage, mIntentDataProvider);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {

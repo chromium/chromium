@@ -71,6 +71,8 @@ class WebApkDatabase {
   void OnDataWritten(CompletionCallback callback,
                      const std::optional<syncer::ModelError>& error);
 
+  void RecordSyncedWebApkCountHistogram(int num_web_apks) const;
+
   std::unique_ptr<syncer::ModelTypeStore> store_;
   const raw_ptr<AbstractWebApkDatabaseFactory, DanglingUntriaged>
       database_factory_;
