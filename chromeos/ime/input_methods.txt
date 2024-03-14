@@ -100,7 +100,7 @@ xkb:pt::por           pt             pt-PT,pt  PT login
 xkb:ro::rum           ro             ro        RO login
 xkb:ro:std:rum        ro(std)        ro        RO login
 xkb:se::swe           se             sv        SE login
-xkb:sk::slo           sk             sk        SK
+xkb:sk::slo           sk             sk        SK login
 xkb:si::slv           si             sl        SI login
 xkb:rs::srp           rs             sr        RS
 xkb:tr::tur           tr             tr        TR login
