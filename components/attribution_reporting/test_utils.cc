@@ -7,6 +7,8 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
@@ -48,6 +50,10 @@ FiltersDisjunction FiltersForSourceType(
 
 TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
                                  bool collapse_into_single_spec) {
+  if (windows_per_type.empty()) {
+    return TriggerSpecs();
+  }
+
   attribution_reporting::TriggerSpecs::TriggerDataIndices indices;
   std::vector<attribution_reporting::TriggerSpec> raw_specs;
 

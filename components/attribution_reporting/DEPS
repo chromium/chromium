@@ -9,6 +9,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "(fuzz_utils\.(h|cc))|(.*_fuzztest.cc)": [
+    "+third_party/fuzztest/src/fuzztest/fuzztest.h",
+  ],
   "registration_mojom_traits\.(h|cc)": [
     "+mojo/public/cpp/base/int128_mojom_traits.h",
     "+mojo/public/cpp/base/time_mojom_traits.h",

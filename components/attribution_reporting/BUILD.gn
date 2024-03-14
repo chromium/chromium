@@ -4,6 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
 
 mojom("mojom") {
   sources = [
@@ -407,4 +408,28 @@ mojom("source_type_mojom") {
   webui_module_path = "/"
   disallow_interfaces = true
   generate_java = false
+}
+
+source_set("fuzzer_support") {
+  testonly = true
+
+  sources = [ "fuzz_utils.h" ]
+
+  public_deps = [
+    ":attribution_reporting",
+    "//third_party/fuzztest",
+  ]
+}
+
+test("privacy_math_fuzztest") {
+  sources = [ "privacy_math_fuzztest.cc" ]
+
+  fuzztests = [ "PrivacyMathTest.SingleSpecNumStatesMatchesRecursive" ]
+
+  deps = [
+    ":attribution_reporting",
+    ":fuzzer_support",
+    ":test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }

@@ -204,13 +204,9 @@ absl::uint128 GetNumStatesCached(const TriggerSpecs& specs,
 
   // Optimized fast-path.
   if (specs.SingleSharedSpec()) {
-    absl::uint128 states = internal::GetNumberOfStarsAndBarsSequences(
+    return internal::GetNumberOfStarsAndBarsSequences(
         /*num_stars=*/max_reports,
         /*num_bars=*/specs.size() * num_windows);
-    DCHECK_EQ(states, GetNumStatesRecursive(it, max_reports, num_windows,
-                                            max_reports, map));
-    DCHECK_GE(states, 0);
-    return states;
   }
   return GetNumStatesRecursive(it, max_reports, num_windows, max_reports, map);
 }
