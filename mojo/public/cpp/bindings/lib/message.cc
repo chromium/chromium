@@ -127,7 +127,8 @@ void CreateSerializedMessageObject(uint32_t name,
                                    MojoCreateMessageFlags create_message_flags,
                                    std::vector<ScopedHandle>* handles,
                                    ScopedMessageHandle* out_handle,
-                                   internal::Buffer* out_buffer) {
+                                   internal::Buffer* out_buffer,
+                                   size_t estimated_payload_size) {
   ScopedMessageHandle handle;
   MojoResult rv = CreateMessage(&handle, create_message_flags);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
@@ -135,13 +136,16 @@ void CreateSerializedMessageObject(uint32_t name,
 
   void* buffer;
   uint32_t buffer_size;
-  size_t total_size = internal::ComputeSerializedMessageSize(
+  const size_t total_size = internal::ComputeSerializedMessageSize(
       flags, payload_size, payload_interface_id_count);
+  const size_t total_allocation_size = internal::EstimateSerializedMessageSize(
+      name, payload_size, total_size, estimated_payload_size);
+
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(total_size));
   DCHECK(!handles ||
          base::IsValueInRangeForNumericType<uint32_t>(handles->size()));
   rv = MojoAppendMessageData(
-      handle->value(), static_cast<uint32_t>(total_size),
+      handle->value(), static_cast<uint32_t>(total_allocation_size),
       handles ? reinterpret_cast<MojoHandle*>(handles->data()) : nullptr,
       handles ? static_cast<uint32_t>(handles->size()) : 0, nullptr, &buffer,
       &buffer_size);
@@ -157,7 +161,7 @@ void CreateSerializedMessageObject(uint32_t name,
                                   buffer_size);
 
   // Make sure we zero the memory first!
-  memset(payload_buffer.data(), 0, total_size);
+  memset(payload_buffer.data(), 0, total_allocation_size);
   WriteMessageHeader(name, flags, trace_nonce, payload_interface_id_count,
                      &payload_buffer);
 
@@ -238,16 +242,18 @@ Message::Message(uint32_t name,
                  size_t payload_size,
                  size_t payload_interface_id_count,
                  MojoCreateMessageFlags create_message_flags,
-                 std::vector<ScopedHandle>* handles) {
+                 std::vector<ScopedHandle>* handles,
+                 size_t estimated_payload_size) {
   uint32_t trace_nonce =
       static_cast<uint32_t>(base::trace_event::GetNextGlobalTraceId());
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("mojom"), "mojo::Message::Message",
               perfetto::Flow::Global(::mojo::GetTraceId(name, trace_nonce)),
               "name", name, "flags", flags, "trace_nonce", trace_nonce);
 
-  CreateSerializedMessageObject(
-      name, flags, trace_nonce, payload_size, payload_interface_id_count,
-      create_message_flags, handles, &handle_, &payload_buffer_);
+  CreateSerializedMessageObject(name, flags, trace_nonce, payload_size,
+                                payload_interface_id_count,
+                                create_message_flags, handles, &handle_,
+                                &payload_buffer_, estimated_payload_size);
   transferable_ = true;
   serialized_ = true;
 }
@@ -256,13 +262,15 @@ Message::Message(uint32_t name,
                  uint32_t flags,
                  size_t payload_size,
                  size_t payload_interface_id_count,
-                 std::vector<ScopedHandle>* handles)
+                 std::vector<ScopedHandle>* handles,
+                 size_t estimated_payload_size)
     : Message(name,
               flags,
               payload_size,
               payload_interface_id_count,
               MOJO_CREATE_MESSAGE_FLAG_NONE,
-              handles) {}
+              handles,
+              estimated_payload_size) {}
 
 Message::Message(ScopedMessageHandle handle,
                  const internal::MessageHeaderV1& header)

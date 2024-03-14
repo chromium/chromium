@@ -21,4 +21,8 @@ class {{export_attribute}} {{interface.name}}Proxy
 
  private:
   mojo::MessageReceiverWithResponder* receiver_;
+
+{%- if interface|has_estimate_size_methods %}
+  mojo::internal::MessageSizeEstimator size_estimator_;
+{%- endif %}
 };

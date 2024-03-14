@@ -31,5 +31,10 @@ BASE_FEATURE(kMojoRecordUnreadMessageCount,
              "MojoRecordUnreadMessageCount",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables predictive allocation for Mojo serialization.
+BASE_FEATURE(kMojoPredictiveAllocation,
+             "MojoPredictiveAllocation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace mojo

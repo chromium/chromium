@@ -83,14 +83,24 @@ base::OnceCallback<void(
 
 {%- macro build_serialized_message(message_name, method, param_name_prefix,
                                    params_struct, params_description,
-                                   flags_text, message_object_name) %}
+                                   flags_text, message_object_name,
+                                   has_size_estimator = False) %}
+  const size_t estimated_payload_size =
+{%-   if has_size_estimator and method.estimate_message_size  %}
+    size_estimator_.EstimatePayloadSize({{message_name}});
+{%-   else %}
+    0;
+{%-   endif %}
+
 {%-   if method.unlimited_message_size %}
   mojo::Message {{message_object_name}}(
       {{message_name}}, {{flags_text}}, 0, 0,
-      MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE, nullptr);
+      MOJO_CREATE_MESSAGE_FLAG_UNLIMITED_SIZE, nullptr,
+      estimated_payload_size);
 {%-   else %}
   mojo::Message {{message_object_name}}(
-      {{message_name}}, {{flags_text}}, 0, 0, nullptr);
+      {{message_name}}, {{flags_text}}, 0, 0, nullptr,
+      estimated_payload_size);
 {%-   endif %}
   mojo::internal::MessageFragment<
       {{params_struct|get_qualified_name_for_kind(internal=True)}}> params(

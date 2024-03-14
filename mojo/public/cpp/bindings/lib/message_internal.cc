@@ -41,5 +41,16 @@ size_t ComputeSerializedMessageSize(uint32_t flags,
   return internal::Align(header_size + payload_size);
 }
 
+size_t EstimateSerializedMessageSize(uint32_t message_name,
+                                     size_t payload_size,
+                                     size_t total_size,
+                                     size_t estimated_payload_size) {
+  if (estimated_payload_size > payload_size) {
+    const size_t extra_payload_size = estimated_payload_size - payload_size;
+    return internal::Align(total_size + extra_payload_size);
+  }
+  return total_size;
+}
+
 }  // namespace internal
 }  // namespace mojo

@@ -80,6 +80,12 @@ size_t ComputeSerializedMessageSize(uint32_t flags,
                                     size_t payload_size,
                                     size_t payload_interface_id_count);
 
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+size_t EstimateSerializedMessageSize(uint32_t message_name,
+                                     size_t payload_size,
+                                     size_t total_size,
+                                     size_t estimated_payload_size);
+
 }  // namespace internal
 }  // namespace mojo
 

@@ -224,6 +224,16 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
 
 {{proxy_name}}::{{proxy_name}}(mojo::MessageReceiverWithResponder* receiver)
     : receiver_(receiver) {
+{%- if interface|has_estimate_size_methods %}
+  if (base::FeatureList::IsEnabled(mojo::features::kMojoPredictiveAllocation)) {
+{%-   for method in interface.methods %}
+{%-     if method.estimate_message_size %}
+{%-       set message_name = "internal::k%s_%s_Name"|format(interface.name, method.name) %}
+    size_estimator_.EnablePredictiveAllocation({{message_name}});
+{%-     endif %}
+{%-   endfor %}
+  }
+{%- endif %}
 }
 
 {#--- Proxy definitions #}
@@ -345,13 +355,17 @@ void {{proxy_name}}::{{method.name}}(
                                          "kFlags")}}
   {{interface_macros.build_serialized_message(
       message_name, method, "in_%s", params_struct, params_description,
-      "kFlags", "message")}}
+      "kFlags", "message", True)}}
 {%-   endif %}
 
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
   message.set_method_name("{{method.name}}");
 #endif
+
+{%- if method.estimate_message_size %}
+  size_estimator_.TrackPayloadSize({{message_name}}, message.payload_num_bytes());
+{%- endif %}
 
 {%- if method.response_parameters != None %}
   std::unique_ptr<mojo::MessageReceiver> responder(
