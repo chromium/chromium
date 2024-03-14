@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_mediator.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_view_controller.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_coordinator.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/views/view_tracker.h"
@@ -23,7 +24,8 @@ class CameraCoordinator {
   CameraCoordinator(views::View& parent_view,
                     bool needs_borders,
                     const std::vector<std::string>& eligible_camera_ids,
-                    PrefService& prefs);
+                    PrefService& prefs,
+                    media_preview_metrics::Context metrics_context);
   CameraCoordinator(const CameraCoordinator&) = delete;
   CameraCoordinator& operator=(const CameraCoordinator&) = delete;
   ~CameraCoordinator();
@@ -55,6 +57,7 @@ class CameraCoordinator {
   // align.
   std::vector<media::VideoCaptureDeviceInfo> eligible_device_infos_;
   raw_ptr<PrefService> prefs_;
+  const media_preview_metrics::Context metrics_context_;
   std::optional<CameraViewController> camera_view_controller_;
   std::optional<VideoStreamCoordinator> video_stream_coordinator_;
 };

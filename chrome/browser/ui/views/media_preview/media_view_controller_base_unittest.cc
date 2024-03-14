@@ -46,7 +46,9 @@ class MediaViewControllerBaseTest : public TestWithBrowserView,
         source_change_callback_.Get(),
         /*combobox_accessible_name=*/kComboboxAccessibleName,
         /*no_devices_found_combobox_text=*/kNoDeviceComboboxText,
-        /*no_devices_found_label_text=*/kNoDeviceLabelText);
+        /*no_devices_found_label_text=*/kNoDeviceLabelText,
+        media_preview_metrics::Context(
+            media_preview_metrics::UiLocation::kPermissionPrompt));
     combobox_model_->AddObserver(this);
   }
 

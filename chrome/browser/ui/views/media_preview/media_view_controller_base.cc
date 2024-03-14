@@ -57,7 +57,8 @@ MediaViewControllerBase::MediaViewControllerBase(
     SourceChangeCallback source_change_callback,
     const std::u16string& combobox_accessible_name,
     const std::u16string& no_devices_found_combobox_text,
-    const std::u16string& no_devices_found_label_text)
+    const std::u16string& no_devices_found_label_text,
+    media_preview_metrics::Context metrics_context)
     : base_view_(base_view),
       live_feed_container_(raw_ref<MediaView>::from_ptr(
           base_view_->AddChildView(std::make_unique<MediaView>()))),
@@ -68,7 +69,8 @@ MediaViewControllerBase::MediaViewControllerBase(
       device_selector_combobox_(raw_ref<views::Combobox>::from_ptr(
           base_view_->AddChildView(std::make_unique<views::Combobox>(model)))),
       no_devices_found_combobox_text_(no_devices_found_combobox_text),
-      source_change_callback_(std::move(source_change_callback)) {
+      source_change_callback_(std::move(source_change_callback)),
+      metrics_context_(metrics_context) {
   CHECK(source_change_callback_);
 
   auto* provider = ChromeLayoutProvider::Get();

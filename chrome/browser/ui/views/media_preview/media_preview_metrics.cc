@@ -9,6 +9,9 @@
 
 namespace media_preview_metrics {
 
+Context::Context(UiLocation ui_location) : ui_location(ui_location) {}
+Context::~Context() = default;
+
 void RecordPageInfoCameraNumInUseDevices(int devices) {
   base::UmaHistogramCustomCounts(
       "MediaPreviews.UI.PageInfo.Camera.NumInUseDevices", devices, 0, 5, 5);

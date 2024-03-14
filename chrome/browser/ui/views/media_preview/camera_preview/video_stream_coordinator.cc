@@ -13,7 +13,10 @@
 #include "content/public/browser/context_factory.h"
 #include "media/capture/video_capture_types.h"
 
-VideoStreamCoordinator::VideoStreamCoordinator(views::View& parent_view) {
+VideoStreamCoordinator::VideoStreamCoordinator(
+    views::View& parent_view,
+    media_preview_metrics::Context metrics_context)
+    : metrics_context_(metrics_context) {
   auto* video_stream_view =
       parent_view.AddChildView(std::make_unique<VideoStreamView>());
   video_stream_view_tracker_.SetView(video_stream_view);

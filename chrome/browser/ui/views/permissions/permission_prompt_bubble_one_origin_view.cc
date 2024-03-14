@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/url_constants.h"
@@ -304,7 +305,9 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
       MediaCoordinator::EligibleDevices{
           /*cameras=*/requested_video_capture_device_ids,
           /*mics=*/requested_audio_capture_device_ids},
-      *browser_->profile()->GetPrefs());
+      *browser_->profile()->GetPrefs(),
+      media_preview_metrics::Context(
+          media_preview_metrics::UiLocation::kPermissionPrompt));
 #endif
 }
 

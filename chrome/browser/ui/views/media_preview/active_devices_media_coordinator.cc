@@ -180,7 +180,9 @@ void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
   media_coordinators_.emplace(
       coordinator_key, std::make_unique<MediaCoordinator>(
                            view_type_, *container_,
-                           /*is_subsection=*/true, eligible_devices, *prefs));
+                           /*is_subsection=*/true, eligible_devices, *prefs,
+                           media_preview_metrics::Context(
+                               media_preview_metrics::UiLocation::kPageInfo)));
   separators_.emplace(coordinator_key,
                       container_->AddChildView(CreateSeparator()));
 }

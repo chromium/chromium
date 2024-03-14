@@ -28,7 +28,8 @@ class CameraViewController {
   CameraViewController(MediaView& base_view,
                        bool needs_borders,
                        ui::SimpleComboboxModel& combobox_model,
-                       MediaViewControllerBase::SourceChangeCallback callback);
+                       MediaViewControllerBase::SourceChangeCallback callback,
+                       media_preview_metrics::Context metrics_context);
   CameraViewController(const CameraViewController&) = delete;
   CameraViewController& operator=(const CameraViewController&) = delete;
   ~CameraViewController();

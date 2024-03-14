@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 
 class MediaView;
 
@@ -39,7 +40,8 @@ class MediaViewControllerBase {
                           SourceChangeCallback source_change_callback,
                           const std::u16string& combobox_accessible_name,
                           const std::u16string& no_devices_found_combobox_text,
-                          const std::u16string& no_devices_found_label_text);
+                          const std::u16string& no_devices_found_label_text,
+                          media_preview_metrics::Context metrics_context);
   MediaViewControllerBase(const MediaViewControllerBase&) = delete;
   MediaViewControllerBase& operator=(const MediaViewControllerBase&) = delete;
   ~MediaViewControllerBase();
@@ -66,6 +68,8 @@ class MediaViewControllerBase {
   const std::u16string no_devices_found_combobox_text_;
 
   const SourceChangeCallback source_change_callback_;
+
+  const media_preview_metrics::Context metrics_context_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_VIEW_CONTROLLER_BASE_H_

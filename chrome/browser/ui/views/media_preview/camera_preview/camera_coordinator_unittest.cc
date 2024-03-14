@@ -81,9 +81,11 @@ class CameraCoordinatorTest : public TestWithBrowserView {
 
   void InitializeCoordinator(std::vector<std::string> eligible_camera_ids) {
     CHECK(profile()->GetPrefs());
-    coordinator_.emplace(*parent_view_,
-                         /*needs_borders=*/true, eligible_camera_ids,
-                         *profile()->GetPrefs());
+    coordinator_.emplace(
+        *parent_view_,
+        /*needs_borders=*/true, eligible_camera_ids, *profile()->GetPrefs(),
+        media_preview_metrics::Context(
+            media_preview_metrics::UiLocation::kPermissionPrompt));
   }
 
   const ui::SimpleComboboxModel& GetComboboxModel() const {

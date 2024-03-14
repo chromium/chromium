@@ -18,14 +18,16 @@ CameraCoordinator::CameraCoordinator(
     views::View& parent_view,
     bool needs_borders,
     const std::vector<std::string>& eligible_camera_ids,
-    PrefService& prefs)
+    PrefService& prefs,
+    media_preview_metrics::Context metrics_context)
     : camera_mediator_(
           prefs,
           base::BindRepeating(&CameraCoordinator::OnVideoSourceInfosReceived,
                               base::Unretained(this))),
       combobox_model_({}),
       eligible_camera_ids_(eligible_camera_ids),
-      prefs_(&prefs) {
+      prefs_(&prefs),
+      metrics_context_(metrics_context) {
   auto* camera_view = parent_view.AddChildView(std::make_unique<MediaView>());
   camera_view_tracker_.SetView(camera_view);
   // Safe to use base::Unretained() because `this` owns / outlives
@@ -33,15 +35,18 @@ CameraCoordinator::CameraCoordinator(
   camera_view_tracker_.SetIsDeletingCallback(base::BindOnce(
       &CameraCoordinator::ResetViewController, base::Unretained(this)));
 
+  metrics_context.preview_type = media_preview_metrics::PreviewType::kCamera;
+
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_controller_`.
   camera_view_controller_.emplace(
       *camera_view, needs_borders, combobox_model_,
       base::BindRepeating(&CameraCoordinator::OnVideoSourceChanged,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      metrics_context);
 
   video_stream_coordinator_.emplace(
-      camera_view_controller_->GetLiveFeedContainer());
+      camera_view_controller_->GetLiveFeedContainer(), metrics_context);
 }
 
 CameraCoordinator::~CameraCoordinator() {

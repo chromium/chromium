@@ -7,6 +7,17 @@
 
 namespace media_preview_metrics {
 
+enum class UiLocation { kPermissionPrompt, kPageInfo };
+enum class PreviewType { kUnknown, kCamera, kMic };
+
+struct Context {
+  explicit Context(UiLocation ui_location);
+  ~Context();
+
+  const UiLocation ui_location;
+  PreviewType preview_type = PreviewType::kUnknown;
+};
+
 void RecordPageInfoCameraNumInUseDevices(int devices);
 void RecordPageInfoMicNumInUseDevices(int devices);
 

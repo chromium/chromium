@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
@@ -23,11 +24,13 @@ MediaCoordinator::EligibleDevices::~EligibleDevices() = default;
 MediaCoordinator::EligibleDevices::EligibleDevices(const EligibleDevices&) =
     default;
 
-MediaCoordinator::MediaCoordinator(ViewType view_type,
-                                   views::View& parent_view,
-                                   bool is_subsection,
-                                   EligibleDevices eligible_devices,
-                                   PrefService& prefs) {
+MediaCoordinator::MediaCoordinator(
+    ViewType view_type,
+    views::View& parent_view,
+    bool is_subsection,
+    EligibleDevices eligible_devices,
+    PrefService& prefs,
+    media_preview_metrics::Context metrics_context) {
   media_view_ =
       parent_view.AddChildView(std::make_unique<MediaView>(is_subsection));
 
@@ -46,12 +49,13 @@ MediaCoordinator::MediaCoordinator(ViewType view_type,
 
   if (view_type != ViewType::kMicOnly) {
     camera_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
-                                eligible_devices.cameras, prefs);
+                                eligible_devices.cameras, prefs,
+                                metrics_context);
   }
 
   if (view_type != ViewType::kCameraOnly) {
     mic_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
-                             eligible_devices.mics, prefs);
+                             eligible_devices.mics, prefs, metrics_context);
   }
 }
 

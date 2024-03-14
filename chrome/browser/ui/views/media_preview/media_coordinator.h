@@ -14,6 +14,10 @@
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_coordinator.h"
 #include "components/prefs/pref_service.h"
 
+namespace media_preview_metrics {
+struct Context;
+}  // namespace media_preview_metrics
+
 namespace views {
 class View;
 }  // namespace views
@@ -40,7 +44,8 @@ class MediaCoordinator {
                    views::View& parent_view,
                    bool is_subsection,
                    EligibleDevices eligible_devices,
-                   PrefService& prefs);
+                   PrefService& prefs,
+                   media_preview_metrics::Context metrics_context);
   MediaCoordinator(const MediaCoordinator&) = delete;
   MediaCoordinator& operator=(const MediaCoordinator&) = delete;
   ~MediaCoordinator();

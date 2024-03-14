@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/audio_stream_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_mediator.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_view_controller.h"
@@ -27,7 +28,8 @@ class MicCoordinator {
   MicCoordinator(views::View& parent_view,
                  bool needs_borders,
                  const std::vector<std::string>& eligible_mic_ids,
-                 PrefService& prefs);
+                 PrefService& prefs,
+                 media_preview_metrics::Context metrics_context);
   MicCoordinator(const MicCoordinator&) = delete;
   MicCoordinator& operator=(const MicCoordinator&) = delete;
   ~MicCoordinator();
@@ -63,6 +65,7 @@ class MicCoordinator {
   // align.
   std::vector<media::AudioDeviceDescription> eligible_device_infos_;
   raw_ptr<PrefService> prefs_;
+  const media_preview_metrics::Context metrics_context_;
   std::optional<MicViewController> mic_view_controller_;
   std::optional<AudioStreamCoordinator> audio_stream_coordinator_;
 };
