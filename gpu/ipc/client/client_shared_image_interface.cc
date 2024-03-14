@@ -237,7 +237,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       AddMailbox(proxy_->CreateSharedImage(
           buffer_format, plane, gpu_memory_buffer->GetSize(), si_info,
           gpu_memory_buffer->CloneHandle())),
-      SharedImageMetadata(viz::GetSinglePlaneSharedImageFormat(buffer_format),
+      SharedImageMetadata(viz::GetSinglePlaneSharedImageFormat(
+                              GetPlaneBufferFormat(plane, buffer_format)),
                           gpu_memory_buffer->GetSize(),
                           si_info.meta.color_space, si_info.meta.surface_origin,
                           si_info.meta.alpha_type, si_info.meta.usage),
