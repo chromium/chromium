@@ -325,6 +325,70 @@ TEST_F(ModelExecutionManagerTest,
       "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
 }
 
+TEST_F(ModelExecutionManagerTest, ExecuteModelDisableFallback) {
+  base::HistogramTester histogram_tester;
+
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("a user typed this");
+  base::RunLoop run_loop;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE,
+      SessionConfigParams{.disable_server_fallback = true});
+  ASSERT_FALSE(session);
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose", 0);
+}
+
+TEST_F(ModelExecutionManagerTest,
+       ExecuteModelDisableFallbackExplicitlySetToFalse) {
+  base::HistogramTester histogram_tester;
+
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("a user typed this");
+  base::RunLoop run_loop;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+  auto session = model_execution_manager()->StartSession(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE,
+      SessionConfigParams{.disable_server_fallback = false});
+  session->ExecuteModel(
+      request, base::BindRepeating(
+                   [](base::RunLoop* run_loop,
+                      OptimizationGuideModelStreamingExecutionResult result) {
+                     EXPECT_TRUE(result.response.has_value());
+                     EXPECT_EQ("foo response",
+                               ParsedAnyMetadata<proto::ComposeResponse>(
+                                   result.response->response)
+                                   ->output());
+                     EXPECT_TRUE(result.response->is_complete);
+                     EXPECT_NE(result.log_entry, nullptr);
+                     EXPECT_TRUE(result.log_entry->log_ai_data_request()
+                                     ->mutable_compose()
+                                     ->has_request_data());
+                     EXPECT_TRUE(result.log_entry->log_ai_data_request()
+                                     ->mutable_compose()
+                                     ->has_response_data());
+                     run_loop->Quit();
+                   },
+                   &run_loop));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  EXPECT_TRUE(SimulateSuccessfulResponse());
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.SessionUsedRemoteExecution.Compose",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.Result.Compose", true, 1);
+}
+
 TEST_F(ModelExecutionManagerTest, ExecuteModelWithPassthroughSession) {
   base::HistogramTester histogram_tester;
 

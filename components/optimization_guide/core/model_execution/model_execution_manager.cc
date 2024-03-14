@@ -254,6 +254,10 @@ ModelExecutionManager::StartSession(
     }
   }
 
+  if (config_params && config_params->disable_server_fallback) {
+    return nullptr;
+  }
+
   RecordSessionUsedRemoteExecutionHistogram(feature, /*is_remote=*/true);
   return std::make_unique<SessionImpl>(
       base::DoNothing(), feature, std::nullopt, nullptr, nullptr,
