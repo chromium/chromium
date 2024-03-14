@@ -250,12 +250,6 @@ bool FrameResources::Initialize() {
       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
-  uint32_t texture_target = GL_TEXTURE_2D;
-#if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/1311844): Use gpu::GetBufferTextureTarget() instead.
-  texture_target = gpu::GetPlatformSpecificTextureTarget();
-#endif
-
   switch (format_) {
     case PIXEL_FORMAT_NV12: {
       // TODO(crbug.com/40239769): Merge with ARGB code after multi-planar
@@ -268,7 +262,9 @@ bool FrameResources::Initialize() {
         if (shared_images_[0]) {
           mailbox_holders_[0].mailbox = shared_images_[0]->mailbox();
         }
-        mailbox_holders_[0].texture_target = texture_target;
+        mailbox_holders_[0].texture_target =
+            shared_images_[0] ? shared_images_[0]->GetTextureTargetForOverlays()
+                              : GL_TEXTURE_2D;
         return true;
       }
 
@@ -285,7 +281,10 @@ bool FrameResources::Initialize() {
         if (shared_images_[plane]) {
           mailbox_holders_[plane].mailbox = shared_images_[plane]->mailbox();
         }
-        mailbox_holders_[plane].texture_target = texture_target;
+        mailbox_holders_[plane].texture_target =
+            shared_images_[plane]
+                ? shared_images_[plane]->GetTextureTargetForOverlays()
+                : GL_TEXTURE_2D;
       }
       return true;
     }
@@ -296,7 +295,8 @@ bool FrameResources::Initialize() {
           kSharedImageUsage, mailbox_holders_[0].sync_token);
       if (shared_images_[0]) {
         mailbox_holders_[0].mailbox = shared_images_[0]->mailbox();
-        mailbox_holders_[0].texture_target = texture_target;
+        mailbox_holders_[0].texture_target =
+            shared_images_[0]->GetTextureTargetForOverlays();
       }
       return true;
     }
