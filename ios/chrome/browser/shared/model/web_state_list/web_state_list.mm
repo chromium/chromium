@@ -397,6 +397,12 @@ void WebStateList::MoveToGroup(const std::set<int>& indices,
   MoveToGroupImpl(indices, group);
 }
 
+void WebStateList::RemoveFromGroups(const std::set<int>& indices) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+  RemoveFromGroupsImpl(indices);
+}
+
 base::AutoReset<bool> WebStateList::LockForMutation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!locked_) << "WebStateList is not re-entrant; it is an error to try to "
@@ -840,6 +846,23 @@ void WebStateList::MoveToGroupImpl(const std::set<int>& indices,
   for (int index : after_group) {
     MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, group);
     ++to_index;
+  }
+}
+
+void WebStateList::RemoveFromGroupsImpl(const std::set<int>& indices) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
+
+  // Ungrouped WebStates are moved after the group. Iterate from the end to
+  // keep ungrouped WebStates in the order they were in the group.
+  for (auto it = indices.rbegin(); it != indices.rend(); ++it) {
+    const int index = *it;
+    const TabGroup* group = GetGroupOfWebStateAt(index);
+    if (group) {
+      const int to_index = GetWebStates(group).end() - 1;
+      MoveWebStateWrapperAt(*it, to_index, /*pinned=*/false,
+                            /*new_group=*/nullptr);
+    }
   }
 }
 

@@ -2911,3 +2911,126 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToRight_GroupToGroup_NoEmptyGroup) {
   EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
   EXPECT_EQ(group_1, observer_.web_state_moved_new_group());
 }
+
+// Tests removing ungrouped tabs from groups is a no-op.
+TEST_F(WebStateListTest, RemoveFromGroups_NoGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| a b c"));
+
+  observer_.ResetStatistics();
+  web_state_list_.RemoveFromGroups({0, 1, 2});
+
+  EXPECT_EQ("| a b c", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+}
+
+// Tests removing some tabs from a group ungroups them and moves them after the
+// group (here they stay in place because they are already at the end). The
+// group they were in still has tabs.
+TEST_F(WebStateListTest, RemoveFromGroups_SomeFromSameGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "| [0 a b c] [ 1 d e ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  web_state_list_.RemoveFromGroups({1, 2});
+
+  EXPECT_EQ("| [ 0 a ] b c [ 1 d e ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(2, observer_.status_only_count());
+  EXPECT_EQ(group_0, observer_.status_only_old_group());
+  EXPECT_EQ(nullptr, observer_.status_only_new_group());
+  EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(3, 2), web_state_list_.GetWebStates(group_1));
+}
+
+// Tests removing all tabs from a group ungroups them and keeps them in place.
+// The group they were in has no longer any tab.
+TEST_F(WebStateListTest, RemoveFromGroups_AllFromSameGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "| [0 a b c] [ 1 d e ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  web_state_list_.RemoveFromGroups({0, 1, 2});
+
+  EXPECT_EQ("| a b c [ 1 d e ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(3, observer_.status_only_count());
+  EXPECT_EQ(group_0, observer_.status_only_old_group());
+  EXPECT_EQ(nullptr, observer_.status_only_new_group());
+  EXPECT_EQ(0, web_state_list_.GetWebStates(group_0).count());
+  EXPECT_EQ(WebStateList::Range(3, 2), web_state_list_.GetWebStates(group_1));
+}
+
+// Tests removing some tabs from different group ungroups them and moves them
+// after their groups. The groups they were in still have tabs.
+TEST_F(WebStateListTest, RemoveFromGroups_SomeFromDifferentGroupsWithMoves) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "| [0 a b c] [ 1 d e ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  web_state_list_.RemoveFromGroups({1, 3});
+
+  EXPECT_EQ("| [ 0 a c ] b [ 1 e ] d",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(WebStateList::Range(3, 1), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(2, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  // observer_.web_state_moved_old_group() is not sufficient to check the groups
+  // communicated to observers because it only records the last move event, so
+  // don't check here.
+}
+
+// Tests removing a pinned tab from its group is a no-op because a pinned tab
+// has no group.
+TEST_F(WebStateListTest, RemoveFromGroups_DoesntUnpin) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "a | [0 b]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  web_state_list_.RemoveFromGroups({0, 1});
+
+  EXPECT_EQ("a | b", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(0, web_state_list_.GetWebStates(group_0).count());
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.status_only_count());
+  EXPECT_FALSE(observer_.pinned_state_changed());
+  EXPECT_EQ(group_0, observer_.status_only_old_group());
+  EXPECT_EQ(nullptr, observer_.status_only_new_group());
+}
+
+// Tests removing the active tab from its group keeps it active.
+TEST_F(WebStateListTest, RemoveFromGroups_KeepsActive) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| [0 a* b]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  web_state_list_.RemoveFromGroups({0});
+
+  EXPECT_EQ("| [ 0 b ] a*",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(0, 1), web_state_list_.GetWebStates(group_0));
+  EXPECT_EQ(1, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_FALSE(observer_.pinned_state_changed());
+  EXPECT_FALSE(observer_.web_state_activated());
+  EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
+  EXPECT_EQ(nullptr, observer_.web_state_moved_new_group());
+}

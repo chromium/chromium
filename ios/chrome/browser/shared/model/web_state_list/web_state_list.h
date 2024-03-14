@@ -376,6 +376,10 @@ class WebStateList {
   // Moves the set of WebStates at `indices` at the end of the given tab group.
   void MoveToGroup(const std::set<int>& indices, const TabGroup* group);
 
+  // Removes the set of WebStates at `indices` from the groups they are in,
+  // if any. The WebStates are reordered out of the groups if necessary.
+  void RemoveFromGroups(const std::set<int>& indices);
+
   // Adds an observer to the model.
   void AddObserver(WebStateListObserver* observer);
 
@@ -471,6 +475,12 @@ class WebStateList {
   //
   // Assumes that the WebStateList is locked.
   void MoveToGroupImpl(const std::set<int>& indices, const TabGroup* group);
+
+  // Removes the set of WebStates at `indices` from the groups they are in,
+  // if any. The WebStates are reordered out of the groups if necessary.
+  //
+  // Assumes that the WebStateList is locked.
+  void RemoveFromGroupsImpl(const std::set<int>& indices);
 
   // Sets the opener of any WebState that reference the WebState at the
   // specified index to null.
