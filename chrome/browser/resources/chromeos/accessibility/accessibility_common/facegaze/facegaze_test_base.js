@@ -210,8 +210,12 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     if (config.gestureToConfidence) {
-      faceGaze.gestureHandler_.gestureToConfidence_ =
-          new Map(config.gestureToConfidence);
+      const gestureToConfidence = {};
+      for (const [gesture, confidence] of config.gestureToConfidence) {
+        gestureToConfidence[gesture] = confidence * 100;
+      }
+      await this.setPref(
+          GestureHandler.GESTURE_TO_CONFIDENCE_PREF, gestureToConfidence);
     }
 
     if (config.bufferSize !== -1) {

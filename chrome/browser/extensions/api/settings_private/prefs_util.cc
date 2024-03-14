@@ -733,6 +733,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeGesturesToMacros] =
       settings_api::PrefType::kDictionary;
+  (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeGesturesToConfidence] =
+      settings_api::PrefType::kDictionary;
   (*s_allowlist)[ash::prefs::kAccessibilityCaretBlinkInterval] =
       settings_api::PrefType::kNumber;
 

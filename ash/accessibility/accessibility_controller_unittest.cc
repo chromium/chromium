@@ -219,6 +219,8 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs::kAccessibilityFaceGazeCursorUseAcceleration));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityFaceGazeGesturesToMacros));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFaceGazeGesturesToConfidence));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
 }
 

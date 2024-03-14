@@ -328,6 +328,7 @@ enum {
   kAccessibilityFaceGazeCursorUseAcceleration = 100268,
   kFingerprintingProtectionEnabled = 100269,
   kAccessibilityFaceGazeGesturesToMacros = 100270,
+  kAccessibilityFaceGazeGesturesToConfidence = 100271,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1096,6 +1097,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFaceGazeGesturesToMacros,
      {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToMacros,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kMergeableDict}},
+    {ash::prefs::kAccessibilityFaceGazeGesturesToConfidence,
+     {syncable_prefs_ids::kAccessibilityFaceGazeGesturesToConfidence,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kMergeableDict}},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

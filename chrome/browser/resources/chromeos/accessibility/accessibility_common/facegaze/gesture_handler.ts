@@ -54,10 +54,22 @@ export class GestureHandler {
               }
               this.gestureToMacroName_.set(
                   gesture as FacialGesture, Number(assignedMacro));
-              // TODO(b/309121742): Set this using the user's preferences.
+              // Ensure the confidence for this gesture is set to the default,
+              // if it wasn't set yet. This might happen if the user hasn't
+              // opened the settings subpage yet.
+              if (!this.gestureToConfidence_.has(gesture as FacialGesture)) {
+                this.gestureToConfidence_.set(
+                    gesture as FacialGesture,
+                    GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
+              }
+            }
+          }
+          break;
+        case GestureHandler.GESTURE_TO_CONFIDENCE_PREF:
+          if (pref.value) {
+            for (const [gesture, confidence] of Object.entries(pref.value)) {
               this.gestureToConfidence_.set(
-                  gesture as FacialGesture,
-                  GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
+                  gesture as FacialGesture, Number(confidence) / 100.);
             }
           }
           break;
@@ -131,6 +143,9 @@ export namespace GestureHandler {
    */
   export const GESTURE_TO_MACRO_PREF =
       'settings.a11y.face_gaze.gestures_to_macros';
+
+  export const GESTURE_TO_CONFIDENCE_PREF =
+      'settings.a11y.face_gaze.gestures_to_confidence';
 }
 
 TestImportManager.exportForTesting(GestureHandler);

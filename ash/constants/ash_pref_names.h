@@ -705,6 +705,12 @@ inline constexpr char kAccessibilityFaceGazeCursorUseAcceleration[] =
 inline constexpr char kAccessibilityFaceGazeGesturesToMacros[] =
     "settings.a11y.face_gaze.gestures_to_macros";
 
+// A dictionary pref which maps facial gestures to confidence thresholds. Facial
+// gestures are strings like 'browDownLeft', and confidence thresholds are
+// integers between 0 and 100 representing percentages.
+inline constexpr char kAccessibilityFaceGazeGesturesToConfidence[] =
+    "settings.a11y.face_gaze.gestures_to_confidence";
+
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.
 inline constexpr char kShouldAlwaysShowAccessibilityMenu[] =

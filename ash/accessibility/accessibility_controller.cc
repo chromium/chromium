@@ -1313,6 +1313,9 @@ void AccessibilityController::RegisterProfilePrefs(
     registry->RegisterDictionaryPref(
         prefs::kAccessibilityFaceGazeGesturesToMacros,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterDictionaryPref(
+        prefs::kAccessibilityFaceGazeGesturesToConfidence,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
 
   if (::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
