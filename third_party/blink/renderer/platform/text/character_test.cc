@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/text/character.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
+#include "third_party/blink/renderer/platform/text/emoji_segmentation_category_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
@@ -506,6 +508,21 @@ TEST(CharacterTest, EmojiComponents) {
 
   for (auto true_test : true_set)
     EXPECT_TRUE(Character::IsEmojiComponent(true_test));
+}
+
+// Ensure that the iterator forwarding in SymbolsIterator is not
+// skipping any other categories that would be computed for the same cursor
+// position and codepoint.
+TEST(CharacterTest, MaybeEmojiPresentationNoIllegalShortcut) {
+  for (UChar32 ch = 0; ch < kMaxCodepoint; ++ch) {
+    const EmojiSegmentationCategory emoji = GetEmojiSegmentationCategory(ch);
+    if (IsEmojiPresentationCategory(emoji)) {
+      EXPECT_TRUE(Character::MaybeEmojiPresentation(ch));
+    }
+    if (!Character::MaybeEmojiPresentation(ch)) {
+      EXPECT_FALSE(IsEmojiPresentationCategory(emoji));
+    }
+  }
 }
 
 }  // namespace blink

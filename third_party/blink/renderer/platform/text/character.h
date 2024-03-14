@@ -192,6 +192,7 @@ class PLATFORM_EXPORT Character {
   static bool IsEmojiTagSequence(UChar32);
   static bool IsEmojiComponent(UChar32);
   static bool IsExtendedPictographic(UChar32);
+  static bool MaybeEmojiPresentation(UChar32);
 
   static inline UChar NormalizeSpaces(UChar character) {
     if (TreatAsSpace(character))

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
@@ -138,6 +139,26 @@ class PLATFORM_EXPORT UTF16RagelIterator {
 
   bool operator!=(const UTF16RagelIterator& other) const {
     return !(*this == other);
+  }
+
+  // Peeks the next codepoint. Note: Does not peak the
+  // `EmojiSegmentationCategory` as does `operator*()`. For performance reasons,
+  // this method is simplified to return U+FFFD when the cursor is at the end of
+  // the stream, instead of using `std::optional` or similar.
+  //
+  // TODO(drott): Before moving to ICU UNSAFE functions, check
+  // InputMethodControllerTest.DeleteSurroundingTextInCodePointsWithInvalidSurrogatePair
+  // and DeleteSurroundingTextInCodePointsWithInvalidSurrogatePair which cause
+  // this code to encounter an unmatched lead surrogate as the last character in
+  // the buffer. (Potential issue with InputMethodController, or the tests?).
+  UChar32 PeekCodepoint() {
+    UChar32 output = kReplacementCharacter;
+    unsigned temp_cursor = cursor_;
+    U16_FWD_1(buffer_, temp_cursor, buffer_size_);
+    if (temp_cursor < buffer_size_) {
+      U16_GET(buffer_, 0, temp_cursor, buffer_size_, output);
+    }
+    return output;
   }
 
  private:

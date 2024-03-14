@@ -247,6 +247,14 @@ bool Character::IsEmojiComponent(UChar32 c) {
   return u_hasBinaryProperty(c, UCHAR_EMOJI_COMPONENT);
 }
 
+bool Character::MaybeEmojiPresentation(UChar32 c) {
+  return c == kZeroWidthJoinerCharacter || c == 0x00A9 /* copyright sign */ ||
+         c == 0x00AE /* registered sign */ || IsEmojiKeycapBase(c) ||
+         IsInRange(c, 0x203C, 0x2B55) || c == kVariationSelector15Character ||
+         c == 0x3030 || c == 0x303D || c == 0x3297 || c == 0x3299 ||
+         c == kVariationSelector16Character || c >= 65536;
+}
+
 template <typename CharacterType>
 static inline String NormalizeSpacesInternal(const CharacterType* characters,
                                              unsigned length) {
