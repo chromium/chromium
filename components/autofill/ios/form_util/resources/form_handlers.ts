@@ -396,6 +396,7 @@ function trackFormMutations(delay: number): void {
           'uniqueFormID': uniqueFormId,
           'uniqueFieldID': '',
         };
+        continue;
       }
 
       const removedFormlessPasswordFieldsIds =
@@ -409,7 +410,9 @@ function trackFormMutations(delay: number): void {
           'uniqueFormID': '',
           'uniqueFieldID': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
         };
+        continue;
       }
+
       if (!addedFormMessage) {
         // Handle the removed form control element case as a form changed
         // mutation that is treated the same way as adding a new form.
