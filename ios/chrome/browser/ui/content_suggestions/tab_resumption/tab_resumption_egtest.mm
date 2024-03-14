@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/ntp/ntp_app_interface.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -118,6 +119,7 @@ NSString* HostnameFromGURL(GURL URL) {
   [ChromeEarlGrey clearBrowsingHistory];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   SignInAndSync();
+  [NewTabPageAppInterface disableSetUpList];
   [NTPAppInterface recordModuleFreshnessSignalForType:
                        ContentSuggestionsModuleType::kTabResumption];
   [[self class] closeAllTabs];
