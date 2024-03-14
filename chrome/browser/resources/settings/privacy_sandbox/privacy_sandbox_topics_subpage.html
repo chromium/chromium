@@ -103,7 +103,7 @@
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
 <div id="disclaimer" hidden="[[!shouldShowV2_]]">
-  $i18n{topicsPageDisclaimer}
+  $i18nRaw{topicsPageDisclaimerDesktop}
 </div>
 <template is="dom-if" if="[[!shouldShowV2EmptyState_]]" restamp>
   <template is="dom-if" if="[[!isTopicsPrefManaged_(

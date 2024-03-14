@@ -902,6 +902,24 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     idsToBeHidden.forEach(id => assertFalse(isChildVisible(page, id)));
   });
 
+  test('disclaimerLinks', async function() {
+    const disclaimer = page.shadowRoot!.querySelector('#disclaimer');
+    assertTrue(!!disclaimer);
+    assertTrue(isVisible(disclaimer));
+
+    const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+        '#disclaimer a[href]');
+
+    assertEquals(1, links.length);
+    assertEquals(
+        links[0]!.getAttribute('aria-description'),
+        loadTimeData.getString('opensInNewTab'),
+        'the link should indicate that it will be opened in a new tab');
+
+    assertEquals(
+        links[0]!.href, 'https://support.google.com/chrome?p=ad_privacy');
+  });
+
   function assertToastOpened() {
     const toast = page.shadowRoot!.querySelector('cr-toast');
     assert(toast);
