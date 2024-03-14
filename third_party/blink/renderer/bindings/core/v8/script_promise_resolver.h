@@ -225,6 +225,19 @@ class CORE_EXPORT ScriptPromiseResolver
     NotifyResolveOrReject();
   }
 
+ protected:
+  template <ResolutionState new_state>
+  bool PrepareToResolveOrReject() {
+    ExecutionContext* execution_context = GetExecutionContext();
+    if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
+        !execution_context || execution_context->IsContextDestroyed()) {
+      return false;
+    }
+    static_assert(new_state == kResolving || new_state == kRejecting);
+    state_ = new_state;
+    return true;
+  }
+
  private:
   template <typename T>
   void ResolveOrReject(T value) {
@@ -247,16 +260,6 @@ class CORE_EXPORT ScriptPromiseResolver
     NotifyResolveOrReject();
   }
 
-  template <ResolutionState new_state>
-  bool PrepareToResolveOrReject() {
-    if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
-        !GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
-      return false;
-    }
-    static_assert(new_state == kResolving || new_state == kRejecting);
-    state_ = new_state;
-    return true;
-  }
   void NotifyResolveOrReject();
   void ResolveOrRejectImmediately();
   void ScheduleResolveOrReject();
