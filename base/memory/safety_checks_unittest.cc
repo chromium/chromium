@@ -5,9 +5,9 @@
 #include <new>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
 #include "base/feature_list.h"
 #include "base/memory/safety_checks.h"
+#include "partition_alloc/partition_address_space.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

@@ -1,4 +1,9 @@
 include_rules = [
+  # `#include "partition_alloc/..."` is prefered to
+  # `#include "base/allocator/partition_allocator/src/partition_alloc/..."`.
+  "+partition_alloc",
+  "-base/allocator/partition_allocator",
+
   "+third_party/ashmem",
   "+third_party/apple_apsl",
   "+third_party/boringssl/src/include",

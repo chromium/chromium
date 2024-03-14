@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

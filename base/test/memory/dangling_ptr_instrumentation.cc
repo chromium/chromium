@@ -7,10 +7,10 @@
 #include <string_view>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/dangling_raw_ptr_checks.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::test {

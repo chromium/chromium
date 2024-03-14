@@ -13,13 +13,13 @@
 #include <vector>
 
 #include "base/allocator/allocator_check.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
+#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -30,10 +30,10 @@
 #endif
 #if BUILDFLAG(IS_MAC)
 #include <malloc/malloc.h>
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check_op.h"
 #include "base/process/memory_unittest_mac.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>

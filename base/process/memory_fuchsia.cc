@@ -4,10 +4,10 @@
 
 #include "base/process/memory.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #endif
 
 #include <stdlib.h>

@@ -12,9 +12,9 @@
 #include <limits>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Death tests on Android are currently very flaky. No need to add more flaky

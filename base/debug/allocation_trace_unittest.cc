@@ -13,9 +13,9 @@
 
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/testing/tools.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_allocation_data.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/debug/stack_trace.h"
+#include "partition_alloc/partition_alloc_allocation_data.h"
+#include "partition_alloc/partition_alloc_config.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/feature_list.h"
@@ -20,6 +19,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
+#include "partition_alloc/page_allocator.h"
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 // For madvise() which is available on all POSIX compatible systems.

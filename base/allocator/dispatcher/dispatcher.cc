@@ -5,18 +5,18 @@
 #include "base/allocator/dispatcher/dispatcher.h"
 
 #include "base/allocator/dispatcher/internal/dispatch_data.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/no_destructor.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 #if DCHECK_IS_ON()
 #include <atomic>
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_hooks.h"
+#include "partition_alloc/partition_alloc_hooks.h"
 #endif
 
 namespace base::allocator::dispatcher {

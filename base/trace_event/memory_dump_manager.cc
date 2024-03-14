@@ -12,7 +12,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/alias.h"
@@ -34,6 +33,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/trace_event/java_heap_dump_provider_android.h"

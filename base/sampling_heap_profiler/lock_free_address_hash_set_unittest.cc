@@ -9,10 +9,10 @@
 #include <cinttypes>
 #include <memory>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/debug/alias.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/simple_thread.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {

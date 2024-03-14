@@ -22,9 +22,9 @@
 #include "testing/multiprocess_func_list.h"
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc.h"
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

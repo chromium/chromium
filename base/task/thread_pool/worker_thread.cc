@@ -11,8 +11,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
@@ -27,6 +25,8 @@
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -38,7 +38,7 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
-#include "base/allocator/partition_allocator/src/partition_alloc/thread_cache.h"
+#include "partition_alloc/thread_cache.h"
 #endif
 
 namespace base::internal {

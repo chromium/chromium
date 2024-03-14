@@ -4,10 +4,10 @@
 
 #include "base/memory/nonscannable_memory.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
+#include "partition_alloc/shim/nonscannable_allocator.h"
 #else
 #include <stdlib.h>
 #endif

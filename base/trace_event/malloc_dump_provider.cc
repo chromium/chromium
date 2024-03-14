@@ -9,10 +9,6 @@
 #include <unordered_map>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_bucket_lookup.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/nonscannable_allocator.h"
 #include "base/debug/profiler.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,6 +17,10 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_bucket_lookup.h"
+#include "partition_alloc/shim/nonscannable_allocator.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
@@ -36,11 +36,11 @@
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
 #if PA_CONFIG(THREAD_CACHE_ALLOC_STATS)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #endif
 
 namespace base {

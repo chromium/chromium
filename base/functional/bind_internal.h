@@ -14,8 +14,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_config.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback_internal.h"
@@ -31,6 +29,8 @@
 #include "base/types/is_instantiation.h"
 #include "base/types/to_address.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_alloc_config.h"
 #include "third_party/abseil-cpp/absl/functional/function_ref.h"
 
 // See docs/callback.md for user documentation.

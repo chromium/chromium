@@ -12,8 +12,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
 #include "base/at_exit.h"
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -54,6 +52,8 @@
 #include "base/time/time.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/tagging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"

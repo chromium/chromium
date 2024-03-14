@@ -6,7 +6,6 @@
 #define BASE_TRACE_EVENT_MALLOC_DUMP_PROVIDER_H_
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
@@ -14,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -21,7 +21,7 @@
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_stats.h"
+#include "partition_alloc/partition_stats.h"
 #endif
 
 namespace base {

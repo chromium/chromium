@@ -5,7 +5,7 @@
 #ifndef BASE_ALLOCATOR_DISPATCHER_TAGGING_H_
 #define BASE_ALLOCATOR_DISPATCHER_TAGGING_H_
 
-#include "base/allocator/partition_allocator/src/partition_alloc/tagging.h"
+#include "partition_alloc/tagging.h"
 
 namespace base::allocator::dispatcher {
 // The various modes of Arm's MTE extension. The enum values should match their

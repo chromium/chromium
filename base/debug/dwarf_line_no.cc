@@ -4,7 +4,7 @@
 
 #include "base/debug/dwarf_line_no.h"
 
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ref.h"
+#include "partition_alloc/pointers/raw_ref.h"
 
 #ifdef USE_SYMBOLIZE
 #include <algorithm>
@@ -16,9 +16,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/pointers/raw_ptr.h"
 #include "base/debug/buffered_dwarf_reader.h"
 #include "base/third_party/symbolize/symbolize.h"
+#include "partition_alloc/pointers/raw_ptr.h"
 
 namespace base {
 namespace debug {

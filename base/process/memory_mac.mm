@@ -7,10 +7,10 @@
 #include <stdlib.h>
 #include <new>
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_interception_apple.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/shim/allocator_interception_apple.h"
+#include "partition_alloc/shim/allocator_shim.h"
 
 namespace base {
 

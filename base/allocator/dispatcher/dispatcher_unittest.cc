@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_root.h"
+#include "partition_alloc/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/allocator/dispatcher/configuration.h"
@@ -10,15 +10,15 @@
 #include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/testing/dispatcher_test.h"
 #include "base/allocator/dispatcher/testing/tools.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
 #endif
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #endif
 
 #include <tuple>

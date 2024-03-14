@@ -12,12 +12,12 @@
 #include "base/allocator/dispatcher/testing/dispatcher_test.h"
 #include "base/allocator/dispatcher/testing/observer_mock.h"
 #include "base/allocator/dispatcher/testing/tools.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
 #include "base/dcheck_is_on.h"
+#include "partition_alloc/partition_alloc_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_allocation_data.h"
+#include "partition_alloc/partition_alloc_allocation_data.h"
 #endif
 
 using ::base::allocator::dispatcher::AllocationSubsystem;

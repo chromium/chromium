@@ -5,9 +5,6 @@
 // This file ensures that these header files don't include Windows.h and can
 // compile without including Windows.h. This helps to improve compile times.
 
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_tls.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/spinning_mutex.h"
 #include "base/atomicops.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
@@ -19,6 +16,9 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
+#include "partition_alloc/partition_alloc-inl.h"
+#include "partition_alloc/partition_tls.h"
+#include "partition_alloc/spinning_mutex.h"
 
 #ifdef _WINDOWS_
 #error Windows.h was included inappropriately.
