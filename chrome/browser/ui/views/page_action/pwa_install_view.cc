@@ -152,7 +152,9 @@ void PwaInstallView::UpdateImpl() {
   // Only try to show IPH when |PwaInstallView.IsDrawn|. This catches the case
   // that view is set to visible but not drawn in fullscreen mode.
   if (data && is_probably_promotable && ShouldShowIph(web_contents, *data) &&
-      IsDrawn()) {
+      IsDrawn() &&
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPHDesktopPwaInstallFeature)) {
     user_education::FeaturePromoParams params(
         feature_engagement::kIPHDesktopPwaInstallFeature);
     params.close_callback = base::BindOnce(
