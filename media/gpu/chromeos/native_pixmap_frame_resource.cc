@@ -388,16 +388,6 @@ void NativePixmapFrameResource::set_hdr_metadata(
   hdr_metadata_ = hdr_metadata;
 }
 
-const std::optional<gpu::VulkanYCbCrInfo>&
-NativePixmapFrameResource::ycbcr_info() const {
-  return ycbcr_info_;
-}
-
-void NativePixmapFrameResource::set_ycbcr_info(
-    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
-  ycbcr_info_ = ycbcr_info;
-}
-
 const VideoFrameMetadata& NativePixmapFrameResource::metadata() const {
   return metadata_;
 }
@@ -452,7 +442,6 @@ scoped_refptr<FrameResource> NativePixmapFrameResource::CreateWrappingFrame(
   wrapping_frame->metadata().MergeMetadataFrom(metadata());
   wrapping_frame->set_color_space(ColorSpace());
   wrapping_frame->set_hdr_metadata(hdr_metadata());
-  wrapping_frame->set_ycbcr_info(ycbcr_info());
 
   // Adds a reference to |this| from the wrapping frame via a destruction
   // observer. This avoids the original frame from returning to the frame pool
@@ -495,7 +484,6 @@ scoped_refptr<VideoFrame> NativePixmapFrameResource::CreateVideoFrame() const {
   video_frame->metadata().MergeMetadataFrom(metadata());
   video_frame->set_color_space(ColorSpace());
   video_frame->set_hdr_metadata(hdr_metadata());
-  video_frame->set_ycbcr_info(ycbcr_info());
 
   // Adds a reference to |this| from the output VideoFrame to make sure the
   // underlying frame does not get recycled back into the frame pool before it

@@ -139,16 +139,6 @@ void VideoFrameResource::set_hdr_metadata(
   GetMutableVideoFrame()->set_hdr_metadata(hdr_metadata);
 }
 
-const std::optional<gpu::VulkanYCbCrInfo>& VideoFrameResource::ycbcr_info()
-    const {
-  return frame_->ycbcr_info();
-}
-
-void VideoFrameResource::set_ycbcr_info(
-    const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
-  GetMutableVideoFrame()->set_ycbcr_info(ycbcr_info);
-}
-
 const VideoFrameMetadata& VideoFrameResource::metadata() const {
   return frame_->metadata();
 }

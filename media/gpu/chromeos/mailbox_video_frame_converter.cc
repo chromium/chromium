@@ -445,7 +445,6 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   mailbox_frame->set_color_space(frame->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
-  mailbox_frame->set_ycbcr_info(frame->ycbcr_info());
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     auto si_format = GetSharedImageFormat(*buffer_format);
     mailbox_frame->set_shared_image_format_type(

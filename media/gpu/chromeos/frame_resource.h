@@ -132,11 +132,6 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   // anamorphic frames, or to "soft-apply" any custom scaling.
   virtual const gfx::Size& natural_size() const = 0;
 
-  // Provides the sampler conversion information for the frame.
-  virtual const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const = 0;
-  virtual void set_ycbcr_info(
-      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) = 0;
-
   // Returns a dictionary of optional metadata. This contains information
   // associated with the frame that downstream clients might use for frame-level
   // logging, quality/performance optimizations, signaling, etc.

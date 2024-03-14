@@ -9,7 +9,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/gpu/chromeos/frame_resource.h"
@@ -90,9 +89,6 @@ class NativePixmapFrameResource : public FrameResource {
   const gfx::Size& coded_size() const override;
   const gfx::Rect& visible_rect() const override;
   const gfx::Size& natural_size() const override;
-  const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const override;
-  void set_ycbcr_info(
-      const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) override;
   const VideoFrameMetadata& metadata() const override;
   VideoFrameMetadata& metadata() override;
   void set_metadata(const VideoFrameMetadata& metadata) override;
@@ -178,9 +174,6 @@ class NativePixmapFrameResource : public FrameResource {
 
   gfx::ColorSpace color_space_;
   std::optional<gfx::HDRMetadata> hdr_metadata_;
-
-  // Sampler conversion information which is used in vulkan context.
-  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
   // Callbacks are added by AddDestructionObserver(). It is unclear whether
   // guarding |done_callbacks_| is necessary. VideoFrame has a similar lock,
