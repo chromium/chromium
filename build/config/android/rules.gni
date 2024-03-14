@@ -2261,9 +2261,10 @@ if (enable_java_templates && is_android) {
     _uses_static_library = defined(invoker.static_library_provider)
 
     # TODO(crbug.com/864142): Allow incremental installs of bundle modules.
-    _incremental_apk = !_is_bundle_module &&
-                       !(defined(invoker.never_incremental) &&
-                         invoker.never_incremental) && incremental_install
+    _incremental_apk =
+        !_is_bundle_module &&
+        !(defined(invoker.never_incremental) && invoker.never_incremental) &&
+        incremental_install && _min_sdk_version >= default_min_sdk_version
     if (_incremental_apk) {
       _target_dir_name = get_label_info(target_name, "dir")
       _incremental_install_json_path = "$root_out_dir/gen.runtime/$_target_dir_name/$target_name.incremental.json"
