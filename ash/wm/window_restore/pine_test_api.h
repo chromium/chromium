@@ -6,7 +6,6 @@
 #define ASH_WM_WINDOW_RESTORE_PINE_TEST_API_H_
 
 #include "ash/wm/window_restore/pine_contents_view.h"
-#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
@@ -15,7 +14,6 @@
 namespace ash {
 
 class PillButton;
-class SystemDialogDelegateView;
 
 class PineContentsViewTestApi {
  public:
@@ -77,16 +75,6 @@ class PineItemsOverflowViewTestApi {
 
  private:
   const raw_ptr<const PineItemsOverflowView> overflow_view_;
-};
-
-class PineTestApi {
- public:
-  explicit PineTestApi();
-  PineTestApi(const PineTestApi&) = delete;
-  PineTestApi& operator=(const PineTestApi&) = delete;
-  ~PineTestApi();
-
-  SystemDialogDelegateView* GetOnboardingDialog();
 };
 
 }  // namespace ash
