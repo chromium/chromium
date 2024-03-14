@@ -1276,8 +1276,15 @@ class DevToolsProtocolTest_RelatedWebsiteSets : public DevToolsProtocolTest {
   }
 };
 
+// TODO(crbug.com/329530175): Re-enable this test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_GetRelatedWebsiteSets DISABLED_GetRelatedWebsiteSets
+#else
+#define MAYBE_GetRelatedWebsiteSets GetRelatedWebsiteSets
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_RelatedWebsiteSets,
-                       GetRelatedWebsiteSets) {
+                       MAYBE_GetRelatedWebsiteSets) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
