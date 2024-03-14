@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/time/time.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
@@ -37,6 +38,10 @@
       _searchEngineChoiceLearnMoreCoordinator;
   // Whether the screen is being shown in the FRE.
   BOOL _firstRun;
+  // Whether the primary account button was already tapped.
+  BOOL _didTapPrimaryButton;
+  // Timestamp of the previous call to `-(void)_didTapPrimaryButton`.
+  base::Time _lastCallToDidTapPrimaryButtonTimestamp;
   // First run screen delegate.
   __weak id<FirstRunScreenDelegate> _firstRunDelegate;
   // Force iPhone to be in portrait only for this coordinator.
@@ -50,6 +55,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _firstRun = NO;
+    _didTapPrimaryButton = NO;
   }
   return self;
 }
@@ -145,6 +151,17 @@
 }
 
 - (void)didTapPrimaryButton {
+  if (_didTapPrimaryButton) {
+    NOTREACHED(base::NotFatalUntil::M127)
+        << "Double tap on primary button [_firstRun = " << _firstRun
+        << " ; delay : "
+        << (base::Time::Now() - _lastCallToDidTapPrimaryButtonTimestamp)
+               .InMilliseconds()
+        << " ms]";
+    return;
+  }
+  _didTapPrimaryButton = YES;
+  _lastCallToDidTapPrimaryButtonTimestamp = base::Time::Now();
   if (_firstRun) {
     search_engines::RecordChoiceScreenEvent(
         search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet);
