@@ -9,7 +9,7 @@ from blinkpy.common.system.executive import Executive, ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.filesystem_mock import MockFileSystem
-from blinkpy.common.checkout.git import Git
+from blinkpy.common.checkout.git import CommitRange, Git
 
 
 # These tests could likely be run on Windows if we first used Git.find_executable_name.
@@ -159,6 +159,25 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         git.commit_locally_with_message('adding foo')
         self.assertEqual(git.show_blob('foo.txt', ref='HEAD'),
                          b'some stuff, possibly binary \xff')
+
+    def test_changed_files_across_commit_range(self):
+        self._chdir(self.untracking_checkout_path)
+        git = self.untracking_git
+        self._chdir(git.checkout_root)
+
+        self.filesystem.write_binary_file('a', b'\xff')
+        self.filesystem.write_binary_file('b', b'\xff')
+        git.add_list(['a', 'b'])
+        git.commit_locally_with_message('commit 1')
+
+        self.filesystem.write_binary_file('a', b'abc\xff')
+        git.add_list(['a'])
+        git.commit_locally_with_message('commit 2')
+
+        self.assertEqual(set(git.changed_files(CommitRange('HEAD~1', 'HEAD'))),
+                         {'a'})
+        self.assertEqual(set(git.changed_files(CommitRange('HEAD~2', 'HEAD'))),
+                         {'a', 'b'})
 
     def test_move(self):
         self._chdir(self.untracking_checkout_path)

@@ -7,6 +7,7 @@ import textwrap
 import unittest
 from unittest import mock
 
+from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import (
     RELATIVE_WEB_TESTS,
@@ -244,19 +245,45 @@ class ImportNotifierTest(unittest.TestCase):
     def test_examine_new_test_expectations(self):
         self.host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA', '')
-        test_expectations = {
-            'external/wpt/foo/bar.html': [
-                'crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Fail ]',
-                'crbug.com/12345 [ Win ] external/wpt/foo/bar.html [ Timeout ]',
-            ]
+        contents_before = textwrap.dedent("""\
+            # tags: [ Linux Mac Win ]
+            # results: [ Failure Pass Timeout ]
+            external/wpt/foo/existing.html [ Failure ]
+            """)
+        contents_after = textwrap.dedent("""\
+            # tags: [ Linux Mac Win ]
+            # results: [ Failure Pass Timeout ]
+            external/wpt/foo/existing.html [ Failure ]
+
+            # ====== New tests from wpt-importer added here ======
+            crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Failure ]
+            crbug.com/12345 [ Win ] external/wpt/foo/bar.html [ Timeout ]
+            """)
+        self.host.filesystem.write_text_file(
+            self.finder.path_from_web_tests('TestExpectations'),
+            contents_after)
+        blobs = {
+            ('third_party/blink/web_tests/TestExpectations', '012345'):
+            contents_before.encode(),
+            ('third_party/blink/web_tests/TestExpectations', 'abcdef'):
+            contents_after.encode(),
         }
-        self.notifier.examine_new_test_expectations(test_expectations)
+
+        with mock.patch.object(self.notifier, 'git') as git:
+            git.show_blob = lambda path, ref=None: blobs[path, ref]
+            git.changed_files.return_value = [
+                'third_party/blink/web_tests/TestExpectations',
+                'third_party/blink/web_tests/external/wpt/unrelated.html',
+            ]
+            self.notifier.examine_new_test_expectations(
+                CommitRange('012345', 'abcdef'))
+
         self.assertEqual(
             self.notifier.new_failures_by_directory, {
                 'external/wpt/foo': [
                     TestFailure.from_expectation_line(
                         'external/wpt/foo/bar.html',
-                        'crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Fail ]'
+                        'crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Failure ]'
                     ),
                     TestFailure.from_expectation_line(
                         'external/wpt/foo/bar.html',
@@ -264,10 +291,6 @@ class ImportNotifierTest(unittest.TestCase):
                     ),
                 ]
             })
-
-        self.notifier.new_failures_by_directory = {}
-        self.notifier.examine_new_test_expectations({})
-        self.assertEqual(self.notifier.new_failures_by_directory, {})
 
     def test_format_commit_list(self):
         imported_commits = [

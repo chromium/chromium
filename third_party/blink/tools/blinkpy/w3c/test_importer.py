@@ -16,6 +16,7 @@ import json
 import logging
 import re
 
+from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
@@ -684,10 +685,10 @@ class TestImporter:
         patchset = self.git_cl.run(['status', '--field=patch']).strip()
         # Construct the notifier here so that any errors won't affect the import.
         notifier = ImportNotifier(self.host, self.project_git, local_wpt)
-        notifier.main(self.last_wpt_revision,
+        notifier.main(CommitRange('origin/main', 'HEAD'),
+                      self.last_wpt_revision,
                       self.wpt_revision,
                       self.rebaselined_tests,
-                      self.new_test_expectations,
                       issue,
                       patchset,
                       dry_run=not auto_file_bugs)

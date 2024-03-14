@@ -29,7 +29,7 @@
 
 import logging
 import re
-from typing import List, Optional
+from typing import List, NamedTuple, Optional, Union
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.executive import Executive, ScriptError
@@ -38,7 +38,15 @@ from blinkpy.common.system.filesystem import FileSystem
 _log = logging.getLogger(__name__)
 
 
-class Git(object):
+class CommitRange(NamedTuple):
+    start: str
+    end: str
+
+    def __str__(self) -> str:
+        return f'{self.start}...{self.end}'
+
+
+class Git:
     # Unless otherwise specified, methods are expected to return paths relative
     # to self.checkout_root.
 
@@ -271,14 +279,22 @@ class Git(object):
         return self._remote_merge_base()
 
     def changed_files(self,
-                      git_commit=None,
-                      diff_filter='ADM',
+                      commits: Union[None, str, CommitRange] = None,
+                      diff_filter: str = 'ADM',
                       path: Optional[str] = None):
         # FIXME: --diff-filter could be used to avoid the "extract_filenames" step.
+        if isinstance(commits, CommitRange):
+            commit_arg = str(commits)
+        else:
+            commit_arg = self._merge_base(commits)
         status_command = [
-            'diff', '-r', '--name-status', '--no-renames', '--no-ext-diff',
+            'diff',
+            '-r',
+            '--name-status',
+            '--no-renames',
+            '--no-ext-diff',
             '--full-index',
-            self._merge_base(git_commit)
+            commit_arg,
         ]
         if path:
             status_command.append(path)

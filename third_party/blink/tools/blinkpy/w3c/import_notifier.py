@@ -16,8 +16,14 @@ import typing
 from typing import List, NamedTuple, Optional
 
 from blinkpy.common import path_finder
+from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.net.git_cl import Changelist
 from blinkpy.common.system.executive import ScriptError
+from blinkpy.web_tests.models import typ_types
+from blinkpy.web_tests.models.test_expectations import (
+    ExpectationsChange,
+    TestExpectations,
+)
 from blinkpy.web_tests.models.testharness_results import (
     LineType,
     Status,
@@ -61,23 +67,23 @@ class ImportNotifier:
         self.new_failures_by_directory = defaultdict(list)
 
     def main(self,
+             import_range: CommitRange,
              wpt_revision_start,
              wpt_revision_end,
              rebaselined_tests,
-             test_expectations,
              issue,
              patchset,
              dry_run=True):
         """Files bug reports for new failures.
 
-        Args:
+        Arguments:
+            import_range: The commits before (exclusive) and after (inclusive)
+                the imported CL.
             wpt_revision_start: The start of the imported WPT revision range
                 (exclusive), i.e. the last imported revision.
             wpt_revision_end: The end of the imported WPT revision range
                 (inclusive), i.e. the current imported revision.
             rebaselined_tests: A list of test names that have been rebaselined.
-            test_expectations: A dictionary mapping names of tests that cannot
-                be rebaselined to a list of new test expectation lines.
             issue: The issue number of the import CL (a string).
             patchset: The patchset number of the import CL (a string).
             dry_run: If True, no bugs will be actually filed to crbug.com.
@@ -91,7 +97,7 @@ class ImportNotifier:
             rebaselined_tests)
         self.examine_baseline_changes(changed_test_baselines,
                                       gerrit_url_with_ps)
-        self.examine_new_test_expectations(test_expectations)
+        self.examine_new_test_expectations(import_range)
 
         bugs = self.create_bugs_from_new_failures(wpt_revision_start,
                                                   wpt_revision_end, issue)
@@ -180,22 +186,41 @@ class ImportNotifier:
         return sum(map(is_subtest, new_failures)) > sum(
             map(is_subtest, old_failures))
 
-    def examine_new_test_expectations(self, test_expectations):
+    def examine_new_test_expectations(self, import_range: CommitRange):
         """Examines new test expectations to find new failures.
 
-        Args:
-            test_expectations: A dictionary mapping names of tests that cannot
-                be rebaselined to a list of new test expectation lines.
+        Arguments:
+            import_range: The commits before (exclusive) and after (inclusive)
+                the imported CL.
         """
-        for test_name, expectation_lines in test_expectations.items():
-            directory = self.find_directory_for_bug(test_name)
-            if not directory:
+        exp_files = {
+            *self.default_port.all_expectations_dict(),
+            self.finder.path_from_web_tests('ChromeTestExpectations'),
+            self.finder.path_from_web_tests('MobileTestExpectations'),
+        }
+        for changed_file in self.git.changed_files(import_range):
+            abs_changed_file = self.finder.path_from_chromium_base(
+                changed_file)
+            if abs_changed_file not in exp_files:
                 continue
+            lines_before = self._read_lines(changed_file, import_range.start)
+            lines_after = self._read_lines(changed_file, import_range.end)
+            change = ExpectationsChange(lines_added=lines_after)
+            change += ExpectationsChange(lines_removed=lines_before)
 
-            for expectation_line in expectation_lines:
-                self.new_failures_by_directory[directory].append(
-                    TestFailure.from_expectation_line(test_name,
-                                                      expectation_line))
+            for line in change.lines_added:
+                directory = self.find_directory_for_bug(line.test)
+                if directory:
+                    failure = TestFailure.from_expectation_line(
+                        line.test, line.to_string())
+                    self.new_failures_by_directory[directory].append(failure)
+
+    def _read_lines(self, path: str, ref: str) -> List[typ_types.Expectation]:
+        abs_path = self.finder.path_from_chromium_base(path)
+        expectations = TestExpectations(
+            self.default_port,
+            {abs_path: self.git.show_blob(path, ref).decode()})
+        return expectations.get_updated_lines(abs_path)
 
     def create_bugs_from_new_failures(self, wpt_revision_start: str,
                                       wpt_revision_end: str,
