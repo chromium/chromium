@@ -1516,6 +1516,9 @@ void StorageHandler::NotifySharedStorageAccessed(
     case AccessType::kDocumentClear:
       type_enum = Storage::SharedStorageAccessTypeEnum::DocumentClear;
       break;
+    case AccessType::kDocumentGet:
+      type_enum = Storage::SharedStorageAccessTypeEnum::DocumentGet;
+      break;
     case AccessType::kWorkletSet:
       type_enum = Storage::SharedStorageAccessTypeEnum::WorkletSet;
       break;

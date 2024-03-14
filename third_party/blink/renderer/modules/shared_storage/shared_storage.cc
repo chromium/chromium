@@ -136,6 +136,25 @@ GetSharedStorageWorkletServiceClient(ExecutionContext* execution_context) {
       ->GetSharedStorageWorkletServiceClient();
 }
 
+bool CanGetOutsideWorklet(ScriptState* script_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  CHECK(execution_context->IsWindow());
+
+  LocalFrame* frame = To<LocalDOMWindow>(execution_context)->GetFrame();
+  DCHECK(frame);
+
+  if (!blink::features::IsFencedFramesEnabled() ||
+      !base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    return false;
+  }
+
+  // Calling get() is only allowed in fenced frame trees where network access
+  // has been restricted. We can't check the network access part in the
+  // renderer, so we'll defer to the browser for that.
+  return frame->IsInFencedFrameTree();
+}
+
 }  // namespace
 
 class SharedStorage::IterationSource final
@@ -547,7 +566,8 @@ ScriptPromiseTyped<IDLString> SharedStorage::get(
     ExceptionState& exception_state) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
+  CHECK(execution_context->IsWindow() ||
+        execution_context->IsSharedStorageWorkletGlobalScope());
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
     return ScriptPromiseTyped<IDLString>();
@@ -557,6 +577,13 @@ ScriptPromiseTyped<IDLString> SharedStorage::get(
       MakeGarbageCollected<ScriptPromiseResolverTyped<IDLString>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
+
+  if (execution_context->IsWindow() && !CanGetOutsideWorklet(script_state)) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+        "Cannot call get() outside of a fenced frame."));
+    return promise;
+  }
 
   CHECK(CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                             *resolver));
@@ -568,42 +595,50 @@ ScriptPromiseTyped<IDLString> SharedStorage::get(
     return promise;
   }
 
-  GetSharedStorageWorkletServiceClient(execution_context)
-      ->SharedStorageGet(
-          key,
-          WTF::BindOnce(
-              [](ScriptPromiseResolverTyped<IDLString>* resolver,
-                 SharedStorage* shared_storage, base::TimeTicks start_time,
-                 mojom::blink::SharedStorageGetStatus status,
-                 const String& error_message, const String& value) {
-                DCHECK(resolver);
-                ScriptState* script_state = resolver->GetScriptState();
+  std::string histogram_name = execution_context->IsWindow()
+                                   ? "Storage.SharedStorage.Document.Timing.Get"
+                                   : "Storage.SharedStorage.Worklet.Timing.Get";
+  auto callback = WTF::BindOnce(
+      [](ScriptPromiseResolverTyped<IDLString>* resolver,
+         SharedStorage* shared_storage, base::TimeTicks start_time,
+         const std::string& histogram_name,
+         mojom::blink::SharedStorageGetStatus status,
+         const String& error_message, const String& value) {
+        DCHECK(resolver);
+        ScriptState* script_state = resolver->GetScriptState();
 
-                if (status == mojom::blink::SharedStorageGetStatus::kError) {
-                  if (IsInParallelAlgorithmRunnable(
-                          resolver->GetExecutionContext(), script_state)) {
-                    ScriptState::Scope scope(script_state);
-                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                        script_state->GetIsolate(),
-                        DOMExceptionCode::kOperationError, error_message));
-                  }
-                  return;
-                }
+        if (status == mojom::blink::SharedStorageGetStatus::kError) {
+          if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                            script_state)) {
+            ScriptState::Scope scope(script_state);
+            resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+                error_message));
+          }
+          return;
+        }
 
-                base::UmaHistogramMediumTimes(
-                    "Storage.SharedStorage.Worklet.Timing.Get",
-                    base::TimeTicks::Now() - start_time);
+        base::UmaHistogramMediumTimes(histogram_name,
+                                      base::TimeTicks::Now() - start_time);
 
-                if (status == mojom::blink::SharedStorageGetStatus::kSuccess) {
-                  resolver->Resolve(value);
-                  return;
-                }
+        if (status == mojom::blink::SharedStorageGetStatus::kSuccess) {
+          resolver->Resolve(value);
+          return;
+        }
 
-                CHECK_EQ(status,
-                         mojom::blink::SharedStorageGetStatus::kNotFound);
-                resolver->Resolve();
-              },
-              WrapPersistent(resolver), WrapPersistent(this), start_time));
+        CHECK_EQ(status, mojom::blink::SharedStorageGetStatus::kNotFound);
+        resolver->Resolve();
+      },
+      WrapPersistent(resolver), WrapPersistent(this), start_time,
+      histogram_name);
+
+  if (execution_context->IsWindow()) {
+    GetSharedStorageDocumentService(execution_context)
+        ->SharedStorageGet(key, std::move(callback));
+  } else {
+    GetSharedStorageWorkletServiceClient(execution_context)
+        ->SharedStorageGet(key, std::move(callback));
+  }
 
   return promise;
 }

@@ -39,12 +39,6 @@ interface SharedStorageEntriesListener {
       int32 total_queued_to_send);
 };
 
-enum SharedStorageGetStatus {
-  kSuccess,
-  kNotFound,
-  kError,
-};
-
 // Used by the shared storage worklet environment to access the shared storage,
 // log messages, etc.
 interface SharedStorageWorkletServiceClient {

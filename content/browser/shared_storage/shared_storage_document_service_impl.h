@@ -67,6 +67,8 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
           worklet_host,
       CreateWorkletCallback callback) override;
+  void SharedStorageGet(const std::u16string& key,
+                        SharedStorageGetCallback callback) override;
   void SharedStorageSet(const std::u16string& key,
                         const std::u16string& value,
                         bool ignore_if_present,

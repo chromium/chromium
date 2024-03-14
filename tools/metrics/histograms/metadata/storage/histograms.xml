@@ -974,6 +974,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Document.Timing.Get" units="ms"
+    expires_after="2024-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::get()` to
+    when the callback has successfully completed. Does not measure the timing of
+    calls that end in an error. Recorded in the OnceCallback executed after the
+    get operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Document.Timing.Run" units="ms"
     expires_after="2024-07-31">
   <owner>cammie@chromium.org</owner>

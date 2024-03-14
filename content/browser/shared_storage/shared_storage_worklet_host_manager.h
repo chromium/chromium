@@ -47,6 +47,7 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
       kDocumentAppend,
       kDocumentDelete,
       kDocumentClear,
+      kDocumentGet,
       kWorkletSet,
       kWorkletAppend,
       kWorkletDelete,

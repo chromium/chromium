@@ -3005,6 +3005,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
       NavigationRequest& navigation_request,
       blink::mojom::AutomaticBeaconType event_type);
 
+  // Determines if this RenderFrameHostImpl is allowed to read from Shared
+  // Storage. Only true if this RenderFrameHostImpl is in a fenced frame tree,
+  // and if its closest fenced frame root ancestor and all nested fenced frame
+  // roots have disabled untrusted network access.
+  bool CanReadFromSharedStorage();
+
   // Returns true if this RFH's compositor should be reused by a speculative
   // RFH with the `speculative_site_instance`.
   // Returns false if the speculative RFH should initialize a new compositor.

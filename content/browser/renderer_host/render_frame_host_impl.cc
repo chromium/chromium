@@ -16265,6 +16265,39 @@ bool RenderFrameHostImpl::ShouldChangeRenderFrameHostOnSameSiteNavigation()
       must_be_replaced());
 }
 
+bool RenderFrameHostImpl::CanReadFromSharedStorage() {
+  if (!IsNestedWithinFencedFrame()) {
+    return false;
+  }
+
+  bool allowed = true;
+  // TODO(averge): There's probably some redundant traversal happening here,
+  // because if we know that a fenced frame root has network disabled, then
+  // we know all iframe children in the inner FrameTree also have network
+  // disabled. For now we'll check every RFHI to be safest, but it might be
+  // better to add a ForEachFencedFrameRoot traversal to speed things up a bit.
+  // TODO(averge): Credentialless iframes have their own per-`Page` nonce that
+  // will be revoked alongside the fenced frame's nonce. Once revocation is
+  // implemented for credentialless iframes, we should do one of 2 things:
+  // 1. Only set has_disabled_untrusted_network if both nonces are revoked.
+  // 2. If not, this traversal should check if the current `Page` for each RFHI
+  // has a revoked iframe nonce.
+  ForEachRenderFrameHost([&allowed](RenderFrameHostImpl* rfhi) {
+    // URN iframes cannot disable untrusted network on their own, so
+    // kClosestAncestor isn't appropriate here. Using kFrameTreeRoot will search
+    // for the root node of each FrameTree, and for fenced frames, this will
+    // always be the root of the fenced frame tree.
+    auto properties = rfhi->frame_tree_node()->GetFencedFrameProperties(
+        FencedFramePropertiesNodeSource::kFrameTreeRoot);
+    if (!properties.has_value() ||
+        !properties->has_disabled_untrusted_network()) {
+      allowed = false;
+    }
+  });
+
+  return allowed;
+}
+
 bool RenderFrameHostImpl::ShouldReuseCompositing(
     SiteInstanceImpl& speculative_site_instance) const {
   if (!ShouldChangeRenderFrameHostOnSameSiteNavigation()) {

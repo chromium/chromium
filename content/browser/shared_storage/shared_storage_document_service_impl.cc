@@ -47,6 +47,9 @@ bool IsSecureFrame(RenderFrameHost* frame) {
 using AccessType =
     SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType;
 
+using OperationResult = storage::SharedStorageManager::OperationResult;
+using GetResult = storage::SharedStorageManager::GetResult;
+
 }  // namespace
 
 const char kSharedStorageDisabledMessage[] = "sharedStorage is disabled";
@@ -153,6 +156,70 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
       this, render_frame_host().GetLastCommittedOrigin(), script_source_url,
       credentials_mode, origin_trial_features, std::move(worklet_host),
       std::move(callback));
+}
+
+void SharedStorageDocumentServiceImpl::SharedStorageGet(
+    const std::u16string& key,
+    SharedStorageGetCallback callback) {
+  if (!render_frame_host().IsNestedWithinFencedFrame()) {
+    mojo::ReportBadMessage(
+        "Attempted to call get() outside of a fenced frame.");
+    return;
+  }
+
+  std::string debug_message;
+  if (!IsSharedStorageAllowed(&debug_message)) {
+    std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kError,
+                            /*error_message=*/
+                            GetSharedStorageErrorMessage(
+                                debug_message, kSharedStorageDisabledMessage),
+                            /*value=*/{});
+    return;
+  }
+
+  if (!(static_cast<RenderFrameHostImpl&>(render_frame_host())
+            .CanReadFromSharedStorage())) {
+    std::move(callback).Run(
+        blink::mojom::SharedStorageGetStatus::kError,
+        /*error_message=*/
+        "sharedStorage.get() is not allowed in a fenced frame until network "
+        "access for it and all descendent frames has been revoked with "
+        "window.fence.disableUntrustedNetwork()",
+        /*value=*/{});
+    return;
+  }
+
+  GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+      AccessType::kDocumentGet, main_frame_id(), SerializeLastCommittedOrigin(),
+      SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
+
+  auto operation_completed_callback = base::BindOnce(
+      [](SharedStorageGetCallback callback, GetResult result) {
+        // If the key is not found but there is no other error, the worklet will
+        // resolve the promise to undefined.
+        if (result.result == OperationResult::kNotFound ||
+            result.result == OperationResult::kExpired) {
+          std::move(callback).Run(
+              blink::mojom::SharedStorageGetStatus::kNotFound,
+              /*error_message=*/"sharedStorage.get() could not find key",
+              /*value=*/{});
+          return;
+        }
+
+        if (result.result != OperationResult::kSuccess) {
+          std::move(callback).Run(
+              blink::mojom::SharedStorageGetStatus::kError,
+              /*error_message=*/"sharedStorage.get() failed", /*value=*/{});
+          return;
+        }
+
+        std::move(callback).Run(blink::mojom::SharedStorageGetStatus::kSuccess,
+                                /*error_message=*/{}, /*value=*/result.data);
+      },
+      std::move(callback));
+
+  GetSharedStorageManager()->Get(render_frame_host().GetLastCommittedOrigin(),
+                                 key, std::move(operation_completed_callback));
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageSet(

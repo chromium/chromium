@@ -9674,6 +9674,7 @@ experimental domain Storage
       documentAppend
       documentDelete
       documentClear
+      documentGet
       workletSet
       workletAppend
       workletDelete

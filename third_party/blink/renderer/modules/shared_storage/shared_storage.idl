@@ -33,7 +33,6 @@
   ] Promise<any> clear();
 
   [
-    Exposed=SharedStorageWorklet,
     CallWith=ScriptState,
     RaisesException
   ] Promise<DOMString> get(DOMString key);

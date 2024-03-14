@@ -34,9 +34,18 @@ struct SharedStorageUrlWithMetadata {
   map<string, url.mojom.Url> reporting_metadata;
 };
 
+enum SharedStorageGetStatus {
+  kSuccess,
+  kNotFound,
+  kError,
+};
+
 // Implemented by the browser and exposed to the renderer process on a
 // per-worklet basis, to allow initiating worklet operations, etc. Note that
 // currently each frame can initialize at most one worklet.
+// TODO: Methods in this interface should should be refactored so that all
+// possible return values are semantically valid. See details in
+// https://chromium.googlesource.com/chromium/src/+/main/docs/security/mojo.md#all-possible-message-values-are-semantically-valid
 interface SharedStorageWorkletHost {
   // Handle sharedStorage.selectURL(): run the operation
   // previously registered by register() with matching `name`. Restrictions will
@@ -91,6 +100,9 @@ interface SharedStorageWorkletHost {
 //
 // Implemented by the browser and exposed to the renderer process on a per-frame
 // basis, to allow accessing the shared storage and creating the worklet.
+// TODO: Methods in this interface should should be refactored so that all
+// possible return values are semantically valid. See details in
+// https://chromium.googlesource.com/chromium/src/+/main/docs/security/mojo.md#all-possible-message-values-are-semantically-valid
 interface SharedStorageDocumentService {
   // Create the worklet, and download and load the module script in the worklet
   // environment. The origin of the `script_source_url` should be
@@ -103,6 +115,14 @@ interface SharedStorageDocumentService {
                 pending_associated_receiver<SharedStorageWorkletHost> worklet_host)
       => (bool success,
           string error_message);
+
+  // Handle sharedStorage.get(): get the entry at `key`, or an empty string
+  // if `key` is not present. May only be called from a fenced frame with
+  // network access restricted. Returns an error if the API is disabled, or if
+  // the state of the fenced frame is invalid.
+  SharedStorageGet(blink.mojom.SharedStorageKeyArgument key)
+      => (SharedStorageGetStatus status, string error_message,
+          mojo_base.mojom.String16 value);
 
   // Handle sharedStorage.set(): set `key`’s entry to `value`. If
   // `ignore_if_present` is true, the entry is not updated if `key` already
