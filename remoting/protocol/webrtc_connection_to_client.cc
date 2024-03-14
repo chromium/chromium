@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
+#include "remoting/base/logging.h"
 #include "remoting/codec/video_encoder.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/audio_source.h"
@@ -286,13 +287,17 @@ void WebrtcConnectionToClient::OnChannelClosed(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (channel_dispatcher == &video_stats_dispatcher_) {
-    LOG(WARNING) << "video_stats channel was closed.";
+    HOST_LOG << "video_stats channel was closed.";
     return;
   }
 
-  LOG(ERROR) << "Channel " << channel_dispatcher->channel_name()
-             << " was closed unexpectedly.";
-  Disconnect(ErrorCode::INCOMPATIBLE_PROTOCOL);
+  // The control channel is closed when the user clicks disconnect on the client
+  // or the client page is closed normally. If the client goes offline then the
+  // channel will remain open. Hence it should be safe to report ErrorCode::OK
+  // here.
+  HOST_LOG << "Channel " << channel_dispatcher->channel_name()
+           << " was closed.";
+  Disconnect(ErrorCode::OK);
 }
 
 bool WebrtcConnectionToClient::allChannelsConnected() {
