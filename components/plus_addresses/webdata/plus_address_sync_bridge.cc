@@ -14,8 +14,10 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/webdata/common/web_database_backend.h"
 
@@ -34,15 +36,29 @@ PlusAddressSyncBridge::PlusAddressSyncBridge(
     return;
   }
   CHECK(GetPlusAddressTable());
-  // TODO(b/322147254): Load metadata and call `ModelReadyToSync()`.
+  // Load metadata and start syncing.
+  auto metadata = std::make_unique<syncer::MetadataBatch>();
+  if (!GetPlusAddressTable()->GetAllSyncMetadata(syncer::PLUS_ADDRESS,
+                                                 *metadata)) {
+    ModelTypeSyncBridge::change_processor()->ReportError(
+        {FROM_HERE, "Failed to read PLUS_ADDRESS metadata."});
+    return;
+  }
+  ModelTypeSyncBridge::change_processor()->ModelReadyToSync(
+      std::move(metadata));
 }
 
 PlusAddressSyncBridge::~PlusAddressSyncBridge() = default;
 
 std::unique_ptr<syncer::MetadataChangeList>
 PlusAddressSyncBridge::CreateMetadataChangeList() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // `PlusAddressTable` implements `syncer::SyncMetadataStore`. Before any
+  // changes written to the metadata change list are persisted on disk, the
+  // pending database transaction needs to be committed.
+  return std::make_unique<syncer::SyncMetadataStoreChangeList>(
+      GetPlusAddressTable(), syncer::PLUS_ADDRESS,
+      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+                          change_processor()->GetWeakPtr()));
 }
 
 std::optional<syncer::ModelError> PlusAddressSyncBridge::MergeFullSyncData(
