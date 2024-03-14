@@ -771,13 +771,13 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       dark_mode ? kColorReadAnythingCurrentReadAloudHighlightDark
                 : kColorReadAnythingCurrentReadAloudHighlightLight};
   mixer[kColorReadAnythingCurrentReadAloudHighlightDark] = {
-      SkColorSetARGB(25, 253, 252, 251)};
+      SkColorSetARGB(46, 253, 252, 251)};
   mixer[kColorReadAnythingCurrentReadAloudHighlightLight] = {
-      SkColorSetARGB(15, 31, 31, 31)};
+      SkColorSetARGB(46, 6, 46, 111)};
   mixer[kColorReadAnythingCurrentReadAloudHighlightBlue] = {
-      SkColorSetARGB(15, 31, 31, 31)};
+      SkColorSetARGB(46, 6, 46, 111)};
   mixer[kColorReadAnythingCurrentReadAloudHighlightYellow] = {
-      SkColorSetARGB(15, 31, 31, 31)};
+      SkColorSetARGB(46, 6, 46, 111)};
   mixer[kColorReadAnythingForeground] = {
       dark_mode ? kColorReadAnythingForegroundDark
                 : kColorReadAnythingForegroundLight};
