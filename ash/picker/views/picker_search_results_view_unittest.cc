@@ -10,12 +10,14 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -24,6 +26,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -36,11 +39,20 @@ using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::ResultOf;
 using ::testing::SizeIs;
 
 constexpr int kPickerWidth = 320;
 
 using PickerSearchResultsViewTest = views::ViewsTestBase;
+
+template <class V, class Matcher>
+auto AsView(Matcher matcher) {
+  return ResultOf(
+      "AsViewClass",
+      [](views::View* view) { return views::AsViewClass<V>(view); },
+      Pointee(matcher));
+}
 
 auto MatchesResultSection(PickerSectionType section_type, int num_items) {
   return AllOf(
@@ -48,6 +60,17 @@ auto MatchesResultSection(PickerSectionType section_type, int num_items) {
                Property(&views::Label::GetText,
                         GetSectionTitleForPickerSectionType(section_type))),
       Property(&PickerSectionView::item_views_for_testing, SizeIs(num_items)));
+}
+
+template <class Matcher>
+auto MatchesResultSectionWithOneItem(PickerSectionType section_type,
+                                     Matcher item_matcher) {
+  return AllOf(
+      Property(&PickerSectionView::title_label_for_testing,
+               Property(&views::Label::GetText,
+                        GetSectionTitleForPickerSectionType(section_type))),
+      Property(&PickerSectionView::item_views_for_testing,
+               ElementsAre(item_matcher)));
 }
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
@@ -110,6 +133,40 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithCategories) {
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Pointee(
                   MatchesResultSection(PickerSectionType::kCategories, 1))));
+}
+
+TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithLocalFiles) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kFiles,
+      {{PickerSearchResult::LocalFile(u"local", base::FilePath())}}));
+
+  EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
+  EXPECT_THAT(
+      view.section_views_for_testing(),
+      ElementsAre(Pointee(MatchesResultSectionWithOneItem(
+          PickerSectionType::kFiles,
+          AsView<PickerListItemView>(Property(
+              &PickerListItemView::GetPrimaryTextForTesting, u"local"))))));
+}
+
+TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithDriveFiles) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+
+  view.AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kFiles,
+      {{PickerSearchResult::DriveFile(u"drive", GURL())}}));
+
+  EXPECT_THAT(view.section_list_view_for_testing()->children(), SizeIs(1));
+  EXPECT_THAT(
+      view.section_views_for_testing(),
+      ElementsAre(Pointee(MatchesResultSectionWithOneItem(
+          PickerSectionType::kFiles,
+          AsView<PickerListItemView>(Property(
+              &PickerListItemView::GetPrimaryTextForTesting, u"drive"))))));
 }
 
 TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
@@ -301,6 +358,9 @@ INSTANTIATE_TEST_SUITE_P(
                                         gfx::Size(20, 20),
                                         u"cat gif")},
         {"Category", PickerSearchResult::Category(PickerCategory::kEmojis)},
+        {"LocalFile",
+         PickerSearchResult::LocalFile(u"local", base::FilePath())},
+        {"DriveFile", PickerSearchResult::DriveFile(u"drive", GURL())},
     }),
     [](const testing::TestParamInfo<
         PickerSearchResultsViewResultSelectionTest::ParamType>& info) {

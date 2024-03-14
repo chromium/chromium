@@ -99,11 +99,18 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const BrowsingHistoryData&) const;
   };
 
-  struct FileData {
+  struct LocalFileData {
     base::FilePath file_path;
     std::u16string title;
 
-    bool operator==(const FileData&) const;
+    bool operator==(const LocalFileData&) const;
+  };
+
+  struct DriveFileData {
+    GURL url;
+    std::u16string title;
+
+    bool operator==(const DriveFileData&) const;
   };
 
   struct CategoryData {
@@ -119,7 +126,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             PngData,
                             GifData,
                             BrowsingHistoryData,
-                            FileData,
+                            LocalFileData,
+                            DriveFileData,
                             CategoryData>;
 
   PickerSearchResult(const PickerSearchResult&);
@@ -142,8 +150,9 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                 const GURL& full_url,
                                 const gfx::Size& full_dimensions,
                                 std::u16string content_description);
-  static PickerSearchResult File(std::u16string title,
-                                 base::FilePath file_path);
+  static PickerSearchResult LocalFile(std::u16string title,
+                                      base::FilePath file_path);
+  static PickerSearchResult DriveFile(std::u16string title, const GURL& url);
   static PickerSearchResult Category(PickerCategory category);
 
   const Data& data() const;

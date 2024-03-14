@@ -49,6 +49,7 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
   // ChromeSearchResult overrides:
   void Open(int event_flags) override;
   std::optional<std::string> DriveId() const override;
+  std::optional<GURL> url() const override;
 
   // Calculates file's match relevance score. Will return a default score if the
   // query is missing or the filename is empty.
@@ -66,6 +67,8 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
     drive_id_ = drive_id;
   }
 
+  void set_url(const std::optional<GURL>& url) { url_ = url; }
+
  private:
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
@@ -80,6 +83,7 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
   const raw_ptr<Profile> profile_;
 
   std::optional<std::string> drive_id_;
+  std::optional<GURL> url_;
 
   base::WeakPtrFactory<FileResult> weak_factory_{this};
 };

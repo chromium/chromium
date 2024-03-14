@@ -226,6 +226,10 @@ std::optional<std::string> FileResult::DriveId() const {
   return drive_id_;
 }
 
+std::optional<GURL> FileResult::url() const {
+  return url_;
+}
+
 // static
 double FileResult::CalculateRelevance(
     const std::optional<TokenizedString>& query,

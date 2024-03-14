@@ -194,11 +194,10 @@ void DriveSearchProvider::SetSearchResults(
       const auto type = info->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      result =
-          MakeResult(info->reparented_path, relevance, type, GetDriveId(url));
+      result = MakeResult(info->reparented_path, relevance, type, url);
     } else {
       result = MakeResult(info->reparented_path, relevance,
-                          FileResult::Type::kFile, GetDriveId(url));
+                          FileResult::Type::kFile, url);
     }
     results.push_back(std::move(result));
   }
@@ -215,7 +214,7 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
     const base::FilePath& reparented_path,
     double relevance,
     FileResult::Type type,
-    const std::optional<std::string>& drive_id) {
+    const GURL& url) {
   // Add "Google Drive" as details.
   std::u16string details =
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
@@ -225,7 +224,8 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
       details, ash::AppListSearchResultType::kDriveSearch,
       ash::SearchResultDisplayType::kList, relevance, last_query_, type,
       profile_);
-  result->set_drive_id(drive_id);
+  result->set_drive_id(GetDriveId(url));
+  result->set_url(url);
   return result;
 }
 

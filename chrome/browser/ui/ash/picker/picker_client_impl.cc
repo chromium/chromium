@@ -259,14 +259,14 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
         }
 
         if (is_image) {
-          picker_results.push_back(
-              ash::PickerSearchResult::Text(result->title()));
+          picker_results.push_back(ash::PickerSearchResult::LocalFile(
+              result->title(), result->filePath()));
         }
         break;
       }
       case ash::AppListSearchResultType::kDriveSearch:
-        picker_results.push_back(
-            ash::PickerSearchResult::File(result->title(), result->filePath()));
+        picker_results.push_back(ash::PickerSearchResult::DriveFile(
+            result->title(), *result->url()));
         break;
       default:
         LOG(DFATAL) << "Got unexpected search result type "
