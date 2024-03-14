@@ -365,12 +365,6 @@ namespace autofillPrivate {
     static void isValidIban(
         DOMString ibanValue, IsValidIbanCallback callback);
 
-    // Clears the data associated with a wallet card which was saved
-    // locally so that the saved copy is masked (e.g., "Card ending
-    // in 1234").
-    // |guid|: GUID of the credit card to mask.
-    static void maskCreditCard(DOMString guid);
-
     // Triggers local credit cards migration.
     static void migrateCreditCards();
 

@@ -1817,7 +1817,7 @@ Called by update_extension_histograms.py.-->
   <int value="1015" label="AUTOFILLPRIVATE_SAVECREDITCARD"/>
   <int value="1016" label="AUTOFILLPRIVATE_REMOVEENTRY"/>
   <int value="1017" label="DELETED_AUTOFILLPRIVATE_VALIDATEPHONENUMBERS"/>
-  <int value="1018" label="AUTOFILLPRIVATE_MASKCREDITCARD"/>
+  <int value="1018" label="DELETED_AUTOFILLPRIVATE_MASKCREDITCARD"/>
   <int value="1019" label="INSTANCEID_GETID"/>
   <int value="1020" label="INSTANCEID_GETCREATIONTIME"/>
   <int value="1021" label="INSTANCEID_GETTOKEN"/>

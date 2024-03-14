@@ -159,11 +159,6 @@
   <button id="menuRemoveCreditCard" class="dropdown-item"
       hidden$="[[!activeCreditCard_.metadata.isLocal]]"
       on-click="onMenuRemoveCreditCardClick_">$i18n{delete}</button>
-  <button id="menuClearCreditCard" class="dropdown-item"
-      on-click="onMenuClearCreditCardClick_"
-      hidden$="[[!activeCreditCard_.metadata.isCached]]">
-    $i18n{clearCreditCard}
-  </button>
 
   <button id="menuAddVirtualCard" class="dropdown-item"
       on-click="onMenuAddVirtualCardClick_"

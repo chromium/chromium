@@ -170,9 +170,7 @@ suite('PaymentsSectionCardRows', function() {
   test('verifyLocalCreditCardMenu', async function() {
     const creditCard = createCreditCardEntry();
 
-    // When credit card is local, |isCached| will be undefined.
     creditCard.metadata!.isLocal = true;
-    creditCard.metadata!.isCached = undefined;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
@@ -193,7 +191,6 @@ suite('PaymentsSectionCardRows', function() {
     // Menu should have 2 options.
     assertFalse(section.$.menuEditCreditCard.hidden);
     assertFalse(section.$.menuRemoveCreditCard.hidden);
-    assertTrue(section.$.menuClearCreditCard.hidden);
     assertTrue(section.$.menuAddVirtualCard.hidden);
     assertTrue(section.$.menuRemoveVirtualCard.hidden);
 
@@ -201,11 +198,10 @@ suite('PaymentsSectionCardRows', function() {
     flush();
   });
 
-  test('verifyCachedCreditCardMenu', async function() {
+  test('verifyServerCreditCardMenu', async function() {
     const creditCard = createCreditCardEntry();
 
     creditCard.metadata!.isLocal = false;
-    creditCard.metadata!.isCached = true;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
@@ -213,81 +209,16 @@ suite('PaymentsSectionCardRows', function() {
         [creditCard], /*ibans=*/[], /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
-    // Cached remote CCs will show overflow menu.
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
-    assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
-    const menuButton =
-        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
-    assertTrue(!!menuButton);
-
-    menuButton.click();
-    flush();
-
-    // Menu should have 2 options.
-    assertFalse(section.$.menuEditCreditCard.hidden);
-    assertTrue(section.$.menuRemoveCreditCard.hidden);
-    assertFalse(section.$.menuClearCreditCard.hidden);
-    assertTrue(section.$.menuAddVirtualCard.hidden);
-    assertTrue(section.$.menuRemoveVirtualCard.hidden);
-
-    section.$.creditCardSharedMenu.close();
-    flush();
-  });
-
-  test('verifyNotCachedCreditCardMenu', async function() {
-    const creditCard = createCreditCardEntry();
-
-    creditCard.metadata!.isLocal = false;
-    creditCard.metadata!.isCached = false;
-    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
-    creditCard.metadata!.isVirtualCardEnrolled = false;
-
-    const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
-    assertEquals(1, getLocalAndServerCreditCardListItems().length);
-
-    // No overflow menu when not cached.
+    // No overflow menu for VCN-ineligible server cards.
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
     assertTrue(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
     assertFalse(!!rowShadowRoot.querySelector('#creditCardMenu'));
-  });
-
-  test('verifyClearCachedCreditCardClicked', async function() {
-    const creditCard = createCreditCardEntry();
-
-    creditCard.metadata!.isLocal = false;
-    creditCard.metadata!.isCached = true;
-    creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
-    creditCard.metadata!.isVirtualCardEnrolled = false;
-
-    const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
-    assertEquals(1, getLocalAndServerCreditCardListItems().length);
-
-    const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
-    assertFalse(!!rowShadowRoot.querySelector('#remoteCreditCardLink'));
-    const menuButton =
-        rowShadowRoot.querySelector<HTMLElement>('#creditCardMenu');
-    assertTrue(!!menuButton);
-    menuButton.click();
-    flush();
-
-    assertFalse(section.$.menuClearCreditCard.hidden);
-    section.$.menuClearCreditCard.click();
-    flush();
-
-    const paymentsManager =
-        PaymentsManagerImpl.getInstance() as TestPaymentsManager;
-    const expectations = getDefaultExpectations();
-    expectations.clearedCachedCreditCards = 1;
-    paymentsManager.assertExpectations(expectations);
   });
 
   test('verifyVirtualCardEligibleCreditCardMenu', async function() {
     const creditCard = createCreditCardEntry();
 
     creditCard.metadata!.isLocal = false;
-    creditCard.metadata!.isCached = false;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
@@ -309,7 +240,6 @@ suite('PaymentsSectionCardRows', function() {
     // Menu should have 2 options.
     assertFalse(section.$.menuEditCreditCard.hidden);
     assertTrue(section.$.menuRemoveCreditCard.hidden);
-    assertTrue(section.$.menuClearCreditCard.hidden);
     assertFalse(section.$.menuAddVirtualCard.hidden);
     assertTrue(section.$.menuRemoveVirtualCard.hidden);
 
@@ -321,7 +251,6 @@ suite('PaymentsSectionCardRows', function() {
     const creditCard = createCreditCardEntry();
 
     creditCard.metadata!.isLocal = false;
-    creditCard.metadata!.isCached = false;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
     creditCard.metadata!.isVirtualCardEnrolled = true;
 
@@ -343,7 +272,6 @@ suite('PaymentsSectionCardRows', function() {
     // Menu should have 2 options.
     assertFalse(section.$.menuEditCreditCard.hidden);
     assertTrue(section.$.menuRemoveCreditCard.hidden);
-    assertTrue(section.$.menuClearCreditCard.hidden);
     assertTrue(section.$.menuAddVirtualCard.hidden);
     assertFalse(section.$.menuRemoveVirtualCard.hidden);
 
@@ -355,7 +283,6 @@ suite('PaymentsSectionCardRows', function() {
     const creditCard = createCreditCardEntry();
 
     creditCard.metadata!.isLocal = false;
-    creditCard.metadata!.isCached = false;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
@@ -385,7 +312,6 @@ suite('PaymentsSectionCardRows', function() {
   test('verifyRemoveVirtualCardClicked', async function() {
     const creditCard = createCreditCardEntry();
     creditCard.metadata!.isLocal = false;
-    creditCard.metadata!.isCached = false;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = true;
     creditCard.metadata!.isVirtualCardEnrolled = true;
 

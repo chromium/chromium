@@ -127,7 +127,6 @@ declare global {
         summarySublabel?: string;
         source?: AddressSource;
         isLocal?: boolean;
-        isCached?: boolean;
         isMigratable?: boolean;
         isVirtualCardEnrollmentEligible?: boolean;
         isVirtualCardEnrolled?: boolean;
@@ -211,7 +210,6 @@ declare global {
       export function getCreditCardList(): Promise<CreditCardEntry[]>;
       export function getIbanList(): Promise<IbanEntry[]>;
       export function isValidIban(ibanValue: string): Promise<boolean>;
-      export function maskCreditCard(guid: string): void;
       export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
       export function logServerIbanLinkClicked(): void;

@@ -111,12 +111,11 @@ export class SettingsCreditCardListEntryElement extends
 
   /**
    * The 3-dot menu should be shown if the card is not a masked server card or
-   * if the card is eligble for virtual card enrollment.
+   * if the card is eligible for virtual card enrollment.
    */
   private showDots_(): boolean {
     return !!(
         this.creditCard.metadata!.isLocal ||
-        this.creditCard.metadata!.isCached ||
         this.isVirtualCardEnrollmentEligible_());
   }
 
@@ -225,13 +224,6 @@ export class SettingsCreditCardListEntryElement extends
 
   private shouldShowPaymentsIndicator_(): boolean {
     return !this.creditCard.metadata!.isLocal;
-  }
-
-  private getPaymentsLabel_(): string {
-    if (this.creditCard.metadata!.isCached) {
-      return this.i18n('googlePaymentsCached');
-    }
-    return this.i18n('googlePayments');
   }
 
   private isCardCvcAvailable_(): boolean {

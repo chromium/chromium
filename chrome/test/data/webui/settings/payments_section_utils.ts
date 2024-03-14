@@ -55,7 +55,6 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
   expected.requestedCreditCards = 1;
   expected.listeningCreditCards = 1;
   expected.removedCreditCards = 0;
-  expected.clearedCachedCreditCards = 0;
   expected.addedVirtualCards = 0;
   expected.requestedIbans = 1;
   expected.removedIbans = 0;

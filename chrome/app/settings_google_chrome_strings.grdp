@@ -54,9 +54,6 @@
   </if>
 
   <!-- Autofill Page -->
-  <message name="IDS_SETTINGS_GOOGLE_PAYMENTS_CACHED" desc="Label that will be used to show that a credit card comes from Google Pay and is saved locally. This should follow the casing of the 'Google Pay' and 'Chrome' brands. 'Copied to Chrome' is short for 'The credit card is copied to Chrome'. 'Google Pay' should not be translated as it is the product name.">
-    Google Pay (copied to Chrome)
-  </message>
   <message name="IDS_SETTINGS_CHECK_PASSWORDS_ERROR_OFFLINE" desc="Error message when the password check can't be completed because the user is offline.">
     Chrome can't check your passwords. Try checking your internet connection.
   </message>

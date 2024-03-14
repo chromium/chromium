@@ -272,7 +272,6 @@ suite('PaymentsSectionCardDialogs', function() {
     const creditCard = createCreditCardEntry();
 
     creditCard.metadata!.isLocal = true;
-    creditCard.metadata!.isCached = false;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
@@ -320,7 +319,6 @@ suite('PaymentsSectionCardDialogs', function() {
     const creditCard = createCreditCardEntry();
 
     creditCard.metadata!.isLocal = true;
-    creditCard.metadata!.isCached = false;
     creditCard.metadata!.isVirtualCardEnrollmentEligible = false;
     creditCard.metadata!.isVirtualCardEnrolled = false;
 

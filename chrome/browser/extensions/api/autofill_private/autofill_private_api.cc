@@ -485,31 +485,6 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateMaskCreditCardFunction
-
-ExtensionFunction::ResponseAction AutofillPrivateMaskCreditCardFunction::Run() {
-  std::optional<api::autofill_private::MaskCreditCard::Params> parameters =
-      api::autofill_private::MaskCreditCard::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(parameters);
-
-  autofill::ContentAutofillClient* client =
-      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
-  if (!client) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
-
-  // If `personal_data` is not available, then don't do anything.
-  autofill::PersonalDataManager* personal_data =
-      client->GetPersonalDataManager();
-  if (!personal_data || !personal_data->IsDataLoaded())
-    return RespondNow(Error(kErrorDataUnavailable));
-
-  // TODO(crbug.com/1497734): Remove this method entirely.
-
-  return RespondNow(NoArguments());
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateGetCreditCardListFunction
 
 ExtensionFunction::ResponseAction

@@ -71,7 +71,6 @@ export interface SettingsPaymentsSectionElement {
     creditCardSharedMenu: CrActionMenuElement,
     ibanSharedActionMenu: CrLazyRenderElement<CrActionMenuElement>,
     mandatoryAuthToggle: SettingsToggleButtonElement,
-    menuClearCreditCard: HTMLElement,
     menuEditCreditCard: HTMLElement,
     menuRemoveCreditCard: HTMLElement,
     menuAddVirtualCard: HTMLElement,
@@ -517,16 +516,6 @@ export class SettingsPaymentsSectionElement extends
     this.showLocalIbanRemoveConfirmationDialog_ = true;
     this.$.ibanSharedActionMenu.get().close();
   }
-
-  /**
-   * Handles clicking on the "Clear copy" button for cached credit cards.
-   */
-  private onMenuClearCreditCardClick_() {
-    this.paymentsManager_.clearCachedCreditCard(this.activeCreditCard_!.guid!);
-    this.$.creditCardSharedMenu.close();
-    this.activeCreditCard_ = null;
-  }
-
 
   private onMenuAddVirtualCardClick_() {
     this.paymentsManager_.addVirtualCard(this.activeCreditCard_!.guid!);

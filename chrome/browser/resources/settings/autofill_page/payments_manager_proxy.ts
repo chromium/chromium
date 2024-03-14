@@ -36,11 +36,6 @@ export interface PaymentsManagerProxy {
   removeCreditCard(guid: string): void;
 
   /**
-   * @param guid The GUID to credit card to remove from the cache.
-   */
-  clearCachedCreditCard(guid: string): void;
-
-  /**
    * Saves the given credit card.
    */
   saveCreditCard(creditCard: chrome.autofillPrivate.CreditCardEntry): void;
@@ -144,10 +139,6 @@ export class PaymentsManagerImpl implements PaymentsManagerProxy {
 
   removeCreditCard(guid: string) {
     chrome.autofillPrivate.removeEntry(guid);
-  }
-
-  clearCachedCreditCard(guid: string) {
-    chrome.autofillPrivate.maskCreditCard(guid);
   }
 
   saveCreditCard(creditCard: chrome.autofillPrivate.CreditCardEntry) {
