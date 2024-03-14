@@ -143,10 +143,10 @@ class ReadAnythingAppModel {
     return selection_node_ids_;
   }
 
-  // Returns the active tree id. For PDFs, this will return the tree id of the
-  // PDF iframe, since that is where the PDF contents are. If that tree id is
-  // not yet in the model, AXTreeIDUnknown will be returned.
-  ui::AXTreeID GetActiveTreeId() const;
+  const ui::AXTreeID active_tree_id() const { return active_tree_id_; }
+  void set_active_tree_id(const ui::AXTreeID active_tree_id) {
+    active_tree_id_ = active_tree_id;
+  }
 
   void SetDistillationInProgress(bool distillation) {
     distillation_in_progress_ = distillation;
@@ -155,8 +155,6 @@ class ReadAnythingAppModel {
     active_tree_selectable_ = active_tree_selectable;
   }
   void SetActiveUkmSourceId(ukm::SourceId source_id);
-
-  void SetActiveTreeId(ui::AXTreeID tree_id) { active_tree_id_ = tree_id; }
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
   bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
@@ -234,18 +232,8 @@ class ReadAnythingAppModel {
   int GetNextSentence(const std::u16string& text);
 
   // PDF handling.
-  void SetIsPdf(const GURL& url);
+  void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
   bool is_pdf() const { return is_pdf_; }
-  ui::AXTreeID GetPDFWebContents() const;
-
-  // Checks assumptions made about the PDF's structure, specifically that the
-  // main web contents AXTree has one child (the pdf web contents), and that
-  // the pdf web contents AXTree has one child (the pdf iframe). If there is
-  // not enough information to check a certain assumption, ie the model does
-  // not contain a certain tree, this function could still return true. When
-  // tree updates are received for the missing tree(s), this function should
-  // be ran again to check for the correct structure.
-  bool IsPDFFormatted() const;
 
   // Google Docs need special handling.
   void set_is_google_docs(bool is_google_docs) { is_docs_ = is_google_docs; }

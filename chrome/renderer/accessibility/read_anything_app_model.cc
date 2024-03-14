@@ -22,10 +22,6 @@
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 
-namespace {
-constexpr char kPDFExtension[] = ".pdf";
-}
-
 ReadAnythingAppModel::ReadAnythingAppModel() {
   // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
   mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
@@ -110,8 +106,8 @@ void ReadAnythingAppModel::ResetSelection() {
 }
 
 bool ReadAnythingAppModel::PostProcessSelection() {
-  DCHECK_NE(GetActiveTreeId(), ui::AXTreeIDUnknown());
-  DCHECK(ContainsTree(GetActiveTreeId()));
+  DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
+  DCHECK(ContainsTree(active_tree_id_));
 
   bool was_empty = is_empty();
   requires_post_process_selection_ = false;
@@ -153,7 +149,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
 void ReadAnythingAppModel::UpdateSelection() {
   ResetSelection();
   ui::AXSelection selection =
-      GetTreeFromId(GetActiveTreeId())->GetUnignoredSelection();
+      GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
   has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
                    selection.focus_object_id != ui::kInvalidAXNodeID &&
                    !selection.IsCollapsed();
@@ -177,8 +173,8 @@ void ReadAnythingAppModel::UpdateSelection() {
 
 void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   DCHECK(has_selection_);
-  DCHECK_NE(GetActiveTreeId(), ui::AXTreeIDUnknown());
-  DCHECK(ContainsTree(GetActiveTreeId()));
+  DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
+  DCHECK(ContainsTree(active_tree_id_));
 
   ui::AXNode* start_node = GetAXNode(start_node_id_);
   DCHECK(start_node);
@@ -436,7 +432,7 @@ void ReadAnythingAppModel::UnserializePendingUpdates(ui::AXTreeID tree_id) {
   //  has begun.
   std::vector<ui::AXTreeUpdate> update =
       pending_updates_map_.extract(tree_id).mapped();
-  DCHECK(update.empty() || tree_id == GetActiveTreeId());
+  DCHECK(update.empty() || tree_id == active_tree_id_);
   UnserializeUpdates(update, tree_id);
 }
 
@@ -471,56 +467,6 @@ void ReadAnythingAppModel::UnserializeUpdates(
   ProcessGeneratedEvents(event_generator, prev_tree_size, tree->size());
 }
 
-ui::AXTreeID ReadAnythingAppModel::GetActiveTreeId() const {
-  if (!is_pdf_) {
-    return active_tree_id_;
-  }
-
-  if (!IsPDFFormatted()) {
-    return ui::AXTreeIDUnknown();
-  }
-
-  ui::AXTreeID pdf_web_contents = GetPDFWebContents();
-  if (pdf_web_contents == ui::AXTreeIDUnknown() ||
-      !ContainsTree(pdf_web_contents)) {
-    return ui::AXTreeIDUnknown();
-  }
-
-  ui::AXTreeID iframe =
-      *(GetTreeFromId(pdf_web_contents)->GetAllChildTreeIds().begin());
-  return ContainsTree(iframe) ? iframe : ui::AXTreeIDUnknown();
-}
-
-ui::AXTreeID ReadAnythingAppModel::GetPDFWebContents() const {
-  DCHECK(is_pdf_);
-  if (!ContainsTree(active_tree_id_)) {
-    return ui::AXTreeIDUnknown();
-  }
-  return *(GetTreeFromId(active_tree_id_)->GetAllChildTreeIds().begin());
-}
-
-bool ReadAnythingAppModel::IsPDFFormatted() const {
-  if (!ContainsTree(active_tree_id_)) {
-    return true;
-  }
-
-  // Main web contents should only have one child (the PDF web contents).
-  std::set<ui::AXTreeID> children =
-      GetTreeFromId(active_tree_id_)->GetAllChildTreeIds();
-  if (children.size() != 1) {
-    return false;
-  }
-
-  ui::AXTreeID pdf_web_contents = *(children.begin());
-  if (!ContainsTree(pdf_web_contents)) {
-    return true;
-  }
-
-  // The PDF web contents should only have one child (the PDF iframe).
-  children = GetTreeFromId(pdf_web_contents)->GetAllChildTreeIds();
-  return children.size() == 1;
-}
-
 void ReadAnythingAppModel::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,
@@ -538,7 +484,7 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
   // Drawing must be done on the same tree that was sent to the distiller,
   // so it’s critical that updates are not unserialized until drawing is
   // complete.
-  if (tree_id == GetActiveTreeId()) {
+  if (tree_id == active_tree_id_) {
     if (distillation_in_progress_) {
       AddPendingUpdates(tree_id, updates);
       ProcessNonGeneratedEvents(events);
@@ -563,10 +509,10 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   if (!ContainsTree(tree_id)) {
     return;
   }
-  if (GetActiveTreeId() == tree_id) {
+  if (active_tree_id_ == tree_id) {
     // TODO(crbug.com/1266555): If distillation is in progress, cancel the
     // distillation request.
-    SetActiveTreeId(ui::AXTreeIDUnknown());
+    active_tree_id_ = ui::AXTreeIDUnknown();
     SetActiveUkmSourceId(ukm::kInvalidSourceId);
   }
   EraseTree(tree_id);
@@ -586,7 +532,7 @@ void ReadAnythingAppModel::SetActiveUkmSourceId(ukm::SourceId source_id) {
 }
 
 ui::AXNode* ReadAnythingAppModel::GetAXNode(ui::AXNodeID ax_node_id) const {
-  ui::AXSerializableTree* tree = GetTreeFromId(GetActiveTreeId());
+  ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
   return tree->GetFromId(ax_node_id);
 }
 
@@ -718,9 +664,9 @@ void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
   // the new selection to the saved selection. If the anchor is the same, update
   // the selection in RM.
   bool is_click_and_drag_selection = false;
-  if (ContainsTree(GetActiveTreeId())) {
+  if (ContainsTree(active_tree_id_)) {
     ui::AXSelection selection =
-        GetTreeFromId(GetActiveTreeId())->GetUnignoredSelection();
+        GetTreeFromId(active_tree_id_)->GetUnignoredSelection();
     is_click_and_drag_selection =
         (selection.anchor_object_id == start_node_id_ &&
          selection.anchor_offset == start_offset_ &&
@@ -966,10 +912,6 @@ void ReadAnythingAppModel::ResetTextSize() {
 
 void ReadAnythingAppModel::ToggleLinksEnabled() {
   links_enabled_ = !links_enabled_;
-}
-
-void ReadAnythingAppModel::SetIsPdf(const GURL& url) {
-  is_pdf_ = url.spec().ends_with(kPDFExtension);
 }
 
 std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {

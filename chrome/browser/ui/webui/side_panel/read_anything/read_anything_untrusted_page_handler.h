@@ -125,7 +125,6 @@ class ReadAnythingUntrustedPageHandler
                          ui::AXNodeID focus_node_id,
                          int focus_offset) override;
   void OnCollapseSelection() override;
-  void EnablePDFContentAccessibility(const ui::AXTreeID& ax_tree_id) override;
 
   // ReadAnythingModel::Observer:
   void OnReadAnythingThemeChanged(
@@ -164,9 +163,9 @@ class ReadAnythingUntrustedPageHandler
   // 2. Notifies the model that the AXTreeID has changed.
   void OnActiveWebContentsChanged();
 
-  // force_update_state will tell the UI to update the state even if the active
-  // tree id does not change.
-  void OnActiveAXTreeIDChanged(bool force_update_state = false);
+  void SetUpPdfObserver();
+
+  void OnActiveAXTreeIDChanged();
 
   // Logs the current visual settings values.
   void LogTextStyle();

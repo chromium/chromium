@@ -53,10 +53,6 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, OnCollapseSelection, (), (override));
   MOCK_METHOD(void, OnCopy, (), (override));
   MOCK_METHOD(void,
-              EnablePDFContentAccessibility,
-              (const ui::AXTreeID& ax_tree_id),
-              (override));
-  MOCK_METHOD(void,
               OnLineSpaceChange,
               (read_anything::mojom::LineSpacing line_spacing),
               (override));
@@ -154,35 +150,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     Mock::VerifyAndClearExpectations(distiller_);
   }
 
-  ui::AXTreeID SetUpPdfTrees() {
+  void SetIsPdf() {
     // Call OnActiveAXTreeIDChanged() to set is_pdf_ state.
     GURL pdf_url("http://www.google.com/foo/bar.pdf");
     OnActiveAXTreeIDChanged(tree_id_, pdf_url, true);
-
-    // PDF set up required for formatting checks.
-    ui::AXTreeID pdf_iframe_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-    ui::AXTreeID pdf_web_contents_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-
-    // Send update for main web content with child tree (pdf web contents).
-    ui::AXTreeUpdate main_web_contents_update;
-    SetUpdateTreeID(&main_web_contents_update);
-    ui::AXNodeData node;
-    node.id = 1;
-    node.AddChildTreeId(pdf_web_contents_tree_id);
-    main_web_contents_update.nodes = {node};
-    AccessibilityEventReceived({main_web_contents_update});
-
-    // Send update for pdf web contents with child tree (iframe).
-    ui::AXTreeUpdate pdf_web_contents_update;
-    ui::AXNodeData pdf_node;
-    pdf_node.id = 1;
-    pdf_node.AddChildTreeId(pdf_iframe_tree_id);
-    pdf_web_contents_update.nodes = {pdf_node};
-    pdf_web_contents_update.root_id = pdf_node.id;
-    SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
-    AccessibilityEventReceived({pdf_web_contents_update});
-
-    return pdf_iframe_tree_id;
   }
 
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
@@ -235,9 +206,9 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
                                const GURL& url,
-                               bool force_update_state = false) {
+                               bool is_pdf = false) {
     controller_->OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId, url,
-                                         force_update_state);
+                                         is_pdf);
   }
 
   void OnAXTreeDistilled(const std::vector<ui::AXNodeID>& content_node_ids) {
@@ -401,7 +372,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->model_.ContainsTree(tree_id);
   }
 
-  ui::AXTreeID ActiveTreeId() { return controller_->model_.GetActiveTreeId(); }
+  ui::AXTreeID active_tree_id() { return controller_->model_.active_tree_id(); }
 
   std::string LanguageCodeForSpeech() {
     return controller_->GetLanguageCodeForSpeech();
@@ -684,11 +655,10 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDF) {
-  ui::AXTreeID pdf_iframe_tree_id = SetUpPdfTrees();
-
   // Send pdf iframe update with html tags to test.
+  SetIsPdf();
   ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update, pdf_iframe_tree_id);
+  SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData node1;
   node1.id = 2;
   node1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
@@ -706,20 +676,19 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_PDF) {
   AccessibilityEventReceived({update});
 
   OnAXTreeDistilled({});
-  EXPECT_CALL(page_handler_, EnablePDFContentAccessibility).Times(1);
   EXPECT_EQ("span", GetHtmlTag(1));
   EXPECT_EQ("h1", GetHtmlTag(2));
   EXPECT_EQ("h2", GetHtmlTag(3));
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
-  ui::AXTreeID pdf_iframe_tree_id = SetUpPdfTrees();
+  SetIsPdf();
 
-  // Send pdf iframe update with html tags to test. Two headings next to each
+  // Send pdf update with html tags to test. Two headings next to each
   // other should be spans. A heading that's too long should be turned into a
   // paragraph.
   ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update, pdf_iframe_tree_id);
+  SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData heading_node1;
   heading_node1.id = 2;
   heading_node1.role = ax::mojom::Role::kHeading;
@@ -753,7 +722,6 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
   AccessibilityEventReceived({update});
 
   OnAXTreeDistilled({});
-  EXPECT_CALL(page_handler_, EnablePDFContentAccessibility).Times(1);
   EXPECT_EQ("span", GetHtmlTag(2));
   EXPECT_EQ("span", GetHtmlTag(3));
   EXPECT_EQ("a", GetHtmlTag(4));
@@ -761,11 +729,11 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_IncorrectlyFormattedPDF) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
-  ui::AXTreeID pdf_iframe_tree_id = SetUpPdfTrees();
+  SetIsPdf();
 
   // Send pdf iframe update with html tags to test.
   ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update, pdf_iframe_tree_id);
+  SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData node;
   node.id = 2;
   node.role = ax::mojom::Role::kContentInfo;
@@ -781,7 +749,6 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_InaccessiblePDF) {
   AccessibilityEventReceived({update});
 
   OnAXTreeDistilled({});
-  EXPECT_CALL(page_handler_, EnablePDFContentAccessibility).Times(1);
   EXPECT_EQ("br", GetHtmlTag(2));
 }
 
@@ -1699,9 +1666,9 @@ TEST_F(ReadAnythingAppControllerTest,
   // Calling OnActiveAXTreeID updates the active AXTreeID.
   ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
   EXPECT_CALL(*distiller_, Distill).Times(0);
-  ASSERT_EQ(tree_id_, ActiveTreeId());
+  ASSERT_EQ(tree_id_, active_tree_id());
   OnActiveAXTreeIDChanged(tree_id_2);
-  ASSERT_EQ(tree_id_2, ActiveTreeId());
+  ASSERT_EQ(tree_id_2, active_tree_id());
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
@@ -2113,36 +2080,6 @@ TEST_F(ReadAnythingAppControllerTest,
        GetLanguageCodeForSpeech_ReturnsCorrectLanguageCode) {
   SetLanguageCode("es");
   ASSERT_EQ(LanguageCodeForSpeech(), "es");
-}
-
-TEST_F(ReadAnythingAppControllerTest, AccessibilityEventReceived_PDFHandling) {
-  // Call OnActiveAXTreeIDChanged() to set is_pdf_ state.
-  GURL pdf_url("http://www.google.com/foo/bar.pdf");
-  OnActiveAXTreeIDChanged(tree_id_, pdf_url, true);
-
-  // Send update for main web contentes.
-  ui::AXTreeID pdf_web_contents_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  ui::AXTreeUpdate update;
-  SetUpdateTreeID(&update);
-  ui::AXNodeData node;
-  node.id = 1;
-  node.AddChildTreeId(pdf_web_contents_tree_id);
-  update.nodes = {node};
-  AccessibilityEventReceived({update});
-
-  // Send update for pdf web contents.
-  ui::AXTreeUpdate pdf_web_contents_update;
-  ui::AXNodeData pdfNode;
-  pdfNode.id = 1;
-  pdf_web_contents_update.root_id = pdfNode.id;
-  pdf_web_contents_update.nodes = {pdfNode};
-  SetUpdateTreeID(&pdf_web_contents_update, pdf_web_contents_tree_id);
-  AccessibilityEventReceived({pdf_web_contents_update});
-
-  EXPECT_CALL(page_handler_,
-              EnablePDFContentAccessibility(pdf_web_contents_tree_id))
-      .Times(1);
-  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
