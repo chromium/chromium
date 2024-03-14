@@ -1707,6 +1707,9 @@ extern const char kPrivacyGuidePreloadAndroidDescription[];
 extern const char kPrivacySandboxAdsAPIsOverrideName[];
 extern const char kPrivacySandboxAdsAPIsOverrideDescription[];
 
+extern const char kPrivacySandboxSettings4Name[];
+extern const char kPrivacySandboxSettings4Description[];
+
 extern const char kPrivacySandboxAdsNoticeCCTName[];
 extern const char kPrivacySandboxAdsNoticeCCTDescription[];
 
