@@ -93,12 +93,11 @@ int GetInt(const base::Value::Dict& dict, const char* key, int default_value) {
 // re-mapping when no customer is setting a quic:// proxy in ONC anymore (see
 // b/323878666).
 std::string RemapQuicSchemeToHttps(std::string host) {
-  std::string_view host_view = host;
-
-  if (!base::StartsWith(host_view, kLegacyQuicScheme)) {
+  if (!base::StartsWith(host, kLegacyQuicScheme)) {
     return host;
   }
-  std::string_view host_after_protocol =
+  std::string_view host_view = host;
+  const std::string_view host_after_protocol =
       host_view.substr(kLegacyQuicScheme.size());
   return base::StrCat({url::kHttpsScheme, host_after_protocol});
 }
