@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/process/process_handle.h"
 #include "base/record_replay.h"
+#include "base/record_replay_render_interface.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -94,13 +95,13 @@ extern "C" char* V8RecordReplayReadAssetFileContents(const char* aPath, size_t* 
 static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
     "REPLAY_CDT_PAUSE_OBJECT_GROUP";
 
-static bool IsGReplayScriptEnabledWhenRecording() {
+static bool IsCommandHandlingEnabledWhenRecording() {
   return !recordreplay::FeatureEnabled("replay-only-command-handling");
 }
 
-static bool IsGReplayScriptEnabled() {
+static bool IsCommandHandlingEnabled() {
   return recordreplay::IsReplaying() ||
-         IsGReplayScriptEnabledWhenRecording();
+         IsCommandHandlingEnabledWhenRecording();
 }
 
 static LocalFrame* GetLocalFrameRoot(v8::Isolate* isolate) {
@@ -188,7 +189,7 @@ static String ReadReplayAssetFile(const char* fname) {
 
   // Important: Treat as UTF-8.
   String result = String::FromUTF8(
-    IsGReplayScriptEnabledWhenRecording()
+    IsCommandHandlingEnabledWhenRecording()
       // Recording + Replay.
       ? ReadReplayAssetFileRaw(fname, len).c_str()
       // Replay only.
@@ -873,7 +874,7 @@ static void LogWarningCallback(const v8::FunctionCallbackInfo<v8::Value>& args) 
 void
 RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
                                 v8::Isolate* isolate) {
-  if (v8::IsMainThread() && IsGReplayScriptEnabled()) {
+  if (v8::IsMainThread() && IsCommandHandlingEnabled()) {
     if (!gV8Inspectors) {
       gV8Inspectors = new std::unordered_map<v8::Isolate*,v8_inspector::V8Inspector*>();
       gInspectorData = new std::unordered_map<v8::Isolate*, ContextGroupIdInspectorMap*>();
@@ -1011,7 +1012,7 @@ InspectorData* getInspectorFor(v8::Isolate* isolate, int contextGroupId) {
  */
 v8_inspector::V8InspectorSession* getInspectorSession(v8::Isolate* isolate, int contextGroupId) {
   CHECK(v8::IsMainThread());
-  CHECK(IsGReplayScriptEnabled());
+  CHECK(IsCommandHandlingEnabled());
   CHECK(gV8Inspectors);
 
   v8_inspector::V8Inspector* inspector = (*gV8Inspectors)[isolate];
@@ -2352,6 +2353,19 @@ static void fromJsEndReplayCode(
   recordreplay::ExitReplayCode();
 }
 
+static void fromJsGetCurrentViewportPixelSize(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+
+  gfx::Size size = recordreplay::GetCurrentViewportPixelSize();
+
+  v8::Local<v8::Object> jsSize = v8::Object::New(isolate);
+  SetDataProperty(isolate, jsSize, "width",
+                  v8::Number::New(isolate, size.width()));
+  SetDataProperty(isolate, jsSize, "height",
+                  v8::Number::New(isolate, size.height()));
+  args.GetReturnValue().Set(jsSize);
+}
+
 /** ###########################################################################
  * misc
  * ##########################################################################*/
@@ -2577,6 +2591,10 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
   SetFunctionProperty(isolate, args, "endReplayCode",
                       fromJsEndReplayCode);
 
+  // Graphics.
+  SetFunctionProperty(isolate, args, "getCurrentViewportPixelSize",
+                      fromJsGetCurrentViewportPixelSize);
+
   // unsorted Replay stuff
   SetFunctionProperty(
       isolate, args, "setClearPauseDataCallback",
@@ -2640,7 +2658,7 @@ static void InitializeReplayScripts(v8::Isolate* isolate, LocalFrame* localFrame
     localFrame->GetSettings()->SetForceMainWorldInitialization(true);
   }
 
-  if (IsGReplayScriptEnabled()) {
+  if (IsCommandHandlingEnabled()) {
     recordreplay::AutoMarkReplayCode amrc;
     String commandHandlerScript = ReadReplayCommandHandlerScript();
     {

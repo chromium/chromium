@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/record_replay.h"
+#include "base/record_replay_render_interface.h"
 #include "base/strings/stringprintf.h"
 #include "cc/animation/animation_events.h"
 #include "cc/trees/compositor_commit_data.h"
@@ -66,6 +67,7 @@ static void InitializeRenderer() {
                                         nullptr);
 
   recordreplay::SetResetPaintSurfaceCallback(ResetSurfaceId);
+  recordreplay::SetGetCurrentViewportPixelSizeCallback(GetCurrentViewportPixelSizeImpl);
 }
 
 static std::string SurfaceIdString(const viz::LocalSurfaceId& local_surface_id) {
@@ -238,6 +240,9 @@ static std::atomic<base::WaitableEvent*> gRepaintEvent;
 // Encoded result of repainting.
 static std::atomic<char*> gRepaintResult;
 
+// Real size of |gRepaintResult|.
+static std::atomic<gfx::Size> gDeviceViewportSize;
+
 void OnPaintFinished(const SkPixmap& pixmap) {
   static bool hasPaints = false;
   if (!hasPaints) {
@@ -246,6 +251,10 @@ void OnPaintFinished(const SkPixmap& pixmap) {
   }
 
   gCurrentPixmap = &pixmap;
+  if (gOutputSurface) {
+    // Obtain device size on impl thread.
+    gDeviceViewportSize = gOutputSurface->software_device()->ReplayViewportPixelSize();
+  }
 
   if (HasDivergedFromRecording()) {
     // If we've diverged from the recording then we're probably repainting,
@@ -316,6 +325,10 @@ static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
 
   gRepaintEvent = nullptr;
   return gRepaintResult;
+}
+
+gfx::Size GetCurrentViewportPixelSizeImpl() {
+  return gDeviceViewportSize;
 }
 
 } // namespace recordreplay

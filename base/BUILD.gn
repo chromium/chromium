@@ -624,6 +624,8 @@ mixed_component("base") {
     "record_replay.cc",
     "record_replay.h",
     "record_replay_ordered_atomic.h",
+    "record_replay_render_interface.h",
+    "record_replay_render_interface.cc",
     "record_replay_atomic_sequence_num.h",
     "run_loop.cc",
     "run_loop.h",

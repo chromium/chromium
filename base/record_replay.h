@@ -390,10 +390,6 @@ public:
   }
 };
 
-typedef void (*ResetPaintSurfaceCallback)();
-void SetResetPaintSurfaceCallback(ResetPaintSurfaceCallback reset_paint_surface);
-void DoResetPaintSurface();
-
 /*
  * A Pseudo-stack mechanism for diagnostics.
  *

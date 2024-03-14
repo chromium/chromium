@@ -611,18 +611,6 @@ void FinishRecording() {
   V8RecordReplayFinishRecording();
 }
 
-// Callback to reset the paint surface.
-static ResetPaintSurfaceCallback gResetPaintSurfaceCallback = nullptr;
-void SetResetPaintSurfaceCallback(ResetPaintSurfaceCallback reset_paint_surface) {
-  gResetPaintSurfaceCallback = reset_paint_surface;
-}
-
-void DoResetPaintSurface() {
-  if (gResetPaintSurfaceCallback) {
-    gResetPaintSurfaceCallback();
-  }
-}
-
 std::vector<std::string> *gPseudoStack = nullptr;
 
 static std::vector<std::string>* GetPseudoStack() {
