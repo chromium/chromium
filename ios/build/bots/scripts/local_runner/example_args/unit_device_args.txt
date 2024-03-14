@@ -1,0 +1,15 @@
+
+# **** REQUIRED ARGS ****
+
+path=/Users/username/bling/src/out/Debug-iphonesimulator
+
+xcode_path=/Users/username/Downloads/Xcode.app
+
+mac_toolchain_cmd=/Users/username/depot_tools/mac_toolchain
+
+target=base_unittests.app
+
+
+# **** OPTIONAL ARGS ****
+
+gtest_filter="*StatisticsRecorderNoStarvation/0*"

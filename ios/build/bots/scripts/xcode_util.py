@@ -417,7 +417,10 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder, ios_version,
 
   # try to delete some simulator runtimes first, to free some disk space,
   # if needed.
-  iossim_util.delete_least_recently_used_simulator_runtimes()
+  if not os.environ.get('LUCI_CONTEXT'):
+    logging.warning('Sim runtimes will not be cleaned up running locally')
+  else:
+    iossim_util.delete_least_recently_used_simulator_runtimes()
 
   runtime_build_to_install = get_latest_runtime_build_cipd(
       xcode_build_version, ios_version)

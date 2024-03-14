@@ -315,11 +315,12 @@ class InstallTest(XcodeUtilTest):
                   with mock.patch(
                       'iossim_util.override_default_iphonesim_runtime'
                   ) as mock_override_default_iphonesim_runtime:
-                    result = xcode_util.install_runtime_dmg(
-                        mac_toolchain='mac_toolchain',
-                        runtime_cache_folder='/path/to/runtime_cache_folder',
-                        ios_version='15.0',
-                        xcode_build_version='15a123')
+                    with mock.patch('os.environ.get', return_value=True):
+                      result = xcode_util.install_runtime_dmg(
+                          mac_toolchain='mac_toolchain',
+                          runtime_cache_folder='/path/to/runtime_cache_folder',
+                          ios_version='15.0',
+                          xcode_build_version='15a123')
 
     mock_delete_least_recently_used_simulator_runtimes.assert_called_once_with()
     mock_get_simulator_runtime_info_by_build.assert_called_once_with('20C52')
@@ -344,11 +345,12 @@ class InstallTest(XcodeUtilTest):
           ) as mock_get_simulator_runtime_info_by_build:
             with mock.patch(
                 'xcode_util._install_runtime_dmg') as mock__install_runtime_dmg:
-              result = xcode_util.install_runtime_dmg(
-                  mac_toolchain='mac_toolchain',
-                  runtime_cache_folder='/path/to/runtime_cache_folder',
-                  ios_version='15.0',
-                  xcode_build_version='15a123')
+              with mock.patch('os.environ.get', return_value=True):
+                result = xcode_util.install_runtime_dmg(
+                    mac_toolchain='mac_toolchain',
+                    runtime_cache_folder='/path/to/runtime_cache_folder',
+                    ios_version='15.0',
+                    xcode_build_version='15a123')
 
     mock_delete_least_recently_used_simulator_runtimes.assert_called_once_with()
     mock_get_simulator_runtime_info_by_build.assert_called_once_with('20C52')

@@ -1,0 +1,24 @@
+
+# **** REQUIRED ARGS ****
+
+path=/Users/username/bling/src/out/Debug-iphonesimulator
+
+xcode_path=/Users/username/Downloads/Xcode.app
+
+mac_toolchain_cmd=/Users/username/depot_tools/mac_toolchain
+
+target=ios_chrome_ui_eg2tests_module-Runner.app
+
+
+# **** TEST SPECIFIC ARGS ****
+
+host_app=ios_chrome_eg2tests.app
+
+platform="iPad Pro (12.9-inch) (5th generation)"
+
+version=17.4
+
+
+# **** OPTIONAL ARGS ****
+
+gtest_filter="AddressBarPreferenceTestCase:SearchEngineTestCase/testMoveToBackgroundAndToForeground"
