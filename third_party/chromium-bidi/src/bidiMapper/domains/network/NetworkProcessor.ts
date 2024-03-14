@@ -101,24 +101,45 @@ export class NetworkProcessor {
   async continueResponse(
     params: Network.ContinueResponseParameters
   ): Promise<EmptyResult> {
-    const networkId = params.request;
-    const {statusCode, reasonPhrase, headers} = params;
-    const request = this.#getBlockedRequestOrFail(networkId, [
-      Network.InterceptPhase.ResponseStarted,
-    ]);
+    const {request: networkId, statusCode, reasonPhrase, headers} = params;
 
     const responseHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(headers);
 
-    // TODO: Set / expand.
-    // ; Step 10. cookies
-    // ; Step 11. credentials
+    const request = this.#getBlockedRequestOrFail(networkId, [
+      Network.InterceptPhase.AuthRequired,
+      Network.InterceptPhase.ResponseStarted,
+    ]);
 
-    await request.continueResponse({
-      responseCode: statusCode,
-      responsePhrase: reasonPhrase,
-      responseHeaders,
-    });
+    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
+      if (params.credentials) {
+        await Promise.all([
+          request.waitNextPhase,
+          request.continueWithAuth({
+            response: 'ProvideCredentials',
+            username: params.credentials.username,
+            password: params.credentials.password,
+          }),
+        ]);
+      } else {
+        // We need to use `ProvideCredentials`
+        // As `Default` may cancel the request
+        await request.continueWithAuth({
+          response: 'ProvideCredentials',
+        });
+        return {};
+      }
+    }
+
+    if (request.interceptPhase === Network.InterceptPhase.ResponseStarted) {
+      // TODO: Set / expand.
+      // ; Step 10. cookies
+      await request.continueResponse({
+        responseCode: statusCode,
+        responsePhrase: reasonPhrase,
+        responseHeaders,
+      });
+    }
 
     return {};
   }
@@ -164,12 +185,12 @@ export class NetworkProcessor {
     request: networkId,
   }: Network.FailRequestParameters): Promise<EmptyResult> {
     const request = this.#getRequestOrFail(networkId);
-    if (request.currentInterceptPhase === Network.InterceptPhase.AuthRequired) {
+    if (request.interceptPhase === Network.InterceptPhase.AuthRequired) {
       throw new InvalidArgumentException(
         `Request '${networkId}' in 'authRequired' phase cannot be failed`
       );
     }
-    if (!request.currentInterceptPhase) {
+    if (!request.interceptPhase) {
       throw new NoSuchRequestException(
         `No blocked request found for network id '${networkId}'`
       );
@@ -205,6 +226,7 @@ export class NetworkProcessor {
       Network.InterceptPhase.ResponseStarted,
       Network.InterceptPhase.AuthRequired,
     ]);
+
     await request.provideResponse({
       responseCode: statusCode ?? request.statusCode,
       responsePhrase: reasonPhrase,
@@ -245,17 +267,14 @@ export class NetworkProcessor {
     phases: Network.InterceptPhase[]
   ): NetworkRequest {
     const request = this.#getRequestOrFail(id);
-    if (!request.currentInterceptPhase) {
+    if (!request.interceptPhase) {
       throw new NoSuchRequestException(
         `No blocked request found for network id '${id}'`
       );
     }
-    if (
-      request.currentInterceptPhase &&
-      !phases.includes(request.currentInterceptPhase)
-    ) {
+    if (request.interceptPhase && !phases.includes(request.interceptPhase)) {
       throw new InvalidArgumentException(
-        `Blocked request for network id '${id}' is in '${request.currentInterceptPhase}' phase`
+        `Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`
       );
     }
 

@@ -41,10 +41,10 @@ function logger(...args: any[]) {
 }
 
 describe('NetworkStorage', () => {
-  let processedEvents = new Map<
+  let processedEvents: [
     ChromiumBidi.Event['method'],
-    ChromiumBidi.Event['params']
-  >();
+    ChromiumBidi.Event['params'],
+  ][] = [];
   let eventManager!: EventManager;
   let networkStorage!: NetworkStorage;
   let cdpClient!: CdpClient;
@@ -54,11 +54,19 @@ describe('NetworkStorage', () => {
   async function getEvent(name: ChromiumBidi.Event['method']) {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    return processedEvents.get(name);
+    return processedEvents
+      .reverse()
+      .find(([method]) => method === name)
+      ?.at(1);
+  }
+  async function getEvents(name: ChromiumBidi.Event['method']) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    return processedEvents.filter(([method]) => method === name);
   }
 
   beforeEach(() => {
-    processedEvents = new Map();
+    processedEvents = [];
     const browsingContextStorage = new BrowsingContextStorage();
     const cdpTarget = new MockCdpTarget(logger) as unknown as CdpTarget;
     const browsingContext = {
@@ -72,7 +80,7 @@ describe('NetworkStorage', () => {
     processingQueue = new ProcessingQueue<OutgoingMessage>(
       async ({message}) => {
         if (message.type === 'event') {
-          processedEvents.set(message.method, message.params);
+          processedEvents.push([message.method, message.params]);
         }
         return await Promise.resolve();
       },
@@ -309,6 +317,17 @@ describe('NetworkStorage', () => {
         'request.request': request.fetchId,
         'request.method': 'GET',
       });
+    });
+
+    it('should work report multiple authRequired', async () => {
+      const request = new MockCdpNetworkEvents(cdpClient);
+
+      request.authRequired();
+      let events = await getEvents('network.authRequired');
+      expect(events).to.have.length(1);
+      request.authRequired();
+      events = await getEvents('network.authRequired');
+      expect(events).to.have.length(2);
     });
   });
 });

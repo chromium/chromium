@@ -29,6 +29,7 @@ import {
   type NetworkEvent,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
+import {Deferred} from '../../../utils/Deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
 import type {EventManager} from '../session/EventManager.js';
@@ -94,6 +95,8 @@ export class NetworkRequest {
     [ChromiumBidi.Network.EventNames.ResponseStarted]: false,
   };
 
+  waitNextPhase = new Deferred<void>();
+
   constructor(
     id: Network.Request,
     eventManager: EventManager,
@@ -121,7 +124,7 @@ export class NetworkRequest {
   /**
    * When blocked returns the phase for it
    */
-  get currentInterceptPhase(): Network.InterceptPhase | undefined {
+  get interceptPhase(): Network.InterceptPhase | undefined {
     return this.#interceptPhase;
   }
 
@@ -160,6 +163,11 @@ export class NetworkRequest {
 
   isRedirecting(): boolean {
     return Boolean(this.#request.info);
+  }
+
+  #phaseChanged() {
+    this.waitNextPhase.resolve();
+    this.waitNextPhase = new Deferred();
   }
 
   #interceptsInPhase(phase: Network.InterceptPhase) {
@@ -281,6 +289,7 @@ export class NetworkRequest {
     this.#emitEventsIfReady({
       hasFailed: true,
     });
+
     this.#emitEvent(() => {
       return {
         method: ChromiumBidi.Network.EventNames.FetchError,
@@ -309,6 +318,7 @@ export class NetworkRequest {
     // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
     if (event.responseStatusCode || event.responseErrorReason) {
       this.#response.paused = event;
+
       if (this.#isBlockedInPhase(Network.InterceptPhase.ResponseStarted)) {
         this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       } else {
@@ -329,6 +339,7 @@ export class NetworkRequest {
   onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
     this.#fetchId = event.requestId;
     this.#request.auth = event;
+
     if (this.#isBlockedInPhase(Network.InterceptPhase.AuthRequired)) {
       this.#interceptPhase = Network.InterceptPhase.AuthRequired;
     } else {
@@ -446,10 +457,15 @@ export class NetworkRequest {
       return;
     }
 
-    if (this.#isIgnoredEvent() || this.#emittedEvents[event.method]) {
+    if (
+      this.#isIgnoredEvent() ||
+      (this.#emittedEvents[event.method] &&
+        // Special case this event can be emitted multiple times
+        event.method !== ChromiumBidi.Network.EventNames.AuthRequired)
+    ) {
       return;
     }
-
+    this.#phaseChanged();
     this.#emittedEvents[event.method] = true;
     this.#eventManager.registerEvent(
       Object.assign(event, {
