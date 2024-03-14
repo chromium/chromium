@@ -1266,18 +1266,6 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   available_render_pass_overlay_backings_.clear();
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(IS_OZONE)
-  // Clear cached solid color buffers that weren't reused.
-  base::EraseIf(solid_color_buffers_, [this](auto entry) {
-    SolidColorBuffer& color_buffer = entry.second;
-    if (!color_buffer.use_count) {
-      skia_output_surface_->DestroySharedImage(color_buffer.mailbox);
-      return true;
-    }
-    return false;
-  });
-#endif  // BUILDFLAG(IS_OZONE)
-
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
   if (protected_buffer_queue_) {
@@ -1296,10 +1284,6 @@ void SkiaRenderer::SwapBuffersSkipped() {
   gfx::Rect root_pass_damage_rect = gfx::Rect(surface_size_for_swap_buffers());
   if (use_partial_swap_)
     root_pass_damage_rect.Intersect(swap_buffer_rect_);
-
-#if BUILDFLAG(IS_OZONE)
-  MaybeDecrementSolidColorBuffers(pending_overlay_locks_.back());
-#endif  // BUILDFLAG(IS_OZONE)
 
   pending_overlay_locks_.pop_back();
   skia_output_surface_->SwapBuffersSkipped(root_pass_damage_rect);
@@ -1349,10 +1333,6 @@ void SkiaRenderer::SwapBuffersComplete(
         std::make_move_iterator(read_fence_lock_iter),
         std::make_move_iterator(committed_overlay_locks_.end()));
   }
-
-#if BUILDFLAG(IS_OZONE)
-  MaybeDecrementSolidColorBuffers(committed_overlay_locks_);
-#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_APPLE)
   // On macOS, we don't want to release |committed_overlay_locks_| right away
@@ -3052,25 +3032,10 @@ void SkiaRenderer::ScheduleOverlays() {
     if (overlay.is_solid_color) {
       DCHECK(overlay.color);
       DCHECK(!overlay.resource_id);
-
-#if BUILDFLAG(IS_OZONE)
-      // If non-backed solid color overlays aren't supported (e.g. Lacros on
-      // Linux) then we need to create buffers to send over Wayland.
-      if (!output_surface_->capabilities()
-               .supports_non_backed_solid_color_overlays &&
-          !output_surface_->capabilities().supports_single_pixel_buffer) {
-        overlay.mailbox = GetImageMailboxForColor(*overlay.color);
-        overlay.resource_size_in_pixels = gfx::Size(1, 1);
-        // This can now be treated as a regular overlay with a mailbox backing.
-        overlay.is_solid_color = false;
-        locks.emplace_back(overlay.mailbox);
-      }
-#else
-      // All other platforms that support solid color overlays don't need fake
-      // buffer.
+      // All other platforms must support solid color overlays
       DCHECK(output_surface_->capabilities()
-                 .supports_non_backed_solid_color_overlays);
-#endif
+                 .supports_non_backed_solid_color_overlays ||
+             output_surface_->capabilities().supports_single_pixel_buffer);
       continue;
     }
 
@@ -4226,33 +4191,16 @@ gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
 }
 
 #if BUILDFLAG(IS_OZONE)
-const gpu::Mailbox SkiaRenderer::GetImageMailboxForColor(
-    const SkColor4f& color) {
-  // Currently the Wayland protocol does not have protocol to support solid
-  // color quads natively as surfaces. Here we create tiny 1x1 image buffers
-  // in the color space of the frame buffer and fill them with the quad's solid
-  // color. These freshly created buffers are then treated like any other
-  // overlay via the mailbox interface.
-  gpu::Mailbox solid_color_mailbox;
-  // First try for an existing same color image.
-  auto it = solid_color_buffers_.find(color.toSkColor());
-  if (it != solid_color_buffers_.end()) {
-    solid_color_mailbox = it->second.mailbox;
-    it->second.use_count++;
-  } else {
-    solid_color_mailbox = skia_output_surface_->CreateSolidColorSharedImage(
-        color, reshape_color_space());
-
-    solid_color_buffers_.insert({color.toSkColor(), {solid_color_mailbox, 1}});
-  }
-  return solid_color_mailbox;
-}
 
 void SkiaRenderer::MaybeScheduleBackgroundImage(
     OverlayProcessorInterface::CandidateList& overlay_list) {
   if (!output_surface_->capabilities().needs_background_image) {
     return;
   }
+
+  DCHECK(output_surface_->capabilities()
+             .supports_non_backed_solid_color_overlays ||
+         output_surface_->capabilities().supports_single_pixel_buffer);
 
   OverlayCandidate background_candidate;
   background_candidate.color_space = reshape_color_space();
@@ -4272,22 +4220,6 @@ void SkiaRenderer::MaybeScheduleBackgroundImage(
   overlay_list.push_back(background_candidate);
 }
 
-void SkiaRenderer::MaybeDecrementSolidColorBuffers(
-    std::vector<OverlayLock>& finished_locks) {
-  if (output_surface_->capabilities()
-          .supports_non_backed_solid_color_overlays ||
-      output_surface_->capabilities().supports_single_pixel_buffer) {
-    return;
-  }
-  for (auto& lock : finished_locks) {
-    for (auto& entry : solid_color_buffers_) {
-      if (entry.second.mailbox == lock.mailbox()) {
-        entry.second.use_count--;
-        break;
-      }
-    }
-  }
-}
 #endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
@@ -4375,10 +4307,6 @@ SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer::OverlayLock&& other) {
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
   render_pass_lock = std::move(other.render_pass_lock);
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-
-#if BUILDFLAG(IS_OZONE)
-  solid_color_buffer = std::move(other.solid_color_buffer);
-#endif  // BUILDFLAG(IS_OZONE)
 }
 
 SkiaRenderer::OverlayLock& SkiaRenderer::OverlayLock::OverlayLock::operator=(
@@ -4389,10 +4317,6 @@ SkiaRenderer::OverlayLock& SkiaRenderer::OverlayLock::OverlayLock::operator=(
   render_pass_lock = std::move(other.render_pass_lock);
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
-#if BUILDFLAG(IS_OZONE)
-  solid_color_buffer = std::move(other.solid_color_buffer);
-#endif  // BUILDFLAG(IS_OZONE)
-
   return *this;
 }
 
@@ -4402,12 +4326,6 @@ SkiaRenderer::OverlayLock::OverlayLock(SkiaRenderer* renderer,
   render_pass_lock.emplace(renderer, mailbox);
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-
-#if BUILDFLAG(IS_OZONE)
-SkiaRenderer::OverlayLock::OverlayLock(
-    const gpu::Mailbox& solid_color_buffer_mailbox)
-    : solid_color_buffer(solid_color_buffer_mailbox) {}
-#endif  // BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_APPLE)
 bool SkiaRenderer::OverlayLockComparator::operator()(
