@@ -688,6 +688,22 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       AccessGranted_DoesNotConsumeUserInteraction) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  EXPECT_EQ(content::EvalJs(GetFrame(), "navigator.userActivation.isActive",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE),
+            true);
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        AccessGranted_NoSubsequentUserInteraction) {
   SetBlockThirdPartyCookies(true);
   prompt_factory()->set_response_type(
@@ -923,6 +939,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
   EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  EXPECT_EQ(content::EvalJs(GetFrame(), "navigator.userActivation.isActive",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE),
+            false);
 
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), NoCookies());
 }

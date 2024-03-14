@@ -356,6 +356,19 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
+                       TopLevelUnrelatedOriginRejected) {
+  NavigateToPageWithFrame(kHostA);
+
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+
+  EXPECT_EQ(content::EvalJs(GetPrimaryMainFrame(),
+                            "navigator.userActivation.isActive",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE),
+            false);
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        TopLevelOpaqueOriginRejected) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL("data:,Hello%2C%20World%21")));
@@ -567,6 +580,21 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "");
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       AccessGranted_DoesNotConsumeUserGesture) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/");
+  ASSERT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+
+  EXPECT_EQ(content::EvalJs(GetPrimaryMainFrame(),
+                            "navigator.userActivation.isActive",
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE),
+            true);
 }
 
 // Validate that the permission for rSAFor allows autogranting of rSA, including
