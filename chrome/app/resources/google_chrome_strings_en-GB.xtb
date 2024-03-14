@@ -258,7 +258,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4969674060580488087">Chrome OS Flex could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="4970761609246024540">Welcome to Chrome profiles</translation>
 <translation id="4970880042055371251">Chrome OS version</translation>
-<translation id="4970947549776831107">Chrome blocked this file because this type of file is dangerous</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Click 'Google Password Manager'</translation>
 <translation id="5126049312684316860">Chrome preloads even more pages that you're likely to visit, so that they load more quickly when you visit them.</translation>
@@ -387,7 +386,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7308322188646931570">Chrome needs storage access to download files</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
-<translation id="7410958280246779049">Chrome blocked this file because it is dangerous</translation>
 <translation id="7412494426921990001">Click the Chrome menu</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{1 USB device was being accessed by one or more Chrome extensions}=1{1 USB device is being accessed by one or more Chrome extensions}other{# USB devices are being accessed by one or more Chrome extensions}}</translation>
 <translation id="7426611252293106642">Google Chrome may not function correctly because it is no longer supported on this Linux distribution</translation>
@@ -460,7 +458,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
-<translation id="8504220326736535258">Chrome blocked this file because it has malware</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>

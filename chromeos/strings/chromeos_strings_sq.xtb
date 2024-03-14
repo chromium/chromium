@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
 <translation id="3492882532495507361">Një zyrë (<ph name="OFFICE_STYLE" />) me tone: <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">Të dhënat maten nga Chromebook. Kjo mund të jetë ndryshe nga të dhënat e ofruesit.</translation>
 <translation id="3502426834823382181">shiko të gjitha aplikacionet</translation>
 <translation id="3510890413042482857">Dërgo <ph name="BEGIN_LINK1" />të dhënat e gjurmimit të performancës<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Përditësim: ChromeOS</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3877066159641251281">Dëgjo përkthimin</translation>
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
+<translation id="3889914174935857450">Rivendos datën</translation>
 <translation id="391412459402535266">Pajisja nuk mund të testohet. Kalo te modaliteti i laptopit për të kryer testin.</translation>
 <translation id="3916998944874125962">nxirr një pamje të ekranit</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nuk ofrohet asnjë skaner</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6234024205316847054">Shfaq strukturat</translation>
 <translation id="6235460611964961764">Rivendos manualisht përdorimin e të dhënave</translation>
 <translation id="6243280677745499710">Caktuar aktualisht</translation>
 <translation id="6250316632541035980">pançetë dhe vezë</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Zgjidh ilustrime ekskluzive për <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">hyr</translation>
 <translation id="7119389851461848805">energjia</translation>
+<translation id="7129287270910503851">Përdorimi yt i të dhënave do të rivendoset çdo muaj në këtë ditë</translation>
 <translation id="7130438335435247835">Emri i pikës së qasjes (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveri i emrave}other{Serverët e emrave}}</translation>
 <translation id="7135814714616751706">Shkurtoret e kërkimit</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">Detajet e APN-së</translation>
 <translation id="8522687886059337719">Tani ke qasje tek <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imazhet e reja të sfondit<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dhe te <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />mbrojtësit e rinj të ekranit<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Mundësuar nga inteligjenca artificiale e Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>
 <translation id="8576249514688522074">E pafilluar</translation>

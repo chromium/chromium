@@ -129,7 +129,7 @@
 <translation id="1612730193129642006">عرض شبكة علامة التبويب</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1622717322707146952">‏اختَر "الإضافة إلى تقويم Google" أو "الإضافة إلى تقويم Apple".</translation>
-<translation id="1626771852476987600">‫<ph name="COUNT" /> كلمة مرور مستخدَمة لحساب آخر</translation>
+<translation id="1626771852476987600">كلمات المرور المستخدَمة لحساب آخر: ‫<ph name="COUNT" /></translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
 <translation id="1641316430523156212">متابعة</translation>
 <translation id="1644574205037202324">السجل</translation>
@@ -233,6 +233,7 @@
 <translation id="2218443599109088993">تصغير</translation>
 <translation id="2220529011494928058">الإبلاغ عن مشكلة</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
+<translation id="223356358902285214">النشاط على الويب وفي التطبيقات</translation>
 <translation id="2234827758954819389">دليل الخصوصية</translation>
 <translation id="2239626343334228536">جارٍ محو بيانات التصفُّح...</translation>
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
@@ -919,6 +920,7 @@
 <translation id="5706552126692816153">نشط قبل يوم واحد</translation>
 <translation id="5718049162805123412">يجب تغيير كلمات المرور هذه الآن</translation>
 <translation id="5724941645893276623">لتصفّح الويب بخصوصية تامّة، يمكنك إضافة علامة تبويب جديدة.</translation>
+<translation id="5728072125198221967">‏خدمات Google المرتبطة</translation>
 <translation id="5728700505257787410">عذرًا، حدثت مشكلة أثناء تسجيل الدخول إلى حسابك.</translation>
 <translation id="5737974891429562743">تفاصيل تسجيل الدخول إلى الحساب قديمة. يمكنك التحديث لبدء المزامنة.</translation>
 <translation id="5738385766833540397">يمكنك إدارة طريقة تلقّي التنبيهات بشأن انخفاض أسعار المنتجات التي يتم تتبُّعها.</translation>

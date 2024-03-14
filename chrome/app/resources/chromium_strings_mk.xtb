@@ -297,7 +297,6 @@
 <translation id="6290827346642914212">Именувајте го профилот на Chromium</translation>
 <translation id="6295779123002464101">Датотеката <ph name="FILE_NAME" /> може да биде опасна, па затоа Chromium ја блокираше.</translation>
 <translation id="6309712487085796862">Chromium ја користи камерата.</translation>
-<translation id="632355235628111698">Chromium ја блокираше датотекава бидејќи е опасна</translation>
 <translation id="6327105987658262776">Нема достапно ажурирање.</translation>
 <translation id="6333502561965082103">Во тек е друга операција на Chromium. Обидете се повторно подоцна.</translation>
 <translation id="6334986366598267305">Сега е полесно да го користите Chromium со вашата сметка на Google и на споделени компјутери.</translation>
@@ -336,7 +335,6 @@
 <translation id="67706546131546258">Chromium препорачува скенирање на датотекава бидејќи можеби е опасна.</translation>
 <translation id="6779406956731413166">Chromium OS е овозможен со дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium ве известува дали вашите лозинки се компромитирани</translation>
-<translation id="6852530923436401894">Chromium ја блокираше датотекава бидејќи има злонамерен софтвер</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирана во Chromium)</translation>
 <translation id="6873893289264747459">Chromium откри дека „<ph name="EXTENSION_NAME" />“ содржи злонамерен софтвер</translation>
@@ -411,7 +409,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="813913629614996137">Се иницијализира…</translation>
 <translation id="8166782796394721554">Вклучување дополнителна заштита во пребарувачот на JavaScript и WebAssembly во Chromium</translation>
 <translation id="81770708095080097">Датотекава е опасна, па затоа Chromium ја блокираше.</translation>
-<translation id="8213374284266571500">Chromium ја блокираше датотекава бидејќи типот на датотека е опасен</translation>
 <translation id="8248265253516264921">Ако сликата нема корисен опис, Chromium ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="8266560134891435528">Chromium не може да ги провери вашите лозинки бидејќи не сте најавени</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ве предупредува<ph name="END_LINK" /> за небезбедни сајтови и преземања</translation>

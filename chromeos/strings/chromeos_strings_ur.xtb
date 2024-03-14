@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">وضاحت</translation>
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ٹونز والا ایک <ph name="OFFICE_STYLE" /> آفس</translation>
+<translation id="3493187369049186498">‏ڈیٹا کی پیمائش آپ کی Chromebook کے ذریعے کی جاتی ہے۔ یہ فراہم کنندہ کے ڈیٹا سے مختلف ہو سکتا ہے۔</translation>
 <translation id="3502426834823382181">سبھی ایپس دیکھیں</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />کارکردگی کا پتا لگانے کا ڈیٹا<ph name="END_LINK1" /> بھیجیں</translation>
 <translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
 <translation id="3877066159641251281">ترجمہ سنیں</translation>
 <translation id="3885327323343477505">اسکرین سیور تبدیل کریں</translation>
+<translation id="3889914174935857450">تاریخ کو ری سیٹ کریں</translation>
 <translation id="391412459402535266">آلہ کو ٹیسٹ نہیں کیا جا سکتا۔ ٹیسٹ کرنے کے لیے لیپ ٹیب موڈ پر سوئچ کریں۔</translation>
 <translation id="3916998944874125962">اسکرین شاٹ لیں</translation>
 <translation id="3923184630988645767">ڈیٹا کا استعمال</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">کوئی بھی اسکینر دستیاب نہیں ہے</translation>
 <translation id="6232017090690406397">بیٹری</translation>
+<translation id="6234024205316847054">آؤٹ لائنز دکھائیں</translation>
 <translation id="6235460611964961764">ڈیٹا کے استعمال کو دستی طور پر ری سیٹ کریں</translation>
 <translation id="6243280677745499710">فی الحال سیٹ ہے</translation>
 <translation id="6250316632541035980">بیکن اور انڈے</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> خصوصی آرٹ ورک منتخب کریں</translation>
 <translation id="7108668606237948702">انٹر</translation>
 <translation id="7119389851461848805">طاقت</translation>
+<translation id="7129287270910503851">آپ کے ڈیٹا کا استعمال ہر ماہ اس دن ری سیٹ کیا جائے گا</translation>
 <translation id="7130438335435247835">‏رسائی کی جگہ کا نام (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{نام سرور}other{نام سرورز}}</translation>
 <translation id="7135814714616751706">شارٹ کٹس تلاش کریں</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">‏APN کی تفصیلات</translation>
 <translation id="8522687886059337719">اب آپ کو نئے <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />وال پیپرز<ph name="END_LINK_WALLPAPER_SUBPAGE" /> اور <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />اسکرین سیور<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> تک رسائی حاصل ہے</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">‏Google AI کی جانب سے تقویت یافتہ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">آپ کے کیریئر کو اپنے نیٹ ورک سے منسلک ہونے کیلئے اس اختیار کی ضرورت پڑ سکتی ہے۔ تفصیلات کیلئے اپنے کیریئر سے رابطہ کریں۔</translation>
 <translation id="8576249514688522074">شروع نہیں کیا گیا</translation>

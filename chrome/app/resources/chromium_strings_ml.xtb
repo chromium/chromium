@@ -297,7 +297,6 @@
 <translation id="6290827346642914212">നിങ്ങളുടെ Chromium പ്രൊഫൈലിന് പേര് നൽകുക</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> അപകടകരമാകാൻ ഇടയുള്ളതിനാൽ, Chromium ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
 <translation id="6309712487085796862">Chromium നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു.</translation>
-<translation id="632355235628111698">ഈ ഫയൽ അപകടകരമായതിനാൽ Chromium അത് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="6327105987658262776">അപ്ഡേറ്റ് ലഭ്യമല്ല.</translation>
 <translation id="6333502561965082103">Chromium-ത്തിൽ മറ്റൊരു പ്രവർത്തനം പുരോഗമിക്കുകയാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6334986366598267305">ഇപ്പോൾ നിങ്ങളുടെ Google Account ഉപയോഗിച്ച്, പങ്കിട്ട കമ്പ്യൂട്ടറുകളിൽ Chromium ഉപയോഗിക്കാൻ എളുപ്പമാണ്.</translation>
@@ -336,7 +335,6 @@
 <translation id="67706546131546258">ഈ ഫയൽ അപകടകരമാകാൻ സാധ്യതയുള്ളതിനാൽ ഇത് സ്‌കാൻ ചെയ്യാൻ Chromium നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="6779406956731413166">ChromiumOS സാധ്യമാക്കിയത് അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ്.</translation>
 <translation id="6847869444787758381">നിങ്ങളുടെ പാസ്‌വേഡുകൾ എപ്പോഴെങ്കിലും അപഹരിക്കപ്പെട്ടിട്ടുണ്ടെങ്കിൽ അക്കാര്യം Chromium നിങ്ങളെ അറിയിക്കും</translation>
-<translation id="6852530923436401894">മാല്‍വെയർ ഉള്ളതിനാൽ Chromium ഈ ഫയൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-ത്തിലേക്ക് പകർത്തി)</translation>
 <translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" എന്നതിൽ മാൽ‌വെയർ അടങ്ങുന്നതായി Chromium കണ്ടെത്തി</translation>
@@ -411,7 +409,6 @@
 <translation id="813913629614996137">ആരംഭിക്കുന്നു...</translation>
 <translation id="8166782796394721554">Chromium-ന്റെ JavaScript, WebAssembly എഞ്ചിനുകളിൽ അധിക പരിരക്ഷ ഓണാക്കുക</translation>
 <translation id="81770708095080097">ഈ ഫയൽ അപകടകരമായതിനാൽ Chromium ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
-<translation id="8213374284266571500">ഇത്തരത്തിലുള്ള ഫയൽ അപകടകരമായതിനാൽ Chromium ഈ ഫയൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="8248265253516264921">ചിത്രത്തിൽ ഉപകാരപ്രദമായ വിവരണമില്ലെങ്കിൽ നിങ്ങൾക്കായി ഒരു വിവരണം നൽകാൻ Chromium ശ്രമിക്കും. വിവരണങ്ങൾ സൃഷ്‌ടിക്കാൻ, ചിത്രങ്ങൾ Google-ലേക്ക് അയയ്ക്കുന്നു. ഏതുസമയത്തും ക്രമീകരണത്തിൽ നിങ്ങൾക്കിത് ഓഫാക്കാം.</translation>
 <translation id="8266560134891435528">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിട്ടില്ലാത്തതിനാൽ Chromium-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവില്ല</translation>
 <translation id="8286943863733751221">സുരക്ഷിതമല്ലാത്ത സൈറ്റുകളെയും ഡൗൺലോഡുകളെയും കുറിച്ച് <ph name="BEGIN_LINK" />Chromium നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു<ph name="END_LINK" /></translation>

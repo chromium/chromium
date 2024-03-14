@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">азначэнне</translation>
 <translation id="3488065109653206955">Часткова актывавана</translation>
 <translation id="3492882532495507361">Офіс, стыль – <ph name="OFFICE_STYLE" />, тон – <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">Выкарыстанне трафіка вымяраецца Chromebook. Атрыманае значэнне можа адрознівацца ад даных пастаўшчыка інтэрнэт-паслуг.</translation>
 <translation id="3502426834823382181">паглядзець усе праграмы</translation>
 <translation id="3510890413042482857">Адпраўляць <ph name="BEGIN_LINK1" />даныя адсочвання прадукцыйнасці<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Абнаўленне Chrome OS</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
 <translation id="3877066159641251281">Праслухаць пераклад</translation>
 <translation id="3885327323343477505">Змяніць застаўку</translation>
+<translation id="3889914174935857450">Дата скіду</translation>
 <translation id="391412459402535266">Не ўдаецца пратэсціраваць прыладу. Каб пачаць тэсціраванне, перайдзіце ў рэжым ноўтбука.</translation>
 <translation id="3916998944874125962">зрабіць здымак экрана</translation>
 <translation id="3923184630988645767">Выкарыстанне трафіка</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма даступных сканераў</translation>
 <translation id="6232017090690406397">Акумулятар</translation>
+<translation id="6234024205316847054">Паказаць асноўныя палажэнні</translation>
 <translation id="6235460611964961764">Скідваць выкарыстанне трафіка ўручную</translation>
 <translation id="6243280677745499710">Цяпер зададзеныя</translation>
 <translation id="6250316632541035980">бекон і яйкі</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Выбраць эксклюзіўныя відэа для <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7119389851461848805">сілкаванне</translation>
+<translation id="7129287270910503851">Даныя пра выкарыстанне трафіка будуць скідацца штомесяц у выбраны дзень</translation>
 <translation id="7130438335435247835">Назва пункта доступу (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер даменных імён}one{Серверы даменных імён}few{Серверы даменных імён}many{Серверы даменных імён}other{Серверы даменных імён}}</translation>
 <translation id="7135814714616751706">Пошук ярлыкоў</translation>
@@ -1241,6 +1245,7 @@
 <translation id="8508640263392900755">Падрабязныя звесткі пра APN</translation>
 <translation id="8522687886059337719">Цяпер вам даступныя новыя <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />шпалеры<ph name="END_LINK_WALLPAPER_SUBPAGE" /> і <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />застаўка<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">На аснове штучнага інтэлекту ад Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Магчыма, вам спатрэбіцца ўключыць гэту наладу, каб падключыцца да сеткі вашага аператара. Звяжыцеся з аператарам, каб даведацца больш.</translation>
 <translation id="8576249514688522074">Неініцыялізаваная</translation>

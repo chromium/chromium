@@ -297,7 +297,6 @@
 <translation id="6290827346642914212">আপোনাৰ Chromium প্ৰ’ফাইল নাম দিয়ক</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> বিপজ্জনক হ’ব পাৰে সেয়ে Chromiumএ এইটো অৱৰোধ কৰিছে।</translation>
 <translation id="6309712487085796862">Chromiumএ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে।</translation>
-<translation id="632355235628111698">এই ফাইলটো বিপজ্জনক হোৱাৰ বাবে Chromiumএ এইটো অৱৰোধ কৰিছে</translation>
 <translation id="6327105987658262776">কোনো আপডে’ট উপলব্ধ নহয়।</translation>
 <translation id="6333502561965082103">Chromiumত অন্য এটা কার্য চলি আছে। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="6334986366598267305">বর্তমান আপোনাৰ Google একাউণ্টৰ জৰিয়তে আৰু শ্বেয়াৰ কৰা কম্পিউটাৰসমূহ সহজে Chromium ব্যৱহাৰ কৰিব পৰা যায়।</translation>
@@ -336,7 +335,6 @@
 <translation id="67706546131546258">Chromiumএ এই ফাইলটো স্কেন কৰাটো চুপাৰিছ কৰে কাৰণ ই বিপজ্জনক হ’ব পাৰে।</translation>
 <translation id="6779406956731413166">অতিৰিক্ত <ph name="BEGIN_LINK_CROS_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_CROS_OSS" />ৰ জৰিয়তে ChromiumOSক ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
 <translation id="6847869444787758381">Chromiumএ আপোনাৰ পাছৱৰ্ডসমূহ কেতিয়াবা হেক কৰা হৈছিল নেকি আপোনাক জানিবলৈ দিয়ে</translation>
-<translation id="6852530923436401894">এই ফাইলটোত মালৱেৰ থকাৰ বাবে Chromiumএ এইটো অৱৰোধ কৰিছে</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromiumলৈ প্ৰতিলিপি কৰা হ’ল)</translation>
 <translation id="6873893289264747459">Chromiumএ "<ph name="EXTENSION_NAME" />"ত মালৱেৰ থকাটো পাইছে</translation>
@@ -411,7 +409,6 @@ Chromiumএ আপোনাৰ ছেটিংসমূহ পুনৰুদ্
 <translation id="813913629614996137">আৰম্ভ কৰা হৈছে…</translation>
 <translation id="8166782796394721554">Chromiumৰ JavaScript আৰু WebAssembly ইঞ্জিনত অতিৰিক্ত সুৰক্ষা অন কৰক</translation>
 <translation id="81770708095080097">এই ফাইলটো বিপজ্জনক, সেয়েহে Chromiumএ সেইটো অৱৰোধ কৰিছে।</translation>
-<translation id="8213374284266571500">Chromiumএ এই ফাইলটো অৱৰোধ কৰিছে, কাৰণ এই ধৰণৰ ফাইল বিপজ্জনক</translation>
 <translation id="8248265253516264921">যদি কোনো প্ৰতিচ্ছবিত উপযোগী বিৱৰণ নাই তেন্তে Chromiumএ আপোনাক সেয়া প্ৰদান কৰিবলৈ চেষ্টা কৰিব। বিৱৰণ সৃষ্টি কৰিবলৈ প্ৰতিচ্ছবি Googleলৈ প্ৰেৰণ কৰা হয়। আপুনি যিকোনো সময়তে ছেটিঙলৈ গৈ ইয়াক অফ কৰিব পাৰে।</translation>
 <translation id="8266560134891435528">আপুনি ছাইন ইন হৈ নথকাৰ বাবে Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="8286943863733751221">অসুৰক্ষিত ছাইট আৰু ডাউনল’ডৰ বিষয়ে<ph name="BEGIN_LINK" />Chromiumএ আপোনাক সকীয়নি দিয়ে<ph name="END_LINK" /></translation>

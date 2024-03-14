@@ -11,7 +11,7 @@
 <translation id="1499635324672558517">Да се затворат сите картички „Инкогнито“?</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="161042844686301425">Тиркизна</translation>
-<translation id="1645759014353344461">Создадена е група со <ph name="TABS_COUNT_MANY" /> картички</translation>
+<translation id="1645759014353344461">Создадена е група со картички (<ph name="TABS_COUNT_MANY" />)</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
 <translation id="1828808367831369073">Создадена е група со <ph name="TABS_COUNT_ONE" /> картичка</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>

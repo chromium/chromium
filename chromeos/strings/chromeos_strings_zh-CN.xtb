@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">定义</translation>
 <translation id="3488065109653206955">部分激活</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色调的<ph name="OFFICE_STYLE" />办公室</translation>
+<translation id="3493187369049186498">流量消耗是由 Chromebook 测得的，可能与提供商的数据不同。</translation>
 <translation id="3502426834823382181">查看所有应用</translation>
 <translation id="3510890413042482857">发送<ph name="BEGIN_LINK1" />性能跟踪数据<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome 操作系统更新</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
 <translation id="3877066159641251281">聆听译文</translation>
 <translation id="3885327323343477505">更换屏保</translation>
+<translation id="3889914174935857450">重置日期</translation>
 <translation id="391412459402535266">无法测试设备。切换到笔记本电脑模式即可进行测试。</translation>
 <translation id="3916998944874125962">截取屏幕截图</translation>
 <translation id="3923184630988645767">流量使用</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">没有可用的扫描仪</translation>
 <translation id="6232017090690406397">电池</translation>
+<translation id="6234024205316847054">显示概要</translation>
 <translation id="6235460611964961764">手动重置流量使用情况</translation>
 <translation id="6243280677745499710">当前设置的壁纸</translation>
 <translation id="6250316632541035980">培根和鸡蛋</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">选择 <ph name="PRODUCT_NAME" /> 专有艺术作品</translation>
 <translation id="7108668606237948702">输入</translation>
 <translation id="7119389851461848805">电源</translation>
+<translation id="7129287270910503851">您的流量消耗会在每月的这一天重置</translation>
 <translation id="7130438335435247835">接入点名称 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
 <translation id="7135814714616751706">搜索快捷键</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">APN 详细信息</translation>
 <translation id="8522687886059337719">现在，您可以享用新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁纸<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />屏保<ph name="END_LINK_SCREENSAVER_SUBPAGE" />了</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google AI 赋能</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">您的运营商可能会要求您启用此选项以连接到其网络。如需了解详情，请联系您的运营商。</translation>
 <translation id="8576249514688522074">未初始化</translation>

@@ -1725,16 +1725,6 @@ Tính năng này không hoạt động nếu tính năng đồng bộ hoá Mật
 
       Chính sách này chỉ ảnh hưởng đến quyền truy cập vào thiết bị USB thông qua API WebUSB. Để cấp quyền truy cập vào thiết bị USB thông qua API Web Serial, hãy xem chính sách <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Cho phép cha mẹ thêm tài khoản được giám sát</translation>
-<translation id="2319419071295380556">Đặt thư mục lưu Nội dung ghi màn hình (cả ảnh chụp màn hình và bản ghi màn hình).
-Nếu bạn đặt chính sách này thành Recommended (Khuyến nghị) thì giá trị này sẽ được sử dụng theo mặc định nhưng người dùng có thể tự thay đổi.
-Nếu không, người dùng sẽ không thể thay đổi giá trị này và nội dung ghi màn hình sẽ luôn được lưu vào thư mục đã xác định.
-
-Chính sách này sử dụng cùng một định dạng với chính sách <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />
-Bạn có thể đặt vị trí thành hệ thống tệp trên máy, <ph name="GOOGLE_DRIVE_NAME" /> (có tiền tố là "${google_drive}") hoặc <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (có tiền tố là "${onedrive}").
-Nếu bạn đặt chính sách này thành chuỗi trống thì chính sách sẽ buộc lưu trữ nội dung ghi màn hình trong thư mục "Downloads" (Tệp đã tải xuống) trên máy.
-Xem danh sách các biến mà bạn có thể sử dụng (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
-
-Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng thư mục "Downloads" (Tệp đã tải xuống) mặc định để lưu trữ nội dung ghi màn hình và người dùng có thể thay đổi vị trí lưu trữ.</translation>
 <translation id="2326031114717677574">Chu kỳ hệ thống lấy mẫu và thu thập dữ liệu âm thanh. Thời gian tối thiểu cho phép là 1 phút.
 
       Nếu bạn không đặt chính sách này, thì chu kỳ mặc định là 15 phút sẽ được áp dụng.</translation>

@@ -476,6 +476,7 @@ Si se le asigna el valor "PromptInTab", cuando la autenticación del usuario cad
 <translation id="1396119629372155901">Función ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes inhabilitada</translation>
 <translation id="1397855852561539316">URL de sugerencia del proveedor de búsquedas predeterminadas</translation>
 <translation id="1402227992519954892">Habilitar los informes sobre las aplicaciones del dispositivo</translation>
+<translation id="1405444733221330570">Habilitar Orca</translation>
 <translation id="141279920573530952">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a todos los puertos serie disponibles.
 
       Las URLs deben ser válidas; si no, se ignorará la política. Solo se tiene en cuenta el origen de la URL (esquema, host y puerto).
@@ -1692,16 +1693,6 @@ La función no está disponible si la sincronización de contraseñas está desa
 
       Esta política solo afecta al acceso a los dispositivos USB a través de la API WebUSB. Para conceder acceso a dispositivos USB a través de la API Web Serial, consulta la política <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Permitir que los padres añadan cuentas supervisadas</translation>
-<translation id="2319419071295380556">Establece el directorio en el que se guardan las capturas de pantalla (tanto en forma de imagen como de vídeo).
-Si esta política se define como recomendada, se utilizará el valor de forma predeterminada, pero los usuarios podrán cambiarlo.
-Si no se define como recomendada, el usuario no podrá cambiar este valor y las capturas se guardarán siempre en el directorio definido.
-
-La política usa el mismo formato que la política <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-La ubicación se podría establecer en un sistema de archivos local o en <ph name="GOOGLE_DRIVE_NAME" /> (con el prefijo "${google_drive}") o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (con el prefijo "${onedrive}").
-Si a esta política se le asigna una cadena vacía, las capturas de pantalla se almacenarán en el directorio local Descargas.
-Consulta una lista de variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.
-
-Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio predeterminado Descargas para almacenar capturas de pantalla, y los usuarios podrán cambiarlo.</translation>
 <translation id="2326031114717677574">Intervalo con el que los datos de audio se muestrean y recogen. El valor mínimo permitido es 1 minuto.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 15 minutos.</translation>
@@ -1821,6 +1812,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si no se le asigna ningún valor, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> se aplicará en todos los sitios, si se ha definido previamente. Si no, se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de URL válidos, visita el sitio https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, a partir de la versión M85 no se admiten en esta política los patrones con los comodines "*" y "[*.]" en el host.</translation>
+<translation id="2421713016375433338">La URL de una imagen que se usará como insignia de la empresa en el perfil. La URL debe dirigir a una imagen.
+
+Esta insignia se mostrará en el menú del perfil (debajo de la imagen de perfil) y el tamaño de la imagen se adaptará al espacio de 16x16 reservado para la insignia.
+
+Si no se define esta política, se mostrará el icono predeterminado de un edificio.
+
+Si se produce un error al intentar obtener y mostrar la imagen, se mostrará el icono predeterminado de un edificio.</translation>
 <translation id="2421779938235645781">El color de la retroiluminación del teclado coincide con el fondo de pantalla actual</translation>
 <translation id="2423255396068675416">Si se habilita la política o no se establece, los usuarios podrán ejecutar <ph name="PRODUCT_CROSTINI_NAME" />, siempre y cuando las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> estén habilitadas. Si se inhabilita la política, se desactivará <ph name="PRODUCT_CROSTINI_NAME" /> para el usuario. En caso de inhabilitar la política, esto se aplicará a los nuevos contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se empiecen a usar, pero no a los que ya estén ejecutándose.</translation>
 <translation id="242521047682347997">No permitir que los usuarios sincronicen mensajes SMS entre su teléfono y el Chromebook</translation>
@@ -2253,6 +2251,7 @@ Si se inhabilita esta política o no se establece, los usuarios podrán transfer
       Si no se define esta política o se le asigna el valor true, el visor de PDF podrá anotar PDFs.
 
       Si se le asigna el valor false, el visor de PDF no podrá anotar PDFs.</translation>
+<translation id="2769199041812510302">URL del logotipo de la empresa</translation>
 <translation id="2769952903507981510">Configurar el nombre de dominio obligatorio para hosts de acceso remoto</translation>
 <translation id="2770376586681635746">Controla si los usuarios pueden añadir cuentas de Kerberos.
 
@@ -3334,6 +3333,21 @@ Si no se define, no se enviará ningún informe de datos de telemetría de sitio
 <translation id="3652670852519271837">Permitir que los sitios pidan al usuario que otorgue permiso de lectura a archivos y directorios a través de la API File System</translation>
 <translation id="3653237928288822292">Icono del proveedor de búsquedas predeterminadas</translation>
 <translation id="3654906736796256792">Permite ejecutar el entorno aislado de audio</translation>
+<translation id="3655252664209966774">La extensión para el uso de claves X.509 indica cómo se puede usar la clave en un certificado. Estas instrucciones garantizan que los certificados no se utilicen en un contexto no deseado, lo que protege contra una clase de ataques de varios protocolos en HTTPS y otros protocolos. Para que esto funcione, los clientes HTTPS deben comprobar si los certificados del servidor coinciden con los parámetros TLS de la conexión.
+
+A partir de la versión 124 de <ph name="PRODUCT_NAME" />, esta comprobación siempre está habilitada.
+
+La versión 123 de <ph name="PRODUCT_NAME" /> y las versiones anteriores tienen el siguiente comportamiento:
+
+Si se habilita esta política,
+<ph name="PRODUCT_NAME" /> realizará esta comprobación.
+Esto ayuda a evitar ataques en los que un atacante manipula el navegador para interpretar una clave de una forma no deseada por el propietario del certificado.
+
+Si se inhabilita esta política, <ph name="PRODUCT_NAME" /> omitirá esta comprobación en las conexiones HTTPS que negocien TLS 1.2 y, además, usen un certificado RSA que conecte con un ancla de confianza local. Entre las anclas de confianza locales se incluyen, por ejemplo, los certificados raíz proporcionados por la política o instalados por el usuario. En todos los demás casos, la comprobación se realizará independientemente de la configuración de esta política.
+
+Si no se configura esta política, <ph name="PRODUCT_NAME" /> se comportará como si la política estuviera habilitada.
+
+Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KEY_USAGE_INCOMPATIBLE. Los sitios con este error probablemente no tengan un certificado configurado correctamente. Los paquetes de cifrado ECDHE_RSA modernos emplean la opción para usar la clave "digitalSignature", mientras que los antiguos paquetes de cifrado para descifrar RSA emplean la opción para usar la clave "keyEncipherment". Si no lo tienes claro, los administradores deberían incluir ambas opciones en los certificados RSA destinados a HTTPS.</translation>
 <translation id="3655710915351748191">No mostrar el icono de Chrome Web Store en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /> ni en la página Nueva pestaña</translation>
 <translation id="3655885297177292093">La API Event.path tendrá el estado predeterminado: disponible en versiones anteriores a la M109 y no disponible de la versión M109 a la 114.</translation>
 <translation id="3659542706175323490">Si se habilita esta política, el inicio con CA (corriente alterna) siempre estará activado si el dispositivo lo admite. El inicio con CA ofrece la opción de que el sistema se reinicie desde el estado de apagado o hibernación cuando se conecte a una toma de corriente.
@@ -4670,6 +4684,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 
           Si no se le asigna ningún valor, el audio en mono se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4757563299858487173">Inhabilitar las funciones</translation>
+<translation id="4758335997982239449">Habilitar la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="4767059955897420757">Si se habilita esta política o no se establece, la promoción de la extensión del proveedor de credenciales se podrá mostrar al usuario.
 Si se inhabilita esta política, la promoción de la extensión del proveedor de credenciales no se mostrará al usuario.</translation>
 <translation id="4768446404233019970">Habilitar los paquetes de cifrado 3DES en TLS</translation>
@@ -4899,6 +4914,7 @@ No se recomienda inhabilitar la decodificación de vídeo acelerada por hardware
 <translation id="499654521603185442">Informes de telemetría de sitios web</translation>
 <translation id="4997074784107449343">Cuando la opción Imprimir como imagen está disponible, no se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="500149597848135831">Habilitar todas las variaciones</translation>
+<translation id="5006222080181284191">Controlar si se habilitará la función Ayúdame a escribir en ChromeOS</translation>
 <translation id="5017157692744444035">Esta política controla si se proporciona información que pueda usarse para identificar equipos, como el nombre del equipo o direcciones de red.
 
 Si no se establece la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o se inhabilita, esta se ignorará.
@@ -4956,6 +4972,13 @@ En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el 
 <translation id="5073609397321802133">Si se asigna el valor "false" a esta política, la página Nueva pestaña no permitirá a los usuarios personalizar la imagen de fondo. Aunque se cambie el valor a "true" posteriormente, las imágenes de fondo personalizadas se eliminarán de forma permanente.
 
       Si se asigna el valor "true" a esta política o no se le asigna ningún valor, los usuarios podrán personalizar la imagen de fondo en la página Nueva pestaña.</translation>
+<translation id="5073788301065423829">Esta política habilita o inhabilita la función Ayúdame a escribir en ChromeOS.
+
+Si se habilita esta política, se habilitará Ayúdame a escribir.
+
+Si se inhabilita esta política, se inhabilitará Ayúdame a escribir.
+
+Si no se define esta política, Ayúdame a escribir se habilitará en los dispositivos no gestionados y se inhabilitará en los dispositivos gestionados por empresas.</translation>
 <translation id="5076953589932162038">Configuración de Conjuntos propios</translation>
 <translation id="5078623750797048009">Habilitar anotaciones en PDF</translation>
 <translation id="5080300140183363718">Configuración de migración de datos para la separación de perfiles</translation>
@@ -5650,6 +5673,9 @@ Si no se define esta política o se le asigna una lista vacía, se le mostrarán
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Habilitar los informes sobre el estado del almacenamiento del dispositivo</translation>
 <translation id="5608114828230655271">Comportamiento predeterminado del dispositivo</translation>
+<translation id="561001683838346956">Esta política se retiró en la versión 124 de <ph name="PRODUCT_NAME" />. Desde esa versión, nunca se admiten los hashes no seguros. En versiones anteriores, esta política controlaba si el navegador admitía hashes antiguos no seguros durante el proceso de handshake TLS.
+
+      Si esta política no se configuraba, <ph name="PRODUCT_NAME" /> seguía el proceso de lanzamiento predeterminado para bloquear los hashes no seguros. Si se habilitaba, <ph name="PRODUCT_NAME" /> permitía que un servidor usase hashes no seguros al negociar un handshake TLS. Si se inhabilitaba, <ph name="PRODUCT_NAME" /> no permitía que un servidor usase hashes no seguros al negociar un handshake TLS.</translation>
 <translation id="5611869109049836323">Implementar obligatoriamente restricciones en las anclas de confianza añadidas de forma local</translation>
 <translation id="5614865701790130558">Registrar eventos de instalación de extensiones basados en políticas</translation>
 <translation id="561493980641967737">Si se habilita esta política, siempre estará activa la recogida de datos anónima con clave de URL, que enviará las URLs de las páginas que el usuario visite a Google para mejorar las búsquedas y la navegación.
@@ -5836,6 +5862,7 @@ Si se inhabilita esta política, se desactivará <ph name="PRODUCT_NAME" />.</tr
 
       Nota: El factor de escala debe ser igual o superior a 100 %.</translation>
 <translation id="5740636973289452345">Habilitar informes de datos sobre extensiones y complementos</translation>
+<translation id="5741110260062082926">Inhabilitar Orca</translation>
 <translation id="5746149754419996562">Habilita la presencia de widgets Glanceables en <ph name="PRODUCT_OS_NAME" />. Concretamente, esto afecta a los widgets a los que se puede acceder mediante el chip de fecha de la estantería.
 Si se habilita esta política, se habilitarán los widgets Glanceables en <ph name="PRODUCT_OS_NAME" />.
 Si esta política se inhabilita o no se define, no se habilitarán los widgets Glanceables en <ph name="PRODUCT_OS_NAME" />.</translation>
@@ -6002,6 +6029,7 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
       Si no se define esta política, <ph name="PRODUCT_NAME" /> podrá decidir qué enfoque se debe utilizar.</translation>
 <translation id="5888645257599699215">Informar sobre el estado del audio del dispositivo</translation>
 <translation id="5890063326284543943">Controlar el uso de la API Serial</translation>
+<translation id="5893223274510346852">Inhabilitar la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="5893303508158298667">Si se habilita <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME" />, siempre y cuando se habilite <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME" /> o no se le asigne ningún valor, los clientes remotos podrán utilizar servidores de retransmisión para conectarse a este equipo cuando no haya disponible una conexión directa (por ejemplo, debido a restricciones del cortafuegos).
 
       Si se le asigna el valor Disabled a esta política, el acceso remoto no se desactivará, pero solo se permitirán las conexiones procedentes de la misma red (sin NAT transversal ni retransmisión).</translation>
@@ -6377,6 +6405,7 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
       Los usuarios quedarán expuestos a riesgos de seguridad relacionados con la ejecución del subsistema de audio fuera del entorno aislado.
       Si no se define esta política, se usará la configuración predeterminada del entorno aislado de audio, que puede variar según la plataforma.
       El objetivo de esta política es ofrecer a las empresas la posibilidad de inhabilitar el entorno aislado de audio si usan configuraciones de software de seguridad que interfieren con el entorno aislado.</translation>
+<translation id="624808913905048408">Permitir que los usuarios activen o desactiven la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" /> en su dispositivo.</translation>
 <translation id="624818583115864448">puerto 554 (puede desbloquearse hasta el 15/10/2021)</translation>
 <translation id="6249912382559535329">Habilita la función de accesibilidad de teclado virtual en la pantalla de inicio de sesión.
 
@@ -8031,6 +8060,7 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
       Si no se establece esta política, se aplicará el intervalo predeterminado de 3 minutos.</translation>
 <translation id="7469554574977894907">Habilitar sugerencias de búsqueda</translation>
 <translation id="747275827471712187">Volver a la configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> en estos sitios web</translation>
+<translation id="7476030153540156377">Elegir si se habilitará la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" />.</translation>
 <translation id="7476158778585368567">Informa de los trabajos de impresión de un dispositivo.
 
       Si se le asigna el valor false a esta política o no se le asigna ninguno, no se enviará esta información.
@@ -8427,6 +8457,13 @@ Si no se establece esta política, el navegador seleccionará el renderizador de
 <translation id="7777535871204167559">Usar los dispositivos de almacenamiento externo como dispositivos de solo lectura</translation>
 <translation id="7781452670568828399">Cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="7784062550705119230">Si se utiliza <ph name="PRINTERS_ALLOWLIST" /> para la política <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, al establecer la política <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, esta especifica qué impresoras pueden utilizar los usuarios. Solo las impresoras cuyos ID coincidan con los valores incluidos en la política estarán disponibles para los usuarios. Los ID deben coincidir con los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del archivo definido en la política <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
+<translation id="7785199109546027763">Política para controlar si se habilitará la función Protección de IP de <ph name="PRIVACY_SANDBOX_NAME" />.
+
+Si se inhabilita esta política, se inhabilitará la función Protección de IP y los usuarios no podrán habilitarla mediante la configuración de UI.
+Si se habilita esta política, se habilitará la función Protección de IP y los usuarios no podrán inhabilitarla mediante la configuración de UI.
+Si no se define esta política, los usuarios podrán activar o desactivar la función Protección de IP en su dispositivo mediante la configuración de UI.
+
+Nota: El comportamiento de la función Protección de IP para los usuarios de empresa puede variar a lo largo del tiempo si se habilita esta política o si esta política no se define y la función Protección de IP se habilita mediante la configuración de UI.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
 <translation id="7790221177424764797">Esta política controla si se cargarán las reglas de la política SiteList de <ph name="IE_PRODUCT_NAME" />.
 

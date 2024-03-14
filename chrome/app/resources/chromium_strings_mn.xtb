@@ -295,7 +295,6 @@
 <translation id="6290827346642914212">Chromium-н профайлаа нэрлэнэ үү</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> аюултай байж болзошгүй тул үүнийг Chromium блок хийсэн.</translation>
 <translation id="6309712487085796862">Chromium таны камерыг ашиглаж байна.</translation>
-<translation id="632355235628111698">Энэ файл аюултай тул Chromium үүнийг блоклосон</translation>
 <translation id="6327105987658262776">Шинэчлэлт боломжгүй байна.</translation>
 <translation id="6333502561965082103">Chromium-д өөр үйл ажиллагаа явагдаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="6334986366598267305">Одоо та Google хаягаа ашиглан мөн өөр бусад компьютер дээр Chromium-г ашиглахад хялбар боллоо.</translation>
@@ -334,7 +333,6 @@
 <translation id="67706546131546258">Энэ файл аюултай байж магадгүй тул Chromium үүнийг скан хийхийг зөвлөж байна.</translation>
 <translation id="6779406956731413166">ChromiumOS-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="6847869444787758381">Хэрэв таны нууц үг алдагдсан байвал Chromium танд мэдэгдэнэ</translation>
-<translation id="6852530923436401894">Энэ файл хортой программтай тул Chromium үүнийг блоклосон</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-д хуулсан)</translation>
 <translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" хортой программ агуулж байгааг Chromium олж мэдлээ</translation>
@@ -407,7 +405,6 @@
 <translation id="813913629614996137">Эхлүүлж байна…</translation>
 <translation id="8166782796394721554">Chromium-н JavaScript болон WebAssembly-н системийн нэмэлт хамгаалалтыг асаана уу</translation>
 <translation id="81770708095080097">Энэ файл аюултай тул Chromium блоклосон байна.</translation>
-<translation id="8213374284266571500">Энэ төрлийн файл аюултай тул Chromium энэ файлыг блоклосон</translation>
 <translation id="8248265253516264921">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chromium танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ. Та үүнийг хүссэн үедээ тохиргоонд унтрааж болно.</translation>
 <translation id="8266560134891435528">Та нэвтрээгүй байгаа тул Chromium таны нууц үгсийг шалгах боломжгүй байна</translation>
 <translation id="8286943863733751221">Аюултай сайт болон татаж авсан файлын талаар <ph name="BEGIN_LINK" />Chromium танд сануулна<ph name="END_LINK" /></translation>

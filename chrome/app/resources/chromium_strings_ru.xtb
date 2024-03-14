@@ -293,7 +293,6 @@
 <translation id="6290827346642914212">Настройте профиль Chromium</translation>
 <translation id="6295779123002464101">Chromium заблокировал файл <ph name="FILE_NAME" /> как потенциально опасный.</translation>
 <translation id="6309712487085796862">Chromium использует камеру.</translation>
-<translation id="632355235628111698">Chromium заблокировал этот файл как опасный.</translation>
 <translation id="6327105987658262776">Нет обновлений.</translation>
 <translation id="6333502561965082103">Chromium выполняет другую операцию. Повторите попытку позже.</translation>
 <translation id="6334986366598267305">Теперь с Chromium ещё удобнее работать в аккаунте Google, в том числе на общих компьютерах.</translation>
@@ -332,7 +331,6 @@
 <translation id="67706546131546258">Chromium рекомендует просканировать этот потенциально вредоносный файл.</translation>
 <translation id="6779406956731413166">Chromium OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
-<translation id="6852530923436401894">Браузер Chromium заблокировал файл, так как он содержит вредоносное ПО.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопирована в Chromium)</translation>
 <translation id="6873893289264747459">Браузер Chromium обнаружил, что расширение "<ph name="EXTENSION_NAME" />" содержит вредоносное ПО.</translation>
@@ -404,7 +402,6 @@
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8166782796394721554">Включить дополнительную защиту движка JavaScript и WebAssembly в Chromium</translation>
 <translation id="81770708095080097">Chromium заблокировал этот файл как опасный.</translation>
-<translation id="8213374284266571500">Chromium заблокировал файл с опасным расширением.</translation>
 <translation id="8248265253516264921">Если у изображения нет понятного описания, Chromium попытается его найти. Для создания описаний изображения отправляются в Google. Эту функцию можно отключить в настройках в любое время.</translation>
 <translation id="8266560134891435528">Не удается запустить проверку паролей в Chromium, поскольку вы не вошли в аккаунт.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium предупреждает<ph name="END_LINK" /> о небезопасных сайтах и файлах в интернете</translation>

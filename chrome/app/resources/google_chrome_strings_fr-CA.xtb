@@ -258,7 +258,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4969674060580488087">Chrome OS Flex n'a pas pu synchroniser vos données parce que les détails de connexion de votre compte ne sont plus à jour.</translation>
 <translation id="4970761609246024540">Bienvenue dans les profils Chrome</translation>
 <translation id="4970880042055371251">Version de Chrome OS</translation>
-<translation id="4970947549776831107">Chrome a bloqué le téléchargement parce que ce type de fichier est dangereux</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Cliquez sur « Gestionnaire de mots de passe Google »</translation>
 <translation id="5126049312684316860">Chrome précharge encore plus de pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous le faites.</translation>
@@ -387,7 +386,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7308322188646931570">Chrome a besoin d'accéder au stockage pour télécharger des fichiers</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
-<translation id="7410958280246779049">Chrome a bloqué ce fichier parce qu'il est dangereux</translation>
 <translation id="7412494426921990001">Cliquez sur le menu Chrome.</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chrome ont accédé à 1 appareil USB}=1{Une ou plusieurs extensions Chrome ont accédé à 1 appareil USB}one{Une ou plusieurs extensions Chrome ont accédé à # appareil USB}other{Une ou plusieurs extensions Chrome ont accédé à # appareils USB}}</translation>
 <translation id="7426611252293106642">Google Chrome peut ne pas fonctionner correctement parce qu'il n'est plus pris en charge sur cette distribution Linux</translation>
@@ -460,7 +458,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8451192282033883849">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut voir et modifier ce profil de navigateur Chrome ainsi que ses données telles que les favoris, l'historique et les mots de passe.</translation>
 <translation id="8496177819998570653">Gestionnaire de&amp;mots de passe Google</translation>
 <translation id="8498858610309223613">Une mise à jour de sécurité spéciale pour Google Chrome vient d'être effectuée. Redémarrez maintenant, et nous restaurerons vos onglets.</translation>
-<translation id="8504220326736535258">Chrome a bloqué ce fichier parce qu'il contient un logiciel malveillant</translation>
 <translation id="8516431725144212809">Vos centres d'intérêt estimés par Chrome</translation>
 <translation id="8521348052903287641">Règle de trafic entrant pour Google Chrome Dev autorisant le trafic mDNS.</translation>
 <translation id="8550334526674375523">Ce profil professionnel est distinct de votre profil personnel.</translation>

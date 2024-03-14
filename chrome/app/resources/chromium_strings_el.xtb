@@ -295,7 +295,6 @@
 <translation id="6290827346642914212">Ονομάστε το προφίλ σας στο Chromium</translation>
 <translation id="6295779123002464101">Το αρχείο <ph name="FILE_NAME" /> μπορεί να είναι επικίνδυνο, επομένως έχει αποκλειστεί από το Chromium.</translation>
 <translation id="6309712487085796862">Το Chromium χρησιμοποιεί την κάμερά σας.</translation>
-<translation id="632355235628111698">Το Chromium απέκλεισε αυτό το αρχείο γιατί είναι επικίνδυνο</translation>
 <translation id="6327105987658262776">Δεν υπάρχει διαθέσιμη ενημέρωση.</translation>
 <translation id="6333502561965082103">Μια άλλη λειτουργία στο Chromium βρίσκεται σε εξέλιξη. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="6334986366598267305">Τώρα μπορείτε να χρησιμοποιείτε πιο εύκολα το Chromium με το Λογαριασμό σας Google και σε κοινόχρηστους υπολογιστές.</translation>
@@ -334,7 +333,6 @@
 <translation id="67706546131546258">Το Chromium συνιστά τη σάρωση αυτού του αρχείου επειδή μπορεί να είναι επικίνδυνο.</translation>
 <translation id="6779406956731413166">Το Chromium OS υλοποιήθηκε με τη βοήθεια πρόσθετου <ph name="BEGIN_LINK_CROS_OSS" />λογισμικού ανοικτού κώδικα<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Το Chromium σας ενημερώνει σε περίπτωση παραβίασης των κωδικών πρόσβασής σας.</translation>
-<translation id="6852530923436401894">Το Chromium απέκλεισε αυτό το αρχείο επειδή περιέχει κακόβουλο πρόγραμμα</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (αντιγράφηκε στο Chromium)</translation>
 <translation id="6873893289264747459">Το Chromium εντόπισε κακόβουλο πρόγραμμα στην επέκταση <ph name="EXTENSION_NAME" />.</translation>
@@ -409,7 +407,6 @@
 <translation id="813913629614996137">Εκκίνηση…</translation>
 <translation id="8166782796394721554">Ενεργοποιήστε την πρόσθετη προστασία στη μηχανή JavaScript και WebAssembly του Chromium</translation>
 <translation id="81770708095080097">Αυτό το αρχείο είναι επικίνδυνο και έχει αποκλειστεί από το Chromium.</translation>
-<translation id="8213374284266571500">Το Chromium απέκλεισε αυτό το αρχείο επειδή αυτός ο τύπος αρχείου είναι επικίνδυνος.</translation>
 <translation id="8248265253516264921">Εάν μια εικόνα δεν έχει κάποια χρήσιμη περιγραφή, το Chromium θα προσπαθήσει να σας προσφέρει μια περιγραφή. Για τη δημιουργία περιγραφών, αποστέλλονται εικόνες στην Google. Μπορείτε να απενεργοποιήσετε αυτήν τη λειτουργία στις ρυθμίσεις οποιαδήποτε στιγμή.</translation>
 <translation id="8266560134891435528">Το Chromium δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας επειδή δεν είστε συνδεδεμένοι.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Το Chromium σας προειδοποιεί<ph name="END_LINK" /> σχετικά με μη ασφαλείς ιστοτόπους και λήψεις</translation>

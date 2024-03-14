@@ -4433,7 +4433,6 @@
 <translation id="4354344420232759511">내가 방문한 사이트가 여기에 표시됩니다.</translation>
 <translation id="435527878592612277">사진 선택</translation>
 <translation id="4356100841225547054">볼륨 끄기</translation>
-<translation id="4358302248024731679">블루투스 문제를 더 효과적으로 진단하기 위해 Google 직원이 의견 보고서에 추가 블루투스 로그를 포함할 수 있습니다. 이 옵션을 선택하면 보고서에 현재 세션의 btsnoop 및 HCI 로그가 포함됩니다. 이 로그는 개인 식별 정보가 가능한 한 적게 포함되도록 정리되며, Listnr의 ChromeOS 제품 그룹 관리자만 액세스할 수 있습니다. 해당 로그는 90일 후에 삭제됩니다.</translation>
 <translation id="4358361163731478742">앱 언어 선택을 지원하는 앱이 없습니다</translation>
 <translation id="4358643842961018282">기기가 최신 상태임</translation>
 <translation id="4359408040881008151">함께 설치된 확장 프로그램입니다.</translation>
@@ -4990,7 +4989,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="479536056609751218">웹페이지, HTML만</translation>
 <translation id="4796142525425001238">항상 복원</translation>
 <translation id="4797314204379834752">탭 그룹을 사용하여 작업 정리, 온라인 쇼핑 등을 해 보세요.</translation>
-<translation id="4798236378408895261"><ph name="BEGIN_LINK" />블루투스 로그<ph name="END_LINK" /> 첨부(Google 사내용)</translation>
 <translation id="479863874072008121">기기 관리</translation>
 <translation id="479989351350248267">검색</translation>
 <translation id="4800839971935185386">이름 및 아이콘 업데이트 검토</translation>

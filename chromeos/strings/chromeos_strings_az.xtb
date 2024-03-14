@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">təsvir</translation>
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tonlarda <ph name="OFFICE_STYLE" /> ofis</translation>
+<translation id="3493187369049186498">Data Chromebook tərəfindən hesablanır. Bu, provayder datasından fərqli ola bilər.</translation>
 <translation id="3502426834823382181">bütün tətbiqlərə baxın</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izləmə datasını<ph name="END_LINK1" /> göndərin</translation>
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
 <translation id="3877066159641251281">Tərcüməni dinləyin</translation>
 <translation id="3885327323343477505">Ekran qoruyucunu dəyişdirin</translation>
+<translation id="3889914174935857450">Sıfırlanma tarixi</translation>
 <translation id="391412459402535266">Cihazı test etmək mümkün deyil. Test etmək üçün noutbuk rejiminə keçin.</translation>
 <translation id="3916998944874125962">skrinşot çəkin</translation>
 <translation id="3923184630988645767">Data istifadəsi</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Əlçatan skaner yoxdur</translation>
 <translation id="6232017090690406397">Batareya</translation>
+<translation id="6234024205316847054">Konturları göstərin</translation>
 <translation id="6235460611964961764">Data istifadəsini manual olaraq sıfırlayın</translation>
 <translation id="6243280677745499710">Hazırda ayarlanıb</translation>
 <translation id="6250316632541035980">donuz əti və yumurtalar</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> üçün eksklüziv illüstrasiya seçin</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">qidalanma</translation>
+<translation id="7129287270910503851">Data istifadəsi hər ayın bu günü sıfırlanacaq</translation>
 <translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
 <translation id="7135814714616751706">Qısayol axtarın</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">APN detalları</translation>
 <translation id="8522687886059337719">Artıq yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />divar kağızlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> və <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran qoruyucusuna<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> giriş imkanınız var</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google AI tərəfindən dəstəklənir</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatorunuz şəbəkəsinə qoşulmaq üçün bu seçimi tələb edə bilər. Ətraflı məlumat üçün operatorunuzla əlaqə saxlayın.</translation>
 <translation id="8576249514688522074">Başladılmayıb</translation>

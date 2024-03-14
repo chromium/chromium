@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">definīcija</translation>
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
 <translation id="3492882532495507361">Birojs (<ph name="OFFICE_STYLE" />) šādos toņos: <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">Datu lietojums tiek noteikts Chromebook datorā. Šie dati var atšķirties no pakalpojumu sniedzēja datiem.</translation>
 <translation id="3502426834823382181">skatīt visas lietotnes</translation>
 <translation id="3510890413042482857">Sūtīt <ph name="BEGIN_LINK1" />veiktspējas izsekošanas datus<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS atjauninājums</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
 <translation id="3877066159641251281">Klausīties tulkojumu</translation>
 <translation id="3885327323343477505">Mainīt ekrānsaudzētāju</translation>
+<translation id="3889914174935857450">Atiestatīt datumu</translation>
 <translation id="391412459402535266">Nevar pārbaudīt ierīci. Lai pārbaudītu, pārejiet klēpjdatora režīmā.</translation>
 <translation id="3916998944874125962">izveidot ekrānuzņēmumu</translation>
 <translation id="3923184630988645767">Datu lietojums</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nav pieejams neviens skeneris</translation>
 <translation id="6232017090690406397">Akumulators</translation>
+<translation id="6234024205316847054">Rādīt kontūras</translation>
 <translation id="6235460611964961764">Manuāli atiestatīt datu lietojuma vērtību</translation>
 <translation id="6243280677745499710">Šobrīd iestatīta</translation>
 <translation id="6250316632541035980">bekons un olas</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Izvēlieties tikai <ph name="PRODUCT_NAME" /> pieejamus mākslas darbus</translation>
 <translation id="7108668606237948702">ievadīt</translation>
 <translation id="7119389851461848805">ieslēgšana</translation>
+<translation id="7129287270910503851">Jūsu datu lietojums tiks atiestatīts katru mēnesi šajā dienā.</translation>
 <translation id="7130438335435247835">Piekļuves punkta nosaukums (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
 <translation id="7135814714616751706">Meklēt īsinājumtaustiņus</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">Informācija par APN</translation>
 <translation id="8522687886059337719">Tagad varat piekļūt jaunām <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fona tapetēm<ph name="END_LINK_WALLPAPER_SUBPAGE" /> un <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrānsaudzētājam<ph name="END_LINK_SCREENSAVER_SUBPAGE" />.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Nodrošina Google MI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Jūsu mobilo sakaru operators var pieprasīt šīs opcijas izmantošanu, lai varētu izveidot savienojumu ar attiecīgā operatora tīklu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="8576249514688522074">Pārbaude nav sākta</translation>

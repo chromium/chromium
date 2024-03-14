@@ -259,7 +259,6 @@
 <translation id="4969674060580488087">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул ChromeOS Flex таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="4970761609246024540">Chrome профайлд тавтай морилно уу</translation>
 <translation id="4970880042055371251">ChromeOS-н хувилбар</translation>
-<translation id="4970947549776831107">Энэ төрлийн файл аюултай тул Chrome энэ файлыг блоклосон</translation>
 <translation id="4990567037958725628">Google Chrome цайвар шаргал өнгө</translation>
 <translation id="5003967926796347400">“Google Password Manager”-г товшино уу</translation>
 <translation id="5126049312684316860">Chrome таны зочлох магадлалтай илүү олон хуудсыг урьдчилан ачаалах бөгөөд ингэснээр тэдгээр нь таныг зочлох үед илүү хурдан ачаална</translation>
@@ -388,7 +387,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7308322188646931570">Файл татахын тулд Chrome-д санд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="7398801000654795464">Та <ph name="USER_EMAIL_ADDRESS" /> нэрээр Chrome-д нэвтэрсэн байна. Та дараа дахин нэвтрэхдээ ижил хаяг ашиглан нэвтэрнэ үү.</translation>
-<translation id="7410958280246779049">Энэ файл аюултай тул Chrome үүнийг блоклосон</translation>
 <translation id="7412494426921990001">Chrome цэсийг товшино уу</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{1 USB төхөөрөмжид нэг эсвэл түүнээс олон Chrome-н өргөтгөл хандаж байсан}=1{1 USB төхөөрөмжид нэг эсвэл түүнээс олон Chrome-н өргөтгөл хандаж байна}other{# USB төхөөрөмжид нэг эсвэл түүнээс олон Chrome-н өргөтгөл хандаж байна}}</translation>
 <translation id="7426611252293106642">Үүнийг Linux дистрибьютер дээр цаашид дэмжихгүй тул Google Chrome буруу ажиллаж болзошгүй</translation>
@@ -461,7 +459,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8451192282033883849">Таны бүртгэлийг <ph name="MANAGER_NAME" /> удирддаг. Танай администратор энэ Chrome хөтчийн профайл болон үүний хавчуурга, түүх, нууц үг зэрэг өгөгдлийг харах болон засах боломжтой.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome-н аюулгүй байдлын тусгай шинэчлэлтийг хийж дууслаа. Одоо дахин эхлүүлнэ үү. Бид таны табыг сэргээх болно.</translation>
-<translation id="8504220326736535258">Энэ файл хортой программтай тул Chrome үүнийг блоклосон</translation>
 <translation id="8516431725144212809">Chrome-с тооцоолсон таны сонирхол</translation>
 <translation id="8521348052903287641">mDNS урсгалыг зөвшөөрөх Google Chrome-н дотоод дүрэм.</translation>
 <translation id="8550334526674375523">Энэ ажлын профайл нь таны хувийн профайлаас бүрэн тусдаа байна.</translation>

@@ -257,7 +257,6 @@
 <translation id="4969674060580488087">‏تعذَّر على ChromeOS Flex مزامنة البيانات لأنّ تفاصيل الحساب المُستخدَم في تسجيل الدخول قديمة.</translation>
 <translation id="4970761609246024540">‏مرحبًا بك في الملفات الشخصية على Chrome</translation>
 <translation id="4970880042055371251">‏إصدار نظام التشغيل Chrome</translation>
-<translation id="4970947549776831107">‏حَظَر Chrome هذا الملف لأنّه ملف خطير.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">‏انقر على "مدير كلمات المرور في Google".</translation>
 <translation id="5126049312684316860">‏يُحمِّل Chrome مسبقًا المزيد من الصفحات التي من المرجَح أن تزورها، وذلك بهدف تحميلها بسرعة أكبر عند زيارتك لها.</translation>
@@ -382,7 +381,6 @@
 <translation id="7308322188646931570">‏يحتاج Chrome للوصول إلى مساحة التخزين لتنزيل الملفات.</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7398801000654795464">‏تم تسجيل دخولك إلى Chrome باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
-<translation id="7410958280246779049">‏حَظَر Chrome هذا الملف لأنّه ملف ضار.</translation>
 <translation id="7412494426921990001">‏انقر على قائمة Chrome.</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{‏كانت إضافة واحدة أو أكثر من إضافات Chrome تصل إلى جهاز USB واحد}=1{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى جهاز USB واحد}two{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى جهازَي USB}few{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى # أجهزة USB}many{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى # جهاز USB}other{‏تصل إضافة واحدة أو أكثر من إضافات Chrome إلى # جهاز USB}}</translation>
 <translation id="7426611252293106642">‏قد لا يعمل Google Chrome بشكل صحيح لأنّه لم يعد متاحًا على توزيع Linux هذا.</translation>
@@ -455,7 +453,6 @@
 <translation id="8451192282033883849">‏تتم إدارة حسابك من خلال <ph name="MANAGER_NAME" />. وبإمكان المشرف الاطّلاع على الملف الشخصي لمتصفّح Chrome وتعديل بياناته، مثل الإشارات المرجعية والسجلّ وكلمات المرور.</translation>
 <translation id="8496177819998570653">‏مدير كلمات المرور في Google</translation>
 <translation id="8498858610309223613">‏تم للتو تطبيق تحديث أمان خاص لمتصفِّح Google Chrome. ويمكنك الآن إعادة التشغيل وستتم استعادة علامات التبويب.</translation>
-<translation id="8504220326736535258">‏حَظَر Chrome هذا الملف لأنّه يحتوي على برامج ضارة.</translation>
 <translation id="8516431725144212809">‏اهتماماتك حسب تقدير Chrome</translation>
 <translation id="8521348052903287641">‏قاعدة الوارد إلى إصدار مطوري البرامج من Google Chrome للسماح بحركة مرور mDNS.</translation>
 <translation id="8550334526674375523">هذا الملف الشخصي للعمل منفصِل تمامًا عن ملفك الشخصي.</translation>

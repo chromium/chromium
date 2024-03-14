@@ -1706,16 +1706,6 @@ La funzionalità non è disponibile se la sincronizzazione delle password viene 
 
       Questo criterio viene applicato soltanto per l'accesso ai dispositivi USB tramite l'API WebUSB. Per concedere l'accesso ai dispositivi USB tramite l'API Web Serial, vedi il criterio <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Consenti ai genitori di aggiungere account supervisionati</translation>
-<translation id="2319419071295380556">Imposta la directory in cui vengono salvate le acquisizioni schermo (screenshot e registrazioni dello schermo).
-Se il criterio viene impostato come consigliato, il valore verrà utilizzato per impostazione predefinita, ma l'utente potrà modificarlo.
-In caso contrario, l'utente non potrà modificarlo e le acquisizioni verranno salvate sempre nella directory definita.
-
-Il criterio utilizza lo stesso formato del criterio <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />
-La posizione può essere impostata su un file system locale o su <ph name="GOOGLE_DRIVE_NAME" /> (con prefisso "${google_drive}") o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (con prefisso "${onedrive}").
-Se il criterio non viene configurato, le acquisizioni schermo verranno archiviate nella directory locale "Download".
-Vedi l'elenco di variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
-
-Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /> utilizza la directory "Download" predefinita per archiviare le acquisizioni schermo e gli utenti possono modificarla.</translation>
 <translation id="2326031114717677574">La frequenza di campionamento e raccolta dei dati audio. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>

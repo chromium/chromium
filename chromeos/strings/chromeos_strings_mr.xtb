@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">परिभाषा</translation>
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन असलेले <ph name="OFFICE_STYLE" /> कार्यालय</translation>
+<translation id="3493187369049186498">तुमच्या Chromebook द्वारे डेटाचे मापन केले जाते. हा पुरवठादाराच्या डेटापेक्षा वेगळा असू शकतो.</translation>
 <translation id="3502426834823382181">सर्व अ‍ॅप्स पहा</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफॉर्मन्स माग डेटा<ph name="END_LINK1" /> पाठवा</translation>
 <translation id="3517001332549868749">ChromeOS अपडेट</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली त्याची संख्या</translation>
 <translation id="3877066159641251281">भाषांतर ऐका</translation>
 <translation id="3885327323343477505">स्क्रीन सेव्हर बदला</translation>
+<translation id="3889914174935857450">तारीख रीसेट करा</translation>
 <translation id="391412459402535266">डिव्हाइसची चाचणी करू शकत नाही. चाचणी करण्यासाठी लॅपटॉप मोडवर स्विच करा.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट घ्या</translation>
 <translation id="3923184630988645767">डेटा वापर</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कोणतेही स्कॅनर उपलब्ध नाहीत</translation>
 <translation id="6232017090690406397">बॅटरी</translation>
+<translation id="6234024205316847054">आउटलाइन दाखवा</translation>
 <translation id="6235460611964961764">डेटा वापर मॅन्युअली रीसेट करा</translation>
 <translation id="6243280677745499710">सध्या सेट केला आहे</translation>
 <translation id="6250316632541035980">बेकन आणि अंडी</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> विशिष्ट आर्टवर्क निवडा</translation>
 <translation id="7108668606237948702">प्रविष्‍ट करा</translation>
 <translation id="7119389851461848805">उर्जा</translation>
+<translation id="7129287270910503851">तुमचा डेटा वापर प्रत्येक महिन्याला या दिवशी रीसेट केला जाईल</translation>
 <translation id="7130438335435247835">अ‍ॅक्सेस पॉइंट नाव (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्व्हर}other{नेम सर्व्हर}}</translation>
 <translation id="7135814714616751706">शॉर्टकट शोधा</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">APN शी संबंधित तपशील</translation>
 <translation id="8522687886059337719">तुमच्याकडे आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> आणि <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />स्क्रीन सेव्हर<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google AI द्वारे सक्षम केलेला</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">तुमच्या वाहकाला त्यांच्या नेटवर्कशी कनेक्ट करण्यासाठी या पर्यायाची आवश्यकता असू शकते. तपशिलांसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="8576249514688522074">सुरुवात केलेली नाही</translation>

@@ -204,6 +204,7 @@
 <translation id="1355301061807280185">Вакансіі</translation>
 <translation id="1357195169723583938">Хто і калі нядаўна выкарыстоўваў прыладу</translation>
 <translation id="1358187717814494928">Стварыць табліцу</translation>
+<translation id="1358223345833465883">Пошукавая сістэма ў Chromium</translation>
 <translation id="1359836962251219822">Кухня і харчаванне</translation>
 <translation id="1360955481084547712">Для прыватнага прагляду вэб-старонак адкрыйце акно ў рэжыме інкогніта</translation>
 <translation id="1363819917331173092">Не прапаноўваць перакладаць старонкі на наступнай мове: <ph name="SOURCE_LANGUAGE" /></translation>
@@ -277,6 +278,7 @@
     <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Паказ палітык:</translation>
 <translation id="1495677929897281669">Вярнуцца на ўкладку</translation>
+<translation id="1500286806237135498">Камеры (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Паказаць карткі з вашага Уліковага запісу Google</translation>
 <translation id="1504042622576912555">Гофр</translation>
 <translation id="1507202001669085618">&lt;p&gt;Гэта памылка ўзнікае, калі вы карыстаецеся парталам Wi-Fi, на якім перад выхадам у інтэрнэт трэба выканаць уваход.&lt;/p&gt;
@@ -919,6 +921,7 @@
 <translation id="2728127805433021124">Сертыфікат сервера падпісаны з выкарыстаннем ненадзейнага алгарытму.</translation>
 <translation id="272937284275742856">Бяспечна правяраюцца звесткі пра спосаб аплаты...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Запусціць дыягностыку падключэння<ph name="END_LINK" />.</translation>
+<translation id="2731220418440848219">Даведацца больш пра пошукавую сістэму ў Chromium</translation>
 <translation id="2731382536835015353">44 x 68 цаляў</translation>
 <translation id="2734319753272419592">Дайце Google доступ да вашых кошыкаў, каб сэрвісы Google маглі шукаць для вас персаналізаваныя скідкі. Даступныя скідкі будуць паказвацца ў кошыках аўтаматычна.</translation>
 <translation id="273785062888389088">Сістэмы ацяплення, вентыляцыі і кандыцыяніравання паветра і клімат-кантроль</translation>
@@ -2224,6 +2227,7 @@
 <translation id="5316812925700871227">Павярнуць супраць гадзіннікавай стрэлкі</translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319366980180850702">Літаратурная класіка</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />Стандартная пошукавая сістэма дае магчымасць шукаць інфармацыю ў інтэрнэце і карыстацца рознымі функцыямі Chromium<ph name="END_BOLD" /> (напрыклад, выконваць запыты з адраснага радка або з выкарыстаннем відарысаў на вэб-старонках). Некаторыя функцыі могуць быць недаступнымі, калі выбраная пошукавая сістэма іх не падтрымлівае.</translation>
 <translation id="5323043727018853753">Убудаванае змесціва дазволена</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> з <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Ваш браўзер не знаходзіцца пад кіраваннем</translation>
@@ -2618,6 +2622,7 @@
 <translation id="6106989379647458772">Магчыма, вэб-старонка па адрасе <ph name="PAGE" /> часова недаступная або была перамешчана на новы вэб-адрас.</translation>
 <translation id="6107012941649240045">Каму выдадзена</translation>
 <translation id="6107924765192360631">Каб пабачыць прапановы напісання, увядзіце некалькі слоў або стварыце першую версію чарнавіка.</translation>
+<translation id="6108702513636120202">Пошукавая сістэма ў Chromium</translation>
 <translation id="6108849843016142864">Рэптыліі і земнаводныя</translation>
 <translation id="610911394827799129">На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> могуць быць іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google</translation>
 <translation id="6116338172782435947">Праглядаць тэкст і відарысы, скапіраваныя ў буфер абмену</translation>
@@ -3792,6 +3797,7 @@
 <translation id="8316555157357957253">Выкарыстоўваецца зараз</translation>
 <translation id="8319269383395457801">Продаж жылля</translation>
 <translation id="831997045666694187">Вечар</translation>
+<translation id="8321448084834652864">Вы ў любы час можаце змяніць пошукавую сістэму ў наладах Chromium.</translation>
 <translation id="8321476692217554900">апавяшчэнні</translation>
 <translation id="8322402665880479974">Ложкі і ўзгалоўі</translation>
 <translation id="832567874344484841">Прадукты для снедання</translation>
@@ -4147,6 +4153,7 @@
 <translation id="9042827002460091668">Праверце падключэнне да інтэрнэту і паўтарыце спробу</translation>
 <translation id="9044359186343685026">Выкарыстоўваць Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />.–.<ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">Мікрафоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Каб выканаць дзеянні <ph name="ACTION_LIST" />, задайце для палітыкі <ph name="POLICY_NAME" /> значэнне <ph name="POLICY_VALUE" />.</translation>
 <translation id="9048662076076074925">24 x 36 цаляў</translation>
 <translation id="9049981332609050619">Вы спрабавалі трапіць на дамен <ph name="DOMAIN" />, але сервер выдаў несапраўдны сертыфікат.</translation>
@@ -4259,6 +4266,7 @@
 <translation id="961663415146723894">Пераплёт знізу</translation>
 <translation id="961930410699694996">Гэтым разам доступ да месцазнаходжання дазволены</translation>
 <translation id="962484866189421427">Праз гэта змесціва могуць усталявацца падманныя праграмы, якія спрабуюць выдаваць сябе за нешта іншае або збіраюць даныя, што могуць быць выкарыстаны для сачэння за вамі. <ph name="BEGIN_LINK" />Усё роўна паказаць<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">Згодна з законам, які дзейнічае ў вашым рэгіёне, выберыце стандартную пошукавую сістэму для Chromium. Прапанаваныя варыянты папулярныя ў вашым рэгіёне. Яны размешчаны ў выпадковым парадку.</translation>
 <translation id="963837307749850257">Усе карыстальнікі</translation>
 <translation id="964050462028070434">Кіраваць паролямі і ключамі доступу…</translation>
 <translation id="969892804517981540">Афіцыйная зборка</translation>

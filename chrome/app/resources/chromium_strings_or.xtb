@@ -297,7 +297,6 @@
 <translation id="6290827346642914212">ଆପଣଙ୍କ Chromium ପ୍ରୋଫାଇଲର ନାମ ଦିଅନ୍ତୁ</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" />, ବିପଜ୍ଜନକ ହୋଇପାରେ, ତେଣୁ ଏହାକୁ Chromium ଅବରୋଧ କରିଛି।</translation>
 <translation id="6309712487085796862">ଆପଣଙ୍କର କ୍ୟାମେରା Chromium ବ୍ୟବହାର କରୁଛି।</translation>
-<translation id="632355235628111698">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chromium ଏହାକୁ ବ୍ଲକ କରିଛି</translation>
 <translation id="6327105987658262776">କୌଣସି ଅପଡେଟ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="6333502561965082103">Chromiumରେ ଅନ୍ୟ ଏକ କାର୍ଯ୍ୟ ପ୍ରକ୍ରିୟାରତ ଅଛି। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6334986366598267305">ବର୍ତ୍ତମାନ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ସହିତ ଏବଂ ସେୟାର୍ ହୋଇଥିବା କମ୍ପ୍ୟୁଟର୍‌ରେ Chromiumର ବ୍ୟବହାର କରିବା ସହଜ ଅଟେ।</translation>
@@ -336,7 +335,6 @@
 <translation id="67706546131546258">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇପାରେ ବୋଲି Chromium ଏହାକୁ ସ୍କାନ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="6779406956731413166">ChromiumOS ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="6847869444787758381">ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ କେବେ ବି ଚୋରି ହୋଇଛି କି ନାହିଁ ତାହା Chromium ଆପଣଙ୍କୁ ଜାଣିବାକୁ ଦିଏ</translation>
-<translation id="6852530923436401894">ଏହି ଫାଇଲରେ ମାଲୱେର ଥିବା ଯୋଗୁଁ Chromium ଏହାକୁ ବ୍ଲକ କରିଦେଇଛି</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google ପେ (Chromiumକୁ କପି କରାଯାଇଛି)</translation>
 <translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />"ରେ ମାଲୱେର୍ ଥିବା Chromium ଜାଣିବାକୁ ପାଇଛି</translation>
@@ -410,7 +408,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="813913629614996137">ଆରମ୍ଭ କରୁଛି…</translation>
 <translation id="8166782796394721554">Chromiumର JavaScript ଏବଂ WebAssembly ଇଞ୍ଜିନରେ ଅତିରିକ୍ତ ସୁରକ୍ଷା ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="81770708095080097">ଏହି ଫାଇଲ୍ ବିପଜ୍ଜନକ ଅଟେ, ତେଣୁ Chromium ଏହାକୁ ବ୍ଲକ୍ କରିଛି।</translation>
-<translation id="8213374284266571500">ଏହି ପ୍ରକାରର ଫାଇଲ ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chromium ଏହି ଫାଇଲକୁ ବ୍ଲକ କରିଛି</translation>
 <translation id="8248265253516264921">ଯଦି ଗୋଟିଏ ଛବିରେ ବ୍ୟବହାରଯୋଗ୍ୟ ବିବରଣୀ ନାହିଁ, ତେବେ Chromium ଆପଣଙ୍କ ପାଇଁ ଏକ ବିବରଣୀ ପ୍ରଦାନ କରିବାକୁ ଚେଷ୍ଟା କରିବ। ବିବରଣୀ ତିଆରି କରିବାକୁ, ଛବିଗୁଡ଼ିକ Googleକୁ ପଠାଇ ଦିଆଯାଇଛି। ଆପଣ ଯେକୌଣସି ସମୟରେ ସେଟିଂସ୍‌ରେ ଏହାକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="8266560134891435528">ଆପଣ ସାଇନ୍ ଇନ୍ କରିନଥିବା ଯୋଗୁଁ Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="8286943863733751221">ଅସୁରକ୍ଷିତ ସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ବିଷୟରେ <ph name="BEGIN_LINK" />Chromium ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ<ph name="END_LINK" /></translation>

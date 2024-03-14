@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Schowek</translation>
 <translation id="2597457036804169544">Nie stosuj ciemnego motywu witryn</translation>
 <translation id="2606760465469169465">Automatyczna weryfikacja</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Zezwól na użycie JavaScriptu w określonej witrynie.</translation>
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Treść chroniona</translation>
 <translation id="662080504995468778">Zostań</translation>
 <translation id="6653342741369270081">Naciśnij przycisk Wstecz, aby zamknąć pełny ekran.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Ukryj opcję Kontynuuj na tej karcie}few{Ukryj opcję Kontynuuj na tych kartach}many{Ukryj opcję Kontynuuj na tych kartach}other{Ukryj opcję Kontynuuj na tych kartach}}</translation>
 <translation id="6689172468748959065">Zdjęcia profilowe</translation>
 <translation id="6697925417670533197">W trakcie pobierania</translation>
 <translation id="6722828510648505498">Blokuj prośby o zalogowanie się pochodzące od usług tożsamości.</translation>

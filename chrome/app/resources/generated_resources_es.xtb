@@ -2604,7 +2604,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2931342457001070961">No hay micrófonos conectados</translation>
 <translation id="2932085390869194046">Sugerir contraseña...</translation>
 <translation id="2932483646085333864">Cierra sesión y vuelve a iniciarla para empezar la sincronización</translation>
-<translation id="2932883381142163287">Notificar uso inadecuado</translation>
+<translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2933632078076743449">Última actualización</translation>
 <translation id="2935225303485967257">Gestionar perfiles</translation>
 <translation id="2935314715123552088">Inhabilitar perfil activo de eSIM</translation>
@@ -4418,7 +4418,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4354344420232759511">Los sitios que visites aparecerán aquí</translation>
 <translation id="435527878592612277">Selecciona una foto</translation>
 <translation id="4356100841225547054">Desactivar volumen</translation>
-<translation id="4358302248024731679">Para diagnosticar mejor los problemas de Bluetooth, los Googlers pueden incluir registros de Bluetooth adicionales en sus comentarios. Si seleccionas esta opción, tu informe contendrá registros btsnoop y HCI de la sesión actual modificados para retirar tanta información personal identificable como sea posible. Solo los administradores del grupo de productos de ChromeOS de Listnr podrán acceder a estos registros, que se eliminarán definitivamente después de 90 días.</translation>
 <translation id="4358361163731478742">Ninguna aplicación admite la selección de idioma</translation>
 <translation id="4358643842961018282">Tu dispositivo está actualizado</translation>
 <translation id="4359408040881008151">Instalada debido a las extensiones dependientes</translation>
@@ -4974,7 +4973,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="479536056609751218">Página web (solo HTML)</translation>
 <translation id="4796142525425001238">Restaurar siempre</translation>
 <translation id="4797314204379834752">Prueba a usar grupos de pestañas para organizar tareas, comprar online y más</translation>
-<translation id="4798236378408895261">Adjuntar <ph name="BEGIN_LINK" />registros de Bluetooth<ph name="END_LINK" /> (opción interna de Google)</translation>
 <translation id="479863874072008121">Gestionar dispositivos</translation>
 <translation id="479989351350248267">buscar</translation>
 <translation id="4800839971935185386">Revisa las actualizaciones de los nombres y los iconos</translation>

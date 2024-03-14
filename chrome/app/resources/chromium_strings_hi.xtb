@@ -295,7 +295,6 @@
 <translation id="6290827346642914212">अपने Chromium प्रोफ़ाइल को नाम दें</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> खतरनाक हो सकता है, इसलिए क्रोमियम ने उसे अवरोधित कर दिया है.</translation>
 <translation id="6309712487085796862">Chromium आपके कैमरे का उपयोग कर रहा है.</translation>
-<translation id="632355235628111698">Chromium ने इस फ़ाइल को ब्लॉक किया है, क्योंकि यह नुकसान पहुंचा सकती है</translation>
 <translation id="6327105987658262776">कोई अपडेट उपलब्ध नहीं है.</translation>
 <translation id="6333502561965082103">क्रोमियम पर एक अन्य क्रिया चल रही है. कृपया बाद में फिर से कोशिश करें.</translation>
 <translation id="6334986366598267305">अब अपने Google खाते के साथ और शेयर किए गए कंप्यूटर पर क्रोमियम का उपयोग करना आसान हो गया है.</translation>
@@ -334,7 +333,6 @@
 <translation id="67706546131546258">Chromium इस फ़ाइल को स्कैन करने का सुझाव देता है, क्योंकि यह खतरनाक हो सकती है.</translation>
 <translation id="6779406956731413166">ChromiumOS को अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_CROS_OSS" /> की मदद से बनाया गया है.</translation>
 <translation id="6847869444787758381">'क्रोमियम' यह बताता है कि कहीं आपके पासवर्ड का गलत इस्तेमाल तो नहीं किया गया है</translation>
-<translation id="6852530923436401894">Chromium ने इस फ़ाइल को ब्लॉक कर दिया है, क्योंकि इसमें मैलवेयर है</translation>
 <translation id="6857782730669500492">क्रोमियम - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (क्रोमियम पर कॉपी किया गया)</translation>
 <translation id="6873893289264747459">Chromium को पता चला है कि "<ph name="EXTENSION_NAME" />" में मैलवेयर है</translation>
@@ -409,7 +407,6 @@
 <translation id="813913629614996137">शुरू हो रहा है...</translation>
 <translation id="8166782796394721554">Chromium के JavaScript और WebAssembly इंजन में अतिरिक्त सुरक्षा की सुविधा चालू करें</translation>
 <translation id="81770708095080097">यह फ़ाइल खतरनाक है, इसलिए क्रोमियम ने इसे रोक दिया है.</translation>
-<translation id="8213374284266571500">Chromium ने इस फ़ाइल को ब्लॉक कर दिया है, क्योंकि इस तरह की फ़ाइल खतरनाक हो सकती है</translation>
 <translation id="8248265253516264921">अगर किसी इमेज के बारे में मददगार जानकारी मौजूद नहीं है, तो 'क्रोमियम' उसके बारे में जानकारी देने की कोशिश करेगा. जानकारी तैयार करने के लिए, इमेज Google को भेजी जाती हैं. आप किसी भी समय सेटिंग में जाकर इसे बंद कर सकते हैं.</translation>
 <translation id="8266560134891435528">क्रोमियम आपके पासवर्ड की जांच नहीं कर सकता, क्योंकि आपने साइन इन नहीं किया है</translation>
 <translation id="8286943863733751221">असुरक्षित साइटों और डाउनलोड की गई फ़ाइलों के बारे में, <ph name="BEGIN_LINK" />Chromium आपको चेतावनी देता है<ph name="END_LINK" /></translation>

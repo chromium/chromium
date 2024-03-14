@@ -408,7 +408,7 @@
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3488065109653206955">Djelimično aktivirano</translation>
 <translation id="3492882532495507361">Kancelarija u stilu "<ph name="OFFICE_STYLE" />" u nijansama boje "<ph name="OFFICE_COLOR" />"</translation>
-<translation id="3493187369049186498">Podatke mjeri Chromebook. Mogu se razlikovati od podataka davatelja usluga.</translation>
+<translation id="3493187369049186498">Podatke mjeri Chromebook. Ovo se može razlikovati od podataka pružaoca usluge.</translation>
 <translation id="3502426834823382181">prikaz svih aplikacija</translation>
 <translation id="3510890413042482857">Pošalji <ph name="BEGIN_LINK1" />podatke o praćenju performansi<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje ChromeOS-a</translation>
@@ -468,7 +468,7 @@
 <translation id="387301095347517405">Broj koji označava koliko je puta baterija prošla kompletan ciklus punjenja</translation>
 <translation id="3877066159641251281">Slušanje prijevoda</translation>
 <translation id="3885327323343477505">Promjena čuvara ekrana</translation>
-<translation id="3889914174935857450">Poništi datum</translation>
+<translation id="3889914174935857450">Datum poništavanja</translation>
 <translation id="391412459402535266">Nije moguće testirati uređaj. Prebacite se na način rada laptopa da testirate.</translation>
 <translation id="3916998944874125962">snimanje snimka ekrana</translation>
 <translation id="3923184630988645767">Prijenos podataka</translation>
@@ -857,7 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nijedan skener nije dostupan</translation>
 <translation id="6232017090690406397">Baterija</translation>
-<translation id="6234024205316847054">Prikaži obrise</translation>
+<translation id="6234024205316847054">Prikaži konture</translation>
 <translation id="6235460611964961764">Ručno poništi prijenos podataka</translation>
 <translation id="6243280677745499710">Trenutno postavljeno</translation>
 <translation id="6250316632541035980">slanina i jaja</translation>
@@ -983,7 +983,7 @@
 <translation id="6961170852793647506">Da započnete, stavite dokument na skener</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6965978654500191972">Uređaj</translation>
-<translation id="6975620886940770104">Slika koja prikazuje "<ph name="GLOWSCAPES_LANDSCAPE" />" sa svijetlećim objektom <ph name="GLOWSCAPES_FEATURE" /></translation>
+<translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> sa svijetlećim objektom "<ph name="GLOWSCAPES_FEATURE" />"</translation>
 <translation id="6975981640379148271">koale</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
@@ -1008,7 +1008,7 @@
 <translation id="7107255225945990211">Odaberite ekskluzivnu ilustraciju koju nudi <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">uključivanje/isključivanje</translation>
-<translation id="7129287270910503851">Vaša potrošnja podatkovnog prometa poništavat će se svakog mjeseca na ovaj dan</translation>
+<translation id="7129287270910503851">Prijenos podataka se poništava svakog mjeseca na ovaj dan</translation>
 <translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Postavite naziv servera}one{Postavite naziv servera}few{Postavite naziv servera}other{Postavite naziv servera}}</translation>
 <translation id="7135814714616751706">Pretražite prečice</translation>
@@ -1247,7 +1247,7 @@
 <translation id="8508640263392900755">Detalji APN-a</translation>
 <translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru ekrana<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
-<translation id="8538236298648811558">Omogućuje Googleov AI</translation>
+<translation id="8538236298648811558">Omogućava Google AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Mobilni operater može zahtijevati ovu opciju radi povezivanja s njegovom mrežom. Za detalje se obratite mobilnom operateru.</translation>
 <translation id="8576249514688522074">Pokretanje je prekinuto</translation>

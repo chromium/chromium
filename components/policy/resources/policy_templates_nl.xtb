@@ -1691,16 +1691,6 @@ De functie is niet beschikbaar als synchronisatie van wachtwoorden uitstaat (via
 
       Dit beleid heeft alleen effect op USB-apparaten via de WebUSB API. Zie het beleid <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> als je USB-apparaten toegang wilt geven via de Web Serial API.</translation>
 <translation id="2318583605563438459">Toestaan dat ouders accounts toevoegen die onder toezicht staan</translation>
-<translation id="2319419071295380556">Hiermee stel je de directory in waarin Screenshots (zowel screenshots als schermopnamen) worden opgeslagen.
-Als je het beleid instelt als Aanbevolen, wordt de waarde standaard gebruikt, maar kan de gebruiker deze wijzigen.
-Anders kan de gebruiker deze niet wijzigen en worden de opnamen altijd opgeslagen in de aangegeven directory.
-
-Het beleid gebruikt dezelfde indeling als het beleid <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-De locatie kan worden ingesteld op een lokaal bestandssysteem of op <ph name="GOOGLE_DRIVE_NAME" /> (met het voorvoegsel '${google_drive}') of <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (met het voorvoegsel '${onedrive}')).
-Als je het beleid instelt op een lege tekenreeks, wordt afgedwongen dat de schermopnamen worden opgeslagen in de lokale map Downloads.
-Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
-
-Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaarddirectory Downloads om schermopnamen op te slaan en kunnen gebruikers deze directory wijzigen.</translation>
 <translation id="2326031114717677574">Snelheid waarmee audiogegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
@@ -1819,6 +1809,13 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
       Als je het beleid niet instelt, is <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" />, indien ingesteld, van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Vanaf M85 worden patronen met de jokertekens '*' en '[*.]' in de host niet meer ondersteund voor dit beleid.</translation>
+<translation id="2421713016375433338">Een URL naar een afbeelding die wordt gebruikt als zakelijke badge voor het profiel. De URL moet naar een afbeelding verwijzen.
+
+Deze badge wordt in het profielmenu onder de profielafbeelding getoond. Het formaat van de afbeelding wordt aangepast aan de ruimte van 16 x 16 die voor de badge is gereserveerd.
+
+Als je dit beleid niet instelt, wordt een standaard gebouwicoon getoond.
+
+Als er een fout optreedt tijdens het ophalen en tonen van de afbeelding, wordt een standaard gebouwicoon getoond.</translation>
 <translation id="2421779938235645781">De achtergrondverlichting van het toetsenbord komt overeen met de huidige achtergrond</translation>
 <translation id="2423255396068675416">Als je het beleid toepast of niet instelt, kunnen gebruikers <ph name="PRODUCT_CROSTINI_NAME" /> uitvoeren, zolang <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aanstaan. Als je het beleid niet toepast, staat <ph name="PRODUCT_CROSTINI_NAME" /> uit voor de gebruiker. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe <ph name="PRODUCT_CROSTINI_NAME" />-containers en niet op containers die al actief zijn.</translation>
 <translation id="242521047682347997">Niet toestaan dat gebruikers sms-berichten synchroniseren tussen hun telefoon en Chromebook</translation>
@@ -2251,6 +2248,7 @@ Dit beleid vereist aanvullende instellingen om van kracht te worden. Ga naar htt
       Als dit beleid niet is ingesteld of is ingesteld op true, kunnen met de pdf-viewer annotaties in pdf's worden gemaakt.
 
       Als dit beleid is ingesteld op false, kunnen met de pdf-viewer geen annotaties in pdf's worden gemaakt.</translation>
+<translation id="2769199041812510302">URL voor zakelijk logo</translation>
 <translation id="2769952903507981510">De vereiste domeinnaam configureren voor hosts voor externe toegang</translation>
 <translation id="2770376586681635746">Bepaalt of gebruikers Kerberos-accounts mogen toevoegen.
 

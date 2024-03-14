@@ -259,7 +259,6 @@
 <translation id="4969674060580488087">ChromeOS Flex не можеше да ги синхронизира вашите податоци бидејќи вашите детали за најавување на сметката се застарени.</translation>
 <translation id="4970761609246024540">Добре дојдовте во профили на Chrome</translation>
 <translation id="4970880042055371251">Верзија на Chrome OS</translation>
-<translation id="4970947549776831107">Chrome ја блокираше датотекава бидејќи типот на датотека е опасен</translation>
 <translation id="4990567037958725628">Google Chrome Канари</translation>
 <translation id="5003967926796347400">Кликнете „Google Password Manager“</translation>
 <translation id="5126049312684316860">Chrome вчитува однапред уште повеќе страници што е веројатно дека ќе ги отворите за да може да се вчитуваат побрзо кога ги отворате</translation>
@@ -388,7 +387,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7308322188646931570">На Chrome му треба пристап до меморијата за да презема датотеки</translation>
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7398801000654795464">Бевте најавени на Chrome како <ph name="USER_EMAIL_ADDRESS" />. Користете ја истата сметка за повторно да се најавите.</translation>
-<translation id="7410958280246779049">Chrome ја блокираше датотекава бидејќи е опасна</translation>
 <translation id="7412494426921990001">Кликнете го менито на Chrome</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{Една или повеќе екстензии за Chrome пристапуваа до 1 USB-уред}=1{Една или повеќе екстензии за Chrome пристапуваат до 1 USB-уред}one{Една или повеќе екстензии за Chrome пристапуваа до # USB-уред}other{Една или повеќе екстензии за Chrome пристапуваа до # USB-уреди}}</translation>
 <translation id="7426611252293106642">Google Chrome може да не работи правилно затоа што веќе не е поддржан на овој систем на Linux</translation>
@@ -461,7 +459,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8451192282033883849">Со сметката управува <ph name="MANAGER_NAME" />. Администраторот може да го види и изменува овој профил на прелистувач Chrome и податоците за него, како обележувачи, историја и лозинки.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Тукушто применивме посебно безбедносно ажурирање за Google Chrome. Рестартирајте сега и ќе ви ги вратиме картичките.</translation>
-<translation id="8504220326736535258">Chrome ја блокираше датотекава бидејќи има злонамерен софтвер</translation>
 <translation id="8516431725144212809">Вашите интереси како што се проценети од Chrome</translation>
 <translation id="8521348052903287641">Дојдовно правило за Google Chrome Dev за овозможување mDNS-сообраќај.</translation>
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>

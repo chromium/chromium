@@ -297,7 +297,6 @@
 <translation id="6290827346642914212">Дајте назив Chromium профилу</translation>
 <translation id="6295779123002464101">Датотека <ph name="FILE_NAME" /> је можда опасна, па ју је Chromium блокирао.</translation>
 <translation id="6309712487085796862">Chromium користи камеру.</translation>
-<translation id="632355235628111698">Chromium је блокирао овај фајл јер је опасан</translation>
 <translation id="6327105987658262776">Нема доступних ажурирања.</translation>
 <translation id="6333502561965082103">Друга радња у Chromium-у је у току. Пробајте поново касније.</translation>
 <translation id="6334986366598267305">Сада можете лакше да користите Chromium са Google налогом и на дељеним рачунарима.</translation>
@@ -336,7 +335,6 @@
 <translation id="67706546131546258">Chromium препоручује скенирање овог фајла јер може да буде опасан.</translation>
 <translation id="6779406956731413166">Chromium ОС омогућава додатни <ph name="BEGIN_LINK_CROS_OSS" />софтвер отвореног кода<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium вас обавештава ако су лозинке угрожене</translation>
-<translation id="6852530923436401894">Chromium је блокирао овај фајл јер садржи малвер</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирано у Chromium)</translation>
 <translation id="6873893289264747459">Chromium је открио да <ph name="EXTENSION_NAME" /> садржи малвер</translation>
@@ -411,7 +409,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="813913629614996137">Покреће се…</translation>
 <translation id="8166782796394721554">Укључите додатну заштиту у Chromium алатки за JavaScript и WebAssembly</translation>
 <translation id="81770708095080097">Ова датотека је опасна, па ју је Chromium блокирао.</translation>
-<translation id="8213374284266571500">Chromium је блокирао овај фајл јер је овај тип фајла опасан</translation>
 <translation id="8248265253516264921">Ако слика нема користан опис, Chromium ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа. То можете да искључите у подешавањима у сваком тренутку.</translation>
 <translation id="8266560134891435528">Chromium не може да вам проверава лозинке зато што нисте пријављени</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium вас упозорава<ph name="END_LINK" /> на небезбедне сајтове и преузимања</translation>

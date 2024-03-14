@@ -295,7 +295,6 @@
 <translation id="6290827346642914212">Додайте назву свого профілю Chromium</translation>
 <translation id="6295779123002464101">Файл <ph name="FILE_NAME" /> може бути небезпечним, тому Chromium заблокував його.</translation>
 <translation id="6309712487085796862">Chromium використовує вашу камеру.</translation>
-<translation id="632355235628111698">Веб-переглядач Chromium заблокував цей файл, оскільки він небезпечний</translation>
 <translation id="6327105987658262776">Немає оновлень.</translation>
 <translation id="6333502561965082103">У Chromium виконується інша операція. Спробуйте пізніше.</translation>
 <translation id="6334986366598267305">Користуватися Chromium у своєму обліковому записі Google на спільних комп’ютерах стало легше.</translation>
@@ -334,7 +333,6 @@
 <translation id="67706546131546258">Chromium радить просканувати цей файл, оскільки він може бути небезпечним.</translation>
 <translation id="6779406956731413166">Chromium OS працює завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Якщо ваші паролі колись викрадуть, Chromium повідомить вас про це</translation>
-<translation id="6852530923436401894">Веб-переглядач Chromium заблокував цей файл, оскільки він містить зловмисне програмне забезпечення</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопійовано в Chromium)</translation>
 <translation id="6873893289264747459">Веб-переглядач Chromium виявив, що розширення "<ph name="EXTENSION_NAME" />" містить зловмисне програмне забезпечення</translation>
@@ -409,7 +407,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="813913629614996137">Ініціалізація...</translation>
 <translation id="8166782796394721554">Увімкніть додатковий захист у системі JavaScript і WebAssembly для Chromium</translation>
 <translation id="81770708095080097">Цей файл небезпечний, тому Chromium заблокував його.</translation>
-<translation id="8213374284266571500">Веб-переглядач Chromium заблокував цей файл, оскільки такий тип файлів небезпечний.</translation>
 <translation id="8248265253516264921">Якщо зображення не має корисного опису, Chromium спробує додати його. Для цього зображення надсилаються в Google. Ви можете будь-коли вимкнути це в налаштуваннях.</translation>
 <translation id="8266560134891435528">Chromium не може перевірити паролі, оскільки ви не ввійшли в обліковий запис</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium попереджає<ph name="END_LINK" /> про небезпечні сайти й завантаження</translation>

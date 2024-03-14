@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Delvist aktiveret</translation>
 <translation id="3492882532495507361">Et <ph name="OFFICE_STYLE" /> kontor med <ph name="OFFICE_COLOR" /> toner</translation>
+<translation id="3493187369049186498">Data måles af din Chromebook. Disse data kan være forskellige fra udbyderdataene.</translation>
 <translation id="3502426834823382181">se alle apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />data om ydeevne<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-opdatering</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
 <translation id="3877066159641251281">Lyt til oversættelse</translation>
 <translation id="3885327323343477505">Skift pauseskærm</translation>
+<translation id="3889914174935857450">Nulstil dato</translation>
 <translation id="391412459402535266">Enheden kan ikke testes. Skift til computertilstand for at teste den.</translation>
 <translation id="3916998944874125962">tag et screenshot</translation>
 <translation id="3923184630988645767">Dataforbrug</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Der er ingen tilgængelige scannere</translation>
 <translation id="6232017090690406397">Batteri</translation>
+<translation id="6234024205316847054">Vis oversigt</translation>
 <translation id="6235460611964961764">Nulstil dataforbrug manuelt</translation>
 <translation id="6243280677745499710">Nuværende</translation>
 <translation id="6250316632541035980">bacon og æg</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Vælg kunst, der kun er tilgængelig på <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">tænd/sluk</translation>
+<translation id="7129287270910503851">Dit dataforbrug nulstilles hver måned på denne dag</translation>
 <translation id="7130438335435247835">Adgangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navneserver}one{Navneserver}other{Navneservere}}</translation>
 <translation id="7135814714616751706">Søg efter genveje</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">Oplysninger om APN</translation>
 <translation id="8522687886059337719">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pauseskærme<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Baseret på Googles AI</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="8576249514688522074">Ikke startet</translation>

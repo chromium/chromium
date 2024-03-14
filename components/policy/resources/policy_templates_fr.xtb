@@ -1694,16 +1694,6 @@ Cette fonctionnalité n'est pas disponible si la synchronisation des mots de pas
 
       Cette règle ne concerne que l'accès aux appareils USB via l'API WebUSB. Pour autoriser l'accès aux appareils USB via l'API Web Serial, consultez la règle <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318583605563438459">Autoriser les parents à ajouter des comptes supervisés</translation>
-<translation id="2319419071295380556">Définit le répertoire dans lequel les captures d'écran et les enregistrements d'écran sont stockés.
-Si la règle est configurée pour suivre la recommandation, la valeur est utilisée par défaut, mais l'utilisateur peut la modifier.
-Sinon, l'utilisateur ne peut pas la modifier et les captures seront toujours enregistrées dans le répertoire défini.
-
-La règle utilise le même format que la règle <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-L'emplacement peut être défini sur le système de fichiers local, sur <ph name="GOOGLE_DRIVE_NAME" /> (avec le préfixe "${google_drive}") ou sur <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (avec le préfixe "${onedrive}").
-Si cette règle est définie sur une chaîne vide, le stockage des captures d'écran est forcé dans le répertoire "Téléchargements" local.
-Voici la liste des variables que vous pouvez utiliser (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
-
-Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise le répertoire "Téléchargements" par défaut pour stocker les captures d'écran, et les utilisateurs peuvent le modifier.</translation>
 <translation id="2326031114717677574">Fréquence d'échantillonnage et de collecte des données audio. La valeur minimale autorisée est de 1 minute.
 
       Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
@@ -3327,6 +3317,20 @@ Si cette règle n'est pas configurée, aucun rapport de données de télémétri
 <translation id="3652670852519271837">Autoriser les sites à demander aux utilisateurs l'accès en lecture aux fichiers et répertoires via l'API File System</translation>
 <translation id="3653237928288822292">Icône du moteur de recherche par défaut</translation>
 <translation id="3654906736796256792">Autoriser l'exécution en bac à sable du processus audio</translation>
+<translation id="3655252664209966774">L'extension d'utilisation de clés X.509 spécifie comment la clé d'un certificat peut être utilisée. Ces instructions permettent de s'assurer que les certificats ne sont pas utilisés dans un contexte inattendu, ce qui offre une protection contre une classe d'attaques interprotocoles sur HTTPS et d'autres protocoles. Pour que cela fonctionne, les clients HTTPS doivent vérifier que les certificats de serveur correspondent aux paramètres TLS de la connexion.
+
+À partir de <ph name="PRODUCT_NAME" /> 124, cette vérification est toujours activée.
+
+<ph name="PRODUCT_NAME" /> 123 et les versions antérieures ont le comportement suivant :
+
+Si cette règle est activée, <ph name="PRODUCT_NAME" /> effectue cette vérification.
+Cela aide à prévenir les attaques où un pirate informatique manipule le navigateur pour interpréter une clé d'une manière que le propriétaire du certificat n'avait pas prévue.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ignore cette vérification pour les connexions HTTPS qui à la fois négocient TLS 1.2 et utilisent un certificat RSA qui se lie à une ancre de confiance locale. Parmi les ancres de confiance locales figurent, par exemple, les certificats racines fournis par la règle ou installés par l'utilisateur. Dans tous les autres cas, la vérification est effectuée indépendamment du paramètre de cette règle.
+
+Si la règle n'est pas configurée, <ph name="PRODUCT_NAME" /> se comporte comme si elle était activée.
+
+Si le résultat de la vérification n'est pas concluant pour une connexion, l'erreur ERR_SSL_KEY_USAGE_INCOMPATIBLE est générée. Dans ce cas, cela peut signifier qu'un certificat est mal configuré. Les suites de chiffrement ECDHE_RSA récentes utilisent l'option d'utilisation de clés "digitalSignature", tandis que les anciennes suites de déchiffrement RSA utilisent l'option d'utilisation de clés "keyEncipherment". En cas de doute, les administrateurs doivent inclure les deux dans les certificats RSA destinés à HTTPS.</translation>
 <translation id="3655710915351748191">Ne pas afficher l'icône du Chrome Web Store dans le lanceur d'applis <ph name="PRODUCT_OS_NAME" /> ni sur la page de nouvel onglet</translation>
 <translation id="3655885297177292093">L'API Event.path aura l'état par défaut disponible avant M109 et indisponible de M109 à 114.</translation>
 <translation id="3659542706175323490">Si cette règle est activée, le démarrage au branchement de l'alimentation CA l'est également si l'appareil le permet. Une fois le cordon d'alimentation branché, le système, qui était alors complètement éteint ou en veille prolongée, redémarre.
@@ -5645,6 +5649,9 @@ Si cette règle n'est pas configurée ou si elle est définie sur une liste vide
 <translation id="5601503069213153581">Code</translation>
 <translation id="5607021831414604820">Activer les rapports sur l'état de stockage de l'appareil</translation>
 <translation id="5608114828230655271">Comportement par défaut de l'appareil</translation>
+<translation id="561001683838346956">Cette règle a été supprimée dans la version 124 de <ph name="PRODUCT_NAME" />. À partir de cette version, les hachages non sécurisés sont toujours interdits. Dans les versions précédentes, cette règle contrôlait si le navigateur autorisait ou non les anciens hachages non sécurisés pendant le processus d'un handshake TLS.
+
+      Si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> applique le processus de déploiement par défaut pour interdire les hachages non sécurisés. Si elle est activée, <ph name="PRODUCT_NAME" /> autorise un serveur à utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS. Si elle est désactivée, <ph name="PRODUCT_NAME" /> interdit à un serveur d'utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS.</translation>
 <translation id="5611869109049836323">Appliquer des contraintes dans les ancres de confiance ajoutées localement</translation>
 <translation id="5614865701790130558">Enregistrer des événements pour les installations d'extensions basées sur des règles</translation>
 <translation id="561493980641967737">Si cette règle est activée, la collecte de données anonymes incluant les URL (qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation) est toujours active.

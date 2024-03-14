@@ -258,7 +258,6 @@
 <translation id="4969674060580488087">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे ChromeOS Flex ला तुमचा डेटा सिंक करता आला नाही.</translation>
 <translation id="4970761609246024540">Chrome प्रोफाइलमध्ये स्वागत आहे</translation>
 <translation id="4970880042055371251">ChromeOS ची आवृत्ती</translation>
-<translation id="4970947549776831107">या प्रकारची फाइल धोकादायक असल्यामुळे Chrome ने ती ब्लॉक केली आहे</translation>
 <translation id="4990567037958725628">Google Chrome कॅनरी</translation>
 <translation id="5003967926796347400">“Google Password Manager” वर क्लिक करा</translation>
 <translation id="5126049312684316860">Chrome तुम्ही भेट देण्याची शक्यता असलेली आणखी पेज प्रीलोड करते, जेणेकरून तुम्ही त्यांना भेट देता, तेव्हा ती अधिक जलद लोड होतात</translation>
@@ -386,7 +385,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7308322188646931570">फाइल डाउनलोड करण्यासाठी Chrome ला स्टोरेजचा ॲक्सेस हवा आहे</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7398801000654795464">तुम्ही <ph name="USER_EMAIL_ADDRESS" /> या रुपात Chrome मध्ये साइन इन केले होते. कृपया पुन्हा साइन इन करण्यासाठी समान खाते वापरा.</translation>
-<translation id="7410958280246779049">ही फाइल धोकादायक असल्यामुळे, Chrome ने ती ब्लॉक केली आहे</translation>
 <translation id="7412494426921990001">Chrome मेनूवर क्लिक करा</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{1 HID device was being accessed by one or more Chromium extensions}=1{१ USB डिव्हाइस हे एक किंवा त्याहून अधिक Chrome एक्स्टेंशनद्वारे अ‍ॅक्सेस केले जात आहे}other{# USB डिव्हाइस ही एक किंवा त्याहून अधिक Chrome एक्स्टेंशनद्वारे अ‍ॅक्सेस केली जात आहेत}}</translation>
 <translation id="7426611252293106642">Google Chrome कदाचित योग्यरीत्या काम करणार नाही, कारण त्याला आता या Linux डिस्ट्रिब्यूशनवर सपोर्ट नाही</translation>
@@ -459,7 +457,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8451192282033883849">तुमचे खाते <ph name="MANAGER_NAME" /> यांनी व्यवस्थापित केले आहे. तुमचा अ‍ॅडमिनिस्ट्रेटर ही Chrome ब्राउझर प्रोफाइल आणि त्यातील डेटा, जसे की बुकमार्क, इतिहास आणि पासवर्ड पाहू व संपादित करू शकतो.</translation>
 <translation id="8496177819998570653">Google Password Manager</translation>
 <translation id="8498858610309223613">Google Chrome साठी आत्ताच एक विशिष्ट सुरक्षितता अपडेट लागू करण्यात आला. आता रीस्टार्ट करा आणि आम्ही तुमचे टॅब रिस्टोअर करू.</translation>
-<translation id="8504220326736535258">या फाइलमध्ये मालवेअर असल्याने, Chrome ने ती ब्लॉक केली</translation>
 <translation id="8516431725144212809">Chrome च्या अंदाजानुसार तुमची स्वारस्ये</translation>
 <translation id="8521348052903287641">Google Chrome विकासकाने mDNS रहदारीस अनुमती देण्यासाठी इनबाउंड नियम.</translation>
 <translation id="8550334526674375523">ही कार्य प्रोफाइल तुमच्या वैयक्तिक प्रोफाइलपेक्षा पूर्णपणे स्वतंत्र आहे.</translation>

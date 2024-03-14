@@ -4415,7 +4415,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4354344420232759511">Los sitios que visitas aparecerán aquí</translation>
 <translation id="435527878592612277">Seleccionar tu foto</translation>
 <translation id="4356100841225547054">Desactivar el volumen</translation>
-<translation id="4358302248024731679">Para diagnosticar mejor los problemas de Bluetooth, los empleados de Google pueden incluir registros de Bluetooth adicionales en sus informes de respuesta. Si se selecciona esta opción, tu informe incluirá registros de btsnoop y HCI de tu sesión actual editados para quitar la mayor cantidad posible de información de identificación personal. Solo los gerentes del grupo del producto ChromeOS tienen acceso a estos registros en Listnr. Los registros se borrarán definitivamente después de 90 días.</translation>
 <translation id="4358361163731478742">Ninguna app admite la selección de idioma</translation>
 <translation id="4358643842961018282">El dispositivo está actualizado</translation>
 <translation id="4359408040881008151">Instalada a causa de las extensiones dependientes</translation>
@@ -4971,7 +4970,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="479536056609751218">Página web, HTML únicamente</translation>
 <translation id="4796142525425001238">Restablecer siempre</translation>
 <translation id="4797314204379834752">Usa los grupos de pestañas para organizar las tareas, hacer compras en línea y más</translation>
-<translation id="4798236378408895261">Adjuntar <ph name="BEGIN_LINK" />registros de Bluetooth<ph name="END_LINK" /> (para uso interno de Google)</translation>
 <translation id="479863874072008121">Administrar dispositivos</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4800839971935185386">Revisar la actualización de íconos y nombres</translation>
@@ -9739,7 +9737,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8497219075884839166">Utilidades de Windows</translation>
 <translation id="8498214519255567734">Te permite ver o leer mejor en lugares con luz tenue</translation>
 <translation id="8499083585497694743">Dejar de silenciar el micrófono</translation>
-<translation id="8499951261760185742">Si un sitio que visitas no funciona como debería, intenta permitir temporalmente las cookies de terceros para ese sitio. Esto implica menos protección, pero es más probable que las funciones del sitio funcionen como se espera.</translation>
+<translation id="8499951261760185742">Si un sitio que visitas no funciona como debería, intenta permitir temporalmente las cookies de terceros para ese sitio. Esto implica menos protección, pero es más probable que el sitio funcione como se espera.</translation>
 <translation id="8500044868721690197">Este sitio no tiene permiso para controlar ni reprogramar tus dispositivos MIDI</translation>
 <translation id="8502536196501630039">Para usar apps de Google Play, primero debes restablecer tus apps. Es posible que se pierdan algunos datos.</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>

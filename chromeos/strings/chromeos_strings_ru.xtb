@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">узнать определение</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
 <translation id="3492882532495507361">Офис: стиль – <ph name="OFFICE_STYLE" />, цвет – <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">Объем использованного трафика измеряется на устройстве. Значения могут отличаться от данных оператора связи.</translation>
 <translation id="3502426834823382181">посмотреть все приложения</translation>
 <translation id="3510890413042482857">Отправлять <ph name="BEGIN_LINK1" />данные отслеживания производительности<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Обновление Chrome OS</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Количество полных циклов зарядки батареи</translation>
 <translation id="3877066159641251281">Озвучить перевод</translation>
 <translation id="3885327323343477505">Изменить заставку</translation>
+<translation id="3889914174935857450">Дата сброса данных</translation>
 <translation id="391412459402535266">Не удается протестировать устройство. Перейдите в режим ноутбука.</translation>
 <translation id="3916998944874125962">сделать скриншот</translation>
 <translation id="3923184630988645767">Передача данных</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Нет доступных сканеров.</translation>
 <translation id="6232017090690406397">Батарея</translation>
+<translation id="6234024205316847054">Показывать границы</translation>
 <translation id="6235460611964961764">Выполнять сброс показателя вручную</translation>
 <translation id="6243280677745499710">Установлено как обои</translation>
 <translation id="6250316632541035980">яичница с беконом</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Выбрать эксклюзивное видео для <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Войти</translation>
 <translation id="7119389851461848805">питание</translation>
+<translation id="7129287270910503851">Сброс данных об использовании трафика будет происходить в этот день каждого месяца</translation>
 <translation id="7130438335435247835">Точка доступа</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
 <translation id="7135814714616751706">Быстрые клавиши для поиска</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">Сведения о точке доступа</translation>
 <translation id="8522687886059337719">Вам доступны новые <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />обои<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />заставка<ph name="END_LINK_SCREENSAVER_SUBPAGE" />.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">На базе технологии ИИ от Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Возможно, вам потребуется установить этот параметр, чтобы подключиться к сети. За подробными сведениями обращайтесь к своему оператору связи.</translation>
 <translation id="8576249514688522074">Без инициализации</translation>

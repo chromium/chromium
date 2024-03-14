@@ -297,7 +297,6 @@
 <translation id="6290827346642914212">Chromium профилиңиздин аталышын коюңуз</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> файлы кооптуу болушу мүмкүн, ошондуктан Chromium аны бөгөттөп койду.</translation>
 <translation id="6309712487085796862">Chromium камераңызды колдонууда.</translation>
-<translation id="632355235628111698">Бул файл кооптуу болгондуктан, Chromium аны бөгөттөп койду</translation>
 <translation id="6327105987658262776">Жаңыртуулар жок.</translation>
 <translation id="6333502561965082103">Chromium'да башка операция жүрүп жатат. Бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="6334986366598267305">Эми Google Аккаунтуңуз аркылуу жана бөлүшүлгөн компьютерлерден Chromium'да иштөө алдаганча жеңилирээк болуп калды.</translation>
@@ -336,7 +335,6 @@
 <translation id="67706546131546258">Chromium бул файлды текшерүүнү сунуштайт. Ал кооптуу болушу мүмкүн.</translation>
 <translation id="6779406956731413166">ChromiumOS тутуму кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
 <translation id="6847869444787758381">Chromium сырсөздөрүңүздү башка бирөөлөр билип алса сизге кабарлайт</translation>
-<translation id="6852530923436401894">Бул файлда кесепеттүү программа болгондуктан, Chromium аны бөгөттөп койду</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'га көчүрүлдү)</translation>
 <translation id="6873893289264747459">Chromium "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
@@ -411,7 +409,6 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="813913629614996137">Баштапкы маанини берүүдө...</translation>
 <translation id="8166782796394721554">Chromium'дун JavaScript жана WebAssembly каражаттарында кошумча коргоону күйгүзүү</translation>
 <translation id="81770708095080097">Бул файл кооптуу, ошондуктан Chromium аны бөгөттөп койду.</translation>
-<translation id="8213374284266571500">Файлдын мындай түрү кооптуу болгондуктан, Chromium аны бөгөттөп койду</translation>
 <translation id="8248265253516264921">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт. Аны жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>
 <translation id="8266560134891435528">Chromium сырсөздөрүңүздү текшере албайт, анткени аккаунтуңузга кирген жоксуз</translation>
 <translation id="8286943863733751221">Кооптуу сайттар жана жүктөп алуулар жөнүндө <ph name="BEGIN_LINK" />Chromium эскертет<ph name="END_LINK" /></translation>

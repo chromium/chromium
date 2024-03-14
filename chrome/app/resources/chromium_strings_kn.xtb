@@ -293,7 +293,6 @@
 <translation id="6290827346642914212">ನಿಮ್ಮ Chromium ಪ್ರೊಫೈಲ್ ಅನ್ನು ಹೆಸರಿಸಿ</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> ಅಪಾಯಕಾರಿಯಾಗಿರಬಹುದು, ಹಾಗಾಗಿ Chromium ಅದನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
 <translation id="6309712487085796862">Chromium ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಬಳಸುತ್ತಿದೆ.</translation>
-<translation id="632355235628111698">Chromium ಈ ಫೈಲ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ ಏಕೆಂದರೆ ಇದು ಅಪಾಯಕಾರಿಯಾಗಿದೆ</translation>
 <translation id="6327105987658262776">ಯಾವುದೇ ಅಪ್‌ಡೇಟ್‌‌ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="6333502561965082103">Chromium ನಲ್ಲಿ ಬೇರೆ ಕಾರ್ಯಾಚರಣೆಯು ಪ್ರಗತಿಯಲ್ಲಿದೆ. ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6334986366598267305">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ಮತ್ತು ಹಂಚಿದ ಕಂಪ್ಯೂಟರ್‌ಗಳಲ್ಲಿ Chromium ಬಳಕೆಯು ಇದೀಗ ತುಂಬಾ ಸುಲಭವಾಗಿದೆ.</translation>
@@ -330,7 +329,6 @@
 <translation id="67706546131546258">ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾಗಿರಬಹುದು, ಆದ್ದರಿಂದ ಇದನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೆಂದು Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="6779406956731413166">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromiumOS ಮಾಡಲು ಸಾಧ್ಯ.</translation>
 <translation id="6847869444787758381">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಎಂದಾದರೂ ಹ್ಯಾಕ್‌ ಆಗಿವೆಯೇ ಎಂಬುದನ್ನು Chromium ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ</translation>
-<translation id="6852530923436401894">Chromium ಈ ಫೈಲ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ, ಏಕೆಂದರೆ ಇದು ಮಾಲ್‌ವೇರ್ ಅನ್ನು ಹೊಂದಿದೆ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium ಗೆ ನಕಲಿಸಲಾಗಿದೆ)</translation>
 <translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" ನಲ್ಲಿ ಮಾಲ್‌ವೇರ್ ಇರುವುದನ್ನು Chromium ಪತ್ತೆಹಚ್ಚಿದೆ</translation>
@@ -402,7 +400,6 @@
 <translation id="813913629614996137">ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8166782796394721554">Chromium ನ JavaScript ಮತ್ತು WebAssembly ಎಂಜಿನ್‌ನಲ್ಲಿ ಹೆಚ್ಚುವರಿ ರಕ್ಷಣೆಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="81770708095080097">ಈ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾಗಿದೆ, ಹೀಗಾಗಿ Chromium ಇದನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
-<translation id="8213374284266571500">ಈ ರೀತಿಯ ಫೈಲ್ ಅಪಾಯಕಾರಿಯಾದ ಕಾರಣ Chromium ಈ ಫೈಲ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ</translation>
 <translation id="8248265253516264921">ಚಿತ್ರದಲ್ಲಿ ಉಪಯುಕ್ತ ವಿವರಣೆಯು ಇಲ್ಲದಿದ್ದರೆ, Chromium ನಿಮಗಾಗಿ ಒಂದು ವಿವರಣೆಯನ್ನು ಒದಗಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತದೆ. ವಿವರಣೆಗಳನ್ನು ರಚಿಸಲು, ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಇದನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="8266560134891435528">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರದ ಕಾರಣ, Chromium ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="8286943863733751221">ಸುರಕ್ಷಿತವಲ್ಲದ ಸೈಟ್‌ಗಳು ಮತ್ತು ಡೌನ್‌ಲೋಡ್‌ಗಳ ಕುರಿತು <ph name="BEGIN_LINK" />Chromium ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ<ph name="END_LINK" /></translation>

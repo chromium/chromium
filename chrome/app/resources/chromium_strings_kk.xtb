@@ -297,7 +297,6 @@
 <translation id="6290827346642914212">Chromium профиліне ат қойыңыз</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> қауіпті болуы мүмкін болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="6309712487085796862">Chromium камераңызды пайдалануда.</translation>
-<translation id="632355235628111698">Бұл файл қауіпті болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="6327105987658262776">Ешқандай жаңарту жоқ.</translation>
 <translation id="6333502561965082103">Chromium браузерінде басқа операция орындалуда. Әрекетті кейінірек қайталаңыз.</translation>
 <translation id="6334986366598267305">Енді Chromium қолданбасын Google аккаунтымен және ортақ компьютерлерде пайдалану жеңілірек.</translation>
@@ -336,7 +335,6 @@
 <translation id="67706546131546258">Chromium бұл файлды сканерлеуді ұсынады, себебі ол қауіпті болуы мүмкін.</translation>
 <translation id="6779406956731413166">ChromiumOS қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="6847869444787758381">Құпия сөздеріңіз ұрланған жағдайда, Chromium бұл туралы хабарлайды.</translation>
-<translation id="6852530923436401894">Бұл файлда зиянды бағдарлама болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium браузеріне көшірілген)</translation>
 <translation id="6873893289264747459">Chromium "<ph name="EXTENSION_NAME" />" кеңейтімінде зиянды бағдарлама бар екенін анықтады.</translation>
@@ -410,7 +408,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="813913629614996137">Дайындауда…</translation>
 <translation id="8166782796394721554">Chromium-нің JavaScript және WebAssembly жүйелерінде қосымша қорғанысты қосу</translation>
 <translation id="81770708095080097">Бұл файл қауіпті болғандықтан, Chromium оны бөгеді.</translation>
-<translation id="8213374284266571500">Файлдың бұл түрі қауіпті болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="8248265253516264921">Егер суреттің пайдалы сипаттамасы болмаса, Chromium оны өзі ұсынып көреді. Сипаттамалар жасау үшін суреттер Google-ға жіберіледі. Бұл функцияны кез келген уақытта параметрлерден өшіріп қоюға болады.</translation>
 <translation id="8266560134891435528">Аккаунтқа кірмегендіктен, Chromium сіздің құпия сөздеріңізді тексере алмайды.</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium сізге<ph name="END_LINK" /> қауіпті сайттар мен жүктеп алу әрекеттері туралы ескертеді</translation>

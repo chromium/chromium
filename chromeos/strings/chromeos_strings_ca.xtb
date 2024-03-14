@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">definició</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
 <translation id="3492882532495507361">Oficina <ph name="OFFICE_STYLE" /> amb tons <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">El Chromebook mesura les dades. És possible que no coincideixin amb les dades del proveïdor.</translation>
 <translation id="3502426834823382181">mostra totes les aplicacions</translation>
 <translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
 <translation id="3877066159641251281">Escolta la traducció</translation>
 <translation id="3885327323343477505">Canvia l'estalvi de pantalla</translation>
+<translation id="3889914174935857450">Data de restabliment</translation>
 <translation id="391412459402535266">No es pot provar el dispositiu. Canvia al mode de portàtil per fer la prova.</translation>
 <translation id="3916998944874125962">fes una captura de pantalla</translation>
 <translation id="3923184630988645767">Ús de dades</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No hi ha cap escàner disponible</translation>
 <translation id="6232017090690406397">Bateria</translation>
+<translation id="6234024205316847054">Mostra els esquemes</translation>
 <translation id="6235460611964961764">Restableix l'ús de dades manualment</translation>
 <translation id="6243280677745499710">Establert actualment</translation>
 <translation id="6250316632541035980">cansalada i ous</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Tria obres d'art exclusives de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">retorn</translation>
 <translation id="7119389851461848805">engegada</translation>
+<translation id="7129287270910503851">L'ús de dades es restablirà cada mes en aquest dia</translation>
 <translation id="7130438335435247835">Nom del punt d'accés Wi-Fi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7135814714616751706">Cerca dreceres</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">Detalls de l'APN</translation>
 <translation id="8522687886059337719">Ara tens accés als nous <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fons de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />estalvis de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Amb la tecnologia de la IA de Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
 <translation id="8576249514688522074">No s'ha inicialitzat</translation>

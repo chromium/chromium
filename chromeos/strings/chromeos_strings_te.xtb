@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">నిర్వచనం</translation>
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చేయబడింది</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> టోన్‌లతో <ph name="OFFICE_STYLE" /> ఆఫీస్</translation>
+<translation id="3493187369049186498">మీ డేటాను కొలవడం Chromebook ద్వారా జరుగుతుంది. ఇది ప్రొవైడర్ డేటాకు భిన్నంగా ఉండవచ్చు.</translation>
 <translation id="3502426834823382181">అన్ని యాప్‌లను చూడండి</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />పనితీరు ట్రేస్ డేటాను<ph name="END_LINK1" /> పంపండి</translation>
 <translation id="3517001332549868749">ChromeOS అప్‌డేట్</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">మీ బ్యాటరీ పూర్తిగా ఛార్జ్ అయిన పర్యాయాల సంఖ్య</translation>
 <translation id="3877066159641251281">అనువాదాన్ని వినండి</translation>
 <translation id="3885327323343477505">స్క్రీన్ సేవర్‌ను మార్చండి</translation>
+<translation id="3889914174935857450">తేదీని రీసెట్ చేయండి</translation>
 <translation id="391412459402535266">పరికరాన్ని పరీక్షించడం సాధ్యపడదు. పరీక్షించడానికి ల్యాప్‌టాప్ మోడ్‌కి మారండి.</translation>
 <translation id="3916998944874125962">స్క్రీన్‌షాట్‌ను తీస్తుంది</translation>
 <translation id="3923184630988645767">డేటా వినియోగం</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="6232017090690406397">బ్యాటరీ</translation>
+<translation id="6234024205316847054">అవుట్‌లైన్‌లను చూపించండి</translation>
 <translation id="6235460611964961764">డేటా వినియోగాన్ని మాన్యువల్‌గా రీసెట్ చేయండి</translation>
 <translation id="6243280677745499710">ప్రస్తుతం సెట్ చేసినది</translation>
 <translation id="6250316632541035980">బేకన్, గుడ్లు</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ప్రత్యేక పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="7108668606237948702">ఎంటర్</translation>
 <translation id="7119389851461848805">పవర్</translation>
+<translation id="7129287270910503851">మీ డేటా వినియోగం ప్రతి నెల ఈ రోజున రీసెట్ చేయబడుతుంది</translation>
 <translation id="7130438335435247835">యాక్సెస్ స్థానం పేరు (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7135814714616751706">షార్ట్‌కట్‌ల కోసం సెర్చ్ చేయండి</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">APN వివరాలు</translation>
 <translation id="8522687886059337719">మీరు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌లు<ph name="END_LINK_WALLPAPER_SUBPAGE" />, <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />స్క్రీన్ సేవర్‌<ph name="END_LINK_SCREENSAVER_SUBPAGE" />కు యాక్సెస్ కలిగి ఉన్నారు</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోంది</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">వారి నెట్‌వర్క్‌కు కనెక్ట్ అవ్వడానికి మీ క్యారియర్‌కు ఈ ఆప్షన్ అవసరం పడవచ్చు. వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="8576249514688522074">ప్రారంభం కాలేదు</translation>

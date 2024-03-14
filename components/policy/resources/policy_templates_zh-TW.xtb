@@ -1662,16 +1662,6 @@
 
       這項政策只會影響透過 WebUSB API 存取 USB 裝置的權限。如要授予透過 Web Serial API 存取 USB 裝置的權限，請參閱 <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="2318583605563438459">允許家長新增受監督的帳戶</translation>
-<translation id="2319419071295380556">設定儲存螢幕畫面擷取內容 (包含螢幕截圖和螢幕錄影) 的目錄。
-如果將這項政策設為建議，系統會預設使用該值，但使用者可以自行變更。
-如果未設為建議，使用者將無法變更，而且系統一律會將擷取內容儲存到已定義的目錄。
-
-這項政策使用的格式與 <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> 政策相同
-該位置可以設為本機檔案系統，也可以設為 <ph name="GOOGLE_DRIVE_NAME" /> (前置字串為「${google_drive}」) 或 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (前置字串為「${onedrive}」)。
-如果將這項政策設為空白字串，系統會強制將螢幕畫面擷取內容儲存在本機的「下載」目錄。
-如要查看可用的變數清單，請前往 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。
-
-如果未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 會使用預設的「下載」目錄儲存螢幕畫面擷取內容，而且使用者可變更儲存位置。</translation>
 <translation id="2326031114717677574">系統取樣和收集音訊資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 15 分鐘的預設頻率。</translation>

@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">diffiniad</translation>
 <translation id="3488065109653206955">Wedi'i weithredu'n rhannol</translation>
 <translation id="3492882532495507361">Swyddfa <ph name="OFFICE_STYLE" /> gyda thonau <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">Mae data yn cael eu mesur gan eich Chromebook. Gall hyn fod yn wahanol i ddata'r darparwr.</translation>
 <translation id="3502426834823382181">gweld pob ap</translation>
 <translation id="3510890413042482857">Anfon <ph name="BEGIN_LINK1" />data olrhain perfformiad<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Diweddariad ChromeOS</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
 <translation id="3877066159641251281">Gwrando ar y cyfieithiad</translation>
 <translation id="3885327323343477505">Newid arbedwr sgrîn</translation>
+<translation id="3889914174935857450">Ailosod dyddiad</translation>
 <translation id="391412459402535266">Methu â phrofi'r ddyfais. Newid i'r modd gliniadur i brofi.</translation>
 <translation id="3916998944874125962">tynnu sgrinlun</translation>
 <translation id="3923184630988645767">Defnydd data</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nid oes unrhyw sganwyr ar gael</translation>
 <translation id="6232017090690406397">Batri</translation>
+<translation id="6234024205316847054">Dangos amlinelliadau</translation>
 <translation id="6235460611964961764">Ailosod defnydd data'n bwrpasol</translation>
 <translation id="6243280677745499710">Wedi'i osod ar hyn o bryd</translation>
 <translation id="6250316632541035980">cig moch ac wyau</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Dewiswch waith celf unigryw <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">rhowch yr allwedd</translation>
 <translation id="7119389851461848805">pŵer</translation>
+<translation id="7129287270910503851">Bydd eich defnydd data yn cael ei ailosod bob mis ar y diwrnod hwn</translation>
 <translation id="7130438335435247835">Enw Pwynt Mynediad (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Gweinydd enwau}zero{Gweinyddion enwau}two{Gweinyddion enwau}few{Gweinyddion enwau}many{Gweinyddion enwau}other{Gweinyddion enwau}}</translation>
 <translation id="7135814714616751706">Chwilio llwybrau byr</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">Manylion APN</translation>
 <translation id="8522687886059337719">Mae bellach gennych fynediad at <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bapurau wal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ac <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />arbedwr sgrîn<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Pwerir gan AI Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Mae'n bosib y bydd eich cludwr yn gofyn am gysylltu â'ch rhwydwaith. Cysylltwch â'ch cludwr am fanylion.</translation>
 <translation id="8576249514688522074">Heb ei gychwyn</translation>

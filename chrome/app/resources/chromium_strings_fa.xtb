@@ -294,7 +294,6 @@
 <translation id="6290827346642914212">‏نام‌گذاری نمایه Chromium</translation>
 <translation id="6295779123002464101">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد، بنابراین Chromium آن را مسدود کرده است.</translation>
 <translation id="6309712487085796862">‏Chromium درحال استفاده از دوربین شما است.</translation>
-<translation id="632355235628111698">‏Chromium این فایل را مسدود کرد زیرا خطرناک است</translation>
 <translation id="6327105987658262776">به‌روزرسانی دردسترس نیست.</translation>
 <translation id="6333502561965082103">‏عملیات دیگری در Chromium درحال انجام است. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="6334986366598267305">‏اکنون استفاده از Chromium با حساب Google شما و در رایانه‌های مشترک آسان‌تر شده است.</translation>
@@ -333,7 +332,6 @@
 <translation id="67706546131546258">‏Chromium توصیه می‌کند این فایل را اسکن کنید زیرا ممکن است خطرناک باشد.</translation>
 <translation id="6779406956731413166">‏ارائه ChromiumOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="6847869444787758381">‏Chromium می‌تواند، اگر گذرواژه‌هایتان در معرض خطر باشد، مطلعتان کند</translation>
-<translation id="6852530923436401894">‏Chromium این فایل را مسدود کرد زیرا حاوی بدافزار است</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (در Chromium کپی شد)</translation>
 <translation id="6873893289264747459">‏Chromium متوجه شده است که «<ph name="EXTENSION_NAME" />» حاوی بدافزار است</translation>
@@ -407,7 +405,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
 <translation id="8166782796394721554">‏روشن کردن محافظت بیشتر در موتور WebAssembly و جاوا اسکریپت Chromium</translation>
 <translation id="81770708095080097">‏این فایل خطرناک است، بنابراین Chromium آن را مسدود کرده است.</translation>
-<translation id="8213374284266571500">‏Chromium این فایل را مسدود کرد زیرا این نوع فایل خطرناک است</translation>
 <translation id="8248265253516264921">‏اگر تصویری توضیح مفیدی نداشته باشد، Chromium توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="8266560134891435528">‏چون به سیستم وارد نشده‌اید، Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="8286943863733751221">‏‫Chromium درباره سایت‌ها و بارگیری‌های ناامن <ph name="BEGIN_LINK" />به شما هشدار می‌دهد<ph name="END_LINK" /></translation>

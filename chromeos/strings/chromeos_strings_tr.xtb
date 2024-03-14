@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">tanım</translation>
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tonda <ph name="OFFICE_STYLE" /> ofis</translation>
+<translation id="3493187369049186498">Veriler, Chromebook'unuz tarafından ölçülür. Bu değer, sağlayıcı verilerinden farklı olabilir.</translation>
 <translation id="3502426834823382181">tüm uygulamaları göster</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izleme verilerini<ph name="END_LINK1" /> gönder</translation>
 <translation id="3517001332549868749">ChromeOS güncellemesi</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
 <translation id="3877066159641251281">Çeviriyi dinle</translation>
 <translation id="3885327323343477505">Ekran koruyucuyu değiştir</translation>
+<translation id="3889914174935857450">Tarihi sıfırlayın</translation>
 <translation id="391412459402535266">Cihaz test edilemiyor. Test etmek için dizüstü bilgisayar moduna geçin.</translation>
 <translation id="3916998944874125962">ekran görüntüsü al</translation>
 <translation id="3923184630988645767">Veri kullanımı</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Kullanılabilir tarayıcı yok</translation>
 <translation id="6232017090690406397">Pil</translation>
+<translation id="6234024205316847054">Anahatları göster</translation>
 <translation id="6235460611964961764">Veri kullanımını manuel olarak sıfırla</translation>
 <translation id="6243280677745499710">Şu anda ayarlı</translation>
 <translation id="6250316632541035980">pastırmalı yumurta</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> cihazlara özel poster seçin</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7119389851461848805">güç</translation>
+<translation id="7129287270910503851">Veri kullanımınız her ay bu günde sıfırlanır</translation>
 <translation id="7130438335435247835">Erişim noktası adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad sunucusu}other{Ad sunucuları}}</translation>
 <translation id="7135814714616751706">Kısayol araması yapın</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">APN ayrıntıları</translation>
 <translation id="8522687886059337719">Artık yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />duvar kağıtları<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ve <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran koruyucu<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> özelliklerine erişebilirsiniz</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google Yapay Zeka destekli</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatörünüz, ağlarına bağlanmak için bu seçeneği gerektirebilir. Ayrıntılı bilgiler için operatörünüzle iletişime geçin.</translation>
 <translation id="8576249514688522074">Başlatılmamış</translation>

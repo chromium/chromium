@@ -4419,7 +4419,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4354344420232759511">Os sites que visitar aparecem aqui</translation>
 <translation id="435527878592612277">Selecionar a sua foto</translation>
 <translation id="4356100841225547054">Desative o volume</translation>
-<translation id="4358302248024731679">Para melhorar o diagnóstico de problemas com o Bluetooth, os funcionários da Google podem incluir registos do Bluetooth adicionais nos respetivos relatórios de feedback. Quando esta opção está selecionada, o seu relatório inclui os registos btsnoop e HCI da sua sessão atual, limpos para remover o máximo de PII possível. O acesso a estes registos será restrito aos gestores do grupo de produtos do ChromeOS no Listnr. Os registos são removidos completamente após 90 dias.</translation>
 <translation id="4358361163731478742">Nenhuma app suporta a seleção do idioma da app</translation>
 <translation id="4358643842961018282">O dispositivo está atualizado</translation>
 <translation id="4359408040881008151">Instalada devido a extensão(ões) dependente(s).</translation>
@@ -4975,7 +4974,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="479536056609751218">Página Web, Apenas HTML</translation>
 <translation id="4796142525425001238">Restaurar sempre</translation>
 <translation id="4797314204379834752">Experimente utilizar grupos de separadores para organizar tarefas, para compras online e muito mais</translation>
-<translation id="4798236378408895261">Anexar <ph name="BEGIN_LINK" />registos do Bluetooth<ph name="END_LINK" /> (interno da Google)</translation>
 <translation id="479863874072008121">Gerir dispositivos</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4800839971935185386">Analise as atualizações do nome e do ícone</translation>

@@ -4417,7 +4417,6 @@
 <translation id="4354344420232759511">這裡會顯示你曾造訪的網站</translation>
 <translation id="435527878592612277">請選取你的相片</translation>
 <translation id="4356100841225547054">關閉音量</translation>
-<translation id="4358302248024731679">為了進一步診斷藍牙問題，Google 員工可在意見回饋報告額外納入藍牙記錄。勾選這個選項後，你的報告就會納入目前工作階段的 btsnoop 和 HCI 記錄。這些記錄會經過處理，盡可能移除個人識別資訊 (PII)，且只有 Listnr 的 Chrome OS 產品團隊主管可以存取。系統會在 90 天後清除這些記錄。</translation>
 <translation id="4358361163731478742">沒有任何應用程式支援應用程式語言選取功能</translation>
 <translation id="4358643842961018282">你的裝置已更新到最新版本</translation>
 <translation id="4359408040881008151">你已安裝相依的擴充功能，因此必須一併安裝這個擴充功能。</translation>
@@ -4973,7 +4972,6 @@
 <translation id="479536056609751218">僅限網頁的 HTML 部分</translation>
 <translation id="4796142525425001238">一律還原</translation>
 <translation id="4797314204379834752">試著為線上購物等使用分頁群組來規劃工作</translation>
-<translation id="4798236378408895261">附加<ph name="BEGIN_LINK" />藍牙記錄<ph name="END_LINK" /> (Google 內部使用)</translation>
 <translation id="479863874072008121">管理裝置</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4800839971935185386">查看名稱和圖示的異動</translation>
