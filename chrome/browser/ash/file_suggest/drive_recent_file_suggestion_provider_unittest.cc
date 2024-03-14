@@ -432,16 +432,16 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
                     actual_suggestions,
                     ElementsAre(
                         SuggestionInfo(root.Append("Modified last item 1"),
-                                       u"Modified · just now"),
+                                       u"Edited · just now"),
                         SuggestionInfo(root.Append("Viewed last item 1"),
-                                       u"You viewed · 7:30 AM"),
+                                       u"You opened · 7:30 AM"),
                         SuggestionInfo(
                             root.Append("Modified and viewed last item"),
-                            u"Modified · Dec 4"),
+                            u"Edited · Dec 4"),
                         SuggestionInfo(root.Append("Viewed last item 2"),
-                                       u"You viewed · Dec 3"),
+                                       u"You opened · Dec 3"),
                         SuggestionInfo(root.Append("Modified last item 2"),
-                                       u"Modified · Dec 2")));
+                                       u"Edited · Dec 2")));
 
                 result_waiter.Quit();
               })));
@@ -543,17 +543,17 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ModifyingUserInfo) {
                     actual_suggestions,
                     ElementsAre(
                         SuggestionInfo(root.Append("Modified last by user"),
-                                       u"You modified · just now"),
+                                       u"You edited · just now"),
                         SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You viewed · 12:30 PM"),
+                                       u"You opened · 12:30 PM"),
                         SuggestionInfo(
                             root.Append("Modified last by someone else"),
-                            u"Test User modified · Dec 4"),
+                            u"Test User edited · Dec 4"),
                         SuggestionInfo(root.Append("No modified by me time"),
-                                       u"Test User modified · Dec 4"),
+                                       u"Test User edited · Dec 4"),
                         SuggestionInfo(
                             root.Append("No last modifying user info"),
-                            u"Modified · Dec 2")));
+                            u"Edited · Dec 2")));
 
                 result_waiter.Quit();
               })));
@@ -699,11 +699,11 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedItems) {
                     ElementsAre(
                         SuggestionInfo(
                             root.Append("Modified last, viewed by user"),
-                            u"Test User modified · just now"),
+                            u"Test User edited · just now"),
                         SuggestionInfo(root.Append("Modified last by user"),
-                                       u"You modified · just now"),
+                                       u"You edited · just now"),
                         SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You viewed · just now"),
+                                       u"You opened · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
                             u"Shared with you · just now"),
@@ -841,11 +841,11 @@ TEST_F(DriveRecentFileSuggestionProviderWithSharingUserTest, SharedItems) {
                     ElementsAre(
                         SuggestionInfo(
                             root.Append("Modified last, viewed by user"),
-                            u"Test User modified · just now"),
+                            u"Test User edited · just now"),
                         SuggestionInfo(root.Append("Modified last by user"),
-                                       u"You modified · just now"),
+                                       u"You edited · just now"),
                         SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You viewed · just now"),
+                                       u"You opened · just now"),
                         SuggestionInfo(
                             root.Append("Modified last, not viewed by user"),
                             u"Shared with you · just now"),
@@ -952,14 +952,14 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
                     actual_suggestions,
                     ElementsAre(
                         SuggestionInfo(root.Append("Modified last item 1"),
-                                       u"Modified · just now"),
+                                       u"Edited · just now"),
                         SuggestionInfo(root.Append("Viewed last item 1"),
-                                       u"You viewed · Dec 4"),
+                                       u"You opened · Dec 4"),
                         SuggestionInfo(
                             root.Append("Modified and viewed last item"),
-                            u"Modified · Dec 4"),
+                            u"Edited · Dec 4"),
                         SuggestionInfo(root.Append("Viewed last item 2"),
-                                       u"You viewed · Dec 3")));
+                                       u"You opened · Dec 3")));
 
                 result_waiter.Quit();
               })));
@@ -1061,16 +1061,16 @@ TEST_F(DriveRecentFileSuggestionProviderTest, TimestampsInFuture) {
                     ElementsAre(
                         SuggestionInfo(
                             root.Append("No last modifying user info"),
-                            u"Modified · Dec 8"),
+                            u"Edited · Dec 8"),
                         SuggestionInfo(
                             root.Append("Modified last by someone else"),
-                            u"Test User modified · Dec 7"),
+                            u"Test User edited · Dec 7"),
                         SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You viewed · Dec 7"),
+                                       u"You opened · Dec 7"),
                         SuggestionInfo(root.Append("Modified last by user"),
-                                       u"You viewed · 2:30 PM"),
+                                       u"You opened · 2:30 PM"),
                         SuggestionInfo(root.Append("No modified by me time"),
-                                       u"You viewed · just now")));
+                                       u"You opened · just now")));
                 result_waiter.Quit();
               })));
   result_waiter.Run();
@@ -1205,12 +1205,12 @@ TEST_F(DriveRecentFileSuggestionProviderTest, LastViewedSearchFailed) {
                     actual_suggestions,
                     ElementsAre(
                         SuggestionInfo(root.Append("Modified last item 1"),
-                                       u"Modified · just now"),
+                                       u"Edited · just now"),
                         SuggestionInfo(
                             root.Append("Modified and viewed last item"),
-                            u"Modified · Dec 4"),
+                            u"Edited · Dec 4"),
                         SuggestionInfo(root.Append("Modified last item 2"),
-                                       u"Modified · Dec 2"),
+                                       u"Edited · Dec 2"),
                         SuggestionInfo(
                             root.Append("Shared with sharing user info"),
                             u"Shared with you · Dec 2")));
@@ -1313,12 +1313,12 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ModifiedTimeSearchFailed) {
                     actual_suggestions,
                     ElementsAre(
                         SuggestionInfo(root.Append("Viewed last item 1"),
-                                       u"You viewed · 1:30 AM"),
+                                       u"You opened · 1:30 AM"),
                         SuggestionInfo(
                             root.Append("Modified and viewed last item"),
-                            u"Modified · Dec 4"),
+                            u"Edited · Dec 4"),
                         SuggestionInfo(root.Append("Viewed last item 2"),
-                                       u"You viewed · Dec 3"),
+                                       u"You opened · Dec 3"),
                         SuggestionInfo(
                             root.Append("Shared with sharing user info"),
                             u"Shared with you · Dec 2")));
@@ -1420,12 +1420,12 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SharedWithMeSearchFailed) {
                     actual_suggestions,
                     ElementsAre(
                         SuggestionInfo(root.Append("Viewed last item"),
-                                       u"You viewed · 1:30 AM"),
+                                       u"You opened · 1:30 AM"),
                         SuggestionInfo(root.Append("Modified last item"),
-                                       u"Modified · Dec 4"),
+                                       u"Edited · Dec 4"),
                         SuggestionInfo(
                             root.Append("Modified and viewed last item"),
-                            u"Modified · Dec 3")));
+                            u"Edited · Dec 3")));
 
                 result_waiter.Quit();
               })));
@@ -1522,9 +1522,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialRequests) {
             EXPECT_THAT(
                 actual_suggestions,
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item"),
-                                           u"You viewed · just now"),
+                                           u"You opened · just now"),
                             SuggestionInfo(root.Append("Modified last item"),
-                                           u"Modified · Dec 4"),
+                                           u"Edited · Dec 4"),
                             SuggestionInfo(root.Append("Shared"),
                                            u"Shared with you · Dec 2")));
 
@@ -1549,9 +1549,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialRequests) {
             EXPECT_THAT(
                 actual_suggestions,
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item"),
-                                           u"You viewed · just now"),
+                                           u"You opened · just now"),
                             SuggestionInfo(root.Append("Modified last item"),
-                                           u"Modified · Dec 4"),
+                                           u"Edited · Dec 4"),
                             SuggestionInfo(root.Append("Shared"),
                                            u"Shared with you · Dec 2")));
 
@@ -1695,9 +1695,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
             EXPECT_THAT(
                 actual_suggestions,
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item 1"),
-                                           u"You viewed · just now"),
+                                           u"You opened · just now"),
                             SuggestionInfo(root.Append("Modified last item 1"),
-                                           u"Modified · Dec 4"),
+                                           u"Edited · Dec 4"),
                             SuggestionInfo(root.Append("Shared 1"),
                                            u"Shared with you · Dec 2")));
 
@@ -1730,9 +1730,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest,
             EXPECT_THAT(
                 actual_suggestions,
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item 2"),
-                                           u"You viewed · just now"),
+                                           u"You opened · just now"),
                             SuggestionInfo(root.Append("Modified last item 2"),
-                                           u"Modified · Dec 3"),
+                                           u"Edited · Dec 3"),
                             SuggestionInfo(root.Append("Shared 2"),
                                            u"Shared with you · Dec 2")));
 
@@ -1875,9 +1875,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearchesAfterRemount) {
             EXPECT_THAT(
                 actual_suggestions,
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item 1"),
-                                           u"You viewed · just now"),
+                                           u"You opened · just now"),
                             SuggestionInfo(root.Append("Modified last item 1"),
-                                           u"Modified · Dec 4"),
+                                           u"Edited · Dec 4"),
                             SuggestionInfo(root.Append("Shared 1"),
                                            u"Shared with you · Dec 2")));
 
@@ -1906,9 +1906,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest, SequentialSearchesAfterRemount) {
             EXPECT_THAT(
                 actual_suggestions,
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item 2"),
-                                           u"You viewed · just now"),
+                                           u"You opened · just now"),
                             SuggestionInfo(root.Append("Modified last item 2"),
-                                           u"Modified · Dec 3"),
+                                           u"Edited · Dec 3"),
                             SuggestionInfo(root.Append("Shared 2"),
                                            u"Shared with you · Dec 2")));
 
@@ -2005,9 +2005,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
             EXPECT_THAT(
                 actual_suggestions,
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item"),
-                                           u"You viewed · just now"),
+                                           u"You opened · just now"),
                             SuggestionInfo(root.Append("Modified last item"),
-                                           u"Modified · Dec 4"),
+                                           u"Edited · Dec 4"),
                             SuggestionInfo(root.Append("Shared"),
                                            u"Shared with you · Dec 2")));
 
@@ -2030,9 +2030,9 @@ TEST_F(DriveRecentFileSuggestionProviderTest, ConcurrentRequests) {
             EXPECT_THAT(
                 actual_suggestions,
                 ElementsAre(SuggestionInfo(root.Append("Viewed last item"),
-                                           u"You viewed · just now"),
+                                           u"You opened · just now"),
                             SuggestionInfo(root.Append("Modified last item"),
-                                           u"Modified · Dec 4"),
+                                           u"Edited · Dec 4"),
                             SuggestionInfo(root.Append("Shared"),
                                            u"Shared with you · Dec 2")));
 

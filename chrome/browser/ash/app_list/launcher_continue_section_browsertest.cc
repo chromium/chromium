@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveFiles) {
                                                  u"Test File 3"};
   EXPECT_EQ(expected_titles, GetContinueTaskTitles(continue_tasks));
   std::vector<std::u16string> expected_descriptions = {
-      u"You viewed · Feb 26", u"Test User 2 modified · Feb 23",
+      u"You opened · Feb 26", u"Test User 2 edited · Feb 23",
       u"Test User 3 shared · 10:00 AM"};
   EXPECT_EQ(expected_descriptions, GetContinueTaskDescriptions(continue_tasks));
 
@@ -502,13 +502,13 @@ IN_PROC_BROWSER_TEST_P(LauncherContinueSectionTest, ShowDriveAndLocalFiles) {
 
   std::vector<std::u16string> expected_descriptions;
   if (MixLocalAndDriveFiles()) {
-    expected_descriptions = {u"You viewed · just now", u"You viewed · Feb 25",
-                             u"Test User 2 modified · Feb 23",
+    expected_descriptions = {u"You opened · just now", u"You opened · Feb 25",
+                             u"Test User 2 edited · Feb 23",
                              u"Test User 3 shared · 10:00 AM"};
   } else {
     expected_descriptions = {
-        u"You viewed · just now", u"Test User 2 modified · Feb 23",
-        u"Test User 3 shared · 10:00 AM", u"You viewed · Feb 25"};
+        u"You opened · just now", u"Test User 2 edited · Feb 23",
+        u"Test User 3 shared · 10:00 AM", u"You opened · Feb 25"};
   }
   EXPECT_EQ(expected_descriptions, GetContinueTaskDescriptions(continue_tasks));
 
