@@ -19,9 +19,10 @@ namespace video_effects {
 
 VideoEffectsServiceImpl::VideoEffectsServiceImpl(
     mojo::PendingReceiver<mojom::VideoEffectsService> receiver,
-    std::unique_ptr<viz::Gpu> viz_gpu)
-    : receiver_(this, std::move(receiver)), viz_gpu_(std::move(viz_gpu)) {
-  CHECK(viz_gpu_);
+    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider)
+    : receiver_(this, std::move(receiver)),
+      gpu_channel_host_provider_(std::move(gpu_channel_host_provider)) {
+  CHECK(gpu_channel_host_provider_);
 }
 
 VideoEffectsServiceImpl::~VideoEffectsServiceImpl() = default;

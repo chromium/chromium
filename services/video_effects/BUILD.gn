@@ -16,7 +16,10 @@ source_set("service") {
     "video_effects_service_impl.cc",
   ]
 
-  visibility = [ "//content/utility:utility" ]
+  visibility = [
+    "//content/utility:utility",
+    "//services/video_effects:tests",
+  ]
 
   public_deps = [
     "//services/video_effects/public/mojom:mojom",
@@ -30,4 +33,20 @@ buildflag_header("buildflags") {
   header_dir = "services/video_effects/public/cpp"
 
   flags = [ "ENABLE_VIDEO_EFFECTS=$enable_video_effects" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [
+    "video_effects_processor_impl_unittest.cc",
+    "video_effects_service_impl_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//media/capture/mojom:video_effects_manager",
+    "//services/video_effects:service",
+    "//testing/gtest",
+  ]
 }

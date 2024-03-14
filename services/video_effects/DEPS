@@ -1,4 +1,6 @@
 include_rules = [
+  "+gpu/command_buffer/common",
+  "+gpu/ipc/client",
   "+media/base",
   "+media/capture/mojom",
   "+services/viz/public/cpp/gpu",
