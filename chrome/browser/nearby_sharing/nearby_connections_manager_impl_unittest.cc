@@ -16,6 +16,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
+#include "chrome/services/sharing/nearby/common/nearby_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
@@ -1722,6 +1723,7 @@ TEST_F(NearbyConnectionsManagerImplTest, ClearIncomingPayloads) {
 using MediumsTestParam = std::tuple<PowerLevel,
                                     DataUsage,
                                     net::NetworkChangeNotifier::ConnectionType,
+                                    bool,
                                     bool>;
 class NearbyConnectionsManagerImplTestMediums
     : public NearbyConnectionsManagerImplTest,
@@ -1734,9 +1736,11 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
   net::NetworkChangeNotifier::ConnectionType connection_type =
       std::get<2>(param);
   bool is_webrtc_enabled = std::get<3>(GetParam());
+  bool is_ble_v2_enabled = std::get<4>(GetParam());
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatureState(features::kNearbySharingWebRtc,
-                                            is_webrtc_enabled);
+  scoped_feature_list_.InitWithFeatureStates(
+      {{features::kNearbySharingWebRtc, is_webrtc_enabled},
+       {features::kEnableNearbyBleV2, is_ble_v2_enabled}});
 
   network_notifier_->SetConnectionType(connection_type);
   network_notifier_->SetUseDefaultConnectionCostImplementation(true);
@@ -1748,11 +1752,12 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
         net::NetworkChangeNotifier::CONNECTION_COST_METERED));
 
   bool is_high_power = power_level == PowerLevel::kHighPower;
+  bool use_ble = is_ble_v2_enabled || !is_high_power;
 
   // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/is_high_power,
-      /*ble=*/!is_high_power,
+      /*ble=*/use_ble,
       /*web_rtc=*/should_use_web_rtc_,
       /*wifi_lan=*/false);
 
@@ -1776,9 +1781,12 @@ TEST_P(NearbyConnectionsManagerImplTestMediums, StartAdvertising_Options) {
                     NearbyConnectionsMojom::StartAdvertisingCallback callback) {
         EXPECT_EQ(is_high_power, options->auto_upgrade_bandwidth);
         EXPECT_EQ(expected_mediums, options->allowed_mediums);
-        EXPECT_EQ(!is_high_power, options->enable_bluetooth_listening);
+        EXPECT_EQ(use_ble, options->enable_bluetooth_listening);
         EXPECT_EQ(is_high_power && should_use_web_rtc_,
                   options->enable_webrtc_listening);
+        // BLE v2 expects this field to be null when in high power mode.
+        EXPECT_EQ(!is_ble_v2_enabled || !is_high_power,
+                  options->fast_advertisement_service_uuid.has_value());
         std::move(callback).Run(Status::kSuccess);
       });
 
@@ -1800,6 +1808,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(net::NetworkChangeNotifier::CONNECTION_NONE,
                         net::NetworkChangeNotifier::CONNECTION_WIFI,
                         net::NetworkChangeNotifier::CONNECTION_3G),
+        testing::Bool(),
         testing::Bool()));
 /******************************************************************************/
 // End: NearbyConnectionsManagerImplTestMediums

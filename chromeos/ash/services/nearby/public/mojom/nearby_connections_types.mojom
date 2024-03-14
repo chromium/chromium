@@ -156,9 +156,9 @@ struct AdvertisingOptions {
   // incoming Web RTC connections while advertising.
   bool enable_webrtc_listening = false;
   // Optional. If set, BLE advertisements will be in their "fast advertisement"
-  // form, use this UUID, and non-connectable; if empty, BLE advertisements
+  // form, use this UUID, and non-connectable; if null, BLE advertisements
   // will otherwise be normal and connectable.
-  bluetooth.mojom.UUID fast_advertisement_service_uuid;
+  bluetooth.mojom.UUID? fast_advertisement_service_uuid;
 };
 
 // Options for a call to NearbyConnections::StartDiscovery().

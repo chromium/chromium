@@ -3,6 +3,12 @@ include_rules = [
     "+third_party/nearby",
 ]
 specific_include_rules = {
+  "nearby_connections_manager_impl.cc": [
+    "+chrome/services/sharing/nearby/common/nearby_features.h",
+  ],
+  "nearby_connections_manager_impl_unittest.cc": [
+    "+chrome/services/sharing/nearby/common/nearby_features.h",
+  ],
   "nearby_sharing_service_impl_unittest.cc": [
     "+chrome/services/sharing/nearby/decoder/advertisement_decoder.h",
   ]

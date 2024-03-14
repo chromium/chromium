@@ -5304,6 +5304,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/settings/search/mojom",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",
+      "//chrome/services/sharing/nearby/common",
       "//chrome/services/sharing/public/cpp",
       "//chrome/services/sharing/public/proto",
       "//chrome/services/speech:lib",

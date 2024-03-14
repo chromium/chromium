@@ -14,6 +14,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chrome/services/sharing/nearby/common/nearby_features.h"
 #include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
@@ -190,7 +191,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   }
 
   bool is_high_power = power_level == PowerLevel::kHighPower;
-  bool use_ble = !is_high_power;
+  bool use_ble = features::IsNearbyBleV2Enabled() || !is_high_power;
   auto allowed_mediums = MediumSelection::New(
       /*bluetooth=*/is_high_power, /*ble=*/use_ble,
       // Using kHighPower here rather than power_level to signal that power
@@ -202,7 +203,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
           kIsWifiLanAdvertisingSupported);
   CD_LOG(VERBOSE, Feature::NC)
       << __func__ << ": " << "is_high_power=" << (is_high_power ? "yes" : "no")
-      << ", data_usage=" << data_usage
+      << "use_ble=" << (use_ble ? "yes" : "no") << ", data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
 
   mojo::PendingRemote<ConnectionLifecycleListener> lifecycle_listener;
@@ -218,17 +219,28 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   // because high-visibility already leaks the device name.
   bool auto_upgrade_bandwidth = is_high_power;
 
+  // We pass in the Fast Advertisement service UUID when we want Nearby
+  // Connections to advertise a Fast Advertisement (AKA low-power, contacts
+  // mode advertising). For BLE v1, this is always the case. When BLE v2 is
+  // enabled, we only pass in the UUID when in low-power mode.
+  // TODO (b/327451380): Replace this with a bool in the NC layer.
+  std::optional<::device::BluetoothUUID> fast_advertisement_service_uuid =
+      features::IsNearbyBleV2Enabled() && is_high_power
+          ? std::nullopt
+          : std::make_optional(
+                device::BluetoothUUID(kFastAdvertisementServiceUuid));
+
   incoming_connection_listener_ = listener;
   nearby_connections->StartAdvertising(
       service_id_, endpoint_info,
-      AdvertisingOptions::New(
-          kStrategy, std::move(allowed_mediums), auto_upgrade_bandwidth,
-          /*enforce_topology_constraints=*/true,
-          /*enable_bluetooth_listening=*/use_ble,
-          /*enable_webrtc_listening=*/
-          ShouldEnableWebRtc(data_usage, power_level),
-          /*fast_advertisement_service_uuid=*/
-          device::BluetoothUUID(kFastAdvertisementServiceUuid)),
+      AdvertisingOptions::New(kStrategy, std::move(allowed_mediums),
+                              auto_upgrade_bandwidth,
+                              /*enforce_topology_constraints=*/true,
+                              /*enable_bluetooth_listening=*/use_ble,
+                              /*enable_webrtc_listening=*/
+                              ShouldEnableWebRtc(data_usage, power_level),
+                              /*fast_advertisement_service_uuid=*/
+                              fast_advertisement_service_uuid),
       std::move(lifecycle_listener), std::move(callback));
 }
 

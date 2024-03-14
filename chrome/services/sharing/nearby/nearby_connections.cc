@@ -221,7 +221,9 @@ void NearbyConnections::StartAdvertising(
       .enable_bluetooth_listening = options->enable_bluetooth_listening,
       .enable_webrtc_listening = options->enable_webrtc_listening,
       .fast_advertisement_service_uuid =
-          options->fast_advertisement_service_uuid.canonical_value()};
+          options->fast_advertisement_service_uuid.has_value()
+              ? options->fast_advertisement_service_uuid->canonical_value()
+              : std::string()};
 
   advertising_options.strategy = StrategyFromMojom(options->strategy);
   advertising_options.allowed =
