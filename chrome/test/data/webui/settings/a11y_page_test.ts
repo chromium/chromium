@@ -16,11 +16,15 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {AccessibilityBrowserProxy, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
+import type {AccessibilityBrowserProxy, LanguageHelper, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
 import {AccessibilityBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {getFakeLanguagePrefs} from './fake_language_settings_private.js';
+import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
+import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+
 
 class TestAccessibilityBrowserProxy extends TestBrowserProxy implements
     AccessibilityBrowserProxy {
@@ -64,6 +68,7 @@ suite('A11yPage', () => {
   let a11yPage: SettingsA11yPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let browserProxy: TestAccessibilityBrowserProxy;
+  let languageHelper: LanguageHelper;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -73,19 +78,35 @@ suite('A11yPage', () => {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    a11yPage = document.createElement('settings-a11y-page');
     settingsPrefs = document.createElement('settings-prefs');
+    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
+    settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
 
-    a11yPage.prefs = settingsPrefs.prefs;
-    document.body.appendChild(a11yPage);
+    return CrSettingsPrefs.initialized.then(function() {
+      // Set up test browser proxy.
+      browserProxy = new TestAccessibilityBrowserProxy();
+      AccessibilityBrowserProxyImpl.setInstance(browserProxy);
 
-    // Set up test browser proxy.
-    browserProxy = new TestAccessibilityBrowserProxy();
-    AccessibilityBrowserProxyImpl.setInstance(browserProxy);
+      // Set up languages helper.
+      const settingsLanguages = document.createElement('settings-languages');
+      settingsLanguages.prefs = settingsPrefs.prefs;
+      fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
+      document.body.appendChild(settingsLanguages);
 
-    flush();
+      a11yPage = document.createElement('settings-a11y-page');
+      a11yPage.prefs = settingsPrefs.prefs;
+      fakeDataBind(settingsPrefs, a11yPage, 'prefs');
+
+      a11yPage.languageHelper = settingsLanguages.languageHelper;
+      fakeDataBind(settingsLanguages, a11yPage, 'language-helper');
+
+      document.body.appendChild(a11yPage);
+      flush();
+
+      languageHelper = a11yPage.languageHelper;
+      return languageHelper.whenReady();
+    });
   });
 
   // <if expr="is_win or is_linux or is_macosx">

@@ -240,6 +240,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "MediaNotificationService",
 #else
     "LiveCaptionController",
+    "LiveTranslateController",
 #endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "AlarmManager",
     "BackgroundContentsService",
