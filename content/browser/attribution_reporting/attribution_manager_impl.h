@@ -260,7 +260,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   void OnUserVisibleTaskStarted();
   void OnUserVisibleTaskComplete();
 
-  void OnClearDataComplete();
+  void OnClearDataComplete(bool was_user_visible);
 
   void PrepareNextOsEvent();
   void ProcessNextOsEvent(const std::vector<bool>& is_debug_key_allowed);

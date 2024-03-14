@@ -985,18 +985,19 @@ void AttributionManagerImpl::ClearData(
                                  delete_rate_limit_data, std::move(barrier));
   }
 
-  // TODO(apaseltiner): It's not necessarily true that this deletion is user
-  // visible, as a site can initiate deletion via the Clear-Site-Data header. We
-  // could inspect `delete_rate_limit_data` to determine this, as its value is
-  // true only for user-initiated deletions, not site-initiated ones.
-  OnUserVisibleTaskStarted();
+  // Rate-limit data is only deleted when initiated by a user, not a site via
+  // the Clear-Site-Data header.
+  if (delete_rate_limit_data) {
+    OnUserVisibleTaskStarted();
+  }
 
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter),
                 delete_rate_limit_data)
       .Then(std::move(done).Then(
           base::BindOnce(&AttributionManagerImpl::OnClearDataComplete,
-                         weak_factory_.GetWeakPtr())));
+                         weak_factory_.GetWeakPtr(),
+                         /*was_user_visible=*/delete_rate_limit_data)));
 }
 
 void AttributionManagerImpl::OnUserVisibleTaskStarted() {
@@ -1015,8 +1016,10 @@ void AttributionManagerImpl::OnUserVisibleTaskComplete() {
   }
 }
 
-void AttributionManagerImpl::OnClearDataComplete() {
-  OnUserVisibleTaskComplete();
+void AttributionManagerImpl::OnClearDataComplete(bool was_user_visible) {
+  if (was_user_visible) {
+    OnUserVisibleTaskComplete();
+  }
   NotifySourcesChanged();
   NotifyReportsChanged();
 }
@@ -1046,9 +1049,9 @@ void AttributionManagerImpl::RemoveAttributionDataByDataKey(
 
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteByDataKey)
       .WithArgs(data_key)
-      .Then(std::move(callback).Then(
-          base::BindOnce(&AttributionManagerImpl::OnClearDataComplete,
-                         weak_factory_.GetWeakPtr())));
+      .Then(std::move(callback).Then(base::BindOnce(
+          &AttributionManagerImpl::OnClearDataComplete,
+          weak_factory_.GetWeakPtr(), /*was_user_visible=*/true)));
 }
 
 void AttributionManagerImpl::GetReportsToSend() {
