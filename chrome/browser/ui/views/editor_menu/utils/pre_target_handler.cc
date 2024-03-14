@@ -222,11 +222,12 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
         view_->RequestFocus();
         key_event->StopPropagation();
 
-        // The context menu will be dismissed when the Editor Menu requests
-        // focus. The `active_menu` will be nullptr.
         active_menu = views::MenuController::GetActiveInstance();
+
+        // When the Editor Menu requests focus, the context menu will
+        // eventually be dismissed. In this case, we skip reopening sub-mdenu.
         if (card_type_ == CardType::kEditorMenu) {
-          CHECK(!active_menu);
+          return;
         }
 
         // Reopen the sub-menu owned by |parent| to clear the currently selected
