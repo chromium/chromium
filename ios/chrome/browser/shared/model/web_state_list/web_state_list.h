@@ -19,7 +19,7 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/325435946): Remove this once all use cases for
+// TODO(crbug.com/328831758): Remove this once all use cases for
 // MoveWebStateWrapperAt have landed and covered by tests.
 #include "base/gtest_prod_util.h"
 
@@ -27,7 +27,7 @@ class RemovingIndexes;
 class TabGroup;
 class WebStateListDelegate;
 class WebStateListObserver;
-// TODO(crbug.com/325435946): Remove this once all use cases for
+// TODO(crbug.com/328831758): Remove this once all use cases for
 // MoveWebStateWrapperAt have landed and covered by tests.
 class WebStateListTest;
 
@@ -373,6 +373,9 @@ class WebStateList {
       const std::set<int>& indices,
       const tab_groups::TabGroupVisualData& visual_data);
 
+  // Moves the set of WebStates at `indices` at the end of the given tab group.
+  void MoveToGroup(const std::set<int>& indices, const TabGroup* group);
+
   // Adds an observer to the model.
   void AddObserver(WebStateListObserver* observer);
 
@@ -464,6 +467,11 @@ class WebStateList {
       const std::set<int>& indices,
       const tab_groups::TabGroupVisualData& visual_data);
 
+  // Moves the set of WebStates at `indices` at the end of the given tab group.
+  //
+  // Assumes that the WebStateList is locked.
+  void MoveToGroupImpl(const std::set<int>& indices, const TabGroup* group);
+
   // Sets the opener of any WebState that reference the WebState at the
   // specified index to null.
   void ClearOpenersReferencing(int index);
@@ -543,48 +551,14 @@ class WebStateList {
   // Weak pointer factory.
   base::WeakPtrFactory<WebStateList> weak_factory_{this};
 
-  // TODO(crbug.com/325435946): Remove this once all use cases for
+  // TODO(crbug.com/328831758): Remove this once all use cases for
   // MoveWebStateWrapperAt have landed and covered by tests.
+  FRIEND_TEST_ALL_PREFIXES(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup);
   FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveWebStateWrapperAt_NoMove_GoToLeftGroup);
+                           MoveToGroup_NoMove_GoToRightGroup_OldGroupEmpty);
   FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveWebStateWrapperAt_NoMove_GoToRightGroup);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebStateListTest,
-      MoveWebStateWrapperAt_NoMove_GoToLeftGroup_OldGroupEmpty);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebStateListTest,
-      MoveWebStateWrapperAt_NoMove_GoToRightGroup_OldGroupEmpty);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebStateListTest,
-      MoveWebStateWrapperAt_NoMove_GoToLeftGroup_OldGroupNonEmpty);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebStateListTest,
-      MoveWebStateWrapperAt_NoMove_GoToRightGroup_OldGroupNonEmpty);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveWebStateWrapperAt_NoMove_PinnedToGroup);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveWebStateWrapperAt_Move_PinnedToGroup);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveWebStateWrapperAt_MoveToLeft_NoGroupToGroup);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveWebStateWrapperAt_MoveToRight_NoGroupToGroup);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveWebStateWrapperAt_MoveToLeft_GroupToGroup);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveWebStateWrapperAt_MoveToRight_GroupToGroup);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebStateListTest,
-      MoveWebStateWrapperAt_MoveToLeft_GroupToGroup_NoEmptyGroup);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebStateListTest,
-      MoveWebStateWrapperAt_MoveToRight_GroupToGroup_NoEmptyGroup);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebStateListTest,
-      MoveWebStateWrapperAt_MoveToLeft_Ungrouped_UpdatesGroupsInBetween);
-  FRIEND_TEST_ALL_PREFIXES(
-      WebStateListTest,
-      MoveWebStateWrapperAt_MoveToRight_Ungrouped_UpdatesGroupsInBetween);
+                           MoveToGroup_NoMove_GoToRightGroup_OldGroupNonEmpty);
+  FRIEND_TEST_ALL_PREFIXES(WebStateListTest, MoveToGroup_NoMove_PinnedToGroup);
 };
 
 // Helper function that closes all WebStates in `web_state_list`. The operation

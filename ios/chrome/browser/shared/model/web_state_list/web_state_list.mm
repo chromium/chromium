@@ -390,6 +390,13 @@ const TabGroup* WebStateList::CreateGroup(
   return CreateGroupImpl(indices, visual_data);
 }
 
+void WebStateList::MoveToGroup(const std::set<int>& indices,
+                               const TabGroup* group) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+  MoveToGroupImpl(indices, group);
+}
+
 base::AutoReset<bool> WebStateList::LockForMutation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!locked_) << "WebStateList is not re-entrant; it is an error to try to "
@@ -788,36 +795,52 @@ const TabGroup* WebStateList::CreateGroupImpl(
   const TabGroup* new_group = group.get();
   groups_.emplace(std::move(group), Range(pivot_index, 0));
 
-  // Split indices between WebStates left of `pivot_index` moving to their right
-  // and WebStates right of `pivot_index` moving to their left. This is to keep
-  // indices valid during the moves.
-  std::vector<int> before_pivot;
-  std::vector<int> after_pivot;
+  // Move the WebStates to the group.
+  MoveToGroupImpl(indices, new_group);
+
+  return new_group;
+}
+
+void WebStateList::MoveToGroupImpl(const std::set<int>& indices,
+                                   const TabGroup* group) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
+  DCHECK(group);
+  DCHECK(ContainsGroup(group));
+  DCHECK(!indices.empty());
+
+  Range group_range = GetWebStates(group);
+
+  // Split indices between WebStates left of the group moving to their right and
+  // WebStates right of the group moving to their left. This is to keep indices
+  // valid during the moves.
+  std::vector<int> before_group;
+  std::vector<int> after_group;
   for (const auto& index : indices) {
-    if (index < pivot_index) {
-      before_pivot.push_back(index);
+    if (index < group_range.start()) {
+      before_group.push_back(index);
+    } else if (index >= group_range.end()) {
+      after_group.push_back(index);
     } else {
-      after_pivot.push_back(index);
+      // Indices already in the group range are not updated.
     }
   }
 
-  // Iterate over the WebStates on the left of the pivot.
-  // Reverse `before_pivot` to start from the rightmost, to keep indices valid.
-  std::reverse(before_pivot.begin(), before_pivot.end());
-  int to_index = pivot_index - 1;
-  for (int index : before_pivot) {
-    MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, new_group);
+  // Iterate over the WebStates on the left of the group.
+  // Reverse `before_group` to start from the rightmost, to keep indices valid.
+  std::reverse(before_group.begin(), before_group.end());
+  int to_index = group_range.end() - 1;
+  for (int index : before_group) {
+    MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, group);
     --to_index;
   }
 
-  // Iterate over the WebStates on the right of the pivot.
-  to_index = pivot_index;
-  for (int index : after_pivot) {
-    MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, new_group);
+  // Iterate over the WebStates on the right of the group.
+  to_index = group_range.end();
+  for (int index : after_group) {
+    MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, group);
     ++to_index;
   }
-
-  return new_group;
 }
 
 void WebStateList::AddObserver(WebStateListObserver* observer) {
