@@ -8,7 +8,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './lens_overlay_app.html.js';
+import {getTemplate} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 
