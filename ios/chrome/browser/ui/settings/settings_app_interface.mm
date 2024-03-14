@@ -89,9 +89,14 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   return viewController.presentedViewController.keyCommands != nil;
 }
 
-+ (void)overrideSearchEngineURL:(NSString*)searchEngineURL {
++ (void)overrideSearchEngineWithURL:(NSString*)searchEngineURL {
   TemplateURLData templateURLData;
-  templateURLData.SetURL(base::SysNSStringToUTF8(searchEngineURL));
+  templateURLData.SetShortName(u"testSearchEngine");
+  templateURLData.SetKeyword(u"testSearchEngine");
+  GURL searchableURL(base::SysNSStringToUTF8(searchEngineURL));
+  templateURLData.SetURL(searchableURL.possibly_invalid_spec());
+  templateURLData.favicon_url = TemplateURL::GenerateFaviconURL(searchableURL);
+  templateURLData.last_visited = base::Time::Now();
 
   auto defaultSearchProvider = std::make_unique<TemplateURL>(templateURLData);
   TemplateURL* defaultSearchProviderPtr = defaultSearchProvider.get();

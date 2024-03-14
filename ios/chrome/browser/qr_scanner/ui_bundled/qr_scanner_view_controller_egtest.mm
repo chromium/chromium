@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/qr_scanner/ui_bundled/qr_scanner_app_interface.h"
 #import "ios/chrome/browser/ui/scanner/camera_state.h"
+#import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -225,12 +226,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   NSString* templateURL =
       base::SysUTF8ToNSString(_testQuery.spec() + kTestQueryURLParams);
-  [QRScannerAppInterface overrideSearchEngine:templateURL];
+  [SettingsAppInterface overrideSearchEngineWithURL:templateURL];
 }
 
 - (void)tearDown {
   [super tearDown];
-  [QRScannerAppInterface resetSearchEngine];
+  [SettingsAppInterface resetSearchEngine];
   _camera_controller_swizzler.reset();
 }
 

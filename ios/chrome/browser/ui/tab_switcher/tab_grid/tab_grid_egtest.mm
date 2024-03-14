@@ -2509,7 +2509,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   GURL searchEngineURL = web::test::HttpServer::MakeUrl(kSearchEngineURL);
   NSString* searchEngineURLString =
       base::SysUTF8ToNSString(searchEngineURL.spec());
-  [SettingsAppInterface overrideSearchEngineURL:searchEngineURLString];
+  [SettingsAppInterface overrideSearchEngineWithURL:searchEngineURLString];
 
   // Enter tab grid search mode & perform a search.
   [ChromeEarlGreyUI openTabGrid];
@@ -2548,7 +2548,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   GURL searchEngineURL = web::test::HttpServer::MakeUrl(kSearchEngineURL);
   NSString* searchEngineURLString =
       base::SysUTF8ToNSString(searchEngineURL.spec());
-  [SettingsAppInterface overrideSearchEngineURL:searchEngineURLString];
+  [SettingsAppInterface overrideSearchEngineWithURL:searchEngineURLString];
 
   // Enter tab grid search mode & perform a search.
   [ChromeEarlGreyUI openTabGrid];

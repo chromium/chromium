@@ -30,14 +30,6 @@
 // should not be called directly.
 + (id)cameraControllerSwizzleBlockWithMock:(id)cameraControllerMock;
 
-#pragma mark Search engine override
-
-// Overrides the default search engine with the `templateURL`.
-+ (void)overrideSearchEngine:(NSString*)templateURL;
-
-// Restored the Google default search engine.
-+ (void)resetSearchEngine;
-
 #pragma mark Mocking and Expectations
 
 // Creates a new CameraController mock with `authorizationStatus` set.
