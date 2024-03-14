@@ -7,6 +7,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +18,13 @@
 namespace plus_addresses {
 
 namespace {
+
+// Matches a std::pair<std::string, std::unique_ptr<some-proto>> against a given
+// (std::string key, (some-proto) value) pair, comparing protos as strings.
+MATCHER_P2(KeyAndProto, key, value, "") {
+  return arg.first == key &&
+         arg.second->SerializeAsString() == value.SerializeAsString();
+}
 
 class PlusAddressTableTest : public testing::Test {
  protected:
@@ -50,7 +61,91 @@ TEST_F(PlusAddressTableTest, ClearPlusProfiles) {
   ASSERT_TRUE(table_.AddPlusProfile(test::GetPlusProfile2()));
   ASSERT_EQ(table_.GetPlusProfiles().size(), 2u);
   EXPECT_TRUE(table_.ClearPlusProfiles());
-  EXPECT_TRUE(table_.GetPlusProfiles().empty());
+  EXPECT_THAT(table_.GetPlusProfiles(), testing::IsEmpty());
+}
+
+// Tests that when no sync metadata is persisted, `GetAllSyncMetadata()` returns
+// the default model type state without any entity metadata.
+TEST_F(PlusAddressTableTest, SyncMetadataStore_NoData) {
+  syncer::MetadataBatch metadata;
+  EXPECT_TRUE(table_.GetAllSyncMetadata(syncer::PLUS_ADDRESS, metadata));
+  EXPECT_EQ(metadata.GetModelTypeState().SerializeAsString(),
+            sync_pb::ModelTypeState().SerializeAsString());
+  EXPECT_THAT(metadata.TakeAllMetadata(), testing::IsEmpty());
+}
+
+// Tests adding and updating the sync model type state.
+TEST_F(PlusAddressTableTest, SyncMetadataStore_ModifyModelTypeState) {
+  // Add
+  sync_pb::ModelTypeState model_type_state;
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
+  EXPECT_TRUE(
+      table_.UpdateModelTypeState(syncer::PLUS_ADDRESS, model_type_state));
+  syncer::MetadataBatch metadata;
+  EXPECT_TRUE(table_.GetAllSyncMetadata(syncer::PLUS_ADDRESS, metadata));
+  EXPECT_EQ(metadata.GetModelTypeState().SerializeAsString(),
+            model_type_state.SerializeAsString());
+
+  // Update
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
+  EXPECT_TRUE(
+      table_.UpdateModelTypeState(syncer::PLUS_ADDRESS, model_type_state));
+  EXPECT_TRUE(table_.GetAllSyncMetadata(syncer::PLUS_ADDRESS, metadata));
+  EXPECT_EQ(metadata.GetModelTypeState().SerializeAsString(),
+            model_type_state.SerializeAsString());
+}
+
+// Tests adding and updating sync entity metadata.
+TEST_F(PlusAddressTableTest, SyncMetadataStore_ModifyEntityMetadata) {
+  // Add two entities.
+  sync_pb::EntityMetadata entity1;
+  entity1.set_creation_time(123);
+  EXPECT_TRUE(
+      table_.UpdateEntityMetadata(syncer::PLUS_ADDRESS, "key1", entity1));
+  sync_pb::EntityMetadata entity2;
+  entity2.set_creation_time(234);
+  EXPECT_TRUE(
+      table_.UpdateEntityMetadata(syncer::PLUS_ADDRESS, "key2", entity2));
+  syncer::MetadataBatch metadata;
+  EXPECT_TRUE(table_.GetAllSyncMetadata(syncer::PLUS_ADDRESS, metadata));
+  EXPECT_THAT(metadata.TakeAllMetadata(),
+              testing::UnorderedElementsAre(KeyAndProto("key1", entity1),
+                                            KeyAndProto("key2", entity2)));
+
+  // Update `entity1`.
+  entity1.set_modification_time(543);
+  EXPECT_TRUE(
+      table_.UpdateEntityMetadata(syncer::PLUS_ADDRESS, "key1", entity1));
+  EXPECT_TRUE(table_.GetAllSyncMetadata(syncer::PLUS_ADDRESS, metadata));
+  EXPECT_THAT(metadata.TakeAllMetadata(),
+              testing::UnorderedElementsAre(KeyAndProto("key1", entity1),
+                                            KeyAndProto("key2", entity2)));
+}
+
+// Tests clearing the sync model type state + entity metadata.
+TEST_F(PlusAddressTableTest, SyncMetadataStore_Clear) {
+  // Add some dummy data.
+  sync_pb::ModelTypeState model_type_state;
+  model_type_state.set_initial_sync_state(
+      sync_pb::ModelTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
+  ASSERT_TRUE(
+      table_.UpdateModelTypeState(syncer::PLUS_ADDRESS, model_type_state));
+  sync_pb::EntityMetadata entity;
+  entity.set_creation_time(123);
+  ASSERT_TRUE(table_.UpdateEntityMetadata(syncer::PLUS_ADDRESS, "key", entity));
+
+  // Clear model type state and entity metadata.
+  EXPECT_TRUE(table_.ClearModelTypeState(syncer::PLUS_ADDRESS));
+  EXPECT_TRUE(table_.ClearEntityMetadata(syncer::PLUS_ADDRESS, "key"));
+
+  // Expect that no data remains.
+  syncer::MetadataBatch metadata;
+  EXPECT_TRUE(table_.GetAllSyncMetadata(syncer::PLUS_ADDRESS, metadata));
+  EXPECT_EQ(metadata.GetModelTypeState().SerializeAsString(),
+            sync_pb::ModelTypeState().SerializeAsString());
+  EXPECT_THAT(metadata.TakeAllMetadata(), testing::IsEmpty());
 }
 
 }  // namespace

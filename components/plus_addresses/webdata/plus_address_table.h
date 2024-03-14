@@ -8,8 +8,13 @@
 #include <vector>
 
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/sync/model/sync_metadata_store.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_table.h"
+
+namespace syncer {
+class MetadataBatch;
+}
 
 namespace plus_addresses {
 
@@ -28,7 +33,6 @@ namespace plus_addresses {
 //                    database layer doesn't enforce this.
 //
 // Schema to implement `syncer::SyncMetadataStore`.
-// TODO(b/322147254): Implement the interface.
 // Even though plus addresses only use a single model type so far, more might
 // be added in the future. For this reason, tables are keyed by model type.
 // plus_address_sync_model_type_state
@@ -40,7 +44,8 @@ namespace plus_addresses {
 //   storage_key        The storage_key of the sync EntitySpecifics.
 //     Composite (model_type, storage_key) primary key.
 //   value              A serialized EntityMetadata record.
-class PlusAddressTable : public WebDatabaseTable {
+class PlusAddressTable : public WebDatabaseTable,
+                         public syncer::SyncMetadataStore {
  public:
   PlusAddressTable();
   PlusAddressTable(const PlusAddressTable&) = delete;
@@ -64,6 +69,24 @@ class PlusAddressTable : public WebDatabaseTable {
   WebDatabaseTable::TypeKey GetTypeKey() const override;
   bool CreateTablesIfNecessary() override;
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
+
+  // syncer::SyncMetadataStore:
+  bool UpdateEntityMetadata(syncer::ModelType model_type,
+                            const std::string& storage_key,
+                            const sync_pb::EntityMetadata& metadata) override;
+  bool ClearEntityMetadata(syncer::ModelType model_type,
+                           const std::string& storage_key) override;
+  bool UpdateModelTypeState(
+      syncer::ModelType model_type,
+      const sync_pb::ModelTypeState& model_type_state) override;
+  bool ClearModelTypeState(syncer::ModelType model_type) override;
+
+  // Populates `metadata_batch` with all stored metadata for the `model_type`.
+  // Returns true if all the reads succeeded.
+  // If no metadata is stored for the model type, the function will succeed and
+  // set the batch's model type state to the default state.
+  bool GetAllSyncMetadata(syncer::ModelType model_type,
+                          syncer::MetadataBatch& metadata_batch);
 
  private:
   // Creates the table of the given name in the newest version of the schema,

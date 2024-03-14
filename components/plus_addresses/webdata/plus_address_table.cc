@@ -6,10 +6,14 @@
 
 #include <vector>
 
-#include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -31,6 +35,50 @@ constexpr char kSyncEntityMetadata[] = "plus_address_sync_entity_metadata";
 // kModelType
 constexpr char kStorageKey[] = "storage_key";
 // kValue
+
+// Populates the `metadata_batch`'s model type state with the state stored for
+// `model_type`, or the default, if no state is stored.
+// Returns false if the model type state is unparsable.
+bool GetModelTypeState(sql::Database& db,
+                       syncer::ModelType model_type,
+                       syncer::MetadataBatch& metadata_batch) {
+  sql::Statement model_state_query(db.GetUniqueStatement(
+      base::StringPrintf("SELECT %s FROM %s WHERE %s=?", kValue,
+                         kSyncModelTypeState, kModelType)
+          .c_str()));
+  model_state_query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
+  sync_pb::ModelTypeState model_type_state;
+  // When the user just started syncing `model_type`, no model type state is
+  // persisted yet and `Step()` will fail. Don't treat this as an error, but
+  // fallback to the default state instead.
+  if (model_state_query.Step() &&
+      !model_type_state.ParseFromString(model_state_query.ColumnString(0))) {
+    return false;
+  }
+  metadata_batch.SetModelTypeState(model_type_state);
+  return true;
+}
+
+// Adds all entity metadata stored for `model_type` to `metadata_batch`.
+// Returns false and aborts if unparsable data is encountered.
+bool AddEntityMetadata(sql::Database& db,
+                       syncer::ModelType model_type,
+                       syncer::MetadataBatch& metadata_batch) {
+  sql::Statement entity_query(db.GetUniqueStatement(
+      base::StringPrintf("SELECT %s, %s FROM %s WHERE %s=?", kStorageKey,
+                         kValue, kSyncEntityMetadata, kModelType)
+          .c_str()));
+  entity_query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
+  while (entity_query.Step()) {
+    auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
+    if (!entity_metadata->ParseFromString(entity_query.ColumnString(1))) {
+      return false;
+    }
+    metadata_batch.AddMetadata(entity_query.ColumnString(0),
+                               std::move(entity_metadata));
+  }
+  return true;
+}
 
 // The `WebDatabase` manages multiple `WebDatabaseTable` in a `TypeKey` -> table
 // map. Any unique constant, such as the address of a static suffices as a key.
@@ -103,6 +151,65 @@ bool PlusAddressTable::AddPlusProfile(const PlusProfile& profile) {
 bool PlusAddressTable::ClearPlusProfiles() {
   return db_->Execute(
       base::StrCat({"DELETE FROM ", kPlusAddressTable}).c_str());
+}
+
+bool PlusAddressTable::UpdateEntityMetadata(
+    syncer::ModelType model_type,
+    const std::string& storage_key,
+    const sync_pb::EntityMetadata& metadata) {
+  CHECK_EQ(model_type, syncer::PLUS_ADDRESS);
+  sql::Statement query(db_->GetUniqueStatement(
+      base::StringPrintf(
+          "INSERT OR REPLACE INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
+          kSyncEntityMetadata, kModelType, kStorageKey, kValue)
+          .c_str()));
+  query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
+  query.BindString(1, storage_key);
+  query.BindBlob(2, metadata.SerializeAsString());
+  return query.Run();
+}
+
+bool PlusAddressTable::ClearEntityMetadata(syncer::ModelType model_type,
+                                           const std::string& storage_key) {
+  CHECK_EQ(model_type, syncer::PLUS_ADDRESS);
+  sql::Statement query(db_->GetUniqueStatement(
+      base::StringPrintf("DELETE FROM %s WHERE %s=? AND %s=?",
+                         kSyncEntityMetadata, kModelType, kStorageKey)
+          .c_str()));
+  query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
+  query.BindString(1, storage_key);
+  return query.Run();
+}
+
+bool PlusAddressTable::UpdateModelTypeState(
+    syncer::ModelType model_type,
+    const sync_pb::ModelTypeState& model_type_state) {
+  CHECK_EQ(model_type, syncer::PLUS_ADDRESS);
+  sql::Statement query(db_->GetUniqueStatement(
+      base::StringPrintf("INSERT OR REPLACE INTO %s (%s, %s) VALUES (?, ?)",
+                         kSyncModelTypeState, kModelType, kValue)
+          .c_str()));
+  query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
+  query.BindBlob(1, model_type_state.SerializeAsString());
+  return query.Run();
+}
+
+bool PlusAddressTable::ClearModelTypeState(syncer::ModelType model_type) {
+  CHECK_EQ(model_type, syncer::PLUS_ADDRESS);
+  sql::Statement query(db_->GetUniqueStatement(
+      base::StringPrintf("DELETE FROM %s WHERE %s=?", kSyncModelTypeState,
+                         kModelType)
+          .c_str()));
+  query.BindInt(0, syncer::ModelTypeToStableIdentifier(model_type));
+  return query.Run();
+}
+
+bool PlusAddressTable::GetAllSyncMetadata(
+    syncer::ModelType model_type,
+    syncer::MetadataBatch& metadata_batch) {
+  CHECK_EQ(model_type, syncer::PLUS_ADDRESS);
+  return GetModelTypeState(*db_, model_type, metadata_batch) &&
+         AddEntityMetadata(*db_, model_type, metadata_batch);
 }
 
 bool PlusAddressTable::CreatePlusAddressesTable() {
