@@ -13,8 +13,89 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/display/types/display_color_management.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/gpu/drm_device.h"
+#include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
 namespace ui {
+
+namespace {
+
+struct PossibleCrtcsForConnector {
+  uint32_t connector_id;
+  std::vector<uint32_t> possible_crtcs;
+};
+
+// Recursively build out all possible permutations of CRTC-connector pairings
+// given a set of connectors and their possible CRTCs. Each CRTC/connector can
+// only be used once per permutation (CrtcConnectorPairs).
+// |connectors_it| is an iterator of |connectors| that tracks which connector
+// has been used (connector left of |connectors_it|). Passing around
+// |connectors_it| is safe due to the constness of |connectors|.
+// |crtcs_used_in_current_permutation| tracks if a CRTC has already been used as
+// part of the current permutation.
+// For example:
+//   Connector A can have CRTCs 1, 2, 3
+//   Connector B can have CRTCs 2, 3
+//   Connector C can have CRTCs 1, 3
+// Returned pairings would be:
+//   {{A, 1}, {B, 2}, {C, 3}},
+//   {{A, 2}, {B, 1}, {C, 3}},
+//   {{A, 3}, {B, 2}, {C, 1}}
+// But not {{A, 1}, {B, 3}, {C, nothing}} as connector C must also be assigned
+// to a valid CRTC and permutations like this are discarded.
+std::vector<CrtcConnectorPairs> BuildCrtcConnectorPermutations(
+    const std::vector<PossibleCrtcsForConnector>& connectors,
+    std::vector<PossibleCrtcsForConnector>::iterator connectors_it,
+    base::flat_set<uint32_t /*crtc_id*/>& crtcs_used_in_current_permutation) {
+  if (connectors_it == connectors.end()) {
+    return {};
+  }
+
+  std::vector<CrtcConnectorPairs> permutations;
+  const PossibleCrtcsForConnector& connector = *connectors_it;
+  // Terminate the recursion once |connectors_it| reaches the end of
+  // |connectors|. Also ensures that all |permutations| will have all the
+  // connectors paired up with a CRTC.
+  if (connectors_it == connectors.end() - 1) {
+    // Possible permutations at this point are all unused CRTCs + the current
+    // connector.
+    for (const uint32_t crtc_id : connector.possible_crtcs) {
+      if (!crtcs_used_in_current_permutation.contains(crtc_id)) {
+        permutations.push_back({CrtcConnectorPair{
+            .crtc_id = crtc_id, .connector_id = connector.connector_id}});
+      }
+    }
+    return permutations;
+  }
+
+  for (const uint32_t crtc_id : connector.possible_crtcs) {
+    // Skip |crtc_id| if it is already being used in this permutation.
+    if (crtcs_used_in_current_permutation.contains(crtc_id)) {
+      continue;
+    }
+
+    // Mark |crtc| as being in use for the current permutation so that it isn't
+    // used multiple times per CrtcConnectorPairs.
+    crtcs_used_in_current_permutation.insert(crtc_id);
+    std::vector<CrtcConnectorPairs> next_connector_permutations =
+        BuildCrtcConnectorPermutations(connectors, connectors_it + 1,
+                                       crtcs_used_in_current_permutation);
+    crtcs_used_in_current_permutation.erase(crtc_id);
+
+    // Add the current |crtc|-|connector| pair to |next_connector_permutations|
+    // as part of recursively building up CrtcConnectorPairs.
+    for (auto& permutation : next_connector_permutations) {
+      permutation.push_back(CrtcConnectorPair{
+          .crtc_id = crtc_id, .connector_id = connector.connector_id});
+    }
+    permutations.insert(permutations.end(), next_connector_permutations.begin(),
+                        next_connector_permutations.end());
+  }
+
+  return permutations;
+}
+}  // namespace
 
 ControllerConfigParams::ControllerConfigParams(
     int64_t display_id,
@@ -180,4 +261,32 @@ void DrmWriteIntoTraceHelper(const drmModeModeInfo& mode_info,
   dict.Add("vdisplay", mode_info.vdisplay);
 }
 
+std::vector<CrtcConnectorPairs> GetAllCrtcConnectorPermutations(
+    const DrmDevice& drm,
+    const std::vector<ControllerConfigParams>& controllers_params) {
+  if (controllers_params.empty()) {
+    LOG(DFATAL) << "No connectors specified in controllers_params to generate "
+                   "CRTC-connector pairings";
+    return {};
+  }
+
+  std::vector<PossibleCrtcsForConnector> possible_crtcs_for_connectors;
+  for (auto params : controllers_params) {
+    const uint32_t possible_crtcs_bitmask =
+        drm.plane_manager()->GetPossibleCrtcsBitmaskForConnector(
+            params.connector);
+    std::vector<uint32_t> possible_crtc_ids =
+        GetPossibleCrtcIdsFromBitmask(drm, possible_crtcs_bitmask);
+    possible_crtcs_for_connectors.push_back(
+        {.connector_id = params.connector,
+         .possible_crtcs = std::move(possible_crtc_ids)});
+  }
+
+  base::flat_set<uint32_t /*crtc_id*/> crtcs_used_in_current_permutation;
+  std::vector<CrtcConnectorPairs> permutations = BuildCrtcConnectorPermutations(
+      possible_crtcs_for_connectors, possible_crtcs_for_connectors.begin(),
+      crtcs_used_in_current_permutation);
+
+  return permutations;
+}
 }  // namespace ui

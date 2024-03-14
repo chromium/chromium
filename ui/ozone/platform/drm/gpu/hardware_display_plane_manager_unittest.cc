@@ -17,6 +17,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_color_management.h"
 #include "ui/gfx/gpu_fence.h"
@@ -74,6 +75,18 @@ class HardwareDisplayPlaneManagerTest
   void PerformFailingPageFlip(size_t crtc_idx,
                               HardwareDisplayPlaneList* state,
                               DrmOverlayPlaneList& assigns);
+
+  uint32_t AddConnector(MockDrmDevice::MockDrmState& drm_state,
+                        uint32_t possible_crtcs) {
+    MockDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
+    encoder.possible_crtcs = possible_crtcs;
+    const uint32_t encoder_id = encoder.id;
+
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders = std::vector<uint32_t>{encoder_id};
+    return connector.id;
+  }
 
   void SetUp() override;
 
@@ -1523,6 +1536,58 @@ TEST_F(HardwareDisplayPlaneManagerPlanesReadyTest,
   task_env_.RunUntilIdle();
 
   EXPECT_TRUE(callback_called);
+}
+
+TEST_P(HardwareDisplayPlaneManagerTest, GetPossibleCrtcsBitmaskForConnector) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  drm_state.AddCrtc();
+  drm_state.AddCrtc();
+  drm_state.AddCrtc();
+
+  const uint32_t connector_1_id =
+      AddConnector(drm_state, /*possible_crtcs=*/0b101u);
+  const uint32_t connector_2_id =
+      AddConnector(drm_state, /*possible_crtcs=*/0b110u);
+  const uint32_t connector_3_id =
+      AddConnector(drm_state, /*possible_crtcs=*/0b011u);
+
+  fake_drm_->InitializeState(drm_state, use_atomic_);
+
+  fake_drm_->plane_manager()->ResetConnectorsCacheAndGetValidIds(
+      fake_drm_->GetResources());
+
+  EXPECT_EQ(fake_drm_->plane_manager()->GetPossibleCrtcsBitmaskForConnector(
+                connector_1_id),
+            0b101u);
+  EXPECT_EQ(fake_drm_->plane_manager()->GetPossibleCrtcsBitmaskForConnector(
+                connector_2_id),
+            0b110u);
+  EXPECT_EQ(fake_drm_->plane_manager()->GetPossibleCrtcsBitmaskForConnector(
+                connector_3_id),
+            0b011u);
+}
+
+TEST_P(HardwareDisplayPlaneManagerTest,
+       GetPossibleCrtcsBitmaskForConnectorInvalidConnector) {
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  drm_state.AddCrtc();
+  MockDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
+  encoder.possible_crtcs = 0b1;
+  const uint32_t encoder_id = encoder.id;
+
+  MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+  connector.connection = true;
+  connector.encoders = std::vector<uint32_t>{encoder_id};
+  const uint32_t connector_id = connector.id;
+
+  fake_drm_->InitializeState(drm_state, use_atomic_);
+
+  fake_drm_->plane_manager()->ResetConnectorsCacheAndGetValidIds(
+      fake_drm_->GetResources());
+
+  EXPECT_EQ(fake_drm_->plane_manager()->GetPossibleCrtcsBitmaskForConnector(
+                connector_id + 1),
+            0u);
 }
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {

@@ -327,6 +327,11 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
     GetDrmPropertyForName(drm_, props.get(), "link-status",
                           &state_props.link_status);
 
+    const std::vector<uint32_t> possible_encoder_ids(
+        connector->encoders, connector->encoders + connector->count_encoders);
+    state_props.possible_crtcs_bitmask =
+        GetPossibleCrtcsBitmaskFromEncoders(*drm_, possible_encoder_ids);
+
     connectors_props_.emplace_back(std::move(state_props));
     valid_ids.emplace(connector_id);
   }
@@ -576,6 +581,22 @@ HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
   // final presentation. For more info, see b/194335274.
   hc.has_independent_cursor_plane = *driver != "amdgpu" && *driver != "radeon";
   return hc;
+}
+
+uint32_t HardwareDisplayPlaneManager::GetPossibleCrtcsBitmaskForConnector(
+    uint32_t connector_id) const {
+  const auto& connector_prop =
+      std::find_if(connectors_props_.begin(), connectors_props_.end(),
+                   [connector_id](const ConnectorProperties& prop) {
+                     return prop.id == connector_id;
+                   });
+  if (connector_prop == connectors_props_.end()) {
+    LOG(WARNING) << __func__
+                 << ": Failed to retrieve connector property for id "
+                 << connector_id;
+    return {};
+  }
+  return connector_prop->possible_crtcs_bitmask;
 }
 
 void HardwareDisplayPlaneManager::UpdateAndCommitCrtcState(

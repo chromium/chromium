@@ -244,6 +244,10 @@ class HardwareDisplayPlaneManager {
   // `DRM_PLANE_TYPE_OVERLAY` planes.
   HardwareCapabilities GetHardwareCapabilities(uint32_t crtc_id);
 
+  // Get a bitmask of possible CRTCs for the connector with |connector_id|.
+  // Returns 0 for invalid |connector_id|.
+  uint32_t GetPossibleCrtcsBitmaskForConnector(uint32_t connector_id) const;
+
  protected:
   struct ConnectorProperties {
     uint32_t id;
@@ -251,6 +255,7 @@ class HardwareDisplayPlaneManager {
     int count_modes;
     DrmWrapper::Property crtc_id;
     DrmWrapper::Property link_status;
+    uint64_t possible_crtcs_bitmask;
   };
 
   bool InitializeCrtcState();

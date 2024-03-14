@@ -186,6 +186,7 @@ source_set("gbm_unittests") {
   sources = [
     "common/drm_util_unittest.cc",
     "gpu/drm_gpu_display_manager_unittest.cc",
+    "gpu/drm_gpu_util_unittest.cc",
     "gpu/drm_overlay_manager_unittest.cc",
     "gpu/drm_overlay_validator_unittest.cc",
     "gpu/drm_thread_unittest.cc",

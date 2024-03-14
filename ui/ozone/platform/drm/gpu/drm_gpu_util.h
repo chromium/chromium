@@ -44,6 +44,14 @@ struct ControllerConfigParams {
 using ConnectorCrtcMap =
     base::flat_map<uint32_t /*connector_id*/, uint32_t /*crtc_id*/>;
 
+// Describes assignment of CRTC with |crtc_id| to a connector with
+// |connector_id|.
+struct CrtcConnectorPair {
+  uint32_t crtc_id;
+  uint32_t connector_id;
+};
+using CrtcConnectorPairs = std::vector<CrtcConnectorPair>;
+
 // Helper function that finds the property with the specified name.
 bool GetDrmPropertyForName(DrmWrapper* drm,
                            drmModeObjectProperties* properties,
@@ -76,6 +84,14 @@ HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(
 
 void DrmWriteIntoTraceHelper(const drmModeModeInfo& mode_info,
                              perfetto::TracedValue context);
+
+// Given a list of connectors from |controllers_params|, generate a list of all
+// possible CRTC-connector combinations. The returned vector will contain
+// permutations that have all the connectors in connectors paired up with each
+// of their supported CRTC.
+std::vector<CrtcConnectorPairs> GetAllCrtcConnectorPermutations(
+    const DrmDevice& drm,
+    const std::vector<ControllerConfigParams>& controllers_params);
 
 }  // namespace ui
 
