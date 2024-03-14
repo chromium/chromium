@@ -42,7 +42,7 @@ std::string ChromeAndroidImpl::GetOperatingSystemName() {
 }
 
 Status ChromeAndroidImpl::GetWindow(const std::string& target_id,
-                                    Window* window) {
+                                    internal::Window& window) {
   WebView* web_view = nullptr;
   Status status = GetWebViewById(target_id, &web_view);
   if (status.IsError())
@@ -55,13 +55,13 @@ Status ChromeAndroidImpl::GetWindow(const std::string& target_id,
   if (status.IsError())
     return status;
 
-  window->left = static_cast<int>(result->GetList()[0].GetDouble());
-  window->top = static_cast<int>(result->GetList()[1].GetDouble());
-  window->width = static_cast<int>(result->GetList()[2].GetDouble());
-  window->height = static_cast<int>(result->GetList()[3].GetDouble());
+  window.left = static_cast<int>(result->GetList()[0].GetDouble());
+  window.top = static_cast<int>(result->GetList()[1].GetDouble());
+  window.width = static_cast<int>(result->GetList()[2].GetDouble());
+  window.height = static_cast<int>(result->GetList()[3].GetDouble());
   // Android does not use Window.id or have window states
-  window->id = 0;
-  window->state = "";
+  window.id = 0;
+  window.state = "";
 
   return status;
 }

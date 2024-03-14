@@ -35,7 +35,8 @@ class ChromeAndroidImpl : public ChromeImpl {
   Status QuitImpl() override;
 
  protected:
-  Status GetWindow(const std::string& target_id, Window* window) override;
+  Status GetWindow(const std::string& target_id,
+                   internal::Window& window) override;
 
  private:
   std::unique_ptr<Device> device_;

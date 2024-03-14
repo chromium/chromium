@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -23,6 +24,37 @@ class PageTracker;
 class Status;
 class WebView;
 class WebViewImpl;
+
+namespace internal {
+struct Position {
+  int left = 0;
+  int top = 0;
+};
+
+struct Size {
+  int width = 0;
+  int height = 0;
+};
+
+struct Window {
+  int id;
+  std::string state;
+  int left;
+  int top;
+  int width;
+  int height;
+};
+
+struct WindowBounds {
+  WindowBounds();
+  ~WindowBounds();
+  std::optional<Position> position;
+  std::optional<Size> size;
+  std::optional<std::string> state;
+  base::Value::Dict ToDict() const;
+  bool Matches(const Window& window) const;
+};
+}  // namespace internal
 
 class ChromeImpl : public Chrome {
  public:
@@ -71,21 +103,15 @@ class ChromeImpl : public Chrome {
 
   bool IsBrowserWindow(const WebViewInfo& view) const;
 
-  struct Window {
-    int id;
-    std::string state;
-    int left;
-    int top;
-    int width;
-    int height;
-  };
-  virtual Status GetWindow(const std::string& target_id, Window* window);
-  Status ParseWindow(const base::Value::Dict& params, Window* window);
-  Status ParseWindowBounds(const base::Value::Dict& params, Window* window);
-  Status GetWindowBounds(int window_id, Window* window);
-  Status SetWindowBounds(Window* window,
+  virtual Status GetWindow(const std::string& target_id,
+                           internal::Window& window);
+  Status ParseWindow(const base::Value::Dict& params, internal::Window& window);
+  Status ParseWindowBounds(const base::Value::Dict& params,
+                           internal::Window& window);
+  Status GetWindowBounds(int window_id, internal::Window& window);
+  Status SetWindowBounds(internal::Window window,
                          const std::string& target_id,
-                         std::unique_ptr<base::Value::Dict> bounds);
+                         const internal::WindowBounds& bounds);
 
   bool quit_ = false;
   std::optional<MobileDevice> mobile_device_;
