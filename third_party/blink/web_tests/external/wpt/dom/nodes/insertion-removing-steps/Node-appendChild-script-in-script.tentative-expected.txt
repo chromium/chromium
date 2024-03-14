@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] An outer script does not execute until its inner `<script>` children are finished being inserted into it. The outer script's execution considers any script text that inner scripts added to the outer one.
-  assert_array_equals: lengths differ, expected array ["s2", "s2ran", "s1", "s1ran"] length 4, got ["s1", "s2", "s2ran"] length 3
-Harness: the test ran to completion.
-
