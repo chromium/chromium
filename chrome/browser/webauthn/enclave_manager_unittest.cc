@@ -43,6 +43,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #endif
 
 // These tests are also disabled under MSAN. The enclave subprocess is written
@@ -884,6 +886,66 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
   EXPECT_FALSE(std::get<0>(add_callback.result().value()));
 }
 
+// TODO(enclave): Make ScopedFakeUserVerifyingKeyProvider build on other
+// platforms and enable these tests.
+#if BUILDFLAG(IS_WIN)
+TEST_F(EnclaveManagerTest, UserVerifyingKeyAvailable) {
+  crypto::ScopedFakeUserVerifyingKeyProvider fake_provider;
+  security_domain_service_->pretend_there_are_members();
+  NoArgCallback loaded_callback;
+  manager_.Load(loaded_callback.callback());
+  loaded_callback.WaitForCallback();
+
+  BoolCallback register_callback;
+  manager_.RegisterIfNeeded(register_callback.callback());
+  ASSERT_FALSE(manager_.is_idle());
+  register_callback.WaitForCallback();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolCallback add_callback;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+  ASSERT_FALSE(manager_.is_idle());
+  add_callback.WaitForCallback();
+
+  ASSERT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
+}
+
+TEST_F(EnclaveManagerTest, UserVerifyingKeyUnavailable) {
+  crypto::ScopedNullUserVerifyingKeyProvider null_provider;
+  security_domain_service_->pretend_there_are_members();
+  NoArgCallback loaded_callback;
+  manager_.Load(loaded_callback.callback());
+  loaded_callback.WaitForCallback();
+
+  BoolCallback register_callback;
+  manager_.RegisterIfNeeded(register_callback.callback());
+  ASSERT_FALSE(manager_.is_idle());
+  register_callback.WaitForCallback();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolCallback add_callback;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+  ASSERT_FALSE(manager_.is_idle());
+  add_callback.WaitForCallback();
+  ASSERT_TRUE(manager_.is_registered());
+  ASSERT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kNone);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
-#endif  // IS_POSIX && !USING_MSAN
+#endif  // !defined(MEMORY_SANITIZER)

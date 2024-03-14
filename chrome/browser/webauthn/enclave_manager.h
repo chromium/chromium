@@ -159,11 +159,6 @@ class EnclaveManager : public KeyedService {
     // valid callback. However, Chrome UI needs to be shown in order to collect
     // biometrics.
     kUsesChromeUI,
-    // A UV key is present, but not in a convenient modality. For example,
-    // if Touch ID isn't available on macOS but the system sign-in password
-    // can still be used. Or if biometrics aren't available on Windows, but
-    // a Hello PIN could still be used.
-    kFallback,
   };
   UvKeyState uv_key_state() const;
 

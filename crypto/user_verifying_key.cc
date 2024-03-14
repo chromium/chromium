@@ -32,6 +32,9 @@ void IsKeyCredentialManagerAvailable(base::OnceCallback<void(bool)> callback);
 #endif
 
 std::unique_ptr<UserVerifyingKeyProvider> GetUserVerifyingKeyProvider() {
+  if (g_mock_provider) {
+    return g_mock_provider();
+  }
 #if BUILDFLAG(IS_WIN)
   return GetUserVerifyingKeyProviderWin();
 #else
@@ -40,6 +43,10 @@ std::unique_ptr<UserVerifyingKeyProvider> GetUserVerifyingKeyProvider() {
 }
 
 void AreUserVerifyingKeysSupported(base::OnceCallback<void(bool)> callback) {
+  if (g_mock_provider) {
+    std::move(callback).Run(g_mock_provider() != nullptr);
+    return;
+  }
 #if BUILDFLAG(IS_WIN)
   IsKeyCredentialManagerAvailable(std::move(callback));
 #else

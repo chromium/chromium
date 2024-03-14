@@ -1100,29 +1100,38 @@ class EnclaveManager::StateMachine {
 
     manager_->user_verifying_key_.reset();
 
-    user_verifying_key_provider_ = crypto::GetUserVerifyingKeyProvider();
-    std::optional<crypto::UserVerifyingKeyLabel> key_label;
-    // TODO(enclave): Reusing the label makes sense on Windows because it will
-    // overwrite the existing key with a new one. This might be different on
-    // other platforms.
-    if (!user_->wrapped_uv_private_key().empty()) {
-      key_label =
-          UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
-    }
-    if (!key_label) {
-      key_label = CreateUserVerifyingKeyLabel();
-    }
-    if (!user_verifying_key_provider_ || !key_label) {
-      // Null `user_verifying_key_provider_` means the current
-      // platform does not support user-verifying keys. nullopt for |key_label|
-      // means Chrome does not support them on this OS.
-      GenerateHardwareKey(nullptr);
-      return;
-    }
-    user_verifying_key_provider_->GenerateUserVerifyingSigningKey(
-        *key_label, kSigningAlgorithms,
-        base::BindOnce(&StateMachine::GenerateHardwareKey,
-                       weak_ptr_factory_.GetWeakPtr()));
+    crypto::AreUserVerifyingKeysSupported(base::BindOnce(
+        [](base::WeakPtr<StateMachine> state_machine,
+           bool is_uv_key_supported) {
+          if (!state_machine) {
+            return;
+          }
+          if (is_uv_key_supported) {
+            std::optional<crypto::UserVerifyingKeyLabel> key_label;
+            // TODO(enclave): Reusing the label makes sense on Windows because
+            // it will overwrite the existing key with a new one. This might be
+            // different on other platforms.
+            if (!state_machine->user_->wrapped_uv_private_key().empty()) {
+              key_label = UserVerifyingKeyLabelFromString(
+                  state_machine->user_->wrapped_uv_private_key());
+            } else {
+              key_label = CreateUserVerifyingKeyLabel();
+            }
+            state_machine->user_verifying_key_provider_ =
+                crypto::GetUserVerifyingKeyProvider();
+            if (state_machine->user_verifying_key_provider_ && key_label) {
+              state_machine->user_verifying_key_provider_
+                  ->GenerateUserVerifyingSigningKey(
+                      *key_label, kSigningAlgorithms,
+                      base::BindOnce(&StateMachine::GenerateHardwareKey,
+                                     state_machine));
+              return;
+            }
+          }
+          // UV keys are not available, so skip to generating a hardware key.
+          state_machine->GenerateHardwareKey(nullptr);
+        },
+        weak_ptr_factory_.GetWeakPtr()));
   }
 
   void GenerateHardwareKey(
@@ -2162,8 +2171,17 @@ EnclaveManager::GetWrappedPIN() {
 }
 
 EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
-  // TODO(enclave): change this when UV key support is ready.
+  CHECK(is_ready());
+  // TODO(enclave): EnclaveManager does not know about biometric availability
+  // on the platform, but might need to know that on Mac.
+  if (user_->wrapped_uv_private_key().empty()) {
+    return UvKeyState::kNone;
+  }
+#if BUILDFLAG(IS_WIN)
+  return UvKeyState::kUsesSystemUI;
+#else
   return UvKeyState::kNone;
+#endif
 }
 
 std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>

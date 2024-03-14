@@ -341,13 +341,6 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
 
         case EnclaveManager::UvKeyState::kUsesChromeUI:
           return EnclaveUserVerificationMethod::kUVKeyWithChromeUI;
-
-        case EnclaveManager::UvKeyState::kFallback:
-          if (has_pin) {
-            return EnclaveUserVerificationMethod::kPIN;
-          } else {
-            return EnclaveUserVerificationMethod::kUVKeyWithSystemUI;
-          }
       }
   }
 }
