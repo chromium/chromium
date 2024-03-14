@@ -33,9 +33,10 @@ EditAddressProfileDialogControllerImpl::
 void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile& profile,
     const std::u16string& footer_message,
-    AutofillClient::AddressProfileSavePromptCallback on_user_decision_callback,
     bool is_editing_existing_address,
-    bool is_migration_to_account) {
+    bool is_migration_to_account,
+    AutofillClient::AddressProfileSavePromptCallback
+        on_user_decision_callback) {
   // Don't show the editor if it's already visible, and inform the backend.
   if (dialog_view_) {
     std::move(on_user_decision_callback)

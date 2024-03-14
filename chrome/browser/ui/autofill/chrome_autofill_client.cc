@@ -926,9 +926,9 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
           base::ASCIIToUTF16(account->email)),
-      /*on_user_decision_callback=*/std::move(on_user_decision_callback),
       /*is_editing_existing_address=*/false,
-      /*is_migration_to_account=*/false);
+      /*is_migration_to_account=*/false,
+      /*on_user_decision_callback=*/std::move(on_user_decision_callback));
 #else
   // Edit address profile dialog is only available is desktop.
   NOTREACHED_NORETURN();

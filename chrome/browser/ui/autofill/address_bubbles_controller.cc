@@ -171,10 +171,10 @@ void AddressBubblesController::ShowEditor(
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(
       *address_profile_, editor_footer_message,
-      base::BindOnce(&AddressBubblesController::OnUserDecision,
-                     weak_ptr_factory_.GetWeakPtr()),
       /*is_editing_existing_address=*/original_profile_.has_value(),
-      is_migration_to_account_);
+      is_migration_to_account_,
+      base::BindOnce(&AddressBubblesController::OnUserDecision,
+                     weak_ptr_factory_.GetWeakPtr()));
   HideBubble();
 }
 

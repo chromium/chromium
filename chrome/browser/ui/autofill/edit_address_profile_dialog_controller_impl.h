@@ -41,10 +41,10 @@ class EditAddressProfileDialogControllerImpl
   // to determine if a subset of editor fields should be made required.
   void OfferEdit(const AutofillProfile& profile,
                  const std::u16string& footer_message,
-                 AutofillClient::AddressProfileSavePromptCallback
-                     on_user_decision_callback,
                  bool is_editing_existing_address,
-                 bool is_migration_to_account);
+                 bool is_migration_to_account,
+                 AutofillClient::AddressProfileSavePromptCallback
+                     on_user_decision_callback);
 
   // EditAddressProfileDialogController:
   std::u16string GetWindowTitle() const override;

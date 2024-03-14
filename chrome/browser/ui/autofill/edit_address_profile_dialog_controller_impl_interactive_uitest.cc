@@ -81,11 +81,11 @@ class EditAddressProfileDialogControllerImplTest
       ASSERT_THAT(controller, ::testing::NotNull());
       controller->OfferEdit(
           profile, footer_message,
+          /*is_editing_existing_address*/ original_profile != nullptr,
+          is_migration_to_account,
           base::BindOnce(
               &EditAddressProfileDialogControllerImplTest::OnUserDecision,
-              base::Unretained(this)),
-          /*is_editing_existing_address*/ original_profile != nullptr,
-          is_migration_to_account);
+              base::Unretained(this)));
     });
   }
 

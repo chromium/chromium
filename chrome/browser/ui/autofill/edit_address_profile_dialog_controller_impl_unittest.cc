@@ -38,9 +38,10 @@ class EditAddressProfileDialogControllerImplTest
         &EditAddressProfileDialogControllerImplTest::GetAutofillBubbleBase,
         base::Unretained(this)));
     controller()->OfferEdit(profile_,
-                            /*footer_message=*/u"", save_callback_.Get(),
+                            /*footer_message=*/u"",
                             /*is_editing_existing_address*/ false,
-                            /*is_migration_to_account=*/false);
+                            /*is_migration_to_account=*/false,
+                            save_callback_.Get());
   }
 
  protected:
