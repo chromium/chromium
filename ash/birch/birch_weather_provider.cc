@@ -76,7 +76,18 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
     birch_model_->SetWeatherItems({});
     return;
   }
+  if (!birch_model_->birch_client()) {
+    // BirchClient may be null in tests.
+    FetchWeather();
+    return;
+  }
+  // Fetching weather requires auth, but early in startup refresh tokens may not
+  // be loaded yet. Ensure refresh tokens are loaded before doing the fetch.
+  birch_model_->birch_client()->WaitForRefreshTokens(base::BindOnce(
+      &BirchWeatherProvider::FetchWeather, weak_factory_.GetWeakPtr()));
+}
 
+void BirchWeatherProvider::FetchWeather() {
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()

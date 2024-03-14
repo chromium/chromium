@@ -51,6 +51,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void SetWeatherItems(std::vector<BirchWeatherItem> weather_items);
 
   void SetClient(BirchClient* client) { birch_client_ = client; }
+  BirchClient* birch_client() { return birch_client_; }
 
   const std::vector<BirchCalendarItem>& GetCalendarItemsForTest() const {
     return calendar_items_;

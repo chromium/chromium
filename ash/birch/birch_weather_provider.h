@@ -33,6 +33,9 @@ class BirchWeatherProvider : public BirchDataProvider {
   void RequestBirchDataFetch() override;
 
  private:
+  // Performs the weather fetch via the ambient controller.
+  void FetchWeather();
+
   // Called in response to a weather info request. It initiates icon fetch from
   // the URL provided in the weather info.
   void OnWeatherInfoFetched(const std::optional<WeatherInfo>& weather_info);

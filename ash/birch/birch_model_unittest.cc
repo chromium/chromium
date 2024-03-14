@@ -61,6 +61,9 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetReleaseNotesProvider() override {
     return &release_notes_provider_;
   }
+  void WaitForRefreshTokens(base::OnceClosure callback) override {
+    std::move(callback).Run();
+  }
 
   StubBirchDataProvider calendar_provider_;
   StubBirchDataProvider file_suggest_provider_;

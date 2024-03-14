@@ -103,6 +103,7 @@ void BirchCalendarFetcher::GetCalendarEvents(
 
   // If a refresh token is available, make the request. Otherwise observe for
   // the token being updated.
+  // TODO(jamescook): Convert this to use RefreshTokenWaiter.
   if (identity_manager_->HasPrimaryAccountWithRefreshToken(
           signin::ConsentLevel::kSignin)) {
     StartRequest();

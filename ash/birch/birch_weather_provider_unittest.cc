@@ -24,6 +24,36 @@
 
 namespace ash {
 
+// A data provider that does nothing.
+class StubBirchDataProvider : public BirchDataProvider {
+ public:
+  StubBirchDataProvider() = default;
+  ~StubBirchDataProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {}
+};
+
+class StubBirchClient : public BirchClient {
+ public:
+  StubBirchClient() = default;
+  ~StubBirchClient() override = default;
+
+  // BirchClient:
+  BirchDataProvider* GetCalendarProvider() override { return &provider_; }
+  BirchDataProvider* GetFileSuggestProvider() override { return &provider_; }
+  BirchDataProvider* GetRecentTabsProvider() override { return &provider_; }
+  BirchDataProvider* GetReleaseNotesProvider() override { return &provider_; }
+
+  void WaitForRefreshTokens(base::OnceClosure callback) override {
+    did_wait_for_refresh_tokens_ = true;
+    std::move(callback).Run();
+  }
+
+  StubBirchDataProvider provider_;
+  bool did_wait_for_refresh_tokens_ = false;
+};
+
 class BirchWeatherProviderTest : public AshTestBase {
  public:
   BirchWeatherProviderTest() {
@@ -82,6 +112,35 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
   EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
   weather_items[0].LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+}
+
+TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
+  auto* birch_model = Shell::Get()->birch_model();
+  StubBirchClient birch_client;
+  birch_model->SetClient(&birch_client);
+
+  WeatherInfo info;
+  info.condition_description = "Cloudy";
+  info.condition_icon_url = "https://fake-icon-url";
+  info.temp_f = 70.0f;
+  ambient_backend_controller_->SetWeatherInfo(info);
+
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The provider used the client to wait for refresh tokens.
+  EXPECT_TRUE(birch_client.did_wait_for_refresh_tokens_);
+
+  // Weather data was fetched.
+  auto& weather_items = birch_model->GetWeatherForTest();
+  ASSERT_EQ(1u, weather_items.size());
+  EXPECT_EQ(u"Cloudy", weather_items[0].title());
+  EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+
+  birch_model->SetClient(nullptr);
 }
 
 TEST_F(BirchWeatherProviderTest, WeatherNotFetchedWhenGeolocationDisabled) {
