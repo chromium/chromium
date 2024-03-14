@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 
+#include "base/containers/flat_map.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -14,6 +15,9 @@
 struct skcms_Matrix3x3;
 
 namespace ui {
+
+using ConnectorCrtcMap =
+    base::flat_map<uint32_t /*connector_id*/, uint32_t /*crtc_id*/>;
 
 // Helper function that finds the property with the specified name.
 bool GetDrmPropertyForName(DrmWrapper* drm,

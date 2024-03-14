@@ -974,4 +974,47 @@ void ScreenManager::SetDrmModifiersFilter(
   drm_modifiers_filter_ = std::move(filter);
 }
 
+bool ScreenManager::ReplaceDisplayControllersCrtcs(
+    const scoped_refptr<DrmDevice>& drm,
+    const ConnectorCrtcMap& current_pairings,
+    const ConnectorCrtcMap& new_pairings) {
+  std::vector<std::pair<uint32_t /*connector_id*/, HardwareDisplayController*>>
+      connector_to_controllers;
+  for (const auto& [connector_id, crtc_id] : current_pairings) {
+    if (!new_pairings.contains(connector_id)) {
+      LOG(DFATAL) << __func__
+                  << " new_pairings must contain all connectors "
+                     "from current_pairings. Connector: "
+                  << connector_id << "not found.";
+      return false;
+    }
+
+    auto hdc_it = FindDisplayController(drm, crtc_id);
+    if (hdc_it == controllers_.end()) {
+      LOG(DFATAL) << __func__
+                  << " controller not found for connector ID: " << connector_id
+                  << " crtc ID: " << crtc_id;
+      return false;
+    }
+    connector_to_controllers.push_back({connector_id, hdc_it->get()});
+  }
+
+  // First, remove the CRTC.
+  for (auto& [connector_id, hdc] : connector_to_controllers) {
+    hdc->RemoveCrtc(drm, current_pairings.at(connector_id));
+  }
+
+  // Now, add the new ones back in separately to avoid a state where multiple
+  // HDCs share a CRTC.
+  for (auto& [connector_id, hdc] : connector_to_controllers) {
+    hdc->AddCrtc(std::make_unique<CrtcController>(
+        drm, new_pairings.at(connector_id), connector_id));
+  }
+
+  // No need to UpdateControllerToWindowMapping() since the underlying
+  // HardwareDisplayController remained intact - just changed their CRTCs.
+
+  return true;
+}
+
 }  // namespace ui

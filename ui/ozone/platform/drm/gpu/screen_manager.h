@@ -13,6 +13,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
+#include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
 
@@ -49,7 +50,7 @@ class ScreenManager {
 
     const int64_t display_id;
     const scoped_refptr<DrmDevice> drm;
-    const uint32_t crtc;
+    uint32_t crtc;
     const uint32_t connector;
     const uint64_t base_connector_id;
     const gfx::Point origin;
@@ -111,6 +112,12 @@ class ScreenManager {
   // in raster and composite. This must be called during initialization before
   // any modeset happens.
   void SetDrmModifiersFilter(std::unique_ptr<DrmModifiersFilter> filter);
+
+  // Replace CRTCs of HardwareDisplayControllers in |current_pairings| with
+  // |new_pairings|, identified by their connectors.
+  bool ReplaceDisplayControllersCrtcs(const scoped_refptr<DrmDevice>& drm,
+                                      const ConnectorCrtcMap& current_pairings,
+                                      const ConnectorCrtcMap& new_pairings);
 
  private:
   using HardwareDisplayControllers =

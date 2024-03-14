@@ -99,6 +99,8 @@ class DrmDisplay {
   bool SetHdrOutputMetadata(const gfx::ColorSpace color_space);
   bool SetColorspaceProperty(const gfx::ColorSpace color_space);
 
+  void set_crtc(uint32_t crtc_id) { crtc_ = crtc_id; }
+
   void set_is_hdr_capable_for_testing(bool value) { is_hdr_capable_ = value; }
 
  private:
@@ -108,7 +110,7 @@ class DrmDisplay {
   const int64_t display_id_;
   const int64_t base_connector_id_;
   const scoped_refptr<DrmDevice> drm_;
-  const uint32_t crtc_;
+  uint32_t crtc_;
   const ScopedDrmConnectorPtr connector_;
   std::vector<drmModeModeInfo> modes_;
   gfx::Point origin_;

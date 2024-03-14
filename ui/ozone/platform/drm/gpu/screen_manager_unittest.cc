@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
@@ -28,8 +29,13 @@
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
-
 namespace {
+
+using ::testing::Eq;
+using ::testing::Matcher;
+using ::testing::Pointee;
+using ::testing::Property;
+using ::testing::UnorderedElementsAre;
 
 constexpr drmModeModeInfo ConstructMode(uint16_t hdisplay, uint16_t vdisplay) {
   return {.hdisplay = hdisplay, .vdisplay = vdisplay};
@@ -40,6 +46,12 @@ const drmModeModeInfo kDefaultMode = ConstructMode(6, 4);
 
 const uint32_t kPrimaryDisplayId = 1;
 const uint32_t kSecondaryDisplayId = 2;
+
+Matcher<const CrtcController&> EqualsCrtcConnectorIds(uint32_t crtc,
+                                                      uint32_t connector) {
+  return AllOf(Property(&CrtcController::crtc, Eq(crtc)),
+               Property(&CrtcController::connector, Eq(connector)));
+}
 
 }  // namespace
 
@@ -129,6 +141,16 @@ class MAYBE_ScreenManagerTest : public testing::Test {
 
     drm->SetModifiersOverhead(modifiers_overhead_);
     drm->InitializeState(drm_state, is_atomic);
+  }
+
+  void AddPlaneToCrtc(uint32_t crtc_id,
+                      uint32_t plane_type,
+                      uint32_t blob_id,
+                      MockDrmDevice::MockDrmState& drm_state) {
+    drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+        blob_id, {DRM_FORMAT_XRGB8888}, {}));
+    auto& plane = drm_state.AddPlane(crtc_id, plane_type);
+    plane.SetProp(kInFormatsPropId, blob_id);
   }
 
   void InitializeDrmStateWithDefault(MockDrmDevice* drm,
@@ -2050,4 +2072,168 @@ TEST_F(MAYBE_ScreenManagerTest, PinnedPlanesAndModesetting) {
   screen_manager_->RemoveWindow(2)->Shutdown();
 }
 
+TEST_F(MAYBE_ScreenManagerTest, ReplaceDisplayControllersCrtcs) {
+  // Initializes 2 CRTC-Connector pairs.
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+
+  ScreenManager::ControllerConfigsList controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+
+  EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset}));
+
+  HardwareDisplayController* controller =
+      screen_manager_->GetDisplayController(GetPrimaryBounds());
+  ASSERT_NE(controller, nullptr);
+
+  ConnectorCrtcMap current_pairings = {{connector_id, crtc_id}};
+
+  uint32_t new_crtc_id = drm_->crtc_property(1).id;
+  ConnectorCrtcMap new_pairings = {{connector_id, new_crtc_id}};
+
+  ASSERT_TRUE(screen_manager_->ReplaceDisplayControllersCrtcs(
+      drm_, current_pairings, new_pairings));
+
+  controllers_to_enable.back().crtc = new_crtc_id;
+  EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset}));
+
+  HardwareDisplayController* new_controller =
+      screen_manager_->GetDisplayController(GetPrimaryBounds());
+  EXPECT_TRUE(new_controller->HasCrtc(drm_, new_crtc_id));
+  EXPECT_FALSE(new_controller->HasCrtc(drm_, crtc_id));
+}
+
+TEST_F(MAYBE_ScreenManagerTest, ReplaceDisplayControllersCrtcsNonexistent) {
+  // Initializes 2 CRTC-Connector pairs.
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  // But only configure 1 CRTC-connector pair.
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+  ScreenManager::ControllerConfigsList controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+
+  EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset}));
+
+  HardwareDisplayController* controller =
+      screen_manager_->GetDisplayController(GetPrimaryBounds());
+  ASSERT_NE(controller, nullptr);
+  // CRTC + 1 is not a current CRTC.
+  ConnectorCrtcMap current_pairings = {{connector_id, crtc_id + 1}};
+
+  uint32_t new_crtc_id = drm_->crtc_property(1).id;
+  ConnectorCrtcMap new_pairings = {{connector_id, new_crtc_id}};
+
+  EXPECT_DEATH_IF_SUPPORTED(screen_manager_->ReplaceDisplayControllersCrtcs(
+                                drm_, current_pairings, new_pairings),
+                            "controller not found for connector");
+}
+
+TEST_F(MAYBE_ScreenManagerTest, ReplaceDisplayControllersCrtcsComplex) {
+  // 3 CRTCs and 2 connectors.
+  // Original state: {crtc_1 - connector_1}, {crtc_2 - connector_2}
+  // After replacement: {crtc_2 - connector_1}, {crtc_3 - connector_2}
+
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+
+  // Set up the default format property ID for the cursor planes:
+  drm_->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
+      kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
+  uint32_t blob_id = kInFormatsBlobIdBase + 1;
+
+  // Create 3 CRTCs
+  uint32_t crtc_1 = drm_state.AddCrtc().id;
+  AddPlaneToCrtc(crtc_1, DRM_PLANE_TYPE_PRIMARY, blob_id++, drm_state);
+  AddPlaneToCrtc(crtc_1, DRM_PLANE_TYPE_OVERLAY, blob_id++, drm_state);
+  uint32_t crtc_2 = drm_state.AddCrtc().id;
+  AddPlaneToCrtc(crtc_2, DRM_PLANE_TYPE_PRIMARY, blob_id++, drm_state);
+  AddPlaneToCrtc(crtc_2, DRM_PLANE_TYPE_OVERLAY, blob_id++, drm_state);
+  uint32_t crtc_3 = drm_state.AddCrtc().id;
+  AddPlaneToCrtc(crtc_3, DRM_PLANE_TYPE_PRIMARY, blob_id++, drm_state);
+  AddPlaneToCrtc(crtc_3, DRM_PLANE_TYPE_OVERLAY, blob_id++, drm_state);
+
+  // Create 2 Connectors that can use all 3 CRTCs.
+  uint32_t connector_1, connector_2;
+  {
+    MockDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
+    encoder.possible_crtcs = 0b111;
+    const uint32_t encoder_id = encoder.id;
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders = std::vector<uint32_t>{encoder_id};
+    connector_1 = connector.id;
+  }
+  {
+    MockDrmDevice::EncoderProperties& encoder = drm_state.AddEncoder();
+    encoder.possible_crtcs = 0b111;
+    const uint32_t encoder_id = encoder.id;
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders = std::vector<uint32_t>{encoder_id};
+    connector_2 = connector.id;
+  }
+
+  drm_->InitializeState(drm_state, /*is_atomic=*/true);
+
+  // Configure to {crtc_1 - connector_1}, {crtc_2 - connector_2}.
+  screen_manager_->AddDisplayController(drm_, crtc_1, connector_1);
+  screen_manager_->AddDisplayController(drm_, crtc_2, connector_2);
+  ScreenManager::ControllerConfigsList controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_1, connector_1, GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  controllers_to_enable.emplace_back(
+      kSecondaryDisplayId, drm_, crtc_2, connector_2,
+      GetSecondaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset}));
+
+  HardwareDisplayController* controller_1 =
+      screen_manager_->GetDisplayController(GetPrimaryBounds());
+  ASSERT_NE(controller_1, nullptr);
+  EXPECT_THAT(controller_1->crtc_controllers(),
+              UnorderedElementsAre(
+                  Pointee(EqualsCrtcConnectorIds(crtc_1, connector_1))));
+
+  HardwareDisplayController* controller_2 =
+      screen_manager_->GetDisplayController(GetSecondaryBounds());
+  ASSERT_NE(controller_2, nullptr);
+  EXPECT_THAT(controller_2->crtc_controllers(),
+              UnorderedElementsAre(
+                  Pointee(EqualsCrtcConnectorIds(crtc_2, connector_2))));
+
+  ConnectorCrtcMap current_pairings = {{connector_1, crtc_1},
+                                       {connector_2, crtc_2}};
+  ConnectorCrtcMap new_pairings = {{connector_1, crtc_2},
+                                   {connector_2, crtc_3}};
+  ASSERT_TRUE(screen_manager_->ReplaceDisplayControllersCrtcs(
+      drm_, current_pairings, new_pairings));
+
+  // Check that the HDCs now reflect the replaced CRTCs, and that no old
+  // CrtcControllers remain.
+  EXPECT_THAT(controller_1->crtc_controllers(),
+              UnorderedElementsAre(
+                  Pointee(EqualsCrtcConnectorIds(crtc_2, connector_1))));
+  EXPECT_THAT(controller_2->crtc_controllers(),
+              UnorderedElementsAre(
+                  Pointee(EqualsCrtcConnectorIds(crtc_3, connector_2))));
+}
 }  // namespace ui
