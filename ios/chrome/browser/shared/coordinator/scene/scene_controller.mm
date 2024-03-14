@@ -1721,16 +1721,7 @@ using UserFeedbackDataCallback =
   data.currentPageIsIncognito = self.currentInterface.incognito;
 
   CGFloat scale = 0.0;
-  if (!self.mainCoordinator.isTabGridActive) {
-    web::WebState* webState =
-        self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
-    if (webState) {
-      // Record URL of browser tab that is currently showing
-      GURL url = webState->GetVisibleURL();
-      std::u16string urlText = url_formatter::FormatUrl(url);
-      data.currentPageDisplayURL = base::SysUTF16ToNSString(urlText);
-    }
-  } else {
+  if (self.mainCoordinator.isTabGridActive) {
     // For screenshots of the tab switcher we need to use a scale of 1.0 to
     // avoid spending too much time since the tab switcher can have lots of
     // subviews.
