@@ -1672,7 +1672,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Navigation.UserAgentStringType" enum="UserAgentStringType"
     expires_after="2024-07-14">
   <owner>miketaylr@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     The type of the user agent string value sent in the User-Agent header on a
     navigation request. The reduced user agent string is sent when User-Agent

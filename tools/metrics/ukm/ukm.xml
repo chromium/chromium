@@ -16284,7 +16284,7 @@ be describing additional metrics about the same event.
 
 <event name="Navigation.ReceivedResponse">
   <owner>miketaylr@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Recorded when the navigation receives a response from the networking layer.
     Only recorded for main frames (i.e. top-level frames).

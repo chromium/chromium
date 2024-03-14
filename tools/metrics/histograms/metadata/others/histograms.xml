@@ -2555,7 +2555,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Emitted on two related events: First, when an request that is eligable to be
     restarted receives an ACCEPT_CH HTTP2/HTTP3 frame via a TLS connection with
@@ -2568,7 +2568,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Count of requests restarted because of the Critical-CH response header.
   </summary>
@@ -2578,7 +2578,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     The latency (in microseconds) to fetch the client hints for a given origin
     from the Accept-CH cache for {OperationType}.
@@ -2598,7 +2598,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     The latency (in milliseconds) to store the client hints for a given origin
     in the Accept-CH cache.
@@ -2608,7 +2608,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ClientHints.UpdateEventCount" units="count"
     expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Count of events when the client hints needs to be persisted to the disk by
     the browser. Collected while navigation responses are being processed.
@@ -2618,7 +2618,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ClientHints.UpdateSize" units="count"
     expires_after="2024-10-01">
   <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Count of client hints that need to be persisted to the disk. Recorded by the
     renderer. Collected while navigation responses are being processed.

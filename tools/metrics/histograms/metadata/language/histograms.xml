@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="LanguageUsage.AcceptLanguageAndContentLanguageUsage"
     enum="AcceptLanguageAndContentLanguageUsage" expires_after="2024-12-10">
   <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Metrics that record matches between the Content-Language response header and
     Accept-Language request header values. This is recorded every time
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="LanguageUsage.AcceptLanguageAndXmlHtmlLangUsage"
     enum="AcceptLanguageAndXmlHtmlLangUsage" expires_after="2024-12-10">
   <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
+  <owner>katabolism-finch@google.com</owner>
   <summary>
     Metrics that record matches between the xml:lang, html lang and
     Accept-Language request header values. This is recorded every time the
