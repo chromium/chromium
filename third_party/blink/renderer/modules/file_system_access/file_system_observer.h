@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_observer_callback.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -19,7 +20,6 @@ namespace blink {
 class ExecutionContext;
 class FileSystemHandle;
 class FileSystemObserverObserveOptions;
-class ScriptPromiseResolver;
 
 class FileSystemObserver : public ScriptWrappable,
                            public mojom::blink::FileSystemAccessObserver {
@@ -36,10 +36,11 @@ class FileSystemObserver : public ScriptWrappable,
       mojo::PendingRemote<mojom::blink::FileSystemAccessObserverHost>
           host_remote);
 
-  ScriptPromise observe(ScriptState*,
-                        FileSystemHandle* handle,
-                        FileSystemObserverObserveOptions* options,
-                        ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> observe(
+      ScriptState*,
+      FileSystemHandle* handle,
+      FileSystemObserverObserveOptions* options,
+      ExceptionState&);
   void unobserve(FileSystemHandle* handle);
   void disconnect();
 
@@ -55,7 +56,7 @@ class FileSystemObserver : public ScriptWrappable,
   // notifications while the page is frozen and to destroy `this` when the
   // ExecutionContext is destroyed.
 
-  void DidObserve(ScriptPromiseResolver* resolver,
+  void DidObserve(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                   mojom::blink::FileSystemAccessErrorPtr result,
                   mojo::PendingReceiver<mojom::blink::FileSystemAccessObserver>
                       observer_receiver);

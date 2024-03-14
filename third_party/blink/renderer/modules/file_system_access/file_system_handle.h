@@ -53,19 +53,20 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
       const FileSystemHandlePermissionDescriptor*,
       ExceptionState&);
 
-  ScriptPromise move(ScriptState*,
-                     const String& new_entry_name,
-                     ExceptionState&);
-  ScriptPromise move(ScriptState*,
-                     FileSystemDirectoryHandle* destination_directory,
-                     ExceptionState&);
-  ScriptPromise move(ScriptState*,
-                     FileSystemDirectoryHandle* destination_directory,
-                     const String& new_entry_name,
-                     ExceptionState&);
-  ScriptPromise remove(ScriptState*,
-                       const FileSystemRemoveOptions* options,
-                       ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> move(ScriptState*,
+                                        const String& new_entry_name,
+                                        ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> move(
+      ScriptState*,
+      FileSystemDirectoryHandle* destination_directory,
+      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> move(
+      ScriptState*,
+      FileSystemDirectoryHandle* destination_directory,
+      const String& new_entry_name,
+      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined>
+  remove(ScriptState*, const FileSystemRemoveOptions* options, ExceptionState&);
 
   ScriptPromiseTyped<IDLBoolean> isSameEntry(ScriptState*,
                                              FileSystemHandle* other,

@@ -218,7 +218,7 @@ FileSystemDirectoryHandle::getDirectoryHandle(
   return result;
 }
 
-ScriptPromise FileSystemDirectoryHandle::removeEntry(
+ScriptPromiseTyped<IDLUndefined> FileSystemDirectoryHandle::removeEntry(
     ScriptState* script_state,
     const String& name,
     const FileSystemRemoveOptions* options,
@@ -226,17 +226,19 @@ ScriptPromise FileSystemDirectoryHandle::removeEntry(
   if (!mojo_ptr_.is_bound()) {
     // TODO(crbug.com/1293949): Add an error message.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError, "");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
   mojo_ptr_->RemoveEntry(
       name, options->recursive(),
       WTF::BindOnce(
-          [](FileSystemDirectoryHandle*, ScriptPromiseResolver* resolver,
+          [](FileSystemDirectoryHandle*,
+             ScriptPromiseResolverTyped<IDLUndefined>* resolver,
              FileSystemAccessErrorPtr result) {
             // Keep `this` alive so the handle will not be garbage-collected
             // before the promise is resolved.

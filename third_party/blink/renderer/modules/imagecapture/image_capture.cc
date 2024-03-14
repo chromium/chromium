@@ -2715,7 +2715,7 @@ void ImageCapture::MaybeRejectWithOverconstrainedError(
 
 void ImageCapture::ResolveWithNothing(ScriptPromiseResolver* resolver) {
   DCHECK(resolver);
-  resolver->Resolve();
+  resolver->DowncastTo<IDLUndefined>()->Resolve();
 }
 
 void ImageCapture::ResolveWithPhotoSettings(ScriptPromiseResolver* resolver) {

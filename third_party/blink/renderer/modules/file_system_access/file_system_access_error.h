@@ -6,14 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_ERROR_H_
 
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 
 namespace blink {
-class ScriptPromiseResolver;
 namespace file_system_access_error {
 
 // Rejects `resolver` with an appropriate exception if `status` represents an
 // error. Resolves `resolver` with undefined otherwise.
-void ResolveOrReject(ScriptPromiseResolver* resolver,
+void ResolveOrReject(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                      const mojom::blink::FileSystemAccessError& status);
 
 // Rejects `resolver` with an appropriate exception if `status` represents an

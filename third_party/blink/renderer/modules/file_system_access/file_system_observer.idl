@@ -18,7 +18,7 @@
   [
       CallWith=ScriptState,
       RaisesException
-  ] Promise<void> observe(FileSystemHandle handle,
+  ] Promise<undefined> observe(FileSystemHandle handle,
                           optional FileSystemObserverObserveOptions options = {});
   void unobserve(FileSystemHandle handle);
   void disconnect();

@@ -74,16 +74,17 @@ class MODULES_EXPORT HIDDevice
   String productName() const;
   const HeapVector<Member<HIDCollectionInfo>>& collections() const;
 
-  ScriptPromise open(ScriptState* script_state,
-                     ExceptionState& exception_state);
-  ScriptPromise close(ScriptState*);
-  ScriptPromise forget(ScriptState*, ExceptionState& exception_state);
-  ScriptPromise sendReport(ScriptState*,
-                           uint8_t report_id,
-                           const DOMArrayPiece& data);
-  ScriptPromise sendFeatureReport(ScriptState*,
-                                  uint8_t report_id,
-                                  const DOMArrayPiece& data);
+  ScriptPromiseTyped<IDLUndefined> open(ScriptState* script_state,
+                                        ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined> close(ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> forget(ScriptState*,
+                                          ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined> sendReport(ScriptState*,
+                                              uint8_t report_id,
+                                              const DOMArrayPiece& data);
+  ScriptPromiseTyped<IDLUndefined> sendFeatureReport(ScriptState*,
+                                                     uint8_t report_id,
+                                                     const DOMArrayPiece& data);
   ScriptPromiseTyped<DOMDataView> receiveFeatureReport(ScriptState*,
                                                        uint8_t report_id);
 
@@ -107,15 +108,13 @@ class MODULES_EXPORT HIDDevice
 
   void OnServiceConnectionError();
 
-  void FinishOpen(ScriptPromiseResolver*,
+  void FinishOpen(ScriptPromiseResolverTyped<IDLUndefined>*,
                   mojo::PendingRemote<device::mojom::blink::HidConnection>);
-  void FinishForget(ScriptPromiseResolver*);
-  void FinishSendReport(ScriptPromiseResolver*, bool success);
-  void FinishReceiveReport(ScriptPromiseResolver*,
-                           bool success,
-                           uint8_t report_id,
-                           const std::optional<Vector<uint8_t>>&);
-  void FinishSendFeatureReport(ScriptPromiseResolver*, bool success);
+  void FinishForget(ScriptPromiseResolverTyped<IDLUndefined>*);
+  void FinishSendReport(ScriptPromiseResolverTyped<IDLUndefined>*,
+                        bool success);
+  void FinishSendFeatureReport(ScriptPromiseResolverTyped<IDLUndefined>*,
+                               bool success);
   void FinishReceiveFeatureReport(ScriptPromiseResolverTyped<DOMDataView>*,
                                   bool success,
                                   const std::optional<Vector<uint8_t>>&);

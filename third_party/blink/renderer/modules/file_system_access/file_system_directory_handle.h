@@ -44,10 +44,10 @@ class FileSystemDirectoryHandle final
       const String& name,
       const FileSystemGetDirectoryOptions*,
       ExceptionState&);
-  ScriptPromise removeEntry(ScriptState*,
-                            const String& name,
-                            const FileSystemRemoveOptions*,
-                            ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> removeEntry(ScriptState*,
+                                               const String& name,
+                                               const FileSystemRemoveOptions*,
+                                               ExceptionState&);
 
   ScriptPromiseTyped<IDLNullable<IDLSequence<IDLUSVString>>>
   resolve(ScriptState*, FileSystemHandle* possible_child, ExceptionState&);

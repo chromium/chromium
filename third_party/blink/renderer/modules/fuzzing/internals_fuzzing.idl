@@ -8,6 +8,6 @@
     ImplementedAs=InternalsFuzzing
 ] partial interface Internals {
     [CallWith=ScriptState]
-    Promise<void> runFuzzer(DOMString fuzzer_id, BufferSource fuzzer_data);
+    Promise<undefined> runFuzzer(DOMString fuzzer_id, BufferSource fuzzer_data);
 };
 

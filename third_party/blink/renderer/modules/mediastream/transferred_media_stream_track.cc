@@ -189,20 +189,22 @@ CaptureHandle* TransferredMediaStreamTrack::getCaptureHandle() const {
   return CaptureHandle::Create();
 }
 
-ScriptPromise TransferredMediaStreamTrack::applyConstraints(
+ScriptPromiseTyped<IDLUndefined> TransferredMediaStreamTrack::applyConstraints(
     ScriptState* script_state,
     const MediaTrackConstraints* constraints) {
   if (track_) {
     return track_->applyConstraints(script_state, constraints);
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
   applyConstraints(resolver, constraints);
   return promise;
 }
 
 void TransferredMediaStreamTrack::applyConstraints(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     const MediaTrackConstraints* constraints) {
   setter_call_order_.push_back(APPLY_CONSTRAINTS);
   constraints_list_.push_back(
@@ -450,7 +452,7 @@ void TransferredMediaStreamTrack::Trace(Visitor* visitor) const {
 }
 
 TransferredMediaStreamTrack::ConstraintsPair::ConstraintsPair(
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     const MediaTrackConstraints* constraints)
     : resolver(resolver), constraints(constraints) {}
 

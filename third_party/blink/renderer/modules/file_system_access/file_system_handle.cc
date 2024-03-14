@@ -91,18 +91,21 @@ ScriptPromiseTyped<V8PermissionState> FileSystemHandle::requestPermission(
   return result;
 }
 
-ScriptPromise FileSystemHandle::move(ScriptState* script_state,
-                                     const String& new_entry_name,
-                                     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+ScriptPromiseTyped<IDLUndefined> FileSystemHandle::move(
+    ScriptState* script_state,
+    const String& new_entry_name,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
   MoveImpl(
       mojo::NullRemote(), new_entry_name,
       WTF::BindOnce(
           [](FileSystemHandle* handle, const String& new_name,
-             ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
+             ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+             FileSystemAccessErrorPtr result) {
             if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
               handle->name_ = new_name;
             }
@@ -113,17 +116,19 @@ ScriptPromise FileSystemHandle::move(ScriptState* script_state,
   return result;
 }
 
-ScriptPromise FileSystemHandle::move(
+ScriptPromiseTyped<IDLUndefined> FileSystemHandle::move(
     ScriptState* script_state,
     FileSystemDirectoryHandle* destination_directory,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
   MoveImpl(destination_directory->Transfer(), name_,
            WTF::BindOnce(
-               [](FileSystemHandle*, ScriptPromiseResolver* resolver,
+               [](FileSystemHandle*,
+                  ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                   FileSystemAccessErrorPtr result) {
                  // Keep `this` alive so the handle will not be
                  // garbage-collected before the promise is resolved.
@@ -134,20 +139,22 @@ ScriptPromise FileSystemHandle::move(
   return result;
 }
 
-ScriptPromise FileSystemHandle::move(
+ScriptPromiseTyped<IDLUndefined> FileSystemHandle::move(
     ScriptState* script_state,
     FileSystemDirectoryHandle* destination_directory,
     const String& new_entry_name,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
   MoveImpl(
       destination_directory->Transfer(), new_entry_name,
       WTF::BindOnce(
           [](FileSystemHandle* handle, const String& new_name,
-             ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
+             ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+             FileSystemAccessErrorPtr result) {
             if (result->status == mojom::blink::FileSystemAccessStatus::kOk) {
               handle->name_ = new_name;
             }
@@ -158,15 +165,18 @@ ScriptPromise FileSystemHandle::move(
   return result;
 }
 
-ScriptPromise FileSystemHandle::remove(ScriptState* script_state,
-                                       const FileSystemRemoveOptions* options,
-                                       ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise result = resolver->Promise();
+ScriptPromiseTyped<IDLUndefined> FileSystemHandle::remove(
+    ScriptState* script_state,
+    const FileSystemRemoveOptions* options,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
 
   RemoveImpl(options, WTF::BindOnce(
-                          [](FileSystemHandle*, ScriptPromiseResolver* resolver,
+                          [](FileSystemHandle*,
+                             ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                              FileSystemAccessErrorPtr result) {
                             // Keep `this` alive so the handle will not be
                             // garbage-collected before the promise is resolved.

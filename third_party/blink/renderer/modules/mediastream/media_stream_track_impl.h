@@ -53,7 +53,6 @@ class MediaTrackCapabilities;
 class MediaTrackConstraints;
 class MediaStream;
 class MediaTrackSettings;
-class ScriptPromiseResolver;
 class ScriptState;
 
 // Primary implementation of the MediaStreamTrack interface and idl type.
@@ -94,8 +93,9 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaTrackSettings* getSettings() const override;
   MediaStreamTrackVideoStats* stats() override;
   CaptureHandle* getCaptureHandle() const override;
-  ScriptPromise applyConstraints(ScriptState*,
-                                 const MediaTrackConstraints*) override;
+  ScriptPromiseTyped<IDLUndefined> applyConstraints(
+      ScriptState*,
+      const MediaTrackConstraints*) override;
 
   // These two functions are called when constraints have been successfully
   // applied.
@@ -170,7 +170,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   friend class InternalsMediaStream;
 
   // MediaStreamTrack
-  void applyConstraints(ScriptPromiseResolver*,
+  void applyConstraints(ScriptPromiseResolverTyped<IDLUndefined>*,
                         const MediaTrackConstraints*) override;
 
   // MediaStreamSource::Observer

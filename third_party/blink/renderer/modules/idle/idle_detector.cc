@@ -117,13 +117,14 @@ ScriptPromiseTyped<V8PermissionState> IdleDetector::requestPermission(
                                                        exception_state);
 }
 
-ScriptPromise IdleDetector::start(ScriptState* script_state,
-                                  const IdleOptions* options,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> IdleDetector::start(
+    ScriptState* script_state,
+    const IdleOptions* options,
+    ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Execution context is detached.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -133,20 +134,20 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
           mojom::blink::PermissionsPolicyFeature::kIdleDetection,
           ReportOptions::kReportOnFailure)) {
     exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (receiver_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Idle detector is already started.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (options->hasThreshold()) {
     auto threshold = base::Milliseconds(options->threshold());
     if (threshold < kMinimumThreshold) {
       exception_state.ThrowTypeError("Minimum threshold is 1 minute.");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
     threshold_ = threshold;
   }
@@ -154,7 +155,8 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
   signal_ = options->getSignalOr(nullptr);
   if (signal_) {
     if (signal_->aborted()) {
-      return ScriptPromise::Reject(script_state, signal_->reason(script_state));
+      return ScriptPromiseTyped<IDLUndefined>::Reject(
+          script_state, signal_->reason(script_state));
     }
     // If there was a previous algorithm, it should have been removed when we
     // reached the "stopped" state.
@@ -168,9 +170,9 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
   receiver_.set_disconnect_handler(WTF::BindOnce(
       &IdleDetector::OnMonitorDisconnected, WrapWeakPersistent(this)));
 
-  resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
+  resolver_ = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver_->Promise();
+  auto promise = resolver_->Promise();
   IdleManager::From(context)->AddMonitor(
       std::move(remote),
       WTF::BindOnce(&IdleDetector::OnAddMonitor, WrapWeakPersistent(this),
@@ -211,9 +213,10 @@ void IdleDetector::OnMonitorDisconnected() {
   Clear();
 }
 
-void IdleDetector::OnAddMonitor(ScriptPromiseResolver* resolver,
-                                IdleManagerError error,
-                                mojom::blink::IdleStatePtr state) {
+void IdleDetector::OnAddMonitor(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    IdleManagerError error,
+    mojom::blink::IdleStatePtr state) {
   if (resolver_ != resolver) {
     // Starting the detector was aborted so `resolver_` has already been used
     // and `receiver_` has already been reset.

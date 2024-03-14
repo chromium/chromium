@@ -12,26 +12,24 @@
 
 namespace blink::file_system_access_error {
 
-void Reject(ScriptPromiseResolver* resolver,
-            const mojom::blink::FileSystemAccessError& error) {
-  DCHECK_NE(error.status, mojom::blink::FileSystemAccessStatus::kOk);
-  ResolveOrReject(resolver, error);
+void ResolveOrReject(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                     const mojom::blink::FileSystemAccessError& error) {
+  if (error.status == mojom::blink::FileSystemAccessStatus::kOk) {
+    resolver->Resolve();
+  } else {
+    Reject(resolver, error);
+  }
 }
 
-void ResolveOrReject(ScriptPromiseResolver* resolver,
-                     const mojom::blink::FileSystemAccessError& error) {
-  // Early exit if the resolver's context has been destroyed already.
-  if (!resolver->GetScriptState()->ContextIsValid())
-    return;
-  ScriptState::Scope scope(resolver->GetScriptState());
-
+void Reject(ScriptPromiseResolver* resolver,
+            const mojom::blink::FileSystemAccessError& error) {
   // Convert empty message to a null string, to make sure we get the default
   // error message if no custom error message is provided.
   const String message = error.message.empty() ? String() : error.message;
 
   switch (error.status) {
     case mojom::blink::FileSystemAccessStatus::kOk:
-      resolver->Resolve();
+      NOTREACHED();
       break;
     case mojom::blink::FileSystemAccessStatus::kPermissionDenied:
       resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
