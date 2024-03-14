@@ -22,8 +22,16 @@ void AppInstallServiceLacros::InstallApp(AppInstallSurface surface,
   params->surface = [&] {
     using Surface = crosapi::mojom::InstallAppParams::Surface;
     switch (surface) {
-      case AppInstallSurface::kAppInstallNavigationThrottle:
-        return Surface::kAppInstallNavigationThrottle;
+      case AppInstallSurface::kAppInstallUriUnknown:
+        return Surface::kAppInstallUriUnknown;
+      case AppInstallSurface::kAppInstallUriShowoff:
+        return Surface::kAppInstallUriShowoff;
+      case AppInstallSurface::kAppInstallUriMall:
+        return Surface::kAppInstallUriMall;
+      case AppInstallSurface::kAppInstallUriGetit:
+        return Surface::kAppInstallUriGetit;
+      case AppInstallSurface::kAppInstallUriLauncher:
+        return Surface::kAppInstallUriLauncher;
       case AppInstallSurface::kAppPreloadServiceOem:
       case AppInstallSurface::kAppPreloadServiceDefault:
         // Preloads should be installed from Ash, not Lacros.

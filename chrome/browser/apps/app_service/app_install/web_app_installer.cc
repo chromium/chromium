@@ -196,7 +196,11 @@ void WebAppInstaller::OnManifestRetrieved(
     web_app_install_info->manifest = std::move(*response);
     web_app_install_info->install_source = [&] {
       switch (surface) {
-        case AppInstallSurface::kAppInstallNavigationThrottle:
+        case AppInstallSurface::kAppInstallUriUnknown:
+        case AppInstallSurface::kAppInstallUriShowoff:
+        case AppInstallSurface::kAppInstallUriMall:
+        case AppInstallSurface::kAppInstallUriGetit:
+        case AppInstallSurface::kAppInstallUriLauncher:
           // TODO(b/315078159): Support non-preload installs over crosapi.
           NOTREACHED();
           [[fallthrough]];
@@ -217,7 +221,11 @@ void WebAppInstaller::OnManifestRetrieved(
   } else {
     webapps::WebappInstallSource install_source = [&] {
       switch (surface) {
-        case AppInstallSurface::kAppInstallNavigationThrottle:
+        case AppInstallSurface::kAppInstallUriUnknown:
+        case AppInstallSurface::kAppInstallUriShowoff:
+        case AppInstallSurface::kAppInstallUriMall:
+        case AppInstallSurface::kAppInstallUriGetit:
+        case AppInstallSurface::kAppInstallUriLauncher:
           // TODO(b/315078159): Add nav throttle as a new surface.
           NOTREACHED();
           [[fallthrough]];

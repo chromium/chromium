@@ -17,11 +17,19 @@
 namespace apps {
 
 // Additions to this enum must also update the
-// Apps.AppInstallService.AppInstallResult histogram.
+// AppInstallSurface variants in:
+// tools/metrics/histograms/metadata/apps/histograms.xml
 enum class AppInstallSurface {
-  kAppInstallNavigationThrottle,
   kAppPreloadServiceOem,
   kAppPreloadServiceDefault,
+
+  // kAppInstallUri* values are not trustworthy, no decision making should
+  // depend on these values.
+  kAppInstallUriUnknown,
+  kAppInstallUriShowoff,
+  kAppInstallUriMall,
+  kAppInstallUriGetit,
+  kAppInstallUriLauncher,
 };
 
 std::ostream& operator<<(std::ostream& out, AppInstallSurface surface);

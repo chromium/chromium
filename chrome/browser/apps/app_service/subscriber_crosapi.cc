@@ -39,8 +39,16 @@ std::optional<AppInstallSurface> AppInstallSurfaceFromCrosapi(
   switch (surface) {
     case Surface::kUnknown:
       return std::nullopt;
-    case Surface::kAppInstallNavigationThrottle:
-      return AppInstallSurface::kAppInstallNavigationThrottle;
+    case Surface::kAppInstallUriUnknown:
+      return AppInstallSurface::kAppInstallUriUnknown;
+    case Surface::kAppInstallUriShowoff:
+      return AppInstallSurface::kAppInstallUriShowoff;
+    case Surface::kAppInstallUriMall:
+      return AppInstallSurface::kAppInstallUriMall;
+    case Surface::kAppInstallUriGetit:
+      return AppInstallSurface::kAppInstallUriGetit;
+    case Surface::kAppInstallUriLauncher:
+      return AppInstallSurface::kAppInstallUriLauncher;
   }
 }
 

@@ -624,10 +624,15 @@ enum ControllerRegistrationResult {
 [Stable]
 struct InstallAppParams {
   // Represents the origin of the installation.
+  // Next version: 2
   [Stable, Extensible]
   enum Surface {
     [Default] kUnknown = 0,
-    kAppInstallNavigationThrottle = 1,
+    kAppInstallUriUnknown = 1,
+    [MinVersion=1] kAppInstallUriShowoff = 2,
+    [MinVersion=1] kAppInstallUriMall = 3,
+    [MinVersion=1] kAppInstallUriGetit = 4,
+    [MinVersion=1] kAppInstallUriLauncher = 5,
   };
   Surface surface@0;
 

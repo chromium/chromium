@@ -30,8 +30,25 @@ using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
 constexpr std::string_view kAppInstallPath = "//install-app";
 constexpr std::string_view kAppInstallPackageIdParam = "package_id";
+constexpr std::string_view kAppInstallSourceParam = "source";
 
 constexpr size_t kMaxDecodeLength = 2048;
+
+AppInstallSurface SourceParamToAppInstallSurface(std::string_view source) {
+  if (base::EqualsCaseInsensitiveASCII(source, "showoff")) {
+    return AppInstallSurface::kAppInstallUriShowoff;
+  }
+  if (base::EqualsCaseInsensitiveASCII(source, "mall")) {
+    return AppInstallSurface::kAppInstallUriMall;
+  }
+  if (base::EqualsCaseInsensitiveASCII(source, "getit")) {
+    return AppInstallSurface::kAppInstallUriGetit;
+  }
+  if (base::EqualsCaseInsensitiveASCII(source, "launcher")) {
+    return AppInstallSurface::kAppInstallUriLauncher;
+  }
+  return AppInstallSurface::kAppInstallUriUnknown;
+}
 
 }  // namespace
 
@@ -44,30 +61,52 @@ AppInstallNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
   return nullptr;
 }
 
+AppInstallNavigationThrottle::QueryParams::QueryParams() = default;
+
+AppInstallNavigationThrottle::QueryParams::QueryParams(
+    std::optional<PackageId> package_id,
+    AppInstallSurface source)
+    : package_id(std::move(package_id)), source(source) {}
+
+AppInstallNavigationThrottle::QueryParams::QueryParams(QueryParams&&) = default;
+
+AppInstallNavigationThrottle::QueryParams::~QueryParams() = default;
+
+bool AppInstallNavigationThrottle::QueryParams::operator==(
+    const QueryParams& other) const {
+  return package_id == other.package_id && source == other.source;
+}
+
 // static
-std::optional<PackageId> AppInstallNavigationThrottle::ExtractPackageId(
-    std::string_view query) {
+AppInstallNavigationThrottle::QueryParams
+AppInstallNavigationThrottle::ExtractQueryParams(std::string_view query) {
+  QueryParams result;
   url::Component query_slice(0, query.length());
   url::Component key_slice;
   url::Component value_slice;
   while (url::ExtractQueryKeyValue(query, &query_slice, &key_slice,
                                    &value_slice)) {
-    if (query.substr(key_slice.begin, key_slice.len) !=
-        kAppInstallPackageIdParam) {
-      continue;
+    std::string_view key = query.substr(key_slice.begin, key_slice.len);
+
+    auto decode_value = [&]() {
+      url::RawCanonOutputW<kMaxDecodeLength> decoded_value;
+      url::DecodeURLEscapeSequences(
+          query.substr(value_slice.begin, value_slice.len),
+          url::DecodeURLMode::kUTF8OrIsomorphic, &decoded_value);
+
+      // TODO(b/299825321): Make DecodeURLEscapeSequences() work with
+      // RawCanonOutput to avoid this redundant UTF8 -> UTF16 -> UTF8
+      // conversion.
+      return base::UTF16ToUTF8(decoded_value.view());
+    };
+
+    if (key == kAppInstallPackageIdParam) {
+      result.package_id = PackageId::FromString(decode_value());
+    } else if (key == kAppInstallSourceParam) {
+      result.source = SourceParamToAppInstallSurface(decode_value());
     }
-
-    url::RawCanonOutputW<kMaxDecodeLength> decoded_value;
-    url::DecodeURLEscapeSequences(
-        query.substr(value_slice.begin, value_slice.len),
-        url::DecodeURLMode::kUTF8OrIsomorphic, &decoded_value);
-
-    // TODO(b/299825321): Make DecodeURLEscapeSequences() work with
-    // RawCanonOutput to avoid this redundant UTF8 -> UTF16 -> UTF8
-    // conversion.
-    return PackageId::FromString(base::UTF16ToUTF8(decoded_value.view()));
   }
-  return std::nullopt;
+  return result;
 }
 
 AppInstallNavigationThrottle::AppInstallNavigationThrottle(
@@ -96,14 +135,15 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
   const GURL& url = navigation_handle()->GetURL();
   if (url.SchemeIs(chromeos::kAppInstallUriScheme) &&
       url.path_piece() == kAppInstallPath) {
-    std::optional<PackageId> package_id = ExtractPackageId(url.query_piece());
+    QueryParams query_params = ExtractQueryParams(url.query_piece());
     // TODO(b/303350800): Generalize to work with all app types.
-    if (package_id.has_value() && package_id->app_type() == AppType::kWeb) {
+    if (query_params.package_id.has_value() &&
+        query_params.package_id->app_type() == AppType::kWeb) {
       Profile* profile = Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
       auto* proxy = AppServiceProxyFactory::GetForProfile(profile);
       proxy->AppInstallService().InstallApp(
-          AppInstallSurface::kAppInstallNavigationThrottle, package_id.value(),
+          query_params.source, std::move(query_params.package_id.value()),
           base::DoNothing());
     }
 

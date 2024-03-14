@@ -12,12 +12,20 @@ namespace apps {
 // Do not modify existing strings, they are used by metrics.
 std::ostream& operator<<(std::ostream& out, AppInstallSurface surface) {
   switch (surface) {
-    case AppInstallSurface::kAppInstallNavigationThrottle:
-      return out << "AppInstallNavigationThrottle";
     case AppInstallSurface::kAppPreloadServiceOem:
       return out << "AppPreloadServiceOem";
     case AppInstallSurface::kAppPreloadServiceDefault:
       return out << "AppPreloadServiceDefault";
+    case AppInstallSurface::kAppInstallUriUnknown:
+      return out << "AppInstallUriUnknown";
+    case AppInstallSurface::kAppInstallUriShowoff:
+      return out << "AppInstallUriShowoff";
+    case AppInstallSurface::kAppInstallUriMall:
+      return out << "AppInstallUriMall";
+    case AppInstallSurface::kAppInstallUriGetit:
+      return out << "AppInstallUriGetit";
+    case AppInstallSurface::kAppInstallUriLauncher:
+      return out << "AppInstallUriLauncher";
   }
 }
 

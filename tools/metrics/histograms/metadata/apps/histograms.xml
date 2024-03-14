@@ -33,7 +33,12 @@ chromium-metrics-reviews@google.com.
 
 <variants name="AppInstallSurface">
   <variant name="" summary="All surfaces"/>
-  <variant name=".AppInstallNavigationThrottle" summary="URI navigation"/>
+  <variant name=".AppInstallUriGetit" summary="URI navigation from Getit"/>
+  <variant name=".AppInstallUriLauncher"
+      summary="URI navigation from Launcher"/>
+  <variant name=".AppInstallUriMall" summary="URI navigation from Mall"/>
+  <variant name=".AppInstallUriShowoff" summary="URI navigation from Showoff"/>
+  <variant name=".AppInstallUriUnknown" summary="URI navigation from unknown"/>
   <variant name=".AppPreloadServiceDefault" summary="Default preload"/>
   <variant name=".AppPreloadServiceOem" summary="OEM preload"/>
 </variants>
