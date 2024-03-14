@@ -2,10 +2,7 @@
   :host {
     --background-color: white;
     --search-engine-icon-size: 24px;
-    --scrollbar-height: 116px;
-    --action-button-margins: 40px;
-    --choice-list-bottom-padding: 50px;
-    --choice-list-horizontal-padding: 8px;
+    --action-button-margins: 24px;
     --content-container-width: 500px;
     --radio-button-horizontal-padding: 16px;
     --choice-gap: 16px;
@@ -26,13 +23,8 @@
   }
 
   #actionButton {
-    --panel-width: calc((100% - var(--content-container-width)) / 2);
     height: unset;
     margin: var(--action-button-margins);
-    /* The max-width is needed to stop the button from overlapping with
-     the choice list in case of large text.  */
-    max-width: calc(var(--panel-width) - (var(--action-button-margins) * 2)
-        - var(--choice-list-horizontal-padding));
     padding: 6px 16px 6px 12px;
     pointer-events: all;
     text-align: center;
@@ -48,24 +40,26 @@
     width: var(--content-container-width);
   }
 
-  .tangible-sync-style .title {
-    margin: 16px 0 0 0;
-  }
-
-  .tangible-sync-style .subtitle {
-    line-height: 30px;
-    margin: 0 0 24px;
-  }
-
   #choiceList {
     display: flex;
     flex-direction: column;
-    /* We add horizontal padding to put the scollbar on the right and keep
-    the content centered. */
-    padding: 0 var(--choice-list-horizontal-padding)
-        var(--choice-list-bottom-padding);
     text-align: start;
     width: 100%;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 32px;
+    margin: 0;
+  }
+
+  .subtitle {
+    color: var(--cr-secondary-text-color);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 24px;
+    margin: 0 0 24px;
   }
 
   .choice {
@@ -94,6 +88,9 @@
   }
 
   .choice-title {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
     font-family: Roboto, Arial;
     font-size: 0.8125rem;
     font-weight: 400;
@@ -101,35 +98,29 @@
     text-align: start;
   }
 
-  .choice-title {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-  }
-
   cr-radio-button {
-    --cr-radio-button-label-spacing: 12px;
+    --cr-radio-button-label-spacing: 16px;
     --cr-radio-button-size: 20px;
     background-color: var(--google-grey-100);
     border-bottom: 1px solid var(--background-color);
     border-radius: 2px;
-    padding: 10px var(--radio-button-horizontal-padding);
+    padding: 8px var(--radio-button-horizontal-padding);
   }
 
   cr-radio-button:first-of-type {
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
   }
 
   cr-radio-button:last-of-type {
     border-bottom: unset;
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
   }
 
   .product-logo {
     height: 48px;
-    margin-top: 68px;
+    margin: 64px 0 16px;
     width: 48px;
   }
 
@@ -165,29 +156,13 @@
     margin: 0 0 24px;
   }
 
-  .button-container {
+  #buttonContainer {
     bottom: 0;
     display: flex;
     justify-content: flex-end;
     pointer-events: none;
     position: fixed;
     width: 100vw;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  /* Track */
-  .custom-scrollbar::-webkit-scrollbar-track {
-    border-radius: calc(var(--scrollbar-height) /2);
-    margin-bottom: var(--choice-list-bottom-padding);
-  }
-
-  /* Handle */
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--google-grey-100);
-    border-radius: calc(var(--scrollbar-height) /2);
   }
 
   .cr-icon {
@@ -197,6 +172,18 @@
     --cr-icon-size: 18px;
     margin: 0;
   }
+
+  #choiceList.overlap-mitigation {
+      --button-container-height: calc(var(--cr-button-height) + 2 *
+          var(--action-button-margins));
+      padding-bottom: var(--button-container-height);
+  }
+
+  #buttonContainer.overlap-mitigation {
+      background-color: var(--background-color);
+      border-top: var(--cr-separator-line);
+      pointer-events: unset;
+    }
 
   .marketing-snippet {
     color: var(--cr-secondary-text-color);
@@ -234,91 +221,29 @@
       color: var(--google-blue-300);
     }
 
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: var(--google-grey-800);
-    }
-
     cr-radio-button {
       --cr-radio-button-unchecked-color: var(--google-grey-100);
       background-color: var(--google-grey-800);
     }
   }
 
-  /* We need to override the values from tangible-sync-style. */
-  @media screen and ((max-width: 780px) or (max-height: 600px)) {
-    .tangible-sync-style .title {
-      font-size: 2.25rem;
-      line-height: 44px;
-    }
-
-    .tangible-sync-style .subtitle {
-      font-size: 1.25rem;
-      line-height: 30px;
-    }
-  }
-
-  @media screen and (max-width: 920px) {
-    :host {
-      --action-button-margins: 28px;
-    }
-
-    .button-container {
-      background-color: var(--background-color);
-      border-top: var(--cr-separator-line);
-      pointer-events: unset;
-    }
-
-    #actionButton {
-      max-width: unset;
-      pointer-events: unset;
-    }
-
+  @media screen and (max-width: 780px) {
     .tangible-sync-style-left-banner,
     .tangible-sync-style-right-banner {
       display: none;
     }
-
-    #choiceList {
-      --button-container-height: calc(var(--cr-button-height) + 2 *
-          var(--action-button-margins));
-      padding-bottom: var(--button-container-height);
-    }
   }
 
-  @media screen and (max-width: 640px) {
+  @media screen and (max-width: 548px) {
     :host {
-      --content-container-width: 420px;
-    }
-
-    .tangible-sync-style .title {
-      font-size: 2rem;
-    }
-  }
-
-  @media screen and (max-height: 757px) {
-    .product-logo {
-      margin-top: 40px;
-    }
-
-    .tangible-sync-style .subtitle {
-      font-size: 1.0625rem;
-    }
-  }
-
-  @media screen and (max-height: 640px) {
-    .product-logo {
-      display: none;
-    }
-
-    .tangible-sync-style .title {
-      margin-top: 24px;
+      --content-container-width: 452px;
     }
   }
 </style>
 
 <img class="tangible-sync-style-left-banner" alt="">
 <img class="tangible-sync-style-right-banner" alt="">
-<div class="content-container tangible-sync-style">
+<div class="content-container">
   <img class="product-logo" src="images/product-logo.svg"
       alt="$i18n{productLogoAltText}" aria-hidden="true">
   <h1 class="title">$i18n{title}</h1>
@@ -329,7 +254,7 @@
       $i18n{subtitleInfoLink}
     </a>
   </p>
-  <cr-radio-group id="choiceList" class="custom-scrollbar"
+  <cr-radio-group id="choiceList"
       selected="{{selectedChoice_}}" role="list">
     <template is="dom-repeat" items="[[choiceList_]]">
         <cr-radio-button aria-label$="[[item.name]]" role="listitem"
@@ -352,7 +277,7 @@
     </template>
   </cr-radio-group>
 </div>
-<div class="button-container">
+<div id="buttonContainer">
   <cr-button class="action-button" id="actionButton"
       on-click="onActionButtonClicked_" disabled="[[isActionButtonDisabled_]]">
       <div class="cr-icon" slot="prefix-icon" title=""

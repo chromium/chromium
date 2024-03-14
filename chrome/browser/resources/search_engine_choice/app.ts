@@ -29,6 +29,8 @@ export interface SearchEngineChoiceAppElement {
     infoDialog: CrDialogElement,
     actionButton: CrButtonElement,
     infoLink: HTMLElement,
+    choiceList: HTMLElement,
+    buttonContainer: HTMLElement,
   };
 }
 
@@ -92,6 +94,7 @@ export class SearchEngineChoiceAppElement extends
   private hasUserScrolledToTheBottom_: boolean;
   private actionButtonText_: string;
   private snippetDisplayed_: boolean;
+  private resizeObserver_: ResizeObserver|null = null;
 
   constructor() {
     super();
@@ -117,6 +120,8 @@ export class SearchEngineChoiceAppElement extends
       }
     });
 
+    this.addResizeObserver_();
+
     afterNextRender(this, () => {
       const isPageScrollable =
           document.body.scrollHeight > document.body.clientHeight;
@@ -131,6 +136,44 @@ export class SearchEngineChoiceAppElement extends
 
       this.pageHandler_.displayDialog();
     });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.resizeObserver_!.disconnect();
+  }
+
+  private addResizeObserver_() {
+    function buttonAndListOverlap(
+        buttonRect: DOMRect, listRect: DOMRect, offset: number): boolean {
+      return !(
+          buttonRect.right + offset < listRect.left ||
+          buttonRect.left - offset > listRect.right ||
+          buttonRect.bottom < listRect.top || buttonRect.top > listRect.bottom);
+    }
+
+    this.resizeObserver_ = new ResizeObserver(() => {
+      // The button container should hide the remaining elements of the list
+      // when they overlap so that the search engines and submit button don't
+      // block each other.
+      const buttonRect = this.$.actionButton.getBoundingClientRect();
+      const listRect = this.$.choiceList.getBoundingClientRect();
+
+      // We add an offset to mitigate the change in position caused by the
+      // addition of the scrollbar.
+      let offset = 0;
+      if (this.$.choiceList.classList.contains('overlap-mitigation')) {
+        offset = 30;
+      }
+
+      this.$.choiceList.classList.toggle(
+          'overlap-mitigation',
+          buttonAndListOverlap(buttonRect, listRect, offset));
+      this.$.buttonContainer.classList.toggle(
+          'overlap-mitigation',
+          buttonAndListOverlap(buttonRect, listRect, offset));
+    });
+    this.resizeObserver_.observe(document.body);
   }
 
   private onLinkClicked_() {
