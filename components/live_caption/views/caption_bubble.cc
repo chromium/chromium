@@ -642,7 +642,7 @@ void CaptionBubble::Init() {
   title->SetBackgroundColor(SK_ColorTRANSPARENT);
   title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   title->SetText(l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_TITLE));
-  title->GetViewAccessibility().OverrideIsIgnored(true);
+  title->GetViewAccessibility().SetIsIgnored(true);
 
   // Define an error message that will be displayed in the caption bubble if a
   // generic error is encountered.
@@ -790,7 +790,7 @@ void CaptionBubble::Init() {
                             base::Unretained(this)));
     language_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
-    language_label->GetViewAccessibility().OverrideIsIgnored(true);
+    language_label->GetViewAccessibility().SetIsIgnored(true);
 
     source_language_code_ =
         profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);

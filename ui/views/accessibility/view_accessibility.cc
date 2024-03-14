@@ -275,7 +275,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   // in our platform specific subclass because subclasses determine if a node is
   // a leaf by (among other things) counting the number of unignored children,
   // which would create a circular definition of the ignored state.
-  if (is_ignored_ || data->IsIgnored() || ViewAccessibility::IsChildOfLeaf()) {
+  if (data->IsIgnored() || ViewAccessibility::IsChildOfLeaf()) {
     data->AddState(ax::mojom::State::kIgnored);
   }
 
@@ -601,9 +601,7 @@ void ViewAccessibility::SetIsIgnored(bool is_ignored) {
 }
 
 bool ViewAccessibility::GetIsIgnored() const {
-  // TODO(javiercon): Once all views are migrated to the new setters remove the
-  // old is_ignored_ check and just return data_.HasState.
-  return is_ignored_ || data_.HasState(ax::mojom::State::kIgnored);
+  return data_.HasState(ax::mojom::State::kIgnored);
 }
 
 void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
@@ -667,18 +665,6 @@ bool ViewAccessibility::IsChildOfLeaf() const {
     return view_accessibility.ViewAccessibility::IsChildOfLeaf();
   }
   return false;
-}
-
-void ViewAccessibility::OverrideIsIgnored(bool value) {
-  is_ignored_ = value;
-}
-
-bool ViewAccessibility::IsIgnored() const {
-  // TODO(nektar): Make this method non-virtual and implement as follows:
-  // ui::AXNodeData out_data;
-  // GetAccessibleNodeData(&out_data);
-  // return out_data.IsIgnored();
-  return is_ignored_;
 }
 
 void ViewAccessibility::OverridePosInSet(int pos_in_set, int set_size) {

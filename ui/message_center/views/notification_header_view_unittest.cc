@@ -378,7 +378,7 @@ TEST_F(NotificationHeaderViewTest, AccessibleExpandAndCollapse) {
   // event on the parent view.
   expand_button_is_ignored = notification_header_view_->expand_button()
                                  ->GetViewAccessibility()
-                                 .IsIgnored();
+                                 .GetIsIgnored();
   EXPECT_FALSE(expand_button_is_ignored);
   EXPECT_EQ(
       ax_counter.GetCount(ax::mojom::Event::kChildrenChanged,

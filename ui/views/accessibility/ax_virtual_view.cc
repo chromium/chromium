@@ -316,7 +316,7 @@ gfx::NativeViewAccessible AXVirtualView::GetNativeViewAccessible() {
 
 gfx::NativeViewAccessible AXVirtualView::GetParent() const {
   if (parent_view_) {
-    if (!parent_view_->IsIgnored())
+    if (!parent_view_->GetIsIgnored())
       return parent_view_->GetNativeObject();
     return GetDelegate()->GetParent();
   }

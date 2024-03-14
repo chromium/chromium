@@ -245,15 +245,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // platform's accessibility layer.
   virtual bool IsChildOfLeaf() const;
 
-  // Hides this View from the accessibility tree that is exposed to platform
-  // APIs.
-  // Deprecated. Use ViewAccessibility::SetIsIgnored instead.
-  // See https://crbug.com/324485311.
-  void OverrideIsIgnored(bool value);
-  // Deprecated. Use ViewAccessibility::GetIsIgnored instead.
-  // See https://crbug.com/324485311.
-  virtual bool IsIgnored() const;
-
   // Override information provided to users by screen readers when describing
   // elements in a menu, listbox, or another set-like item. For example, "New
   // tab, menu item 1 of 5". If not specified, a view's index in its parent and
@@ -406,16 +397,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility.
   bool is_leaf_ = false;
-
-  // When true the view is ignored when generating the AX node hierarchy, but
-  // its children are included. For example, if you created a custom table with
-  // the digits 1 - 9 arranged in a 3 x 3 grid, marking the table and rows
-  // "ignored" would mean that the digits 1 - 9 would appear as if they were
-  // immediate children of the root. Likewise "internal" container views can be
-  // ignored, like a Widget's RootView, ClientView, etc.
-  // Similar to setting the role of an ARIA widget to "none" or
-  // "presentational".
-  bool is_ignored_ = false;
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
