@@ -58,6 +58,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_animations.h"
@@ -988,14 +989,17 @@ const gfx::RoundedCornersF OverviewItem::GetRoundedCorners() const {
   }
 
   aura::Window* window = transform_window_.window();
-  const gfx::RoundedCornersF& header_rounded_corners =
-      overview_item_view_->header_view()->GetHeaderRoundedCorners(window);
+  const auto header_rounded_corners = overview_item_view_->header_view()
+                                          ->GetBackground()
+                                          ->GetRoundedCornerRadii();
+  CHECK(header_rounded_corners.has_value());
   const auto* layer = window->layer();
   const gfx::RoundedCornersF& transform_window_rounded_corners =
       layer->rounded_corner_radii();
   const float scale = layer->transform().To2dScale().x();
   return gfx::RoundedCornersF(
-      header_rounded_corners.upper_left(), header_rounded_corners.upper_right(),
+      header_rounded_corners->upper_left(),
+      header_rounded_corners->upper_right(),
       transform_window_rounded_corners.lower_right() * scale,
       transform_window_rounded_corners.lower_left() * scale);
 }

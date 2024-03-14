@@ -68,8 +68,7 @@ class BaseRoundedRectBackground : public Background {
     canvas->DrawPath(path, flags);
   }
 
-  std::optional<gfx::RoundedCornersF> GetRoundedCornerRadiiForTesing()
-      override {
+  std::optional<gfx::RoundedCornersF> GetRoundedCornerRadii() const override {
     return radii_;
   }
 
@@ -192,8 +191,7 @@ void Background::SetNativeControlColor(SkColor color) {
 
 void Background::OnViewThemeChanged(View* view) {}
 
-std::optional<gfx::RoundedCornersF>
-Background::GetRoundedCornerRadiiForTesing() {
+std::optional<gfx::RoundedCornersF> Background::GetRoundedCornerRadii() const {
   return std::nullopt;
 }
 

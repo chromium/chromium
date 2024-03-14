@@ -57,8 +57,6 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
   // `header_view_rounded_corners_`.
   void ResetRoundedCorners();
 
-  gfx::RoundedCornersF GetHeaderRoundedCorners(aura::Window* window) const;
-
  private:
   // The parent view of `this`, which is guaranteed not null during the lifetime
   // of `this`.

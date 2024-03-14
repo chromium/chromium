@@ -239,7 +239,8 @@ gfx::RoundedCornersF WindowMiniView::GetRoundedCorners() const {
   }
 
   const gfx::RoundedCornersF header_rounded_corners =
-      header_view_->GetHeaderRoundedCorners(source_window_);
+      header_view_->background()->GetRoundedCornerRadii().value_or(
+          gfx::RoundedCornersF());
   const gfx::RoundedCornersF preview_rounded_corners =
       preview_view_->layer()->rounded_corner_radii();
   return gfx::RoundedCornersF(header_rounded_corners.upper_left(),

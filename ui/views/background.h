@@ -61,9 +61,9 @@ class VIEWS_EXPORT Background {
   // subclasses that depend on theme colors.
   virtual void OnViewThemeChanged(View* view);
 
-  // Returns the rounded corner radii of the background for testing. Returns
-  // `std::nullopt` by default.
-  virtual std::optional<gfx::RoundedCornersF> GetRoundedCornerRadiiForTesing();
+  // Returns the rounded corner radii of the background. Returns `std::nullopt`
+  // by default.
+  virtual std::optional<gfx::RoundedCornersF> GetRoundedCornerRadii() const;
 
   // Returns the "background color".  This is equivalent to the color set in
   // SetNativeControlColor().  For solid backgrounds, this is the color; for
