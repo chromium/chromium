@@ -2709,7 +2709,6 @@ crbug.com/626703 external/wpt/css/css-page/page-orientation-on-square-001-print.
 crbug.com/626703 external/wpt/webnn/conformance_tests/elementwise_logical.https.any.worker.html [ Skip Timeout ]
 crbug.com/626703 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_logical.https.any.worker.html [ Skip Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Timeout ]
-crbug.com/626703 external/wpt/css/css-nesting/has-nesting.html [ Failure ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-nearly-transparent.html [ Timeout ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-transparent.html [ Timeout ]
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-background.html [ Timeout ]

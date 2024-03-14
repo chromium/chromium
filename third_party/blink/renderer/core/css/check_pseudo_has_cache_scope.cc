@@ -13,9 +13,15 @@
 
 namespace blink {
 
-CheckPseudoHasCacheScope::CheckPseudoHasCacheScope(Document* document)
-    : document_(document) {
+CheckPseudoHasCacheScope::CheckPseudoHasCacheScope(
+    Document* document,
+    bool within_selector_checking)
+    : document_(document), within_selector_checking_(within_selector_checking) {
   DCHECK(document_);
+
+  if (within_selector_checking) {
+    document_->EnterPseudoHasChecking();
+  }
 
   if (document_->GetCheckPseudoHasCacheScope()) {
     return;
@@ -25,6 +31,9 @@ CheckPseudoHasCacheScope::CheckPseudoHasCacheScope(Document* document)
 }
 
 CheckPseudoHasCacheScope::~CheckPseudoHasCacheScope() {
+  if (within_selector_checking_) {
+    document_->LeavePseudoHasChecking();
+  }
   if (document_->GetCheckPseudoHasCacheScope() != this) {
     return;
   }
