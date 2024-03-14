@@ -22,6 +22,7 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.view.ViewStub;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -257,6 +258,10 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
     public void testTabGridDialogVisibilitySupplier() {
+        ViewStub dialogStub = new ViewStub(mActivity);
+        mCoordinatorView.addView(dialogStub);
+        dialogStub.setId(R.id.tab_grid_dialog_stub);
+
         Supplier<Boolean> tabGridDialogVisibilitySupplier =
                 mCoordinator.getTabGridDialogVisibilitySupplier();
 

@@ -10,6 +10,7 @@ import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.PopupWindow;
 
 import androidx.annotation.DrawableRes;
@@ -65,6 +66,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private TabListEditorCoordinator mTabListEditorCoordinator;
     private TabGridDialogView mDialogView;
     private ColorPickerCoordinator mColorPickerCoordinator;
+    private TabGridDialogShareBottomSheetContent mShareBottomSheetContent;
     private @Nullable SnackbarManager mSnackbarManager;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private @Nullable AnchoredPopupWindow mColorIconPopupWindow;
@@ -108,8 +110,12 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
             mDialogView = containerView.findViewById(R.id.dialog_parent_view);
             if (mDialogView == null) {
-                LayoutInflater.from(activity)
-                        .inflate(R.layout.tab_grid_dialog_layout, containerView, true);
+                ViewStub dialogStub = containerView.findViewById(R.id.tab_grid_dialog_stub);
+                assert dialogStub != null;
+
+                dialogStub.setLayoutResource(R.layout.tab_grid_dialog_layout);
+                dialogStub.inflate();
+
                 mDialogView = containerView.findViewById(R.id.dialog_parent_view);
                 mDialogView.setupScrimCoordinator(scrimCoordinator);
             }
@@ -133,7 +139,17 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(mDialogView.getContext());
                 manageBar.addView(mSharedImageTilesCoordinator.getView(), 0);
+
+                mShareBottomSheetContent =
+                        new TabGridDialogShareBottomSheetContent(
+                                LayoutInflater.from(activity)
+                                        .inflate(R.layout.data_sharing_bottom_sheet, null));
             }
+
+            Runnable showShareBottomSheetRunnable =
+                    () -> {
+                        bottomSheetController.requestShowContent(mShareBottomSheetContent, true);
+                    };
 
             mMediator =
                     new TabGridDialogMediator(
@@ -148,6 +164,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mSnackbarManager,
                             mSharedImageTilesCoordinator,
                             bottomSheetController,
+                            showShareBottomSheetRunnable,
                             mComponentName);
 
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to

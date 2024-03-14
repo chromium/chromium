@@ -164,12 +164,6 @@ found in the LICENSE file.
             android:layout="@layout/page_insights_hub_container" />
 
         <FrameLayout
-            android:id="@+id/sheet_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false" />
-
-        <FrameLayout
             android:id="@+id/survey_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -187,6 +181,17 @@ found in the LICENSE file.
             android:layout_marginBottom="@dimen/page_zoom_view_margins"
             android:inflatedId="@+id/page_zoom_layout"
             android:layout="@layout/page_zoom_view" />
+
+        <ViewStub
+            android:id="@+id/tab_grid_dialog_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/sheet_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="false" />
 
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 

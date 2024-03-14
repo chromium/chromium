@@ -45,6 +45,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -127,6 +129,7 @@ public class TabGridDialogMediator
     private final AnimationSourceViewProvider mAnimationSourceViewProvider;
     private final DialogHandler mTabGridDialogHandler;
     private final Runnable mScrimClickRunnable;
+    private final Runnable mShowShareBottomSheetRunnable;
     private final @Nullable SnackbarManager mSnackbarManager;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final String mComponentName;
@@ -154,6 +157,7 @@ public class TabGridDialogMediator
             SnackbarManager snackbarManager,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             @NonNull BottomSheetController bottomSheetController,
+            Runnable showShareBottomSheetRunnable,
             String componentName) {
         mContext = activity;
         mModel = model;
@@ -169,6 +173,7 @@ public class TabGridDialogMediator
         mActivity = activity;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
         mBottomSheetController = bottomSheetController;
+        mShowShareBottomSheetRunnable = showShareBottomSheetRunnable;
 
         // Register for tab model.
         mTabModelObserver =
@@ -700,7 +705,24 @@ public class TabGridDialogMediator
             if (mSharedImageTilesCoordinator != null) {
                 mSharedImageTilesCoordinator.updateTilesCount(0);
             }
+            showShareBottomSheet();
         };
+    }
+
+    private void showShareBottomSheet() {
+        mShowShareBottomSheetRunnable.run();
+        mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, true);
+
+        mBottomSheetController.addObserver(
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetClosed(@StateChangeReason int reason) {
+                        // TODO(haileywang): Refresh data sharing service data after sheet
+                        // submission.
+                        mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, false);
+                        mBottomSheetController.removeObserver(this);
+                    }
+                });
     }
 
     private List<Tab> getRelatedTabs(int tabId) {

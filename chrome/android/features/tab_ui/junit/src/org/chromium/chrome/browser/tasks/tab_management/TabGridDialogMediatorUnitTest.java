@@ -120,7 +120,8 @@ public class TabGridDialogMediatorUnitTest {
     @Mock Editable mEditable;
     @Mock SnackbarManager mSnackbarManager;
     @Mock Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
-    @Mock private BottomSheetController mBottomSheetController;
+    @Mock BottomSheetController mBottomSheetController;
+    @Mock Runnable mShowShareBottomSheetRunnable;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
@@ -179,6 +180,7 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /*SharedImageTilesCoordinator*/ null,
                         mBottomSheetController,
+                        mShowShareBottomSheetRunnable,
                         "");
 
         mMediator.initWithNative(
@@ -1152,6 +1154,7 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /*SharedImageTilesCoordinator*/ null,
                         mBottomSheetController,
+                        mShowShareBottomSheetRunnable,
                         "");
         mMediator.initWithNative(
                 () -> {
@@ -1211,6 +1214,7 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /*SharedImageTilesCoordinator*/ null,
                         mBottomSheetController,
+                        mShowShareBottomSheetRunnable,
                         "");
         mMediator.initWithNative(
                 () -> {
@@ -1261,6 +1265,7 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /*SharedImageTilesCoordinator*/ null,
                         mBottomSheetController,
+                        mShowShareBottomSheetRunnable,
                         "");
         mMediator.initWithNative(
                 () -> {

@@ -116,4 +116,8 @@ found in the LICENSE file.
     <dimen name="tab_group_color_icon_vertical_padding">6dp</dimen>
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
     <dimen name="tab_group_creation_dialog_horizontal_margin">24dp</dimen>
+
+    <!-- Dimens for DataSharing within TabGridDialog -->
+    <!-- TODO(b/325082444): This dimension should be removed and set by PeopleKit UI. -->
+    <dimen name="share_share_sheet_height">300dp</dimen>
 </resources>
