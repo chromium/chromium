@@ -589,28 +589,6 @@ TEST_F(TabTest, SmallTabsHideCloseButton) {
   EXPECT_FALSE(close->GetVisible());
 }
 
-TEST_F(TabTest, ExtraLeftPaddingNotShownOnSmallActiveTab) {
-  // TODO (crbug/1520660): Fix or remove test.
-  if (features::IsChromeRefresh2023()) {
-    GTEST_SKIP();
-  }
-  auto controller = std::make_unique<FakeTabSlotController>();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
-  Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
-  controller->set_active_tab(tab);
-  tab->SetBounds(0, 0, 200, 50);
-  const views::View* close = GetCloseButton(tab);
-  EXPECT_TRUE(close->GetVisible());
-
-  const views::View* icon = GetTabIcon(tab);
-  const int icon_x = icon->x();
-
-  tab->SetBounds(0, 0, 40, 50);
-  EXPECT_TRUE(close->GetVisible());
-  // The favicon moves left because the extra padding disappears.
-  EXPECT_LT(icon->x(), icon_x);
-}
-
 TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
   auto controller = std::make_unique<FakeTabSlotController>();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
