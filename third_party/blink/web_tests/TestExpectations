@@ -6871,6 +6871,9 @@ crbug.com/326459000 virtual/pageswap/external/wpt/html/browsers/browsing-the-web
 # Flaky test
 crbug.com/325415944 [ Linux ] external/wpt/longtask-timing/spin-eventloop-not-longtask.html [ Failure Pass ]
 
+# Flaky test on multiple platforms
+crbug.com/329325808 fast/history/scroll-restoration/scroll-restoration-fragment-navigation-samedoc.html [ Failure Pass ]
+
 # Flaky tests: 2024-02-27
 crbug.com/327190607 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/fledge-container-size.https.html [ Failure Pass Timeout ]
 crbug.com/327388802 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.https.html [ Failure Pass Timeout ]
