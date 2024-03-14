@@ -726,7 +726,8 @@ class AuthenticatorGPMArbitraryPinSheetModel
 
   explicit AuthenticatorGPMArbitraryPinSheetModel(
       AuthenticatorRequestDialogModel* dialog_model,
-      Mode mode);
+      Mode mode,
+      AuthenticatorRequestDialogModel::GpmPinError error);
   ~AuthenticatorGPMArbitraryPinSheetModel() override;
 
   // Sets currently typed pin in the sheet.
@@ -738,6 +739,7 @@ class AuthenticatorGPMArbitraryPinSheetModel
   // AuthenticatorSheetModelBase:
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
+  std::u16string GetError() const override;
   bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
@@ -745,6 +747,7 @@ class AuthenticatorGPMArbitraryPinSheetModel
 
   std::u16string pin_;
   const Mode mode_;
+  const AuthenticatorRequestDialogModel::GpmPinError error_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_SHEET_MODELS_H_

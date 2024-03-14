@@ -1675,10 +1675,12 @@ void AuthenticatorGPMPinSheetModel::OnAccept() {
 
 AuthenticatorGPMArbitraryPinSheetModel::AuthenticatorGPMArbitraryPinSheetModel(
     AuthenticatorRequestDialogModel* dialog_model,
-    Mode mode)
+    Mode mode,
+    AuthenticatorRequestDialogModel::GpmPinError error)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden),
-      mode_(mode) {
+      mode_(mode),
+      error_(error) {
   // TODO(rgod): Add correct illustration.
   vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
 }
@@ -1715,6 +1717,15 @@ std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetStepDescription()
   }
 }
 
+std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetError() const {
+  switch (error_) {
+    case AuthenticatorRequestDialogModel::GpmPinError::kNone:
+      return std::u16string();
+    case AuthenticatorRequestDialogModel::GpmPinError::kWrongPin:
+      return u"Wrong PIN (UNTRANSLATED)";
+  }
+}
+
 bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonVisible() const {
   return true;
 }
@@ -1729,7 +1740,6 @@ std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetAcceptButtonLabel()
 }
 
 void AuthenticatorGPMArbitraryPinSheetModel::OnAccept() {
-  // TODO(rgod): Handle pin mismatch error.
   // TODO(rgod): Possibly add OnGPMArbitraryPinEntered().
   dialog_model()->OnGPMPinEntered(pin_);
 }
