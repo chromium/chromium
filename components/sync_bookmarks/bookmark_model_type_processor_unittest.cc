@@ -392,10 +392,6 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
   EXPECT_TRUE(processor()->IsTrackingMetadata());
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), IsEmpty());
 
-  histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeInitialUpdateReceived",
-      /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
-      /*expected_bucket_count=*/3);
   histogram_tester.ExpectTotalCount(
       kPersistentModelTypeConfigurationTimeMetricName,
       /*count=*/1);
@@ -425,10 +421,6 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithOneBookmark) {
   EXPECT_TRUE(processor()->IsTrackingMetadata());
   EXPECT_THAT(bookmark_model()->bookmark_bar_node()->children(), SizeIs(1));
 
-  histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeInitialUpdateReceived",
-      /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
-      /*expected_bucket_count=*/4);
   histogram_tester.ExpectTotalCount(
       kPersistentModelTypeConfigurationTimeMetricName,
       /*count=*/1);
@@ -591,11 +583,6 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
   EXPECT_THAT(bookmark_bar->children().front().get(), Eq(bookmark_node));
   EXPECT_THAT(bookmark_node->GetTitle(), Eq(ASCIIToUTF16(kNewTitle)));
   EXPECT_THAT(bookmark_node->url(), Eq(GURL(kNewUrl)));
-
-  histogram_tester.ExpectUniqueSample(
-      "Sync.ModelTypeIncrementalUpdateReceived",
-      /*sample=*/syncer::ModelTypeHistogramValue(syncer::BOOKMARKS),
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(

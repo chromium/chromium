@@ -1004,29 +1004,6 @@ chromium-metrics-reviews@google.com.
   <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>
 
-<histogram name="Sync.ModelTypeIncrementalUpdateReceived" enum="SyncModelTypes"
-    expires_after="2024-04-16">
-  <owner>rushans@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Counts the number of incremental sync updates received by the processor, per
-    datatype. Logged in the model thread prior to any filtering, and includes
-    tombstones as well as regular updates.
-  </summary>
-</histogram>
-
-<histogram name="Sync.ModelTypeInitialUpdateReceived" enum="SyncModelTypes"
-    expires_after="2024-08-18">
-  <owner>rushans@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Counts the number of initial sync updates received by the processor, per
-    datatype. Logged in the model thread prior to any filtering.
-  </summary>
-</histogram>
-
 <histogram name="Sync.ModelTypeMemoryKB{SyncModelType}" units="KB"
     expires_after="2024-07-14">
   <owner>mastiz@chromium.org</owner>

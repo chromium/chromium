@@ -785,10 +785,6 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   DCHECK(!model_error_);
   DCHECK(!model_type_state.progress_marker().has_gc_directive());
 
-  const bool is_initial_sync = !IsTrackingMetadata();
-  LogUpdatesReceivedByProcessorHistogram(type_, is_initial_sync,
-                                         updates.size());
-
   if (!ValidateUpdate(model_type_state, updates, gc_directive)) {
     return;
   }
@@ -802,6 +798,7 @@ void ClientTagBasedModelTypeProcessor::OnUpdateReceived(
   // always clear all data. We do this to allow the server to replace all data
   // on the client, without having to know exactly which entities the client
   // has.
+  const bool is_initial_sync = !IsTrackingMetadata();
   const bool treating_as_full_update =
       is_initial_sync || HasClearAllDirective(gc_directive);
   if (treating_as_full_update) {

@@ -137,8 +137,6 @@ void NigoriModelTypeProcessor::OnUpdateReceived(
 
   const bool is_initial_sync =
       !IsInitialSyncDone(model_type_state_.initial_sync_state());
-  LogUpdatesReceivedByProcessorHistogram(NIGORI, is_initial_sync,
-                                         updates.size());
 
   model_type_state_ = type_state;
 
