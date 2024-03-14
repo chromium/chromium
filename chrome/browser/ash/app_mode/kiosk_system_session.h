@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/metrics/low_disk_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
@@ -46,6 +47,11 @@ class KioskSystemSession {
   void SetOnHandleBrowserCallbackForTesting(
       base::RepeatingCallback<void(bool)> callback);
 
+  DeviceWeeklyScheduledSuspendController*
+  device_weekly_scheduled_suspend_controller_for_testing() {
+    return device_weekly_scheduled_suspend_controller_.get();
+  }
+
  private:
   class LacrosWatcher;
 
@@ -75,6 +81,8 @@ class KioskSystemSession {
   std::unique_ptr<NetworkConnectivityMetricsService> network_metrics_service_;
 
   const std::unique_ptr<PeriodicMetricsService> periodic_metrics_service_;
+  const std::unique_ptr<DeviceWeeklyScheduledSuspendController>
+      device_weekly_scheduled_suspend_controller_;
   std::unique_ptr<LacrosWatcher> lacros_watcher_;
 
   // Tracks low disk notifications.

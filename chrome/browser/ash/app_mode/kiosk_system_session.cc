@@ -129,7 +129,10 @@ KioskSystemSession::KioskSystemSession(
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>()),
       periodic_metrics_service_(std::make_unique<PeriodicMetricsService>(
-          g_browser_process->local_state())) {
+          g_browser_process->local_state())),
+      device_weekly_scheduled_suspend_controller_(
+          std::make_unique<DeviceWeeklyScheduledSuspendController>(
+              g_browser_process->local_state())) {
   switch (kiosk_app_id_.type) {
     case KioskAppType::kChromeApp:
       InitForChromeAppKiosk();
