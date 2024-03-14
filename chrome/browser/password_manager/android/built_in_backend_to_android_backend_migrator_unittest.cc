@@ -94,6 +94,8 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
     prefs_.registry()->RegisterBooleanPref(
         prefs::kShouldShowPostPasswordMigrationSheetAtStartup, false);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kEmptyProfileStoreLoginDatabase, false);
     CreateMigrator(&built_in_backend_, &android_backend_, &prefs_);
   }
 
@@ -174,6 +176,32 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
       base::Time::Now().InSecondsFSinceUnixEpoch(),
       prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
   EXPECT_TRUE(prefs()->GetBoolean(
+      prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
+}
+
+TEST_F(BuiltInBackendToAndroidBackendMigratorTest,
+       AllPrefsAreUpdatedAfterOnlySettingsMigration) {
+  Init();
+
+  prefs()->SetInteger(
+      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+      static_cast<int>(
+          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
+              kOffAndMigrationPending));
+  prefs()->SetBoolean(password_manager::prefs::kEmptyProfileStoreLoginDatabase,
+                      true);
+
+  InitSyncService(/*is_password_sync_enabled=*/false);
+
+  migrator()->StartMigrationOfLocalPasswords();
+  RunUntilIdle();
+
+  EXPECT_EQ(static_cast<int>(UseUpmLocalAndSeparateStoresState::kOn),
+            prefs()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores));
+  EXPECT_EQ(
+      base::Time::Now().InSecondsFSinceUnixEpoch(),
+      prefs()->GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt));
+  EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kShouldShowPostPasswordMigrationSheetAtStartup));
 }
 

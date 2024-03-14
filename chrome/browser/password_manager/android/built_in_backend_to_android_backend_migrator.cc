@@ -565,8 +565,11 @@ void BuiltInBackendToAndroidBackendMigrator::MigrationFinished(
             prefs::kPasswordsUseUPMLocalAndSeparateStores,
             static_cast<int>(password_manager::prefs::
                                  UseUpmLocalAndSeparateStoresState::kOn));
-        prefs_->SetBoolean(
-            prefs::kShouldShowPostPasswordMigrationSheetAtStartup, true);
+        if (!prefs_->GetBoolean(
+                password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
+          prefs_->SetBoolean(
+              prefs::kShouldShowPostPasswordMigrationSheetAtStartup, true);
+        }
         break;
       case MigrationType::kInitialForSyncUsers:
       case MigrationType::kNonSyncableToAndroidBackend:
