@@ -2674,7 +2674,6 @@ libvpx_srcs_arm64_sve = [
   "//third_party/libvpx/source/libvpx/vp9/encoder/arm/neon/vp9_error_sve.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/sum_squares_sve.c",
 ]
-libvpx_srcs_arm64_sve2 = []
 libvpx_srcs_arm_neon_highbd = [
   "//third_party/libvpx/source/libvpx/vp8/common/alloccommon.c",
   "//third_party/libvpx/source/libvpx/vp8/common/arm/loopfilter_arm.c",
@@ -3612,9 +3611,6 @@ libvpx_srcs_arm64_highbd_sve = [
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/highbd_variance_sve.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/highbd_vpx_convolve8_sve.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/arm/sum_squares_sve.c",
-]
-libvpx_srcs_arm64_highbd_sve2 = [
-  "//third_party/libvpx/source/libvpx/vpx_dsp/arm/highbd_vpx_convolve8_sve2.c",
 ]
 libvpx_srcs_mips = [
   "//third_party/libvpx/source/libvpx/vp8/common/alloccommon.c",

@@ -29,7 +29,6 @@
 #define HAVE_NEON_DOTPROD 1
 #define HAVE_NEON_I8MM 1
 #define HAVE_SVE 1
-#define HAVE_SVE2 1
 #define HAVE_MIPS32 0
 #define HAVE_DSPR2 0
 #define HAVE_MSA 0
