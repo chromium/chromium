@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Instrumentation;
-import android.app.job.JobScheduler;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
@@ -180,7 +179,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                                 arguments.toString()));
             }
             finishAllAppTasks(getTargetContext());
-            getTargetContext().getSystemService(JobScheduler.class).cancelAll();
+            BaseJUnit4TestRule.clearJobSchedulerJobs();
             checkOrDeleteOnDiskSharedPreferences(false);
             clearDataDirectory(sInMemorySharedPreferencesContext);
             InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
@@ -486,7 +485,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
         try {
             writeClangCoverageProfileIfEnabled();
-            getTargetContext().getSystemService(JobScheduler.class).cancelAll();
             checkOrDeleteOnDiskSharedPreferences(true);
             UmaRecorderHolder.resetForTesting();
 
