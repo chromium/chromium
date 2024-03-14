@@ -19,7 +19,7 @@ BASE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing,
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPassExplicitSyncPassphraseToGmsCore,
              "PassExplicitSyncPassphraseToGmsCore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kSharingOfferKeyPairBootstrap,

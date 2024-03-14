@@ -35,7 +35,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Integration test for ExplicitPassphrasePlatformClient.
  *
- * <p>TODO(crbug.com/1511304): Implement and test the case where the passphrase was already entered.
+ * <p>TODO(crbug.com/329409293): Test the case where the passphrase was already entered.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/1168590): SyncTestRule doesn't support batching.")
@@ -88,7 +88,7 @@ public class ExplicitPassphrasePlatformClientTest {
                 .setExplicitDecryptionPassphrase(eq(account), notNull());
     }
 
-    // TODO(crbug.com/1511304): Change the behavior to *not* invoke the API if the passphrase is
+    // TODO(crbug.com/329409290): Change the behavior to *not* invoke the API if the passphrase is
     // wrong.
     @Test
     @MediumTest

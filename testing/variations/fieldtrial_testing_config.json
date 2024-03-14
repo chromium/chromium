@@ -18519,7 +18519,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "PassExplicitSyncPassphraseToGmsCore",
                         "RemoveUPMUnenrollment",
                         "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration"
                     ]
