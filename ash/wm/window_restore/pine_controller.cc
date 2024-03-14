@@ -228,6 +228,19 @@ void PineController::MaybeStartPineOverviewSession(
 
   pine_contents_data_ = std::move(pine_contents_data);
 
+  // If this is the first time starting pine, show the onboarding dialog
+  // instead. Pine session will be started if the user hits 'Accept'.
+  if (ShouldShowPineOnboarding()) {
+    // TODO(sophiewen): Consider piping this from `FullRestoreService`.
+    full_restore::RestoreOption restore_pref =
+        static_cast<full_restore::RestoreOption>(
+            GetActivePrefService()->GetInteger(
+                prefs::kRestoreAppsAndPagesPrefName));
+    MaybeShowPineOnboardingMessage(/*restore_on=*/restore_pref ==
+                                   full_restore::RestoreOption::kAskEveryTime);
+    return;
+  }
+
   RecordPineScreenshotMetrics(Shell::Get()->local_state());
   image_util::DecodeImageFile(
       base::BindOnce(&PineController::OnPineImageDecoded,
@@ -315,7 +328,8 @@ void PineController::StartPineOverviewSession() {
 }
 
 void PineController::OnOnboardingAcceptPressed(bool restore_on) {
-  // TODO(sophiewen): Bind this to start the pine session.
+  // TODO(sophiewen): Update the pref when UX decide what to do.
+  StartPineOverviewSession();
   if (!restore_on) {
     // We only record the action taken if the user had Restore off.
     base::UmaHistogramBoolean(kPineOnboardingHistogram, true);

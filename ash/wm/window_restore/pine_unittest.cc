@@ -80,14 +80,6 @@ class PineTest : public AshTestBase {
         .overflow_view();
   }
 
-  SystemDialogDelegateView* GetOnboardingDialog() {
-    auto* pine_controller = Shell::Get()->pine_controller();
-    auto* onboarding_widget = pine_controller->onboarding_widget_.get();
-    return onboarding_widget ? views::AsViewClass<SystemDialogDelegateView>(
-                                   onboarding_widget->GetContentsView())
-                             : nullptr;
-  }
-
   // Used for testing overview. Returns a vector with `n` chrome browser app
   // ids.
   std::unique_ptr<PineContentsData> MakeTestAppIds(int n) {
@@ -299,14 +291,18 @@ TEST_F(PineTest, OnboardingMetrics) {
   base::HistogramTester histogram_tester;
   PineController::SetIgnorePrefsForTesting(true);
 
+  // Set some fake data to simulate having restore data.
+  // TODO(sophiewen): Remove this when UX decide what to do.
+  auto* pine_controller = Shell::Get()->pine_controller();
+  pine_controller->pine_contents_data_ = MakeTestAppIds(1);
+
   // Verify initial histogram counts.
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 0);
 
   // Press "Accept". Test we increment `true`.
-  auto* pine_controller = Shell::Get()->pine_controller();
   pine_controller->MaybeShowPineOnboardingMessage(
       /*restore_on=*/false);
-  auto* dialog = GetOnboardingDialog();
+  auto* dialog = PineTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetAcceptButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
   histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
@@ -316,7 +312,7 @@ TEST_F(PineTest, OnboardingMetrics) {
   // Press "Cancel". Test we increment `false`.
   pine_controller->MaybeShowPineOnboardingMessage(
       /*restore_on=*/false);
-  dialog = GetOnboardingDialog();
+  dialog = PineTestApi().GetOnboardingDialog();
   LeftClickOn(dialog->GetCancelButtonForTesting());
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
   histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
@@ -329,7 +325,7 @@ TEST_F(PineTest, OnboardingMetrics) {
   // Show the onboarding dialog with 'Restore' on. Test we don't record.
   pine_controller->MaybeShowPineOnboardingMessage(
       /*restore_on=*/true);
-  LeftClickOn(GetOnboardingDialog()->GetAcceptButtonForTesting());
+  LeftClickOn(PineTestApi().GetOnboardingDialog()->GetAcceptButtonForTesting());
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
 }
 
