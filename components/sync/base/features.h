@@ -88,10 +88,6 @@ BASE_DECLARE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
-inline constexpr base::FeatureParam<bool>
-    kSyncEnableContactInfoDataTypeForDasherGoogleUsers{
-        &kSyncEnableContactInfoDataTypeForDasherUsers,
-        "enable_for_google_accounts", false};
 
 // For users who support separate "profile" and "account" password stores -
 // see password_manager::features_util::CanCreateAccountStore() - and have

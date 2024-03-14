@@ -35,11 +35,8 @@ PreconditionState GetPreconditionStateFromAccountManagedStatus(
   }
   switch (finder->GetOutcome()) {
     case signin::AccountManagedStatusFinder::Outcome::kNonEnterprise:
-      return PreconditionState::kPreconditionsMet;
     case signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom:
-      return syncer::kSyncEnableContactInfoDataTypeForDasherGoogleUsers.Get()
-                 ? PreconditionState::kPreconditionsMet
-                 : PreconditionState::kMustStopAndClearData;
+      return PreconditionState::kPreconditionsMet;
     case signin::AccountManagedStatusFinder::Outcome::kEnterprise:
       return PreconditionState::kMustStopAndClearData;
     case signin::AccountManagedStatusFinder::Outcome::kPending:

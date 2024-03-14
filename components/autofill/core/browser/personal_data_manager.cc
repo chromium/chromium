@@ -906,8 +906,7 @@ bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
     }
     using StatusOutcome = signin::AccountManagedStatusFinder::Outcome;
     StatusOutcome outcome = account_status_finder_->GetOutcome();
-    return (outcome == StatusOutcome::kEnterprise ||
-            outcome == StatusOutcome::kEnterpriseGoogleDotCom) &&
+    return outcome == StatusOutcome::kEnterprise &&
            !base::FeatureList::IsEnabled(
                syncer::kSyncEnableContactInfoDataTypeForDasherUsers);
   };
