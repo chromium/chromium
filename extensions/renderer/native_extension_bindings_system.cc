@@ -28,20 +28,12 @@
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/utils/extension_utils.h"
-#include "extensions/renderer/api/declarative_content_hooks_delegate.h"
-#include "extensions/renderer/api/dom_hooks_delegate.h"
-#include "extensions/renderer/api/feedback_private_hooks_delegate.h"
-#include "extensions/renderer/api/i18n_hooks_delegate.h"
-#include "extensions/renderer/api/runtime_hooks_delegate.h"
-#include "extensions/renderer/api/web_request_hooks.h"
 #include "extensions/renderer/api_activity_logger.h"
 #include "extensions/renderer/bindings/api_binding_bridge.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 #include "extensions/renderer/bindings/api_binding_js_util.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
-#include "extensions/renderer/chrome_setting.h"
 #include "extensions/renderer/console.h"
-#include "extensions/renderer/content_setting.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_interaction_provider.h"
 #include "extensions/renderer/extension_js_runner.h"
@@ -52,7 +44,6 @@
 #include "extensions/renderer/renderer_frame_context_data.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set_iterable.h"
-#include "extensions/renderer/storage_area.h"
 #include "extensions/renderer/trace_util.h"
 #include "extensions/renderer/worker_thread_util.h"
 #include "gin/converter.h"
@@ -442,28 +433,7 @@ NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
           base::BindRepeating(&AddConsoleError),
           APILastError(base::BindRepeating(&GetLastErrorParents),
                        base::BindRepeating(&AddConsoleError))),
-      messaging_service_(this) {
-  api_system_.RegisterCustomType(
-      "storage.StorageArea",
-      base::BindRepeating(&StorageArea::CreateStorageArea));
-  api_system_.RegisterCustomType("types.ChromeSetting",
-                                 base::BindRepeating(&ChromeSetting::Create));
-  api_system_.RegisterCustomType("contentSettings.ContentSetting",
-                                 base::BindRepeating(&ContentSetting::Create));
-  api_system_.RegisterHooksDelegate("webRequest",
-                                    std::make_unique<WebRequestHooks>());
-  api_system_.RegisterHooksDelegate(
-      "declarativeContent",
-      std::make_unique<DeclarativeContentHooksDelegate>());
-  api_system_.RegisterHooksDelegate("dom",
-                                    std::make_unique<DOMHooksDelegate>());
-  api_system_.RegisterHooksDelegate("i18n",
-                                    std::make_unique<I18nHooksDelegate>());
-  api_system_.RegisterHooksDelegate(
-      "runtime", std::make_unique<RuntimeHooksDelegate>(&messaging_service_));
-  api_system_.RegisterHooksDelegate(
-      "feedbackPrivate", std::make_unique<FeedbackPrivateHooksDelegate>());
-}
+      messaging_service_(this) {}
 
 NativeExtensionBindingsSystem::~NativeExtensionBindingsSystem() = default;
 

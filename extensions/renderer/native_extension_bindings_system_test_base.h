@@ -18,6 +18,7 @@
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
+#include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
@@ -171,6 +172,7 @@ class NativeExtensionBindingsSystemUnittest
 
   StringSourceMap source_map_;
   TestExtensionsRendererClient renderer_client_;
+  CoreExtensionsRendererAPIProvider api_provider_;
 
   // True if we allow some v8::Contexts to avoid registration as a
   // ScriptContext.

@@ -5,7 +5,19 @@
 #include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 
 #include "extensions/grit/extensions_renderer_resources.h"
+#include "extensions/renderer/api/declarative_content_hooks_delegate.h"
+#include "extensions/renderer/api/dom_hooks_delegate.h"
+#include "extensions/renderer/api/feedback_private_hooks_delegate.h"
+#include "extensions/renderer/api/i18n_hooks_delegate.h"
+#include "extensions/renderer/api/runtime_hooks_delegate.h"
+#include "extensions/renderer/api/web_request_hooks.h"
+#include "extensions/renderer/bindings/api_bindings_system.h"
+#include "extensions/renderer/chrome_setting.h"
+#include "extensions/renderer/content_setting.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
+#include "extensions/renderer/script_context.h"
+#include "extensions/renderer/storage_area.h"
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
 
 namespace extensions {
@@ -17,7 +29,29 @@ void CoreExtensionsRendererAPIProvider::RegisterNativeHandlers(
 
 void CoreExtensionsRendererAPIProvider::AddBindingsSystemHooks(
     Dispatcher* dispatcher,
-    NativeExtensionBindingsSystem* bindings_system) const {}
+    NativeExtensionBindingsSystem* bindings_system) const {
+  APIBindingsSystem* bindings = bindings_system->api_system();
+  bindings->RegisterCustomType(
+      "storage.StorageArea",
+      base::BindRepeating(&StorageArea::CreateStorageArea));
+  bindings->RegisterCustomType("types.ChromeSetting",
+                               base::BindRepeating(&ChromeSetting::Create));
+  bindings->RegisterCustomType("contentSettings.ContentSetting",
+                               base::BindRepeating(&ContentSetting::Create));
+  bindings->RegisterHooksDelegate("webRequest",
+                                  std::make_unique<WebRequestHooks>());
+  bindings->RegisterHooksDelegate(
+      "declarativeContent",
+      std::make_unique<DeclarativeContentHooksDelegate>());
+  bindings->RegisterHooksDelegate("dom", std::make_unique<DOMHooksDelegate>());
+  bindings->RegisterHooksDelegate("i18n",
+                                  std::make_unique<I18nHooksDelegate>());
+  bindings->RegisterHooksDelegate("runtime",
+                                  std::make_unique<RuntimeHooksDelegate>(
+                                      bindings_system->messaging_service()));
+  bindings->RegisterHooksDelegate(
+      "feedbackPrivate", std::make_unique<FeedbackPrivateHooksDelegate>());
+}
 
 void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
     ResourceBundleSourceMap* source_map) const {

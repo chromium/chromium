@@ -52,6 +52,8 @@ void NativeExtensionBindingsSystemUnittest::SetUp() {
   ipc_message_sender_ = message_sender.get();
   bindings_system_ = std::make_unique<NativeExtensionBindingsSystem>(
       this, std::move(message_sender));
+  api_provider_.AddBindingsSystemHooks(/*dispatcher=*/nullptr,
+                                       bindings_system_.get());
   APIBindingTest::SetUp();
 }
 
