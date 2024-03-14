@@ -156,10 +156,36 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
       }
       break;
     }
-    case WebStateListChange::Type::kDetach:
-    case WebStateListChange::Type::kInsert:
-      [self populateConsumerItems];
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detachChange =
+          change.As<WebStateListChangeDetach>();
+      web::WebState* detachedWebState = detachChange.detached_web_state();
+      TabStripItemIdentifier* item = [TabStripItemIdentifier
+          tabIdentifier:[[WebStateTabSwitcherItem alloc]
+                            initWithWebState:detachedWebState]];
+      [self.consumer removeItems:@[ item ]];
       break;
+    }
+    case WebStateListChange::Type::kInsert: {
+      const WebStateListChangeInsert& insertChange =
+          change.As<WebStateListChangeInsert>();
+      web::WebState* insertedWebState = insertChange.inserted_web_state();
+      TabStripItemIdentifier* item = [TabStripItemIdentifier
+          tabIdentifier:[[WebStateTabSwitcherItem alloc]
+                            initWithWebState:insertedWebState]];
+
+      if (webStateList->ContainsIndex(insertChange.index() + 1)) {
+        web::WebState* destinationWebState =
+            webStateList->GetWebStateAt(insertChange.index() + 1);
+        TabStripItemIdentifier* destinationItem = [TabStripItemIdentifier
+            tabIdentifier:[[WebStateTabSwitcherItem alloc]
+                              initWithWebState:destinationWebState]];
+        [self.consumer insertItems:@[ item ] beforeItem:destinationItem];
+      } else {
+        [self.consumer insertItems:@[ item ] beforeItem:nil];
+      }
+      break;
+    }
     case WebStateListChange::Type::kMove: {
       const WebStateListChangeMove& moveChange =
           change.As<WebStateListChangeMove>();
@@ -464,7 +490,7 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
 
 // Updates the consumer with the list of all items and the selected one.
 - (void)populateConsumerItems {
-  if (!_webStateList || _webStateList->count() == 0) {
+  if (!_webStateList) {
     return;
   }
   TabSwitcherItem* item;

@@ -50,10 +50,6 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     didSet { self.ensureSelectedItemIsSelected() }
   }
 
-  /// `true` if the new tab button has been tapped. Used to scroll to the newly
-  /// added item. It's automatically set to `false` after the scroll.
-  private var newTabOpened: Bool = false
-
   /// `true` if the dragged tab moved to a new index.
   private var dragEndAtNewIndex: Bool = false
 
@@ -235,35 +231,6 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
       diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true,
       numberOfItemChanged: true)
     selectItem(selectedItem)
-
-    /// Scroll to the end of the collection view if a new tab has been opened.
-    if newTabOpened {
-      newTabOpened = false
-
-      // Don't scroll to the end of the collection view in RTL.
-      let isRTL: Bool = self.collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
-      if isRTL { return }
-
-      let offset = self.collectionView.contentSize.width - self.collectionView.frame.width
-      if offset > 0 {
-        if #available(iOS 17.0, *) {
-          scrollToContentOffset(offset)
-        } else {
-          // On iOS 16, when the scroll animation and the insert animation
-          // occur simultaneously, the resulting animation lacks of
-          // smoothness.
-          weak var weakSelf = self
-          targetedScrollOffsetiOS16 = offset
-          DispatchQueue.main.asyncAfter(
-            deadline: .now() + TabStripConstants.CollectionView.scrollDelayAfterInsert
-          ) {
-            weakSelf?.scrollToContentOffset(offset)
-          }
-        }
-      } else {
-        layout.cellAnimatediOS16 = false
-      }
-    }
   }
 
   func selectItem(_ item: TabSwitcherItem?) {
@@ -299,6 +266,66 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     applySnapshot(
       diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
     layout.invalidateLayout()
+  }
+
+  func insertItems(
+    _ items: [TabStripItemIdentifier], beforeItem destinationItem: TabStripItemIdentifier?
+  ) {
+    guard let diffableDataSource = diffableDataSource else { return }
+
+    var snapshot = diffableDataSource.snapshot()
+
+    var insertedLast = false
+
+    if let destinationItem = destinationItem {
+      snapshot.insertItems(items, beforeItem: destinationItem)
+    } else {
+      if snapshot.indexOfSection(.tabs) == nil {
+        snapshot.appendSections([.tabs])
+      }
+      snapshot.appendItems(items, toSection: .tabs)
+      insertedLast = true
+    }
+
+    applySnapshot(
+      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true,
+      numberOfItemChanged: true)
+
+    if insertedLast {
+      // Don't scroll to the end of the collection view in RTL.
+      let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
+      if isRTL { return }
+
+      let offset = collectionView.contentSize.width - collectionView.frame.width
+      if offset > 0 {
+        if #available(iOS 17.0, *) {
+          scrollToContentOffset(offset)
+        } else {
+          // On iOS 16, when the scroll animation and the insert animation
+          // occur simultaneously, the resulting animation lacks of
+          // smoothness.
+          weak var weakSelf = self
+          targetedScrollOffsetiOS16 = offset
+          DispatchQueue.main.asyncAfter(
+            deadline: .now() + TabStripConstants.CollectionView.scrollDelayAfterInsert
+          ) {
+            weakSelf?.scrollToContentOffset(offset)
+          }
+        }
+      } else {
+        layout.cellAnimatediOS16 = false
+      }
+    }
+  }
+
+  func removeItems(_ items: [TabStripItemIdentifier]?) {
+    guard let items = items, let diffableDataSource = diffableDataSource
+    else { return }
+    var snapshot = diffableDataSource.snapshot()
+    snapshot.deleteItems(items)
+    applySnapshot(
+      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true,
+      numberOfItemChanged: true)
   }
 
   func replaceItem(_ oldItem: TabSwitcherItem?, withItem newItem: TabSwitcherItem?) {
@@ -571,7 +598,6 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     UserMetricsUtils.recordAction("MobileTabSwitched")
     UserMetricsUtils.recordAction("MobileTabStripNewTab")
 
-    newTabOpened = true
     mutator?.addNewItem()
   }
 

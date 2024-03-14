@@ -65,6 +65,24 @@
   [self.items insertObject:itemIdentifier atIndex:destinationIndex];
 }
 
+- (void)insertItems:(NSArray<TabStripItemIdentifier*>*)items
+         beforeItem:(TabStripItemIdentifier*)destinationItem {
+  if (!destinationItem) {
+    [self.items addObjectsFromArray:items];
+    return;
+  }
+  NSInteger destinationIndex = [self.items indexOfObject:destinationItem];
+  for (TabStripItemIdentifier* item in items) {
+    [self.items insertObject:item atIndex:destinationIndex++];
+  }
+}
+
+- (void)removeItems:(NSArray<TabStripItemIdentifier*>*)items {
+  for (TabStripItemIdentifier* item in items) {
+    [self.items removeObject:item];
+  }
+}
+
 - (void)replaceItem:(TabSwitcherItem*)oldTab withItem:(TabSwitcherItem*)newTab {
   TabStripItemIdentifier* oldItem =
       [TabStripItemIdentifier tabIdentifier:oldTab];
@@ -191,16 +209,6 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
             consumer_.items[1].tabSwitcherItem.identifier);
   EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
             consumer_.items[2].tabSwitcherItem.identifier);
-
-  // Check that the closed tab and its group are removed from the consumer.
-  web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
-
-  ASSERT_NE(nil, consumer_.selectedItem);
-  EXPECT_EQ(web_state_list_->GetActiveWebState()->GetUniqueIdentifier(),
-            consumer_.selectedItem.identifier);
-  ASSERT_EQ(1ul, consumer_.items.count);
-  EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
-            consumer_.items[0].tabSwitcherItem.identifier);
 }
 
 // Tests that changing the selected tab is correctly reflected in the consumer.
@@ -301,6 +309,21 @@ TEST_F(TabStripMediatorTest, AddTab) {
 
   EXPECT_EQ(web_state_list_->GetWebStateAt(2)->GetUniqueIdentifier(),
             consumer_.selectedItem.identifier);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(browser_state_.get());
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state.get(),
+      ios::FaviconServiceFactory::GetForBrowserState(
+          browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+
+  web_state_list_->InsertWebState(std::move(web_state),
+                                  WebStateList::InsertionParams::AtIndex(1));
+
+  for (int index = 0; index < web_state_list_->count(); index++) {
+    EXPECT_EQ(consumer_.items[index].tabSwitcherItem.identifier,
+              web_state_list_->GetWebStateAt(index)->GetUniqueIdentifier());
+  }
 }
 
 // Tests that activating a tab works.
@@ -484,4 +507,22 @@ TEST_F(TabStripMediatorTest, MoveWebStates) {
     EXPECT_EQ(consumer_.items[index].tabSwitcherItem.identifier,
               web_state_list_->GetWebStateAt(index)->GetUniqueIdentifier());
   }
+  EXPECT_EQ(web_state_list_->count(), (int)consumer_.items.count);
+}
+
+// Tests that the consumer is correctly updated after removing all web states.
+TEST_F(TabStripMediatorTest, DeleteAllWebState) {
+  AddWebState();
+  AddWebState();
+
+  InitializeMediator();
+
+  CloseAllWebStates(*web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+
+  AddWebState();
+  AddWebState();
+  AddWebState();
+  AddWebState();
+
+  EXPECT_EQ(web_state_list_->count(), (int)consumer_.items.count);
 }
