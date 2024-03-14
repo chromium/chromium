@@ -44,12 +44,6 @@ const int64_t kMaxDownloadBytes = 1024 * 1024;
 
 const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
 const char kChromeWhatsNewURLShort[] = "google.com/chrome/whats-new/";
-// The /m117 URL is reserved for the chrome refresh page.
-const char kChromeWhatsNewRefreshURL[] =
-    "https://www.google.com/chrome/whats-new/m117";
-
-bool is_refresh_version =
-    CHROME_VERSION_MAJOR >= 117 && CHROME_VERSION_MAJOR <= 121;
 
 bool g_is_remote_content_disabled = false;
 
@@ -72,40 +66,12 @@ void DisableRemoteContentForTests() {
   g_is_remote_content_disabled = true;
 }
 
-bool IsRefreshVersion() {
-  return is_refresh_version;
-}
-
-void SetChromeVersionForTests(int chrome_version) {
-  is_refresh_version = chrome_version >= 117 && chrome_version <= 121;
-}
-
 void LogStartupType(StartupType type) {
   base::UmaHistogramEnumeration("WhatsNew.StartupType", type);
 }
 
 bool IsRemoteContentDisabled() {
   return g_is_remote_content_disabled;
-}
-
-bool HasShownRefreshWhatsNew(PrefService* local_state) {
-  return local_state->GetBoolean(prefs::kHasShownRefreshWhatsNew);
-}
-
-bool ShouldShowRefresh(PrefService* local_state) {
-  // Check pref to see if user has seen refresh page.
-  if (HasShownRefreshWhatsNew(local_state)) {
-    return false;
-  }
-
-  // Only show refresh page on milestone versions 117-121.
-  if (!IsRefreshVersion()) {
-    return false;
-  }
-
-  // Show refresh page if user has flag enabled.
-  return features::IsChromeRefresh2023() &&
-         features::IsChromeWebuiRefresh2023();
 }
 
 bool ShouldShowForState(PrefService* local_state,
@@ -135,10 +101,6 @@ bool ShouldShowForState(PrefService* local_state,
     return false;
   }
 
-  if (ShouldShowRefresh(local_state)) {
-    return true;
-  }
-
   int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
 
   // Don't show What's New if it's already been shown for the current major
@@ -154,11 +116,6 @@ bool ShouldShowForState(PrefService* local_state,
   // multiple profile relaunches (see https://crbug.com/1274313).
   local_state->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
   return true;
-}
-
-GURL GetServerURLForRefresh() {
-  return net::AppendQueryParameter(GURL(kChromeWhatsNewRefreshURL), "internal",
-                                   "true");
 }
 
 GURL GetServerURL(bool may_redirect) {
@@ -184,16 +141,8 @@ class WhatsNewFetcher : public BrowserListObserver {
   explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
 
-    PrefService* local_state = g_browser_process->local_state();
-    GURL server_url;
-    if (ShouldShowRefresh(local_state)) {
-      server_url = GetServerURLForRefresh();
-      startup_url_ =
-          net::AppendQueryParameter(GetWebUIStartupURL(), "refresh", "true");
-    } else {
-      server_url = GetServerURL(false);
-      startup_url_ = GetWebUIStartupURL();
-    }
+    GURL server_url = GetServerURL(false);
+    startup_url_ = GetWebUIStartupURL();
 
     if (IsRemoteContentDisabled()) {
       // Don't fetch network content if this is the case, just pretend the tab
@@ -343,14 +292,6 @@ class WhatsNewFetcher : public BrowserListObserver {
 
 void StartWhatsNewFetch(Browser* browser) {
   new WhatsNewFetcher(browser);
-
-  PrefService* local_state = g_browser_process->local_state();
-  if (ShouldShowRefresh(local_state)) {
-    // Set pref to indicate that the refresh page should not attempt to
-    // display again. ShouldShowRefresh should not be called after this
-    // boolean is set to true.
-    local_state->SetBoolean(prefs::kHasShownRefreshWhatsNew, true);
-  }
 }
 
 }  // namespace whats_new

@@ -61,19 +61,8 @@ void DisableRemoteContentForTests();
 // DisableRemoteContentForTests().
 bool IsRemoteContentDisabled();
 
-// Whether the current CHROME_VERSION_MAJOR is a minimum of 117
-bool IsMinimumRefreshVersion();
-
-// Whether the current CHROME_VERSION_MAJOR is either 117 or 118
-bool IsRefreshVersion();
-
 // Allow setting the CHROME_VERSION_MAJOR for tests
 void SetChromeVersionForTests(int chrome_version);
-
-// Returns true if user has received the Chrome 2023 Refresh flag. Once
-// the user/ has seen the Refresh version of the WNP, a pref is set to
-// disable ever showing this page again.
-bool ShouldShowRefresh(PrefService* local_state);
 
 // Returns true if the user has not yet seen the What's New page for the
 // current major milestone. When returning true, sets the pref in |local_state|
@@ -95,10 +84,6 @@ bool ShouldShowForState(PrefService* local_state,
 // the closest milestone page. Otherwise, return the direct URL of the current
 // version, which may return 404 if there is no page for this milestone.
 GURL GetServerURL(bool may_redirect);
-
-// Same as GetServerURL, except version m117 and m118 are hard-coded to
-// the same What's New version.
-GURL GetServerURLForRefresh();
 
 // Return the startup URL for the WebUI page.
 GURL GetWebUIStartupURL();

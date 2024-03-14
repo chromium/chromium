@@ -47,7 +47,6 @@ export class WhatsNewAppElement extends PolymerElement {
   private url_: string;
 
   private isAutoOpen_: boolean = false;
-  private isRefresh_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
@@ -55,7 +54,6 @@ export class WhatsNewAppElement extends PolymerElement {
 
     const queryParams = new URLSearchParams(window.location.search);
     this.isAutoOpen_ = queryParams.has('auto');
-    this.isRefresh_ = queryParams.has('refresh');
 
     // There are no subpages in What's New. Also remove the query param here
     // since its value is recorded.
@@ -65,9 +63,8 @@ export class WhatsNewAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    WhatsNewProxyImpl.getInstance()
-        .initialize(this.isRefresh_)
-        .then(url => this.handleUrlResult_(url));
+    WhatsNewProxyImpl.getInstance().initialize().then(
+        url => this.handleUrlResult_(url));
   }
 
   override disconnectedCallback() {
