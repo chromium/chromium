@@ -91,6 +91,8 @@ found in the LICENSE file.
         </LinearLayout>
     </ScrollView>
 
+    <!-- Depending on the size of the screen, either the dual_control_button_bar or the
+    primary_button/secondary_button pair will be made visible from the Java side. -->
     <org.chromium.components.browser_ui.widget.DualControlLayout
         android:id="@+id/dual_control_button_bar"
         android:layout_width="match_parent"
@@ -102,13 +104,15 @@ found in the LICENSE file.
         android:id="@+id/button_primary"
         style="@style/FilledButton.Flat"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/button_secondary"
         style="@style/TextButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/sync_consent_details_description"

@@ -34,7 +34,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
@@ -100,7 +99,6 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/329131962")
     public void testWithExistingAccount_signIn_requiredHistoryOptIn() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
@@ -134,7 +132,6 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/329131962")
     public void testWithExistingAccount_signIn_optOutHistorySync() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
@@ -157,7 +154,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
         // Verify that the history opt-in dialog is shown and decline.
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-        onView(withId(R.id.button_secondary)).perform(click());
+        onView(allOf(withId(R.id.button_secondary), isCompletelyDisplayed())).perform(click());
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
@@ -168,7 +165,6 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/329131962")
     public void testWithExistingAccount_signIn_optionalHistoryOptIn() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);

@@ -58,12 +58,14 @@ class HistorySyncView extends LinearLayout {
     void createButtons(boolean isButtonBar) {
         if (isButtonBar) {
             createButtonBar();
+        } else {
+            mAcceptButton = findViewById(R.id.button_primary);
+            mDeclineButton = findViewById(R.id.button_secondary);
+            mAcceptButton.setVisibility(VISIBLE);
+            mDeclineButton.setVisibility(VISIBLE);
         }
-        mAcceptButton = findViewById(R.id.button_primary);
-        assert mAcceptButton != null;
+        assert mAcceptButton != null && mDeclineButton != null;
         mAcceptButton.setText(R.string.signin_accept_button);
-        mDeclineButton = findViewById(R.id.button_secondary);
-        assert mDeclineButton != null;
         mDeclineButton.setText(R.string.no_thanks);
     }
 
@@ -78,5 +80,6 @@ class HistorySyncView extends LinearLayout {
         buttonBar.addView(mAcceptButton);
         buttonBar.addView(mDeclineButton);
         buttonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.END);
+        buttonBar.setVisibility(VISIBLE);
     }
 }
