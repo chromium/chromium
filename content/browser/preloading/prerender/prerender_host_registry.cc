@@ -1449,6 +1449,25 @@ void PrerenderHostRegistry::DidStartNavigation(
   prerender_host->DidStartNavigation(navigation_handle);
 }
 
+void PrerenderHostRegistry::ReadyToCommitNavigation(
+    NavigationHandle* navigation_handle) {
+  // ReadyToCommitNavigation is used for monitoring the main frame navigation in
+  // a prerendered page so do nothing for other navigations.
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
+  if (!navigation_request->IsInPrerenderedMainFrame() ||
+      navigation_request->IsSameDocument()) {
+    return;
+  }
+
+  // This navigation is running on the main frame in the prerendered page, so
+  // its FrameTree::Delegate should be PrerenderHost.
+  auto* prerender_host = static_cast<PrerenderHost*>(
+      navigation_request->frame_tree_node()->frame_tree().delegate());
+  CHECK(prerender_host);
+
+  prerender_host->ReadyToCommitNavigation(navigation_handle);
+}
+
 void PrerenderHostRegistry::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);

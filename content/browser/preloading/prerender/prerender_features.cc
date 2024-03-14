@@ -41,4 +41,11 @@ BASE_FEATURE(kPrerender2EmbedderBlockedHosts,
 const base::FeatureParam<std::string> kPrerender2EmbedderBlockedHostsParam{
     &kPrerender2EmbedderBlockedHosts, "embedder_blocked_hosts", ""};
 
+// Prerender2 support for No-Vary-Search header. Enables prerender matching
+// at navigation time using non-exact URL matching based on the prerender
+// No-Vary-Search header.
+BASE_FEATURE(kPrerender2NoVarySearch,
+             "Prerender2NoVarySearch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

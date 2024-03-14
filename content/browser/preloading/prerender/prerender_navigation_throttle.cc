@@ -349,8 +349,8 @@ PrerenderNavigationThrottle::WillProcessResponse() {
 }
 
 bool PrerenderNavigationThrottle::IsInitialNavigation() const {
-  return prerender_host_->GetInitialNavigationId() ==
-         navigation_handle()->GetNavigationId();
+  return prerender_host_->IsInitialNavigation(
+      *NavigationRequest::From(navigation_handle()));
 }
 
 void PrerenderNavigationThrottle::CancelPrerendering(

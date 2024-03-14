@@ -19,6 +19,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2EmbedderBlockedHosts);
 CONTENT_EXPORT extern const base::FeatureParam<std::string>
     kPrerender2EmbedderBlockedHostsParam;
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2NoVarySearch);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FEATURES_H_
