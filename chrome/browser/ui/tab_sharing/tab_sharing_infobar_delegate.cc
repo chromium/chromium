@@ -47,11 +47,9 @@ class TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
   virtual std::u16string GetTooltip() const { return u""; }
 };
 
-namespace {
-
 // Represents a button which, when clicked, changes the tab being shared/cast to
 // be the current tab (the one associated with this infobar.)
-class ShareTabInsteadButton
+class TabSharingInfoBarDelegate::ShareTabInsteadButton
     : public TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
  public:
   ShareTabInsteadButton(TabSharingUI* ui,
@@ -97,7 +95,7 @@ class ShareTabInsteadButton
 // Represents a button which, when clicked, changes the activated tab to be
 // the one which was hard-coded into this infobar. The intended use for this
 // class is for the captured tab to activate the capturing tab, and vice versa.
-class SwitchToTabButton
+class TabSharingInfoBarDelegate::SwitchToTabButton
     : public TabSharingInfoBarDelegate::TabSharingInfoBarDelegateButton {
  public:
   SwitchToTabButton(const TabSharingInfoBarDelegate::FocusTarget& focus_target,
@@ -156,6 +154,8 @@ class SwitchToTabButton
   const TabSharingInfoBarDelegate::FocusTarget focus_target_;
   const bool focus_target_is_capturer_;
 };
+
+namespace {
 
 std::u16string GetMessageTextCastingNoSinkName(
     bool shared_tab,
@@ -246,15 +246,12 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
           favicons_used_for_switch_to_tab_button),
       capture_type_(capture_type) {
   if (share_this_tab_instead_button_state != ButtonState::NOT_SHOWN) {
-    secondary_button_ = std::make_unique<ShareTabInsteadButton>(
+    share_this_tab_instead_button_ = std::make_unique<ShareTabInsteadButton>(
         ui_, share_this_tab_instead_button_state, capture_type_);
   }
 
-  // Note that tertiary_button_ may be non-null even secondary_button_ is null.
-  // TODO(crbug.com/327501794): Rename buttons these buttons to reflect their
-  // use.
   if (focus_target.has_value()) {
-    tertiary_button_ =
+    quick_nav_button_ =
         std::make_unique<SwitchToTabButton>(*focus_target, shared_tab);
   }
 }
@@ -291,10 +288,10 @@ std::u16string TabSharingInfoBarDelegate::GetMessageText() const {
 std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   switch (button) {
-    case BUTTON_NONE:
+    case kNone:
       break;
 
-    case BUTTON_OK:
+    case kStop:
       switch (capture_type_) {
         case TabSharingInfoBarDelegate::TabShareType::CAST:
           return l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_STOP_BUTTON);
@@ -303,13 +300,13 @@ std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
       }
       break;
 
-    case BUTTON_CANCEL:
-      DCHECK(secondary_button_);
-      return secondary_button_->GetLabel();
+    case kShareThisTabInstead:
+      DCHECK(share_this_tab_instead_button_);
+      return share_this_tab_instead_button_->GetLabel();
 
-    case BUTTON_EXTRA:
-      DCHECK(tertiary_button_);
-      return tertiary_button_->GetLabel();
+    case kQuickNav:
+      DCHECK(quick_nav_button_);
+      return quick_nav_button_->GetLabel();
   }
   NOTREACHED_NORETURN();
 }
@@ -321,38 +318,38 @@ ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
   }
 
   switch (button) {
-    case BUTTON_NONE:
+    case kNone:
       break;
 
-    case BUTTON_OK:
+    case kStop:
       return ui::ImageModel();
 
-    case BUTTON_CANCEL:
-      DCHECK(secondary_button_);
-      return secondary_button_->GetImage();
+    case kShareThisTabInstead:
+      DCHECK(share_this_tab_instead_button_);
+      return share_this_tab_instead_button_->GetImage();
 
-    case BUTTON_EXTRA:
-      DCHECK(tertiary_button_);
-      return tertiary_button_->GetImage();
+    case kQuickNav:
+      DCHECK(quick_nav_button_);
+      return quick_nav_button_->GetImage();
   }
   NOTREACHED_NORETURN();
 }
 
 bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
   switch (button) {
-    case BUTTON_NONE:
+    case kNone:
       break;
 
-    case BUTTON_OK:
+    case kStop:
       return true;
 
-    case BUTTON_CANCEL:
-      DCHECK(secondary_button_);
-      return secondary_button_->IsEnabled();
+    case kShareThisTabInstead:
+      DCHECK(share_this_tab_instead_button_);
+      return share_this_tab_instead_button_->IsEnabled();
 
-    case BUTTON_EXTRA:
-      DCHECK(tertiary_button_);
-      return tertiary_button_->IsEnabled();
+    case kQuickNav:
+      DCHECK(quick_nav_button_);
+      return quick_nav_button_->IsEnabled();
   }
   NOTREACHED_NORETURN();
 }
@@ -360,42 +357,42 @@ bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
 std::u16string TabSharingInfoBarDelegate::GetButtonTooltip(
     InfoBarButton button) const {
   switch (button) {
-    case BUTTON_NONE:
+    case kNone:
       break;
 
-    case BUTTON_OK:
+    case kStop:
       return std::u16string();
 
-    case BUTTON_CANCEL:
-      DCHECK(secondary_button_);
-      return secondary_button_->GetTooltip();
+    case kShareThisTabInstead:
+      DCHECK(share_this_tab_instead_button_);
+      return share_this_tab_instead_button_->GetTooltip();
 
-    case BUTTON_EXTRA:
-      DCHECK(tertiary_button_);
-      return tertiary_button_->GetTooltip();
+    case kQuickNav:
+      DCHECK(quick_nav_button_);
+      return quick_nav_button_->GetTooltip();
   }
   NOTREACHED_NORETURN();
 }
 
 int TabSharingInfoBarDelegate::GetButtons() const {
-  return BUTTON_OK | (secondary_button_ ? BUTTON_CANCEL : 0) |
-         (tertiary_button_ ? BUTTON_EXTRA : 0);
+  return kStop | (share_this_tab_instead_button_ ? kShareThisTabInstead : 0) |
+         (quick_nav_button_ ? kQuickNav : 0);
 }
 
-bool TabSharingInfoBarDelegate::Accept() {
+bool TabSharingInfoBarDelegate::Stop() {
   ui_->StopSharing();
   return false;
 }
 
-bool TabSharingInfoBarDelegate::Cancel() {
-  DCHECK(secondary_button_);
-  secondary_button_->Click(infobar());
+bool TabSharingInfoBarDelegate::ShareThisTabInstead() {
+  DCHECK(share_this_tab_instead_button_);
+  share_this_tab_instead_button_->Click(infobar());
   return false;
 }
 
-bool TabSharingInfoBarDelegate::ExtraButtonPressed() {
-  DCHECK(tertiary_button_);
-  tertiary_button_->Click(infobar());
+bool TabSharingInfoBarDelegate::QuickNav() {
+  DCHECK(quick_nav_button_);
+  quick_nav_button_->Click(infobar());
   return false;
 }
 

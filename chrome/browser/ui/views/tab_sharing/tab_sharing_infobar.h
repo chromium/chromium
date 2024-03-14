@@ -33,7 +33,7 @@ class TabSharingInfoBar : public InfoBarView {
   // InfoBarView:
   void Layout(PassKey) override;
 
-  views::MdTextButton* ok_button_for_testing() { return ok_button_; }
+  views::MdTextButton* stop_button_for_testing() { return stop_button_; }
 
  protected:
   // InfoBarView:
@@ -42,18 +42,18 @@ class TabSharingInfoBar : public InfoBarView {
  private:
   TabSharingInfoBarDelegate* GetDelegate();
 
-  void OkButtonPressed();
-  void CancelButtonPressed();
-  void ExtraButtonPressed();
+  void StopButtonPressed();
+  void ShareThisTabInsteadButtonPressed();
+  void QuickNavButtonPressed();
 
   // Returns the width of all content other than the label and link.
   // Layout uses this to determine how much space the label and link can take.
   int NonLabelWidth() const;
 
   raw_ptr<views::Label> label_ = nullptr;
-  raw_ptr<views::MdTextButton> ok_button_ = nullptr;
-  raw_ptr<views::MdTextButton> cancel_button_ = nullptr;
-  raw_ptr<views::MdTextButton> extra_button_ = nullptr;
+  raw_ptr<views::MdTextButton> stop_button_ = nullptr;
+  raw_ptr<views::MdTextButton> share_this_tab_instead_button_ = nullptr;
+  raw_ptr<views::MdTextButton> quick_nav_button_ = nullptr;
   raw_ptr<views::Link> link_ = nullptr;
 };
 

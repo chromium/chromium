@@ -44,13 +44,11 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
     ui::ImageModel icon;
   };
 
-  // TODO(crbug.com/327501794): Rename these buttons to reflect what they are
-  // used for in the TabSharingInfoBar.
   enum InfoBarButton {
-    BUTTON_NONE = 0,
-    BUTTON_OK = 1 << 0,
-    BUTTON_CANCEL = 1 << 1,
-    BUTTON_EXTRA = 1 << 2,
+    kNone = 0,
+    kStop = 1 << 0,
+    kShareThisTabInstead = 1 << 1,
+    kQuickNav = 1 << 2,
   };
 
   enum class ButtonState {
@@ -69,6 +67,8 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   };
 
   class TabSharingInfoBarDelegateButton;
+  class ShareTabInsteadButton;
+  class SwitchToTabButton;
 
   // Creates a tab sharing infobar, which has 1-2 buttons.
   //
@@ -100,9 +100,9 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   bool GetButtonEnabled(InfoBarButton button) const;
   std::u16string GetButtonTooltip(InfoBarButton button) const;
   int GetButtons() const;
-  bool Accept();
-  bool Cancel();
-  bool ExtraButtonPressed();
+  bool Stop();
+  bool ShareThisTabInstead();
+  bool QuickNav();
 
   // InfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
@@ -138,8 +138,8 @@ class TabSharingInfoBarDelegate : public infobars::InfoBarDelegate {
   // Indicates whether this instance is used for casting or capturing.
   const TabShareType capture_type_;
 
-  std::unique_ptr<TabSharingInfoBarDelegateButton> secondary_button_;
-  std::unique_ptr<TabSharingInfoBarDelegateButton> tertiary_button_;
+  std::unique_ptr<ShareTabInsteadButton> share_this_tab_instead_button_;
+  std::unique_ptr<SwitchToTabButton> quick_nav_button_;
 };
 
 std::unique_ptr<infobars::InfoBar> CreateTabSharingInfoBar(

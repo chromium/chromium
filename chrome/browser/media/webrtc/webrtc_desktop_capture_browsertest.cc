@@ -434,13 +434,13 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   // Should delete 3 infobars and create 3 new!
   observer.ExpectCalls(6);
   // Switch shared tab from 2 to 0.
-  GetDelegate(browser(), 0)->Cancel();
+  GetDelegate(browser(), 0)->ShareThisTabInstead();
   observer.Wait();
 
   // Should delete 3 infobars and create 3 new!
   observer.ExpectCalls(6);
   // Switch shared tab from 0 to 2.
-  GetDelegate(browser(), 2)->Cancel();
+  GetDelegate(browser(), 2)->ShareThisTabInstead();
   observer.Wait();
 }
 

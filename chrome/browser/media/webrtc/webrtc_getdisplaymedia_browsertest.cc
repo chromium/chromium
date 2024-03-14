@@ -218,13 +218,14 @@ TabSharingInfoBarDelegate* GetDelegate(content::WebContents* web_contents,
 
 bool HasSecondaryButton(content::WebContents* web_contents) {
   return GetDelegate(web_contents)->GetButtons() &
-         TabSharingInfoBarDelegate::InfoBarButton::BUTTON_CANCEL;
+         TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead;
 }
 
 std::u16string GetSecondaryButtonLabel(content::WebContents* web_contents) {
   DCHECK(HasSecondaryButton(web_contents));  // Test error otherwise.
   return GetDelegate(web_contents)
-      ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+      ->GetButtonLabel(
+          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
 }
 
 void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
@@ -1206,7 +1207,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
   EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
 
   // Click the secondary button, i.e., the "Share this tab instead" button
-  GetDelegate(other_tab)->Cancel();
+  GetDelegate(other_tab)->ShareThisTabInstead();
 
   // Wait until the capture of the other tab has started.
   while (!other_tab->IsBeingCaptured()) {
@@ -1249,7 +1250,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
                      /*is_tab_capture=*/true);
 
   // Click the secondary button, i.e., the "Share this tab instead" button
-  GetDelegate(other_tab)->Cancel();
+  GetDelegate(other_tab)->ShareThisTabInstead();
 
   // Wait until the capture of the other tab has started.
   while (!other_tab->IsBeingCaptured()) {
@@ -1309,7 +1310,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
 
   // Click the secondary button, i.e., the "Share this tab instead" button. This
   // is rejected since screen capture is not allowed by the above policy.
-  GetDelegate(other_tab)->Cancel();
+  GetDelegate(other_tab)->ShareThisTabInstead();
 
   // When "Share this tab instead" fails for other_tab, the focus goes back to
   // the captured tab. Wait until that happens:
@@ -1887,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaCapturedSurfaceControlTest,
   // Expect that clicking "share this tab instead" will pipe a notification of
   // the change to the captured surface controller.
   capture_session.SetExpectUpdateCaptureTarget();
-  GetDelegate(capture_session.other_tab())->Cancel();
+  GetDelegate(capture_session.other_tab())->ShareThisTabInstead();
   capture_session.WaitForCaptureOf(CapturedTab::kOtherTab);
 
   capture_session.VerifyAndClearExpectations();
@@ -1921,7 +1922,7 @@ void GetDisplayMediaCapturedSurfaceControlTest::
   capture_session_experiencing_change.SetExpectUpdateCaptureTarget();
   GetDelegate(capture_session_experiencing_change.other_tab(),
               /*infobar_index=*/session_experiencing_change)
-      ->Cancel();
+      ->ShareThisTabInstead();
   capture_session_experiencing_change.WaitForCaptureOf(CapturedTab::kOtherTab);
 
   capture_session_0.VerifyAndClearExpectations();

@@ -77,45 +77,47 @@ std::u16string GetInfobarMessageText(Browser* browser, int tab) {
   return GetDelegate(browser, tab)->GetMessageText();
 }
 
-bool HasSecondaryButton(Browser* browser, int tab) {
+bool HasShareThisTabInsteadButton(Browser* browser, int tab) {
   return GetDelegate(browser, tab)->GetButtons() &
-         TabSharingInfoBarDelegate::InfoBarButton::BUTTON_CANCEL;
+         TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead;
 }
 
-std::u16string GetSecondaryButtonLabel(Browser* browser, int tab) {
-  DCHECK(HasSecondaryButton(browser, tab));  // Test error otherwise.
+std::u16string GetShareThisTabInsteadButtonLabel(Browser* browser, int tab) {
+  DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+      ->GetButtonLabel(
+          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
 }
 
-ui::ImageModel GetSecondaryButtonImage(Browser* browser, int tab) {
-  DCHECK(HasSecondaryButton(browser, tab));  // Test error otherwise.
+ui::ImageModel GetShareThisTabInsteadButtonImage(Browser* browser, int tab) {
+  DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+      ->GetButtonImage(
+          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
 }
 
-bool SecondaryButtonIsEnabled(Browser* browser, int tab) {
-  DCHECK(HasSecondaryButton(browser, tab));  // Test error otherwise.
+bool ShareThisTabInsteadButtonIsEnabled(Browser* browser, int tab) {
+  DCHECK(HasShareThisTabInsteadButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
       ->GetButtonEnabled(
-          TabSharingInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+          TabSharingInfoBarDelegate::InfoBarButton::kShareThisTabInstead);
 }
 
-bool HasTertiaryButton(Browser* browser, int tab) {
+bool HasQuickNavButton(Browser* browser, int tab) {
   return GetDelegate(browser, tab)->GetButtons() &
-         TabSharingInfoBarDelegate::InfoBarButton::BUTTON_EXTRA;
+         TabSharingInfoBarDelegate::InfoBarButton::kQuickNav;
 }
 
-std::u16string GetTertiaryButtonLabel(Browser* browser, int tab) {
-  DCHECK(HasTertiaryButton(browser, tab));  // Test error otherwise.
+std::u16string GetQuickNavButtonLabel(Browser* browser, int tab) {
+  DCHECK(HasQuickNavButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::BUTTON_EXTRA);
+      ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::kQuickNav);
 }
 
-ui::ImageModel GetTertiaryButtonImage(Browser* browser, int tab) {
-  DCHECK(HasTertiaryButton(browser, tab));  // Test error otherwise.
+ui::ImageModel GetQuickNavButtonImage(Browser* browser, int tab) {
+  DCHECK(HasQuickNavButton(browser, tab));  // Test error otherwise.
   return GetDelegate(browser, tab)
-      ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::BUTTON_EXTRA);
+      ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::kQuickNav);
 }
 
 std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
@@ -281,28 +283,29 @@ class TabSharingUIViewsBrowserTest
 
       if (i == capturing_tab && i == captured_tab) {
         // Self-capture.
-        EXPECT_FALSE(HasSecondaryButton(browser, i));
+        EXPECT_FALSE(HasShareThisTabInsteadButton(browser, i));
       } else if (i == capturing_tab) {
         // Capturing-tab's infobar.
-        ASSERT_TRUE(HasTertiaryButton(browser, i));
-        EXPECT_EQ(GetTertiaryButtonLabel(browser, i),
+        ASSERT_TRUE(HasQuickNavButton(browser, i));
+        EXPECT_EQ(GetQuickNavButtonLabel(browser, i),
                   GetExpectedSwitchToMessage(browser, captured_tab));
-        EXPECT_EQ(GetTertiaryButtonImage(browser, i),
+        EXPECT_EQ(GetQuickNavButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, captured_tab));
       } else if (i == captured_tab) {
         // Captured-tab's infobar.
-        ASSERT_TRUE(HasTertiaryButton(browser, i));
-        EXPECT_EQ(GetTertiaryButtonLabel(browser, i),
+        ASSERT_TRUE(HasQuickNavButton(browser, i));
+        EXPECT_EQ(GetQuickNavButtonLabel(browser, i),
                   GetExpectedSwitchToMessage(browser, capturing_tab));
-        EXPECT_EQ(GetTertiaryButtonImage(browser, i),
+        EXPECT_EQ(GetQuickNavButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, capturing_tab));
       } else if (infobar_manager->infobars().size() > 0) {
         // Any other infobar.
-        ASSERT_TRUE(HasSecondaryButton(browser, i));
-        EXPECT_EQ(GetSecondaryButtonLabel(browser, i),
+        ASSERT_TRUE(HasShareThisTabInsteadButton(browser, i));
+        EXPECT_EQ(GetShareThisTabInsteadButtonLabel(browser, i),
                   kShareThisTabInsteadMessage);
-        EXPECT_EQ(GetSecondaryButtonImage(browser, i), ui::ImageModel());
-        EXPECT_EQ(SecondaryButtonIsEnabled(browser, i),
+        EXPECT_EQ(GetShareThisTabInsteadButtonImage(browser, i),
+                  ui::ImageModel());
+        EXPECT_EQ(ShareThisTabInsteadButtonIsEnabled(browser, i),
                   i != tab_with_disabled_button)
             << "Tab: " << i;
       }
@@ -1042,14 +1045,14 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
   ManualSetUp(/*captured_tab=*/kTab0);
 
   // The tab which is capturing itself: [Stop]
-  EXPECT_FALSE(HasSecondaryButton(browser(), kTab0));
-  EXPECT_FALSE(HasTertiaryButton(browser(), kTab0));
+  EXPECT_FALSE(HasShareThisTabInsteadButton(browser(), kTab0));
+  EXPECT_FALSE(HasQuickNavButton(browser(), kTab0));
 
   // Any other tab: [Stop] [Share this tab instead]
-  EXPECT_TRUE(HasSecondaryButton(browser(), kTab1));
-  EXPECT_EQ(GetSecondaryButtonLabel(browser(), kTab1),
+  EXPECT_TRUE(HasShareThisTabInsteadButton(browser(), kTab1));
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(browser(), kTab1),
             kShareThisTabInsteadMessage);
-  EXPECT_FALSE(HasTertiaryButton(browser(), kTab1));
+  EXPECT_FALSE(HasQuickNavButton(browser(), kTab1));
 }
 
 IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
@@ -1057,16 +1060,16 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
   ManualSetUp(/*captured_tab=*/kTab1);
 
   // The capturing tab: [Stop] [Share this tab instead] [View tab: ...]
-  EXPECT_TRUE(HasSecondaryButton(browser(), kTab0));
-  EXPECT_EQ(GetSecondaryButtonLabel(browser(), kTab0),
+  EXPECT_TRUE(HasShareThisTabInsteadButton(browser(), kTab0));
+  EXPECT_EQ(GetShareThisTabInsteadButtonLabel(browser(), kTab0),
             kShareThisTabInsteadMessage);
-  EXPECT_TRUE(HasTertiaryButton(browser(), kTab0));
-  EXPECT_TRUE(base::StartsWith(GetTertiaryButtonLabel(browser(), kTab0),
+  EXPECT_TRUE(HasQuickNavButton(browser(), kTab0));
+  EXPECT_TRUE(base::StartsWith(GetQuickNavButtonLabel(browser(), kTab0),
                                kViewTabMessage));
 
   // The capturing tab: [Stop] [View tab: ...]
-  EXPECT_TRUE(HasTertiaryButton(browser(), kTab1));
-  EXPECT_TRUE(base::StartsWith(GetTertiaryButtonLabel(browser(), kTab1),
+  EXPECT_TRUE(HasQuickNavButton(browser(), kTab1));
+  EXPECT_TRUE(base::StartsWith(GetQuickNavButtonLabel(browser(), kTab1),
                                kViewTabMessage));
-  EXPECT_FALSE(HasSecondaryButton(browser(), kTab1));
+  EXPECT_FALSE(HasShareThisTabInsteadButton(browser(), kTab1));
 }

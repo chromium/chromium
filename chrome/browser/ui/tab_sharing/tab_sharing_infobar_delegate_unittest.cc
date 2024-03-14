@@ -125,7 +125,7 @@ TEST_P(TabSharingInfoBarDelegateTest, StartSharingOnCancel) {
   TabSharingInfoBarDelegate* delegate =
       static_cast<TabSharingInfoBarDelegate*>(infobar->delegate());
   EXPECT_CALL(*tab_sharing_mock_ui(), StartSharing(infobar)).Times(1);
-  EXPECT_FALSE(delegate->Cancel());
+  EXPECT_FALSE(delegate->ShareThisTabInstead());
 }
 
 TEST_P(TabSharingInfoBarDelegateTest, StopSharingOnAccept) {
@@ -136,7 +136,7 @@ TEST_P(TabSharingInfoBarDelegateTest, StopSharingOnAccept) {
                       .shared_tab = false,
                       .can_share_instead = true});
   EXPECT_CALL(*tab_sharing_mock_ui(), StopSharing).Times(1);
-  EXPECT_FALSE(delegate->Accept());
+  EXPECT_FALSE(delegate->Stop());
 }
 
 // Test that the infobar on the shared tab has the correct layout:
@@ -166,14 +166,13 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
   EXPECT_EQ(delegate->GetMessageText(),
             l10n_util::GetStringFUTF16(
                 IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
-  EXPECT_EQ(delegate->GetButtons(),
-            TabSharingInfoBarDelegate::BUTTON_OK |
-                TabSharingInfoBarDelegate::BUTTON_EXTRA);
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_OK),
+  EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop |
+                                        TabSharingInfoBarDelegate::kQuickNav);
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_EXTRA),
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kQuickNav),
             GetExpectedSwitchToMessageForTargetTab(1));
-  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::BUTTON_EXTRA),
+  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::kQuickNav),
             favicon);
   EXPECT_FALSE(delegate->IsCloseable());
 }
@@ -205,14 +204,13 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
   EXPECT_EQ(delegate->GetMessageText(),
             l10n_util::GetStringFUTF16(
                 IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
-  EXPECT_EQ(delegate->GetButtons(),
-            TabSharingInfoBarDelegate::BUTTON_OK |
-                TabSharingInfoBarDelegate::BUTTON_EXTRA);
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_OK),
+  EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop |
+                                        TabSharingInfoBarDelegate::kQuickNav);
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_EXTRA),
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kQuickNav),
             GetExpectedSwitchToMessageForTargetTab(0));
-  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::BUTTON_EXTRA),
+  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::kQuickNav),
             favicon);
   EXPECT_FALSE(delegate->IsCloseable());
 }
@@ -233,12 +231,13 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotSharedTab) {
                 IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
                 kSharedTabName, kAppName));
   EXPECT_EQ(delegate->GetButtons(),
-            TabSharingInfoBarDelegate::BUTTON_OK |
-                TabSharingInfoBarDelegate::BUTTON_CANCEL);
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_OK),
+            TabSharingInfoBarDelegate::kStop |
+                TabSharingInfoBarDelegate::kShareThisTabInstead);
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_CANCEL),
-            l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON));
+  EXPECT_EQ(
+      delegate->GetButtonLabel(TabSharingInfoBarDelegate::kShareThisTabInstead),
+      l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON));
   EXPECT_FALSE(delegate->IsCloseable());
 }
 
@@ -254,7 +253,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarWhenSharingNotAllowed) {
                       .can_share_instead = false,
                       .tab_index = 0});
   EXPECT_EQ(delegate_shared_tab->GetButtons(),
-            TabSharingInfoBarDelegate::BUTTON_OK);
+            TabSharingInfoBarDelegate::kStop);
 
   // Create infobar for another not shared tab.
   AddTab(browser(), GURL("about:blank"));
@@ -264,7 +263,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarWhenSharingNotAllowed) {
                       .shared_tab = false,
                       .can_share_instead = false,
                       .tab_index = 1});
-  EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::BUTTON_OK);
+  EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop);
 }
 
 // Test that if the app preferred self-capture, but the user either chose
@@ -303,22 +302,23 @@ TEST_P(TabSharingInfoBarDelegateTest,
 
   // Correct number of buttons.
   EXPECT_EQ(delegate->GetButtons(),
-            TabSharingInfoBarDelegate::BUTTON_OK |
-                TabSharingInfoBarDelegate::BUTTON_CANCEL |
-                TabSharingInfoBarDelegate::BUTTON_EXTRA);
+            TabSharingInfoBarDelegate::kStop |
+                TabSharingInfoBarDelegate::kShareThisTabInstead |
+                TabSharingInfoBarDelegate::kQuickNav);
 
   // Validate the [Stop] button.
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_OK),
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
 
   // Validate the [Share this tab instead] button.
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_CANCEL),
-            l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON));
+  EXPECT_EQ(
+      delegate->GetButtonLabel(TabSharingInfoBarDelegate::kShareThisTabInstead),
+      l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON));
 
   // Validate the [Quick-nav] button.
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_EXTRA),
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kQuickNav),
             GetExpectedSwitchToMessageForTargetTab(0));
-  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::BUTTON_EXTRA),
+  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::kQuickNav),
             favicon);
 
   EXPECT_FALSE(delegate->IsCloseable());
@@ -377,12 +377,13 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotCastTab) {
                 IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL,
                 kSharedTabName, kSinkName));
   EXPECT_EQ(delegate->GetButtons(),
-            TabSharingInfoBarDelegate::BUTTON_OK |
-                TabSharingInfoBarDelegate::BUTTON_CANCEL);
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_OK),
+            TabSharingInfoBarDelegate::kStop |
+                TabSharingInfoBarDelegate::kShareThisTabInstead);
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_STOP_BUTTON));
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_CANCEL),
-            l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_CAST_BUTTON));
+  EXPECT_EQ(
+      delegate->GetButtonLabel(TabSharingInfoBarDelegate::kShareThisTabInstead),
+      l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_CAST_BUTTON));
   EXPECT_FALSE(delegate->IsCloseable());
 
   // Without sink name.
@@ -411,8 +412,8 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCastTab) {
   EXPECT_EQ(delegate->GetMessageText(),
             l10n_util::GetStringFUTF16(
                 IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL, kSinkName));
-  EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::BUTTON_OK);
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_OK),
+  EXPECT_EQ(delegate->GetButtons(), TabSharingInfoBarDelegate::kStop);
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::kStop),
             l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_STOP_BUTTON));
   EXPECT_FALSE(delegate->IsCloseable());
 
