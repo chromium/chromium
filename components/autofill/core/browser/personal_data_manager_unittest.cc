@@ -70,9 +70,6 @@ namespace {
 
 constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
 
-const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
-const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
-
 template <typename T>
 bool CompareElements(T* a, T* b) {
   return a->Compare(*b) < 0;
@@ -219,12 +216,6 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   void AddOfferDataForTest(AutofillOfferData offer_data) {
     personal_data_->AddOfferDataForTest(
         std::make_unique<AutofillOfferData>(offer_data));
-  }
-
-  void AddLocalIban(Iban& iban) {
-    iban.set_identifier(Iban::Guid(personal_data_->AddAsLocalIban(iban)));
-    PersonalDataChangedWaiter(*personal_data_).Wait();
-    iban.set_record_type(Iban::kLocalIban);
   }
 
   std::unique_ptr<PersonalDataManager> personal_data_;
@@ -514,60 +505,6 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIbanSave) {
   // the user can load the IBANs from the local web database on browser startup.
   ResetPersonalDataManager();
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
-}
-
-TEST_F(PersonalDataManagerTest, RecordIbanUsage_LocalIban) {
-  base::HistogramTester histogram_tester;
-  // Create the test clock and set the time to a specific value.
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-  Iban local_iban;
-  local_iban.set_value(u"FR76 3000 6000 0112 3456 7890 189");
-  EXPECT_EQ(local_iban.use_count(), 1u);
-  EXPECT_EQ(local_iban.use_date(), kArbitraryTime);
-  EXPECT_EQ(local_iban.modification_date(), kArbitraryTime);
-
-  AddLocalIban(local_iban);
-
-  // Set the current time to sometime later.
-  test_clock.SetNow(kSomeLaterTime);
-
-  // Use `local_iban`, then verify usage stats.
-  EXPECT_EQ(personal_data_->GetLocalIbans().size(), 1u);
-  personal_data_->RecordUseOfIban(local_iban);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-  histogram_tester.ExpectTotalCount(
-      "Autofill.DaysSinceLastUse.StoredIban.Local", 1);
-  EXPECT_EQ(local_iban.use_count(), 2u);
-  EXPECT_EQ(local_iban.use_date(), kSomeLaterTime);
-  EXPECT_EQ(local_iban.modification_date(), kArbitraryTime);
-}
-
-TEST_F(PersonalDataManagerTest, RecordIbanUsage_ServerIban) {
-  base::HistogramTester histogram_tester;
-  // Create the test clock and set the time to a specific value.
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-  Iban server_iban = test::GetServerIban();
-  EXPECT_EQ(server_iban.use_count(), 1u);
-  EXPECT_EQ(server_iban.use_date(), kArbitraryTime);
-  EXPECT_EQ(server_iban.modification_date(), kArbitraryTime);
-  GetServerDataTable()->SetServerIbansForTesting({server_iban});
-  personal_data_->Refresh();
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  // Set the current time to sometime later.
-  test_clock.SetNow(kSomeLaterTime);
-
-  // Use `server_iban`, then verify usage stats.
-  EXPECT_EQ(personal_data_->GetServerIbans().size(), 1u);
-  personal_data_->RecordUseOfIban(server_iban);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-  histogram_tester.ExpectTotalCount(
-      "Autofill.DaysSinceLastUse.StoredIban.Server", 1);
-  EXPECT_EQ(server_iban.use_count(), 2u);
-  EXPECT_EQ(server_iban.use_date(), kSomeLaterTime);
-  EXPECT_EQ(server_iban.modification_date(), kArbitraryTime);
 }
 
 // Test that ensure local data is not lost on sign-in.
@@ -1189,27 +1126,6 @@ TEST_F(PersonalDataManagerTest,
 
   // Expect no credit card values or suggestions were added.
   EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
-}
-
-TEST_F(PersonalDataManagerTest, RecordUseOfCard) {
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-  CreditCard card = test::GetCreditCard();
-  ASSERT_EQ(card.use_count(), 1u);
-  ASSERT_EQ(card.use_date(), kArbitraryTime);
-  ASSERT_EQ(card.modification_date(), kArbitraryTime);
-  personal_data_->AddCreditCard(card);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  test_clock.SetNow(kSomeLaterTime);
-  personal_data_->RecordUseOf(&card);
-  PersonalDataChangedWaiter(*personal_data_).Wait();
-
-  CreditCard* pdm_card = personal_data_->GetCreditCardByGUID(card.guid());
-  ASSERT_TRUE(pdm_card);
-  EXPECT_EQ(pdm_card->use_count(), 2u);
-  EXPECT_EQ(pdm_card->use_date(), kSomeLaterTime);
-  EXPECT_EQ(pdm_card->modification_date(), kArbitraryTime);
 }
 
 TEST_F(PersonalDataManagerTest, ClearAllLocalData) {

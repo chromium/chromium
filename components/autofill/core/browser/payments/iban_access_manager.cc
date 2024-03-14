@@ -43,7 +43,9 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
                            .GetIbanByGUID(guid->value());
     if (iban) {
       Iban iban_copy = *iban;
-      client_->GetPersonalDataManager()->RecordUseOfIban(iban_copy);
+      client_->GetPersonalDataManager()
+          ->payments_data_manager()
+          .RecordUseOfIban(iban_copy);
       if (client_->GetPersonalDataManager()
               ->IsPaymentMethodsMandatoryReauthEnabled()) {
         StartDeviceAuthenticationForFilling(
@@ -89,7 +91,8 @@ void IbanAccessManager::FetchValue(const Suggestion& suggestion,
     return;
   }
   Iban iban_copy = *iban;
-  client_->GetPersonalDataManager()->RecordUseOfIban(iban_copy);
+  client_->GetPersonalDataManager()->payments_data_manager().RecordUseOfIban(
+      iban_copy);
   payments::PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details;
   request_details.billable_service_number =
       payments::kUnmaskPaymentMethodBillableServiceNumber;

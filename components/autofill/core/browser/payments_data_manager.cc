@@ -1116,6 +1116,45 @@ bool PaymentsDataManager::RemoveByGUID(const std::string& guid) {
   return false;
 }
 
+void PaymentsDataManager::RecordUseOfCard(const CreditCard* card) {
+  CreditCard* credit_card = GetCreditCardByGUID(card->guid());
+  if (!credit_card) {
+    return;
+  }
+
+  credit_card->RecordAndLogUse();
+
+  if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
+    // Fail silently if there's no local database, because we need to
+    // support this for tests.
+    if (GetLocalDatabase()) {
+      GetLocalDatabase()->UpdateCreditCard(*credit_card);
+    }
+  } else {
+    DCHECK(GetServerDatabase())
+        << "Recording use of server card without server storage.";
+    GetServerDatabase()->UpdateServerCardMetadata(*credit_card);
+  }
+
+  Refresh();
+}
+
+void PaymentsDataManager::RecordUseOfIban(Iban& iban) {
+  iban.RecordAndLogUse();
+
+  if (iban.record_type() == Iban::RecordType::kServerIban) {
+    CHECK(GetServerDatabase())
+        << "Recording use of server IBAN metadata without server storage.";
+    GetServerDatabase()->UpdateServerIbanMetadata(iban);
+  } else {
+    if (GetLocalDatabase()) {
+      GetLocalDatabase()->UpdateLocalIban(iban);
+    }
+  }
+
+  Refresh();
+}
+
 // The priority ranking for deduping a duplicate card is:
 // 1. RecordType::kFullServerCard
 // 2. RecordType::kLocalCard

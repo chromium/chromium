@@ -56,9 +56,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // for various tests, whether to skip calls to uncreated databases/services,
   // or to make things easier in general to toggle.
   bool IsPaymentsWalletSyncTransportEnabled() const override;
-  void RecordUseOf(absl::variant<const AutofillProfile*, const CreditCard*>
-                       profile_or_credit_card) override;
-  void RecordUseOfIban(Iban& iban) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
   bool IsEligibleForAddressAccountStorage() const override;

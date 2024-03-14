@@ -208,13 +208,8 @@ class PersonalDataManager : public KeyedService,
 
   // Called to indicate |profile_or_credit_card| was used (to fill in a form).
   // Updates the database accordingly.
-  virtual void RecordUseOf(
-      absl::variant<const AutofillProfile*, const CreditCard*>
-          profile_or_credit_card);
-
-  // Called to indicate `iban` was used (to fill in a form). Updates the
-  // database accordingly.
-  virtual void RecordUseOfIban(Iban& iban);
+  void RecordUseOf(absl::variant<const AutofillProfile*, const CreditCard*>
+                       profile_or_credit_card);
 
   // Try to save a credit card locally. If the card already exists, do nothing
   // and return false. If the card is new, save it locally and return true.

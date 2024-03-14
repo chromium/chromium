@@ -221,6 +221,14 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns true if something was removed.
   virtual bool RemoveByGUID(const std::string& guid);
 
+  // Called to indicate `credit_card` was used (to fill in a form).
+  // Updates the database accordingly.
+  virtual void RecordUseOfCard(const CreditCard* card);
+
+  // Called to indicate `iban` was used (to fill in a form). Updates the
+  // database accordingly.
+  virtual void RecordUseOfIban(Iban& iban);
+
   // De-dupe credit card to suggest. Full server cards are preferred over their
   // local duplicates, and local cards are preferred over their masked server
   // card duplicate.

@@ -93,6 +93,28 @@ bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
   return false;
 }
 
+void TestPaymentsDataManager::RecordUseOfCard(const CreditCard* card) {
+  CreditCard* credit_card = GetCreditCardByGUID(card->guid());
+  if (credit_card) {
+    credit_card->RecordAndLogUse();
+  }
+}
+
+void TestPaymentsDataManager::RecordUseOfIban(Iban& iban) {
+  std::unique_ptr<Iban> updated_iban = std::make_unique<Iban>(iban);
+  std::vector<std::unique_ptr<Iban>>& container =
+      iban.record_type() == Iban::kLocalIban ? local_ibans_ : server_ibans_;
+  auto it =
+      base::ranges::find(container,
+                         iban.record_type() == Iban::kLocalIban
+                             ? GetIbanByGUID(iban.guid())
+                             : GetIbanByInstrumentId(iban.instrument_id()),
+                         &std::unique_ptr<Iban>::get);
+  if (it != container.end()) {
+    it->get()->RecordAndLogUse();
+  }
+}
+
 void TestPaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
   std::unique_ptr<CreditCard> local_credit_card =
       std::make_unique<CreditCard>(credit_card);

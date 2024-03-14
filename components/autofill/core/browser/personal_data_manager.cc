@@ -359,49 +359,12 @@ void PersonalDataManager::RecordUseOf(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card) {
   if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
-    CreditCard* credit_card = GetCreditCardByGUID(
-        absl::get<const CreditCard*>(profile_or_credit_card)->guid());
-    if (!credit_card) {
-      return;
-    }
-
-    credit_card->RecordAndLogUse();
-
-    if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
-      // Fail silently if there's no local database, because we need to
-      // support this for tests.
-      if (payments_data_manager_->GetLocalDatabase()) {
-        payments_data_manager_->GetLocalDatabase()->UpdateCreditCard(
-            *credit_card);
-      }
-    } else {
-      DCHECK(payments_data_manager_->GetServerDatabase())
-          << "Recording use of server card without server storage.";
-      payments_data_manager_->GetServerDatabase()->UpdateServerCardMetadata(
-          *credit_card);
-    }
-
-    Refresh();
+    payments_data_manager_->RecordUseOfCard(
+        absl::get<const CreditCard*>(profile_or_credit_card));
   } else {
     address_data_manager_->RecordUseOf(
         *absl::get<const AutofillProfile*>(profile_or_credit_card));
   }
-}
-
-void PersonalDataManager::RecordUseOfIban(Iban& iban) {
-  iban.RecordAndLogUse();
-
-  if (iban.record_type() == Iban::RecordType::kServerIban) {
-    CHECK(payments_data_manager_->GetServerDatabase())
-        << "Recording use of server IBAN metadata without server storage.";
-    payments_data_manager_->GetServerDatabase()->UpdateServerIbanMetadata(iban);
-  } else {
-    if (payments_data_manager_->GetLocalDatabase()) {
-      payments_data_manager_->GetLocalDatabase()->UpdateLocalIban(iban);
-    }
-  }
-
-  Refresh();
 }
 
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {

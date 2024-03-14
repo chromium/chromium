@@ -34,38 +34,6 @@ bool TestPersonalDataManager::IsPaymentsWalletSyncTransportEnabled() const {
   return PersonalDataManager::IsPaymentsWalletSyncTransportEnabled();
 }
 
-void TestPersonalDataManager::RecordUseOf(
-    absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card) {
-  if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
-    CreditCard* credit_card = GetCreditCardByGUID(
-        absl::get<const CreditCard*>(profile_or_credit_card)->guid());
-
-    if (credit_card)
-      credit_card->RecordAndLogUse();
-  } else {
-    address_data_manager_->RecordUseOf(
-        *absl::get<const AutofillProfile*>(profile_or_credit_card));
-  }
-}
-
-void TestPersonalDataManager::RecordUseOfIban(Iban& iban) {
-  std::unique_ptr<Iban> updated_iban = std::make_unique<Iban>(iban);
-  std::vector<std::unique_ptr<Iban>>& container =
-      iban.record_type() == Iban::kLocalIban
-          ? payments_data_manager_->local_ibans_
-          : payments_data_manager_->server_ibans_;
-  auto it = base::ranges::find(
-      container,
-      iban.record_type() == Iban::kLocalIban
-          ? payments_data_manager().GetIbanByGUID(iban.guid())
-          : payments_data_manager().GetIbanByInstrumentId(iban.instrument_id()),
-      &std::unique_ptr<Iban>::get);
-  if (it != container.end()) {
-    it->get()->RecordAndLogUse();
-  }
-}
-
 std::string TestPersonalDataManager::SaveImportedCreditCard(
     const CreditCard& imported_credit_card) {
   num_times_save_imported_credit_card_called_++;

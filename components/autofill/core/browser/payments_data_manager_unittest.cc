@@ -65,6 +65,7 @@ namespace {
 using testing::Pointee;
 
 const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
+const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
 
 template <typename T>
 bool CompareElements(T* a, T* b) {
@@ -411,6 +412,60 @@ TEST_F(PaymentsDataManagerTest, RemoveLocalIbans) {
   RemoveByGUIDFromPersonalDataManager(iban.guid());
 }
 
+TEST_F(PaymentsDataManagerTest, RecordIbanUsage_LocalIban) {
+  base::HistogramTester histogram_tester;
+  // Create the test clock and set the time to a specific value.
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+  Iban local_iban;
+  local_iban.set_value(u"FR76 3000 6000 0112 3456 7890 189");
+  EXPECT_EQ(local_iban.use_count(), 1u);
+  EXPECT_EQ(local_iban.use_date(), kArbitraryTime);
+  EXPECT_EQ(local_iban.modification_date(), kArbitraryTime);
+
+  AddLocalIban(local_iban);
+
+  // Set the current time to sometime later.
+  test_clock.SetNow(kSomeLaterTime);
+
+  // Use `local_iban`, then verify usage stats.
+  EXPECT_EQ(personal_data_->GetLocalIbans().size(), 1u);
+  personal_data_->payments_data_manager().RecordUseOfIban(local_iban);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  histogram_tester.ExpectTotalCount(
+      "Autofill.DaysSinceLastUse.StoredIban.Local", 1);
+  EXPECT_EQ(local_iban.use_count(), 2u);
+  EXPECT_EQ(local_iban.use_date(), kSomeLaterTime);
+  EXPECT_EQ(local_iban.modification_date(), kArbitraryTime);
+}
+
+TEST_F(PaymentsDataManagerTest, RecordIbanUsage_ServerIban) {
+  base::HistogramTester histogram_tester;
+  // Create the test clock and set the time to a specific value.
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+  Iban server_iban = test::GetServerIban();
+  EXPECT_EQ(server_iban.use_count(), 1u);
+  EXPECT_EQ(server_iban.use_date(), kArbitraryTime);
+  EXPECT_EQ(server_iban.modification_date(), kArbitraryTime);
+  GetServerDataTable()->SetServerIbansForTesting({server_iban});
+  personal_data_->Refresh();
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  // Set the current time to sometime later.
+  test_clock.SetNow(kSomeLaterTime);
+
+  // Use `server_iban`, then verify usage stats.
+  EXPECT_EQ(personal_data_->GetServerIbans().size(), 1u);
+  personal_data_->payments_data_manager().RecordUseOfIban(server_iban);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+  histogram_tester.ExpectTotalCount(
+      "Autofill.DaysSinceLastUse.StoredIban.Server", 1);
+  EXPECT_EQ(server_iban.use_count(), 2u);
+  EXPECT_EQ(server_iban.use_date(), kSomeLaterTime);
+  EXPECT_EQ(server_iban.modification_date(), kArbitraryTime);
+}
+
 TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                           test::kEmptyOrigin);
@@ -498,6 +553,27 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   personal_data_->AddFullServerCreditCardForTesting(duplicate_server_card);
 
   ExpectSameElements(cards, personal_data_->GetCreditCards());
+}
+
+TEST_F(PaymentsDataManagerTest, RecordUseOfCard) {
+  TestAutofillClock test_clock;
+  test_clock.SetNow(kArbitraryTime);
+  CreditCard card = test::GetCreditCard();
+  ASSERT_EQ(card.use_count(), 1u);
+  ASSERT_EQ(card.use_date(), kArbitraryTime);
+  ASSERT_EQ(card.modification_date(), kArbitraryTime);
+  personal_data_->AddCreditCard(card);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  test_clock.SetNow(kSomeLaterTime);
+  personal_data_->RecordUseOf(&card);
+  PersonalDataChangedWaiter(*personal_data_).Wait();
+
+  CreditCard* pdm_card = personal_data_->GetCreditCardByGUID(card.guid());
+  ASSERT_TRUE(pdm_card);
+  EXPECT_EQ(pdm_card->use_count(), 2u);
+  EXPECT_EQ(pdm_card->use_date(), kSomeLaterTime);
+  EXPECT_EQ(pdm_card->modification_date(), kArbitraryTime);
 }
 
 // Test that UpdateLocalCvc function working as expected.
