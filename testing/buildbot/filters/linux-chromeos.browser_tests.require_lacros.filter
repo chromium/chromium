@@ -86,6 +86,7 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfIconFocusForward*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreSecondaryDisplay*
 -TouchExplorationTest
+-SelectToSpeakMouseSelectionTest.VoiceSwitching
 # TODO(crbug/1484723): Flaky
 -BrowserAppShelfControllerBrowserTest.WindowedApps
 -BrowserAppShelfControllerBrowserTest.TabbedApps

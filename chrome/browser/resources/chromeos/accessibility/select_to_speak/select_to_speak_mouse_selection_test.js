@@ -266,10 +266,8 @@ TEST_F(
       });
     });
 
-// TODO(crbug.com/329477535): Test is flaky.
 AX_TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'DISABLED_VoiceSwitching',
-    async function() {
+    'SelectToSpeakMouseSelectionTest', 'VoiceSwitching', async function() {
       selectToSpeak.shouldUseVoiceSwitching_ = () => true;
       const root = await this.runWithLoadedTree(
           'data:text/html;charset=utf-8,<div>' +
