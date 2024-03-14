@@ -15,6 +15,38 @@
 
 namespace features {
 
+#if BUILDFLAG(IS_WIN)
+// When this feature is enabled, metrics are gathered regarding the performance
+// and reliability of app-bound encryption primitives on a background thread.
+BASE_FEATURE(kAppBoundEncryptionMetrics,
+             "AppBoundEncryptionMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
+// This is used to enable an experiment for modifying confidence cutoff of
+// prerender and preconnect for autocomplete action predictor.
+BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
+             "AutocompleteActionPredictorConfidenceCutoff",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This flag is used for enabling Bookmark triggered prerendering. See
+// crbug.com/1422819 for more details of Bookmark triggered prerendering.
+BASE_FEATURE(kBookmarkTriggerForPrerender2,
+             "BookmarkTriggerForPrerender2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables Certificate Transparency on Desktop.
+// Enabling CT enforcement requires maintaining a log policy, and the ability to
+// update the list of accepted logs. Embedders who are planning to enable this
+// should first reach out to chrome-certificate-transparency@google.com.
+BASE_FEATURE(kCertificateTransparencyAskBeforeEnabling,
+             "CertificateTransparencyAskBeforeEnabling",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 // Enables using the ClosedTabCache to instantly restore recently closed tabs
 // using the "Reopen Closed Tab" button.
 BASE_FEATURE(kClosedTabCache,
@@ -56,18 +88,6 @@ BASE_FEATURE(kDestroySystemProfiles,
              "DestroySystemProfiles",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Let DevTools front-end talk to the target of type "tab" rather than
-// "frame" when inspecting a WebContents.
-BASE_FEATURE(kDevToolsTabTarget,
-             "DevToolsTabTarget",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Let DevTools front-end log extensive VisualElements-style UMA metrics for
-// impressions and interactions.
-BASE_FEATURE(kDevToolsVeLogging,
-             "DevToolsVeLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Let the DevTools front-end query an AIDA endpoint for explanations and
 // insights regarding console (error) messages.
 BASE_FEATURE(kDevToolsConsoleInsights,
@@ -87,6 +107,144 @@ BASE_FEATURE(kDevToolsSharedProcessInfobar,
              "DevToolsSharedProcessInfobar",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Let DevTools front-end talk to the target of type "tab" rather than
+// "frame" when inspecting a WebContents.
+BASE_FEATURE(kDevToolsTabTarget,
+             "DevToolsTabTarget",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Let DevTools front-end log extensive VisualElements-style UMA metrics for
+// impressions and interactions.
+BASE_FEATURE(kDevToolsVeLogging,
+             "DevToolsVeLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables being able to zoom a web page by double tapping in Chrome OS tablet
+// mode.
+BASE_FEATURE(kDoubleTapToZoomInTabletMode,
+             "DoubleTapToZoomInTabletMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+// When this feature is enabled, the DPAPI encryption provider will be
+// registered and enabled for encryption/decryption. This provider is
+// forwards/backwards compatible with OSCrypt sync.
+BASE_FEATURE(kEnableDPAPIEncryptionProvider,
+             "EnableDPAPIEncryptionProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
+// Enables usage of the FedCM API without third party cookies at the same time.
+BASE_FEATURE(kFedCmWithoutThirdPartyCookies,
+             "FedCmWithoutThirdPartyCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables showing the email of the flex org admin that setup CBCM in the
+// management disclosures.
+BASE_FEATURE(kFlexOrgManagementDisclosure,
+             "FlexOrgManagementDisclosure",
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Enables the Incoming Call Notifications scenario. When created by an
+// installed origin, an incoming call notification should have increased
+// priority, colored buttons, a ringtone, and a default "close" button.
+// Otherwise, if the origin is not installed, it should behave like the default
+// notifications, but with the added "Close" button. See
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Notifications/notifications_actions_customization.md
+BASE_FEATURE(kIncomingCallNotifications,
+             "IncomingCallNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether the static key pinning list can be updated via component
+// updater.
+BASE_FEATURE(kKeyPinningComponentUpdater,
+             "KeyPinningComponentUpdater",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLargeFaviconFromGoogle,
+             "LargeFaviconFromGoogle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
+    &kLargeFaviconFromGoogle, "favicon_size_in_dip", 128};
+
+#if BUILDFLAG(IS_WIN)
+// Enables locking the cookie database for profiles.
+// TODO(crbug.com/1430226): Remove after fully launched.
+BASE_FEATURE(kLockProfileCookieDatabase,
+             "LockProfileCookieDatabase",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
+#if !BUILDFLAG(IS_ANDROID)
+// Adds a "Snooze" action to mute notifications during screen sharing sessions.
+BASE_FEATURE(kMuteNotificationSnoozeAction,
+             "MuteNotificationSnoozeAction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+// This feature enables monitoring of first-party network requests in order to
+// find possible violations. Example: A Chrome policy is set to disabled but the
+// network request controlled by that policy is observed.
+BASE_FEATURE(kNetworkAnnotationMonitoring,
+             "NetworkAnnotationMonitoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This flag is used for enabling New Tab Page triggered prerendering. See
+// crbug.com/1462832 for more details of New Tab Page triggered prerendering.
+BASE_FEATURE(kNewTabPageTriggerForPrerender2,
+             "NewTabPageTriggerForPrerender2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN)
+// Don't try to clear downlevel OS appcompat layers out of Chrome's
+// AppCompatFlags\Layers value in the Windows registry on process startup in
+// child processes; see https://crbug.com/1482568.
+BASE_FEATURE(kNoAppCompatClearInChildren,
+             "NoAppCompatClearInChildren",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN)
+// Don't call the Win32 API PrefetchVirtualMemory when loading chrome.dll inside
+// non-browser processes. This is done by passing flags to these processes. This
+// prevents pulling the entirety of chrome.dll into physical memory (albeit only
+// pri-2 physical memory) under the assumption that during chrome execution,
+// portions of the DLL which are used will already be present, hopefully leading
+// to less needless memory consumption.
+BASE_FEATURE(kNoPreReadMainDll,
+             "NoPreReadMainDll",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+// Adds an "Unsubscribe" action to web push notifications that allows stopping
+// notifications from a given origin with a single tap (with an option to undo).
+BASE_FEATURE(kNotificationOneTapUnsubscribe,
+             "NotificationOneTapUnsubscribe",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+// Enables omnibox trigger no state prefetch. Only one of
+// kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
+// enabled in the experiment. If both are enabled, only
+// kOmniboxTriggerForPrerender2 takes effect.
+// TODO(crbug.com/1267731): Remove this flag once the experiments are completed.
+BASE_FEATURE(kOmniboxTriggerForNoStatePrefetch,
+             "OmniboxTriggerForNoStatePrefetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This flag is used for enabling Omnibox triggered prerendering. See
+// crbug.com/1166085 for more details of Omnibox triggered prerendering.
+BASE_FEATURE(kOmniboxTriggerForPrerender2,
+             "OmniboxTriggerForPrerender2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables AES keys support in the chrome.enterprise.platformKeys and
 // chrome.platformKeys APIs. The new operations include `sign`, `encrypt` and
@@ -95,6 +253,15 @@ BASE_FEATURE(kPlatformKeysAesEncryption,
              "PlatformKeysAesEncryption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Disables prerendering on the default search engine predictor. This is useful
+// in comparing the impact of the SupportSearchSuggestionForPrerender2 feature
+// during its rollout. Once that rollout is complete, this feature should be
+// removed and instead we should add a new long-term holdback to
+// PreloadingConfig.
+BASE_FEATURE(kPrerenderDSEHoldback,
+             "PrerenderDSEHoldback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables executing the browser commands sent by the NTP promos.
 BASE_FEATURE(kPromoBrowserCommands,
@@ -126,26 +293,11 @@ BASE_FEATURE(kReadAnythingPermanentAccessibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enables being able to zoom a web page by double tapping in Chrome OS tablet
-// mode.
-BASE_FEATURE(kDoubleTapToZoomInTabletMode,
-             "DoubleTapToZoomInTabletMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-// Adds a "Snooze" action to mute notifications during screen sharing sessions.
-BASE_FEATURE(kMuteNotificationSnoozeAction,
-             "MuteNotificationSnoozeAction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-// Adds an "Unsubscribe" action to web push notifications that allows stopping
-// notifications from a given origin with a single tap (with an option to undo).
-BASE_FEATURE(kNotificationOneTapUnsubscribe,
-             "NotificationOneTapUnsubscribe",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+// When this feature is enabled, the network service will restart unsandboxed if
+// a previous attempt to launch it sandboxed failed.
+BASE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch,
+             "RestartNetworkServiceUnsandboxedForFailedLaunch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Gates sandboxed iframe navigation toward external protocol behind any of:
 // - allow-top-navigation
@@ -173,6 +325,26 @@ BASE_FEATURE(kSandboxExternalProtocolBlocked,
 BASE_FEATURE(kSandboxExternalProtocolBlockedWarning,
              "SandboxExternalProtocolBlockedWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This flag controls whether to trigger prerendering when the default search
+// engine suggests to prerender a search result.
+BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
+             "SupportSearchSuggestionForPrerender2",
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+const base::FeatureParam<SearchPreloadShareableCacheType>::Option
+    search_preload_shareable_cache_types[] = {
+        {SearchPreloadShareableCacheType::kEnabled, "enabled"},
+        {SearchPreloadShareableCacheType::kDisabled, "disabled"}};
+const base::FeatureParam<SearchPreloadShareableCacheType>
+    kSearchPreloadShareableCacheTypeParam{
+        &kSupportSearchSuggestionForPrerender2, "shareable_cache",
+        SearchPreloadShareableCacheType::kEnabled,
+        &search_preload_shareable_cache_types};
 
 // Enables migration of the network context data from `unsandboxed_data_path` to
 // `data_path`. See the explanation in network_context.mojom.
@@ -207,170 +379,19 @@ BASE_FEATURE(kTabCaptureBlueBorderCrOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables runtime detection of USB devices which provide a WebUSB landing page
-// descriptor.
-BASE_FEATURE(kWebUsbDeviceDetection,
-             "WebUsbDeviceDetection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Certificate Transparency on Desktop.
-// Enabling CT enforcement requires maintaining a log policy, and the ability to
-// update the list of accepted logs. Embedders who are planning to enable this
-// should first reach out to chrome-certificate-transparency@google.com.
-BASE_FEATURE(kCertificateTransparencyAskBeforeEnabling,
-             "CertificateTransparencyAskBeforeEnabling",
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-BASE_FEATURE(kLargeFaviconFromGoogle,
-             "LargeFaviconFromGoogle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kLargeFaviconFromGoogleSizeInDip{
-    &kLargeFaviconFromGoogle, "favicon_size_in_dip", 128};
-
-// Controls whether the static key pinning list can be updated via component
-// updater.
-BASE_FEATURE(kKeyPinningComponentUpdater,
-             "KeyPinningComponentUpdater",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When this feature is enabled, the network service will restart unsandboxed if
-// a previous attempt to launch it sandboxed failed.
-BASE_FEATURE(kRestartNetworkServiceUnsandboxedForFailedLaunch,
-             "RestartNetworkServiceUnsandboxedForFailedLaunch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN)
-// When this feature is enabled, metrics are gathered regarding the performance
-// and reliability of app-bound encryption primitives on a background thread.
-BASE_FEATURE(kAppBoundEncryptionMetrics,
-             "AppBoundEncryptionMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables locking the cookie database for profiles.
-// TODO(crbug.com/1430226): Remove after fully launched.
-BASE_FEATURE(kLockProfileCookieDatabase,
-             "LockProfileCookieDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Don't try to clear downlevel OS appcompat layers out of Chrome's
-// AppCompatFlags\Layers value in the Windows registry on process startup in
-// child processes; see https://crbug.com/1482568.
-BASE_FEATURE(kNoAppCompatClearInChildren,
-             "NoAppCompatClearInChildren",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Don't call the Win32 API PrefetchVirtualMemory when loading chrome.dll inside
-// non-browser processes. This is done by passing flags to these processes. This
-// prevents pulling the entirety of chrome.dll into physical memory (albeit only
-// pri-2 physical memory) under the assumption that during chrome execution,
-// portions of the DLL which are used will already be present, hopefully leading
-// to less needless memory consumption.
-BASE_FEATURE(kNoPreReadMainDll,
-             "NoPreReadMainDll",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When this feature is enabled, the network service will be passed an
 // OSCryptAsync crypto cookie delegate meaning that OSCryptAsync will be used
 // for cookie encryption.
 BASE_FEATURE(kUseOsCryptAsyncForCookieEncryption,
              "UseOsCryptAsyncForCookieEncryption",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When this feature is enabled, the DPAPI encryption provider will be
-// registered and enabled for encryption/decryption. This provider is
-// forwards/backwards compatible with OSCrypt sync.
-BASE_FEATURE(kEnableDPAPIEncryptionProvider,
-             "EnableDPAPIEncryptionProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-// Enables showing the email of the flex org admin that setup CBCM in the
-// management disclosures.
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kFlexOrgManagementDisclosure,
-             "FlexOrgManagementDisclosure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kFlexOrgManagementDisclosure,
-             "FlexOrgManagementDisclosure",
+// Enables runtime detection of USB devices which provide a WebUSB landing page
+// descriptor.
+BASE_FEATURE(kWebUsbDeviceDetection,
+             "WebUsbDeviceDetection",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Enables usage of the FedCM API without third party cookies at the same time.
-BASE_FEATURE(kFedCmWithoutThirdPartyCookies,
-             "FedCmWithoutThirdPartyCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the Incoming Call Notifications scenario. When created by an
-// installed origin, an incoming call notification should have increased
-// priority, colored buttons, a ringtone, and a default "close" button.
-// Otherwise, if the origin is not installed, it should behave like the default
-// notifications, but with the added "Close" button. See
-// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Notifications/notifications_actions_customization.md
-BASE_FEATURE(kIncomingCallNotifications,
-             "IncomingCallNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables omnibox trigger prerendering.
-BASE_FEATURE(kOmniboxTriggerForPrerender2,
-             "OmniboxTriggerForPrerender2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables bookmark trigger prerendering.
-BASE_FEATURE(kBookmarkTriggerForPrerender2,
-             "BookmarkTriggerForPrerender2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables New Tab Page trigger prerendering.
-BASE_FEATURE(kNewTabPageTriggerForPrerender2,
-             "NewTabPageTriggerForPrerender2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
-             "SupportSearchSuggestionForPrerender2",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-const base::FeatureParam<SearchPreloadShareableCacheType>::Option
-    search_preload_shareable_cache_types[] = {
-        {SearchPreloadShareableCacheType::kEnabled, "enabled"},
-        {SearchPreloadShareableCacheType::kDisabled, "disabled"}};
-const base::FeatureParam<SearchPreloadShareableCacheType>
-    kSearchPreloadShareableCacheTypeParam{
-        &kSupportSearchSuggestionForPrerender2, "shareable_cache",
-        SearchPreloadShareableCacheType::kEnabled,
-        &search_preload_shareable_cache_types};
-
-BASE_FEATURE(kPrerenderDSEHoldback,
-             "PrerenderDSEHoldback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
-             "AutocompleteActionPredictorConfidenceCutoff",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables omnibox trigger no state prefetch. Only one of
-// kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
-// enabled in the experiment. If both are enabled, only
-// kOmniboxTriggerForPrerender2 takes effect.
-// TODO(crbug.com/1267731): Remove this flag once the experiments are completed.
-BASE_FEATURE(kOmniboxTriggerForNoStatePrefetch,
-             "OmniboxTriggerForNoStatePrefetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This feature enables monitoring of first-party network requests in order to
-// find possible violations. Example: A Chrome policy is set to disabled but the
-// network request controlled by that policy is observed.
-BASE_FEATURE(kNetworkAnnotationMonitoring,
-             "NetworkAnnotationMonitoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
