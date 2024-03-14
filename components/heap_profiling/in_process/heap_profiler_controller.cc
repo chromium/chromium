@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/profiler/module_cache.h"
 #include "base/rand_util.h"
@@ -99,17 +100,33 @@ std::string ProcessHistogramName(base::StringPiece base_name,
   }
 }
 
+double GetChannelProbability(version_info::Channel channel,
+                             const HeapProfilerParameters& params) {
+  switch (channel) {
+    case version_info::Channel::STABLE:
+    case version_info::Channel::UNKNOWN:
+      // If the channel can't be determined, treat it as `stable` for safety.
+      // Don't disable heap profiling completely so that developers can still
+      // enable it with --enable-feature flags.
+      return params.stable_probability;
+    case version_info::Channel::BETA:
+    case version_info::Channel::DEV:
+    case version_info::Channel::CANARY:
+      return params.nonstable_probability;
+  }
+  NOTREACHED_NORETURN();
+}
+
 ProfilingEnabled DecideIfCollectionIsEnabled(version_info::Channel channel,
                                              ProcessType process_type) {
   HeapProfilerParameters params =
       GetHeapProfilerParametersForProcess(process_type);
-  if (!params.is_supported)
+  if (!params.is_supported) {
     return ProfilingEnabled::kDisabled;
-  const double probability = (channel == version_info::Channel::STABLE)
-                                 ? params.stable_probability
-                                 : params.nonstable_probability;
-  if (base::RandDouble() >= probability)
+  }
+  if (base::RandDouble() >= GetChannelProbability(channel, params)) {
     return ProfilingEnabled::kDisabled;
+  }
   return ProfilingEnabled::kEnabled;
 }
 
