@@ -1280,9 +1280,9 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid output operand: The number of elements "
-              "is too large.");
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "Invalid operand descriptor: The number of elements is too large.");
   }
   {
     // Test throwing exception if the output operand's byte length is too large.
@@ -1301,7 +1301,7 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid output operand: The byte length is too large.");
+              "Invalid operand descriptor: The byte length is too large.");
   }
   {
     // Test throwing exception when the input is not a 4-D tensor.
@@ -1895,9 +1895,9 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid output operand: The number of elements "
-              "is too large.");
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "Invalid operand descriptor: The number of elements is too large.");
   }
   {
     // Test throwing exception if the output operand's byte length is too large.
@@ -1917,7 +1917,7 @@ TEST_F(MLGraphBuilderTest, ConvTranspose2dTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid output operand: The byte length is too large.");
+              "Invalid operand descriptor: The byte length is too large.");
   }
   {
     // Test throwing exception when the input is not a 4-D tensor.
@@ -2593,7 +2593,7 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
       EXPECT_EQ(scope.GetExceptionState().Message(),
-                "Invalid output operand: The byte length is too large.");
+                "Invalid operand descriptor: The byte length is too large.");
     }
     {
       // Test throwing exception when the input is not a 4-D tensor.
@@ -2714,8 +2714,9 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       EXPECT_THAT(output, testing::IsNull());
       EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
                 DOMExceptionCode::kDataError);
-      EXPECT_EQ(scope.GetExceptionState().Message(),
-                "Invalid output operand: All dimensions should be positive.");
+      EXPECT_EQ(
+          scope.GetExceptionState().Message(),
+          "Invalid operand descriptor: All dimensions should be positive.");
     }
     {
       // Test throwing exception when the length of padding is not 4.
@@ -3390,7 +3391,7 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
     EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid output operand: The byte length is too large.");
+              "Invalid operand descriptor: The byte length is too large.");
   }
 }
 
@@ -4841,9 +4842,9 @@ TEST_F(MLGraphBuilderTest, ExpandTest) {
     EXPECT_THAT(output, testing::IsNull());
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid output operand: The number of elements "
-              "is too large.");
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "Invalid operand descriptor: The number of elements is too large.");
   }
 }
 
