@@ -75,7 +75,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
 
   checked: boolean = false;
   disabled: boolean = false;
-  ariaDescription?: string;
+  override ariaDescription: string|null;
   ariaLabelOverride?: string;
   override tabIndex: number = 0;
 

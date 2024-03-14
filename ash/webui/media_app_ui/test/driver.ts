@@ -217,17 +217,17 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
     throw new Error('Not implemented');
   }
 
-  async * entries(): AsyncIterable<Array<string|FileSystemHandle>> {
+  async * entries(): AsyncIterableIterator<[string, FileSystemHandle]> {
     for (const file of this.files) {
       yield [file.name, file];
     }
   }
-  async * keys(): AsyncIterable<string> {
+  async * keys(): AsyncIterableIterator<string> {
     for (const file of this.files) {
       yield file.name;
     }
   }
-  async * values(): AsyncIterable<FileSystemHandle> {
+  async * values(): AsyncIterableIterator<FileSystemHandle> {
     for (const file of this.files) {
       if (file.errorToFireOnIterate) {
         const error = file.errorToFireOnIterate;
@@ -235,6 +235,18 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
         throw error;
       }
       yield file;
+    }
+  }
+  async *
+      [Symbol.asyncIterator]():
+          AsyncIterableIterator<[string, FileSystemHandle]> {
+    for (const file of this.files) {
+      if (file.errorToFireOnIterate) {
+        const error = file.errorToFireOnIterate;
+        file.errorToFireOnIterate = null;
+        throw error;
+      }
+      yield [file.name, file];
     }
   }
   async removeEntry(name: string, _options: FileSystemRemoveOptions) {

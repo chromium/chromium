@@ -267,7 +267,7 @@ suite('cr-input', function() {
     assertEquals(
         crInput.inputElement.getAttribute('aria-description'), ariaDescription);
 
-    crInput.ariaDescription = undefined;
+    crInput.ariaDescription = null;
     flush();
     assertEquals(crInput.inputElement.getAttribute('aria-description'), null);
   });
