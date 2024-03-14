@@ -61,7 +61,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/memchr-2.7.1/src/tests/substring/prop.rs",
     "//third_party/rust/chromium_crates_io/vendor/memchr-2.7.1/src/vector.rs",
   ]
-  inputs = []
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/memchr-2.7.1/src/tests/x86_64-soft_float.json" ]
 
   build_native_rust_unit_tests = false
   edition = "2021"
