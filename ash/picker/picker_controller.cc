@@ -281,7 +281,15 @@ void PickerController::InsertResultOnNextFocus(
   // This cancels the previous request if there was one.
   insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
       input_method, *media_to_insert, kInsertMediaTimeout,
-      base::BindOnce(&CopyMediaToClipboard, *media_to_insert));
+      base::BindOnce(
+          [](const PickerRichMedia& media,
+             PickerInsertMediaRequest::Result result) {
+            // Fallback to copying to the clipboard on failure.
+            if (result != PickerInsertMediaRequest::Result::kSuccess) {
+              CopyMediaToClipboard(media);
+            }
+          },
+          *media_to_insert));
 
   session_metrics_->RecordOutcome(
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);

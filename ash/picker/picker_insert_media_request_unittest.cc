@@ -257,32 +257,34 @@ TEST_P(PickerInsertMediaRequestTest, DoesNotInsertWhenInputMethodIsDestroyed) {
   EXPECT_EQ(client.text(), u"");
 }
 
-TEST_P(PickerInsertMediaRequestTest, DoesNotCallCallbackOnSuccess) {
+TEST_P(PickerInsertMediaRequestTest, CallsCallbackOnSuccess) {
   InputMethodAsh input_method(nullptr);
   ui::FakeTextInputClient client(
       &input_method,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
-  base::test::TestFuture<void> failure_future;
+  base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
   PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
                                    /*insert_timeout=*/base::Seconds(1),
-                                   failure_future.GetCallback());
+                                   complete_future.GetCallback());
   client.Focus();
   task_environment().FastForwardBy(base::Seconds(1));
 
-  EXPECT_FALSE(failure_future.IsReady());
+  EXPECT_TRUE(complete_future.IsReady());
+  EXPECT_EQ(complete_future.Get(), PickerInsertMediaRequest::Result::kSuccess);
 }
 
 TEST_P(PickerInsertMediaRequestTest, CallsFailureCallbackOnTimeout) {
   InputMethodAsh input_method(nullptr);
 
-  base::test::TestFuture<void> failure_future;
+  base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
   PickerInsertMediaRequest request(&input_method, GetParam().media_to_insert,
                                    /*insert_timeout=*/base::Seconds(1),
-                                   failure_future.GetCallback());
+                                   complete_future.GetCallback());
   task_environment().FastForwardBy(base::Seconds(1));
 
-  EXPECT_TRUE(failure_future.Wait());
+  EXPECT_TRUE(complete_future.IsReady());
+  EXPECT_EQ(complete_future.Get(), PickerInsertMediaRequest::Result::kTimeout);
 }
 
 TEST(PickerInsertMediaRequestUnsupportedTest,
@@ -297,21 +299,22 @@ TEST(PickerInsertMediaRequestUnsupportedTest,
       &input_method,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
-  base::test::TestFuture<void> failure_future;
+  base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
   PickerInsertMediaRequest request(
       &input_method, PickerImageMedia(GURL("http://foo.com")),
-      /*insert_timeout=*/base::Seconds(1), failure_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
   unsupported_client.Focus();
   supported_client.Focus();
   task_environment.FastForwardBy(base::Seconds(1));
 
-  EXPECT_FALSE(failure_future.IsReady());
+  EXPECT_TRUE(complete_future.IsReady());
+  EXPECT_EQ(complete_future.Get(), PickerInsertMediaRequest::Result::kSuccess);
   EXPECT_EQ(unsupported_client.last_inserted_image_url(), std::nullopt);
   EXPECT_EQ(supported_client.last_inserted_image_url(), GURL("http://foo.com"));
 }
 
 TEST(PickerInsertMediaRequestUnsupportedTest,
-     InsertingUnsupportedImageCallsFailureCallbackAfterTimeout) {
+     InsertingUnsupportedImageFailsAfterTimeout) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   InputMethodAsh input_method(nullptr);
@@ -319,14 +322,15 @@ TEST(PickerInsertMediaRequestUnsupportedTest,
       &input_method,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
-  base::test::TestFuture<void> failure_future;
+  base::test::TestFuture<PickerInsertMediaRequest::Result> complete_future;
   PickerInsertMediaRequest request(
       &input_method, PickerImageMedia(GURL("http://foo.com")),
-      /*insert_timeout=*/base::Seconds(1), failure_future.GetCallback());
+      /*insert_timeout=*/base::Seconds(1), complete_future.GetCallback());
   client.Focus();
   task_environment.FastForwardBy(base::Seconds(1));
 
-  EXPECT_TRUE(failure_future.IsReady());
+  EXPECT_TRUE(complete_future.IsReady());
+  EXPECT_EQ(complete_future.Get(), PickerInsertMediaRequest::Result::kTimeout);
   EXPECT_EQ(client.last_inserted_image_url(), std::nullopt);
 }
 

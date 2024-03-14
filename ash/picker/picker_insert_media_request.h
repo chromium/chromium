@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "ash/ash_export.h"
+#include "ash/picker/picker_insert_media.h"
 #include "ash/picker/picker_rich_media.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
@@ -27,19 +28,26 @@ namespace ash {
 // Inserts rich media such as text and images into an input field.
 class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
  public:
-  using InsertFailedCallback = base::OnceClosure;
+  enum class Result {
+    kSuccess,
+    // There was no compatible input field to insert in during the timeout.
+    kTimeout,
+  };
+
+  using OnCompleteCallback = base::OnceCallback<void(Result)>;
 
   // Creates a request to insert `data` in the next focused input field.
   // If there's no focus change within `insert_timeout`, then this
   // request is cancelled. If this request is destroyed before insertion could
   // happen, the request is cancelled.
-  // If `insert_failed_callback` is valid, it is called if the input field does
-  // not support inserting `data`, or no insertion happened before the timeout.
+  // If `on_complete_callback` is valid, it is called when the insert
+  // completed successfully, or when there is an error, such as no insertion
+  // happened before the timeout.
   explicit PickerInsertMediaRequest(
       ui::InputMethod* input_method,
       const PickerRichMedia& media,
       base::TimeDelta insert_timeout,
-      InsertFailedCallback insert_failed_callback = {});
+      OnCompleteCallback on_complete_callback = {});
   ~PickerInsertMediaRequest() override;
 
   // ui::InputMethodObserver:
@@ -58,7 +66,9 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};
   base::OneShotTimer insert_timeout_timer_;
-  InsertFailedCallback insert_failed_callback_;
+  // This is guaranteed to be non-null before the insertion is complete (even if
+  // a null callback is passed in the constructor), and null afterwards.
+  OnCompleteCallback on_complete_callback_;
 };
 
 }  // namespace ash
