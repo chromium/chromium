@@ -991,6 +991,13 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
                               [self adjustedOffset].y));
   }
 
+  // Stop any existing focus/defocus animation.
+  if (self.animator.running) {
+    [self.animator stopAnimation:NO];
+    [self.animator finishAnimationAtPosition:UIViewAnimatingPositionStart];
+    self.animator = nil;
+  }
+
   // If the fake omnibox is already at the final position, just focus it and
   // return early.
   if ([self shouldSkipScrollToFocusOmnibox]) {
@@ -1175,21 +1182,23 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     self.headerViewController.view.alpha = 0;
     __weak __typeof(self) weakSelf = self;
     self.inhibitScrollPositionUpdates = YES;
-    [UIView animateWithDuration:kMaterialDuration6
-        delay:0
-        options:UIViewAnimationOptionCurveEaseOut
-        animations:^{
-          weakSelf.headerViewController.view.alpha = 1;
-          weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
-          [weakSelf updateFakeOmniboxForScrollPosition];
-        }
-        completion:^(BOOL finished) {
-          weakSelf.inhibitScrollPositionUpdates = NO;
-          weakSelf.collectionShiftingOffset = 0;
-          weakSelf.headerViewController.view.alpha = 1;
-          weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
-          weakSelf.scrolledToMinimumHeight = NO;
-        }];
+    self.animator = [[UIViewPropertyAnimator alloc]
+        initWithDuration:kMaterialDuration6
+                   curve:UIViewAnimationCurveEaseInOut
+              animations:^{
+                weakSelf.headerViewController.view.alpha = 1;
+                weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
+                [weakSelf updateFakeOmniboxForScrollPosition];
+              }];
+    [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
+      weakSelf.inhibitScrollPositionUpdates = NO;
+      weakSelf.collectionShiftingOffset = 0;
+      weakSelf.headerViewController.view.alpha = 1;
+      weakSelf.collectionView.contentOffset = CGPoint(0, yOffset);
+      weakSelf.scrolledToMinimumHeight = NO;
+    }];
+    self.animator.interruptible = YES;
+    [self.animator startAnimation];
     return;
   }
 
