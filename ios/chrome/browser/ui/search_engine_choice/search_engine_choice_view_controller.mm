@@ -87,6 +87,8 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   SnippetSearchEngineElement* _chosenSearchEngineElement;
   UIStackView* _searchEngineStackView;
   SnippetSearchEngineButton* _selectedSearchEngineButton;
+  // Wether `-[SearchEngineChoiceViewController viewWillAppear]` was called.
+  BOOL _viewWillAppearCalled;
 }
 
 @synthesize searchEngines = _searchEngines;
@@ -294,6 +296,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+  _viewWillAppearCalled = YES;
   // Update all views sizes before checking if the scroll view is at the bottom.
   [self.view layoutIfNeeded];
   [self updateDidReachBottomFlag];
@@ -385,7 +388,9 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
 }
 
 - (void)updateDidReachBottomFlag {
-  if (_didReachBottom || !self.presentingViewController) {
+  if (!_viewWillAppearCalled || _didReachBottom ||
+      !self.presentingViewController) {
+    // Don't update the value if the view is not ready to appear.
     // Don't update the value if the bottom was reached at least once.
     // Don't update the value if the view is not presented yet.
     return;
