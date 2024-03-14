@@ -42,6 +42,15 @@ void HighlightRegistry::Trace(blink::Visitor* visitor) const {
   Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
+HighlightRegistry* HighlightRegistry::GetHighlightRegistry(const Node* node) {
+  if (!node) {
+    return nullptr;
+  }
+  return node->GetDocument()
+      .domWindow()
+      ->Supplementable<LocalDOMWindow>::RequireSupplement<HighlightRegistry>();
+}
+
 // Deletes all HighlightMarkers and rebuilds them with the contents of
 // highlights_.
 void HighlightRegistry::ValidateHighlightMarkers() {
