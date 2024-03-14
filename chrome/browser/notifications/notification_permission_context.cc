@@ -14,6 +14,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -85,6 +86,9 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusInternal(
   ContentSetting setting =
       permissions::PermissionContextBase::GetPermissionStatusInternal(
           render_frame_host, requesting_origin, embedding_origin);
+
+  content_settings::PageSpecificContentSettings::NotificationsAccessed(
+      render_frame_host, /*blocked=*/setting != CONTENT_SETTING_ALLOW);
 
   if (requesting_origin != embedding_origin && setting == CONTENT_SETTING_ASK)
     return CONTENT_SETTING_BLOCK;
@@ -197,4 +201,22 @@ void NotificationPermissionContext::DecidePermission(
 
   permissions::PermissionContextBase::DecidePermission(std::move(request_data),
                                                        std::move(callback));
+}
+
+void NotificationPermissionContext::UpdateTabContext(
+    const permissions::PermissionRequestID& id,
+    const GURL& requesting_frame,
+    bool allowed) {
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          id.global_render_frame_host_id());
+  if (!content_settings) {
+    return;
+  }
+
+  if (allowed) {
+    content_settings->OnContentAllowed(ContentSettingsType::NOTIFICATIONS);
+  } else {
+    content_settings->OnContentBlocked(ContentSettingsType::NOTIFICATIONS);
+  }
 }

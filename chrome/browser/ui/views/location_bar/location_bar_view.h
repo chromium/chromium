@@ -38,6 +38,10 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/drag_controller.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/webapps/common/web_app_id.h"
+#endif
+
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
 class IntentChipButton;
@@ -267,15 +271,6 @@ class LocationBarView
   using ContentSettingViews =
       std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>;
 
-#if BUILDFLAG(IS_MAC)
-  // Manage a subscription to GeolocationSystemPermissionManager, which may
-  // outlive this object.
-  base::ScopedObservation<
-      device::GeolocationSystemPermissionManager,
-      device::GeolocationSystemPermissionManager::PermissionObserver>
-      geolocation_permission_observation_{this};
-#endif
-
   // Returns the amount of space required to the left of the omnibox text.
   int GetMinimumLeadingWidth() const;
 
@@ -393,6 +388,22 @@ class LocationBarView
       const ui::MouseEvent& event) const;
 
   bool GetPopupMode() const;
+
+#if BUILDFLAG(IS_MAC)
+  // Called when app shims change.
+  void OnAppShimChanged(const webapps::AppId& app_id);
+
+  // Manage a subscription to GeolocationSystemPermissionManager, which may
+  // outlive this object.
+  base::ScopedObservation<
+      device::GeolocationSystemPermissionManager,
+      device::GeolocationSystemPermissionManager::PermissionObserver>
+      geolocation_permission_observation_{this};
+
+  // Manage a subscription to AppShimRegistry; used to monitor for changes
+  // to system level notification permissions.
+  base::CallbackListSubscription app_shim_observation_;
+#endif
 
   // The Browser this LocationBarView is in.  Note that at least
   // ash::SimpleWebViewDialog uses a LocationBarView outside any browser

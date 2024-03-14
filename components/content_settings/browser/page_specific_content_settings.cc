@@ -789,6 +789,21 @@ void PageSpecificContentSettings::TopicAccessed(
 }
 
 // static
+void PageSpecificContentSettings::NotificationsAccessed(
+    content::RenderFrameHost* rfh,
+    bool blocked) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
+  if (settings) {
+    if (blocked) {
+      settings->OnContentBlocked(ContentSettingsType::NOTIFICATIONS);
+    } else {
+      settings->OnContentAllowed(ContentSettingsType::NOTIFICATIONS);
+    }
+  }
+}
+
+// static
 content::WebContentsObserver*
 PageSpecificContentSettings::GetWebContentsObserverForTest(
     content::WebContents* web_contents) {
@@ -797,9 +812,6 @@ PageSpecificContentSettings::GetWebContentsObserverForTest(
 
 bool PageSpecificContentSettings::IsContentBlocked(
     ContentSettingsType content_type) const {
-  DCHECK_NE(ContentSettingsType::NOTIFICATIONS, content_type)
-      << "Notifications settings handled by "
-      << "ContentSettingsNotificationsImageModel";
   DCHECK_NE(ContentSettingsType::AUTOMATIC_DOWNLOADS, content_type)
       << "Automatic downloads handled by DownloadRequestLimiter";
   CHECK_NE(ContentSettingsType::STORAGE_ACCESS, content_type)
@@ -817,7 +829,8 @@ bool PageSpecificContentSettings::IsContentBlocked(
       content_type == ContentSettingsType::SOUND ||
       content_type == ContentSettingsType::CLIPBOARD_READ_WRITE ||
       content_type == ContentSettingsType::SENSORS ||
-      content_type == ContentSettingsType::GEOLOCATION) {
+      content_type == ContentSettingsType::GEOLOCATION ||
+      content_type == ContentSettingsType::NOTIFICATIONS) {
     const auto& it = content_settings_status_.find(content_type);
     if (it != content_settings_status_.end()) {
       return it->second.blocked;
@@ -842,7 +855,8 @@ bool PageSpecificContentSettings::IsContentAllowed(
       content_type != ContentSettingsType::MIDI_SYSEX &&
       content_type != ContentSettingsType::CLIPBOARD_READ_WRITE &&
       content_type != ContentSettingsType::SENSORS &&
-      content_type != ContentSettingsType::GEOLOCATION) {
+      content_type != ContentSettingsType::GEOLOCATION &&
+      content_type != ContentSettingsType::NOTIFICATIONS) {
     return false;
   }
 
@@ -857,6 +871,15 @@ std::map<net::SchemefulSite, /*is_allowed*/ bool>
 PageSpecificContentSettings::GetTwoSiteRequests(
     ContentSettingsType content_type) {
   return content_settings_two_site_requests_[content_type];
+}
+
+void PageSpecificContentSettings::
+    SetNotificationsWasDeniedBecauseOfSystemPermission() {
+  if (notifications_was_denied_because_of_system_permission_) {
+    return;
+  }
+  notifications_was_denied_because_of_system_permission_ = true;
+  MaybeUpdateLocationBar();
 }
 
 void PageSpecificContentSettings::OnContentBlocked(ContentSettingsType type) {
@@ -1327,6 +1350,9 @@ void PageSpecificContentSettings::OnContentSettingChanged(
 
       [[fallthrough]];
     }
+    case ContentSettingsType::NOTIFICATIONS:
+      MaybeUpdateLocationBar();
+      [[fallthrough]];
     case ContentSettingsType::IMAGES:
     case ContentSettingsType::JAVASCRIPT:
     case ContentSettingsType::COOKIES:

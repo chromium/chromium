@@ -48,6 +48,7 @@ namespace base::apple {
 BASE_EXPORT FilePath MainBundlePath();
 BASE_EXPORT FilePath OuterBundlePath();
 BASE_EXPORT FilePath FrameworkBundlePath();
+BASE_EXPORT std::string MainBundleIdentifier();
 #if defined(__OBJC__)
 BASE_EXPORT NSBundle* MainBundle();
 BASE_EXPORT NSURL* MainBundleURL();

@@ -64,7 +64,7 @@ std::optional<ViewID> GetViewID(
     case ImageType::FRAMEBUST:
     case ImageType::CLIPBOARD_READ_WRITE:
     case ImageType::SENSORS:
-    case ImageType::NOTIFICATIONS_QUIET_PROMPT:
+    case ImageType::NOTIFICATIONS:
     case ImageType::STORAGE_ACCESS:
       return std::nullopt;
 

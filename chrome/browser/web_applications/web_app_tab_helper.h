@@ -37,6 +37,14 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // if there is no tab helper or app ID.
   static const webapps::AppId* GetAppId(content::WebContents* web_contents);
 
+#if BUILDFLAG(IS_MAC)
+  // Like the above method, but also checks if notification attribution should
+  // apply to the app in the web contents. This checks the base::Feature as well
+  // as makes sure the app is installed.
+  static std::optional<webapps::AppId> GetAppIdForNotificationAttribution(
+      content::WebContents* web_contents);
+#endif
+
   explicit WebAppTabHelper(content::WebContents* web_contents);
   WebAppTabHelper(const WebAppTabHelper&) = delete;
   WebAppTabHelper& operator=(const WebAppTabHelper&) = delete;

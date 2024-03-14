@@ -151,6 +151,11 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#endif
+
 namespace {
 
 int IncrementalMinimumWidth(const views::View* view) {
@@ -211,6 +216,11 @@ LocationBarView::LocationBarView(Browser* browser,
         device::GeolocationSystemPermissionManager::GetInstance());
 #endif
   }
+#if BUILDFLAG(IS_MAC)
+  app_shim_observation_ =
+      AppShimRegistry::Get()->RegisterAppChangedCallback(base::BindRepeating(
+          &LocationBarView::OnAppShimChanged, base::Unretained(this)));
+#endif
 }
 
 LocationBarView::~LocationBarView() = default;
@@ -1671,6 +1681,22 @@ ui::MouseEvent LocationBarView::AdjustMouseEventLocationForOmniboxView(
 bool LocationBarView::GetPopupMode() const {
   return is_popup_mode_;
 }
+
+#if BUILDFLAG(IS_MAC)
+void LocationBarView::OnAppShimChanged(const webapps::AppId& app_id) {
+  WebContents* web_contents = GetWebContents();
+  // During window creation and teardown it is possible for web_contents to be
+  // null.
+  if (!web_contents) {
+    return;
+  }
+  if (const webapps::AppId* id =
+          web_app::WebAppTabHelper::GetAppId(web_contents);
+      id && *id == app_id) {
+    UpdateContentSettingsIcons();
+  }
+}
+#endif
 
 BEGIN_METADATA(LocationBarView)
 ADD_READONLY_PROPERTY_METADATA(int, BorderRadius)

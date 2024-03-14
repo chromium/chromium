@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
@@ -39,6 +40,29 @@ const webapps::AppId* WebAppTabHelper::GetAppId(
   return tab_helper->app_id_.has_value() ? &tab_helper->app_id_.value()
                                          : nullptr;
 }
+
+#if BUILDFLAG(IS_MAC)
+std::optional<webapps::AppId>
+WebAppTabHelper::GetAppIdForNotificationAttribution(
+    content::WebContents* web_contents) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAppShimNotificationAttribution)) {
+    return std::nullopt;
+  }
+  const webapps::AppId* app_id = GetAppId(web_contents);
+  if (!app_id) {
+    return std::nullopt;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
+  if (!web_app_provider ||
+      !web_app_provider->registrar_unsafe().IsLocallyInstalled(*app_id)) {
+    return std::nullopt;
+  }
+  return *app_id;
+}
+#endif
 
 WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<WebAppTabHelper>(*web_contents),

@@ -9,6 +9,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 
 PermissionPromptNotificationsMac::PermissionPromptNotificationsMac(
     content::WebContents* web_contents,
@@ -38,16 +39,9 @@ bool PermissionPromptNotificationsMac::CanHandleRequest(
           permissions::RequestType::kNotifications) {
     return false;
   }
-  const webapps::AppId* app_id =
-      web_app::WebAppTabHelper::GetAppId(web_contents);
-  if (!app_id) {
-    return false;
-  }
-  web_app::WebAppProvider* web_app_provider =
-      web_app::WebAppProvider::GetForLocalAppsUnchecked(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  return web_app_provider &&
-         web_app_provider->registrar_unsafe().IsLocallyInstalled(*app_id);
+  return web_app::WebAppTabHelper::GetAppIdForNotificationAttribution(
+             web_contents)
+      .has_value();
 }
 
 bool PermissionPromptNotificationsMac::UpdateAnchor() {
@@ -89,7 +83,16 @@ void PermissionPromptNotificationsMac::OnPermissionResult(
     case RequestPermissionResult::kPermissionGranted:
       delegate_->Accept();
       return;
-    case RequestPermissionResult::kPermissionPreviouslyDenied:
+    case RequestPermissionResult::kPermissionPreviouslyDenied: {
+      content::RenderFrameHost* rfh =
+          delegate_->GetAssociatedWebContents()->GetPrimaryMainFrame();
+      content_settings::PageSpecificContentSettings::GetForFrame(rfh)
+          ->SetNotificationsWasDeniedBecauseOfSystemPermission();
+      // TODO(https://crbug.com/328105508): Consider adding a new result type
+      // for this rather than re-using ignore.
+      delegate_->Ignore();
+      break;
+    }
     case RequestPermissionResult::kPermissionDenied:
       delegate_->Deny();
       return;

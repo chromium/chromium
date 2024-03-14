@@ -340,9 +340,9 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_MacPermissions, Denied) {
 
 IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_MacPermissions,
                        PreviouslyDenied) {
-  EXPECT_EQ("denied", RequestAndRespondToPermission(
-                          mac_notifications::mojom::RequestPermissionResult::
-                              kPermissionPreviouslyDenied));
+  EXPECT_EQ("default", RequestAndRespondToPermission(
+                           mac_notifications::mojom::RequestPermissionResult::
+                               kPermissionPreviouslyDenied));
 }
 
 #endif
