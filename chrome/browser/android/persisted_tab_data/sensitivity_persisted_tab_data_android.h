@@ -14,13 +14,14 @@
 // Client of PersistedTabDataAndroid
 class SensitivityPersistedTabDataAndroid
     : public PersistedTabDataAndroid,
-      public optimization_guide::PageContentAnnotationsService::
+      public page_content_annotations::PageContentAnnotationsService::
           PageContentAnnotationsObserver {
  public:
   explicit SensitivityPersistedTabDataAndroid(TabAndroid* tab_android);
 
-  void RegisterPCAService(optimization_guide::PageContentAnnotationsService*
-                              page_content_annotations_service);
+  void RegisterPCAService(
+      page_content_annotations::PageContentAnnotationsService*
+          page_content_annotations_service);
   ~SensitivityPersistedTabDataAndroid() override;
 
   // Used to acquire SensitivityPersistedTabDataAndroid for a given TabAndroid
@@ -34,10 +35,11 @@ class SensitivityPersistedTabDataAndroid
 
   bool is_sensitive() { return is_sensitive_; }
 
-  // optimization_guide::PageContentAnnotationsService::PageContentAnnotationsObserver
+  // page_content_annotations::PageContentAnnotationsService::PageContentAnnotationsObserver
   void OnPageContentAnnotated(
       const GURL& url,
-      const optimization_guide::PageContentAnnotationsResult& result) override;
+      const page_content_annotations::PageContentAnnotationsResult& result)
+      override;
 
  protected:
   std::unique_ptr<const std::vector<uint8_t>> Serialize() override;
@@ -51,7 +53,7 @@ class SensitivityPersistedTabDataAndroid
   raw_ptr<TabAndroid> tab_;
 
   // Not owned. Register manually through RegisterPCAService
-  raw_ptr<optimization_guide::PageContentAnnotationsService>
+  raw_ptr<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_ = nullptr;
 
   // Determine if SensitivityPersistedTabDataAndroid exists for |tab_android|.

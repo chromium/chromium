@@ -16,14 +16,17 @@
 #include "net/base/priority_queue.h"
 
 namespace optimization_guide {
-
 class OptimizationGuideModelProvider;
+}  // namespace optimization_guide
+
+namespace page_content_annotations {
 
 // Manages the loading and execution of models used to annotate page content.
 class PageContentAnnotationsModelManager : public PageContentAnnotator {
  public:
   explicit PageContentAnnotationsModelManager(
-      OptimizationGuideModelProvider* optimization_guide_model_provider);
+      optimization_guide::OptimizationGuideModelProvider*
+          optimization_guide_model_provider);
   ~PageContentAnnotationsModelManager() override;
   PageContentAnnotationsModelManager(
       const PageContentAnnotationsModelManager&) = delete;
@@ -39,7 +42,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
-  std::optional<ModelInfo> GetModelInfoForType(
+  std::optional<optimization_guide::ModelInfo> GetModelInfoForType(
       AnnotationType type) const override;
   void RequestAndNotifyWhenModelAvailable(
       AnnotationType type,
@@ -76,7 +79,8 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   // Set up the machinery for execution of the page visibility model. This
   // should only be run at construction.
   void SetUpPageVisibilityModel(
-      OptimizationGuideModelProvider* optimization_guide_model_provider);
+      optimization_guide::OptimizationGuideModelProvider*
+          optimization_guide_model_provider);
 
   // Runs the next job in |job_queue_| if there is any.
   void MaybeStartNextAnnotationJob();
@@ -97,12 +101,13 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   JobExecutionState job_state_ = JobExecutionState::kIdle;
 
   // The model provider, not owned.
-  raw_ptr<OptimizationGuideModelProvider> optimization_guide_model_provider_;
+  raw_ptr<optimization_guide::OptimizationGuideModelProvider>
+      optimization_guide_model_provider_;
 
   base::WeakPtrFactory<PageContentAnnotationsModelManager> weak_ptr_factory_{
       this};
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_MODEL_MANAGER_H_

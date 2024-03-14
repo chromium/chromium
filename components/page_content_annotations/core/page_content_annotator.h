@@ -13,7 +13,7 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 using BatchAnnotationCallback =
     base::OnceCallback<void(const std::vector<BatchAnnotationResult>&)>;
@@ -33,7 +33,7 @@ class PageContentAnnotator {
 
   // Returns the model info associated with the given AnnotationType, if it is
   // available and loaded.
-  virtual std::optional<ModelInfo> GetModelInfoForType(
+  virtual std::optional<optimization_guide::ModelInfo> GetModelInfoForType(
       AnnotationType annotation_type) const = 0;
 
   // Requests that the given model for |type| be loaded in the background and
@@ -45,6 +45,6 @@ class PageContentAnnotator {
       base::OnceCallback<void(bool)> callback) = 0;
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATOR_H_

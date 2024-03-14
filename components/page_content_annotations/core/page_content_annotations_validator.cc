@@ -4,24 +4,26 @@
 
 #include "components/page_content_annotations/core/page_content_annotations_validator.h"
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/strings/string_split.h"
-#include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
-#include "components/page_content_annotations/core/page_content_annotator.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/page_content_annotator.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 namespace {
 
@@ -181,4 +183,4 @@ std::vector<std::string> PageContentAnnotationsValidator::BuildInputsForType(
   return inputs;
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

@@ -16,18 +16,19 @@
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 // A NL-based model handler for page visibility annotations.
 class PageVisibilityModelHandler
     : public PageContentAnnotationJobExecutor,
-      public ModelHandler<std::vector<tflite::task::core::Category>,
-                          const std::string&> {
+      public optimization_guide::ModelHandler<
+          std::vector<tflite::task::core::Category>,
+          const std::string&> {
  public:
   PageVisibilityModelHandler(
-      OptimizationGuideModelProvider* model_provider,
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      const std::optional<proto::Any>& model_metadata);
+      const std::optional<optimization_guide::proto::Any>& model_metadata);
   ~PageVisibilityModelHandler() override;
 
   // PageContentAnnotationJobExecutor:
@@ -54,6 +55,6 @@ class PageVisibilityModelHandler
   base::WeakPtrFactory<PageVisibilityModelHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_VISIBILITY_MODEL_HANDLER_H_

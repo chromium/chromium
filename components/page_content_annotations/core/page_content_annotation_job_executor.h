@@ -13,7 +13,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 // An abstract class that serves as an adapter between the multiple string
 // inputs of a PageContentAnnotationJob and the actual model execution which
@@ -59,6 +59,6 @@ class PageContentAnnotationJobExecutor {
       this};
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_JOB_EXECUTOR_H_

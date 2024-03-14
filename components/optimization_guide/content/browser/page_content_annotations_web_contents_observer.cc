@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
@@ -20,7 +21,7 @@
 #include "content/public/browser/page_user_data.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 namespace {
 
@@ -55,14 +56,14 @@ PageContentAnnotationsWebContentsObserver::
 
 void PageContentAnnotationsWebContentsObserver::
     DocumentOnLoadCompletedInPrimaryMainFrame() {
-  if (!optimization_guide::features::ShouldExtractRelatedSearches()) {
+  if (!features::ShouldExtractRelatedSearches()) {
     return;
   }
   if (!google_util::IsGoogleSearchUrl(web_contents()->GetLastCommittedURL())) {
     return;
   }
 
-  optimization_guide::HistoryVisit history_visit =
+  HistoryVisit history_visit =
       CreateHistoryVisitFromWebContents(web_contents());
   search_result_extractor_client_.RequestData(
       web_contents(), {continuous_search::mojom::ResultType::kRelatedSearches},
@@ -85,4 +86,4 @@ void PageContentAnnotationsWebContentsObserver::OnRelatedSearchesExtracted(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver);
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

@@ -7,7 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/check_op.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 PageContentAnnotationJobExecutor::PageContentAnnotationJobExecutor() = default;
 PageContentAnnotationJobExecutor::~PageContentAnnotationJobExecutor() = default;
@@ -91,4 +91,4 @@ void PageContentAnnotationJobExecutor::OnSingleInputExecutionComplete(
   std::move(on_single_input_done_barrier_closure).Run();
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

@@ -11,19 +11,21 @@
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 // static
 std::unique_ptr<TestPageContentAnnotationsService>
 TestPageContentAnnotationsService::Create(
-    OptimizationGuideModelProvider* optimization_guide_model_provider,
+    optimization_guide::OptimizationGuideModelProvider*
+        optimization_guide_model_provider,
     history::HistoryService* history_service) {
-  std::unique_ptr<TestOptimizationGuideModelProvider> test_model_provider;
-  OptimizationGuideModelProvider* model_provider_to_use =
+  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
+      test_model_provider;
+  optimization_guide::OptimizationGuideModelProvider* model_provider_to_use =
       optimization_guide_model_provider;
   if (!model_provider_to_use) {
-    test_model_provider =
-        std::make_unique<TestOptimizationGuideModelProvider>();
+    test_model_provider = std::make_unique<
+        optimization_guide::TestOptimizationGuideModelProvider>();
     model_provider_to_use = test_model_provider.get();
   }
 
@@ -64,7 +66,8 @@ TestPageContentAnnotationsService::~TestPageContentAnnotationsService() {
 }
 
 TestPageContentAnnotationsService::TestPageContentAnnotationsService(
-    OptimizationGuideModelProvider* optimization_guide_model_provider,
+    optimization_guide::OptimizationGuideModelProvider*
+        optimization_guide_model_provider,
     history::HistoryService* history_service)
     : PageContentAnnotationsService(/*autocomplete_provider_client=*/nullptr,
                                     /*application_locale=*/"en-US",
@@ -79,4 +82,4 @@ TestPageContentAnnotationsService::TestPageContentAnnotationsService(
                                     /*optimization_guide_decider=*/nullptr,
                                     /*background_task_runner=*/nullptr) {}
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

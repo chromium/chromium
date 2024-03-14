@@ -22,7 +22,6 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
-#include "components/page_content_annotations/core/page_content_annotations_validator.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -30,6 +29,10 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_content_annotations/core/page_content_annotations_enums.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/page_content_annotations_validator.h"
 #include "components/search/search.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -42,7 +45,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_model_manager.h"
 #endif
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 namespace {
 
@@ -125,15 +128,14 @@ void MaybeRecordVisibilityUKM(
   }
 
   // We want 2^|num_bits| buckets, linearly spaced.
-  uint32_t num_buckets =
-      std::pow(2, optimization_guide::features::NumBitsForRAPPORMetrics());
+  uint32_t num_buckets = std::pow(2, features::NumBitsForRAPPORMetrics());
   DCHECK_GT(num_buckets, 0u);
   float bucket_size = 100.0 / num_buckets;
   uint32_t bucketed_score = static_cast<uint32_t>(floor(score / bucket_size));
   DCHECK_LE(bucketed_score, num_buckets);
   uint32_t noisy_score = NoisyMetricsRecorder().GetNoisyMetric(
-      optimization_guide::features::NoiseProbabilityForRAPPORMetrics(),
-      bucketed_score, optimization_guide::features::NumBitsForRAPPORMetrics());
+      features::NoiseProbabilityForRAPPORMetrics(), bucketed_score,
+      features::NumBitsForRAPPORMetrics());
   ukm::SourceId ukm_source_id = ukm::ConvertToSourceId(
       visit.navigation_id, ukm::SourceIdType::NAVIGATION_ID);
 
@@ -173,14 +175,15 @@ PageContentAnnotationsService::PageContentAnnotationsService(
     std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
     const std::string& application_locale,
     const std::string& country_code,
-    OptimizationGuideModelProvider* optimization_guide_model_provider,
+    optimization_guide::OptimizationGuideModelProvider*
+        optimization_guide_model_provider,
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
     ZeroSuggestCacheService* zero_suggest_cache_service,
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
-    OptimizationGuideDecider* optimization_guide_decider,
+    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
       min_page_category_score_to_persist_(
@@ -221,12 +224,12 @@ PageContentAnnotationsService::PageContentAnnotationsService(
   is_salient_image_metadata_fetching_enabled_ =
       features::ShouldPersistSalientImageMetadata(application_locale,
                                                   country_code);
-  std::vector<proto::OptimizationType> optimization_types;
+  std::vector<optimization_guide::proto::OptimizationType> optimization_types;
   if (is_remote_page_metadata_fetching_enabled_) {
-    optimization_types.emplace_back(proto::PAGE_ENTITIES);
+    optimization_types.emplace_back(optimization_guide::proto::PAGE_ENTITIES);
   }
   if (is_salient_image_metadata_fetching_enabled_) {
-    optimization_types.emplace_back(proto::SALIENT_IMAGE);
+    optimization_types.emplace_back(optimization_guide::proto::SALIENT_IMAGE);
   }
   if (optimization_guide_decider_ && !optimization_types.empty()) {
     optimization_guide_decider_->RegisterOptimizationTypes(optimization_types);
@@ -445,8 +448,8 @@ void PageContentAnnotationsService::BatchAnnotate(
       inputs, annotation_type);
 }
 
-std::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
-    AnnotationType type) const {
+std::optional<optimization_guide::ModelInfo>
+PageContentAnnotationsService::GetModelInfoForType(AnnotationType type) const {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   DCHECK(annotator_);
   return annotator_->GetModelInfoForType(type);
@@ -752,20 +755,20 @@ void PageContentAnnotationsService::OnURLVisitedWithNavigationId(
   if (is_remote_page_metadata_fetching_enabled_ &&
       optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimization(
-        url_row.url(), proto::PAGE_ENTITIES,
+        url_row.url(), optimization_guide::proto::PAGE_ENTITIES,
         base::BindOnce(
             &PageContentAnnotationsService::OnOptimizationGuideResponseReceived,
             weak_ptr_factory_.GetWeakPtr(), history_visit,
-            proto::PAGE_ENTITIES));
+            optimization_guide::proto::PAGE_ENTITIES));
   }
   if (is_salient_image_metadata_fetching_enabled_ &&
       optimization_guide_decider_) {
     optimization_guide_decider_->CanApplyOptimization(
-        url_row.url(), proto::SALIENT_IMAGE,
+        url_row.url(), optimization_guide::proto::SALIENT_IMAGE,
         base::BindOnce(
             &PageContentAnnotationsService::OnOptimizationGuideResponseReceived,
             weak_ptr_factory_.GetWeakPtr(), history_visit,
-            proto::SALIENT_IMAGE));
+            optimization_guide::proto::SALIENT_IMAGE));
   }
 }
 
@@ -795,7 +798,8 @@ void PageContentAnnotationsService::RemoveObserver(
 
 void PageContentAnnotationsService::PersistRemotePageMetadata(
     const HistoryVisit& visit,
-    const proto::PageEntitiesMetadata& page_entities_metadata) {
+    const optimization_guide::proto::PageEntitiesMetadata&
+        page_entities_metadata) {
   CHECK(visit.visit_id);
 
   // Persist entities and categories to VisitContentModelAnnotations if that
@@ -837,7 +841,8 @@ void PageContentAnnotationsService::PersistRemotePageMetadata(
 
 void PageContentAnnotationsService::PersistSalientImageMetadata(
     const HistoryVisit& visit,
-    const proto::SalientImageMetadata& salient_image_metadata) {
+    const optimization_guide::proto::SalientImageMetadata&
+        salient_image_metadata) {
   CHECK(visit.visit_id);
 
   if (salient_image_metadata.thumbnails_size() <= 0) {
@@ -868,25 +873,27 @@ void PageContentAnnotationsService::NotifyPageContentAnnotatedObservers(
 
 void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
     const HistoryVisit& history_visit,
-    proto::OptimizationType optimization_type,
-    OptimizationGuideDecision decision,
-    const OptimizationMetadata& metadata) {
-  if (decision != OptimizationGuideDecision::kTrue) {
+    optimization_guide::proto::OptimizationType optimization_type,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     return;
   }
 
   switch (optimization_type) {
-    case proto::OptimizationType::PAGE_ENTITIES: {
-      std::optional<proto::PageEntitiesMetadata> page_entities_metadata =
-          metadata.ParsedMetadata<proto::PageEntitiesMetadata>();
+    case optimization_guide::proto::OptimizationType::PAGE_ENTITIES: {
+      std::optional<optimization_guide::proto::PageEntitiesMetadata>
+          page_entities_metadata = metadata.ParsedMetadata<
+              optimization_guide::proto::PageEntitiesMetadata>();
       if (page_entities_metadata) {
         PersistRemotePageMetadata(history_visit, *page_entities_metadata);
       }
       break;
     }
-    case proto::OptimizationType::SALIENT_IMAGE: {
-      std::optional<proto::SalientImageMetadata> salient_image_metadata =
-          metadata.ParsedMetadata<proto::SalientImageMetadata>();
+    case optimization_guide::proto::OptimizationType::SALIENT_IMAGE: {
+      std::optional<optimization_guide::proto::SalientImageMetadata>
+          salient_image_metadata = metadata.ParsedMetadata<
+              optimization_guide::proto::SalientImageMetadata>();
       if (salient_image_metadata) {
         PersistSalientImageMetadata(history_visit, *salient_image_metadata);
       }
@@ -911,4 +918,4 @@ HistoryVisit::HistoryVisit(history::VisitID visit_id) {
 HistoryVisit::~HistoryVisit() = default;
 HistoryVisit::HistoryVisit(const HistoryVisit&) = default;
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

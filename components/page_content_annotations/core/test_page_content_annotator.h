@@ -10,7 +10,7 @@
 #include "components/page_content_annotations/core/page_content_annotator.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 // Pass this to
 // |PageContentAnnotationsService::OverridePageContentAnnotatorForTesting| for
@@ -24,7 +24,7 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   // The given visibility score is used for the matching BatchAnnotationResults
   // by input string. If the input is not found, the output is left as nullopt.
   void UseVisibilityScores(
-      const std::optional<ModelInfo>& model_info,
+      const std::optional<optimization_guide::ModelInfo>& model_info,
       const base::flat_map<std::string, double>& visibility_scores_for_input);
 
   // When set, |Annotate| will never call its callback.
@@ -44,7 +44,7 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   void Annotate(BatchAnnotationCallback callback,
                 const std::vector<std::string>& inputs,
                 AnnotationType annotation_type) override;
-  std::optional<ModelInfo> GetModelInfoForType(
+  std::optional<optimization_guide::ModelInfo> GetModelInfoForType(
       AnnotationType annotation_type) const override;
   void RequestAndNotifyWhenModelAvailable(
       AnnotationType type,
@@ -54,7 +54,7 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   // When set, |Annotate| will never call its callback.
   bool always_hang_ = false;
 
-  std::optional<ModelInfo> visibility_scores_model_info_;
+  std::optional<optimization_guide::ModelInfo> visibility_scores_model_info_;
   base::flat_map<std::string, double> visibility_scores_for_input_;
 
   std::vector<AnnotateInputsAndType> annotation_requests_;
@@ -62,6 +62,6 @@ class TestPageContentAnnotator : public PageContentAnnotator {
   base::flat_set<AnnotationType> model_requests_;
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_TEST_PAGE_CONTENT_ANNOTATOR_H_

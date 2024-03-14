@@ -18,4 +18,5 @@ include_rules = [
   "+services/metrics/public",
   "+third_party/omnibox_proto",
   "+third_party/tflite_support",
+  "+ui/base/l10n",
 ]

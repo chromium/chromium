@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 // The type of annotation that is being done on the given input.
 //
@@ -35,6 +35,6 @@ enum class AnnotationType {
 
 std::string AnnotationTypeToString(AnnotationType type);
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_TYPE_H_

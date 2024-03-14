@@ -8,7 +8,7 @@
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 class PageContentAnnotationJobTest : public testing::Test {
  public:
@@ -86,4 +86,4 @@ TEST_F(PageContentAnnotationJobTest, FillWithNullOutputs) {
   EXPECT_EQ(job.CountOfRemainingNonNullInputs(), 0U);
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

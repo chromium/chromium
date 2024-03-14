@@ -1224,8 +1224,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus"
-    enum="OptimizationGuidePageContentAnnotationsStorageStatus"
-    expires_after="M130">
+    enum="PageContentAnnotationsStorageStatus" expires_after="M130">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -1238,8 +1237,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotationsService.ContentAnnotationsStorageStatus.{PageContentAnnotationsStorageType}"
-    enum="OptimizationGuidePageContentAnnotationsStorageStatus"
-    expires_after="2024-07-30">
+    enum="PageContentAnnotationsStorageStatus" expires_after="2024-07-30">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

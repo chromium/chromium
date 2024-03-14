@@ -15,9 +15,10 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/page_content_annotations/core/page_content_annotations_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_database.h"
@@ -27,12 +28,13 @@
 #include "components/optimization_guide/core/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
+#include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -47,7 +49,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #endif
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 namespace {
 
@@ -124,7 +126,7 @@ class PageContentAnnotationsServiceDisabledBrowserTest
   PageContentAnnotationsServiceDisabledBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        {features::kOptimizationHints, features::kPageContentAnnotations});
+        { optimization_guide::features::kOptimizationHints, features::kPageContentAnnotations});
   }
 
  private:
@@ -142,7 +144,7 @@ class PageContentAnnotationsServiceKioskModeBrowserTest
  public:
   PageContentAnnotationsServiceKioskModeBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationHints, features::kPageContentAnnotations},
+        { features::kPageContentAnnotations},
         /*disabled_features=*/{});
   }
 
@@ -166,7 +168,7 @@ class PageContentAnnotationsServiceEphemeralProfileBrowserTest
  public:
   PageContentAnnotationsServiceEphemeralProfileBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationHints, features::kPageContentAnnotations},
+        {features::kPageContentAnnotations},
         /*disabled_features=*/{});
   }
 
@@ -195,7 +197,7 @@ class PageContentAnnotationsServiceValidationBrowserTest
  public:
   PageContentAnnotationsServiceValidationBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationHints,
+        {
          features::kPageContentAnnotationsValidation},
         {features::kPageContentAnnotations});
   }
@@ -214,13 +216,13 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
  public:
   PageContentAnnotationsServiceBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationHints, {}},
+        {
          {features::kPageContentAnnotations,
           {
               {"write_to_history_service", "true"},
           }},
          {features::kPageVisibilityPageContentAnnotations, {}}},
-        /*disabled_features=*/{features::kPreventLongRunningPredictionModels});
+        /*disabled_features=*/{optimization_guide::features::kPreventLongRunningPredictionModels});
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
 
@@ -266,13 +268,13 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
 
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->OverrideTargetModelForTesting(
-            proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
+            optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
             optimization_guide::TestModelInfoBuilder()
                 .SetModelFilePath(model_file_path)
                 .Build());
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
         "OptimizationGuide.ModelExecutor.ModelFileUpdated.PageVisibility", 1);
 #else
@@ -371,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   int expected_count = 0;
 #endif
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       expected_count);
@@ -423,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 #else
   int expected_count = 0;
 #endif
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
       expected_count);
@@ -523,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
 
     Annotate(history_visit);
 
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
         "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
@@ -531,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
         "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
         true, 1);
 
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
         "OptimizationGuide.PageContentAnnotationsService."
         "ContentAnnotationsStorageStatus",
@@ -575,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
@@ -593,8 +595,8 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
     // Make sure remote page metadata works without page content annotations
     // enabled.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationHints, {}},
-         {features::kRemotePageMetadata,
+        {
+         {page_content_annotations::features::kRemotePageMetadata,
           {{"min_page_category_score", "80"},
            {"supported_countries", "*"},
            {"supported_locales", "*"}}}},
@@ -613,21 +615,21 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
-  proto::PageEntitiesMetadata page_entities_metadata;
-  proto::Entity* entity = page_entities_metadata.add_entities();
+  optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
+  optimization_guide::proto::Entity* entity = page_entities_metadata.add_entities();
   entity->set_entity_id("entity1");
   entity->set_score(50);
-  proto::Category* category = page_entities_metadata.add_categories();
+  optimization_guide::proto::Category* category = page_entities_metadata.add_categories();
   category->set_category_id("category1");
   category->set_score(0.85);
-  proto::Category* category2 = page_entities_metadata.add_categories();
+  optimization_guide::proto::Category* category2 = page_entities_metadata.add_categories();
   category2->set_category_id("othercategory");
   category2->set_score(0.75);
   page_entities_metadata.set_alternative_title("alternative title");
-  OptimizationMetadata metadata;
+  optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
@@ -652,20 +654,20 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
-  proto::PageEntitiesMetadata page_entities_metadata;
-  proto::Entity* entity = page_entities_metadata.add_entities();
+  optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
+  optimization_guide::proto::Entity* entity = page_entities_metadata.add_entities();
   entity->set_entity_id("entity1");
   entity->set_score(50);
-  proto::Category* category = page_entities_metadata.add_categories();
+  optimization_guide::proto::Category* category = page_entities_metadata.add_categories();
   category->set_category_id("category1");
   category->set_score(0.85);
-  proto::Category* category2 = page_entities_metadata.add_categories();
+  optimization_guide::proto::Category* category2 = page_entities_metadata.add_categories();
   category2->set_category_id("othercategory");
   category2->set_score(0.75);
-  OptimizationMetadata metadata;
+  optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
@@ -689,12 +691,12 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
-  proto::PageEntitiesMetadata page_entities_metadata;
+  optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
   page_entities_metadata.set_alternative_title("alternative title");
-  OptimizationMetadata metadata;
+  optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
@@ -711,11 +713,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceRemoteMetadataBrowserTest,
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
-  proto::PageEntitiesMetadata page_entities_metadata;
-  OptimizationMetadata metadata;
+  optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
+  optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(page_entities_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, proto::PAGE_ENTITIES, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
@@ -731,7 +733,7 @@ class PageContentAnnotationsServiceSalientImageMetadataBrowserTest
  public:
   PageContentAnnotationsServiceSalientImageMetadataBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationHints, {}},
+        {
          {features::kPageContentAnnotations, {}},
          {features::kPageContentAnnotationsPersistSalientImageMetadata,
           {{"supported_countries", "*"}, {"supported_locales", "*"}}}},
@@ -752,11 +754,11 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
-  proto::SalientImageMetadata salient_image_metadata;
-  OptimizationMetadata metadata;
+  optimization_guide::proto::SalientImageMetadata salient_image_metadata;
+  optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(salient_image_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, proto::SALIENT_IMAGE, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
@@ -774,13 +776,13 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
-  proto::SalientImageMetadata salient_image_metadata;
+  optimization_guide::proto::SalientImageMetadata salient_image_metadata;
   salient_image_metadata.add_thumbnails();
   salient_image_metadata.add_thumbnails();
-  OptimizationMetadata metadata;
+  optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(salient_image_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, proto::SALIENT_IMAGE, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop().RunUntilIdle();
@@ -798,14 +800,14 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
 
-  proto::SalientImageMetadata salient_image_metadata;
+  optimization_guide::proto::SalientImageMetadata salient_image_metadata;
   salient_image_metadata.add_thumbnails();
   salient_image_metadata.add_thumbnails()->set_image_url(
       "http://gstatic.com/image");
-  OptimizationMetadata metadata;
+  optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(salient_image_metadata);
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-      ->AddHintForTesting(url, proto::SALIENT_IMAGE, metadata);
+      ->AddHintForTesting(url, optimization_guide::proto::SALIENT_IMAGE, metadata);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   WaitForHistoryServiceToFinish();
@@ -821,7 +823,7 @@ class PageContentAnnotationsServiceNoHistoryTest
  public:
   PageContentAnnotationsServiceNoHistoryTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationHints, {}},
+        {
          {features::kPageContentAnnotations,
           {
               {"write_to_history_service", "false"},
@@ -846,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
@@ -879,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
     GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
         "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
@@ -892,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
     GURL url2(embedded_test_server()->GetURL("a.test", "/hello.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
-    RetryForHistogramUntilCountReached(
+    optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
         "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
@@ -913,7 +915,7 @@ class PageContentAnnotationsServiceBatchVisitTest
  public:
   PageContentAnnotationsServiceBatchVisitTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationHints, {}},
+        {
          {features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
            {"annotate_visit_batch_size", "2"}}},
@@ -955,14 +957,14 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "PageContentAnnotations.AnnotateVisit.AnnotationRequested", 1);
 
   GURL url2(embedded_test_server()->GetURL("b.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 2);
 
@@ -996,7 +998,7 @@ class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
  public:
   PageContentAnnotationsServiceBatchVisitNoAnnotateTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationHints, {}},
+        {
          {features::kPageContentAnnotations,
           {{"write_to_history_service", "false"},
            {"annotate_visit_batch_size", "1"}}},
@@ -1030,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitNoAnnotateTest,
   Annotate(history_visit2);
   Annotate(history_visit3);
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "PageContentAnnotations.AnnotateVisit.QueueFullVisitDropped", 1);
 
@@ -1056,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
   GURL url(embedded_test_server()->GetURL("a.test", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  RetryForHistogramUntilCountReached(
+  optimization_guide::RetryForHistogramUntilCountReached(
       &histogram_tester,
       "PageContentAnnotations.AnnotateVisit.AnnotationRequestQueued", 1);
 
@@ -1078,4 +1080,4 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

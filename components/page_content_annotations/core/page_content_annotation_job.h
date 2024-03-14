@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 // A single page content annotation job with all request and response data
 // throughout the progression of the model execution. It can contain one or more
@@ -77,6 +77,6 @@ class PageContentAnnotationJob {
   std::optional<base::TimeTicks> job_execution_start_time_;
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_JOB_H_

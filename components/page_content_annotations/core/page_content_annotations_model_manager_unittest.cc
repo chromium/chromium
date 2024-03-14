@@ -17,26 +17,28 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 using ::testing::FloatEq;
 using ::testing::UnorderedElementsAre;
 
-class ModelObserverTracker : public TestOptimizationGuideModelProvider {
+class ModelObserverTracker
+    : public optimization_guide::TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
-      proto::OptimizationTarget target,
-      const std::optional<proto::Any>& model_metadata,
-      OptimizationTargetModelObserver* observer) override {
+      optimization_guide::proto::OptimizationTarget target,
+      const std::optional<optimization_guide::proto::Any>& model_metadata,
+      optimization_guide::OptimizationTargetModelObserver* observer) override {
     registered_model_metadata_.insert_or_assign(target, model_metadata);
   }
 
   bool DidRegisterForTarget(
-      proto::OptimizationTarget target,
-      std::optional<proto::Any>* out_model_metadata) const {
+      optimization_guide::proto::OptimizationTarget target,
+      std::optional<optimization_guide::proto::Any>* out_model_metadata) const {
     auto it = registered_model_metadata_.find(target);
     if (it == registered_model_metadata_.end())
       return false;
@@ -46,7 +48,8 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
   }
 
  private:
-  base::flat_map<proto::OptimizationTarget, std::optional<proto::Any>>
+  base::flat_map<optimization_guide::proto::OptimizationTarget,
+                 std::optional<optimization_guide::proto::Any>>
       registered_model_metadata_;
 };
 
@@ -56,7 +59,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     // Enable Visibility but disable Entities.
     scoped_feature_list_.InitWithFeatures(
         {features::kPageVisibilityPageContentAnnotations},
-        {features::kPreventLongRunningPredictionModels});
+        {optimization_guide::features::kPreventLongRunningPredictionModels});
   }
   ~PageContentAnnotationsModelManagerTest() override = default;
 
@@ -88,10 +91,13 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     // execution: job, queue, background sequences, etc, are working correctly.
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("non_existent_model.tflite");
-    std::unique_ptr<ModelInfo> model_info =
-        TestModelInfoBuilder().SetModelFilePath(model_file_path).Build();
+    std::unique_ptr<optimization_guide::ModelInfo> model_info =
+        optimization_guide::TestModelInfoBuilder()
+            .SetModelFilePath(model_file_path)
+            .Build();
     model_manager()->page_visibility_model_handler_->OnModelUpdated(
-        proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, *model_info);
+        optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
+        *model_info);
     RunUntilIdle();
   }
 
@@ -139,7 +145,9 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageVisibility) {
   run_loop.Run();
 
   EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_VISIBILITY, nullptr));
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_PAGE_VISIBILITY,
+      nullptr));
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
       "ContentVisibility",
@@ -185,7 +193,9 @@ TEST_F(PageContentAnnotationsModelManagerTest, PageVisibilityDisabled) {
   run_loop.Run();
 
   EXPECT_FALSE(model_observer_tracker()->DidRegisterForTarget(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_VISIBILITY, nullptr));
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_PAGE_VISIBILITY,
+      nullptr));
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
       "ContentVisibility",
@@ -244,7 +254,9 @@ TEST_F(PageContentAnnotationsModelManagerTest, CalledTwice) {
   run_loop2.Run();
 
   EXPECT_TRUE(model_observer_tracker()->DidRegisterForTarget(
-      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAGE_VISIBILITY, nullptr));
+      optimization_guide::proto::OptimizationTarget::
+          OPTIMIZATION_TARGET_PAGE_VISIBILITY,
+      nullptr));
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentAnnotations.BatchRequestedSize."
@@ -298,4 +310,4 @@ TEST_F(PageContentAnnotationsModelManagerTest,
   EXPECT_TRUE(visibility_callback_success);
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

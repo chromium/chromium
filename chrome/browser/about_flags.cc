@@ -128,6 +128,8 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/page_image_service/features.h"
 #include "components/page_info/core/features.h"
 #include "components/paint_preview/buildflags/buildflags.h"
@@ -6291,7 +6293,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::
          kExtractRelatedSearchesFromPrefetchedZPSResponseDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(optimization_guide::features::
+     FEATURE_VALUE_TYPE(page_content_annotations::features::
                             kExtractRelatedSearchesFromPrefetchedZPSResponse)},
 
     {"page-image-service-optimization-guide-salient-images",
@@ -6314,7 +6316,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPageContentAnnotationsDescription,
      kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         optimization_guide::features::kPageContentAnnotations,
+         page_content_annotations::features::kPageContentAnnotations,
          kPageContentAnnotationsVariations,
          "PageContentAnnotations")},
 
@@ -6324,21 +6326,22 @@ const FeatureEntry kFeatureEntries[] = {
          kPageContentAnnotationsPersistSalientImageMetadataDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
-         optimization_guide::features::
+         page_content_annotations::features::
              kPageContentAnnotationsPersistSalientImageMetadata)},
 
     {"page-content-annotations-remote-page-metadata",
      flag_descriptions::kPageContentAnnotationsRemotePageMetadataName,
      flag_descriptions::kPageContentAnnotationsRemotePageMetadataDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(optimization_guide::features::kRemotePageMetadata)},
+     FEATURE_VALUE_TYPE(
+         page_content_annotations::features::kRemotePageMetadata)},
 
     {"page-visibility-page-content-annotations",
      flag_descriptions::kPageVisibilityPageContentAnnotationsName,
      flag_descriptions::kPageVisibilityPageContentAnnotationsDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         optimization_guide::features::kPageVisibilityPageContentAnnotations)},
+     FEATURE_VALUE_TYPE(page_content_annotations::features::
+                            kPageVisibilityPageContentAnnotations)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-remove-stale-policy-pinned-apps-from-shelf",

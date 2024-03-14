@@ -8,13 +8,13 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 TEST(PageContentAnnotationsValidatorTest, DoesNothing) {
   TestPageContentAnnotator annotator;
@@ -283,4 +283,4 @@ TEST(PageContentAnnotationsValidatorTest, CommandOverridesFeature) {
   EXPECT_EQ(annotation_requests[0].second, AnnotationType::kContentVisibility);
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

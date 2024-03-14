@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 
 #include <memory>
 
@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/history/core/browser/history_service.h"
@@ -70,19 +71,19 @@ bool ShouldEnablePageContentAnnotations(Profile* profile) {
 
   // Allow for the validation experiment or remote page metadata to enable the
   // PCAService without need to enable both features.
-  return optimization_guide::features::IsPageContentAnnotationEnabled() ||
+  return page_content_annotations::features::IsPageContentAnnotationEnabled() ||
          base::FeatureList::IsEnabled(
-             optimization_guide::features::kPageContentAnnotationsValidation) ||
+             page_content_annotations::features::kPageContentAnnotationsValidation) ||
          base::FeatureList::IsEnabled(
-             optimization_guide::features::kRemotePageMetadata);
+             page_content_annotations::features::kRemotePageMetadata);
 }
 
 }  // namespace
 
 // static
-optimization_guide::PageContentAnnotationsService*
+page_content_annotations::PageContentAnnotationsService*
 PageContentAnnotationsServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<optimization_guide::PageContentAnnotationsService*>(
+  return static_cast<page_content_annotations::PageContentAnnotationsService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
@@ -138,7 +139,7 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
   if (optimization_guide_keyed_service && history_service) {
     std::string country_code =
         GetCurrentCountryCode(g_browser_process->variations_service());
-    return std::make_unique<optimization_guide::PageContentAnnotationsService>(
+    return std::make_unique<page_content_annotations::PageContentAnnotationsService>(
         std::make_unique<ChromeAutocompleteProviderClient>(profile),
         g_browser_process->GetApplicationLocale(), country_code,
         optimization_guide_keyed_service, history_service, template_url_service,

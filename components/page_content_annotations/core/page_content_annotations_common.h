@@ -14,7 +14,7 @@
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 // A weighted ID value.
 class WeightedIdentifier {
@@ -120,6 +120,6 @@ class PageContentAnnotationsResult {
   absl::variant<void* /*Unknown*/, ContentVisibilityScore> result_;
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_COMMON_H_

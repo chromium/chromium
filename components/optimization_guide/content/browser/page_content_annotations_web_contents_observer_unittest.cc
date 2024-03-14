@@ -26,8 +26,8 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -46,7 +46,7 @@
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 #include "url/gurl.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 namespace {
 
@@ -87,7 +87,8 @@ const char16_t kDefaultTemplateURLKeyword[] = u"default-engine.com";
 class FakePageContentAnnotationsService : public PageContentAnnotationsService {
  public:
   explicit FakePageContentAnnotationsService(
-      OptimizationGuideModelProvider* optimization_guide_model_provider,
+      optimization_guide::OptimizationGuideModelProvider*
+          optimization_guide_model_provider,
       history::HistoryService* history_service,
       ZeroSuggestCacheService* zero_suggest_cache_service,
       TemplateURLService* template_url_service)
@@ -158,8 +159,8 @@ class PageContentAnnotationsWebContentsObserverTest
     ASSERT_TRUE(history_service_->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath())));
 
-    optimization_guide_model_provider_ =
-        std::make_unique<TestOptimizationGuideModelProvider>();
+    optimization_guide_model_provider_ = std::make_unique<
+        optimization_guide::TestOptimizationGuideModelProvider>();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     ZeroSuggestProvider::RegisterProfilePrefs(pref_service_->registry());
     zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
@@ -225,7 +226,7 @@ class PageContentAnnotationsWebContentsObserverTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<TestOptimizationGuideModelProvider>
+  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -430,4 +431,4 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest,
   }
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

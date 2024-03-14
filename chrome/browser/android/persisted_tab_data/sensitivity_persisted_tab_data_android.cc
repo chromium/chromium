@@ -15,7 +15,7 @@ SensitivityPersistedTabDataAndroid::SensitivityPersistedTabDataAndroid(
       tab_(tab_android) {}
 
 void SensitivityPersistedTabDataAndroid::RegisterPCAService(
-    optimization_guide::PageContentAnnotationsService*
+    page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service) {
   DCHECK(page_content_annotations_service);
   if (page_content_annotations_service_ == page_content_annotations_service) {
@@ -24,13 +24,13 @@ void SensitivityPersistedTabDataAndroid::RegisterPCAService(
 
   page_content_annotations_service_ = page_content_annotations_service;
   page_content_annotations_service_->AddObserver(
-      optimization_guide::AnnotationType::kContentVisibility, this);
+      page_content_annotations::AnnotationType::kContentVisibility, this);
 }
 
 SensitivityPersistedTabDataAndroid::~SensitivityPersistedTabDataAndroid() {
   if (page_content_annotations_service_ != nullptr) {
     page_content_annotations_service_->RemoveObserver(
-        optimization_guide::AnnotationType::kContentVisibility, this);
+        page_content_annotations::AnnotationType::kContentVisibility, this);
   }
 }
 
@@ -71,7 +71,7 @@ void SensitivityPersistedTabDataAndroid::Deserialize(
 
 void SensitivityPersistedTabDataAndroid::OnPageContentAnnotated(
     const GURL& url,
-    const optimization_guide::PageContentAnnotationsResult& result) {
+    const page_content_annotations::PageContentAnnotationsResult& result) {
   if (tab_->GetURL() != url) {
     return;
   }

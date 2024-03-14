@@ -10,15 +10,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/test_page_content_annotator.h"
 #include "components/search_engines/template_url_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 namespace {
 
@@ -56,51 +57,58 @@ class MockHistoryService : public history::HistoryService {
               (override));
 };
 
-class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
+class FakeOptimizationGuideDecider
+    : public optimization_guide::TestOptimizationGuideDecider {
  public:
   void RegisterOptimizationTypes(
-      const std::vector<proto::OptimizationType>& optimization_types) override {
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types) override {
     registered_optimization_types_ = optimization_types;
   }
 
-  std::vector<proto::OptimizationType> registered_optimization_types() {
+  std::vector<optimization_guide::proto::OptimizationType>
+  registered_optimization_types() {
     return registered_optimization_types_;
   }
 
   void CanApplyOptimization(
       const GURL& url,
-      proto::OptimizationType optimization_type,
-      OptimizationGuideDecisionCallback callback) override {
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationGuideDecisionCallback callback) override {
     std::string url_spec = url.spec();
-    if (optimization_type == proto::PAGE_ENTITIES &&
+    if (optimization_type == optimization_guide::proto::PAGE_ENTITIES &&
         url == GURL("http://hasmetadata.com/")) {
-      proto::PageEntitiesMetadata page_entities_metadata;
+      optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
       page_entities_metadata.set_alternative_title("alternative title");
 
-      OptimizationMetadata metadata;
+      optimization_guide::OptimizationMetadata metadata;
       metadata.SetAnyMetadataForTesting(page_entities_metadata);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      std::move(callback).Run(
+          optimization_guide::OptimizationGuideDecision::kTrue, metadata);
       return;
     }
-    if (optimization_type == proto::SALIENT_IMAGE &&
+    if (optimization_type == optimization_guide::proto::SALIENT_IMAGE &&
         url == GURL("http://hasimageurl.com")) {
-      proto::SalientImageMetadata salient_image_metadata;
+      optimization_guide::proto::SalientImageMetadata salient_image_metadata;
       salient_image_metadata.add_thumbnails()->set_image_url(
           "http://gstatic.com/image");
 
-      OptimizationMetadata metadata;
+      optimization_guide::OptimizationMetadata metadata;
       metadata.SetAnyMetadataForTesting(salient_image_metadata);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      std::move(callback).Run(
+          optimization_guide::OptimizationGuideDecision::kTrue, metadata);
       return;
     }
     if (url == GURL("http://wrongmetadata.com/")) {
-      OptimizationMetadata metadata;
-      proto::Entity entity;
+      optimization_guide::OptimizationMetadata metadata;
+      optimization_guide::proto::Entity entity;
       metadata.SetAnyMetadataForTesting(entity);
-      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      std::move(callback).Run(
+          optimization_guide::OptimizationGuideDecision::kTrue, metadata);
       return;
     }
-    std::move(callback).Run(OptimizationGuideDecision::kFalse, {});
+    std::move(callback).Run(
+        optimization_guide::OptimizationGuideDecision::kFalse, {});
   }
 
   optimization_guide::OptimizationGuideDecision CanApplyOptimization(
@@ -113,7 +121,8 @@ class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
   }
 
  private:
-  std::vector<proto::OptimizationType> registered_optimization_types_;
+  std::vector<optimization_guide::proto::OptimizationType>
+      registered_optimization_types_;
 };
 
 }  // namespace
@@ -122,20 +131,20 @@ class PageContentAnnotationsServiceTest : public testing::Test {
  public:
   PageContentAnnotationsServiceTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kOptimizationHints, {}},
-         {features::kPageContentAnnotations,
+        {{features::kPageContentAnnotations,
           {
               {"write_to_history_service", "true"},
               {"pca_service_wait_for_title_delay_in_milliseconds", "4999"},
           }},
          {features::kPageVisibilityPageContentAnnotations, {}}},
-        /*disabled_features=*/{features::kPreventLongRunningPredictionModels});
+        /*disabled_features=*/{
+            optimization_guide::features::kPreventLongRunningPredictionModels});
   }
   ~PageContentAnnotationsServiceTest() override = default;
 
   void SetUp() override {
-    optimization_guide_model_provider_ =
-        std::make_unique<TestOptimizationGuideModelProvider>();
+    optimization_guide_model_provider_ = std::make_unique<
+        optimization_guide::TestOptimizationGuideModelProvider>();
     history_service_ =
         std::make_unique<testing::StrictMock<MockHistoryService>>();
 
@@ -195,7 +204,7 @@ class PageContentAnnotationsServiceTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<TestOptimizationGuideModelProvider>
+  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       optimization_guide_model_provider_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<TestPageContentAnnotator> test_annotator_;
@@ -301,10 +310,11 @@ class PageContentAnnotationsServiceRemotePageMetadataTest
 
 TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
        RegistersTypeWhenFeatureEnabled) {
-  std::vector<proto::OptimizationType> registered_optimization_types =
-      optimization_guide_decider()->registered_optimization_types();
-  EXPECT_TRUE(
-      base::Contains(registered_optimization_types, proto::PAGE_ENTITIES));
+  std::vector<optimization_guide::proto::OptimizationType>
+      registered_optimization_types =
+          optimization_guide_decider()->registered_optimization_types();
+  EXPECT_TRUE(base::Contains(registered_optimization_types,
+                             optimization_guide::proto::PAGE_ENTITIES));
 }
 
 TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
@@ -344,10 +354,11 @@ class PageContentAnnotationsServiceSalientImageMetadataTest
 
 TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
        RegistersTypeWhenFeatureEnabled) {
-  std::vector<proto::OptimizationType> registered_optimization_types =
-      optimization_guide_decider()->registered_optimization_types();
-  EXPECT_TRUE(
-      base::Contains(registered_optimization_types, proto::SALIENT_IMAGE));
+  std::vector<optimization_guide::proto::OptimizationType>
+      registered_optimization_types =
+          optimization_guide_decider()->registered_optimization_types();
+  EXPECT_TRUE(base::Contains(registered_optimization_types,
+                             optimization_guide::proto::SALIENT_IMAGE));
 }
 
 TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
@@ -373,4 +384,4 @@ TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
            /*local_navigation_id=*/1);
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

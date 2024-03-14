@@ -105,25 +105,6 @@ const char kModelValidate[] = "optimization-guide-model-validate";
 const char kModelExecutionValidate[] =
     "optimization-guide-model-execution-validate";
 
-const char kPageContentAnnotationsLoggingEnabled[] =
-    "enable-page-content-annotations-logging";
-
-const char kPageContentAnnotationsValidationStartupDelaySeconds[] =
-    "page-content-annotations-validation-startup-delay-seconds";
-
-const char kPageContentAnnotationsValidationBatchSizeOverride[] =
-    "page-content-annotations-validation-batch-size";
-
-// Enables the specific annotation type to run validation at startup after a
-// delay. A comma separated list of inputs can be given as a value which will be
-// used as input for the validation job.
-const char kPageContentAnnotationsValidationContentVisibility[] =
-    "page-content-annotations-validation-content-visibility";
-
-// Writes the output of page content annotation validations to the given file.
-const char kPageContentAnnotationsValidationWriteToFile[] =
-    "page-content-annotations-validation-write-to-file";
-
 // Overrides the model quality service URL.
 const char kModelQualityServiceURL[] = "model-quality-service-url";
 
@@ -274,62 +255,6 @@ std::optional<base::FilePath> GetOnDeviceValidationWriteToFile() {
     return std::nullopt;
   }
   return command_line->GetSwitchValuePath(kOnDeviceValidationWriteToFile);
-}
-
-bool ShouldLogPageContentAnnotationsInput() {
-  static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kPageContentAnnotationsLoggingEnabled);
-  return enabled;
-}
-
-std::optional<base::TimeDelta> PageContentAnnotationsValidationStartupDelay() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(
-          kPageContentAnnotationsValidationStartupDelaySeconds)) {
-    return std::nullopt;
-  }
-
-  std::string value = command_line->GetSwitchValueASCII(
-      kPageContentAnnotationsValidationStartupDelaySeconds);
-
-  size_t seconds = 0;
-  if (base::StringToSizeT(value, &seconds)) {
-    return base::Seconds(seconds);
-  }
-  return std::nullopt;
-}
-
-std::optional<size_t> PageContentAnnotationsValidationBatchSize() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(
-          kPageContentAnnotationsValidationBatchSizeOverride)) {
-    return std::nullopt;
-  }
-
-  std::string value = command_line->GetSwitchValueASCII(
-      kPageContentAnnotationsValidationBatchSizeOverride);
-
-  size_t size = 0;
-  if (base::StringToSizeT(value, &size)) {
-    return size;
-  }
-  return std::nullopt;
-}
-
-bool LogPageContentAnnotationsValidationToConsole() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(
-      kPageContentAnnotationsValidationContentVisibility);
-  ;
-}
-
-std::optional<base::FilePath> PageContentAnnotationsValidationWriteToFile() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kPageContentAnnotationsValidationWriteToFile)) {
-    return std::nullopt;
-  }
-  return command_line->GetSwitchValuePath(
-      kPageContentAnnotationsValidationWriteToFile);
 }
 
 }  // namespace switches

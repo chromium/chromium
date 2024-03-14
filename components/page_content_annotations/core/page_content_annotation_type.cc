@@ -6,7 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 // Each of these string values is used in UMA histograms so please update the
 // variants there when any changes are made.
@@ -24,4 +24,4 @@ std::string AnnotationTypeToString(AnnotationType type) {
   }
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

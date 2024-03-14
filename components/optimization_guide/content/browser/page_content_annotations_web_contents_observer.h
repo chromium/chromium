@@ -19,7 +19,7 @@ namespace prerender {
 class NoStatePrefetchManager;
 }  // namespace prerender
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 class PageContentAnnotationsService;
 
@@ -54,7 +54,7 @@ class PageContentAnnotationsWebContentsObserver
 
   // Invoked when related searches have been extracted for |visit|.
   void OnRelatedSearchesExtracted(
-      const optimization_guide::HistoryVisit& visit,
+      const HistoryVisit& visit,
       continuous_search::SearchResultExtractorClientStatus status,
       continuous_search::mojom::CategoryResultsPtr results);
 
@@ -79,6 +79,6 @@ class PageContentAnnotationsWebContentsObserver
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_

@@ -4,6 +4,19 @@
 
 import("//components/optimization_guide/features.gni")
 
+component("features") {
+  sources = [
+    "page_content_annotations_enums.h",
+    "page_content_annotations_features.cc",
+    "page_content_annotations_features.h",
+    "page_content_annotations_switches.cc",
+    "page_content_annotations_switches.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//ui/base" ]
+  defines = [ "IS_PAGE_CONTENT_ANNOTATIONS_FEATURES_IMPL" ]
+}
+
 static_library("core") {
   sources = [
     "page_content_annotation_job.cc",
@@ -29,6 +42,7 @@ static_library("core") {
     ]
   }
   public_deps = [
+    ":features",
     "//base",
     "//components/continuous_search/common",
     "//components/continuous_search/common/public/mojom",
@@ -55,6 +69,7 @@ static_library("test_support") {
   ]
   deps = [
     ":core",
+    ":features",
     "//components/history/core/test",
     "//components/optimization_guide/core:test_support",
     "//testing/gtest",
@@ -81,6 +96,7 @@ source_set("unit_tests") {
   }
   deps = [
     ":core",
+    ":features",
     ":test_support",
     "//base/test:test_support",
     "//components/optimization_guide/core:test_support",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -12,9 +12,9 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-namespace optimization_guide {
+namespace page_content_annotations {
 class PageContentAnnotationsService;
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 class Profile;
 
@@ -26,7 +26,7 @@ class PageContentAnnotationsServiceFactory : public ProfileKeyedServiceFactory {
   //
   // Returns null if the features that allow for this to provide useful
   // information are disabled.
-  static optimization_guide::PageContentAnnotationsService* GetForProfile(
+  static page_content_annotations::PageContentAnnotationsService* GetForProfile(
       Profile* profile);
 
   // Gets the LazyInstance that owns all PageContentAnnotationsService(s).
@@ -50,4 +50,4 @@ class PageContentAnnotationsServiceFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_

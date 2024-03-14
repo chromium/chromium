@@ -10,7 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 class PageVisibilityModelHandlerTest : public testing::Test {
  public:
@@ -18,7 +18,8 @@ class PageVisibilityModelHandlerTest : public testing::Test {
   ~PageVisibilityModelHandlerTest() override = default;
 
   void SetUp() override {
-    model_provider_ = std::make_unique<TestOptimizationGuideModelProvider>();
+    model_provider_ = std::make_unique<
+        optimization_guide::TestOptimizationGuideModelProvider>();
     model_handler_ = std::make_unique<PageVisibilityModelHandler>(
         model_provider_.get(), task_environment_.GetMainThreadTaskRunner(),
         /*model_metadata=*/std::nullopt);
@@ -38,7 +39,8 @@ class PageVisibilityModelHandlerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestOptimizationGuideModelProvider> model_provider_;
+  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
+      model_provider_;
   std::unique_ptr<PageVisibilityModelHandler> model_handler_;
 };
 
@@ -69,4 +71,4 @@ TEST_F(PageVisibilityModelHandlerTest, HasScore) {
   EXPECT_EQ(*visibility_score, 0.9);
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

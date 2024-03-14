@@ -14,7 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 WeightedIdentifier::WeightedIdentifier(int32_t value, double weight)
     : value_(value), weight_(weight) {
@@ -168,4 +168,4 @@ PageContentAnnotationsResult::GetContentVisibilityScore() const {
       result_);
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

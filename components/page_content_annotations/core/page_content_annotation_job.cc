@@ -7,7 +7,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 PageContentAnnotationJob::PageContentAnnotationJob(
     BatchAnnotationCallback on_complete_callback,
@@ -117,4 +117,4 @@ bool PageContentAnnotationJob::HadAnySuccess() const {
   return false;
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

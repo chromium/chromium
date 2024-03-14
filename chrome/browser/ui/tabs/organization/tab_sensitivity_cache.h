@@ -21,7 +21,7 @@ struct GURLHash {
 // synchronously available form, for specifically the currently open tabs, by
 // caching scores emitted to PageContentAnnotationsObservers.
 class TabSensitivityCache final
-    : public optimization_guide::PageContentAnnotationsService::
+    : public page_content_annotations::PageContentAnnotationsService::
           PageContentAnnotationsObserver {
  public:
   explicit TabSensitivityCache(Profile* profile);
@@ -31,12 +31,13 @@ class TabSensitivityCache final
   // is a float from 0 to 1, where 1 is most likely to be sensitive.
   std::optional<float> GetScore(const GURL& url) const;
 
-  // optimization_guide
+  // page_content_annotations
   //     ::PageContentAnnotationsService
   //     ::PageContentAnnotationsObserver
   void OnPageContentAnnotated(
       const GURL& url,
-      const optimization_guide::PageContentAnnotationsResult& result) override;
+      const page_content_annotations::PageContentAnnotationsResult& result)
+      override;
 
  private:
   void MaybeTrimCacheKeys();

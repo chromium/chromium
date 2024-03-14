@@ -13,7 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 class PageContentAnnotator;
 
@@ -52,6 +52,6 @@ class PageContentAnnotationsValidator {
   base::WeakPtrFactory<PageContentAnnotationsValidator> weak_ptr_factory_{this};
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_VALIDATOR_H_

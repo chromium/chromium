@@ -46,7 +46,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
-#include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
@@ -423,11 +423,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
     OptimizationGuideWebContentsObserver::CreateForWebContents(web_contents);
   }
-  optimization_guide::PageContentAnnotationsService*
+  page_content_annotations::PageContentAnnotationsService*
       page_content_annotations_service =
           PageContentAnnotationsServiceFactory::GetForProfile(profile);
   if (page_content_annotations_service) {
-    optimization_guide::PageContentAnnotationsWebContentsObserver::
+    page_content_annotations::PageContentAnnotationsWebContentsObserver::
         CreateForWebContents(
             web_contents, page_content_annotations_service,
             TemplateURLServiceFactory::GetForProfile(profile),
@@ -445,7 +445,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         SensitivityPersistedTabDataAndroid::From(
             tab,
             base::BindOnce(
-                [](optimization_guide::PageContentAnnotationsService*
+                [](page_content_annotations::PageContentAnnotationsService*
                        page_content_annotations_service,
                    PersistedTabDataAndroid* persisted_tab_data) {
                   auto* sensitivity_persisted_tab_data_android =

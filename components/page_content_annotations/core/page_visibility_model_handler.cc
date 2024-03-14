@@ -14,7 +14,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 namespace {
 
@@ -23,16 +23,16 @@ const char kNotSensitiveCategory[] = "NOT-SENSITIVE";
 }  // namespace
 
 PageVisibilityModelHandler::PageVisibilityModelHandler(
-    OptimizationGuideModelProvider* model_provider,
+    optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    const std::optional<proto::Any>& model_metadata)
+    const std::optional<optimization_guide::proto::Any>& model_metadata)
     : ModelHandler<std::vector<tflite::task::core::Category>,
                    const std::string&>(
           model_provider,
           background_task_runner,
-          std::make_unique<PageVisibilityModelExecutor>(),
+          std::make_unique<optimization_guide::PageVisibilityModelExecutor>(),
           /*model_inference_timeout=*/std::nullopt,
-          proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
+          optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
           model_metadata) {
   // Unloading the model is done via custom logic in the PCAService.
   SetShouldUnloadModelOnComplete(false);
@@ -77,4 +77,4 @@ PageVisibilityModelHandler::ExtractContentVisibilityFromModelOutput(
   return std::nullopt;
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

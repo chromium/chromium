@@ -13,8 +13,9 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 namespace {
 
@@ -33,14 +34,16 @@ base::TaskTraits GetTaskTraits() {
 }  // namespace
 
 PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
-    OptimizationGuideModelProvider* optimization_guide_model_provider)
+    optimization_guide::OptimizationGuideModelProvider*
+        optimization_guide_model_provider)
     : optimization_guide_model_provider_(optimization_guide_model_provider) {}
 
 PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
     default;
 
 void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
-    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+    optimization_guide::OptimizationGuideModelProvider*
+        optimization_guide_model_provider) {
   if (!features::PageVisibilityBatchAnnotationsEnabled())
     return;
 
@@ -70,7 +73,7 @@ void PageContentAnnotationsModelManager::RequestAndNotifyWhenModelAvailable(
   std::move(callback).Run(false);
 }
 
-std::optional<ModelInfo>
+std::optional<optimization_guide::ModelInfo>
 PageContentAnnotationsModelManager::GetModelInfoForType(
     AnnotationType type) const {
   if (type == AnnotationType::kContentVisibility &&
@@ -151,4 +154,4 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
   NOTREACHED();
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations

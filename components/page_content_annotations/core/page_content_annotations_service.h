@@ -50,10 +50,13 @@ class ProtoDatabaseProvider;
 }  // namespace leveldb_proto
 
 namespace optimization_guide {
-
 class OptimizationGuideDecider;
 class OptimizationGuideModelProvider;
 class OptimizationMetadata;
+}  // namespace optimization_guide
+
+namespace page_content_annotations {
+
 class PageContentAnnotationsModelManager;
 class PageContentAnnotationsServiceBrowserTest;
 class PageContentAnnotationsValidator;
@@ -127,14 +130,15 @@ class PageContentAnnotationsService : public KeyedService,
       std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
       const std::string& application_locale,
       const std::string& country_code,
-      OptimizationGuideModelProvider* optimization_guide_model_provider,
+      optimization_guide::OptimizationGuideModelProvider*
+          optimization_guide_model_provider,
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
       ZeroSuggestCacheService* zero_suggest_cache_service,
       leveldb_proto::ProtoDatabaseProvider* database_provider,
       const base::FilePath& database_dir,
       OptimizationGuideLogger* optimization_guide_logger,
-      OptimizationGuideDecider* optimization_guide_decider,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
   ~PageContentAnnotationsService() override;
   PageContentAnnotationsService(const PageContentAnnotationsService&) = delete;
@@ -159,7 +163,8 @@ class PageContentAnnotationsService : public KeyedService,
 
   // Returns the model info for the given annotation type, if the model file is
   // available.
-  std::optional<ModelInfo> GetModelInfoForType(AnnotationType type) const;
+  std::optional<optimization_guide::ModelInfo> GetModelInfoForType(
+      AnnotationType type) const;
 
   // history::HistoryServiceObserver:
   void OnURLsModified(history::HistoryService* history_service,
@@ -274,14 +279,16 @@ class PageContentAnnotationsService : public KeyedService,
   // Virtualized for testing.
   virtual void PersistRemotePageMetadata(
       const HistoryVisit& visit,
-      const proto::PageEntitiesMetadata& page_entities_metadata);
+      const optimization_guide::proto::PageEntitiesMetadata&
+          page_entities_metadata);
 
   // Persist |salient_image_metadata| for |visit| in |history_service_|.
   //
   // Virtualized for testing.
   virtual void PersistSalientImageMetadata(
       const HistoryVisit& visit,
-      const proto::SalientImageMetadata& salient_image_metadata);
+      const optimization_guide::proto::SalientImageMetadata&
+          salient_image_metadata);
 
   using PersistAnnotationsCallback = base::OnceCallback<void(history::VisitID)>;
   // Queries |history_service| for all the visits to the visited URL of |visit|.
@@ -311,9 +318,9 @@ class PageContentAnnotationsService : public KeyedService,
   // from |optimization_guide_decider_| for |visit|.
   void OnOptimizationGuideResponseReceived(
       const HistoryVisit& visit,
-      proto::OptimizationType optimization_type,
-      OptimizationGuideDecision decision,
-      const OptimizationMetadata& metadata);
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
 
   // Sends the page for annotation from |OnURLVisitedWithNavigationId| and
   // |OnURLsModified|.
@@ -392,7 +399,8 @@ class PageContentAnnotationsService : public KeyedService,
   bool is_salient_image_metadata_fetching_enabled_ = false;
 
   // Not owned and must outlive |this|.
-  raw_ptr<OptimizationGuideDecider> optimization_guide_decider_;
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_;
 
   // Observers of PageContentAnnotations that have been registered per
   // AnnotationType.
@@ -402,6 +410,6 @@ class PageContentAnnotationsService : public KeyedService,
   base::WeakPtrFactory<PageContentAnnotationsService> weak_ptr_factory_{this};
 };
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_

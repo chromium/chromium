@@ -4,7 +4,7 @@
 
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
 
-namespace optimization_guide {
+namespace page_content_annotations {
 
 TestPageContentAnnotator::~TestPageContentAnnotator() = default;
 TestPageContentAnnotator::TestPageContentAnnotator() = default;
@@ -38,7 +38,8 @@ void TestPageContentAnnotator::SetAlwaysHang(bool hang) {
   always_hang_ = hang;
 }
 
-std::optional<ModelInfo> TestPageContentAnnotator::GetModelInfoForType(
+std::optional<optimization_guide::ModelInfo>
+TestPageContentAnnotator::GetModelInfoForType(
     AnnotationType annotation_type) const {
   if (annotation_type == AnnotationType::kContentVisibility) {
     return visibility_scores_model_info_;
@@ -48,7 +49,7 @@ std::optional<ModelInfo> TestPageContentAnnotator::GetModelInfoForType(
 }
 
 void TestPageContentAnnotator::UseVisibilityScores(
-    const std::optional<ModelInfo>& model_info,
+    const std::optional<optimization_guide::ModelInfo>& model_info,
     const base::flat_map<std::string, double>& visibility_scores_for_input) {
   visibility_scores_model_info_ = model_info;
   visibility_scores_for_input_ = visibility_scores_for_input;
@@ -66,4 +67,4 @@ void TestPageContentAnnotator::RequestAndNotifyWhenModelAvailable(
   std::move(callback).Run(true);
 }
 
-}  // namespace optimization_guide
+}  // namespace page_content_annotations
