@@ -16,12 +16,14 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/record_replay.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/compositor_timing_history.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
+#include "components/viz/service/display/record_replay_render.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 
@@ -713,7 +715,7 @@ void Scheduler::BeginImplFrame(const viz::BeginFrameArgs& args,
     base::AutoReset<bool> mark_inside(&inside_scheduled_action_, true);
 
     begin_impl_frame_tracker_.Start(args);
-    state_machine_.OnBeginImplFrame(args.frame_id, args.animate_only);
+    state_machine_.OnBeginImplFrame(args.frame_id, args.animate_only, args.replay_force_draw);
     compositor_timing_history_->WillBeginImplFrame(args, now);
     compositor_frame_reporting_controller_->WillBeginImplFrame(args);
     bool has_damage =
@@ -773,7 +775,13 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
     }
     case DeadlineMode::REGULAR:
       // We are animating the active tree but we're also waiting for commit.
-      new_deadline = begin_impl_frame_tracker_.Current().deadline;
+
+      // This deadline is derived from time-since-reboot, which means if we're replaying on
+      // something vastly different from recording, we might see times deep into the future,
+      // which will block our ability to render divergent frames.
+      if (!recordreplay::HasDivergedFromRecording()) {
+        new_deadline = begin_impl_frame_tracker_.Current().deadline;
+      }
       break;
     case DeadlineMode::IMMEDIATE:
       // Avoid using Now() for immediate deadlines because it's expensive, and
@@ -983,6 +991,9 @@ void Scheduler::ProcessScheduledActions() {
         break;
       case SchedulerStateMachine::Action::DRAW_FORCED:
         DrawForced();
+        if (state_machine_.ClearReplayForceDraw()) {
+          recordreplay::OnRepaintFinished();
+        }
         break;
       case SchedulerStateMachine::Action::DRAW_ABORT:
         // No action is actually performed, but this allows the state machine to

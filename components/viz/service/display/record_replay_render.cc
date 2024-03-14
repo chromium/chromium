@@ -232,9 +232,6 @@ void OnReadyToCommit() {
 static const char* gRepaintMimeType;
 static int gRepaintJPEGQuality;
 
-// Event to signal when layout has been comitted.
-static std::atomic<base::WaitableEvent*> gRepaintLayoutCommitEvent;
-
 // Event to signal when repainting has finished.
 static std::atomic<base::WaitableEvent*> gRepaintEvent;
 
@@ -265,16 +262,12 @@ void OnPaintFinished(const SkPixmap& pixmap) {
   gCurrentPixmap = nullptr;
 }
 
-void OnRepaintLayoutCommitted() {
-  CHECK(HasDivergedFromRecording());
-  if (gRepaintLayoutCommitEvent) {
-    gRepaintLayoutCommitEvent.load()->Signal();
-  }
-}
-
 void OnRepaintFinished() {
-  CHECK(HasDivergedFromRecording());
-  gRepaintEvent.load()->Signal();
+  base::WaitableEvent* e = gRepaintEvent.load();
+  if (e != nullptr) {
+    CHECK(HasDivergedFromRecording());
+    e->Signal();
+  }
 }
 
 static cc::ProxyMain* gCurrentCompositorProxy;
@@ -308,35 +301,18 @@ static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
       new cc::BeginMainFrameAndCommitState);
   begin_main_frame_state->mutator_events = std::make_unique<cc::AnimationEvents>();
   begin_main_frame_state->commit_data = std::make_unique<cc::CompositorCommitData>();
-  gCurrentCompositorProxy->BeginMainFrame(std::move(begin_main_frame_state));
 
-  // RUN-2643: https://linear.app/replay/issue/RUN-2643
-  //
-  // FIXME: This is not the final fix for this.  We're waiting here in lieu of
-  // an explicit wake-up event.  If we fire the `RecordReplayRepaint` below too
-  // early, it runs before the layout above has finished committing all the
-  // necessary draw calls to the compositor.
-  //
-  // Places where we have already tried adding an explicit wake-up signal from
-  // but which didn't work:
-  //   * ProxyImpl::BeginMainFrame
-  //   * ProxyImpl::NotifyReadyToCommitOnImpl
-  //   * ProxyImpl::ScheduledActionCommit
-  //   * ProxyImpl::ScheduledActionPostCommit
-  //
-  // When we fix this properly, we need to insert a call to explicitly
-  // wake-up this thread by calling `OnRepaintLayoutCommitted` above.
-  base::WaitableEvent layoutCommittedEvent;
-  gRepaintLayoutCommitEvent = &layoutCommittedEvent;
-  layoutCommittedEvent.TimedWait(base::Milliseconds(100));
-  gRepaintLayoutCommitEvent = nullptr;
+  gCurrentCompositorProxy->BeginMainFrameWithBlocking(std::move(begin_main_frame_state), true);
 
   // Trigger a new frame on the compositor thread.
   gCurrentCompositorProxy->RecordReplayRepaint();
 
   // Wait for the repainting frame to complete.
-  bool signaled = event.TimedWait(base::Milliseconds(500));
-  CHECK(signaled);
+  bool signaled = event.TimedWait(base::Milliseconds(3000));
+  if (!signaled) {
+    Print("Failed waiting to get a repaint.");
+    gRepaintResult = nullptr;
+  }
 
   gRepaintEvent = nullptr;
   return gRepaintResult;

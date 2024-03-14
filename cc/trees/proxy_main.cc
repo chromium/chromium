@@ -140,6 +140,13 @@ void ProxyMain::DidCompletePageScaleAnimation() {
 
 void ProxyMain::BeginMainFrame(
     std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
+  
+  BeginMainFrameWithBlocking(std::move(begin_main_frame_state), false);
+}
+
+void ProxyMain::BeginMainFrameWithBlocking(
+    std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state,
+    bool force_blocking) {
   if (recordreplay::IsRecordingOrReplaying("notify-paints")) {
     recordreplay::SetCompositorProxy(this);
   }
@@ -435,7 +442,7 @@ void ProxyMain::BeginMainFrame(
   // point of view, but asynchronously performed on the impl thread,
   // coordinated by the Scheduler.
   CommitTimestamps commit_timestamps;
-  bool blocking = !base::FeatureList::IsEnabled(features::kNonBlockingCommit);
+  bool blocking = force_blocking || !base::FeatureList::IsEnabled(features::kNonBlockingCommit);
   {
     TRACE_EVENT_WITH_FLOW0("viz,benchmark",
                            "MainFrame.NotifyReadyToCommitOnMain",

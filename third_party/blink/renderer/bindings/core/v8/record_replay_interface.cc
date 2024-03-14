@@ -1556,6 +1556,13 @@ static void fromJsMakeDebuggeeValue(
   args.GetReturnValue().SetNull();
 }
 
+static void LayoutDom(
+  const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (gRootLocalFrame) {
+    gRootLocalFrame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
+  }
+}
+
 static void fromJsGetArgumentsInFrame(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
@@ -2525,6 +2532,8 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
   SetFunctionProperty(isolate, args, "sendCDPMessage", SendCDPMessage);
   SetFunctionProperty(isolate, args, "setCommandCallback",
                       v8::FunctionCallbackRecordReplaySetCommandCallback);
+
+  SetFunctionProperty(isolate, args, "layoutDom", LayoutDom);
 
   // Object Util
   SetFunctionProperty(isolate, args, "fromJsMakeDebuggeeValue",

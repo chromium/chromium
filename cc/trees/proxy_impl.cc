@@ -1029,16 +1029,16 @@ void ProxyImpl::RecordReplayRepaint() {
   // a new frame in the scheduler directly, which will hopefully be sufficient to perform
   // a paint shortly with the special repaint sequence number that will cause the main
   // thread to be notified about the repaint result.
+  base::TimeTicks now = base::TimeTicks::Now();
   viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(BEGINFRAME_FROM_HERE,
                                                          viz::BeginFrameArgs::kManualSourceId,
                                                          RepaintSequenceNumber,
-                                                         base::TimeTicks::Now(),
-                                                         base::TimeTicks(),
+                                                         now,
+                                                         now,
                                                          viz::BeginFrameArgs::DefaultInterval(),
-                                                         viz::BeginFrameArgs::NORMAL);
+                                                         viz::BeginFrameArgs::NORMAL, 
+                                                         true /*replay_force_draw*/);
   scheduler_->OnBeginFrameDerivedImpl(args);
-
-  recordreplay::OnRepaintFinished();
 }
 
 }  // namespace cc

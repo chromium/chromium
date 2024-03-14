@@ -154,7 +154,8 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
                                base::TimeTicks frame_time,
                                base::TimeTicks deadline,
                                base::TimeDelta interval,
-                               BeginFrameArgsType type);
+                               BeginFrameArgsType type,
+                               bool replay_force_redraw = false);
 
   // This is the default interval assuming 60Hz to use to avoid sprinkling the
   // code with magic numbers.
@@ -239,13 +240,16 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   // `frame_time`.
   absl::optional<PossibleDeadlines> possible_deadlines;
 
+  bool replay_force_draw = false;
+
  private:
   BeginFrameArgs(uint64_t source_id,
                  uint64_t sequence_number,
                  base::TimeTicks frame_time,
                  base::TimeTicks deadline,
                  base::TimeDelta interval,
-                 BeginFrameArgsType type);
+                 BeginFrameArgsType type,
+                 bool replay_force_draw);
 };
 
 // Sent by a BeginFrameObserver as acknowledgment of completing a BeginFrame.

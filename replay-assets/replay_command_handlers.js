@@ -19,6 +19,8 @@ const {
   addNewScriptHandler,
   getCurrentError,
 
+  layoutDom,
+
   fromJsMakeDebuggeeValue,
   fromJsGetArgumentsInFrame,
   fromJsGetObjectByCdpId,
@@ -280,6 +282,7 @@ const CommandCallbacks = {
   "Pause.getObjectPreview": Pause_getObjectPreview,
   "Pause.getObjectProperty": Pause_getObjectProperty,
   "Pause.getScope": Pause_getScope,
+  "DOM.forceLayout": DOM_forceLayout,
   "DOM.getDocument": DOM_getDocument,
   "DOM.getAllBoundingClientRects": DOM_getAllBoundingClientRects,
   "DOM.getBoundingClientRect": DOM_getBoundingClientRect,
@@ -2062,6 +2065,14 @@ function createRrpScope(scopeId) {
     functionName: cdpScope.name || undefined,
     bindings,
   };
+}
+
+/** ###########################################################################
+ * {@link DOM_forceLayout}
+ * ##########################################################################*/
+function DOM_forceLayout() {
+  layoutDom();
+  return {};
 }
 
 /** ###########################################################################
