@@ -154,7 +154,7 @@ public class PageInfoAboutThisSiteTest {
                                     null)
                             .show(tab, ChromePageInfoHighlight.noHighlight());
                 });
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), true);
     }
 
     private void dismissPageInfo() throws TimeoutException {

@@ -241,7 +241,7 @@ public class PageInfoViewTest {
                                     tab,
                                     ChromePageInfoHighlight.forPermission(highlightedPermission));
                 });
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
+        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), true);
     }
 
     private View getPageInfoView() {
@@ -943,7 +943,7 @@ public class PageInfoViewTest {
                             pageInfoControllerDelegate,
                             ChromePageInfoHighlight.noHighlight());
                 });
-        onViewWaiting(allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()), true);
     }
 
     /** Tests PageInfo on a website with permissions and no particular row highlight. */

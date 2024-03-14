@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.anything;
@@ -87,7 +88,7 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
                 });
 
         // Choose a target window.
-        onData(anything()).atPosition(1).perform(click());
+        onData(anything()).inRoot(isDialog()).atPosition(1).perform(click());
 
         // Click 'move tab'.
         String moveTab = getActivity().getResources().getString(R.string.target_selector_move);

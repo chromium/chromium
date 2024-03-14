@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -316,7 +317,7 @@ public class AutofillServerCardEditorTest {
                                 fakeVirtualCardEnrollmentFields));
 
         // Verify that the dialog was displayed.
-        onView(withId(R.id.dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.dialog_title)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Click on the education link.
         // Verify that education text link click is recorded.
@@ -431,7 +432,7 @@ public class AutofillServerCardEditorTest {
                                 fakeVirtualCardEnrollmentFields));
 
         // Verify that the dialog was displayed.
-        onView(withId(R.id.dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.dialog_title)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Click positive button on enrollment dialog.
         onView(withId(R.id.positive_button)).perform(click());
@@ -518,7 +519,7 @@ public class AutofillServerCardEditorTest {
                                 fakeVirtualCardEnrollmentFields));
 
         // Verify that the dialog was displayed.
-        onView(withId(R.id.dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.dialog_title)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Click negative button on enrollment dialog.
         // Verify that enrollment dialog rejection is recorded.

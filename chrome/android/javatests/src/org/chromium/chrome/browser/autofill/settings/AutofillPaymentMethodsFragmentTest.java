@@ -1098,6 +1098,7 @@ public class AutofillPaymentMethodsFragmentTest {
                 });
 
         onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_title))
+                .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(R.string.autofill_delete_saved_cvcs_confirmation_dialog_message))
                 .check(matches(isDisplayed()));

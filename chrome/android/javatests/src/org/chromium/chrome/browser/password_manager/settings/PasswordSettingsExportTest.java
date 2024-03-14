@@ -18,6 +18,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
 import static androidx.test.espresso.intent.matcher.UriMatchers.hasHost;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -986,6 +987,7 @@ public class PasswordSettingsExportTest {
 
         // Check that the error prompt is showing.
         onView(withText(R.string.password_settings_export_error_title))
+                .inRoot(isDialog())
                 .check(matches(isCompletelyDisplayed()));
 
         // Hit the negative button on the error prompt.
@@ -1029,7 +1031,7 @@ public class PasswordSettingsExportTest {
         requestShowingExportErrorWithButton(R.string.try_again);
 
         // Hit the positive button to try again.
-        onView(withText(R.string.try_again)).perform(click());
+        onView(withText(R.string.try_again)).inRoot(isDialog()).perform(click());
 
         // Check that there is again the export warning.
         onView(withText(R.string.password_settings_export_action_title))
