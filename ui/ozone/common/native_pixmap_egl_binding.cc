@@ -116,7 +116,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     GLenum target,
     GLuint texture_id) {
   DCHECK(!pixmap_);
-  if (GetInternalFormat() == GL_NONE) {
+  if (format_ == gfx::BufferFormat::YUVA_420_TRIPLANAR) {
     LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
     return false;
   }
@@ -259,15 +259,6 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
   glEGLImageTargetTexture2DOES(target, egl_image_.get());
 
   return true;
-}
-
-GLuint NativePixmapEGLBinding::GetInternalFormat() {
-  if (format_ == gfx::BufferFormat::RGBA_4444) {
-    return GL_RGB_YCBCR_P010_CHROMIUM;
-  }
-
-  return NativePixmapGLBinding::BufferFormatToGLInternalFormatDefaultMapping(
-      format_);
 }
 
 }  // namespace ui

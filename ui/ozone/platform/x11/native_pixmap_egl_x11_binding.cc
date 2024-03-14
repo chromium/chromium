@@ -141,7 +141,7 @@ inline EGLDisplay FromXDisplay() {
 namespace ui {
 
 NativePixmapEGLX11Binding::NativePixmapEGLX11Binding(gfx::BufferFormat format)
-    : display_(gl::FromXDisplay()), format_(format) {}
+    : display_(gl::FromXDisplay()) {}
 
 NativePixmapEGLX11Binding::~NativePixmapEGLX11Binding() {
   if (surface_) {
@@ -272,11 +272,6 @@ bool NativePixmapEGLX11Binding::BindTexture(GLenum target, GLuint texture_id) {
   }
 
   return true;
-}
-
-GLuint NativePixmapEGLX11Binding::GetInternalFormat() {
-  return NativePixmapGLBinding::BufferFormatToGLInternalFormatDefaultMapping(
-      format_);
 }
 
 }  // namespace ui

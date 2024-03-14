@@ -33,9 +33,6 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
 
   static bool CanImportNativeGLXPixmap();
 
-  // NativePixmapGLBinding:
-  GLuint GetInternalFormat() override;
-
  private:
   bool Initialize(x11::Pixmap pixmap);
 
@@ -45,7 +42,6 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
 
   EGLSurface surface_ = nullptr;
   EGLDisplay display_;
-  gfx::BufferFormat format_;
 
   x11::Pixmap pixmap_ = x11::Pixmap::None;
 };
