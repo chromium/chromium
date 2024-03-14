@@ -35,6 +35,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "content/public/common/prefetch_type_win.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -339,6 +340,11 @@ class ChildProcessLauncherHelper
 
 #if BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<sandbox::policy::SandboxPolicyFuchsia> sandbox_policy_;
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  // Only valid if the host process has logging enabled.
+  base::win::ScopedHandle log_handle_;
 #endif
 
   // Histogram shared memory region metadata.

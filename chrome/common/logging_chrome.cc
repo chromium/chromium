@@ -70,8 +70,11 @@
 #include "base/logging_win.h"
 #include "base/process/process_info.h"
 #include "base/syslog_logging.h"
+#include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "chrome/common/win/eventlog_messages.h"
 #include "chrome/install_static/install_details.h"
+#include "sandbox/policy/switches.h"
 #endif
 
 namespace logging {
@@ -138,10 +141,35 @@ void SuppressDialogs() {
   dialogs_are_suppressed_ = true;
 }
 
-}  // anonymous namespace
-
-LoggingDestination DetermineLoggingDestination(
+#if BUILDFLAG(IS_WIN)
+base::win::ScopedHandle GetLogInheritedHandle(
     const base::CommandLine& command_line) {
+  auto handle_str = command_line.GetSwitchValueNative(switches::kLogFile);
+  uint32_t handle_value = 0;
+  if (!base::StringToUint(handle_str, &handle_value)) {
+    return base::win::ScopedHandle();
+  }
+  // Duplicate the handle from the command line so that different things can
+  // init logging. This means the handle from the parent is never closed, but
+  // there will only be one of these in the process.
+  HANDLE log_handle = nullptr;
+  if (!::DuplicateHandle(GetCurrentProcess(),
+                         base::win::Uint32ToHandle(handle_value),
+                         GetCurrentProcess(), &log_handle, 0,
+                         /*bInheritHandle=*/FALSE, DUPLICATE_SAME_ACCESS)) {
+    return base::win::ScopedHandle();
+  }
+  // Transfer ownership to the caller.
+  return base::win::ScopedHandle(log_handle);
+}
+#endif
+
+// `filename_is_handle`, will be set to `true` if the log-file switch contains
+// an inherited handle value rather than a filepath, and `false` otherwise.
+LoggingDestination LoggingDestFromCommandLine(
+    const base::CommandLine& command_line,
+    bool& filename_is_handle) {
+  filename_is_handle = false;
 #if BUILDFLAG(IS_FUCHSIA)
   // Fuchsia provides a system log that can be filtered for logs from specific
   // components (e.g. Chrome), and which is easier to access than logs in a
@@ -176,18 +204,39 @@ LoggingDestination DetermineLoggingDestination(
         command_line.GetSwitchValueASCII(switches::kEnableLogging);
     if (logging_destination == "stderr") {
       return LOG_TO_SYSTEM_DEBUG_LOG | LOG_TO_STDERR;
-    } else if (logging_destination != "") {
-      PLOG(ERROR) << "Invalid logging destination: " << logging_destination;
-#if BUILDFLAG(IS_WIN)
-    } else if (base::IsCurrentProcessInAppContainer() &&
-               !command_line.HasSwitch(switches::kLogFile)) {
-      // Sandboxed appcontainer processes are unable to resolve the default log
-      // file path without asserting.
-      return kDefaultLoggingMode & ~LOG_TO_FILE;
-#endif
     }
+#if BUILDFLAG(IS_WIN)
+    if (logging_destination == "handle" &&
+        command_line.HasSwitch(switches::kProcessType) &&
+        command_line.HasSwitch(switches::kLogFile)) {
+      // Child processes can log to a handle duplicated from the parent, and
+      // provided in the log-file switch value.
+      filename_is_handle = true;
+      return kDefaultLoggingMode | LOG_TO_FILE;
+    }
+#endif  // BUILDFLAG(IS_WIN)
+    if (logging_destination != "") {
+      // The browser process should not be called with --enable-logging=handle.
+      LOG(ERROR) << "Invalid logging destination: " << logging_destination;
+      return kDefaultLoggingMode;
+    }
+#if BUILDFLAG(IS_WIN)
+    if (command_line.HasSwitch(switches::kProcessType) &&
+        !command_line.HasSwitch(sandbox::policy::switches::kNoSandbox)) {
+      // Sandboxed processes cannot open log files so skip if provided.
+      return kDefaultLoggingMode & ~LOG_TO_FILE;
+    }
+#endif
   }
   return kDefaultLoggingMode;
+}
+
+}  // anonymous namespace
+
+LoggingDestination DetermineLoggingDestination(
+    const base::CommandLine& command_line) {
+  bool unused = false;
+  return LoggingDestFromCommandLine(command_line, unused);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -367,43 +416,69 @@ void InitChromeLogging(const base::CommandLine& command_line,
                        OldFileDeletionState delete_old_log_file) {
   DCHECK(!chrome_logging_initialized_)
       << "Attempted to initialize logging when it was already initialized.";
-  LoggingDestination logging_dest = DetermineLoggingDestination(command_line);
+  bool filename_is_handle = false;
+  LoggingDestination logging_dest =
+      LoggingDestFromCommandLine(command_line, filename_is_handle);
   LogLockingState log_locking_state = LOCK_LOG_FILE;
   base::FilePath log_path;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath target_path;
 #endif
+#if BUILDFLAG(IS_WIN)
+  base::win::ScopedHandle log_handle;
+#endif
 
-  // Don't resolve the log path unless we need to. Otherwise we leave an open
-  // ALPC handle after sandbox lockdown on Windows.
-  if ((logging_dest & LOG_TO_FILE) != 0) {
-    log_path = GetLogFileName(command_line);
+  if (logging_dest & LOG_TO_FILE) {
+    if (filename_is_handle) {
+#if BUILDFLAG(IS_WIN)
+      // Child processes on Windows are provided a file handle if logging is
+      // enabled as sandboxed processes cannot open files.
+      log_handle = GetLogInheritedHandle(command_line);
+      if (!log_handle.is_valid()) {
+        DLOG(ERROR) << "Unable to initialize logging from handle.";
+        chrome_logging_failed_ = true;
+        return;
+      }
+#endif
+    } else {
+      log_path = GetLogFileName(command_line);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // For BWSI (Incognito) logins, we want to put the logs in the user
-    // profile directory that is created for the temporary session instead
-    // of in the system log directory, for privacy reasons.
-    if (command_line.HasSwitch(ash::switches::kGuestSession))
-      log_path = GetSessionLogFile(command_line);
+      // For BWSI (Incognito) logins, we want to put the logs in the user
+      // profile directory that is created for the temporary session instead
+      // of in the system log directory, for privacy reasons.
+      if (command_line.HasSwitch(ash::switches::kGuestSession)) {
+        log_path = GetSessionLogFile(command_line);
+      }
 
-    // Prepares a log file.  We rotate the previous log file and prepare a new
-    // log file if we've been asked to delete the old log, since that
-    // indicates the start of a new session.
-    target_path =
-        SetUpLogFile(log_path, delete_old_log_file == DELETE_OLD_LOG_FILE);
+      // Prepares a log file.  We rotate the previous log file and prepare a new
+      // log file if we've been asked to delete the old log, since that
+      // indicates the start of a new session.
+      target_path =
+          SetUpLogFile(log_path, delete_old_log_file == DELETE_OLD_LOG_FILE);
 
-    // Because ChromeOS manages the move to a new session by redirecting
-    // the link, it shouldn't remove the old file in the logging code,
-    // since that will remove the newly created link instead.
-    delete_old_log_file = APPEND_TO_OLD_LOG_FILE;
+      // Because ChromeOS manages the move to a new session by redirecting
+      // the link, it shouldn't remove the old file in the logging code,
+      // since that will remove the newly created link instead.
+      delete_old_log_file = APPEND_TO_OLD_LOG_FILE;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    }
   } else {
     log_locking_state = DONT_LOCK_LOG_FILE;
   }
 
   LoggingSettings settings;
   settings.logging_dest = logging_dest;
-  settings.log_file_path = log_path.value().c_str();
+  if (!log_path.empty()) {
+    settings.log_file_path = log_path.value().c_str();
+  }
+#if BUILDFLAG(IS_WIN)
+  // Avoid initializing with INVALID_HANDLE_VALUE.
+  // This handle is owned by the logging framework and is closed when the
+  // process exits.
+  // TODO(crbug.com/328285906) Use a ScopedHandle in logging settings.
+  settings.log_file = log_handle.is_valid() ? log_handle.release() : nullptr;
+#endif
   settings.lock_log = log_locking_state;
   settings.delete_old = delete_old_log_file;
   bool success = InitLogging(settings);

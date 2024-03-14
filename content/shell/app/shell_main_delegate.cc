@@ -79,6 +79,8 @@
 
 #include <initguid.h>
 #include "base/logging_win.h"
+#include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "content/shell/common/v8_crashpad_support_win.h"
 #endif
 
@@ -115,6 +117,26 @@ const GUID kContentShellProviderName = {
 #endif
 
 void InitLogging(const base::CommandLine& command_line) {
+#if BUILDFLAG(IS_WIN)
+  // On Windows child process may be given a handle in the --log-file switch.
+  base::win::ScopedHandle log_handle;
+  if (command_line.GetSwitchValueASCII(switches::kEnableLogging) == "handle") {
+    auto handle_str = command_line.GetSwitchValueNative(switches::kLogFile);
+    uint32_t handle_value = 0;
+    if (base::StringToUint(handle_str, &handle_value)) {
+      // This handle is owned by the logging framework and is closed when the
+      // process exits.
+      HANDLE duplicate = nullptr;
+      if (::DuplicateHandle(GetCurrentProcess(),
+                            base::win::Uint32ToHandle(handle_value),
+                            GetCurrentProcess(), &duplicate, 0, FALSE,
+                            DUPLICATE_SAME_ACCESS)) {
+        log_handle.Set(duplicate);
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   base::FilePath log_filename =
       command_line.GetSwitchValuePath(switches::kLogFile);
   if (log_filename.empty()) {
@@ -128,7 +150,18 @@ void InitLogging(const base::CommandLine& command_line) {
 
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_ALL;
+#if BUILDFLAG(IS_WIN)
+  if (log_handle.is_valid()) {
+    settings.log_file_path = nullptr;
+    // TODO(crbug.com/328285906) Use a ScopedHandle in logging settings.
+    settings.log_file = log_handle.release();
+  } else {
+    settings.log_file_path = log_filename.value().c_str();
+    settings.log_file = nullptr;
+  }
+#else
   settings.log_file_path = log_filename.value().c_str();
+#endif
   settings.delete_old = logging::DELETE_OLD_LOG_FILE;
   logging::InitLogging(settings);
   logging::SetLogItems(true /* Process ID */, true /* Thread ID */,

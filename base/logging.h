@@ -28,6 +28,10 @@
 #include <cstdio>
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 //
 // Optional message capabilities
 // -----------------------------
@@ -188,6 +192,7 @@ using LoggingDestination = uint32_t;
 // with bitwise OR.
 // Unless destination is LOG_NONE, all logs with severity ERROR and above will
 // be written to stderr in addition to the specified destination.
+// LOG_TO_FILE includes logging to externally-provided file handles.
 enum : uint32_t {
   LOG_NONE = 0,
   LOG_TO_FILE = 1 << 0,
@@ -247,6 +252,13 @@ struct BASE_EXPORT LoggingSettings {
   raw_ptr<FILE> log_file = nullptr;
   // ChromeOS uses the syslog log format by default.
   LogFormat log_format = LogFormat::LOG_FORMAT_SYSLOG;
+#endif
+#if BUILDFLAG(IS_WIN)
+  // Contains an optional file that logs should be written to. If present,
+  // `log_file_path` will be ignored, and the logging system will take ownership
+  // of the HANDLE. If there's an error writing to this file, no fallback paths
+  // will be opened.
+  HANDLE log_file = nullptr;
 #endif
 };
 
@@ -755,6 +767,9 @@ BASE_EXPORT bool IsLoggingToFileEnabled();
 
 // Returns the default log file path.
 BASE_EXPORT std::wstring GetLogFileFullPath();
+
+// Duplicates the log file handle to send into a child process.
+BASE_EXPORT HANDLE DuplicateLogFileHandle();
 #endif
 
 }  // namespace logging
