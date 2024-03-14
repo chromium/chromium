@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, assertNotReached} from '../assert.js';
+import {Point} from '../geometry.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {CropRegionRect, Resolution} from '../type.js';
@@ -353,6 +354,20 @@ export class DigitalZoomPTZController implements PTZController {
     // When fully zoomed out, calculated crop region equals to |fullCropRegion|,
     // this means pan and tilt are disabled.
     return true;
+  }
+
+  /**
+   * Map a point on the preview frame to a corresponding point on the camera
+   * frame based on the current crop region.
+   *
+   * @param point The point in normalize coordidate system, which means both
+   *     |x| and |y| are in range [0, 1).
+   */
+  calculatePointOnCameraFrame(point: Point): Point {
+    const activeRegion = calculateNormalizedCropRegion(this.getSettings());
+    const x = activeRegion.x + (point.x * activeRegion.width);
+    const y = activeRegion.y + (point.y * activeRegion.height);
+    return new Point(x, y);
   }
 
   async resetPTZ(): Promise<void> {

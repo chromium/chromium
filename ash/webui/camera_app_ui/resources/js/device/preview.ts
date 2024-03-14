@@ -776,6 +776,9 @@ export class Preview {
    *     |x| and |y| are in range [0, 1).
    */
   setPointOfInterest(point: Point): Promise<void> {
+    if (this.ptzController instanceof DigitalZoomPTZController) {
+      point = this.ptzController.calculatePointOnCameraFrame(point);
+    }
     const constraints = {
       advanced: [{pointsOfInterest: [{x: point.x, y: point.y}]}],
     };
