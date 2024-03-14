@@ -579,6 +579,31 @@ const FeatureEntry::FeatureVariation kCCTPageInsightsHubVariations[] = {
     {"with both", kCCTPageInsightsHubBothParams,
      std::size(kCCTPageInsightsHubBothParams), nullptr}};
 
+const FeatureEntry::FeatureParam kCCTBottomBarButtonsEquallyDividedParam[] = {
+    {"google_bottom_bar_button_list", "0,1,2,3,5"}};
+const FeatureEntry::FeatureParam kCCTBottomBarPihExpandedInSpotlightParam[] = {
+    {"google_bottom_bar_button_list", "7,7,2,3,5"}};
+const FeatureEntry::FeatureParam kCCTBottomBarPihInSpotlightParam[] = {
+    {"google_bottom_bar_button_list", "1,1,2,3,5"}};
+const FeatureEntry::FeatureParam kCCTBottomBarPihColoredInSpotlightParam[] = {
+    {"google_bottom_bar_button_list", "6,7,2,3,5"}};
+const FeatureEntry::FeatureParam kCCTBottomBarWithTwoTransitionsParams[] = {
+    {"google_bottom_bar_button_list", "0,1,2,3,5"},
+    {"google_bottom_bar_two_transitions", "true"}};
+
+const FeatureEntry::FeatureVariation kCCTGoogleBottomBarVariations[] = {
+    {"Balanced bottom bar", kCCTBottomBarButtonsEquallyDividedParam,
+     std::size(kCCTBottomBarButtonsEquallyDividedParam), nullptr},
+    {"PIH expanded in spotlight", kCCTBottomBarPihExpandedInSpotlightParam,
+     std::size(kCCTBottomBarPihExpandedInSpotlightParam), nullptr},
+    {"PIH basic in spotlight", kCCTBottomBarPihInSpotlightParam,
+     std::size(kCCTBottomBarPihInSpotlightParam), nullptr},
+    {"PIH colored in spotlight", kCCTBottomBarPihColoredInSpotlightParam,
+     std::size(kCCTBottomBarPihColoredInSpotlightParam), nullptr},
+    {"Two transitions", kCCTBottomBarWithTwoTransitionsParams,
+     std::size(kCCTBottomBarWithTwoTransitionsParams), nullptr},
+};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -7241,7 +7266,9 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kCCTResizableSideSheetForThirdParties)},
     {"cct-google-bottom-bar", flag_descriptions::kCCTGoogleBottomBarName,
      flag_descriptions::kCCTGoogleBottomBarDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTGoogleBottomBar)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTGoogleBottomBar,
+                                    kCCTGoogleBottomBarVariations,
+                                    "CCTGoogleBottomBarVariations")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
