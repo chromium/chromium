@@ -398,7 +398,14 @@ void OnDialogChoiceReceived(
   } else if (!choice.value().empty()) {
     LOG(ERROR) << "Unhandled response: " << choice.value();
   } else {
+    // Always map an empty user response to a Cancel user response.
+    // This can occur when the user logs out of the session. However,
+    // since there could be other unknown causes, leave a log.
     LOG(ERROR) << "Empty user response";
+    LogOneDriveMetricsAfterFallback(
+        fallback_reason,
+        ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
+        std::move(cloud_open_metrics));
   }
 }
 

@@ -445,8 +445,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
 }
 
 // Test which launches a `CloudUploadDialog` which in turn creates a
-// `FileHandlerPageElement`. Tests that when the dialog closes unexpectedly, no
-// TaskResult is logged.
+// `FileHandlerPageElement`. Tests that when the dialog closes unexpectedly, a
+// Cancel TaskResult is logged.
 IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DialogClosedUnexpectedly) {
   auto cloud_open_metrics = std::make_unique<CloudOpenMetrics>(
       CloudProvider::kGoogleDrive, /*file_count=*/1);
@@ -473,10 +473,10 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DialogClosedUnexpectedly) {
 
   watcher.Wait();
 
-  // Expect TaskResult was incorrectly not logged.
+  // Expect a kCancelledAtSetup TaskResult.
   histogram_.ExpectUniqueSample(
-      ash::cloud_upload::kGoogleDriveTaskResultMetricStateMetricName,
-      ash::cloud_upload::MetricState::kIncorrectlyNotLogged, 1);
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCancelledAtSetup, 1);
 
   // cloud_open_metrics should have been destroyed by the end of the test.
   ASSERT_TRUE(cloud_open_metrics_weak_ptr.WasInvalidated());
