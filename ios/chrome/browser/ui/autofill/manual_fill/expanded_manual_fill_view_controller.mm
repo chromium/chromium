@@ -274,18 +274,11 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   closeButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL);
 
-  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kCloseButtonSize
-                          weight:UIImageSymbolWeightSemibold
-                           scale:UIImageSymbolScaleMedium];
-
-  UIImage* buttonImage =
-      SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                                       symbolConfiguration),
-                        @[
-                          [UIColor colorNamed:kGrey600Color],
-                          [UIColor colorNamed:kUpdatedTertiaryBackgroundColor]
-                        ]);
+  UIImage* buttonImage = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonSize), @[
+        [[UIColor secondaryLabelColor] colorWithAlphaComponent:0.6],
+        [UIColor tertiarySystemFillColor]
+      ]);
   [closeButton setImage:buttonImage forState:UIControlStateNormal];
 
   [closeButton addTarget:self
