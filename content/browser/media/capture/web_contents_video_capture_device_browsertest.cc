@@ -640,9 +640,10 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
 // TODO(crbug/328419809): Also flaky on Mac.
-// TODO(crbug/329654821): Also flaky for Chrome OS ASAN.
+// TODO(crbug/329654821): Also flaky for ChromeOS ASAN LSAN and debug.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    (defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS))
+    (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) ||                \
+    (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG))
 #define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
 #else
 #define MAYBE_CapturesContentChanges CapturesContentChanges
