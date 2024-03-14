@@ -157,7 +157,7 @@ class TSFBridgeImpl : public TSFBridge {
   HWND attached_window_handle_ = nullptr;
 
   // Tracks Windows OS support for empty TSF text stores, available on win11+.
-  bool empty_TSF_support_ = false;
+  bool empty_tsf_support_ = false;
 };
 
 TSFBridgeImpl::TSFBridgeImpl() = default;
@@ -270,7 +270,7 @@ void TSFBridgeImpl::OnTextInputTypeChanged(const TextInputClient* client) {
   // prepare the TSF document for reuse by clearing focus first.
   if (input_type_ != TEXT_INPUT_TYPE_NONE &&
       input_type_ == client_->GetTextInputType()) {
-    if (empty_TSF_support_) {
+    if (empty_tsf_support_) {
       // Switch focus to empty doc. This optimizes the reuse, since here TSF
       // changes the text store's edit context state. So switching
       // the focus back to the edit context helps to reuse the TSF document.
@@ -532,7 +532,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
   HRESULT res = thread_manager_->QueryInterface(GUID_COMPARTMENT_EMPTYCONTEXT,
                                                 &flag_empty_context);
   if (SUCCEEDED(res)) {
-    empty_TSF_support_ = true;
+    empty_tsf_support_ = true;
   }
 
   for (size_t i = 0; i < std::size(kTextInputTypes); ++i) {
@@ -544,7 +544,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
     DWORD language_profile_cookie = TF_INVALID_COOKIE;
     // Use a null text store if empty tsf text store is not supported.
     const bool use_null_text_store =
-        (input_type == TEXT_INPUT_TYPE_NONE && !empty_TSF_support_);
+        (input_type == TEXT_INPUT_TYPE_NONE && !empty_tsf_support_);
     DWORD* source_cookie_ptr = use_null_text_store ? nullptr : &source_cookie;
     DWORD* key_trace_sink_cookie_ptr =
         use_null_text_store ? nullptr : &key_trace_sink_cookie;
@@ -564,7 +564,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
     if (FAILED(hr))
       return hr;
     if (input_type == TEXT_INPUT_TYPE_PASSWORD ||
-        (empty_TSF_support_ && input_type == TEXT_INPUT_TYPE_NONE)) {
+        (empty_tsf_support_ && input_type == TEXT_INPUT_TYPE_NONE)) {
       // Disable context for TEXT_INPUT_TYPE_NONE, if empty text store is
       // supported.
       hr = InitializeDisabledContext(context.Get());
@@ -582,7 +582,7 @@ HRESULT TSFBridgeImpl::InitializeDocumentMapInternal() {
 
     // Set the flag for empty text store.
     if (text_store && input_type == TEXT_INPUT_TYPE_NONE) {
-      text_store->SetUseEmptyTextStore(empty_TSF_support_);
+      text_store->UseEmptyTextStore(empty_tsf_support_);
     }
   }
   return S_OK;

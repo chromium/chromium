@@ -433,7 +433,7 @@ TEST_F(TSFTextStoreTest, GetStatusTest) {
   EXPECT_EQ((ULONG)(TS_SS_TRANSITORY | TS_SS_NOHIDDENTEXT),
             status.dwStaticFlags);
 
-  text_store_->SetUseEmptyTextStore(true);
+  text_store_->UseEmptyTextStore(true);
   status = {};
   EXPECT_CALL(text_input_client_, GetTextInputType())
       .WillRepeatedly(Return(TEXT_INPUT_TYPE_NONE));
@@ -441,7 +441,7 @@ TEST_F(TSFTextStoreTest, GetStatusTest) {
   EXPECT_EQ((ULONG)TS_SD_READONLY, status.dwDynamicFlags & TS_SD_READONLY);
 
   status = {};
-  text_store_->SetUseEmptyTextStore(false);
+  text_store_->UseEmptyTextStore(false);
   EXPECT_CALL(text_input_client_, GetTextInputType())
       .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
   EXPECT_EQ(S_OK, text_store_->GetStatus(&status));
@@ -450,13 +450,13 @@ TEST_F(TSFTextStoreTest, GetStatusTest) {
 
 TEST_F(TSFTextStoreTest, DummyLockTest) {
   HRESULT result = kInvalidResult;
-  text_store_->SetUseEmptyTextStore(false);
+  text_store_->UseEmptyTextStore(false);
   EXPECT_CALL(text_input_client_, GetTextInputType())
       .WillRepeatedly(Return(TEXT_INPUT_TYPE_TEXT));
   EXPECT_EQ(S_OK,
             text_store_->RequestLock(TS_LF_READWRITE | TS_LF_SYNC, &result));
 
-  text_store_->SetUseEmptyTextStore(true);
+  text_store_->UseEmptyTextStore(true);
   EXPECT_EQ(E_FAIL,
             text_store_->RequestLock(TS_LF_READWRITE | TS_LF_SYNC, &result));
   EXPECT_CALL(text_input_client_, GetTextInputType())
@@ -1683,10 +1683,10 @@ TEST_F(TSFTextStoreTest, RetrieveRequestedAttrs) {
 }
 
 TEST_F(TSFTextStoreTest, SendOnUrlChanged) {
-  text_store_->SetUseEmptyTextStore(true);
+  text_store_->UseEmptyTextStore(true);
   EXPECT_TRUE(text_store_->MaybeSendOnUrlChanged());
 
-  text_store_->SetUseEmptyTextStore(false);
+  text_store_->UseEmptyTextStore(false);
   EXPECT_FALSE(text_store_->MaybeSendOnUrlChanged());
 }
 

@@ -1636,8 +1636,8 @@ bool TSFTextStore::IsInputIME() const {
   return false;
 }
 
-void ui::TSFTextStore::SetUseEmptyTextStore(bool isEnabled) {
-  is_empty_text_store_ = isEnabled;
+void TSFTextStore::UseEmptyTextStore(bool is_enabled) {
+  is_empty_text_store_ = is_enabled;
 }
 
 bool TSFTextStore::MaybeSendOnUrlChanged() {
