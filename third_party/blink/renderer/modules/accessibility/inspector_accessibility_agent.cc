@@ -1299,10 +1299,6 @@ protocol::Response InspectorAccessibilityAgent::disable() {
   if (!enabled_.Get())
     return protocol::Response::Success();
   enabled_.Set(false);
-  for (auto& context : document_to_context_map_.Values()) {
-    auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());
-    cache.RemoveInspectorAgent(this);
-  }
   document_to_context_map_.clear();
   nodes_requested_.clear();
   dirty_nodes_.clear();
@@ -1312,6 +1308,10 @@ protocol::Response InspectorAccessibilityAgent::disable() {
   it->value->erase(this);
   if (it->value->empty())
     EnabledAgents().erase(frame);
+  for (auto& context : document_to_context_map_.Values()) {
+    auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());
+    cache.RemoveInspectorAgent(this);
+  }
   return protocol::Response::Success();
 }
 
