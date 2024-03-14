@@ -209,6 +209,12 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kTrustedTypesCreatePolicy);
 
+  // Count policy creation with empty names.
+  if (policy_name.empty()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kTrustedTypesCreatePolicyWithEmptyName);
+  }
+
   // TT requires two validity checks: One against the CSP, and one for the
   // default policy. Use |disallowed| (and |violation_details|) to aggregate
   // these, so we can have unified error handling.
