@@ -188,7 +188,8 @@ public class PasswordMigrationWarningExportFlowTest {
             onViewWaiting(
                             allOf(
                                     withText(R.string.password_settings_export_action_title),
-                                    isCompletelyDisplayed()))
+                                    isCompletelyDisplayed()),
+                            /* checkRootDialog= */ true)
                     .perform(click());
 
             // Assert that the expected intent was detected.
@@ -224,7 +225,8 @@ public class PasswordMigrationWarningExportFlowTest {
         onViewWaiting(
                         allOf(
                                 withText(R.string.exported_passwords_delete_button),
-                                isCompletelyDisplayed()))
+                                isCompletelyDisplayed()),
+                        /* checkRootDialog= */ true)
                 .perform(click());
 
         verify(mPasswordStoreBridge).clearAllPasswords();
