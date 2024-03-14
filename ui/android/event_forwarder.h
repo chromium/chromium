@@ -173,6 +173,7 @@ class UI_ANDROID_EXPORT EventForwarder {
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   base::ObserverList<Observer> observers_;
+  bool send_touch_moves_to_observers;
 };
 
 }  // namespace ui

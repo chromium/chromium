@@ -33,6 +33,11 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportAllAvailablePointerTypes);
 // leading value to be configured.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRequireLeadingInTextViewWithLeading);
 
+// TODO(b/328601354): Cleanup flag after investigating nothing is broken after
+// changing the default behavior for EventForwarder observers.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
+    kSendTouchMovesToEventForwarderObservers);
+
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_
