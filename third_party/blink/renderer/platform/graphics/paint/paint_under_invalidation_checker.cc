@@ -13,7 +13,7 @@ namespace blink {
 
 PaintUnderInvalidationChecker::PaintUnderInvalidationChecker(
     PaintController& paint_controller)
-    : paint_controller_(paint_controller) {
+    : paint_controller_(&paint_controller) {
 #if DCHECK_IS_ON()
   DCHECK(RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled());
   DCHECK_EQ(paint_controller_->GetUsage(), PaintController::kMultiplePaints);
@@ -22,6 +22,10 @@ PaintUnderInvalidationChecker::PaintUnderInvalidationChecker(
 
 PaintUnderInvalidationChecker::~PaintUnderInvalidationChecker() {
   DCHECK(!IsChecking());
+}
+
+void PaintUnderInvalidationChecker::Trace(Visitor* visitor) const {
+  visitor->Trace(paint_controller_);
 }
 
 bool PaintUnderInvalidationChecker::IsChecking() const {
@@ -248,14 +252,12 @@ void PaintUnderInvalidationChecker::ShowSubsequenceError(
   LOG(FATAL) << "See https://crbug.com/619103.";
 }
 
-const Vector<PaintChunk>& PaintUnderInvalidationChecker::OldPaintChunks()
-    const {
-  return paint_controller_->current_paint_artifact_->PaintChunks();
+const PaintChunks& PaintUnderInvalidationChecker::OldPaintChunks() const {
+  return paint_controller_->current_paint_artifact_->GetPaintChunks();
 }
 
-const Vector<PaintChunk>& PaintUnderInvalidationChecker::NewPaintChunks()
-    const {
-  return paint_controller_->new_paint_artifact_->PaintChunks();
+const PaintChunks& PaintUnderInvalidationChecker::NewPaintChunks() const {
+  return paint_controller_->new_paint_artifact_->GetPaintChunks();
 }
 
 DisplayItemList& PaintUnderInvalidationChecker::OldDisplayItemList() {

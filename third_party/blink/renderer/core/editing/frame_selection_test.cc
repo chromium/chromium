@@ -1510,8 +1510,8 @@ TEST_F(FrameSelectionTest, PaintCaretRecordsSelectionWithNoSelectionHandles) {
   EXPECT_TRUE(Selection().ShouldPaintCaret(
       *To<LayoutBlock>(GetDocument().body()->GetLayoutObject())));
 
-  auto paint_controller =
-      std::make_unique<PaintController>(PaintController::kTransient);
+  auto* paint_controller =
+      MakeGarbageCollected<PaintController>(PaintController::kTransient);
   {
     GraphicsContext context(*paint_controller);
     paint_controller->UpdateCurrentPaintChunkProperties(
@@ -1521,7 +1521,7 @@ TEST_F(FrameSelectionTest, PaintCaretRecordsSelectionWithNoSelectionHandles) {
   }
   paint_controller->CommitNewDisplayItems();
 
-  const PaintChunk& chunk = paint_controller->PaintChunks()[0];
+  const PaintChunk& chunk = paint_controller->GetPaintChunks()[0];
   EXPECT_THAT(chunk.layer_selection_data, Not(IsNull()));
   LayerSelectionData selection_data = *chunk.layer_selection_data;
   EXPECT_TRUE(selection_data.start.has_value());

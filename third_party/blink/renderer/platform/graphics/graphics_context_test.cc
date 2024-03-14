@@ -79,7 +79,7 @@ TEST(GraphicsContextTest, Recording) {
   bitmap.eraseColor(0);
   SkiaPaintCanvas canvas(bitmap);
 
-  auto paint_controller = std::make_unique<PaintController>();
+  auto* paint_controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*paint_controller);
 
   Color opaque = Color::FromRGBA(255, 0, 0, 255);
@@ -110,7 +110,7 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   Color opaque = Color::FromRGBA(255, 0, 0, 255);
   Color transparent = Color::kTransparent;
 
-  auto paint_controller = std::make_unique<PaintController>();
+  auto* paint_controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*paint_controller);
   context.BeginRecording();
 
@@ -146,7 +146,7 @@ class GraphicsContextDarkModeTest : public testing::Test {
     bitmap_.allocN32Pixels(4, 1);
     bitmap_.eraseColor(0);
     canvas_ = std::make_unique<SkiaPaintCanvas>(bitmap_);
-    paint_controller_ = std::make_unique<PaintController>();
+    paint_controller_ = MakeGarbageCollected<PaintController>();
   }
 
   void DrawColorsToContext(bool is_dark_mode_on,
@@ -173,7 +173,7 @@ class GraphicsContextDarkModeTest : public testing::Test {
 
   SkBitmap bitmap_;
   std::unique_ptr<SkiaPaintCanvas> canvas_;
-  std::unique_ptr<PaintController> paint_controller_;
+  Persistent<PaintController> paint_controller_;
 };
 
 // This is a baseline test where dark mode is turned off. Compare other variants

@@ -36,7 +36,7 @@ void PreserveNearIntegralBounds(gfx::RectF& bounds) {
 
 }  // anonymous namespace
 
-PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
+PendingLayer::PendingLayer(const PaintArtifact& artifact,
                            const PaintChunk& first_chunk)
     : bounds_(first_chunk.bounds),
       rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
@@ -46,7 +46,7 @@ PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
           first_chunk.text_known_to_be_on_opaque_background),
       solid_color_chunk_index_(
           first_chunk.background_color.is_solid_color ? 0 : kNotFound),
-      chunks_(std::move(artifact), first_chunk),
+      chunks_(artifact, first_chunk),
       property_tree_state_(
           first_chunk.properties.GetPropertyTreeState().Unalias()),
       hit_test_opaqueness_(first_chunk.hit_test_opaqueness) {
@@ -63,6 +63,11 @@ PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
     }
   }
   rect_known_to_be_opaque_.Intersect(bounds_);
+}
+
+void PendingLayer::Trace(Visitor* visitor) const {
+  visitor->Trace(chunks_);
+  visitor->Trace(content_layer_client_);
 }
 
 gfx::Vector2dF PendingLayer::LayerOffset() const {
@@ -423,7 +428,7 @@ bool PendingLayer::MightOverlap(const PendingLayer& other) const {
 //  10. All child transform nodes are also able to be de-composited.
 // This algorithm should be O(t+c+e) where t,c,e are the number of transform,
 // clip, and effect nodes in the full tree.
-void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
+void PendingLayer::DecompositeTransforms(PendingLayers& pending_layers) {
   HashMap<const TransformPaintPropertyNode*, bool> can_be_decomposited;
   HashSet<const void*> clips_and_effects_seen;
   for (const PendingLayer& pending_layer : pending_layers) {
@@ -595,7 +600,7 @@ void PendingLayer::UpdateContentLayer(PendingLayer* old_pending_layer,
     content_layer_client_ = std::move(old_pending_layer->content_layer_client_);
   }
   if (!content_layer_client_) {
-    content_layer_client_ = std::make_unique<ContentLayerClientImpl>();
+    content_layer_client_ = MakeGarbageCollected<ContentLayerClientImpl>();
     content_layer_client_->GetRasterInvalidator().SetTracksRasterInvalidations(
         tracks_raster_invalidations);
   }
@@ -688,7 +693,7 @@ void PendingLayer::UpdateCcLayerHitTestOpaqueness() const {
 }
 
 void PendingLayer::UpdateCompositedLayerForRepaint(
-    scoped_refptr<const PaintArtifact> repainted_artifact,
+    const PaintArtifact& repainted_artifact,
     cc::LayerSelection& layer_selection) {
   // Essentially replace the paint chunks of the pending layer with the
   // repainted chunks in |repainted_artifact|. The pending layer's paint
@@ -697,9 +702,9 @@ void PendingLayer::UpdateCompositedLayerForRepaint(
   // removed, or re-ordered, so we can simply swap in a repainted
   // |PaintArtifact| instead of copying |PaintChunk|s individually.
   const PaintArtifact& old_artifact = Chunks().GetPaintArtifact();
-  DCHECK_EQ(old_artifact.PaintChunks().size(),
-            repainted_artifact->PaintChunks().size());
-  SetPaintArtifact(std::move(repainted_artifact));
+  DCHECK_EQ(old_artifact.GetPaintChunks().size(),
+            repainted_artifact.GetPaintChunks().size());
+  SetPaintArtifact(repainted_artifact);
 
   bool chunks_unchanged = true;
   for (const auto& chunk : Chunks()) {
@@ -723,7 +728,7 @@ void PendingLayer::UpdateCompositedLayerForRepaint(
       if (chunks_unchanged) {
         // See RasterInvalidator::SetOldPaintArtifact() for the reason for this.
         content_layer_client_->GetRasterInvalidator().SetOldPaintArtifact(
-            &Chunks().GetPaintArtifact());
+            Chunks().GetPaintArtifact());
       } else {
         content_layer_client_->UpdateCcPictureLayer(*this);
       }

@@ -91,7 +91,7 @@ class TestChunks {
         drawable_bounds ? *drawable_bounds : bounds, std::move(record),
         RasterEffectOutset::kNone);
 
-    auto& chunks = paint_artifact_->PaintChunks();
+    auto& chunks = paint_artifact_->GetPaintChunks();
     chunks.emplace_back(i, i + 1, DefaultClient(), DefaultId(),
                         PropertyTreeStateOrAlias(t, c, e));
     chunks.back().bounds = bounds;
@@ -102,22 +102,20 @@ class TestChunks {
                      const ClipPaintPropertyNode& c,
                      const EffectPaintPropertyNode& e,
                      const gfx::Rect& bounds = gfx::Rect(0, 0, 100, 100)) {
-    auto& chunks = paint_artifact_->PaintChunks();
+    auto& chunks = paint_artifact_->GetPaintChunks();
     auto i = paint_artifact_->GetDisplayItemList().size();
     chunks.emplace_back(i, i, DefaultClient(), DefaultId(),
                         PropertyTreeState(t, c, e));
     chunks.back().bounds = bounds;
   }
 
-  Vector<PaintChunk>* GetChunks() { return &paint_artifact_->PaintChunks(); }
+  PaintChunks& GetChunks() { return paint_artifact_->GetPaintChunks(); }
 
-  PaintChunkSubset Build() {
-    return PaintChunkSubset(std::move(paint_artifact_));
-  }
+  PaintChunkSubset Build() { return PaintChunkSubset(*paint_artifact_); }
 
  private:
-  scoped_refptr<PaintArtifact> paint_artifact_ =
-      base::MakeRefCounted<PaintArtifact>();
+  Persistent<PaintArtifact> paint_artifact_ =
+      MakeGarbageCollected<PaintArtifact>();
 };
 
 TEST_P(PaintChunksToCcLayerTest, EffectGroupingSimple) {
@@ -1183,7 +1181,7 @@ TEST_P(PaintChunksToCcLayerTest,
 
   const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
   const RegionCaptureData kMap{{kCropId, gfx::Rect{50, 60, 100, 200}}};
-  chunks.GetChunks()->back().region_capture_data =
+  chunks.GetChunks().back().region_capture_data =
       std::make_unique<RegionCaptureData>(kMap);
 
   UpdateLayerProperties(*layer, PropertyTreeState::Root(), chunks.Build());
@@ -1203,7 +1201,7 @@ TEST_P(PaintChunksToCcLayerTest,
 
   const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
   const RegionCaptureData kMap{{kCropId, gfx::Rect{50, 60, 100, 200}}};
-  chunks.GetChunks()->back().region_capture_data =
+  chunks.GetChunks().back().region_capture_data =
       std::make_unique<RegionCaptureData>(kMap);
 
   UpdateLayerProperties(*layer, PropertyTreeState::Root(), chunks.Build());
@@ -1232,7 +1230,7 @@ TEST_P(PaintChunksToCcLayerTest,
 
   const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
   const RegionCaptureData kMap{{kCropId, gfx::Rect{}}};
-  chunks.GetChunks()->back().region_capture_data =
+  chunks.GetChunks().back().region_capture_data =
       std::make_unique<RegionCaptureData>(kMap);
 
   UpdateLayerProperties(*layer, PropertyTreeState::Root(), chunks.Build());
@@ -1253,7 +1251,7 @@ TEST_P(PaintChunksToCcLayerTest,
                   gfx::Rect(10, 15, 20, 30));
   const auto kCropId = RegionCaptureCropId(base::Token::CreateRandom());
   const RegionCaptureData kMap{{kCropId, gfx::Rect{50, 60, 100, 200}}};
-  chunks.GetChunks()->back().region_capture_data =
+  chunks.GetChunks().back().region_capture_data =
       std::make_unique<RegionCaptureData>(kMap);
 
   // Add a second chunk with additional region capture bounds.
@@ -1264,7 +1262,7 @@ TEST_P(PaintChunksToCcLayerTest,
   const RegionCaptureData kSecondMap{
       {kSecondCropId, gfx::Rect{51, 61, 101, 201}},
       {kThirdCropId, gfx::Rect{52, 62, 102, 202}}};
-  chunks.GetChunks()->back().region_capture_data =
+  chunks.GetChunks().back().region_capture_data =
       std::make_unique<RegionCaptureData>(kSecondMap);
 
   UpdateLayerProperties(*layer, PropertyTreeState::Root(), chunks.Build());

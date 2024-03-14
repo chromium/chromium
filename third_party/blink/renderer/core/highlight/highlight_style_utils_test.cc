@@ -58,8 +58,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
           ->firstChild();
   const ComputedStyle& text_style = text_node->GetLayoutObject()->StyleRef();
 
-  std::unique_ptr<PaintController> controller{
-      std::make_unique<PaintController>()};
+  PaintController* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
   TextPaintStyle paint_style;
@@ -109,8 +108,7 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
 
   Compositor().BeginFrame();
 
-  std::unique_ptr<PaintController> controller{
-      std::make_unique<PaintController>()};
+  PaintController* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
   TextPaintStyle paint_style;
@@ -203,8 +201,7 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
 
   Compositor().BeginFrame();
 
-  std::unique_ptr<PaintController> controller{
-      std::make_unique<PaintController>()};
+  auto* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
   TextPaintStyle paint_style;
@@ -283,8 +280,7 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
 
   Compositor().BeginFrame();
 
-  std::unique_ptr<PaintController> controller{
-      std::make_unique<PaintController>()};
+  auto* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
   TextPaintStyle paint_style;
@@ -340,8 +336,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
   Compositor().BeginFrame();
   std::optional<Color> previous_layer_color;
 
-  std::unique_ptr<PaintController> controller{
-      std::make_unique<PaintController>()};
+  PaintController* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
   TextPaintStyle paint_style;

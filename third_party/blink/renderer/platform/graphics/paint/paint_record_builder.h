@@ -53,7 +53,7 @@ class PLATFORM_EXPORT PaintRecordBuilder final {
       const PropertyTreeState& replay_state = PropertyTreeState::Root());
 
  private:
-  PaintController paint_controller_;
+  PaintController& paint_controller_;
   GraphicsContext context_;
 };
 

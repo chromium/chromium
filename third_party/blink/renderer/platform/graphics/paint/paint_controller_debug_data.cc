@@ -25,7 +25,7 @@ class PaintController::PaintArtifactAsJSON {
         flags_(flags) {}
 
   String ToString() {
-    return ChunksAsJSONArrayRecursive(0, artifact_.PaintChunks().size())
+    return ChunksAsJSONArrayRecursive(0, artifact_.GetPaintChunks().size())
         ->ToPrettyJSONString();
   }
 

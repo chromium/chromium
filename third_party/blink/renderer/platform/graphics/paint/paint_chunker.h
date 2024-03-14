@@ -15,10 +15,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -29,13 +27,13 @@ class PLATFORM_EXPORT PaintChunker final {
   DISALLOW_NEW();
 
  public:
-  explicit PaintChunker(Vector<PaintChunk>& chunks) { ResetChunks(&chunks); }
+  explicit PaintChunker(PaintChunks& chunks) { ResetChunks(&chunks); }
   PaintChunker(const PaintChunker&) = delete;
   PaintChunker& operator=(const PaintChunker&) = delete;
 
   // Finishes current chunks if any, and makes it ready to create chunks into
   // the given vector if not null.
-  void ResetChunks(Vector<PaintChunk>*);
+  void ResetChunks(PaintChunks*);
 
 #if DCHECK_IS_ON()
   bool IsInInitialState() const;
@@ -125,9 +123,8 @@ class PLATFORM_EXPORT PaintChunker final {
 
   void FinalizeLastChunkProperties();
 
-  Vector<PaintChunk>* chunks_ = nullptr;
-  WeakPersistent<HeapVector<Member<const DisplayItemClient>>>
-      clients_to_validate_ = nullptr;
+  PaintChunks* chunks_ = nullptr;
+  HeapVector<Member<const DisplayItemClient>>* clients_to_validate_ = nullptr;
   // The id specified by UpdateCurrentPaintChunkProperties(). If it is not
   // nullopt, we will use it as the id of the next new chunk. Otherwise we will
   // use the id of the first display item of the new chunk as the id.

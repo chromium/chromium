@@ -5,27 +5,28 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_PAINT_UNDER_INVALIDATION_CHECKER_H_
 
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class DisplayItem;
 class DisplayItemList;
 class PaintController;
-struct PaintChunk;
 
 // If RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled(),
 // when PaintController can use a cached display item or a cached subsequence,
 // it lets the client paint instead of using the cache, and this class checks
 // whether the painting is the same as the cache.
-class PaintUnderInvalidationChecker {
-  USING_FAST_MALLOC(PaintUnderInvalidationChecker);
-
+class PaintUnderInvalidationChecker
+    : public GarbageCollected<PaintUnderInvalidationChecker> {
  public:
   explicit PaintUnderInvalidationChecker(PaintController& paint_controller);
   ~PaintUnderInvalidationChecker();
+
+  void Trace(Visitor*) const;
 
   bool IsChecking() const;
 
@@ -55,14 +56,14 @@ class PaintUnderInvalidationChecker {
                             const PaintChunk* new_chunk = nullptr,
                             const PaintChunk* old_chunk = nullptr);
 
-  const Vector<PaintChunk>& OldPaintChunks() const;
-  const Vector<PaintChunk>& NewPaintChunks() const;
+  const PaintChunks& OldPaintChunks() const;
+  const PaintChunks& NewPaintChunks() const;
   DisplayItemList& OldDisplayItemList();
   DisplayItemList& NewDisplayItemList();
 
-  const raw_ref<PaintController> paint_controller_;
+  Member<PaintController> paint_controller_;
 
-  // Points to the cached display item which is expected to match the nextnew
+  // Points to the cached display item which is expected to match the next new
   // display item.
   wtf_size_t old_item_index_ = kNotFound;
   // Points to the cached paint chunk which is expected to match the next

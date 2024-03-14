@@ -7,7 +7,8 @@
 namespace blink {
 
 PaintRecordBuilder::PaintRecordBuilder()
-    : paint_controller_(PaintController::kTransient),
+    : paint_controller_(
+          *MakeGarbageCollected<PaintController>(PaintController::kTransient)),
       context_(paint_controller_) {
   paint_controller_.UpdateCurrentPaintChunkProperties(
       PropertyTreeState::Root());

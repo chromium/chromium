@@ -141,7 +141,7 @@ TEST_P(FrameOverlayTest, DeviceEmulationScale) {
     EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
               paint_controller.GetDisplayItemList()[0].VisualRect());
     EXPECT_THAT(
-        paint_controller.PaintChunks(),
+        paint_controller.GetPaintChunks(),
         ElementsAre(IsPaintChunk(
             0, 1,
             PaintChunk::Id(frame_overlay->Id(), DisplayItem::kFrameOverlay),

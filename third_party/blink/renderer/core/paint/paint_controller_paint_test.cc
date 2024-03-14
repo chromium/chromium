@@ -131,7 +131,7 @@ TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
       GetLayoutView().FirstFragment().PaintProperties()->ScrollTranslation();
   view_scroll_hit_test.scroll_hit_test_rect = gfx::Rect(0, 0, 800, 600);
   EXPECT_THAT(
-      RootPaintController().PaintChunks()[0],
+      RootPaintController().GetPaintChunks()[0],
       IsPaintChunk(
           0, 0,
           PaintChunk::Id(GetLayoutView().Id(), DisplayItem::kScrollHitTest),
@@ -160,7 +160,7 @@ TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
                           IsSameId(div3.Id(), kBackgroundType),
                           IsSameId(div4.Id(), kBackgroundType)));
   EXPECT_THAT(
-      RootPaintController().PaintChunks()[0],
+      RootPaintController().GetPaintChunks()[0],
       IsPaintChunk(
           0, 0,
           PaintChunk::Id(GetLayoutView().Id(), DisplayItem::kScrollHitTest),
