@@ -71,7 +71,6 @@ LabelButton::LabelButton(
 
   SetAnimationDuration(base::Milliseconds(170));
   SetTextInternal(text);
-  SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
 }
 
 LabelButton::~LabelButton() {
@@ -370,17 +369,10 @@ int LabelButton::GetHeightForWidth(int width) const {
   return height;
 }
 
-ProposedLayout LabelButton::CalculateProposedLayout(
-    const SizeBounds& size_bounds) const {
-  ProposedLayout layouts;
-  if (!size_bounds.is_fully_bounded()) {
-    return layouts;
-  }
+void LabelButton::Layout(PassKey) {
   gfx::Rect image_area = GetLocalBounds();
 
-  layouts.child_layouts.emplace_back(ink_drop_container_.get(),
-                                     ink_drop_container_->GetVisible(),
-                                     image_area, size_bounds);
+  ink_drop_container_->SetBoundsRect(image_area);
 
   gfx::Insets insets = GetInsets();
   // If the button have a limited space to fit in, the image and the label
@@ -430,10 +422,7 @@ ProposedLayout LabelButton::CalculateProposedLayout(
   } else if (horizontal_alignment == gfx::ALIGN_RIGHT) {
     image_origin.Offset(image_area.width() - image_size.width(), 0);
   }
-  layouts.child_layouts.emplace_back(
-      const_cast<LabelButton*>(this)->image_container_view(),
-      image_container_view()->GetVisible(), gfx::Rect(image_origin, image_size),
-      size_bounds);
+  image_container_view()->SetBoundsRect(gfx::Rect(image_origin, image_size));
 
   gfx::Rect label_bounds = label_area;
   if (label_area.width() == label_size.width()) {
@@ -446,12 +435,8 @@ ProposedLayout LabelButton::CalculateProposedLayout(
       label_bounds.Offset(label_area.width() - label_size.width(), 0);
   }
 
-  layouts.child_layouts.emplace_back(label_.get(), label_->GetVisible(),
-                                     label_bounds, size_bounds);
-  layouts.host_size =
-      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
-
-  return layouts;
+  label_->SetBoundsRect(label_bounds);
+  LayoutSuperclass<Button>(this);
 }
 
 void LabelButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {

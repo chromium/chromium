@@ -20,7 +20,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/native_theme_delegate.h"
@@ -37,9 +36,7 @@ class InkDropContainerView;
 class LabelButtonBorder;
 
 // LabelButton is a button with text and an icon.
-class VIEWS_EXPORT LabelButton : public Button,
-                                 public NativeThemeDelegate,
-                                 public LayoutDelegate {
+class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   METADATA_HEADER(LabelButton, Button)
 
  public:
@@ -152,15 +149,12 @@ class VIEWS_EXPORT LabelButton : public Button,
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int w) const override;
+  void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AddLayerToRegion(ui::Layer* new_layer,
                         views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
   std::unique_ptr<ActionViewInterface> GetActionViewInterface() override;
-
-  // LayoutDelegate:
-  ProposedLayout CalculateProposedLayout(
-      const SizeBounds& size_bounds) const override;
 
   // NativeThemeDelegate:
   ui::NativeTheme::Part GetThemePart() const override;
