@@ -1504,6 +1504,12 @@ class CORE_EXPORT Document : public ContainerNode,
   void EnqueueSnapChangedEvent(Node* target, HeapVector<Member<Node>>& targets);
   void EnqueueSnapChangingEvent(Node* target,
                                 HeapVector<Member<Node>>& targets);
+  void EnqueueSnapChangedEvent(Node* target,
+                               Member<Node>& block_target,
+                               Member<Node>& inline_target);
+  void EnqueueSnapChangingEvent(Node* target,
+                                Member<Node>& block_target,
+                                Member<Node>& inline_target);
 
   void DispatchEventsForPrinting();
 

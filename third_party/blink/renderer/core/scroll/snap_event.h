@@ -41,6 +41,38 @@ class SnapEventDeprecated : public Event {
   Member<StaticNodeList> snap_targets_;
 };
 
+// This class implements the SnapEvent interface for scroll-snap-related
+// JavaScript events, snapchanged and snapchanging.
+// SnapEvents are sent to a scroller when it snaps to a different element from
+// the element to which it was previously snapped along either axis.
+// https://drafts.csswg.org/css-scroll-snap-2/#snapchanged-and-snapchanging
+class SnapEvent : public Event {
+  DEFINE_WRAPPERTYPEINFO();
+
+ public:
+  static SnapEvent* Create(const AtomicString& type,
+                           Member<Node>& block_target,
+                           Member<Node>& inline_target);
+  SnapEvent(const AtomicString& type,
+            Member<Node>& block_target,
+            Member<Node>& inline_target);
+
+  Node* snapTargetBlock() { return snap_target_block_.Get(); }
+  Node* snapTargetInline() { return snap_target_inline_.Get(); }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(snap_target_block_);
+    visitor->Trace(snap_target_inline_);
+    Event::Trace(visitor);
+  }
+
+ private:
+  // This are the elements that the scrolling container selected as snap targets
+  // for the related snap event.
+  Member<Node> snap_target_block_;
+  Member<Node> snap_target_inline_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SNAP_EVENT_H_

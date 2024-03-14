@@ -9474,6 +9474,11 @@ interface SharedWorker : EventTarget
     getter port
     method constructor
     setter onerror
+interface SnapEvent : Event
+    attribute @@toStringTag
+    getter snapTargetBlock
+    getter snapTargetInline
+    method constructor
 interface SnapEventDeprecated : Event
     attribute @@toStringTag
     getter snapTargets

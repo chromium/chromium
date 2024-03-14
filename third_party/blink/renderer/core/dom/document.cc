@@ -6100,6 +6100,15 @@ void Document::EnqueueSnapChangedEvent(Node* target,
   scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
 }
 
+void Document::EnqueueSnapChangedEvent(Node* target,
+                                       Member<Node>& block_target,
+                                       Member<Node>& inline_target) {
+  Event* snapchanged_event = SnapEvent::Create(event_type_names::kSnapchanged,
+                                               block_target, inline_target);
+  snapchanged_event->SetTarget(target);
+  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
+}
+
 void Document::EnqueueSnapChangingEvent(
     Node* target,
     HeapVector<Member<Node>>& snap_targets) {
@@ -6107,6 +6116,15 @@ void Document::EnqueueSnapChangingEvent(
       event_type_names::kSnapchanging, snap_targets);
   snapchanging_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(snapchanging_event);
+}
+
+void Document::EnqueueSnapChangingEvent(Node* target,
+                                        Member<Node>& block_target,
+                                        Member<Node>& inline_target) {
+  Event* snapchanged_event = SnapEvent::Create(event_type_names::kSnapchanging,
+                                               block_target, inline_target);
+  snapchanged_event->SetTarget(target);
+  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
 }
 
 void Document::EnqueueMoveEvent() {
