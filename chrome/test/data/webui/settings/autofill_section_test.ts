@@ -667,21 +667,46 @@ suite('AutofillSectionAddressTests', function() {
     });
   });
 
-  test('verifyCancelDoesNotSaveAddress', function(done) {
+  test(
+      'verifyNoSaveAddressEventWhenEditDialogCancelButtonIsClicked',
+      function(done) {
+        createAddressDialog(createAddressEntry()).then(function(dialog) {
+          eventToPromise('save-address', dialog).then(function() {
+            // Fail the test because the save event should not be fired when
+            // the cancel is clicked.
+            assertTrue(true);
+          });
+
+          eventToPromise('cancel', dialog).then(function() {
+            // Test is |done| in a timeout in order to ensure that
+            // 'save-address' is NOT fired after this test.
+            assertEquals(
+                1,
+                metricsTracker.count('Autofill.Settings.EditAddress', false));
+            window.setTimeout(done, 100);
+          });
+
+          dialog.$.cancelButton.click();
+        });
+      });
+
+  test('verifyNoCancelEventWhenEditDialogSaveButtonIsClicked', function(done) {
     createAddressDialog(createAddressEntry()).then(function(dialog) {
-      eventToPromise('save-address', dialog).then(function() {
-        // Fail the test because the save event should not be called when
-        // cancel is clicked.
+      eventToPromise('cancel', dialog).then(function() {
+        // Fail the test because the cancel event should not be fired when
+        // the save is clicked.
         assertTrue(false);
       });
 
-      eventToPromise('close', dialog).then(function() {
+      eventToPromise('save-address', dialog).then(function() {
         // Test is |done| in a timeout in order to ensure that
         // 'save-address' is NOT fired after this test.
+        assertEquals(
+            1, metricsTracker.count('Autofill.Settings.EditAddress', true));
         window.setTimeout(done, 100);
       });
 
-      dialog.$.cancelButton.click();
+      dialog.$.saveButton.click();
     });
   });
 

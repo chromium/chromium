@@ -350,6 +350,9 @@ export class SettingsAddressEditDialogElement extends
   }
 
   private onCancelClick_(): void {
+    chrome.metricsPrivate.recordBoolean(
+        'Autofill.Settings.EditAddress',
+        /*confirmed=*/ false);
     this.$.dialog.cancel();
   }
 
@@ -369,6 +372,9 @@ export class SettingsAddressEditDialogElement extends
       this.address.fields.push({type: key, value: value});
     });
 
+    chrome.metricsPrivate.recordBoolean(
+        'Autofill.Settings.EditAddress',
+        /*confirmed=*/ true);
     this.fire_('save-address', this.address);
     this.$.dialog.close();
   }

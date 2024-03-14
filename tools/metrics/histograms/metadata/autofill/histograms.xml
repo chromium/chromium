@@ -1884,7 +1884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ExtendedMenu.EditAddress"
-    enum="BooleanAutofillExtendedMenuEditAddress" expires_after="2024-10-01">
+    enum="BooleanAutofillEditAddress" expires_after="2024-07-13">
   <owner>tchudakov@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4600,6 +4600,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records which entry point opened the Autofill Options screen. Recorded on
     Android.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Settings.EditAddress"
+    enum="BooleanAutofillEditAddress" expires_after="2024-07-13">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    This metric measures how many users clicked on the edit option from the
+    settings page and what their next action was. The metric is logged when the
+    user closes the edit address profile dialog, either after saving an updated
+    profile or after canceling.
   </summary>
 </histogram>
 
