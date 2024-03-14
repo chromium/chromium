@@ -11,11 +11,13 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -1042,12 +1044,12 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     UpdaterScope scope,
     const std::wstring& app_id,
     const std::wstring& command_id,
-    bool send_pings) {
+    PingSender ping_sender) {
   app_command_runner_ =
       AppCommandRunner::LoadAppCommand(scope, app_id, command_id);
   scope_ = scope;
   app_id_ = base::WideToUTF8(app_id);
-  send_pings_ = send_pings;
+  ping_sender_ = std::move(ping_sender);
   return app_command_runner_.error_or(S_OK);
 }
 
@@ -1085,44 +1087,6 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
 
 namespace {
 
-struct ErrorParams {
-  int error_code = 0;
-  int extra_code1 = 0;
-};
-
-void SendPing(UpdaterScope scope,
-              const std::string& app_id,
-              ErrorParams error_params) {
-  AppServerWin::PostRpcTask(base::BindOnce(
-      [](UpdaterScope scope, const std::string& app_id,
-         ErrorParams error_params) {
-        scoped_refptr<Configurator> config =
-            GetAppServerWinInstance()->config();
-        scoped_refptr<PersistedData> persisted_data =
-            config->GetUpdaterPersistedData();
-        if (!persisted_data->GetUsageStatsEnabled() &&
-            !AreRawUsageStatsEnabled(scope)) {
-          return;
-        }
-
-        update_client::CrxComponent app_command_data;
-        app_command_data.ap = persisted_data->GetAP(app_id);
-        app_command_data.app_id = app_id;
-        app_command_data.brand = persisted_data->GetBrandCode(app_id);
-        app_command_data.requires_network_encryption = false;
-        app_command_data.version = persisted_data->GetProductVersion(app_id);
-
-        update_client::UpdateClientFactory(config)->SendPing(
-            app_command_data,
-            {.event_type =
-                 update_client::protocol_request::kEventAppCommandComplete,
-             .result = SUCCEEDED(error_params.error_code),
-             .error_code = error_params.error_code,
-             .extra_code1 = error_params.extra_code1},
-            base::DoNothing());
-      },
-      scope, app_id, error_params));
-}
 
 }  // namespace
 
@@ -1157,18 +1121,16 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   }
 
   const HRESULT hr = app_command_runner_->Run(substitutions, process_);
-  if (!send_pings_) {
-    return hr;
-  }
   if (FAILED(hr)) {
     VLOG(2) << __func__ << ": AppCommand failed to launch: " << hr;
-    SendPing(scope_, app_id_,
-             {
-                 .error_code = hr,
-                 .extra_code1 = kErrorAppCommandLaunchFailed,
-             });
+    ping_sender_.Run(scope_, app_id_,
+                     {
+                         .error_code = hr,
+                         .extra_code1 = kErrorAppCommandLaunchFailed,
+                     });
     return hr;
   }
+
   base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::WithBaseSyncPrimitives()})
       ->PostTask(FROM_HERE,
@@ -1190,8 +1152,42 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                        };
                      },
                      process_.Duplicate())
-                     .Then(base::BindOnce(&SendPing, scope_, app_id_)));
+                     .Then(base::BindOnce(ping_sender_, scope_, app_id_)));
   return hr;
+}
+
+void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
+                                       const std::string& app_id,
+                                       ErrorParams error_params) {
+  AppServerWin::PostRpcTask(base::BindOnce(
+      [](UpdaterScope scope, const std::string& app_id,
+         ErrorParams error_params) {
+        scoped_refptr<Configurator> config =
+            GetAppServerWinInstance()->config();
+        scoped_refptr<PersistedData> persisted_data =
+            config->GetUpdaterPersistedData();
+        if (!persisted_data->GetUsageStatsEnabled() &&
+            !AreRawUsageStatsEnabled(scope)) {
+          return;
+        }
+
+        update_client::CrxComponent app_command_data;
+        app_command_data.ap = persisted_data->GetAP(app_id);
+        app_command_data.app_id = app_id;
+        app_command_data.brand = persisted_data->GetBrandCode(app_id);
+        app_command_data.requires_network_encryption = false;
+        app_command_data.version = persisted_data->GetProductVersion(app_id);
+
+        update_client::UpdateClientFactory(config)->SendPing(
+            app_command_data,
+            {.event_type =
+                 update_client::protocol_request::kEventAppCommandComplete,
+             .result = SUCCEEDED(error_params.error_code),
+             .error_code = error_params.error_code,
+             .extra_code1 = error_params.extra_code1},
+            base::DoNothing());
+      },
+      scope, app_id, error_params));
 }
 
 PolicyStatusImpl::PolicyStatusImpl()

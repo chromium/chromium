@@ -14,6 +14,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -252,18 +254,28 @@ class LegacyProcessLauncherImpl
 // back-slash, double-quotes, space, and tab is applied if necessary.
 class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
  public:
+  struct ErrorParams {
+    int error_code = 0;
+    int extra_code1 = 0;
+  };
+
+  using PingSender = base::RepeatingCallback<void(UpdaterScope scope,
+                                                  const std::string& app_id,
+                                                  ErrorParams error_params)>;
   LegacyAppCommandWebImpl();
   LegacyAppCommandWebImpl(const LegacyAppCommandWebImpl&) = delete;
   LegacyAppCommandWebImpl& operator=(const LegacyAppCommandWebImpl&) = delete;
 
   // Initializes an instance of `IAppCommandWeb` for the given `scope`,
-  // `app_id`, and `command_id`. Returns an error if the command format does not
-  // exist in the registry, or if the command format in the registry has an
-  // invalid formatting, or if the type information could not be initialized.
+  // `app_id`, `command_id`, and a `ping_sender`. Returns an error if the
+  // command format does not exist in the registry, or if the command format in
+  // the registry has an invalid formatting, or if the type information could
+  // not be initialized.
   HRESULT RuntimeClassInitialize(UpdaterScope scope,
                                  const std::wstring& app_id,
                                  const std::wstring& command_id,
-                                 bool send_pings = true);
+                                 PingSender ping_sender = base::BindRepeating(
+                                     &LegacyAppCommandWebImpl::SendPing));
 
   // Overrides for IAppCommandWeb.
   IFACEMETHODIMP get_status(UINT* status) override;
@@ -289,15 +301,19 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
                          VARIANT substitution9) override;
 
  private:
+  friend class LegacyAppCommandWebImplTest;
+
+  static void SendPing(UpdaterScope scope,
+                       const std::string& app_id,
+                       ErrorParams error_params);
+
   ~LegacyAppCommandWebImpl() override;
 
   base::Process process_;
   HResultOr<AppCommandRunner> app_command_runner_;
   UpdaterScope scope_ = UpdaterScope::kSystem;
   std::string app_id_;
-  bool send_pings_ = true;
-
-  friend class LegacyAppCommandWebImplTest;
+  PingSender ping_sender_ = base::DoNothing();
 };
 
 // This class implements the legacy Omaha3 IPolicyStatus* interfaces, which
