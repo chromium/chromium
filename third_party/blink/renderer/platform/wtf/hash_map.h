@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
@@ -110,6 +111,8 @@ class HashMap {
 
  public:
   HashMap() {
+    static_assert(!IsStackAllocatedType<KeyArg>);
+    static_assert(!IsStackAllocatedType<MappedArg>);
     static_assert(Allocator::kIsGarbageCollected ||
                       !IsPointerToGarbageCollectedType<KeyArg>::value,
                   "Cannot put raw pointers to garbage-collected classes into "
@@ -331,8 +334,23 @@ struct HashMapTranslator {
   }
 };
 
-template <typename T, typename U, typename V, typename W, typename X>
-HashMap<T, U, V, W, X>::HashMap(std::initializer_list<ValueType> elements) {
+template <typename KeyArg,
+          typename MappedArg,
+          typename KeyTraitsArg,
+          typename MappedTraitsArg,
+          typename Allocator>
+HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::HashMap(
+    std::initializer_list<ValueType> elements) {
+  static_assert(!IsStackAllocatedType<KeyArg>);
+  static_assert(!IsStackAllocatedType<MappedArg>);
+  static_assert(Allocator::kIsGarbageCollected ||
+                    !IsPointerToGarbageCollectedType<KeyArg>::value,
+                "Cannot put raw pointers to garbage-collected classes into "
+                "an off-heap HashMap.  Use HeapHashMap<> instead.");
+  static_assert(Allocator::kIsGarbageCollected ||
+                    !IsPointerToGarbageCollectedType<MappedArg>::value,
+                "Cannot put raw pointers to garbage-collected classes into "
+                "an off-heap HashMap.  Use HeapHashMap<> instead.");
   if (elements.size()) {
     impl_.ReserveCapacityForSize(
         base::checked_cast<wtf_size_t>(elements.size()));

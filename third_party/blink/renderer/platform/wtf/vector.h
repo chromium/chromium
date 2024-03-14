@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"  // For default Vector template parameters.
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -1511,6 +1512,7 @@ class Vector
 // static
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 constexpr void Vector<T, inlineCapacity, Allocator>::CheckTypeConstraints() {
+  static_assert(!IsStackAllocatedType<T>);
   static_assert(!std::is_polymorphic<T>::value ||
                     !VectorTraits<T>::kCanInitializeWithMemset,
                 "Cannot initialize with memset if there is a vtable.");

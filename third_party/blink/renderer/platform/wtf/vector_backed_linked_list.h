@@ -163,6 +163,8 @@ template <typename ValueType, typename Allocator = PartitionAllocator>
 class VectorBackedLinkedList {
   USE_ALLOCATOR(VectorBackedLinkedList, Allocator);
 
+  static_assert(!IsStackAllocatedType<ValueType>);
+
  private:
   using Node = VectorBackedLinkedListNode<ValueType, Allocator>;
   // Using Vector like this (instead of HeapVector for garbage collected types)

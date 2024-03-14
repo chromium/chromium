@@ -949,6 +949,8 @@ inline HashTable<Key,
       stats_(nullptr)
 #endif
 {
+  static_assert(!IsStackAllocatedType<Key>);
+  static_assert(!IsStackAllocatedType<Value>);
   static_assert(Allocator::kIsGarbageCollected ||
                     (!IsPointerToGarbageCollectedType<Key>::value &&
                      !IsPointerToGarbageCollectedType<Value>::value),

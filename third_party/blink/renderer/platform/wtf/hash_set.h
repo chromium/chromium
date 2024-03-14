@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace WTF {
@@ -72,6 +73,7 @@ class HashSet {
   typedef typename HashTableType::AddResult AddResult;
 
   HashSet() {
+    static_assert(!IsStackAllocatedType<ValueArg>);
     static_assert(Allocator::kIsGarbageCollected ||
                       !IsPointerToGarbageCollectedType<ValueArg>::value,
                   "Cannot put raw pointers to garbage-collected classes into "
@@ -196,6 +198,11 @@ struct HashSetTranslatorAdapter {
 template <typename Value, typename Traits, typename Allocator>
 HashSet<Value, Traits, Allocator>::HashSet(
     std::initializer_list<ValueType> elements) {
+  static_assert(!IsStackAllocatedType<Value>);
+  static_assert(Allocator::kIsGarbageCollected ||
+                    !IsPointerToGarbageCollectedType<Value>::value,
+                "Cannot put raw pointers to garbage-collected classes into "
+                "an off-heap HashSet. Use HeapHashSet<Member<T>> instead.");
   if (elements.size()) {
     impl_.ReserveCapacityForSize(
         base::checked_cast<wtf_size_t>(elements.size()));

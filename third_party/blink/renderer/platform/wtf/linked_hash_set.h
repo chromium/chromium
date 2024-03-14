@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_backed_linked_list.h"
 
 namespace WTF {
@@ -252,6 +253,7 @@ class LinkedHashSet {
 
 template <typename T, typename TraitsArg, typename Allocator>
 inline LinkedHashSet<T, TraitsArg, Allocator>::LinkedHashSet() {
+  static_assert(!IsStackAllocatedType<T>);
   static_assert(Allocator::kIsGarbageCollected ||
                     !IsPointerToGarbageCollectedType<T>::value,
                 "Cannot put raw pointers to garbage-collected classes into "
