@@ -46,7 +46,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -317,7 +316,6 @@ public class IntentHandlerRobolectricTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature({"Android-Appbase"})
     public void testUrlFromIntent_WebappUrl() {
         Intent webappLauncherActivityIntent =
@@ -345,7 +343,6 @@ public class IntentHandlerRobolectricTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Feature({"Android-AppBase"})
     public void testReferrerUrl_customTabIntentWithSession() {
         Context context = ApplicationProvider.getApplicationContext();

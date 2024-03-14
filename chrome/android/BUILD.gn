@@ -1565,6 +1565,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/androidx:androidx_fragment_fragment_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_monitor_java",
+      "//third_party/androidx:androidx_test_rules_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/androidx:androidx_viewpager_viewpager_java",
       "//third_party/blink/public:blink_headers_java",

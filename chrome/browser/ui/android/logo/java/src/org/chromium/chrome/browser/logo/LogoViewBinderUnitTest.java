@@ -36,7 +36,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
@@ -120,7 +119,6 @@ public class LogoViewBinderUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetShowAndHideLogoWithMetaData() {
         assertFalse(mLogoModel.get(LogoProperties.VISIBILITY));
@@ -141,7 +139,6 @@ public class LogoViewBinderUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testEndFadeAnimation() {
         Logo logo =
@@ -168,7 +165,6 @@ public class LogoViewBinderUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testUpdateLogo() {
         Logo logo =
@@ -185,7 +181,6 @@ public class LogoViewBinderUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testDefaultGoogleLogo() {
         Bitmap defaultLogo =
@@ -197,7 +192,6 @@ public class LogoViewBinderUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testAnimationEnabled() {
         assertEquals(true, mLogoView.getAnimationEnabledForTesting());
@@ -208,7 +202,6 @@ public class LogoViewBinderUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testSetLogoClickHandler() {
         assertNull(mLogoView.getClickHandlerForTesting());
@@ -223,7 +216,6 @@ public class LogoViewBinderUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testShowSearchProviderInitialView() {
         PropertyModel LogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
@@ -235,7 +227,6 @@ public class LogoViewBinderUnitTest {
     }
 
     @Test
-    @UiThreadTest
     @SmallTest
     public void testLoadingViewWithAnimatedLogo() {
         mLogoView.setLoadingViewVisibilityForTesting(View.INVISIBLE);

@@ -50,7 +50,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -396,7 +395,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testAllocInstanceId_reachesMaximum() {
         assertTrue(mMultiInstanceManager.mMaxInstances < mActivityPool.length);
         int index = 0;
@@ -422,7 +420,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testAllocInstanceId_destroyedInstanceMappedBackToItsTask() {
         int index = 0;
         for (; index < mMultiInstanceManager.mMaxInstances; ++index) {
@@ -438,7 +435,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testAllocInstanceId_removeTaskOnRecentScreen() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
@@ -452,7 +448,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @EnableFeatures(ChromeFeatureList.MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP)
     public void testAllocInstanceId_removeTaskOnRecentScreen_withoutDestroy() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
@@ -483,7 +478,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @DisableFeatures(ChromeFeatureList.MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP)
     public void testAllocInstanceId_removeTaskOnRecentScreen_withoutDestroy_fixDisabled() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
@@ -516,7 +510,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testAllocInstanceId_assignPassedInstanceID() {
         // Take always the the passed ID if valid. This can be from switcher UI, explicitly
         // chosen by a user.
@@ -525,7 +518,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testAllocInstanceId_ignoreWrongPassedInstanceID() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
 
@@ -535,7 +527,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testAllocInstanceId_createFreshNewInstance() {
         int index = 0;
         final int finalIndex = mMultiInstanceManager.mMaxInstances - 1;
@@ -557,7 +548,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testAllocInstance_pickMruInstance() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
@@ -579,7 +569,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testGetInstanceInfo_size() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
@@ -603,7 +592,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testGetInstanceInfo_currentInfoAtTop() {
         // Ensure the single instance at non-zero position is handled okay.
         assertEquals(2, allocInstanceIndex(2, mActivityTask56));
@@ -625,7 +613,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testCurrentInstanceId() {
         // Ensure the single instance at non-zero position is handled okay.
         int expected = 2;
@@ -636,7 +623,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testSelectedTabUpdatesInstanceInfo() {
         when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
@@ -726,7 +712,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testTabEventsUpdatesTabCounts() {
         when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
@@ -804,7 +789,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testZeroNormalTabClearsUrlTitle() {
         when(mTabModelOrchestratorSupplier.get()).thenReturn(mTabModelOrchestrator);
         when(mTabModelOrchestrator.getTabModelSelector()).thenReturn(mTabModelSelector);
@@ -876,7 +860,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Config(sdk = 31)
     public void testGetWindowIdsOfRunningTabbedActivities() {
         // Create 1 activity that is not a ChromeTabbedActivity and 2 ChromeTabbedActivity's.
@@ -1035,7 +1018,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_calledWithDesiredParameters() {
@@ -1062,7 +1044,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_notCalled() {
         MultiInstanceManagerApi31 multiInstanceManager1 =
@@ -1087,7 +1068,6 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_BeyondMaxWindows_CallsOnly_OpenNewWindow() {
@@ -1117,7 +1097,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @UiThreadTest
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = 31)
     public void testTabMove_MoveTabToCurrentWindow_calledWithDesiredParameters() {
@@ -1142,7 +1121,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @UiThreadTest
     @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToWindow_notCalled() {
         int tabAtIndex = 0;
@@ -1162,7 +1140,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @UiThreadTest
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabAction_WithTabIndex_success() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
@@ -1184,7 +1161,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @UiThreadTest
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabAction_WithNonExistantInstance_success() {
@@ -1233,7 +1209,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @UiThreadTest
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = 31)
     public void testCloseChromeWindowIfEmpty_closed() {
@@ -1252,7 +1227,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @UiThreadTest
     @EnableFeatures({
         ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
         ChromeFeatureList.DRAG_DROP_TAB_TEARING
@@ -1275,7 +1249,6 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @UiThreadTest
     @DisableFeatures({
         ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
         ChromeFeatureList.DRAG_DROP_TAB_TEARING

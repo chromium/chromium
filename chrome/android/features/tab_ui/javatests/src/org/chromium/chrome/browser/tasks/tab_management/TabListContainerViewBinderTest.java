@@ -30,6 +30,7 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -42,7 +43,6 @@ import org.mockito.Spy;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.MathUtils;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;

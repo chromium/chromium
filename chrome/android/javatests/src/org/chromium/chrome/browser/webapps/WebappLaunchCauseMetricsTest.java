@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
 
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -22,7 +23,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;

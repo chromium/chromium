@@ -25,7 +25,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -55,7 +54,6 @@ public class ScrollCaptureManagerTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testObserveTab() {
         Tab tab = mock(Tab.class);
         InOrder inOrder = Mockito.inOrder(mTab, tab, mScrollCaptureManagerDelegateMock);
@@ -75,7 +73,6 @@ public class ScrollCaptureManagerTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testContentChange() {
         View view = mock(View.class);
         View anotherView = mock(View.class);
@@ -105,7 +102,6 @@ public class ScrollCaptureManagerTest {
 
     @Test
     @SmallTest
-    @UiThreadTest
     public void testDestroy() {
         View view = mock(View.class);
         InOrder inOrder = Mockito.inOrder(mTab, mScrollCaptureManagerDelegateMock);
