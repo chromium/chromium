@@ -52,7 +52,7 @@ _COMPILE_TARGET = _nodes_lib.create_unscoped_node_type("targets|compile-target")
 
 # A collection of compile targets to build and tests to run with optional
 # modifications
-_BUNDLE = _nodes_lib.create_unscoped_node_type("targets|bundle", allow_unnamed = True)
+_BUNDLE = _nodes_lib.create_unscoped_node_type("targets|bundle", allow_empty_id = True)
 
 nodes = struct(
     BINARY = _BINARY,
