@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] checkbox label with embedded combobox (span)
-  assert_equals: <input type="checkbox" data-expectedlabel="Flash the screen 3 times" data-testname="checkbox label with embedded combobox (span)" class="ex"> expected "Flash the screen 3 times" but got "Flash the screen times"
-[FAIL] checkbox label with embedded combobox (div)
-  assert_equals: <input type="checkbox" data-expectedlabel="Flash the screen 3 times" data-testname="checkbox label with embedded combobox (div)" class="ex"> expected "Flash the screen 3 times" but got "Flash the screen times"
-Harness: the test ran to completion.
-
