@@ -10,13 +10,14 @@
 
 namespace blink {
 
-SnapEvent* SnapEvent::Create(const AtomicString& type,
-                             HeapVector<Member<Node>>& targets) {
-  return MakeGarbageCollected<SnapEvent>(type, targets);
+SnapEventDeprecated* SnapEventDeprecated::Create(
+    const AtomicString& type,
+    HeapVector<Member<Node>>& targets) {
+  return MakeGarbageCollected<SnapEventDeprecated>(type, targets);
 }
 
-SnapEvent::SnapEvent(const AtomicString& type,
-                     HeapVector<Member<Node>>& targets)
+SnapEventDeprecated::SnapEventDeprecated(const AtomicString& type,
+                                         HeapVector<Member<Node>>& targets)
     : Event(type, Bubbles::kNo, Cancelable::kNo),
       snap_targets_(StaticNodeList::Adopt(targets)) {}
 

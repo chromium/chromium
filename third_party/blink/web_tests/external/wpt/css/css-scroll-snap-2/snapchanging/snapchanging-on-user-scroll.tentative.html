@@ -81,7 +81,7 @@
             y: snap_area_2.offsetTop
           }
         };
-        await test_snap_event(t, test_data, "snapchanging");
+        await test_snap_event_deprecated(t, test_data, "snapchanging");
       }, "touch scrolling fires snapchanging.");
 
       // Wheel scroll test.
@@ -100,7 +100,7 @@
             y: snap_area_2.offsetTop
           }
         };
-        await test_snap_event(t, test_data, "snapchanging");
+        await test_snap_event_deprecated(t, test_data, "snapchanging");
       }, "mouse wheel scroll triggers snapchanging.");
 
       // Scrollbar drag test.
@@ -127,7 +127,7 @@
              y: snap_area_2.offsetTop
           }
          };
-        await test_snap_event(t, test_data, "snapchanging");
+        await test_snap_event_deprecated(t, test_data, "snapchanging");
       }, "scrollbar dragging fires snapchanging.");
 
       // Keyboard test.
@@ -145,7 +145,7 @@
              y: snap_area_2.offsetTop
           }
          };
-        await test_snap_event(t, test_data, "snapchanging");
+        await test_snap_event_deprecated(t, test_data, "snapchanging");
       }, "keyboard scroll triggers snapchanging.");
 
       // Touch scroll test: peek at snap_area_2 and then drag back to
@@ -174,8 +174,8 @@
           .send();
         let evts = await evts_promise;
         assert_equals(evts.length, 2, "2 snapchanging events are seens");
-        assertSnapEvent(evts[0], [snap_area_2.id]);
-        assertSnapEvent(evts[1], [snap_area_1.id]);
+        assertSnapEventDeprecated(evts[0], [snap_area_2.id]);
+        assertSnapEventDeprecated(evts[1], [snap_area_1.id]);
       }, "snapchanging fires as scroll moves through different snap targets.");
 
     // snapchanging doesn't fire test.

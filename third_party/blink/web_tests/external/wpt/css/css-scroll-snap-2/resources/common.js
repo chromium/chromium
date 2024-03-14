@@ -8,7 +8,8 @@ function checkSnapEventSupport(event_type) {
   }
 }
 
-function assertSnapEvent(evt, expected_ids) {
+// This function is deprecated. It tests a deprecated SnapEvent interface.
+function assertSnapEventDeprecated(evt, expected_ids) {
   assert_equals(evt.bubbles, false, "snap events don't bubble");
   assert_false(evt.cancelable, "snap events are not cancelable.");
   const actual = Array.from(evt.snapTargets, el => el.id).join(",");
@@ -16,6 +17,7 @@ function assertSnapEvent(evt, expected_ids) {
   assert_equals(actual, expected, "snap event supplied expected targets");
 }
 
+// This function is deprecated. It tests a deprecated SnapEvent interface.
 // This function holds logic intended to be used by tests for scroll snap
 // events.
 // |test_data| should contain:
@@ -29,7 +31,7 @@ function assertSnapEvent(evt, expected_ids) {
 //                              should be after scrolling function has been
 //                              executed.
 // |event_type|: should be "snapchanged" or "snapchanging".
-async function test_snap_event(test, test_data, event_type) {
+async function test_snap_event_deprecated(test, test_data, event_type) {
   checkSnapEventSupport(event_type);
   await waitForScrollReset(test, test_data.scroller);
 
@@ -40,7 +42,7 @@ async function test_snap_event(test, test_data, event_type) {
   await test_data.scrolling_function();
   let evt = await event_promise;
 
-  assertSnapEvent(evt, test_data.expected_snap_targets);
+  assertSnapEventDeprecated(evt, test_data.expected_snap_targets);
   assert_approx_equals(test_data.scroller.scrollTop,
     test_data.expected_scroll_offsets.y, 1,
     "vertical scroll offset mismatch.");
@@ -50,7 +52,7 @@ async function test_snap_event(test, test_data, event_type) {
 }
 
 async function test_snapchanged(test, test_data) {
-  await test_snap_event(test, test_data, "snapchanged");
+  await test_snap_event_deprecated(test, test_data, "snapchanged");
 }
 
 function waitForEventUntil(event_target, event_type, wait_until) {

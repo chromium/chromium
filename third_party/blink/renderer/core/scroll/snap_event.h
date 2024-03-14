@@ -19,13 +19,14 @@ namespace blink {
 // SnapEvents are sent to a scroller when it snaps to a different element from
 // the element to which it was previously snapped along either axis.
 // https://drafts.csswg.org/css-scroll-snap-2/#snapchanged-and-snapchanging
-class SnapEvent : public Event {
+class SnapEventDeprecated : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SnapEvent* Create(const AtomicString& type,
-                           HeapVector<Member<Node>>& targets);
-  SnapEvent(const AtomicString& type, HeapVector<Member<Node>>& targets);
+  static SnapEventDeprecated* Create(const AtomicString& type,
+                                     HeapVector<Member<Node>>& targets);
+  SnapEventDeprecated(const AtomicString& type,
+                      HeapVector<Member<Node>>& targets);
 
   StaticNodeList* snapTargets() { return snap_targets_.Get(); }
 

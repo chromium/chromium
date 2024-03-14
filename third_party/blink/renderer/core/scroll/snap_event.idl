@@ -5,6 +5,6 @@
 [
     Exposed=Window,
     RuntimeEnabled=CSSScrollSnapEvents
-] interface SnapEvent : Event {
+] interface SnapEventDeprecated : Event {
     readonly attribute NodeList snapTargets;
 };
