@@ -9,16 +9,18 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "components/plus_addresses/plus_address_http_client.h"
+#include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses {
 
 FakePlusAddressService::FakePlusAddressService()
-    : PlusAddressService(/*identity_manager=*/nullptr,
-                         /*pref_service=*/nullptr,
-                         /*plus_address_http_client=*/nullptr,
-                         /*webdata_service=*/nullptr) {}
+    : PlusAddressService(
+          /*identity_manager=*/nullptr,
+          /*pref_service=*/nullptr,
+          std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
+          /*webdata_service=*/nullptr) {}
 
 FakePlusAddressService::~FakePlusAddressService() = default;
 

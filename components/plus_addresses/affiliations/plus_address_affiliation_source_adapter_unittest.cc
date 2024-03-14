@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/affiliations/core/browser/mock_affiliation_source.h"
+#include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,10 +29,11 @@ using ::testing::UnorderedElementsAreArray;
 class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
   PlusAddressAffiliationSourceAdapterTest()
-      : service_(/*identity_manager=*/nullptr,
-                 /*pref_service=*/nullptr,
-                 /*plus_address_http_client=*/nullptr,
-                 /*webdata_service=*/nullptr),
+      : service_(
+            /*identity_manager=*/nullptr,
+            /*pref_service=*/nullptr,
+            std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
+            /*webdata_service=*/nullptr),
         adapter_(std::make_unique<PlusAddressAffiliationSourceAdapter>(
             &service_,
             &mock_source_observer_)) {}
