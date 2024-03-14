@@ -75,9 +75,6 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
       const webrtc::VideoEncoder::RateControlParameters& parameters) override;
   EncoderInfo GetEncoderInfo() const override;
 
-  // Returns true if there's VP9 HW support for spatial layers.
-  static bool Vp9HwSupportForSpatialLayers();
-
   void SetErrorCallbackForTesting(
       WTF::CrossThreadOnceClosure error_callback_for_testing) {
     error_callback_for_testing_ = std::move(error_callback_for_testing);
