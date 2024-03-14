@@ -113,16 +113,19 @@ suite('NetworkNetworkApnlistTest', function() {
 
     const propertyList = apnlist.$$('network-property-list-mojo');
     const button = apnlist.$$('#saveButton');
+    const attachApnToggle = apnlist.$$('#attachApnControl');
 
     assertFalse(selectEl.disabled);
     assertFalse(propertyList.disabled);
     assertFalse(button.disabled);
+    assertFalse(attachApnToggle.disabled);
 
     apnlist.disabled = true;
 
     assertTrue(selectEl.disabled);
     assertTrue(propertyList.disabled);
     assertTrue(button.disabled);
+    assertTrue(attachApnToggle.disabled);
   });
 
   test('Select different database APN', async function() {

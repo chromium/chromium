@@ -1800,6 +1800,10 @@ export class SettingsInternetDetailPageElement extends
 
 
   private onApnRowClicked_(): void {
+    if (this.disabled_) {
+      return;
+    }
+
     if (!this.isCellular_(this.managedProperties_)) {
       console.error(
           'APN row should only be visible when cellular is available.');

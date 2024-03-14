@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {CellularRoamingToggleButtonElement, NetworkProxySectionElement, PasspointRemoveDialogElement, SettingsInternetDetailPageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement, InternetPageBrowserProxyImpl, LocalizedLinkElement, Router, routes, settingMojom, SettingsToggleButtonElement, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import {CrDialogElement, CrLinkRowElement, InternetPageBrowserProxyImpl, LocalizedLinkElement, Router, routes, settingMojom, SettingsToggleButtonElement, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
@@ -1700,9 +1700,7 @@ suite('<settings-internet-detail-subpage>', () => {
           `Page disabled when inhibited, ApnRevamp enabled is: ${
               isApnRevampEnabled}`,
           async () => {
-            loadTimeData.overrideValues({
-              apnRevamp: isApnRevampEnabled,
-            });
+            loadTimeData.overrideValues({isApnRevampEnabled});
             init();
 
             mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
@@ -1761,11 +1759,11 @@ suite('<settings-internet-detail-subpage>', () => {
                 internetDetailPage.shadowRoot!
                     .querySelector<NetworkChooseMobileElement>(
                         'network-choose-mobile');
-            let apnList = null;
-            if (isApnRevampEnabled) {
-              // TODO(b/318561207): Get <apn-list> element.
-            } else {
-              apnList =
+            let apnElement: CrLinkRowElement|NetworkApnListElement|null =
+                internetDetailPage.shadowRoot!.querySelector<CrLinkRowElement>(
+                    '#apnSubpageButton');
+            if (!isApnRevampEnabled) {
+              apnElement =
                   internetDetailPage.shadowRoot!
                       .querySelector<NetworkApnListElement>('network-apnlist');
             }
@@ -1783,9 +1781,7 @@ suite('<settings-internet-detail-subpage>', () => {
 
             assertTrue(!!allowDataRoamingButton);
             assertTrue(!!networkChooseMobile);
-            if (apnList) {
-              assertTrue(!!apnList);
-            }
+            assertTrue(!!apnElement);
             assertTrue(!!networkIpConfig);
             assertTrue(!!networkNameservers);
             assertTrue(!!networkProxySection);
@@ -1797,9 +1793,7 @@ suite('<settings-internet-detail-subpage>', () => {
             assertFalse(advancedFields.disabled);
             assertFalse(deviceFields.disabled);
             assertFalse(networkChooseMobile.disabled);
-            if (apnList) {
-              assertFalse(apnList.disabled);
-            }
+            assertFalse(apnElement.disabled);
             assertFalse(networkIpConfig.disabled);
             assertFalse(networkNameservers.disabled);
             assertFalse(networkProxySection.disabled);
@@ -1825,9 +1819,7 @@ suite('<settings-internet-detail-subpage>', () => {
             assertTrue(advancedFields.disabled);
             assertTrue(deviceFields.disabled);
             assertTrue(networkChooseMobile.disabled);
-            if (apnList) {
-              assertTrue(apnList.disabled);
-            }
+            assertTrue(apnElement.disabled);
             assertTrue(networkIpConfig.disabled);
             assertTrue(networkNameservers.disabled);
             assertTrue(networkProxySection.disabled);
@@ -1852,9 +1844,7 @@ suite('<settings-internet-detail-subpage>', () => {
             assertFalse(advancedFields.disabled);
             assertFalse(deviceFields.disabled);
             assertFalse(networkChooseMobile.disabled);
-            if (apnList) {
-              assertFalse(apnList.disabled);
-            }
+            assertFalse(apnElement.disabled);
             assertFalse(networkIpConfig.disabled);
             assertFalse(networkNameservers.disabled);
             assertFalse(networkProxySection.disabled);
