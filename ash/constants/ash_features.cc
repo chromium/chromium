@@ -3301,10 +3301,6 @@ bool IsCrosPrivacyHubAppPermissionsV2Enabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissionsV2);
 }
 
-bool IsCrosPrivacyHubEnabled() {
-  return true;
-}
-
 bool IsCrosPrivacyHubLocationEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHub);
 }

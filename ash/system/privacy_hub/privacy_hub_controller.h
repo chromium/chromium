@@ -66,7 +66,7 @@ class ASH_EXPORT PrivacyHubController {
   // Gets the geolocation controller.
   GeolocationPrivacySwitchController* geolocation_controller();
 
-  CameraPrivacySwitchSynchronizer* CameraSynchronizerForTest();
+  CameraPrivacySwitchController* CameraSynchronizerForTest();
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -105,7 +105,6 @@ class ASH_EXPORT PrivacyHubController {
   void InitUsingCameraLEDFallback();
 
   std::unique_ptr<CameraPrivacySwitchController> camera_controller_;
-  std::unique_ptr<CameraPrivacySwitchDisabled> camera_disabled_;
   std::unique_ptr<MicrophonePrivacySwitchController> microphone_controller_;
   std::unique_ptr<SpeakOnMuteDetectionPrivacySwitchController>
       speak_on_mute_controller_;

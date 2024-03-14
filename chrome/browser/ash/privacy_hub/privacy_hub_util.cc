@@ -28,9 +28,6 @@
 namespace ash::privacy_hub_util {
 
 void SetFrontend(PrivacyHubDelegate* ptr) {
-  if (!features::IsCrosPrivacyHubEnabled()) {
-    return;
-  }
   PrivacyHubController* const controller = PrivacyHubController::Get();
   if (controller != nullptr) {
     // Controller may not be available when used from a test.
@@ -51,10 +48,6 @@ bool ShouldForceDisableCameraSwitch() {
 }
 
 void SetUpCameraCountObserver() {
-  if (!features::IsCrosPrivacyHubEnabled()) {
-    return;
-  }
-
   auto* camera_controller = CameraPrivacySwitchController::Get();
   CHECK(camera_controller);
 
@@ -74,8 +67,7 @@ void SetUpCameraCountObserver() {
 
 // Notifies the Privacy Hub controller.
 void TrackGeolocationAttempted(const std::string& name) {
-  if (!features::IsCrosPrivacyHubEnabled() ||
-      !features::IsCrosPrivacyHubLocationEnabled()) {
+  if (!features::IsCrosPrivacyHubLocationEnabled()) {
     return;
   }
   GeolocationPrivacySwitchController* controller =
@@ -88,8 +80,7 @@ void TrackGeolocationAttempted(const std::string& name) {
 
 // Notifies the Privacy Hub controller.
 void TrackGeolocationRelinquished(const std::string& name) {
-  if (!features::IsCrosPrivacyHubEnabled() ||
-      !features::IsCrosPrivacyHubLocationEnabled()) {
+  if (!features::IsCrosPrivacyHubLocationEnabled()) {
     return;
   }
   GeolocationPrivacySwitchController* controller =
@@ -122,9 +113,6 @@ std::optional<bool> camera_led_fallback_for_testing{};
 // TODO(b/289510726): remove when all cameras fully support the software
 // switch.
 bool UsingCameraLEDFallback() {
-  if (!features::IsCrosPrivacyHubEnabled()) {
-    return false;
-  }
   if (!camera_led_fallback_for_testing.has_value()) {
     CameraPrivacySwitchController* const controller =
         CameraPrivacySwitchController::Get();

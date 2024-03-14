@@ -143,9 +143,6 @@ class PrivacyHubCameraTestBase : public AshTestBase,
     fake_video_conference_tray_controller_.reset();
   }
 
-  CameraPrivacySwitchSynchronizer* Synchronizer() {
-    return PrivacyHubController::Get()->CameraSynchronizerForTest();
-  }
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -153,7 +150,9 @@ class PrivacyHubCameraTestBase : public AshTestBase,
     auto mock_switch = std::make_unique<::testing::NiceMock<MockSwitchAPI>>();
     mock_switch_ = mock_switch.get();
 
-    Synchronizer()->SetCameraPrivacySwitchAPIForTest(std::move(mock_switch));
+    PrivacyHubController::Get()
+        ->camera_controller()
+        ->SetCameraPrivacySwitchAPIForTest(std::move(mock_switch));
 
     // Set up the fake `SensorDisabledNotificationDelegate`.
     // In production it is set only if Privacy Hub is enabled.
@@ -235,10 +234,14 @@ TEST_P(PrivacyHubCameraSynchronizerTest, OnCameraSoftwarePrivacySwitchChanged) {
               SetCameraSWPrivacySwitch(CameraSWPrivacySwitchSetting::kEnabled))
       .Times(::testing::Exactly(3));
   SetUserPref(true);
-  Synchronizer()->OnCameraSWPrivacySwitchStateChanged(
-      cros::mojom::CameraPrivacySwitchState::UNKNOWN);
-  Synchronizer()->OnCameraSWPrivacySwitchStateChanged(
-      cros::mojom::CameraPrivacySwitchState::ON);
+  PrivacyHubController::Get()
+      ->camera_controller()
+      ->OnCameraSWPrivacySwitchStateChanged(
+          cros::mojom::CameraPrivacySwitchState::UNKNOWN);
+  PrivacyHubController::Get()
+      ->camera_controller()
+      ->OnCameraSWPrivacySwitchStateChanged(
+          cros::mojom::CameraPrivacySwitchState::ON);
 
   if (IsVideoConferenceEnabled()) {
     // When `prefs::kUserCameraAllowed` is false and CrOS Camera Service
@@ -249,10 +252,14 @@ TEST_P(PrivacyHubCameraSynchronizerTest, OnCameraSoftwarePrivacySwitchChanged) {
                                    CameraSWPrivacySwitchSetting::kDisabled))
         .Times(::testing::Exactly(3));
     SetUserPref(false);
-    Synchronizer()->OnCameraSWPrivacySwitchStateChanged(
-        cros::mojom::CameraPrivacySwitchState::UNKNOWN);
-    Synchronizer()->OnCameraSWPrivacySwitchStateChanged(
-        cros::mojom::CameraPrivacySwitchState::OFF);
+    PrivacyHubController::Get()
+        ->camera_controller()
+        ->OnCameraSWPrivacySwitchStateChanged(
+            cros::mojom::CameraPrivacySwitchState::UNKNOWN);
+    PrivacyHubController::Get()
+        ->camera_controller()
+        ->OnCameraSWPrivacySwitchStateChanged(
+            cros::mojom::CameraPrivacySwitchState::OFF);
 
     // When the SW privacy switch states match in Privacy Hub and CrOS Camera
     // Service, `SetCameraSWPrivacySwitch()` should not be called.
@@ -263,15 +270,19 @@ TEST_P(PrivacyHubCameraSynchronizerTest, OnCameraSoftwarePrivacySwitchChanged) {
     // communicates the SW privacy switch state as OFF, the states match and
     // `SetCameraSWPrivacySwitch()` should not be called.
     SetUserPref(true);
-    Synchronizer()->OnCameraSWPrivacySwitchStateChanged(
-        cros::mojom::CameraPrivacySwitchState::OFF);
+    PrivacyHubController::Get()
+        ->camera_controller()
+        ->OnCameraSWPrivacySwitchStateChanged(
+            cros::mojom::CameraPrivacySwitchState::OFF);
 
     // When `prefs::kUserCameraAllowed` is false and CrOS Camera Service
     // communicates the SW privacy switch state as ON, the states match and
     // `SetCameraSWPrivacySwitch()` should not be called.
     SetUserPref(false);
-    Synchronizer()->OnCameraSWPrivacySwitchStateChanged(
-        cros::mojom::CameraPrivacySwitchState::ON);
+    PrivacyHubController::Get()
+        ->camera_controller()
+        ->OnCameraSWPrivacySwitchStateChanged(
+            cros::mojom::CameraPrivacySwitchState::ON);
   }
 }
 

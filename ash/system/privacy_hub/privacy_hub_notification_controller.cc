@@ -98,14 +98,11 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
   // switch.
   // Note: if the privacy hub is not enabled, this object may still exist as it
   // is used by privacy indicators as well.
-  bool use_camera_led_fallback =
-      features::IsCrosPrivacyHubEnabled() &&
-      privacy_hub_controller->UsingCameraLEDFallback();
 
   std::vector<int> camera_messages;
   std::vector<int> combined_messages;
 
-  if (use_camera_led_fallback) {
+  if (privacy_hub_controller->UsingCameraLEDFallback()) {
     camera_messages = {
         IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_DISCLAIMER,
         IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME_WITH_DISCLAIMER,

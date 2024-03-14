@@ -14,6 +14,7 @@
 #include "ash/system/privacy_hub/geolocation_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/speak_on_mute_detection_privacy_switch_controller.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/types/pass_key.h"
@@ -43,26 +44,12 @@ PrivacyHubController::CreatePrivacyHubController() {
   privacy_hub_controller->geolocation_switch_controller_ =
       std::make_unique<GeolocationPrivacySwitchController>();
 
-  if (features::IsCrosPrivacyHubEnabled()) {
-    privacy_hub_controller->camera_controller_ =
-        std::make_unique<CameraPrivacySwitchController>();
-    privacy_hub_controller->microphone_controller_ =
-        std::make_unique<MicrophonePrivacySwitchController>();
-    privacy_hub_controller->speak_on_mute_controller_ =
-        std::make_unique<SpeakOnMuteDetectionPrivacySwitchController>();
-
-    return privacy_hub_controller;
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kVideoConference)) {
-    privacy_hub_controller->camera_disabled_ =
-        std::make_unique<CameraPrivacySwitchDisabled>();
-  }
-
-  // TODO(b/264388354) Until PrivacyHub is enabled for all keep this around
-  // for the already existing microphone notifications to continue working.
+  privacy_hub_controller->camera_controller_ =
+      std::make_unique<CameraPrivacySwitchController>();
   privacy_hub_controller->microphone_controller_ =
       std::make_unique<MicrophonePrivacySwitchController>();
+  privacy_hub_controller->speak_on_mute_controller_ =
+      std::make_unique<SpeakOnMuteDetectionPrivacySwitchController>();
 
   return privacy_hub_controller;
 }
@@ -180,12 +167,10 @@ bool PrivacyHubController::CrosToArcGeolocationPermissionMapping(
   }
 }
 
-CameraPrivacySwitchSynchronizer*
+CameraPrivacySwitchController*
 PrivacyHubController::CameraSynchronizerForTest() {
-  return camera_controller() ? static_cast<CameraPrivacySwitchSynchronizer*>(
-                                   camera_controller())
-                             : static_cast<CameraPrivacySwitchSynchronizer*>(
-                                   camera_disabled_.get());
+  CHECK(camera_controller());
+  return camera_controller();
 }
 
 ScopedLedFallbackForTesting::ScopedLedFallbackForTesting(bool value)

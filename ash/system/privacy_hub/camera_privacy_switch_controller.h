@@ -33,16 +33,20 @@ class CameraPrivacySwitchAPI {
   virtual void SetCameraSWPrivacySwitch(CameraSWPrivacySwitchSetting) = 0;
 };
 
-class ASH_EXPORT CameraPrivacySwitchSynchronizer
+// A singleton class that acts as a bridge between Privacy Hub UI and backend.
+// It listens on both ends and changes UI to reflect changes in
+// the backend and notifies the backend of changes in the user
+// preference setting.
+class ASH_EXPORT CameraPrivacySwitchController
     : public SessionObserver,
-      public media::CameraPrivacySwitchObserver {
+      public media::CameraPrivacySwitchObserver,
+      public base::SupportsUserData {
  public:
-  CameraPrivacySwitchSynchronizer();
-  CameraPrivacySwitchSynchronizer(const CameraPrivacySwitchSynchronizer&) =
-      delete;
-  CameraPrivacySwitchSynchronizer& operator=(
-      const CameraPrivacySwitchSynchronizer&) = delete;
-  ~CameraPrivacySwitchSynchronizer() override;
+  CameraPrivacySwitchController();
+  CameraPrivacySwitchController(const CameraPrivacySwitchController&) = delete;
+  CameraPrivacySwitchController& operator=(
+      const CameraPrivacySwitchController&) = delete;
+  ~CameraPrivacySwitchController() override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -72,41 +76,6 @@ class ASH_EXPORT CameraPrivacySwitchSynchronizer
   void SetForceDisableCameraAccess(bool value);
   bool IsCameraAccessForceDisabled() const;
 
- protected:
-  // Sets the value of the global camera permission in the camera backend.
-  void SetCameraSWPrivacySwitch(CameraSWPrivacySwitchSetting value);
-
-  // Sets the value of the user pref in the pref service.
-  void SetUserSwitchPreference(CameraSWPrivacySwitchSetting value);
-
- private:
-  virtual void OnPreferenceChangedImpl() = 0;
-
-  PrefService& prefs();
-  void RestorePreviousPrefValueMaybe();
-  void StorePreviousPrefValue();
-
-  raw_ptr<PrivacyHubDelegate> frontend_ = nullptr;
-  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
-  bool is_camera_observer_added_ = false;
-  bool force_disable_camera_access_ = false;
-};
-
-// A singleton class that acts as a bridge between Privacy Hub UI and backend.
-// It listens on both ends and changes UI to reflect changes in
-// the backend and notifies the backend of changes in the user
-// preference setting.
-class ASH_EXPORT CameraPrivacySwitchController
-    : public CameraPrivacySwitchSynchronizer,
-      public base::SupportsUserData {
- public:
-  CameraPrivacySwitchController();
-  CameraPrivacySwitchController(const CameraPrivacySwitchController&) = delete;
-  CameraPrivacySwitchController& operator=(
-      const CameraPrivacySwitchController&) = delete;
-  ~CameraPrivacySwitchController() override;
-
   // Gets the instance from Shell.
   static CameraPrivacySwitchController* Get();
 
@@ -126,9 +95,15 @@ class ASH_EXPORT CameraPrivacySwitchController
   bool UsingCameraLEDFallback();
 
  private:
-  // Handles changes in the user pref ( e.g. toggling the camera switch on
-  // Privacy Hub UI).
-  void OnPreferenceChangedImpl() override;
+  // Sets the value of the global camera permission in the camera backend.
+  void SetCameraSWPrivacySwitch(CameraSWPrivacySwitchSetting value);
+
+  // Sets the value of the user pref in the pref service.
+  void SetUserSwitchPreference(CameraSWPrivacySwitchSetting value);
+
+  PrefService& prefs();
+  void RestorePreviousPrefValueMaybe();
+  void StorePreviousPrefValue();
 
   void ShowNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void RemoveNotification() VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -136,6 +111,12 @@ class ASH_EXPORT CameraPrivacySwitchController
   void ScheduleNotificationRemoval() VALID_CONTEXT_REQUIRED(sequence_checker_);
   bool InNotificationExtensionPeriod()
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  raw_ptr<PrivacyHubDelegate> frontend_ = nullptr;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
+  bool is_camera_observer_added_ = false;
+  bool force_disable_camera_access_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -146,16 +127,6 @@ class ASH_EXPORT CameraPrivacySwitchController
       last_active_notification_update_time_;
 
   base::WeakPtrFactory<CameraPrivacySwitchController> weak_ptr_factory_{this};
-};
-
-// A class that makes sure the camera is initially enabled in case the Privacy
-// Hub feature is disabled.
-class ASH_EXPORT CameraPrivacySwitchDisabled
-    : public CameraPrivacySwitchSynchronizer {
- private:
-  // Handles changes in the user pref ( e.g. toggling the camera switch on
-  // Privacy Hub UI).
-  void OnPreferenceChangedImpl() override;
 };
 
 }  // namespace ash

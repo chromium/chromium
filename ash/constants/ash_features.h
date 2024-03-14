@@ -956,7 +956,6 @@ bool IsContinuousOverviewScrollAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCoralFeatureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubAppPermissionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubAppPermissionsV2Enabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubLocationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCryptauthAttestationSyncingEnabled();

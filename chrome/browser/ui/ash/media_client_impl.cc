@@ -569,9 +569,8 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_id,
 
   // Device is active and switch state is ON
 
-  if (ash::features::IsCrosPrivacyHubEnabled() &&
-      camera_sw_privacy_switch_state_ ==
-          cros::mojom::CameraPrivacySwitchState::ON) {
+  if (camera_sw_privacy_switch_state_ ==
+      cros::mojom::CameraPrivacySwitchState::ON) {
     // SW switch disables the camera as well, hence no notification.
     return;
   }

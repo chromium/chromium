@@ -71,11 +71,9 @@ std::optional<std::u16string> MapAppIdToShortName(
 // when the application starts using the camera and false when the application
 // stops using the camera.
 void SendActiveCameraApplicationsChangedNotification(bool application_added) {
-  if (ash::features::IsCrosPrivacyHubEnabled()) {
-    auto* camera_controller = ash::CameraPrivacySwitchController::Get();
-    CHECK(camera_controller);
-    camera_controller->ActiveApplicationsChanged(application_added);
-  }
+  auto* camera_controller = ash::CameraPrivacySwitchController::Get();
+  CHECK(camera_controller);
+  camera_controller->ActiveApplicationsChanged(application_added);
 }
 
 }  // namespace
