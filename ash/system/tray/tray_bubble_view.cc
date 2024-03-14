@@ -38,6 +38,7 @@
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -251,6 +252,26 @@ void TrayBubbleView::RerouteEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   }
 }
 
+void TrayBubbleView::RerouteEventHandler::OnMouseEvent(
+    ui::MouseEvent* mouse_event) {
+  if (tray_bubble_view_->set_can_activate_on_click_or_tap_ &&
+      mouse_event->type() == ui::ET_MOUSE_PRESSED) {
+    tray_bubble_view_->SetCanActivate(true);
+  }
+}
+
+void TrayBubbleView::RerouteEventHandler::OnTouchEvent(
+    ui::TouchEvent* mouse_event) {
+  if (!tray_bubble_view_->set_can_activate_on_click_or_tap_) {
+    return;
+  }
+
+  if (tray_bubble_view_->set_can_activate_on_click_or_tap_ &&
+      mouse_event->type() == ui::ET_MOUSE_PRESSED) {
+    tray_bubble_view_->SetCanActivate(true);
+  }
+}
+
 TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     : BubbleDialogDelegateView(init_params.anchor_view,
                                GetArrowAlignment(init_params.shelf_alignment)),
@@ -259,6 +280,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
       delegate_(init_params.delegate),
       preferred_width_(init_params.preferred_width),
       is_gesture_dragging_(false),
+      set_can_activate_on_click_or_tap_(
+          init_params.set_can_activate_on_click_or_tap),
       mouse_actively_entered_(false) {
   // We set the dialog role because views::BubbleDialogDelegate defaults this to
   // an alert dialog. This would make screen readers announce the whole of the

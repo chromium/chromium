@@ -137,6 +137,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     int preferred_width = 0;
     int max_height = 0;
     bool close_on_deactivate = true;
+    // Indicates whether the tray bubble will become activatable when it is
+    // clicked.
+    bool set_can_activate_on_click_or_tap = false;
     // Indicates whether tray bubble view should add a pre target event handler.
     bool reroute_event_handler = false;
     int corner_radius = kBubbleCornerRadius;
@@ -306,6 +309,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
     // Overridden from ui::EventHandler
     void OnKeyEvent(ui::KeyEvent* event) override;
+    void OnMouseEvent(ui::MouseEvent* event) override;
+    void OnTouchEvent(ui::TouchEvent* event) override;
 
    private:
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
@@ -317,6 +322,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   base::WeakPtr<Delegate> delegate_;
   int preferred_width_;
   bool is_gesture_dragging_;
+  bool set_can_activate_on_click_or_tap_;
 
   // True once the mouse cursor was actively moved by the user over the bubble.
   // Only then the OnMouseExitedView() event will get passed on to listeners.
