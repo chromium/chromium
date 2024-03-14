@@ -810,6 +810,10 @@ public final class ProductionSupportedFlagList {
                 "Enable the WebView Media Integrity API. Requires injection of platform-specific"
                         + " JavaScript APIs to be enabled."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION,
+                "Enable the WebView Media Integrity API as a Blink extension. Only works if"
+                        + " WebViewMediaIntegrityApi is disabled."),
+        Flag.baseFeature(
                 "PMProcessPriorityPolicy",
                 "Controls whether the priority of renderers is controlled by the performance "
                         + "manager."),

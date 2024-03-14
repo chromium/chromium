@@ -34,6 +34,7 @@ BASE_DECLARE_FEATURE(kWebViewInjectPlatformJsApis);
 extern const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria;
 BASE_DECLARE_FEATURE(kWebViewJavaJsBridgeMojo);
 BASE_DECLARE_FEATURE(kWebViewMediaIntegrityApi);
+BASE_DECLARE_FEATURE(kWebViewMediaIntegrityApiBlinkExtension);
 BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
 BASE_DECLARE_FEATURE(kWebViewMuteAudio);
 BASE_DECLARE_FEATURE(kWebViewOriginTrials);

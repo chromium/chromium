@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "android_webview/common/url_constants.h"
@@ -186,6 +187,15 @@ void AwContentRendererClient::
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillSharedAutofill)) {
     blink::WebRuntimeFeatures::EnableSharedAutofill(true);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewMediaIntegrityApiBlinkExtension) &&
+      !base::FeatureList::IsEnabled(features::kWebViewMediaIntegrityApi)) {
+    // Enable the overall android.webview namespace.
+    blink::WebRuntimeFeatures::EnableBlinkExtensionWebView(true);
+    // Enable the android.webview.getExperimentalMediaIntegrityProvider API.
+    blink::WebRuntimeFeatures::EnableBlinkExtensionWebViewMediaIntegrity(true);
   }
 }
 
