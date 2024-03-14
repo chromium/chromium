@@ -90,6 +90,7 @@ interface WaylandBufferManagerHost {
 
   // Send overlay configurations for a frame to a WaylandWindow with the
   // following |widget|, |frame_id|, and |overlays|.
+  [EstimateSize]
   CommitOverlays(gfx.mojom.AcceleratedWidget widget,
                  uint32 frame_id,
                  gfx.mojom.FrameData data,

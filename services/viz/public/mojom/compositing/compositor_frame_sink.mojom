@@ -68,7 +68,7 @@ interface CompositorFrameSink {
   // TODO(crbug.com/1141980): Investigate whether it's possible to alter the
   // CompositorFrame structure to be less likely to exceed soft message size
   // limits and remove [UnlimitedSize] here.
-  [UnlimitedSize]
+  [EstimateSize, UnlimitedSize]
   SubmitCompositorFrame(LocalSurfaceId local_surface_id,
                         CompositorFrame frame,
                         HitTestRegionList? hit_test_region_list,
