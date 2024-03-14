@@ -63,6 +63,7 @@ ParseInstallWebAppActionPerformerParams(const base::Value::Dict* params) {
     return nullptr;
   }
 
+  // TODO(b/308440474): take the concrete param for performing the action.
   auto* install_params = params->FindDict(kInstallWebAppParams);
   if (!install_params) {
     LOG(ERROR) << kInstallWebAppParams << " parameter not found.";

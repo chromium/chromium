@@ -16,6 +16,7 @@ namespace growth {
 enum class ActionType {
   kInstallWebApp = 0,
   kPinWebApp = 1,
+  kOpenUrl = 2,
 };
 
 enum class ActionResult {
