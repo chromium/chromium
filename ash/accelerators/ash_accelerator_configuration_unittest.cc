@@ -551,8 +551,13 @@ TEST_F(AshAcceleratorConfigurationTest, VerifyObserversAreNotified) {
 
 TEST_F(AshAcceleratorConfigurationTest, RemoveAccelerator) {
   EXPECT_EQ(0, observer_.num_times_accelerator_updated_called());
+  // Adding an additional kSwitchToLastUsedIme with trigger_on_press = false
+  // here to verify it will be also removed together when removing
+  // kSwitchToLastUsedIme with trigger_on_press = true.
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kSwitchToLastUsedIme},
+      {/*trigger_on_press=*/false, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
       {/*trigger_on_press=*/true, ui::VKEY_SPACE,
        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
