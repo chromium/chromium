@@ -143,7 +143,7 @@ void PersonalDataManager::Init(
   // dependencies, rather than inject them through `Init()`.
   DCHECK(!address_data_manager_) << "Don't call Init() on a TestPDM";
   address_data_manager_ = std::make_unique<AddressDataManager>(
-      profile_database, pref_service,
+      profile_database, pref_service, strike_database,
       base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
                           base::Unretained(this)),
       app_locale_);
@@ -176,18 +176,6 @@ void PersonalDataManager::Init(
   if (payments_data_manager_->IsAutofillPaymentMethodsEnabled()) {
     autofill_metrics::LogIsAutofillPaymentsCvcStorageEnabledAtStartup(
         IsPaymentCvcStorageEnabled());
-  }
-
-  if (strike_database) {
-    profile_migration_strike_database_ =
-        std::make_unique<AutofillProfileMigrationStrikeDatabase>(
-            strike_database);
-    profile_save_strike_database_ =
-        std::make_unique<AutofillProfileSaveStrikeDatabase>(strike_database);
-    profile_update_strike_database_ =
-        std::make_unique<AutofillProfileUpdateStrikeDatabase>(strike_database);
-    address_suggestion_strike_database_ =
-        std::make_unique<AddressSuggestionStrikeDatabase>(strike_database);
   }
 
   // WebDataService may not be available in tests.
@@ -233,11 +221,14 @@ void PersonalDataManager::OnURLsDeleted(
   if (!deletion_info.is_from_expiration() && deletion_info.IsAllHistory()) {
     AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_);
   }
-  if (profile_save_strike_database_) {
-    profile_save_strike_database_->ClearStrikesWithHistory(deletion_info);
+  // TODO(b/322170538): Move to ADM.
+  if (address_data_manager_->profile_save_strike_database_) {
+    address_data_manager_->profile_save_strike_database_
+        ->ClearStrikesWithHistory(deletion_info);
   }
-  if (address_suggestion_strike_database_) {
-    address_suggestion_strike_database_->ClearStrikesWithHistory(deletion_info);
+  if (address_data_manager_->address_suggestion_strike_database_) {
+    address_data_manager_->address_suggestion_strike_database_
+        ->ClearStrikesWithHistory(deletion_info);
   }
 }
 
@@ -800,125 +791,6 @@ const CreditCard* PersonalDataManager::GetServerCardForLocalCard(
   return nullptr;
 }
 
-bool PersonalDataManager::IsProfileMigrationBlocked(
-    const std::string& guid) const {
-  AutofillProfile* profile = GetProfileByGUID(guid);
-  DCHECK(profile == nullptr ||
-         profile->source() == AutofillProfile::Source::kLocalOrSyncable);
-  if (!GetProfileMigrationStrikeDatabase()) {
-    return false;
-  }
-  return GetProfileMigrationStrikeDatabase()->ShouldBlockFeature(guid);
-}
-
-void PersonalDataManager::AddStrikeToBlockProfileMigration(
-    const std::string& guid) {
-  if (!GetProfileMigrationStrikeDatabase()) {
-    return;
-  }
-  GetProfileMigrationStrikeDatabase()->AddStrike(guid);
-}
-
-void PersonalDataManager::AddMaxStrikesToBlockProfileMigration(
-    const std::string& guid) {
-  if (AutofillProfileMigrationStrikeDatabase* db =
-          GetProfileMigrationStrikeDatabase()) {
-    db->AddStrikes(db->GetMaxStrikesLimit() - db->GetStrikes(guid), guid);
-  }
-}
-
-void PersonalDataManager::RemoveStrikesToBlockProfileMigration(
-    const std::string& guid) {
-  if (!GetProfileMigrationStrikeDatabase()) {
-    return;
-  }
-  GetProfileMigrationStrikeDatabase()->ClearStrikes(guid);
-}
-
-bool PersonalDataManager::IsNewProfileImportBlockedForDomain(
-    const GURL& url) const {
-  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
-    return false;
-  }
-
-  return GetProfileSaveStrikeDatabase()->ShouldBlockFeature(url.host());
-}
-
-void PersonalDataManager::AddStrikeToBlockNewProfileImportForDomain(
-    const GURL& url) {
-  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
-    return;
-  }
-  GetProfileSaveStrikeDatabase()->AddStrike(url.host());
-}
-
-void PersonalDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
-    const GURL& url) {
-  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
-    return;
-  }
-  GetProfileSaveStrikeDatabase()->ClearStrikes(url.host());
-}
-
-bool PersonalDataManager::IsProfileUpdateBlocked(
-    const std::string& guid) const {
-  if (!GetProfileUpdateStrikeDatabase()) {
-    return false;
-  }
-  return GetProfileUpdateStrikeDatabase()->ShouldBlockFeature(guid);
-}
-
-void PersonalDataManager::AddStrikeToBlockProfileUpdate(
-    const std::string& guid) {
-  if (!GetProfileUpdateStrikeDatabase())
-    return;
-  GetProfileUpdateStrikeDatabase()->AddStrike(guid);
-}
-
-void PersonalDataManager::RemoveStrikesToBlockProfileUpdate(
-    const std::string& guid) {
-  if (!GetProfileUpdateStrikeDatabase()) {
-    return;
-  }
-  GetProfileUpdateStrikeDatabase()->ClearStrikes(guid);
-}
-
-bool PersonalDataManager::AreAddressSuggestionsBlocked(
-    FormSignature form_signature,
-    FieldSignature field_signature,
-    const GURL& gurl) const {
-  if (!GetAddressSuggestionStrikeDatabase()) {
-    return false;
-  }
-  return GetAddressSuggestionStrikeDatabase()->ShouldBlockFeature(
-      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
-                                             gurl));
-}
-
-void PersonalDataManager::AddStrikeToBlockAddressSuggestions(
-    FormSignature form_signature,
-    FieldSignature field_signature,
-    const GURL& gurl) {
-  if (!GetAddressSuggestionStrikeDatabase()) {
-    return;
-  }
-  GetAddressSuggestionStrikeDatabase()->AddStrike(
-      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
-                                             gurl));
-}
-
-void PersonalDataManager::ClearStrikesToBlockAddressSuggestions(
-    FormSignature form_signature,
-    FieldSignature field_signature,
-    const GURL& gurl) {
-  if (!GetAddressSuggestionStrikeDatabase()) {
-    return;
-  }
-  GetAddressSuggestionStrikeDatabase()->ClearStrikes(
-      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
-                                             gurl));
-}
-
 bool PersonalDataManager::IsSyncFeatureEnabledForAutofill() const {
   // TODO(crbug.com/40066949): Remove this method in favor of
   // `IsUserSelectableTypeEnabled` once ConsentLevel::kSync and
@@ -1097,50 +969,6 @@ PersonalDataManager::GetAccountStatusForTesting() const {
   return account_status_finder_
              ? account_status_finder_->GetOutcome()
              : std::optional<signin::AccountManagedStatusFinder::Outcome>();
-}
-
-AutofillProfileMigrationStrikeDatabase*
-PersonalDataManager::GetProfileMigrationStrikeDatabase() {
-  return const_cast<AutofillProfileMigrationStrikeDatabase*>(
-      std::as_const(*this).GetProfileMigrationStrikeDatabase());
-}
-
-const AutofillProfileMigrationStrikeDatabase*
-PersonalDataManager::GetProfileMigrationStrikeDatabase() const {
-  return profile_migration_strike_database_.get();
-}
-
-AutofillProfileSaveStrikeDatabase*
-PersonalDataManager::GetProfileSaveStrikeDatabase() {
-  return const_cast<AutofillProfileSaveStrikeDatabase*>(
-      std::as_const(*this).GetProfileSaveStrikeDatabase());
-}
-
-const AutofillProfileSaveStrikeDatabase*
-PersonalDataManager::GetProfileSaveStrikeDatabase() const {
-  return profile_save_strike_database_.get();
-}
-
-AutofillProfileUpdateStrikeDatabase*
-PersonalDataManager::GetProfileUpdateStrikeDatabase() {
-  return const_cast<AutofillProfileUpdateStrikeDatabase*>(
-      std::as_const(*this).GetProfileUpdateStrikeDatabase());
-}
-
-const AutofillProfileUpdateStrikeDatabase*
-PersonalDataManager::GetProfileUpdateStrikeDatabase() const {
-  return profile_update_strike_database_.get();
-}
-
-AddressSuggestionStrikeDatabase*
-PersonalDataManager::GetAddressSuggestionStrikeDatabase() {
-  return const_cast<AddressSuggestionStrikeDatabase*>(
-      std::as_const(*this).GetAddressSuggestionStrikeDatabase());
-}
-
-const AddressSuggestionStrikeDatabase*
-PersonalDataManager::GetAddressSuggestionStrikeDatabase() const {
-  return address_suggestion_strike_database_.get();
 }
 
 void PersonalDataManager::SetCreditCards(

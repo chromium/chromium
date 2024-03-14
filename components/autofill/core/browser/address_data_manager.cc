@@ -55,6 +55,7 @@ void OrderProfiles(std::vector<AutofillProfile*>& profiles,
 AddressDataManager::AddressDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     PrefService* pref_service,
+    StrikeDatabaseBase* strike_database,
     base::RepeatingClosure notify_pdm_observers,
     const std::string& app_locale)
     : notify_pdm_observers_(notify_pdm_observers),
@@ -68,6 +69,7 @@ AddressDataManager::AddressDataManager(
     webdata_service_observer_.Observe(webdata_service_.get());
   }
   SetPrefService(pref_service);
+  SetStrikeDatabase(strike_database);
 }
 
 AddressDataManager::~AddressDataManager() {
@@ -266,6 +268,125 @@ void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
   UpdateProfile(updated_profile);
 }
 
+bool AddressDataManager::IsProfileMigrationBlocked(
+    const std::string& guid) const {
+  AutofillProfile* profile = GetProfileByGUID(guid);
+  DCHECK(profile == nullptr ||
+         profile->source() == AutofillProfile::Source::kLocalOrSyncable);
+  if (!GetProfileMigrationStrikeDatabase()) {
+    return false;
+  }
+  return GetProfileMigrationStrikeDatabase()->ShouldBlockFeature(guid);
+}
+
+void AddressDataManager::AddStrikeToBlockProfileMigration(
+    const std::string& guid) {
+  if (!GetProfileMigrationStrikeDatabase()) {
+    return;
+  }
+  GetProfileMigrationStrikeDatabase()->AddStrike(guid);
+}
+
+void AddressDataManager::AddMaxStrikesToBlockProfileMigration(
+    const std::string& guid) {
+  if (AutofillProfileMigrationStrikeDatabase* db =
+          GetProfileMigrationStrikeDatabase()) {
+    db->AddStrikes(db->GetMaxStrikesLimit() - db->GetStrikes(guid), guid);
+  }
+}
+
+void AddressDataManager::RemoveStrikesToBlockProfileMigration(
+    const std::string& guid) {
+  if (!GetProfileMigrationStrikeDatabase()) {
+    return;
+  }
+  GetProfileMigrationStrikeDatabase()->ClearStrikes(guid);
+}
+
+bool AddressDataManager::IsNewProfileImportBlockedForDomain(
+    const GURL& url) const {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
+    return false;
+  }
+
+  return GetProfileSaveStrikeDatabase()->ShouldBlockFeature(url.host());
+}
+
+void AddressDataManager::AddStrikeToBlockNewProfileImportForDomain(
+    const GURL& url) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
+    return;
+  }
+  GetProfileSaveStrikeDatabase()->AddStrike(url.host());
+}
+
+void AddressDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
+    const GURL& url) {
+  if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
+    return;
+  }
+  GetProfileSaveStrikeDatabase()->ClearStrikes(url.host());
+}
+
+bool AddressDataManager::IsProfileUpdateBlocked(const std::string& guid) const {
+  if (!GetProfileUpdateStrikeDatabase()) {
+    return false;
+  }
+  return GetProfileUpdateStrikeDatabase()->ShouldBlockFeature(guid);
+}
+
+void AddressDataManager::AddStrikeToBlockProfileUpdate(
+    const std::string& guid) {
+  if (!GetProfileUpdateStrikeDatabase()) {
+    return;
+  }
+  GetProfileUpdateStrikeDatabase()->AddStrike(guid);
+}
+
+void AddressDataManager::RemoveStrikesToBlockProfileUpdate(
+    const std::string& guid) {
+  if (!GetProfileUpdateStrikeDatabase()) {
+    return;
+  }
+  GetProfileUpdateStrikeDatabase()->ClearStrikes(guid);
+}
+
+bool AddressDataManager::AreAddressSuggestionsBlocked(
+    FormSignature form_signature,
+    FieldSignature field_signature,
+    const GURL& gurl) const {
+  if (!GetAddressSuggestionStrikeDatabase()) {
+    return false;
+  }
+  return GetAddressSuggestionStrikeDatabase()->ShouldBlockFeature(
+      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
+                                             gurl));
+}
+
+void AddressDataManager::AddStrikeToBlockAddressSuggestions(
+    FormSignature form_signature,
+    FieldSignature field_signature,
+    const GURL& gurl) {
+  if (!GetAddressSuggestionStrikeDatabase()) {
+    return;
+  }
+  GetAddressSuggestionStrikeDatabase()->AddStrike(
+      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
+                                             gurl));
+}
+
+void AddressDataManager::ClearStrikesToBlockAddressSuggestions(
+    FormSignature form_signature,
+    FieldSignature field_signature,
+    const GURL& gurl) {
+  if (!GetAddressSuggestionStrikeDatabase()) {
+    return;
+  }
+  GetAddressSuggestionStrikeDatabase()->ClearStrikes(
+      AddressSuggestionStrikeDatabase::GetId(form_signature, field_signature,
+                                             gurl));
+}
+
 void AddressDataManager::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
   profile_enabled_pref_ = std::make_unique<BooleanPrefMember>();
@@ -280,6 +401,65 @@ void AddressDataManager::SetPrefService(PrefService* pref_service) {
                                     },
                                     this));
   }
+}
+
+void AddressDataManager::SetStrikeDatabase(
+    StrikeDatabaseBase* strike_database) {
+  if (!strike_database) {
+    return;
+  }
+  profile_migration_strike_database_ =
+      std::make_unique<AutofillProfileMigrationStrikeDatabase>(strike_database);
+  profile_save_strike_database_ =
+      std::make_unique<AutofillProfileSaveStrikeDatabase>(strike_database);
+  profile_update_strike_database_ =
+      std::make_unique<AutofillProfileUpdateStrikeDatabase>(strike_database);
+  address_suggestion_strike_database_ =
+      std::make_unique<AddressSuggestionStrikeDatabase>(strike_database);
+}
+
+AutofillProfileMigrationStrikeDatabase*
+AddressDataManager::GetProfileMigrationStrikeDatabase() {
+  return const_cast<AutofillProfileMigrationStrikeDatabase*>(
+      std::as_const(*this).GetProfileMigrationStrikeDatabase());
+}
+
+const AutofillProfileMigrationStrikeDatabase*
+AddressDataManager::GetProfileMigrationStrikeDatabase() const {
+  return profile_migration_strike_database_.get();
+}
+
+AutofillProfileSaveStrikeDatabase*
+AddressDataManager::GetProfileSaveStrikeDatabase() {
+  return const_cast<AutofillProfileSaveStrikeDatabase*>(
+      std::as_const(*this).GetProfileSaveStrikeDatabase());
+}
+
+const AutofillProfileSaveStrikeDatabase*
+AddressDataManager::GetProfileSaveStrikeDatabase() const {
+  return profile_save_strike_database_.get();
+}
+
+AutofillProfileUpdateStrikeDatabase*
+AddressDataManager::GetProfileUpdateStrikeDatabase() {
+  return const_cast<AutofillProfileUpdateStrikeDatabase*>(
+      std::as_const(*this).GetProfileUpdateStrikeDatabase());
+}
+
+const AutofillProfileUpdateStrikeDatabase*
+AddressDataManager::GetProfileUpdateStrikeDatabase() const {
+  return profile_update_strike_database_.get();
+}
+
+AddressSuggestionStrikeDatabase*
+AddressDataManager::GetAddressSuggestionStrikeDatabase() {
+  return const_cast<AddressSuggestionStrikeDatabase*>(
+      std::as_const(*this).GetAddressSuggestionStrikeDatabase());
+}
+
+const AddressSuggestionStrikeDatabase*
+AddressDataManager::GetAddressSuggestionStrikeDatabase() const {
+  return address_suggestion_strike_database_.get();
 }
 
 bool AddressDataManager::IsAutofillProfileEnabled() const {

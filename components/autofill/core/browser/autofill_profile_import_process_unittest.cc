@@ -33,14 +33,19 @@ MATCHER(CompareWithSource, "") {
 class AutofillProfileImportProcessTest : public testing::Test {
  protected:
   void BlockProfileForUpdates(const AutofillProfile& profile) {
-    while (!personal_data_manager_.IsProfileUpdateBlocked(profile.guid())) {
-      personal_data_manager_.AddStrikeToBlockProfileUpdate(profile.guid());
+    while (
+        !personal_data_manager_.address_data_manager().IsProfileUpdateBlocked(
+            profile.guid())) {
+      personal_data_manager_.address_data_manager()
+          .AddStrikeToBlockProfileUpdate(profile.guid());
     }
   }
 
   void BlockDomainForNewProfiles(GURL url) {
-    while (!personal_data_manager_.IsNewProfileImportBlockedForDomain(url)) {
-      personal_data_manager_.AddStrikeToBlockNewProfileImportForDomain(url);
+    while (!personal_data_manager_.address_data_manager()
+                .IsNewProfileImportBlockedForDomain(url)) {
+      personal_data_manager_.address_data_manager()
+          .AddStrikeToBlockNewProfileImportForDomain(url);
     }
   }
 

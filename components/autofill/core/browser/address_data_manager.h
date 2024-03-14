@@ -16,6 +16,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/strike_databases/address_suggestion_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/autofill_profile_update_strike_database.h"
+#include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/prefs/pref_member.h"
@@ -49,6 +54,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   AddressDataManager(scoped_refptr<AutofillWebDataService> webdata_service,
                      PrefService* pref_service,
+                     StrikeDatabaseBase* strike_database,
                      base::RepeatingClosure notify_pdm_observers,
                      const std::string& app_locale);
 
@@ -110,6 +116,70 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Updates the `profile`'s use count and use date in the database.
   virtual void RecordUseOf(const AutofillProfile& profile);
 
+  // Returns true if a `kLocalOrSyncable` profile identified by its guid is
+  // blocked for migration to a `kAccount` profile.
+  bool IsProfileMigrationBlocked(const std::string& guid) const;
+
+  // Adds a strike to block a profile identified by its `guid` for migrations.
+  // Does nothing if the strike database is not available.
+  void AddStrikeToBlockProfileMigration(const std::string& guid);
+
+  // Adds enough strikes to the profile identified by `guid` to block migrations
+  // for it.
+  void AddMaxStrikesToBlockProfileMigration(const std::string& guid);
+
+  // Removes potential strikes to block a profile identified by its `guid` for
+  // migrations. Does nothing if the strike database is not available.
+  void RemoveStrikesToBlockProfileMigration(const std::string& guid);
+
+  // Returns true if the import of new profiles should be blocked on `url`.
+  // Returns false if the strike database is not available, the `url` is not
+  // valid or has no host.
+  bool IsNewProfileImportBlockedForDomain(const GURL& url) const;
+
+  // Add a strike for blocking the import of new profiles on `url`.
+  // Does nothing if the strike database is not available, the `url` is not
+  // valid or has no host.
+  void AddStrikeToBlockNewProfileImportForDomain(const GURL& url);
+
+  // Removes potential strikes for the import of new profiles from `url`.
+  // Does nothing if the strike database is not available, the `url` is not
+  // valid or has no host.
+  void RemoveStrikesToBlockNewProfileImportForDomain(const GURL& url);
+
+  // Returns true if a profile identified by its `guid` is blocked for updates.
+  // Returns false if the database is not available.
+  bool IsProfileUpdateBlocked(const std::string& guid) const;
+
+  // Adds a strike to block a profile identified by its `guid` for updates.
+  // Does nothing if the strike database is not available.
+  void AddStrikeToBlockProfileUpdate(const std::string& guid);
+
+  // Removes potential strikes to block a profile identified by its `guid` for
+  // updates. Does nothing if the strike database is not available.
+  void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
+
+  // Returns true if a specific field on the web identified by its host form
+  // signature, field signature and domain is blocked for address suggestions.
+  // Returns false if the database is not available.
+  bool AreAddressSuggestionsBlocked(FormSignature form_signature,
+                                    FieldSignature field_signature,
+                                    const GURL& gurl) const;
+
+  // Adds a strike to block a specific field on the web identified by its host
+  // form signature, field signature and domain from having address suggestions
+  // displayed. Does nothing if the database is not available.
+  void AddStrikeToBlockAddressSuggestions(FormSignature form_signature,
+                                          FieldSignature field_signature,
+                                          const GURL& gurl);
+
+  // Clears all strikes to block a specific field on the web identified by its
+  // host form signature, field signature and domain from having address
+  // suggestions displayed. Does nothing if the database is not available.
+  void ClearStrikesToBlockAddressSuggestions(FormSignature form_signature,
+                                             FieldSignature field_signature,
+                                             const GURL& gurl);
+
   // Returns true if the PDM is currently awaiting an address-related responses
   // from the database. In this case, the PDM's address data is currently
   // potentially inconsistent with the database. Once the state has converged,
@@ -141,6 +211,35 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   }
 
   void SetPrefService(PrefService* pref_service);
+  void SetStrikeDatabase(StrikeDatabaseBase* strike_database);
+
+  // Used to get a pointer to the strike database for migrating existing
+  // profiles. Note, the result can be a nullptr, for example, on incognito
+  // mode.
+  AutofillProfileMigrationStrikeDatabase* GetProfileMigrationStrikeDatabase();
+  virtual const AutofillProfileMigrationStrikeDatabase*
+  GetProfileMigrationStrikeDatabase() const;
+
+  // Used to get a pointer to the strike database for importing new profiles.
+  // Note, the result can be a nullptr, for example, on incognito
+  // mode.
+  AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase();
+  virtual const AutofillProfileSaveStrikeDatabase*
+  GetProfileSaveStrikeDatabase() const;
+
+  // Used to get a pointer to the strike database for updating existing
+  // profiles. Note, the result can be a nullptr, for example, on incognito
+  // mode.
+  AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase();
+  virtual const AutofillProfileUpdateStrikeDatabase*
+  GetProfileUpdateStrikeDatabase() const;
+
+  // Used to get a pointer to the strike database for updating existing
+  // profiles. Note, the result can be a nullptr, for example, on incognito
+  // mode.
+  AddressSuggestionStrikeDatabase* GetAddressSuggestionStrikeDatabase();
+  virtual const AddressSuggestionStrikeDatabase*
+  GetAddressSuggestionStrikeDatabase() const;
 
   // TODO(b/322170538): Remove once the PDM observer is split.
   base::RepeatingClosure notify_pdm_observers_;
@@ -226,6 +325,27 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // The cached result of `MostCommonCountryCodeFromProfiles()`.
   mutable std::string most_common_country_code_;
+
+  // The database that is used to count guid-keyed strikes to suppress the
+  // migration-prompt of new profiles.
+  std::unique_ptr<AutofillProfileMigrationStrikeDatabase>
+      profile_migration_strike_database_;
+
+  // The database that is used to count domain-keyed strikes to suppress the
+  // import of new profiles.
+  std::unique_ptr<AutofillProfileSaveStrikeDatabase>
+      profile_save_strike_database_;
+
+  // The database that is used to count guid-keyed strikes to suppress updates
+  // of existing profiles.
+  std::unique_ptr<AutofillProfileUpdateStrikeDatabase>
+      profile_update_strike_database_;
+
+  // The database that is used to count form-field-domain-keyed strikes to
+  // suppress the display of the Autofill popup for address suggestions on a
+  // field.
+  std::unique_ptr<AddressSuggestionStrikeDatabase>
+      address_suggestion_strike_database_;
 
   const std::string app_locale_;
 

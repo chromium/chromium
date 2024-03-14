@@ -93,8 +93,8 @@ void ProfileImportProcess::DetermineProfileImportType() {
 
   DCHECK(personal_data_manager_);
   new_profiles_suppressed_for_domain_ =
-      personal_data_manager_->IsNewProfileImportBlockedForDomain(
-          form_source_url_);
+      personal_data_manager_->address_data_manager()
+          .IsNewProfileImportBlockedForDomain(form_source_url_);
 
   int number_of_unchanged_profiles = 0;
   std::optional<AutofillProfile> migration_candidate;
@@ -155,7 +155,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
       // If the personal data manager is not available the profile is considered
       // as not blocked. Also, updates can be disabled by a feature flag.
       bool is_blocked_for_update =
-          personal_data_manager_->IsProfileUpdateBlocked(
+          personal_data_manager_->address_data_manager().IsProfileUpdateBlocked(
               existing_profile->guid()) ||
           base::FeatureList::IsEnabled(
               features::test::kAutofillDisableProfileUpdates);

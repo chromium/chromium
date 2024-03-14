@@ -68,7 +68,6 @@ namespace autofill {
 
 namespace {
 
-constexpr char kGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
 constexpr char kPrimaryAccountEmail[] = "syncuser@example.com";
 
 const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
@@ -1396,80 +1395,21 @@ TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 }
 
-TEST_F(PersonalDataManagerTest, SaveProfileMigrationStrikes) {
-  EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
-
-  personal_data_->AddStrikeToBlockProfileMigration(kGuid);
-  EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
-
-  personal_data_->AddStrikeToBlockProfileMigration(kGuid);
-  EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
-
-  // After the third strike, the guid should be blocked.
-  personal_data_->AddStrikeToBlockProfileMigration(kGuid);
-  EXPECT_TRUE(personal_data_->IsProfileMigrationBlocked(kGuid));
-
-  // Until the strikes are removed again.
-  personal_data_->RemoveStrikesToBlockProfileMigration(kGuid);
-  EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
-
-  // `AddMaxStrikesToBlockProfileMigration()` should add sufficiently many
-  // strikes.
-  personal_data_->AddMaxStrikesToBlockProfileMigration(kGuid);
-  EXPECT_TRUE(personal_data_->IsProfileMigrationBlocked(kGuid));
-}
-
-TEST_F(PersonalDataManagerTest, SaveProfileUpdateStrikes) {
-  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(kGuid));
-
-  personal_data_->AddStrikeToBlockProfileUpdate(kGuid);
-  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(kGuid));
-
-  personal_data_->AddStrikeToBlockProfileUpdate(kGuid);
-  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(kGuid));
-
-  // After the third strike, the guid should be blocked.
-  personal_data_->AddStrikeToBlockProfileUpdate(kGuid);
-  EXPECT_TRUE(personal_data_->IsProfileUpdateBlocked(kGuid));
-
-  // Until the strikes are removed again.
-  personal_data_->RemoveStrikesToBlockProfileUpdate(kGuid);
-  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(kGuid));
-}
-
-TEST_F(PersonalDataManagerTest, SaveProfileSaveStrikes) {
-  GURL domain("https://www.block.me/index.html");
-
-  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
-
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
-  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
-
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
-  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
-
-  // After the third strike, the domain should be blocked.
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
-  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
-
-  // Until the strikes are removed again.
-  personal_data_->RemoveStrikesToBlockNewProfileImportForDomain(domain);
-  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
-}
 
 TEST_F(PersonalDataManagerTest, ClearFullBrowsingHistory) {
   GURL domain("https://www.block.me/index.html");
+  AddressDataManager& adm = personal_data_->address_data_manager();
 
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(domain);
-  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(domain));
 
   history::DeletionInfo deletion_info = history::DeletionInfo::ForAllHistory();
 
   personal_data_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
 
-  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(domain));
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(domain));
 }
 
 TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistory) {
@@ -1477,15 +1417,16 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistory) {
   GURL second_url("https://www.block.too/index.html");
 
   // Add strikes to block both domains.
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
-  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
+  AddressDataManager& adm = personal_data_->address_data_manager();
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(first_url));
 
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
-  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
 
   history::URLRows deleted_urls = {history::URLRow(first_url)};
 
@@ -1496,8 +1437,8 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistory) {
 
   // The strikes for `domain` should be deleted, but the strikes for
   // `another_domain` should not.
-  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
-  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(first_url));
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
 }
 
 TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
@@ -1507,19 +1448,20 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
   TestAutofillClock test_clock;
 
   // Add strikes to block both domains.
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(first_url);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
-  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
+  AddressDataManager& adm = personal_data_->address_data_manager();
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(first_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(first_url));
 
   test_clock.Advance(base::Hours(1));
   base::Time end_of_deletion = AutofillClock::Now();
   test_clock.Advance(base::Hours(1));
 
-  personal_data_->AddStrikeToBlockNewProfileImportForDomain(second_url);
-  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
+  adm.AddStrikeToBlockNewProfileImportForDomain(second_url);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
 
   history::URLRows deleted_urls = {history::URLRow(first_url),
                                    history::URLRow(second_url)};
@@ -1533,10 +1475,10 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
 
   // The strikes for `first_url` should be deleted because the strikes have been
   // added within the deletion time range.
-  EXPECT_FALSE(personal_data_->IsNewProfileImportBlockedForDomain(first_url));
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(first_url));
   // The last strike for 'second_url' was collected after the deletion time
   // range and therefore, the blocking should prevail.
-  EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(second_url));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -31,6 +31,8 @@ const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
 const base::Time kSomeLaterTime = base::Time::FromSecondsSinceUnixEpoch(1000);
 const base::Time kMuchLaterTime = base::Time::FromSecondsSinceUnixEpoch(5000);
 
+constexpr char kGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
+
 class AddressDataManagerTest : public PersonalDataManagerTestBase,
                                public testing::Test {
  protected:
@@ -74,6 +76,7 @@ class AddressDataManagerTest : public PersonalDataManagerTestBase,
     std::move(waiter).Wait();
   }
 
+  // TODO(b/322170538): Make this an `AddressDataManager`.
   std::unique_ptr<PersonalDataManager> personal_data_;
 };
 
@@ -782,6 +785,70 @@ TEST_F(AddressDataManagerTest, RecordUseOf) {
   EXPECT_EQ(adm_profile->use_count(), 2u);
   EXPECT_EQ(adm_profile->use_date(), kSomeLaterTime);
   EXPECT_EQ(adm_profile->modification_date(), kArbitraryTime);
+}
+
+TEST_F(AddressDataManagerTest, SaveProfileMigrationStrikes) {
+  AddressDataManager& adm = personal_data_->address_data_manager();
+  EXPECT_FALSE(adm.IsProfileMigrationBlocked(kGuid));
+
+  adm.AddStrikeToBlockProfileMigration(kGuid);
+  EXPECT_FALSE(adm.IsProfileMigrationBlocked(kGuid));
+
+  adm.AddStrikeToBlockProfileMigration(kGuid);
+  EXPECT_FALSE(adm.IsProfileMigrationBlocked(kGuid));
+
+  // After the third strike, the guid should be blocked.
+  adm.AddStrikeToBlockProfileMigration(kGuid);
+  EXPECT_TRUE(adm.IsProfileMigrationBlocked(kGuid));
+
+  // Until the strikes are removed again.
+  adm.RemoveStrikesToBlockProfileMigration(kGuid);
+  EXPECT_FALSE(adm.IsProfileMigrationBlocked(kGuid));
+
+  // `AddMaxStrikesToBlockProfileMigration()` should add sufficiently many
+  // strikes.
+  adm.AddMaxStrikesToBlockProfileMigration(kGuid);
+  EXPECT_TRUE(adm.IsProfileMigrationBlocked(kGuid));
+}
+
+TEST_F(AddressDataManagerTest, SaveProfileUpdateStrikes) {
+  AddressDataManager& adm = personal_data_->address_data_manager();
+  EXPECT_FALSE(adm.IsProfileUpdateBlocked(kGuid));
+
+  adm.AddStrikeToBlockProfileUpdate(kGuid);
+  EXPECT_FALSE(adm.IsProfileUpdateBlocked(kGuid));
+
+  adm.AddStrikeToBlockProfileUpdate(kGuid);
+  EXPECT_FALSE(adm.IsProfileUpdateBlocked(kGuid));
+
+  // After the third strike, the guid should be blocked.
+  adm.AddStrikeToBlockProfileUpdate(kGuid);
+  EXPECT_TRUE(adm.IsProfileUpdateBlocked(kGuid));
+
+  // Until the strikes are removed again.
+  adm.RemoveStrikesToBlockProfileUpdate(kGuid);
+  EXPECT_FALSE(adm.IsProfileUpdateBlocked(kGuid));
+}
+
+TEST_F(AddressDataManagerTest, SaveProfileSaveStrikes) {
+  AddressDataManager& adm = personal_data_->address_data_manager();
+  GURL domain("https://www.block.me/index.html");
+
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(domain));
+
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(domain));
+
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(domain));
+
+  // After the third strike, the domain should be blocked.
+  adm.AddStrikeToBlockNewProfileImportForDomain(domain);
+  EXPECT_TRUE(adm.IsNewProfileImportBlockedForDomain(domain));
+
+  // Until the strikes are removed again.
+  adm.RemoveStrikesToBlockNewProfileImportForDomain(domain);
+  EXPECT_FALSE(adm.IsNewProfileImportBlockedForDomain(domain));
 }
 
 }  // namespace

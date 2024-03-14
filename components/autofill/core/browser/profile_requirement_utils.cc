@@ -159,7 +159,8 @@ bool IsEligibleForMigrationToAccount(
     const PersonalDataManager& personal_data_manager,
     const AutofillProfile& profile) {
   return personal_data_manager.IsEligibleForAddressAccountStorage() &&
-         !personal_data_manager.IsProfileMigrationBlocked(profile.guid()) &&
+         !personal_data_manager.address_data_manager()
+              .IsProfileMigrationBlocked(profile.guid()) &&
          personal_data_manager.IsCountryEligibleForAccountStorage(
              base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
 }

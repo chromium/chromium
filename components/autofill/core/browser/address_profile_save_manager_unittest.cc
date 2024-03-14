@@ -191,8 +191,11 @@ class AddressProfileSaveManagerTest
   }
 
   void BlockProfileForUpdates(const std::string& guid) {
-    while (!personal_data_manager_.IsProfileUpdateBlocked(guid)) {
-      personal_data_manager_.AddStrikeToBlockProfileUpdate(guid);
+    while (
+        !personal_data_manager_.address_data_manager().IsProfileUpdateBlocked(
+            guid)) {
+      personal_data_manager_.address_data_manager()
+          .AddStrikeToBlockProfileUpdate(guid);
     }
   }
 
@@ -259,19 +262,23 @@ void AddressProfileSaveManagerTest::TestImportScenario(
   // initial strikes. Otherwise, use 1.
   int initial_strikes_for_domain =
       test_scenario.new_profiles_suppresssed_for_domain
-          ? personal_data_manager_.GetProfileSaveStrikeDatabase()
+          ? personal_data_manager_.test_address_data_manager()
+                .GetProfileSaveStrikeDatabase()
                 ->GetMaxStrikesLimit()
           : 1;
-  personal_data_manager_.GetProfileSaveStrikeDatabase()->AddStrikes(
-      initial_strikes_for_domain, form_url().host());
-  ASSERT_EQ(
-      personal_data_manager_.IsNewProfileImportBlockedForDomain(form_url()),
-      test_scenario.new_profiles_suppresssed_for_domain);
+  personal_data_manager_.test_address_data_manager()
+      .GetProfileSaveStrikeDatabase()
+      ->AddStrikes(initial_strikes_for_domain, form_url().host());
+  ASSERT_EQ(personal_data_manager_.address_data_manager()
+                .IsNewProfileImportBlockedForDomain(form_url()),
+            test_scenario.new_profiles_suppresssed_for_domain);
   // Add one strike for each existing profile and the maximum number of strikes
   // for blocked profiles.
   for (const AutofillProfile& profile : test_scenario.existing_profiles) {
-    personal_data_manager_.AddStrikeToBlockProfileUpdate(profile.guid());
-    personal_data_manager_.AddStrikeToBlockProfileMigration(profile.guid());
+    personal_data_manager_.address_data_manager().AddStrikeToBlockProfileUpdate(
+        profile.guid());
+    personal_data_manager_.address_data_manager()
+        .AddStrikeToBlockProfileMigration(profile.guid());
   }
   for (const std::string& guid : test_scenario.blocked_guids_for_updates) {
     BlockProfileForUpdates(guid);
@@ -468,8 +475,9 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
   // Check that the strike count was incremented if the import of a new
   // profile was declined.
   const int profile_save_strikes =
-      personal_data_manager_.GetProfileSaveStrikeDatabase()->GetStrikes(
-          form_url().host());
+      personal_data_manager_.test_address_data_manager()
+          .GetProfileSaveStrikeDatabase()
+          ->GetStrikes(form_url().host());
   if (IsNewProfile(test_scenario) && last_import.UserDeclined()) {
     EXPECT_EQ(initial_strikes_for_domain + 1, profile_save_strikes);
   } else if (IsNewProfile(test_scenario) && last_import.UserAccepted()) {
@@ -484,7 +492,8 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
   // Check that the strike count for profile updates is reset if a profile was
   // updated.
   const StrikeDatabaseIntegratorBase* db =
-      personal_data_manager_.GetProfileUpdateStrikeDatabase();
+      personal_data_manager_.test_address_data_manager()
+          .GetProfileUpdateStrikeDatabase();
   if (IsConfirmableMerge(test_scenario) && last_import.UserAccepted()) {
     EXPECT_EQ(0, db->GetStrikes(test_scenario.merge_candidate->guid()));
   } else if (IsConfirmableMerge(test_scenario) && last_import.UserDeclined()) {
@@ -500,7 +509,8 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
   // should nevertheless be reset.
   // If the user declined, the strikes should get increased. Otherwise they
   // should be unaltered.
-  db = personal_data_manager_.GetProfileMigrationStrikeDatabase();
+  db = personal_data_manager_.test_address_data_manager()
+           .GetProfileMigrationStrikeDatabase();
   if (IsMigration(test_scenario) && last_import.UserAccepted()) {
     EXPECT_EQ(0, db->GetStrikes(test_scenario.import_candidate->guid()));
   } else if (IsMigration(test_scenario) && last_import.UserDeclined()) {

@@ -18,8 +18,6 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -37,16 +35,21 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   ~TestPersonalDataManager() override;
 
-  using PersonalDataManager::GetProfileSaveStrikeDatabase;
-  using PersonalDataManager::GetProfileUpdateStrikeDatabase;
-
   TestAddressDataManager& test_address_data_manager() {
     AddressDataManager& manager = address_data_manager();
     return static_cast<TestAddressDataManager&>(manager);
   }
+  const TestAddressDataManager& test_address_data_manager() const {
+    const AddressDataManager& manager = address_data_manager();
+    return static_cast<const TestAddressDataManager&>(manager);
+  }
   TestPaymentsDataManager& test_payments_data_manager() {
     PaymentsDataManager& manager = payments_data_manager();
     return static_cast<TestPaymentsDataManager&>(manager);
+  }
+  const TestPaymentsDataManager& test_payments_data_manager() const {
+    const PaymentsDataManager& manager = payments_data_manager();
+    return static_cast<const TestPaymentsDataManager&>(manager);
   }
 
   // PersonalDataManager overrides.  These functions are overridden as needed
@@ -66,12 +69,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
-  const AutofillProfileMigrationStrikeDatabase*
-  GetProfileMigrationStrikeDatabase() const override;
-  const AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase()
-      const override;
-  const AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase()
-      const override;
   bool IsPaymentMethodsMandatoryReauthEnabled() override;
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
   bool IsPaymentCvcStorageEnabled() override;
@@ -165,14 +162,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::optional<bool> payments_wallet_sync_transport_enabled_;
   CoreAccountInfo account_info_;
   std::optional<bool> payments_cvc_storage_enabled_;
-
-  TestInMemoryStrikeDatabase inmemory_strike_database_;
-  AutofillProfileMigrationStrikeDatabase
-      inmemory_profile_migration_strike_database_{&inmemory_strike_database_};
-  AutofillProfileSaveStrikeDatabase inmemory_profile_save_strike_database_{
-      &inmemory_strike_database_};
-  AutofillProfileUpdateStrikeDatabase inmemory_profile_update_strike_database_{
-      &inmemory_strike_database_};
 };
 
 }  // namespace autofill

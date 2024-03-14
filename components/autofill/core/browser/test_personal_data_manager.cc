@@ -11,7 +11,6 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 
@@ -118,21 +117,6 @@ bool TestPersonalDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics()
 CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()
     const {
   return account_info_;
-}
-
-const AutofillProfileMigrationStrikeDatabase*
-TestPersonalDataManager::GetProfileMigrationStrikeDatabase() const {
-  return &inmemory_profile_migration_strike_database_;
-}
-
-const AutofillProfileSaveStrikeDatabase*
-TestPersonalDataManager::GetProfileSaveStrikeDatabase() const {
-  return &inmemory_profile_save_strike_database_;
-}
-
-const AutofillProfileUpdateStrikeDatabase*
-TestPersonalDataManager::GetProfileUpdateStrikeDatabase() const {
-  return &inmemory_profile_update_strike_database_;
 }
 
 bool TestPersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {

@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_ADDRESS_DATA_MANAGER_H_
 
 #include "components/autofill/core/browser/address_data_manager.h"
+#include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
 
 namespace autofill {
 
@@ -16,6 +17,9 @@ class TestAddressDataManager : public AddressDataManager {
   explicit TestAddressDataManager(base::RepeatingClosure notify_pdm_observers);
   ~TestAddressDataManager() override;
 
+  using AddressDataManager::GetProfileMigrationStrikeDatabase;
+  using AddressDataManager::GetProfileSaveStrikeDatabase;
+  using AddressDataManager::GetProfileUpdateStrikeDatabase;
   using AddressDataManager::SetPrefService;
 
   // AddressDataManager overrides:
@@ -34,6 +38,7 @@ class TestAddressDataManager : public AddressDataManager {
 
  private:
   std::optional<bool> autofill_profile_enabled_;
+  TestInMemoryStrikeDatabase inmemory_strike_database_;
 };
 
 }  // namespace autofill

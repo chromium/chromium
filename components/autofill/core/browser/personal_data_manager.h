@@ -38,10 +38,6 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
-#include "components/autofill/core/browser/strike_databases/address_suggestion_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_migration_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/autofill_profile_update_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -558,70 +554,6 @@ class PersonalDataManager : public KeyedService,
   // database by adding, updating and removing credit cards.
   void SetCreditCards(std::vector<CreditCard>* credit_cards);
 
-  // Returns true if a `kLocalOrSyncable` profile identified by its guid is
-  // blocked for migration to a `kAccount` profile.
-  bool IsProfileMigrationBlocked(const std::string& guid) const;
-
-  // Adds a strike to block a profile identified by its `guid` for migrations.
-  // Does nothing if the strike database is not available.
-  void AddStrikeToBlockProfileMigration(const std::string& guid);
-
-  // Adds enough strikes to the profile identified by `guid` to block migrations
-  // for it.
-  void AddMaxStrikesToBlockProfileMigration(const std::string& guid);
-
-  // Removes potential strikes to block a profile identified by its `guid` for
-  // migrations. Does nothing if the strike database is not available.
-  void RemoveStrikesToBlockProfileMigration(const std::string& guid);
-
-  // Returns true if the import of new profiles should be blocked on `url`.
-  // Returns false if the strike database is not available, the `url` is not
-  // valid or has no host.
-  bool IsNewProfileImportBlockedForDomain(const GURL& url) const;
-
-  // Add a strike for blocking the import of new profiles on `url`.
-  // Does nothing if the strike database is not available, the `url` is not
-  // valid or has no host.
-  void AddStrikeToBlockNewProfileImportForDomain(const GURL& url);
-
-  // Removes potential strikes for the import of new profiles from `url`.
-  // Does nothing if the strike database is not available, the `url` is not
-  // valid or has no host.
-  void RemoveStrikesToBlockNewProfileImportForDomain(const GURL& url);
-
-  // Returns true if a profile identified by its `guid` is blocked for updates.
-  // Returns false if the database is not available.
-  bool IsProfileUpdateBlocked(const std::string& guid) const;
-
-  // Adds a strike to block a profile identified by its `guid` for updates.
-  // Does nothing if the strike database is not available.
-  void AddStrikeToBlockProfileUpdate(const std::string& guid);
-
-  // Removes potential strikes to block a profile identified by its `guid` for
-  // updates. Does nothing if the strike database is not available.
-  void RemoveStrikesToBlockProfileUpdate(const std::string& guid);
-
-  // Returns true if a specific field on the web identified by its host form
-  // signature, field signature and domain is blocked for address suggestions.
-  // Returns false if the database is not available.
-  bool AreAddressSuggestionsBlocked(FormSignature form_signature,
-                                    FieldSignature field_signature,
-                                    const GURL& gurl) const;
-
-  // Adds a strike to block a specific field on the web identified by its host
-  // form signature, field signature and domain from having address suggestions
-  // displayed. Does nothing if the database is not available.
-  void AddStrikeToBlockAddressSuggestions(FormSignature form_signature,
-                                          FieldSignature field_signature,
-                                          const GURL& gurl);
-
-  // Clears all strikes to block a specific field on the web identified by its
-  // host form signature, field signature and domain from having address
-  // suggestions displayed. Does nothing if the database is not available.
-  void ClearStrikesToBlockAddressSuggestions(FormSignature form_signature,
-                                             FieldSignature field_signature,
-                                             const GURL& gurl);
-
   // Returns true if Sync-the-feature is enabled and
   // UserSelectableType::kAutofill is among the user's selected data types.
   // TODO(crbug.com/40066949): Remove this method once ConsentLevel::kSync and
@@ -708,33 +640,6 @@ class PersonalDataManager : public KeyedService,
   // TODO(b/322170538): The `PaymentsDataManager` shouldn't depend on the PDM
   // at all, let alone befriend it.
   friend class PaymentsDataManager;
-  // Used to get a pointer to the strike database for migrating existing
-  // profiles. Note, the result can be a nullptr, for example, on incognito
-  // mode.
-  AutofillProfileMigrationStrikeDatabase* GetProfileMigrationStrikeDatabase();
-  virtual const AutofillProfileMigrationStrikeDatabase*
-  GetProfileMigrationStrikeDatabase() const;
-
-  // Used to get a pointer to the strike database for importing new profiles.
-  // Note, the result can be a nullptr, for example, on incognito
-  // mode.
-  AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase();
-  virtual const AutofillProfileSaveStrikeDatabase*
-  GetProfileSaveStrikeDatabase() const;
-
-  // Used to get a pointer to the strike database for updating existing
-  // profiles. Note, the result can be a nullptr, for example, on incognito
-  // mode.
-  AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase();
-  virtual const AutofillProfileUpdateStrikeDatabase*
-  GetProfileUpdateStrikeDatabase() const;
-
-  // Used to get a pointer to the strike database for updating existing
-  // profiles. Note, the result can be a nullptr, for example, on incognito
-  // mode.
-  AddressSuggestionStrikeDatabase* GetAddressSuggestionStrikeDatabase();
-  virtual const AddressSuggestionStrikeDatabase*
-  GetAddressSuggestionStrikeDatabase() const;
 
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
@@ -810,27 +715,6 @@ class PersonalDataManager : public KeyedService,
 
   // The sync service this instances uses. Must outlive this instance.
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
-
-  // The database that is used to count guid-keyed strikes to suppress the
-  // migration-prompt of new profiles.
-  std::unique_ptr<AutofillProfileMigrationStrikeDatabase>
-      profile_migration_strike_database_;
-
-  // The database that is used to count domain-keyed strikes to suppress the
-  // import of new profiles.
-  std::unique_ptr<AutofillProfileSaveStrikeDatabase>
-      profile_save_strike_database_;
-
-  // The database that is used to count guid-keyed strikes to suppress updates
-  // of existing profiles.
-  std::unique_ptr<AutofillProfileUpdateStrikeDatabase>
-      profile_update_strike_database_;
-
-  // The database that is used to count form-field-domain-keyed strikes to
-  // suppress the display of the Autofill popup for address suggestions on a
-  // field.
-  std::unique_ptr<AddressSuggestionStrikeDatabase>
-      address_suggestion_strike_database_;
 
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;

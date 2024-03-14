@@ -14,8 +14,13 @@ TestAddressDataManager::TestAddressDataManager(
     base::RepeatingClosure notify_pdm_observers)
     : AddressDataManager(/*webdata_service=*/nullptr,
                          /*pref_service=*/nullptr,
+                         /*strike_database=*/nullptr,
                          notify_pdm_observers,
-                         "en-US") {}
+                         "en-US") {
+  // Not initialized through the base class constructor call, since
+  // `inmemory_strike_database_` is not initialized at this point.
+  SetStrikeDatabase(&inmemory_strike_database_);
+}
 
 TestAddressDataManager::~TestAddressDataManager() = default;
 
