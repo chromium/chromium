@@ -105,6 +105,7 @@
   },
   "chrome/browser/platform_experience/win/resources/resources.grd": {
     "includes": [2270],
+    "messages": [2275],
   },
   "chrome/browser/recent_tabs/internal/android/java/strings/android_restore_tabs_strings.grd": {
     "messages": [2280],
