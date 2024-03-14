@@ -129,8 +129,11 @@ void MessagePopupCollection::NotifyPopupResized() {
 
 void MessagePopupCollection::NotifyPopupClosed(MessagePopupView* popup) {
   for (auto& item : popup_items_) {
-    if (item.popup == popup)
+    if (item.popup && item.popup == popup) {
+      // Make sure this item's popup is closed before removing it.
+      item.popup->Close();
       item.popup = nullptr;
+    }
   }
 }
 
@@ -330,7 +333,9 @@ bool MessagePopupCollection::IsNextEdgeOutsideWorkArea(
 }
 
 void MessagePopupCollection::ClosePopupItem(const PopupItem& item) {
-  item.popup->Close();
+  if (MessagePopupView* popup = item.popup) {
+    popup->Close();
+  }
 }
 
 void MessagePopupCollection::MoveDownPopups() {
@@ -350,6 +355,11 @@ void MessagePopupCollection::PausePopupTimers() {
 
 void MessagePopupCollection::CloseAllPopupsNow() {
   for (auto& item : popup_items_) {
+    // A popup might have already been removed when this is called.
+    if (!item.popup) {
+      continue;
+    }
+
     item.is_animating = true;
 
     // Mark the popup as shown so that the popup item will not re-appear after

@@ -203,6 +203,8 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   const std::vector<PopupItem>& popup_items() { return popup_items_; }
 
  private:
+  friend class MessagePopupCollectionTest;
+
   // MessagePopupCollection always runs single animation at one time.
   // State is an enum of which animation is running right now.
   // If |state_| is kIdle, animation_->is_animating() is always false and vice
