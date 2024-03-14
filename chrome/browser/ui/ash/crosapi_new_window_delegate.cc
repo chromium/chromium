@@ -116,7 +116,7 @@ void CrosapiNewWindowDelegate::DetachedWindowObserver::OnExoWindowCreated(
 
 void CrosapiNewWindowDelegate::DetachedWindowObserver::
     OnWindowVisibilityChanged(aura::Window* window, bool visible) {
-  if (!window || !visible || callback_.is_null()) {
+  if (!visible || callback_.is_null()) {
     return;
   }
 
