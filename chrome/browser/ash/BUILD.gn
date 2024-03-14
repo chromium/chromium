@@ -2008,6 +2008,8 @@ source_set("ash") {
     "login/smart_lock/smart_lock_service.h",
     "login/smart_lock/smart_lock_service_factory.cc",
     "login/smart_lock/smart_lock_service_factory.h",
+    "mahi/mahi_cache_manager.cc",
+    "mahi/mahi_cache_manager.h",
     "mahi/mahi_manager_impl.cc",
     "mahi/mahi_manager_impl.h",
     "nonclosable_app_ui_utils.cc",

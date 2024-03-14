@@ -25,6 +25,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "mahi_browser_delegate_ash_unittest.cc",
+    "mahi_cache_manager_unittest.cc",
     "mahi_manager_impl_unittest.cc",
   ]
   deps = [
