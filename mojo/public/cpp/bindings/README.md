@@ -1812,6 +1812,15 @@ example above.
 For converting between Blink and non-Blink variants, please see
 `//third_party/blink/public/platform/cross_variant_mojo_util.h`.
 
+Blink strings deserve a special mention, since `WTF::String` can store either
+Latin-1 or UTF-16, and converts to UTF-8 as needed. Since Mojo strings are
+supposed to be UTF-8, converting a `WTF::String` to a mojo string will convert
+it to UTF-8. When converting a Mojo string back to a WTF::String, the string is
+re-encoded from UTF-8 back into UTF-16. Invalid UTF-16 is tolerated throughout
+and converted to invalid UTF-8, so if your WTF::String may contain invalid
+UTF-16, don't represent it on the wire with a mojo string - use a mojo
+ByteString instead.
+
 ## Versioning Considerations
 
 For general documentation of versioning in the Mojom IDL see
