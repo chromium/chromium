@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_INTERNAL_H_
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"

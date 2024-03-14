@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_PROVIDER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
@@ -78,4 +79,4 @@ class KeyDataProvider {
 
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_PROVIDER_H_

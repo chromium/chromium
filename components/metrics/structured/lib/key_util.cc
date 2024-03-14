@@ -4,6 +4,8 @@
 
 #include "components/metrics/structured/lib/key_util.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/unguessable_token.h"
 

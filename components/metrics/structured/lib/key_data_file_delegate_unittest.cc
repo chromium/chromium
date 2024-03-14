@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"

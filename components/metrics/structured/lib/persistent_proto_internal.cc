@@ -5,6 +5,7 @@
 #include "components/metrics/structured/lib/persistent_proto_internal.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/files/file_util.h"
