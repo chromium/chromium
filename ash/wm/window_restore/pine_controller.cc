@@ -39,10 +39,6 @@ namespace ash {
 
 namespace {
 
-// TODO(sophiewen): Remove these when we get assets from UX.
-constexpr int kOnboardingMessageWidth = 500;
-constexpr int kOnboardingMessageHeight = 200;
-
 // The nudge will not be shown if it already been shown 3 times, or if 24 hours
 // have not yet passed since it was last shown.
 constexpr int kNudgeMaxShownCount = 3;
@@ -125,23 +121,22 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
     return;
   }
 
-  views::Widget::InitParams params(
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  aura::Window* root_window = Shell::GetPrimaryRootWindow();
-  params.parent =
-      root_window->GetChildById(ash::kShellWindowId_SystemModalContainer);
-  gfx::Rect centered_bounds(
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          root_window));
-  centered_bounds.ClampToCenteredSize(
-      gfx::Size(kOnboardingMessageWidth, kOnboardingMessageHeight));
-  params.bounds = centered_bounds;
-  params.name = "PineOnboardingWidget";
-  onboarding_widget_ = std::make_unique<views::Widget>(std::move(params));
+  auto dialog =
+      views::Builder<SystemDialogDelegateView>()
+          .SetTitleText(l10n_util::GetStringUTF16(
+              restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_TITLE
+                         : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_TITLE))
+          .SetDescription(l10n_util::GetStringUTF16(
+              restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_DESCRIPTION
+                         : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_DESCRIPTION))
+          .SetAcceptButtonText(l10n_util::GetStringUTF16(
+              restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_ACCEPT
+                         : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_ACCEPT))
+          .SetAcceptCallback(
+              base::BindOnce(&PineController::OnOnboardingAcceptPressed,
+                             base::Unretained(this), restore_on))
+          .Build();
 
-  auto* dialog = onboarding_widget_->SetContentsView(
-      std::make_unique<SystemDialogDelegateView>());
   // Since no additional view was set, the buttons will be center aligned.
   dialog->SetButtonContainerAlignment(views::LayoutAlignment::kCenter);
   dialog->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -149,18 +144,7 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true);
-  dialog->SetTitleText(l10n_util::GetStringUTF16(
-      restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_TITLE
-                 : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_TITLE));
-  dialog->SetDescription(l10n_util::GetStringUTF16(
-      restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_DESCRIPTION
-                 : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_DESCRIPTION));
-  dialog->SetAcceptButtonText(l10n_util::GetStringUTF16(
-      restore_on ? IDS_ASH_PINE_ONBOARDING_RESTORE_ON_ACCEPT
-                 : IDS_ASH_PINE_ONBOARDING_RESTORE_OFF_ACCEPT));
-  dialog->SetAcceptCallback(
-      base::BindOnce(&PineController::OnOnboardingAcceptPressed,
-                     base::Unretained(this), restore_on));
+  dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
   if (restore_on) {
     // If the user had the restore pref set as "Ask every time", don't show the
     // Cancel button.
@@ -173,6 +157,13 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
         &PineController::OnOnboardingCancelPressed, base::Unretained(this)));
   }
 
+  views::Widget::InitParams params(
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.name = "PineOnboardingWidget";
+  params.delegate = dialog.release();
+
+  onboarding_widget_ = std::make_unique<views::Widget>(std::move(params));
   onboarding_widget_->Show();
   GetActivePrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, false);
 }
