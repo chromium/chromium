@@ -45,6 +45,8 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
 
   static MahiManager* Get();
 
+  static bool IsEnabledWithCorrectFeatureKey();
+
   // Opens the Mahi Panel in the display with `display_id`.
   virtual void OpenMahiPanel(int64_t display_id) = 0;
 

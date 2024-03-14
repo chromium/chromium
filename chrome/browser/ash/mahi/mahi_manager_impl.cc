@@ -74,6 +74,10 @@ MahiManagerImpl::~MahiManagerImpl() {
 }
 
 void MahiManagerImpl::OpenMahiPanel(int64_t display_id) {
+  if (!IsEnabledWithCorrectFeatureKey()) {
+    return;
+  }
+
   mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(display_id);
   mahi_panel_widget_->Show();
 }

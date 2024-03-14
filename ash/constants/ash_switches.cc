@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/field_trial.h"
@@ -34,6 +35,14 @@ bool g_ignore_forest_secret_key = false;
 constexpr char kCampbellHashKey[] =
     "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
     "\x03\x18\x32";
+
+// The hash value for the secret key of the mahi feature.
+constexpr char kMahiHashKey[] =
+    "\xFE\x34\x22\x3F\xEA\x73\xC2\xD5\xA6\xE8\x82\x0B\xF3\x67\x7D\x01\xA3\x6F"
+    "\x3A\xFF";
+
+// Whether checking the mahi secret key is ignored.
+bool g_ignore_mahi_secret_key = false;
 
 }  // namespace
 
@@ -868,6 +877,9 @@ const char kDisallowLacros[] = "disallow-lacros";
 // used, event if --disallow-lacros is set.
 const char kDisableDisallowLacros[] = "disable-disallow-lacros";
 
+// Supply secret key for the mahi feature.
+const char kMahiFeatureKey[] = "mahi-feature-key";
+
 // Specifies the user that the browser data migration should happen for.
 const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 
@@ -1383,6 +1395,30 @@ bool IsForestSecretKeyMatched() {
 
 void SetIgnoreForestSecretKeyForTest(bool ignore) {
   g_ignore_forest_secret_key = ignore;
+}
+
+bool IsMahiSecretKeyMatched() {
+  if (g_ignore_mahi_secret_key) {
+    return true;
+  }
+
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --mahi-feature-key="INSERT KEY HERE" --enable-features=Mahi
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kMahiFeatureKey));
+
+  bool mahi_key_matched = (provided_key_hash == kMahiHashKey);
+  if (!mahi_key_matched) {
+    LOG(ERROR) << "Provided secret key does not match with the expected one.";
+  }
+
+  return mahi_key_matched;
+}
+
+base::AutoReset<bool> SetIgnoreMahiSecretKeyForTest() {
+  return {&g_ignore_mahi_secret_key, true};
 }
 
 }  // namespace ash::switches

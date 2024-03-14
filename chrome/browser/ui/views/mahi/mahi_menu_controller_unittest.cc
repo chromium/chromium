@@ -7,14 +7,29 @@
 #include <memory>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "base/auto_reset.h"
+#include "base/command_line.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace chromeos::mahi {
+
+using ::testing::IsNull;
 
 class MahiMenuControllerTest : public ChromeViewsTestBase {
  public:
@@ -51,6 +66,12 @@ class MahiMenuControllerTest : public ChromeViewsTestBase {
   ::mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
   std::unique_ptr<::mahi::ScopedMahiWebContentsManagerForTesting>
       scoped_mahi_web_contents_manager_;
+
+  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::AutoReset<bool> ignore_mahi_secret_key_ =
+      ash::switches::SetIgnoreMahiSecretKeyForTest();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 // Tests the behavior of the controller when there's no text selected when
@@ -123,5 +144,33 @@ TEST_F(MahiMenuControllerTest, TextSelected) {
   EXPECT_FALSE(read_write_cards_ui_controller_.widget_for_test());
   EXPECT_FALSE(read_write_cards_ui_controller_.GetMahiViewForTest());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class MahiMenuControllerFeatureKeyTest : public ChromeViewsTestBase {
+ public:
+  MahiMenuControllerFeatureKeyTest() {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(ash::switches::kMahiFeatureKey, "hello");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
+};
+
+TEST_F(MahiMenuControllerFeatureKeyTest, DoesNotShowWidgetIfFeatureKeyIsWrong) {
+  ReadWriteCardsUiController read_write_cards_ui_controller;
+  ::mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager;
+  fake_mahi_web_contents_manager.set_focused_web_content_is_distillable(true);
+  ::mahi::ScopedMahiWebContentsManagerForTesting
+      scoped_mahi_web_contents_manager(&fake_mahi_web_contents_manager);
+  MahiMenuController menu_controller(read_write_cards_ui_controller);
+
+  menu_controller.OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                  /*selected_text=*/"",
+                                  /*surrounding_text=*/"");
+
+  EXPECT_THAT(menu_controller.menu_widget_for_test(), IsNull());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace chromeos::mahi

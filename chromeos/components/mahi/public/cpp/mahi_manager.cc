@@ -6,6 +6,13 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "chromeos/constants/chromeos_features.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -18,6 +25,16 @@ MahiManager* g_instance = nullptr;
 // static
 MahiManager* MahiManager::Get() {
   return g_instance;
+}
+
+// static
+bool MahiManager::IsEnabledWithCorrectFeatureKey() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return chromeos::features::IsMahiEnabled() &&
+         ash::switches::IsMahiSecretKeyMatched();
+#else
+  return chromeos::features::IsMahiEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 MahiManager::MahiManager() {

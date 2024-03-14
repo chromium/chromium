@@ -48,6 +48,7 @@ class MahiManagerImpl : public chromeos::MahiManager {
 
  private:
   friend class MahiManagerImplTest;
+  friend class MahiManagerImplFeatureKeyTest;
 
   // Initialize required provider if it is not initialized yet.
   void MaybeInitialize();

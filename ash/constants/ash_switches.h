@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/component_export.h"
 
 namespace base {
@@ -268,6 +269,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginProfile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisallowLacros[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableDisallowLacros[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMahiFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kBrowserDataMigrationForUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -512,6 +514,12 @@ bool IsForestSecretKeyMatched();
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 void SetIgnoreForestSecretKeyForTest(bool ignore);
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsMahiSecretKeyMatched();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+base::AutoReset<bool> SetIgnoreMahiSecretKeyForTest();
 
 }  // namespace ash::switches
 

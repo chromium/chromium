@@ -5,15 +5,23 @@
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 
 #include <memory>
+#include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/auto_reset.h"
+#include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
@@ -21,6 +29,8 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+using ::testing::IsNull;
 
 using crosapi::mojom::MahiContextMenuActionType;
 
@@ -93,6 +103,11 @@ class MahiManagerImplTest : public testing::Test {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
+  base::AutoReset<bool> ignore_mahi_secret_key_ =
+      ash::switches::SetIgnoreMahiSecretKeyForTest();
 };
 
 TEST_F(MahiManagerImplTest, OpenPanel) {
@@ -136,6 +151,30 @@ TEST_F(MahiManagerImplTest, OnContextMenuClickedSettings) {
   mahi_manager_impl_->OnContextMenuClicked(std::move(request));
 
   EXPECT_FALSE(GetMahiPanelWidget());
+}
+
+class MahiManagerImplFeatureKeyTest : public testing::Test {
+ public:
+  MahiManagerImplFeatureKeyTest() {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(ash::switches::kMahiFeatureKey, "hello");
+  }
+
+ protected:
+  views::Widget* GetMahiPanelWidget() {
+    return mahi_manager_impl_.mahi_panel_widget_.get();
+  }
+
+  MahiManagerImpl mahi_manager_impl_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_{chromeos::features::kMahi};
+};
+
+TEST_F(MahiManagerImplFeatureKeyTest, DoesNotShowWidgetIfFeatureKeyIsWrong) {
+  mahi_manager_impl_.OpenMahiPanel(/*display_id=*/0);
+
+  EXPECT_THAT(GetMahiPanelWidget(), IsNull());
 }
 
 }  // namespace ash

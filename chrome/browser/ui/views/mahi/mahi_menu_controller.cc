@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/views/view_utils.h"
 
 namespace chromeos::mahi {
@@ -24,6 +25,10 @@ void MahiMenuController::OnContextMenuShown(Profile* profile) {}
 void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
                                          const std::string& selected_text,
                                          const std::string& surrounding_text) {
+  if (!chromeos::MahiManager::IsEnabledWithCorrectFeatureKey()) {
+    return;
+  }
+
   // Only shows mahi menu for distillable pages.
   if (!::mahi::MahiWebContentsManager::Get()->IsFocusedPageDistillable()) {
     return;
