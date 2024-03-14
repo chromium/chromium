@@ -7,6 +7,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -47,7 +48,9 @@ void SelectProbableNameTypes(AutofillField& field,
 // If a field was autofilled on form submission and the value was accepted, set
 // possible types to the autofilled type.
 void SetPossibleTypesToAutofilledTypeIfAvailable(AutofillField& field) {
-  if (field.is_autofilled && field.autofilled_type()) {
+  if (field.is_autofilled && field.autofilled_type() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillDisambiguateContradictingFieldTypes)) {
     field.set_possible_types({*field.autofilled_type()});
   }
 }

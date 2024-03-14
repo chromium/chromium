@@ -323,6 +323,13 @@ BASE_FEATURE(kAutofillDetectFieldVisibility,
              "AutofillDetectFieldVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, new heuristics are applied for disamibguating multiple possible
+// types in a form field. Otherwise, only the already established heuristic for
+// disambiguating address and credit card names is used.
+BASE_FEATURE(kAutofillDisambiguateContradictingFieldTypes,
+             "AutofillDisambiguateContradictingFieldTypes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, whenever form controls are removed from the DOM, the ChromeClient
 // is informed about this. This enables Autofill to trigger a reparsing of
 // forms.
