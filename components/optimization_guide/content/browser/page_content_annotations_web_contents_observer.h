@@ -7,6 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/continuous_search/browser/search_result_extractor_client.h"
+#include "components/continuous_search/common/search_result_extractor_client_status.h"
+#include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -49,6 +52,12 @@ class PageContentAnnotationsWebContentsObserver
   // content::WebContentsObserver:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
+  // Invoked when related searches have been extracted for |visit|.
+  void OnRelatedSearchesExtracted(
+      const optimization_guide::HistoryVisit& visit,
+      continuous_search::SearchResultExtractorClientStatus status,
+      continuous_search::mojom::CategoryResultsPtr results);
+
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<TemplateURLService> template_url_service_;
 
@@ -57,6 +66,12 @@ class PageContentAnnotationsWebContentsObserver
 
   // Not owned. Guaranteed to outlive |this|.
   raw_ptr<prerender::NoStatePrefetchManager> no_state_prefetch_manager_;
+
+  // The client of continuous_search::mojom::SearchResultExtractor
+  // interface used for extracting data from the main frame of Google SRP
+  // |web_contents|.
+  continuous_search::SearchResultExtractorClient
+      search_result_extractor_client_;
 
   base::WeakPtrFactory<PageContentAnnotationsWebContentsObserver>
       weak_ptr_factory_{this};

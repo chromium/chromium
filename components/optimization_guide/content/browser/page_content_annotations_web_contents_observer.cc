@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -63,8 +64,23 @@ void PageContentAnnotationsWebContentsObserver::
 
   optimization_guide::HistoryVisit history_visit =
       CreateHistoryVisitFromWebContents(web_contents());
-  page_content_annotations_service_->ExtractRelatedSearches(history_visit,
-                                                            web_contents());
+  search_result_extractor_client_.RequestData(
+      web_contents(), {continuous_search::mojom::ResultType::kRelatedSearches},
+      base::BindOnce(&PageContentAnnotationsWebContentsObserver::
+                         OnRelatedSearchesExtracted,
+                     weak_ptr_factory_.GetWeakPtr(), history_visit));
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PageContentAnnotationsWebContentsObserver."
+      "RelatedSearchesExtractRequest",
+      true);
+}
+
+void PageContentAnnotationsWebContentsObserver::OnRelatedSearchesExtracted(
+    const HistoryVisit& visit,
+    continuous_search::SearchResultExtractorClientStatus status,
+    continuous_search::mojom::CategoryResultsPtr results) {
+  page_content_annotations_service_->OnRelatedSearchesExtracted(
+      visit, status, std::move(results));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PageContentAnnotationsWebContentsObserver);

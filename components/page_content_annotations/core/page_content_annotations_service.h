@@ -20,23 +20,22 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/continuous_search/browser/search_result_extractor_client.h"
-#include "components/continuous_search/browser/search_result_extractor_client_status.h"
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
+#include "components/continuous_search/common/search_result_extractor_client_status.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
-#include "components/page_content_annotations/core/page_content_annotator.h"
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
-#include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/optimization_guide/proto/salient_image_metadata.pb.h"
+#include "components/page_content_annotations/core/page_content_annotations_common.h"
+#include "components/page_content_annotations/core/page_content_annotator.h"
 #include "components/search_engines/template_url_service.h"
 #include "url/gurl.h"
 
@@ -189,6 +188,13 @@ class PageContentAnnotationsService : public KeyedService,
       const ZeroSuggestCacheService::CacheEntry& response,
       history::QueryURLResult url_result);
 
+  // Invoked when related searches have been extracted for |visit|, to store
+  // the related searches in History Service.
+  void OnRelatedSearchesExtracted(
+      const HistoryVisit& visit,
+      continuous_search::SearchResultExtractorClientStatus status,
+      continuous_search::mojom::CategoryResultsPtr results);
+
   // Adds or removes PageContentAnnotations observers for |annotation_type|.
   void AddObserver(AnnotationType annotation_type,
                    PageContentAnnotationsObserver* observer);
@@ -198,14 +204,6 @@ class PageContentAnnotationsService : public KeyedService,
   OptimizationGuideLogger* optimization_guide_logger() const {
     return optimization_guide_logger_;
   }
-
- protected:
-  // Callback invoked when related searches have been extracted for |visit|.
-  // protected instead of private for testing purposes.
-  void OnRelatedSearchesExtracted(
-      const HistoryVisit& visit,
-      continuous_search::SearchResultExtractorClientStatus status,
-      continuous_search::mojom::CategoryResultsPtr results);
 
  private:
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -262,15 +260,6 @@ class PageContentAnnotationsService : public KeyedService,
   friend class PageContentAnnotationsServiceBrowserTest;
   // Virtualized for testing.
   virtual void Annotate(const HistoryVisit& visit);
-
-  // Requests |search_result_extractor_client_| to extract related searches from
-  // the Google SRP DOM associated with |web_contents|.
-  //
-  // Once finished, it will store the related searches in History Service.
-  //
-  // Virtualized for testing.
-  virtual void ExtractRelatedSearches(const HistoryVisit& visit,
-                                      content::WebContents* web_contents);
 
   // Annotates the provided `visit` in the history DB with the given list of
   // `related_searches`.
@@ -360,11 +349,6 @@ class PageContentAnnotationsService : public KeyedService,
   // appropriate history visit is targeted for annotation.
   base::HashingLRUCache<std::string, std::vector<std::string>>
       prefetched_related_searches_;
-  // The client of continuous_search::mojom::SearchResultExtractor
-  // interface used for extracting data from the main frame of Google SRP
-  // |web_contents|.
-  continuous_search::SearchResultExtractorClient
-      search_result_extractor_client_;
   // A LRU Cache keeping track of the visits that have been requested for
   // annotation. If the requested visit is in this cache, the models will not be
   // requested for another annotation on the same visit.

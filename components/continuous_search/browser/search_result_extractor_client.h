@@ -9,8 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/continuous_search/browser/search_result_extractor_client_status.h"
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
+#include "components/continuous_search/common/search_result_extractor_client_status.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "url/gurl.h"
 

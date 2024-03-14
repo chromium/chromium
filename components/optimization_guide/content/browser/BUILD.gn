@@ -19,6 +19,8 @@ static_library("browser") {
 
   public_deps = [
     "//base",
+    "//components/continuous_search/browser",
+    "//components/continuous_search/common",
     "//components/google/core/common",
     "//components/history/core/browser",
     "//components/keyed_service/core",

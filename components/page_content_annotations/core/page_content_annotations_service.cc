@@ -466,15 +466,6 @@ void PageContentAnnotationsService::RequestAndNotifyWhenModelAvailable(
 #endif
 }
 
-void PageContentAnnotationsService::ExtractRelatedSearches(
-    const HistoryVisit& visit,
-    content::WebContents* web_contents) {
-  search_result_extractor_client_.RequestData(
-      web_contents, {continuous_search::mojom::ResultType::kRelatedSearches},
-      base::BindOnce(&PageContentAnnotationsService::OnRelatedSearchesExtracted,
-                     weak_ptr_factory_.GetWeakPtr(), visit));
-}
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PageContentAnnotationsService::OnPageContentAnnotated(
     const HistoryVisit& visit,
