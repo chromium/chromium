@@ -20,14 +20,15 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.autofill.AutofillProfile;
@@ -44,6 +45,14 @@ import java.lang.annotation.RetentionPolicy;
 /** Server credit card settings. */
 public class AutofillServerCardEditor extends AutofillCreditCardEditor
         implements ProfileDependentSetting {
+    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_URL_FOR_GPAY_WEB =
+            "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
+    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL_FOR_GPAY_WEB =
+            "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
+    private static final String AUTOFILL_MANAGE_WALLET_CARD_URL =
+            "https://payments.google.com/#paymentMethods";
+    private static final String AUTOFILL_MANAGE_WALLET_CARD_SANDBOX_URL =
+            "https://payments.sandbox.google.com/#paymentMethods";
     private static final String SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT =
             "Autofill.VirtualCard.SettingsPageEnrollment";
 
@@ -317,18 +326,30 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
     }
 
     // Returns the URL for managing the card in GPay Web.
-    // TODO (crbug.com/1518026): For sandbox cards, direct to the sandbox card management page at
-    // pay.sandbox.google.com.
     private String getEditCardLink() {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_UPDATE_CHROME_SETTINGS_LINK_TO_GPAY_WEB)) {
-            return ChromeStringConstants.AUTOFILL_MANAGE_WALLET_CARD_URL;
+        // This flag enables a feature that redirects users to the card's details page in GPay Web
+        // instead of the generic methods page.
+        boolean isGPayFlagEnabled =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_UPDATE_CHROME_SETTINGS_LINK_TO_GPAY_WEB);
+
+        // Check if sandbox is enabled.
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT)) {
+            if (isGPayFlagEnabled) {
+                return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL_FOR_GPAY_WEB)
+                        .append("&id=")
+                        .append(mCard.getInstrumentId())
+                        .toString();
+            }
+            return AUTOFILL_MANAGE_WALLET_CARD_SANDBOX_URL;
         }
-        return new StringBuilder(
-                        ChromeStringConstants.AUTOFILL_MANAGE_PAYMENTS_CARDS_URL_FOR_GPAY_WEB)
-                .append("&id=")
-                .append(mCard.getInstrumentId())
-                .toString();
+        if (isGPayFlagEnabled) {
+            return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_URL_FOR_GPAY_WEB)
+                    .append("&id=")
+                    .append(mCard.getInstrumentId())
+                    .toString();
+        }
+        return AUTOFILL_MANAGE_WALLET_CARD_URL;
     }
 
     @Override
