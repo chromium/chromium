@@ -69,6 +69,12 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Stacks Game Dashboard UI widgets above `widget` if it is needed.
   void MaybeStackAboveWidget(views::Widget* widget);
 
+  // Enables the Game Dashboard widgets' UI visibility if `enable` is true.
+  // Otherwise, hide the widgets.
+  void EnableFeatures(
+      bool enable,
+      GameDashboardMainMenuToggleMethod main_menu_toggle_method);
+
   // Reassigns the new `toolbar_snap_location_` and performs an animation as the
   // toolbar moves to its new location.
   void SetToolbarSnapLocation(ToolbarSnapLocation new_location);
@@ -172,7 +178,7 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   // Closes and deletes the Game Dashboard welcome dialog once it's no longer
   // needed.
-  void CloseWelcomeDialog();
+  void CloseWelcomeDialogIfAny();
 
   // Resets the `main_menu_view_`, removes the cursor handler, and updates the
   // `game_dashboard_button_` UI.

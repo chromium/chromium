@@ -118,12 +118,39 @@ GameDashboardContext::~GameDashboardContext() {
   if (main_menu_widget_) {
     main_menu_widget_->CloseNow();
   }
-  CloseWelcomeDialog();
+  CloseWelcomeDialogIfAny();
 }
 
 const std::u16string& GameDashboardContext::GetRecordingDuration() const {
   return recording_duration_.empty() ? kDefaultRecordingDuration
                                      : recording_duration_;
+}
+
+void GameDashboardContext::EnableFeatures(
+    bool enable,
+    GameDashboardMainMenuToggleMethod main_menu_toggle_method) {
+  DCHECK(game_dashboard_button_);
+  if (enable) {
+    game_dashboard_button_widget_->Show();
+    if (toolbar_widget_) {
+      toolbar_widget_->Show();
+    }
+  } else {
+    CloseWelcomeDialogIfAny();
+    if (toolbar_widget_) {
+      // Hide `toolbar_widget_` if the system is in the tablet mode.
+      // `toolbar_widget_` is still visible in clamshell overview mode.
+      if (display::Screen::GetScreen()->InTabletMode()) {
+        toolbar_widget_->Hide();
+      } else {
+        toolbar_widget_->ShowInactive();
+      }
+    }
+    if (main_menu_widget_) {
+      CloseMainMenu(main_menu_toggle_method);
+    }
+    game_dashboard_button_widget_->Hide();
+  }
 }
 
 void GameDashboardContext::MaybeStackAboveWidget(views::Widget* widget) {
@@ -379,7 +406,9 @@ void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
       game_window_,
       wm::GetTransientParent(game_dashboard_button_widget_->GetNativeWindow()));
   UpdateGameDashboardButtonWidgetBounds();
-  game_dashboard_button_widget_->Show();
+  if (game_dashboard_utils::ShouldEnableFeatures()) {
+    game_dashboard_button_widget_->Show();
+  }
 }
 
 void GameDashboardContext::UpdateGameDashboardButtonWidgetBounds() {
@@ -406,12 +435,14 @@ void GameDashboardContext::OnGameDashboardButtonPressed() {
   // TODO(b/273640775): Add metrics to know when the Game Dashboard button was
   // physically pressed.
   // Close the welcome dialog if it's open when a user opens the main menu view.
-  CloseWelcomeDialog();
+  CloseWelcomeDialogIfAny();
   ToggleMainMenu(GameDashboardMainMenuToggleMethod::kGameDashboardButton);
 }
 
 void GameDashboardContext::MaybeShowWelcomeDialog() {
-  if (!show_welcome_dialog_) {
+  // If the welcome dialog should not be shown, or the Game Dashboard feature is
+  // disabled, do not show the welcome dialog.
+  if (!show_welcome_dialog_ || !game_dashboard_utils::ShouldEnableFeatures()) {
     return;
   }
 
@@ -427,7 +458,7 @@ void GameDashboardContext::MaybeShowWelcomeDialog() {
   MaybeUpdateWelcomeDialogBounds();
   welcome_dialog_widget_->Show();
   welcome_dialog_view->StartTimer(base::BindRepeating(
-      &GameDashboardContext::CloseWelcomeDialog, base::Unretained(this)));
+      &GameDashboardContext::CloseWelcomeDialogIfAny, base::Unretained(this)));
 }
 
 void GameDashboardContext::MaybeUpdateWelcomeDialogBounds() {
@@ -548,7 +579,7 @@ void GameDashboardContext::OnUpdateRecordingTimer() {
   }
 }
 
-void GameDashboardContext::CloseWelcomeDialog() {
+void GameDashboardContext::CloseWelcomeDialogIfAny() {
   if (welcome_dialog_widget_) {
     welcome_dialog_widget_->RemoveObserver(this);
     welcome_dialog_widget_.reset();

@@ -23,6 +23,8 @@
 #include "extensions/common/constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace ash {
 
@@ -44,8 +46,8 @@ bool GameDashboardController::IsGameWindow(aura::Window* window) {
 
 // static
 bool GameDashboardController::ReadyForAccelerator(aura::Window* window) {
-  return IsGameWindow(window) &&
-             game_dashboard_utils::ShouldEnableGameDashboardButton(window);
+  return game_dashboard_utils::ShouldEnableFeatures() && IsGameWindow(window) &&
+         game_dashboard_utils::ShouldEnableGameDashboardButton(window);
 }
 
 // static
@@ -182,22 +184,44 @@ void GameDashboardController::OnRecordingStartAborted() {
   OnRecordingEnded();
 }
 
+void GameDashboardController::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  switch (state) {
+    case display::TabletState::kInClamshellMode:
+      MaybeEnableFeatures(/*enable=*/true,
+                          GameDashboardMainMenuToggleMethod::kTabletMode);
+      break;
+    case display::TabletState::kEnteringTabletMode:
+      if (active_recording_context_) {
+        auto* capture_mode_controller = CaptureModeController::Get();
+        CHECK(capture_mode_controller->is_recording_in_progress());
+        // TODO(b/316036118): Update the end recording reason in the capture
+        // mode.
+        capture_mode_controller->EndVideoRecording(
+            EndRecordingReason::kGameDashboardStopRecordingButton);
+      }
+      MaybeEnableFeatures(/*enable=*/false,
+                          GameDashboardMainMenuToggleMethod::kTabletMode);
+      // TODO(b/316036118): Show the UI to notify users this is not available in
+      // the tablet mode.
+      break;
+    case display::TabletState::kInTabletMode:
+    case display::TabletState::kExitingTabletMode:
+      break;
+  }
+}
+
 void GameDashboardController::OnOverviewModeWillStart() {
   // In overview mode, hide the Game Dashboard button, and if open, close the
   // main menu.
-  for (auto const& [_, context] : game_window_contexts_) {
-    context->game_dashboard_button_widget()->Hide();
-    if (context->main_menu_view()) {
-      context->CloseMainMenu(GameDashboardMainMenuToggleMethod::kOverview);
-    }
-  }
+  MaybeEnableFeatures(/*enable=*/false,
+                      GameDashboardMainMenuToggleMethod::kOverview);
 }
 
 void GameDashboardController::OnOverviewModeEnded() {
   // Make the Game Dashboard button visible.
-  for (auto const& [_, context] : game_window_contexts_) {
-    context->game_dashboard_button_widget()->Show();
-  }
+  MaybeEnableFeatures(/*enable=*/true,
+                      GameDashboardMainMenuToggleMethod::kOverview);
 }
 
 void GameDashboardController::GetWindowGameState(aura::Window* window) {
@@ -272,6 +296,16 @@ void GameDashboardController::RefreshForGameControlsFlags(
 
   if (auto* context = GetGameDashboardContext(window)) {
     context->UpdateForGameControlsFlags();
+  }
+}
+
+void GameDashboardController::MaybeEnableFeatures(
+    bool enable,
+    GameDashboardMainMenuToggleMethod main_menu_toggle_method) {
+  const bool should_enable =
+      enable && game_dashboard_utils::ShouldEnableFeatures();
+  for (auto const& [_, context] : game_window_contexts_) {
+    context->EnableFeatures(should_enable, main_menu_toggle_method);
   }
 }
 

@@ -1142,6 +1142,7 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="3" label="Activate a new feature"/>
   <int value="4" label="Enter overview mode"/>
   <int value="5" label="Others"/>
+  <int value="6" label="Enter tablet mode"/>
 </enum>
 
 <enum name="GameDashboardMenu">

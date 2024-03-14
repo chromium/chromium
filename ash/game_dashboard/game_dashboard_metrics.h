@@ -40,7 +40,8 @@ enum class GameDashboardMainMenuToggleMethod {
   // Includes clicking outside of the menu, clicking on the game window close
   // button, and game window closing unspecified.
   kOthers,
-  kMaxValue = kOthers,
+  kTabletMode,
+  kMaxValue = kTabletMode,
 };
 
 // This enum should be kept in sync with the `GameDashboardMenu` in

@@ -25,6 +25,7 @@
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -36,6 +37,7 @@
 #include "ash/system/unified/feature_tile.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/check.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/timer.h"
@@ -68,7 +70,7 @@ enum class Movement { kTouch, kMouse };
 void VerifyToggleMainMenuHistogram(const base::HistogramTester& histograms,
                                    const std::string& histogram_name,
                                    const std::vector<int>& histograms_values) {
-  DCHECK_EQ(6u, histograms_values.size());
+  DCHECK_EQ(7u, histograms_values.size());
   histograms.ExpectBucketCount(
       histogram_name, GameDashboardMainMenuToggleMethod::kGameDashboardButton,
       histograms_values[0]);
@@ -87,6 +89,9 @@ void VerifyToggleMainMenuHistogram(const base::HistogramTester& histograms,
   histograms.ExpectBucketCount(histogram_name,
                                GameDashboardMainMenuToggleMethod::kOthers,
                                histograms_values[5]);
+  histograms.ExpectBucketCount(histogram_name,
+                               GameDashboardMainMenuToggleMethod::kTabletMode,
+                               histograms_values[6]);
 }
 
 void VerifyToggleToolbarHistogram(const base::HistogramTester& histograms,
@@ -258,7 +263,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // Using `prefs::kGameDashboardShowWelcomeDialog`, verify whether the
     // welcome dialog should be shown.
     if (active_user_prefs_->GetBoolean(
-            prefs::kGameDashboardShowWelcomeDialog)) {
+            prefs::kGameDashboardShowWelcomeDialog) &&
+        game_dashboard_utils::ShouldEnableFeatures()) {
       ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
     } else {
       ASSERT_FALSE(test_api_->GetWelcomeDialogWidget());
@@ -1113,6 +1119,31 @@ class GameTypeGameDashboardContextTest
 
  protected:
   bool IsArcGame() const { return GetParam(); }
+
+  void VerifyFeaturesEnabled(bool expect_enabled,
+                             bool toolbar_visible = false) {
+    auto* event_generator = GetEventGenerator();
+    auto* gd_button_widget = test_api_->GetGameDashboardButtonWidget();
+    EXPECT_TRUE(gd_button_widget);
+
+    if (expect_enabled) {
+      EXPECT_TRUE(gd_button_widget->IsVisible());
+      event_generator->PressAndReleaseKey(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+      EXPECT_TRUE(test_api_->GetMainMenuWidget());
+      test_api_->CloseTheMainMenu();
+    } else {
+      EXPECT_FALSE(gd_button_widget->IsVisible());
+      event_generator->PressAndReleaseKey(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+      EXPECT_FALSE(test_api_->GetMainMenuWidget());
+    }
+    auto* toolbar_widget = test_api_->GetToolbarWidget();
+    if (toolbar_visible) {
+      EXPECT_TRUE(toolbar_widget);
+      EXPECT_TRUE(toolbar_widget->IsVisible());
+    } else {
+      EXPECT_TRUE(!toolbar_widget || !toolbar_widget->IsVisible());
+    }
+  }
 };
 
 // GameTypeGameDashboardContextTest Tests
@@ -1684,6 +1715,39 @@ TEST_P(GameTypeGameDashboardContextTest, ToggleWelcomeDialogSettings) {
   EXPECT_TRUE(test_api_->GetSettingsViewWelcomeDialogSwitch()->GetIsOn());
 }
 
+TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+
+  // App is launched in desktop mode in Setup and switch to the tablet mode.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  VerifyFeaturesEnabled(/*expect_enabled=*/false);
+  // Switch back to the desktop mode and this feature is resumed.
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);
+  CloseGameWindow();
+
+  // Launch app in the tablet mode and switch to the desktop mode.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  CreateGameWindow(IsArcGame());
+  VerifyFeaturesEnabled(/*expect_enabled=*/false);
+  // Switch back to the desktop mode and this feature is resumed.
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  VerifyFeaturesEnabled(/*expect_enabled=*/true);
+
+  // Start recording in the desktop mode and switch to the tablet mode.
+  test_api_->OpenTheMainMenu();
+  LeftClickOn(test_api_->GetMainMenuRecordGameTile());
+  // Clicking on the record game tile closes the main menu, and asynchronously
+  // starts the capture session. Run until idle to ensure that the posted task
+  // runs synchronously and completes before proceeding.
+  base::RunLoop().RunUntilIdle();
+  ClickOnStartRecordingButtonInCaptureModeBarView();
+  EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+}
+
 // -----------------------------------------------------------------------------
 // OnOverviewModeEndedWaiter:
 class OnOverviewModeEndedWaiter : public OverviewObserver {
@@ -1756,6 +1820,49 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
   EXPECT_FALSE(test_api_->GetMainMenuWidget());
 }
 
+TEST_P(GameTypeGameDashboardContextTest, OverviewModeWithTabletMode) {
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  const auto* overview_controller = OverviewController::Get();
+
+  // 1. Clamshell -> overrview -> tablet-> exit overview.
+  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EnterOverview();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  VerifyFeaturesEnabled(/*expect_enabled=*/false, /*toolbar_visible=*/true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  VerifyFeaturesEnabled(/*expect_enabled=*/false);
+  ExitOverview();
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+  VerifyFeaturesEnabled(/*expect_enabled=*/false);
+
+  // 2. Tablet -> overview -> exit overview -> clamshell.
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EnterOverview();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  VerifyFeaturesEnabled(/*expect_enabled=*/false);
+  ExitOverview();
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+  VerifyFeaturesEnabled(/*expect_enabled=*/false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);
+
+  // 3. Tablet -> overview -> clamshell -> exit overview.
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EnterOverview();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
+  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  VerifyFeaturesEnabled(/*expect_enabled=*/false, /*toolbar_visible=*/true);
+  ExitOverview();
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+  VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);
+}
+
 TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
   base::HistogramTester histograms;
   const std::string histogram_name_on =
@@ -1771,63 +1878,74 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
   test_api_->OpenTheMainMenu();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/1, 0, 0, 0, 0, 0});
+      std::vector<int>{/*kGameDashboardButton=*/1, 0, 0, 0, 0, 0, 0});
   test_api_->CloseTheMainMenu();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_off,
-      std::vector<int>{/*kGameDashboardButton=*/1, 0, 0, 0, 0, 0});
+      std::vector<int>{/*kGameDashboardButton=*/1, 0, 0, 0, 0, 0, 0});
 
   // Toggle on/off main menu by Search+G.
   auto* event_generator = GetEventGenerator();
   event_generator->PressAndReleaseKey(ui::VKEY_G, ui::EF_COMMAND_DOWN);
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_on,
-      std::vector<int>{1, /*kSearchPlusG=*/1, 0, 0, 0, 0});
+      std::vector<int>{1, /*kSearchPlusG=*/1, 0, 0, 0, 0, 0});
   event_generator->PressAndReleaseKey(ui::VKEY_G, ui::EF_COMMAND_DOWN);
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_off,
-      std::vector<int>{1, /*kSearchPlusG=*/1, 0, 0, 0, 0});
+      std::vector<int>{1, /*kSearchPlusG=*/1, 0, 0, 0, 0, 0});
 
   // Toggle off main menu by key Esc.
   test_api_->OpenTheMainMenu();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/2, 1, 0, 0, 0, 0});
+      std::vector<int>{/*kGameDashboardButton=*/2, 1, 0, 0, 0, 0, 0});
   event_generator->PressAndReleaseKey(ui::VKEY_ESCAPE);
   // Main menu is closed asynchronously. Run until idle to ensure that this
   // posted task runs synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
   VerifyToggleMainMenuHistogram(histograms, histogram_name_off,
-                                std::vector<int>{1, 1, /*kEsc=*/1, 0, 0, 0});
+                                std::vector<int>{1, 1, /*kEsc=*/1, 0, 0, 0, 0});
 
   // Toggle off main menu by activating a new feature.
   test_api_->OpenTheMainMenu();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/3, 1, 0, 0, 0, 0});
+      std::vector<int>{/*kGameDashboardButton=*/3, 1, 0, 0, 0, 0, 0});
   LeftClickOn(test_api_->GetMainMenuScreenshotTile());
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_off,
-      std::vector<int>{1, 1, 1, /*kActivateNewFeature=*/1, 0, 0});
+      std::vector<int>{1, 1, 1, /*kActivateNewFeature=*/1, 0, 0, 0});
 
   // Toggle off main menu by entering overview mode.
   test_api_->OpenTheMainMenu();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/4, 1, 0, 0, 0, 0});
+      std::vector<int>{/*kGameDashboardButton=*/4, 1, 0, 0, 0, 0, 0});
   EnterOverview();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_off,
-      std::vector<int>{1, 1, 1, 1, /*kOverview=*/1, 0});
+      std::vector<int>{1, 1, 1, 1, /*kOverview=*/1, 0, 0});
   OnOverviewModeEndedWaiter waiter;
   ExitOverview();
   waiter.Wait();
+
+  // Toggle off main menu by entering the tablet mode.
+  test_api_->OpenTheMainMenu();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_on,
+      std::vector<int>{/*kGameDashboardButton=*/5, 1, 0, 0, 0, 0, 0});
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_off,
+      std::vector<int>{1, 1, 1, 1, 1, 0, /*kTabletMode=*/1});
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
 
   // Toggle off main menu by clicking outside of the main menu.
   test_api_->OpenTheMainMenu();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/5, 1, 0, 0, 0, 0});
+      std::vector<int>{/*kGameDashboardButton=*/6, 1, 0, 0, 0, 0, 0});
   const gfx::Point bottom_center =
       test_api_->GetMainMenuView()->GetBoundsInScreen().bottom_center();
   event_generator->MoveMouseTo(
@@ -1836,19 +1954,21 @@ TEST_P(GameTypeGameDashboardContextTest, RecordToggleMainMenuHistogramTest) {
   // Main menu is closed asynchronously. Run until idle to ensure that this
   // posted task runs synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
-  VerifyToggleMainMenuHistogram(histograms, histogram_name_off,
-                                std::vector<int>{1, 1, 1, 1, 1, /*kOthers=*/1});
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_off,
+      std::vector<int>{1, 1, 1, 1, 1, /*kOthers=*/1, 1});
 
   test_api_->OpenTheMainMenu();
   VerifyToggleMainMenuHistogram(
       histograms, histogram_name_on,
-      std::vector<int>{/*kGameDashboardButton=*/6, 1, 0, 0, 0, 0});
+      std::vector<int>{/*kGameDashboardButton=*/7, 1, 0, 0, 0, 0, 0});
   CloseGameWindow();
   // Main menu is closed asynchronously. Run until idle to ensure that this
   // posted task runs synchronously and completes before proceeding.
   base::RunLoop().RunUntilIdle();
-  VerifyToggleMainMenuHistogram(histograms, histogram_name_off,
-                                std::vector<int>{1, 1, 1, 1, 1, /*kOthers=*/2});
+  VerifyToggleMainMenuHistogram(
+      histograms, histogram_name_off,
+      std::vector<int>{1, 1, 1, 1, 1, /*kOthers=*/2, 1});
 }
 
 TEST_P(GameTypeGameDashboardContextTest,

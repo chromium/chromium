@@ -34,6 +34,12 @@ ASH_EXPORT ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
                                           ArcGameControlsFlag flag,
                                           bool enable_flag);
 
+// Returns true if the system is not in the overview mode and not in the tablet
+// mode. This is only for Game Dashboard (GD) features availability. Call it
+// when the feature availability is aligned with GD entry availability, since
+// GD features availability dependency may change.
+ASH_EXPORT bool ShouldEnableFeatures();
+
 // Returns flags value if `window` is an ARC game window. Otherwise, it returns
 // nullopt.
 std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window);

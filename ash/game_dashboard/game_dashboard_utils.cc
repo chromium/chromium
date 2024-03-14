@@ -11,9 +11,11 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view_utils.h"
 
@@ -34,6 +36,11 @@ ArcGameControlsFlag UpdateFlag(ArcGameControlsFlag flags,
                                bool enable_flag) {
   return static_cast<ArcGameControlsFlag>(enable_flag ? flags | flag
                                                       : flags & ~flag);
+}
+
+bool ShouldEnableFeatures() {
+  return !OverviewController::Get()->InOverviewSession() &&
+         !display::Screen::GetScreen()->InTabletMode();
 }
 
 std::optional<ArcGameControlsFlag> GetGameControlsFlag(aura::Window* window) {
