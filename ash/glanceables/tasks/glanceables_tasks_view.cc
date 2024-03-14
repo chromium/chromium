@@ -67,8 +67,7 @@ constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
 constexpr gfx::Insets kFooterBorderInsets = gfx::Insets::TLBR(4, 6, 8, 2);
 
-constexpr char kTasksManagementPage[] =
-    "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
+constexpr char kTasksManagementPage[] = "https://tasks.google.com/";
 
 api::TasksClient* GetTasksClient() {
   return Shell::Get()->glanceables_controller()->GetTasksClient();
@@ -242,7 +241,8 @@ GlanceablesTasksView::GlanceablesTasksView(
       tasks_header_view_->AddChildView(std::make_unique<IconButton>(
           base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                               base::Unretained(this),
-                              TasksLaunchSource::kHeaderButton),
+                              TasksLaunchSource::kHeaderButton,
+                              GURL(kTasksManagementPage)),
           IconButton::Type::kSmall, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
   header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -259,7 +259,8 @@ GlanceablesTasksView::GlanceablesTasksView(
               IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
           base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                               base::Unretained(this),
-                              TasksLaunchSource::kFooterButton)));
+                              TasksLaunchSource::kFooterButton,
+                              GURL(kTasksManagementPage))));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
   list_footer_view_->SetBorder(views::CreateEmptyBorder(kFooterBorderInsets));
@@ -342,9 +343,11 @@ std::unique_ptr<GlanceablesTaskViewV2> GlanceablesTasksView::CreateTaskView(
                           base::Unretained(this), task_list_id),
       base::BindRepeating(&GlanceablesTasksView::SaveTask,
                           base::Unretained(this), task_list_id),
-      base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
-                          base::Unretained(this),
-                          TasksLaunchSource::kEditInGoogleTasksButton),
+      base::BindRepeating(
+          &GlanceablesTasksView::ActionButtonPressed, base::Unretained(this),
+          TasksLaunchSource::kEditInGoogleTasksButton,
+          task && task->web_view_link.is_valid() ? task->web_view_link
+                                                 : GURL(kTasksManagementPage)),
       base::BindRepeating(&GlanceablesTasksView::ShowErrorMessageWithType,
                           base::Unretained(this)));
 }
@@ -493,14 +496,14 @@ void GlanceablesTasksView::MarkTaskAsCompleted(const std::string& task_list_id,
   GetTasksClient()->MarkAsCompleted(task_list_id, task_id, completed);
 }
 
-void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source) {
+void GlanceablesTasksView::ActionButtonPressed(TasksLaunchSource source,
+                                               const GURL& target_url) {
   if (user_with_no_tasks_) {
     RecordUserWithNoTasksRedictedToTasksUI();
   }
   RecordTasksLaunchSource(source);
   NewWindowDelegate::GetPrimary()->OpenUrl(
-      GURL(kTasksManagementPage),
-      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      target_url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 

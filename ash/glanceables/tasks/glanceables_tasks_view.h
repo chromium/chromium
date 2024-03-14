@@ -22,6 +22,8 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+class GURL;
+
 namespace views {
 class LabelButton;
 }  // namespace views
@@ -115,7 +117,7 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
 
   // Handles press behavior for icons that are used to open Google Tasks in the
   // browser.
-  void ActionButtonPressed(TasksLaunchSource source);
+  void ActionButtonPressed(TasksLaunchSource source, const GURL& target_url);
 
   // Saves the task (either creates or updates the existing one).
   // `view`     - individual task view which triggered this request.

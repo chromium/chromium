@@ -569,7 +569,7 @@ TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromHeaderView) {
   const auto* const header_icon_button = GetHeaderIconView();
   GestureTapOn(header_icon_button);
   EXPECT_EQ(new_window_delegate()->GetLastOpenedUrl(),
-            "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
+            "https://tasks.google.com/");
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Tasks_LaunchTasksApp_HeaderButton"));
   EXPECT_EQ(0, user_actions.GetActionCount(
@@ -593,6 +593,8 @@ TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromEditInBrowserView) {
 
   // Verify that tapping on the button will record the action.
   GestureTapOn(edit_in_browser_button);
+  EXPECT_EQ(new_window_delegate()->GetLastOpenedUrl(),
+            "https://tasks.google.com/task/TaskListItem1");
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Tasks_LaunchTasksApp_EditInGoogleTasksButton"));
   histogram_tester.ExpectTotalCount(
