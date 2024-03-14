@@ -155,12 +155,25 @@ found in the LICENSE file.
 
   <div class="columns">
     <div class="column">
-      <h2>Command line options:</h2>
+      <h2>
+        Locking the accessibility mode from being changed by other
+        applications:
+      </h2>
       <p>
         Accessibility features in Chrome are off by default and enabled
         automatically on-demand. Changes to these modes only take effect
         until the next time Chrome is restarted.
       </p>
+      <div class="checkbox-row">
+        <label>
+          <span class="checkbox-wrapper">
+            <input type="checkbox" id="locked"
+                   aria-describedby="locked_secondary">
+          </span>
+          Lock the current accessibility mode from being changed
+          except by this page.
+        </label>
+      </div>
       <p>
         To force accessibility to be enabled at launch, run Chrome with this
         flag:

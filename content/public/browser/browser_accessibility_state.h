@@ -124,6 +124,11 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Returns whether performance filtering is allowed.
   virtual bool IsPerformanceFilteringAllowed() = 0;
 
+  // Allows or disallows changes to the AXMode. This is useful for tests that
+  // want to ensure that the AXMode is not changed after a certain point.
+  virtual void SetAXModeChangeAllowed(bool allow) = 0;
+  virtual bool IsAXModeChangeAllowed() const = 0;
+
   using FocusChangedCallback =
       base::RepeatingCallback<void(const FocusedNodeDetails&)>;
 

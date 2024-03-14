@@ -441,7 +441,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   static_cast<content::BrowserAccessibilityStateImpl*>(
       content::BrowserAccessibilityState::GetInstance())
-      ->DisallowAXModeChanges();
+      ->SetAXModeChangeAllowed(false);
   WaitForAllFramesLoaded(mode);
 
   // Call the subclass to dump the output.

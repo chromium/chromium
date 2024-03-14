@@ -19,7 +19,7 @@ base::LazyInstance<AXPlatformNode::NativeWindowHandlerCallback>::Leaky
     AXPlatformNode::native_window_handler_ = LAZY_INSTANCE_INITIALIZER;
 
 // static
-bool AXPlatformNode::disallow_ax_mode_changes_;
+bool AXPlatformNode::allow_ax_mode_changes_ = true;
 
 // static
 gfx::NativeViewAccessible AXPlatformNode::popup_focus_override_ = nullptr;
@@ -47,8 +47,8 @@ void AXPlatformNode::RegisterNativeWindowHandler(
 }
 
 // static
-void AXPlatformNode::DisallowAXModeChanges() {
-  disallow_ax_mode_changes_ = true;
+void AXPlatformNode::SetAXModeChangeAllowed(bool allow) {
+  allow_ax_mode_changes_ = allow;
 }
 
 AXPlatformNode::AXPlatformNode() = default;
@@ -78,7 +78,7 @@ std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node) {
 
 // static
 void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
-  if (disallow_ax_mode_changes_) {
+  if (!allow_ax_mode_changes_) {
     return;
   }
 

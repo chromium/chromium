@@ -93,6 +93,7 @@ static const char kBrowser[] = "browser";
 static const char kCopyTree[] = "copyTree";
 static const char kHTML[] = "html";
 static const char kInternal[] = "internal";
+static const char kLocked[] = "locked";
 static const char kNative[] = "native";
 static const char kPage[] = "page";
 static const char kPDFPrinting[] = "pdfPrinting";
@@ -232,6 +233,10 @@ void HandleAccessibilityRequestCallback(
 
   bool show_internal = pref->GetBoolean(prefs::kShowInternalAccessibilityTree);
   data.Set(kInternal, show_internal ? kOn : kOff);
+
+  bool is_mode_locked = !content::BrowserAccessibilityState::GetInstance()
+                             ->IsAXModeChangeAllowed();
+  data.Set(kLocked, is_mode_locked ? kOn : kOff);
 
   base::Value::List page_list;
   std::unique_ptr<content::RenderWidgetHostIterator> widget_iter(
@@ -551,6 +556,10 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
   if (flag_name_str == kInternal) {
     PrefService* pref = Profile::FromWebUI(web_ui())->GetPrefs();
     pref->SetBoolean(prefs::kShowInternalAccessibilityTree, enabled);
+    return;
+  } else if (flag_name_str == kLocked) {
+    content::BrowserAccessibilityState::GetInstance()->SetAXModeChangeAllowed(
+        !enabled);
     return;
   }
 

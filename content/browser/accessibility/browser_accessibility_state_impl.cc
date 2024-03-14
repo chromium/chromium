@@ -233,9 +233,7 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     }
   }
 
-  if (disallow_changes) {
-    DisallowAXModeChanges();
-  }
+  SetAXModeChangeAllowed(!disallow_changes);
 }
 
 void BrowserAccessibilityStateImpl::InitBackgroundTasks() {
@@ -270,7 +268,7 @@ void BrowserAccessibilityStateImpl::OnScreenReaderDetected() {
   // Clear any previous, now obsolete, request to disable support.
   disable_accessibility_request_time_ = base::TimeTicks();
 
-  if (disallow_ax_mode_changes_) {
+  if (!allow_ax_mode_changes_) {
     return;
   }
   EnableAccessibility();
@@ -293,7 +291,7 @@ void BrowserAccessibilityStateImpl::OnScreenReaderStopped() {
 }
 
 void BrowserAccessibilityStateImpl::EnableAccessibility() {
-  if (disallow_ax_mode_changes_) {
+  if (!allow_ax_mode_changes_) {
     return;
   }
 
@@ -342,7 +340,7 @@ void BrowserAccessibilityStateImpl::MaybeResetAccessibilityMode() {
 }
 
 void BrowserAccessibilityStateImpl::ResetAccessibilityMode() {
-  if (disallow_ax_mode_changes_) {
+  if (!allow_ax_mode_changes_) {
     return;
   }
 
@@ -392,7 +390,7 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
 
   UMA_HISTOGRAM_BOOLEAN(
       "Accessibility.ManuallyEnabled",
-      !GetAccessibilityMode().is_mode_off() && disallow_ax_mode_changes_);
+      !GetAccessibilityMode().is_mode_off() && !allow_ax_mode_changes_);
 
   ui_thread_done_ = true;
   if (other_thread_done_ && background_thread_done_callback_)
@@ -443,7 +441,7 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityModeForBrowserContext(
 
 void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   // No need to do anything if accessibility is off, or if it was forced on.
-  if (GetAccessibilityMode().is_mode_off() || disallow_ax_mode_changes_) {
+  if (GetAccessibilityMode().is_mode_off() || !allow_ax_mode_changes_) {
     return;
   }
 
@@ -509,13 +507,17 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
 
 void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
 
-void BrowserAccessibilityStateImpl::DisallowAXModeChanges() {
-  disallow_ax_mode_changes_ = true;
-  ui::AXPlatformNode::DisallowAXModeChanges();
+void BrowserAccessibilityStateImpl::SetAXModeChangeAllowed(bool allowed) {
+  allow_ax_mode_changes_ = allowed;
+  ui::AXPlatformNode::SetAXModeChangeAllowed(allowed);
+}
+
+bool BrowserAccessibilityStateImpl::IsAXModeChangeAllowed() const {
+  return allow_ax_mode_changes_;
 }
 
 void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
-  if (disallow_ax_mode_changes_) {
+  if (!allow_ax_mode_changes_) {
     return;
   }
 
@@ -541,7 +543,7 @@ void BrowserAccessibilityStateImpl::RemoveAccessibilityModeFlags(
   // Turning off accessibility or changing the mode will not be allowed if the
   // --force-renderer-accessibility or --disable-renderer-accessibility command
   // line flags are present, or during testing
-  if (disallow_ax_mode_changes_) {
+  if (!allow_ax_mode_changes_) {
     return;
   }
 

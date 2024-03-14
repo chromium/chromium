@@ -93,6 +93,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   std::unique_ptr<ScopedAccessibilityMode> CreateScopedModeForWebContents(
       WebContents* web_contents,
       ui::AXMode mode) override;
+  void SetAXModeChangeAllowed(bool allowed) override;
+  bool IsAXModeChangeAllowed() const override;
 
   // Returns whether caret browsing is enabled for the most recently
   // used profile.
@@ -127,9 +129,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // Notifies listeners that the focused element changed inside a WebContents.
   void OnFocusChangedInPage(const FocusedNodeDetails& details);
-
-  // Do not allow further changes to the AXMode.
-  void DisallowAXModeChanges();
 
  protected:
   BrowserAccessibilityStateImpl();
@@ -179,10 +178,10 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Whether there is a pending task to run UpdateAccessibilityActivityTask.
   bool accessibility_update_task_pending_ = false;
 
-  // Whether changes to the AXMode are disallowed.
+  // Whether changes to the AXMode are allowed.
   // Changes are disallowed while running tests or when
   // --force-renderer-accessibility is used on the command line.
-  bool disallow_ax_mode_changes_ = false;
+  bool allow_ax_mode_changes_ = true;
 
   // Disable hot tracking, i.e. hover state - needed just to avoid flaky tests.
   bool disable_hot_tracking_ = false;

@@ -71,6 +71,7 @@ interface InitData {
 
   html: EnabledStatus;
   internal: EnabledStatus;
+  locked: EnabledStatus;
   native: EnabledStatus;
   pdfPrinting: EnabledStatus;
   screenreader: EnabledStatus;
@@ -242,6 +243,7 @@ function initialize() {
   bindCheckbox('screenreader', data.screenreader);
   bindCheckbox('html', data.html);
   bindCheckbox('internal', data.internal);
+  bindCheckbox('locked', data.locked);
 
   getRequiredElement('pages').textContent = '';
 
