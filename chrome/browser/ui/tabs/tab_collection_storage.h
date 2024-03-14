@@ -73,9 +73,17 @@ class TabCollectionStorage {
   // Returns true if the `tab_model` is owned by the `children_`.
   bool ContainsTab(TabModel* tab_model) const;
 
+  // Returns true if the `tab_collection` is owned by the `children_`.
+  bool ContainsCollection(TabCollection* tab_collection) const;
+
   // Returns the index of the `tab_model` in `children_`. It returns a nullopt
   // if the `tab_model` is not present in the `children_`.
   std::optional<size_t> GetIndexOfTab(TabModel* tab_model) const;
+
+  // Returns the index of the `tab_collection` in `children_`. It returns a
+  // nullopt if the `tab_collection` is not present in the `children_`.
+  std::optional<size_t> GetIndexOfCollection(
+      TabCollection* tab_collection) const;
 
   // Returns the total number of elements stored in `children_`. This is
   // equivalent to the sum of TabModel and TabCollection present in `children_`.
