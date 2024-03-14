@@ -70,6 +70,7 @@ libvpx_include_dirs = [
   "source/libvpx",
 ]
 
+# Private configuration used in building libvpx.
 config("libvpx_config") {
   include_dirs = libvpx_include_dirs
 
@@ -96,7 +97,7 @@ config("libvpx_config") {
 }
 
 # This config is applied to targets that depend on libvpx.
-config("libvpx_external_config") {
+config("libvpx_public_config") {
   include_dirs = [
     "source/libvpx",
     platform_include_dir,
@@ -545,7 +546,7 @@ static_library("libvpx") {
     deps += [ ":libvpx_loongarch_lsx" ]
   }
 
-  public_configs = [ ":libvpx_external_config" ]
+  public_configs = [ ":libvpx_public_config" ]
 }
 
 static_library("libvpxrc") {
@@ -567,7 +568,7 @@ static_library("libvpxrc") {
   configs += [ ":libvpx_config" ]
   public_deps = [ ":libvpx" ]
 
-  public_configs = [ ":libvpx_external_config" ]
+  public_configs = [ ":libvpx_public_config" ]
 }
 
 test("vp8_encoder_fuzz_test") {

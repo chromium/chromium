@@ -6,7 +6,8 @@ import("//build/config/arm.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libgav1/options.gni")
 
-config("public_libgav1_config") {
+# Public configuration exported to users of the libgav1_parser target.
+config("libgav1_public_config") {
   include_dirs = [
     "src",
     "src/src",
@@ -24,7 +25,8 @@ config("public_libgav1_config") {
   ]
 }
 
-config("private_libgav1_config") {
+# Private configuration used in building libgav1.
+config("libgav1_config") {
   configs = []
 
   # dsp intrinsics will generate much better code when optimized for speed
@@ -43,9 +45,9 @@ if (use_libgav1_parser) {
   static_library("libgav1_parser") {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ ":private_libgav1_config" ]
+    configs += [ ":libgav1_config" ]
 
-    public_configs = [ ":public_libgav1_config" ]
+    public_configs = [ ":libgav1_public_config" ]
 
     sources = [
       "//third_party/libgav1/src/src/buffer_pool.cc",
@@ -95,6 +97,6 @@ if (use_libgav1_parser) {
     ]
     deps = [ ":libgav1_parser" ]
     defines = [ "LIBGAV1_EXAMPLES_ENABLE_LOGGING=0" ]
-    additional_configs = [ ":private_libgav1_config" ]
+    additional_configs = [ ":libgav1_config" ]
   }
 }

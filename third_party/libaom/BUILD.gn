@@ -65,12 +65,13 @@ libaom_include_dirs = [
   "source/libaom",
 ]
 
+# Private configuration used in building libaom.
 config("libaom_config") {
   include_dirs = libaom_include_dirs
 }
 
 # This config is applied to targets that depend on libaom.
-config("libaom_external_config") {
+config("libaom_public_config") {
   include_dirs = [
     "source/libaom",
     platform_include_dir,
@@ -337,7 +338,7 @@ static_library("libaom") {
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]
   }
-  public_configs = [ ":libaom_external_config" ]
+  public_configs = [ ":libaom_public_config" ]
   public_deps = [ ":libaom_buildflags" ]
 }
 
@@ -355,7 +356,7 @@ static_library("libaomrc") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ ":libaom_config" ]
 
-  public_configs = [ ":libaom_external_config" ]
+  public_configs = [ ":libaom_public_config" ]
   public_deps = [ ":libaom" ]
 }
 
