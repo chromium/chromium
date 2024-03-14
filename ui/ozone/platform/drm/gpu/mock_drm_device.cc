@@ -266,7 +266,7 @@ MockDrmDevice::MockDrmState::AddConnector() {
 }
 
 MockDrmDevice::EncoderProperties& MockDrmDevice::MockDrmState::AddEncoder() {
-  uint32_t next_encoder_id = GetNextId(crtc_properties, kEncoderIdBase);
+  uint32_t next_encoder_id = GetNextId(encoder_properties, kEncoderIdBase);
   auto& encoder_property = encoder_properties.emplace_back();
   encoder_property.id = next_encoder_id;
 

@@ -2,3 +2,10 @@ include_rules = [
   "-ui/ozone/platform/drm",
   "+ui/ozone/platform/drm/common",
 ]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+ui/ozone/platform/drm/gpu/fake_drm_device_generator.h",
+    "+ui/ozone/platform/drm/gpu/mock_drm_device.h",
+  ],
+}

@@ -9,14 +9,20 @@
 
 #include <map>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
+#include "ui/ozone/platform/drm/gpu/fake_drm_device_generator.h"
+#include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 
 namespace ui {
+
+using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
 
 class DrmUtilTest : public testing::Test {};
 
@@ -262,6 +268,190 @@ TEST(PathBlobParser, ValidPathFormat) {
     drmModePropertyBlobRes blob{1, sizeof(valid), valid};
     EXPECT_EQ(expected, ParsePathBlob(blob));
   }
+}
+
+TEST(GetPossibleCrtcsBitmaskFromEncoders, MultipleCrtcsMultipleEncoders) {
+  std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
+      std::make_unique<FakeDrmDeviceGenerator>();
+  scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(
+      base::FilePath("/test/dri/card0"), base::ScopedFD(),
+      /*is_primary_device=*/true);
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(device.get());
+
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  uint32_t first_encoder_id, second_encoder_id;
+  {
+    // Add 2 CRTCs
+    drm_state.AddCrtc();
+    drm_state.AddCrtc();
+
+    // Add 2 encoders
+    MockDrmDevice::EncoderProperties& first_encoder = drm_state.AddEncoder();
+    first_encoder.possible_crtcs = 0b10;
+    first_encoder_id = first_encoder.id;
+
+    MockDrmDevice::EncoderProperties& second_encoder = drm_state.AddEncoder();
+    second_encoder.possible_crtcs = 0b01;
+    second_encoder_id = second_encoder.id;
+
+    // Add 1 connector
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders =
+        std::vector<uint32_t>{first_encoder_id, second_encoder_id};
+  }
+
+  mock_drm->InitializeState(drm_state, /*use_atomic*/ true);
+
+  EXPECT_EQ(GetPossibleCrtcsBitmaskFromEncoders(
+                *mock_drm, {first_encoder_id, second_encoder_id}),
+            0b11u);
+}
+
+TEST(GetPossibleCrtcsBitmaskFromEncoders, EmptyEncodersList) {
+  std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
+      std::make_unique<FakeDrmDeviceGenerator>();
+  scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(
+      base::FilePath("/test/dri/card0"), base::ScopedFD(),
+      /*is_primary_device=*/true);
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(device.get());
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  {
+    drm_state.AddCrtc();
+    MockDrmDevice::EncoderProperties& first_encoder = drm_state.AddEncoder();
+    first_encoder.possible_crtcs = 0b01;
+    uint32_t encoder_id = first_encoder.id;
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders = std::vector<uint32_t>{encoder_id};
+  }
+
+  mock_drm->InitializeState(drm_state, /*use_atomic*/ true);
+
+  EXPECT_EQ(GetPossibleCrtcsBitmaskFromEncoders(*mock_drm, /*encoder_ids=*/{}),
+            0u);
+}
+
+TEST(GetPossibleCrtcsBitmaskFromEncoders, InvalidEncoderID) {
+  std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
+      std::make_unique<FakeDrmDeviceGenerator>();
+  scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(
+      base::FilePath("/test/dri/card0"), base::ScopedFD(),
+      /*is_primary_device=*/true);
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(device.get());
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  {
+    drm_state.AddCrtc();
+    MockDrmDevice::EncoderProperties& first_encoder = drm_state.AddEncoder();
+    first_encoder.possible_crtcs = 0b01;
+    uint32_t encoder_id = first_encoder.id;
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders = std::vector<uint32_t>{encoder_id};
+  }
+
+  mock_drm->InitializeState(drm_state, /*use_atomic*/ true);
+
+  EXPECT_THAT(GetPossibleCrtcsBitmaskFromEncoders(*mock_drm,
+                                                  /*invalid encoder_ids=*/{1}),
+              0u);
+}
+
+TEST(GetPossibleCrtcIdsFromBitmask, ValidBitmask) {
+  std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
+      std::make_unique<FakeDrmDeviceGenerator>();
+  scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(
+      base::FilePath("/test/dri/card0"), base::ScopedFD(),
+      /*is_primary_device=*/true);
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(device.get());
+
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  uint32_t crtc_1_id, crtc_2_id;
+  {
+    // Add 2 CRTCs
+    crtc_1_id = drm_state.AddCrtc().id;
+    crtc_2_id = drm_state.AddCrtc().id;
+
+    // Add 2 encoders
+    MockDrmDevice::EncoderProperties& first_encoder = drm_state.AddEncoder();
+    first_encoder.possible_crtcs = 0b10;
+    uint32_t first_encoder_id = first_encoder.id;
+
+    MockDrmDevice::EncoderProperties& second_encoder = drm_state.AddEncoder();
+    second_encoder.possible_crtcs = 0b01;
+    uint32_t second_encoder_id = second_encoder.id;
+
+    // Add 1 connector
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders =
+        std::vector<uint32_t>{first_encoder_id, second_encoder_id};
+  }
+
+  mock_drm->InitializeState(drm_state, /*use_atomic*/ true);
+
+  EXPECT_THAT(GetPossibleCrtcIdsFromBitmask(*mock_drm, 0b11),
+              UnorderedElementsAre(crtc_1_id, crtc_2_id));
+}
+
+TEST(GetPossibleCrtcIdsFromBitmask, ZeroBitmask) {
+  std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
+      std::make_unique<FakeDrmDeviceGenerator>();
+  scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(
+      base::FilePath("/test/dri/card0"), base::ScopedFD(),
+      /*is_primary_device=*/true);
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(device.get());
+
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  {
+    drm_state.AddCrtc();
+
+    MockDrmDevice::EncoderProperties& first_encoder = drm_state.AddEncoder();
+    first_encoder.possible_crtcs = 0b01;
+    uint32_t first_encoder_id = first_encoder.id;
+
+    // Add 1 connector
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders = std::vector<uint32_t>{first_encoder_id};
+  }
+
+  mock_drm->InitializeState(drm_state, /*use_atomic*/ true);
+
+  EXPECT_THAT(
+      GetPossibleCrtcIdsFromBitmask(*mock_drm, /*possible_crtcs_bitmask=*/0),
+      IsEmpty());
+}
+
+TEST(GetPossibleCrtcIdsFromBitmask, BitmaskTooLong) {
+  std::unique_ptr<DrmDeviceGenerator> fake_device_generator =
+      std::make_unique<FakeDrmDeviceGenerator>();
+  scoped_refptr<DrmDevice> device = fake_device_generator->CreateDevice(
+      base::FilePath("/test/dri/card0"), base::ScopedFD(),
+      /*is_primary_device=*/true);
+  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(device.get());
+
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  uint32_t crtc_id;
+  {
+    crtc_id = drm_state.AddCrtc().id;
+
+    MockDrmDevice::EncoderProperties& first_encoder = drm_state.AddEncoder();
+    first_encoder.possible_crtcs = 0b01;
+    uint32_t first_encoder_id = first_encoder.id;
+
+    // Add 1 connector
+    MockDrmDevice::ConnectorProperties& connector = drm_state.AddConnector();
+    connector.connection = true;
+    connector.encoders = std::vector<uint32_t>{first_encoder_id};
+  }
+
+  mock_drm->InitializeState(drm_state, /*use_atomic*/ true);
+
+  // Recall that there was only 1 CRTC, but the bitmask has 4.
+  EXPECT_THAT(GetPossibleCrtcIdsFromBitmask(*mock_drm,
+                                            /*possible_crtcs_bitmask=*/0b1111),
+              UnorderedElementsAre(crtc_id));
 }
 
 }  // namespace ui

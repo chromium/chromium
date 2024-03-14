@@ -127,6 +127,17 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm);
 HardwareDisplayControllerInfoList GetAvailableDisplayControllerInfos(
     const DrmWrapper& drm);
 
+// Returns a bitmask of possible CRTCs for at least one encoder in
+// |encoder_ids|. The index in the bitmask corresponds to drm_crtc_index().
+uint32_t GetPossibleCrtcsBitmaskFromEncoders(
+    const DrmWrapper& drm,
+    const std::vector<uint32_t>& encoder_ids);
+
+// Returns a list of all possible CRTCs for encoders with IDs in |encoder_ids|.
+std::vector<uint32_t> GetPossibleCrtcIdsFromBitmask(
+    const DrmWrapper& drm,
+    const uint32_t possible_crtcs_bitmask);
+
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs);
 
 std::unique_ptr<display::DisplayMode> CreateDisplayMode(
