@@ -112,6 +112,12 @@ std::u16string GetTertiaryButtonLabel(Browser* browser, int tab) {
       ->GetButtonLabel(TabSharingInfoBarDelegate::InfoBarButton::BUTTON_EXTRA);
 }
 
+ui::ImageModel GetTertiaryButtonImage(Browser* browser, int tab) {
+  DCHECK(HasTertiaryButton(browser, tab));  // Test error otherwise.
+  return GetDelegate(browser, tab)
+      ->GetButtonImage(TabSharingInfoBarDelegate::InfoBarButton::BUTTON_EXTRA);
+}
+
 std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
   content::RenderFrameHost* const rfh =
       GetWebContents(browser, tab)->GetPrimaryMainFrame();
@@ -278,17 +284,17 @@ class TabSharingUIViewsBrowserTest
         EXPECT_FALSE(HasSecondaryButton(browser, i));
       } else if (i == capturing_tab) {
         // Capturing-tab's infobar.
-        ASSERT_TRUE(HasSecondaryButton(browser, i));
-        EXPECT_EQ(GetSecondaryButtonLabel(browser, i),
+        ASSERT_TRUE(HasTertiaryButton(browser, i));
+        EXPECT_EQ(GetTertiaryButtonLabel(browser, i),
                   GetExpectedSwitchToMessage(browser, captured_tab));
-        EXPECT_EQ(GetSecondaryButtonImage(browser, i),
+        EXPECT_EQ(GetTertiaryButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, captured_tab));
       } else if (i == captured_tab) {
         // Captured-tab's infobar.
-        ASSERT_TRUE(HasSecondaryButton(browser, i));
-        EXPECT_EQ(GetSecondaryButtonLabel(browser, i),
+        ASSERT_TRUE(HasTertiaryButton(browser, i));
+        EXPECT_EQ(GetTertiaryButtonLabel(browser, i),
                   GetExpectedSwitchToMessage(browser, capturing_tab));
-        EXPECT_EQ(GetSecondaryButtonImage(browser, i),
+        EXPECT_EQ(GetTertiaryButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, capturing_tab));
       } else if (infobar_manager->infobars().size() > 0) {
         // Any other infobar.
@@ -1059,8 +1065,8 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
                                kViewTabMessage));
 
   // The capturing tab: [Stop] [View tab: ...]
-  EXPECT_TRUE(HasSecondaryButton(browser(), kTab1));
-  EXPECT_TRUE(base::StartsWith(GetSecondaryButtonLabel(browser(), kTab1),
+  EXPECT_TRUE(HasTertiaryButton(browser(), kTab1));
+  EXPECT_TRUE(base::StartsWith(GetTertiaryButtonLabel(browser(), kTab1),
                                kViewTabMessage));
-  EXPECT_FALSE(HasTertiaryButton(browser(), kTab1));
+  EXPECT_FALSE(HasSecondaryButton(browser(), kTab1));
 }

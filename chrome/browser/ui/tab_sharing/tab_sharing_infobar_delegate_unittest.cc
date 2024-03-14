@@ -168,12 +168,12 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
                 IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
   EXPECT_EQ(delegate->GetButtons(),
             TabSharingInfoBarDelegate::BUTTON_OK |
-                TabSharingInfoBarDelegate::BUTTON_CANCEL);
+                TabSharingInfoBarDelegate::BUTTON_EXTRA);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_OK),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_CANCEL),
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_EXTRA),
             GetExpectedSwitchToMessageForTargetTab(1));
-  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::BUTTON_CANCEL),
+  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::BUTTON_EXTRA),
             favicon);
   EXPECT_FALSE(delegate->IsCloseable());
 }
@@ -207,12 +207,12 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
                 IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
   EXPECT_EQ(delegate->GetButtons(),
             TabSharingInfoBarDelegate::BUTTON_OK |
-                TabSharingInfoBarDelegate::BUTTON_CANCEL);
+                TabSharingInfoBarDelegate::BUTTON_EXTRA);
   EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_OK),
             l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
-  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_CANCEL),
+  EXPECT_EQ(delegate->GetButtonLabel(TabSharingInfoBarDelegate::BUTTON_EXTRA),
             GetExpectedSwitchToMessageForTargetTab(0));
-  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::BUTTON_CANCEL),
+  EXPECT_EQ(delegate->GetButtonImage(TabSharingInfoBarDelegate::BUTTON_EXTRA),
             favicon);
   EXPECT_FALSE(delegate->IsCloseable());
 }

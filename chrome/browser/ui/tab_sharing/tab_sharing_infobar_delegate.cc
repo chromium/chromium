@@ -245,27 +245,17 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button),
       capture_type_(capture_type) {
-  auto share_this_tab_instead_button =
-      share_this_tab_instead_button_state != ButtonState::NOT_SHOWN
-          ? std::make_unique<ShareTabInsteadButton>(
-                ui_, share_this_tab_instead_button_state, capture_type_)
-          : nullptr;
+  if (share_this_tab_instead_button_state != ButtonState::NOT_SHOWN) {
+    secondary_button_ = std::make_unique<ShareTabInsteadButton>(
+        ui_, share_this_tab_instead_button_state, capture_type_);
+  }
 
-  auto quick_nav =
-      focus_target.has_value()
-          ? std::make_unique<SwitchToTabButton>(*focus_target, shared_tab)
-          : nullptr;
-
-  if (share_this_tab_instead_button && quick_nav) {
-    // [Stop] [Share-this-tab-instead] [View tab: ...]
-    secondary_button_ = std::move(share_this_tab_instead_button);
-    tertiary_button_ = std::move(quick_nav);
-  } else if (share_this_tab_instead_button) {
-    // [Stop] [Share-this-tab-instead]
-    secondary_button_ = std::move(share_this_tab_instead_button);
-  } else if (quick_nav) {
-    // [Stop] [View tab: ...]
-    secondary_button_ = std::move(quick_nav);
+  // Note that tertiary_button_ may be non-null even secondary_button_ is null.
+  // TODO(crbug.com/327501794): Rename buttons these buttons to reflect their
+  // use.
+  if (focus_target.has_value()) {
+    tertiary_button_ =
+        std::make_unique<SwitchToTabButton>(*focus_target, shared_tab);
   }
 }
 
