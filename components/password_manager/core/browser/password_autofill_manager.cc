@@ -186,8 +186,7 @@ void PasswordAutofillManager::OnUnlockItemAccepted(
   password_client_->TriggerReauthForPrimaryAccount(
       reauth_access_point,
       base::BindOnce(&PasswordAutofillManager::OnUnlockReauthCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), unlock_item,
-                     last_popup_open_args_));
+                     weak_ptr_factory_.GetWeakPtr(), unlock_item));
 }
 
 void PasswordAutofillManager::DidAcceptSuggestion(
@@ -610,11 +609,9 @@ void PasswordAutofillManager::OnFaviconReady(
 
 void PasswordAutofillManager::OnUnlockReauthCompleted(
     autofill::PopupItemId unlock_item,
-    autofill::AutofillClient::PopupOpenArgs reopen_args,
     PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
-  autofill_client_->ShowAutofillPopup(reopen_args,
+  autofill_client_->ShowAutofillPopup(last_popup_open_args_,
                                       weak_ptr_factory_.GetWeakPtr());
-  last_popup_open_args_ = reopen_args;
   autofill_client_->PinPopupView();
   if (reauth_succeeded) {
     if (unlock_item ==
@@ -625,8 +622,10 @@ void PasswordAutofillManager::OnUnlockReauthCompleted(
     }
     return;
   }
-  UpdatePopup(SetUnlockLoadingState(reopen_args.suggestions, unlock_item,
-                                    IsLoading(false)));
+  UpdatePopup(SetUnlockLoadingState(last_popup_open_args_.suggestions,
+                                    unlock_item, IsLoading(false)));
+  // Resets the popup arguments until the next ShowPopup() call.
+  last_popup_open_args_ = {};
 }
 
 void PasswordAutofillManager::OnBiometricReauthCompleted(

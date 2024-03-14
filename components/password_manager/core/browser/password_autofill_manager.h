@@ -172,7 +172,6 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // that was clicked.
   void OnUnlockReauthCompleted(
       autofill::PopupItemId unlock_item,
-      autofill::AutofillClient::PopupOpenArgs reopen_args,
       PasswordManagerClient::ReauthSucceeded reauth_succeeded);
 
   // Called when the biometric reauth that guards password filling completes.
