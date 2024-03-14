@@ -106,13 +106,11 @@ bool XOSExchangeDataProvider::IsRendererTainted() const {
 
 std::optional<url::Origin> XOSExchangeDataProvider::GetRendererTaintedOrigin()
     const {
-  auto it = format_map_.find(x11::GetAtom(kRendererTaint));
-
-  if (it == format_map_.end()) {
+  ui::SelectionData data = format_map_.Get(x11::GetAtom(kRendererTaint));
+  if (!data.IsValid()) {
     return std::nullopt;
   }
 
-  ui::SelectionData data(it->first, it->second);
   std::string data_as_string;
   data.AssignTo(&data_as_string);
   if (data_as_string.empty()) {
@@ -238,7 +236,7 @@ std::optional<std::u16string> XOSExchangeDataProvider::GetString() const {
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(text_atoms, GetTargets(), &requested_types);
 
-  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (data.IsValid()) {
     return base::UTF8ToUTF16(data.GetText());
   }
@@ -252,7 +250,7 @@ XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy) const {
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 
-  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (data.IsValid()) {
     // TODO(erg): Technically, both of these forms can accept multiple URLs,
     // but that doesn't match the assumptions of the rest of the system which
@@ -335,7 +333,7 @@ std::optional<std::vector<FileInfo>> XOSExchangeDataProvider::GetFilenames()
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 
-  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (!data.IsValid()) {
     return std::nullopt;
   }
@@ -355,10 +353,8 @@ std::optional<std::vector<FileInfo>> XOSExchangeDataProvider::GetFilenames()
 
 bool XOSExchangeDataProvider::GetPickledData(const ClipboardFormatType& format,
                                              base::Pickle* pickle) const {
-  std::vector<x11::Atom> requested_types;
-  requested_types.push_back(x11::GetAtom(format.GetName().c_str()));
-
-  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  ui::SelectionData data =
+      format_map_.Get(x11::GetAtom(format.GetName().c_str()));
   if (data.IsValid()) {
     // Note that the pickle object on the right hand side of the assignment
     // only refers to the bytes in |data|. The assignment copies the data.
@@ -388,7 +384,7 @@ bool XOSExchangeDataProvider::HasURL(FilenameToURLPolicy policy) const {
 
   // The Linux desktop doesn't differentiate between files and URLs like
   // Windows does and stuffs all the data into one mime type.
-  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (data.IsValid()) {
     if (data.GetType() == x11::GetAtom(kMimeTypeMozillaURL)) {
       // File managers shouldn't be using this type, so this is a URL.
@@ -421,7 +417,7 @@ bool XOSExchangeDataProvider::HasFile() const {
   // To actually answer whether we have a file, we need to look through the
   // contents of the kMimeTypeURIList type, and see if any of them are file://
   // URIs.
-  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (data.IsValid()) {
     std::vector<std::string> tokens = ui::ParseURIList(data);
     for (const std::string& token : tokens) {
@@ -495,7 +491,7 @@ XOSExchangeDataProvider::GetFileContents() const {
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(file_contents_atoms, GetTargets(), &requested_types);
 
-  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (data.IsValid()) {
     std::string file_contents;
     data.AssignTo(&file_contents);
@@ -531,7 +527,7 @@ XOSExchangeDataProvider::GetHtml() const {
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 
-  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  ui::SelectionData data = format_map_.GetFirstOf(requested_types);
   if (!data.IsValid()) {
     return std::nullopt;
   }
