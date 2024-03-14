@@ -25,13 +25,15 @@ void UploadAllPendingUserFeedback() {
 }
 
 bool CanUseStartUserFeedbackFlow() {
-  NOTREACHED_NORETURN() << "User feedback not supported in unit tests.";
+  // Supports user feedback flow in unit tests.
+  return true;
 }
 
 bool StartUserFeedbackFlow(UserFeedbackConfiguration* configuration,
                            UIViewController* presenting_view_controller,
                            NSError** error) {
-  NOTREACHED_NORETURN() << "User feedback not supported in unit tests.";
+  // No-op for starting the feedback flow used to test configuration state only.
+  return true;
 }
 
 }  // namespace provider

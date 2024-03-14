@@ -1611,16 +1611,28 @@ using UserFeedbackDataCallback =
                                    timeout:(base::TimeDelta)timeout
                                 completion:
                                     (UserFeedbackDataCallback)completion {
+  UserFeedbackData* userFeedbackData =
+      [self createUserFeedbackDataForSender:sender
+                        specificProductData:specificProductData];
+  [self presentReportAnIssueViewController:baseViewController
+                                    sender:sender
+                          userFeedbackData:userFeedbackData
+                                   timeout:timeout
+                                completion:std::move(completion)];
+}
+
+- (void)presentReportAnIssueViewController:(UIViewController*)baseViewController
+                                    sender:(UserFeedbackSender)sender
+                          userFeedbackData:(UserFeedbackData*)data
+                                   timeout:(base::TimeDelta)timeout
+                                completion:
+                                    (UserFeedbackDataCallback)completion {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   if (self.settingsNavigationController) {
     return;
   }
-
-  UserFeedbackData* data =
-      [self createUserFeedbackDataForSender:sender
-                        specificProductData:specificProductData];
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(
@@ -1633,7 +1645,8 @@ using UserFeedbackDataCallback =
   if (!primary_account.IsEmpty()) {
     __weak SceneController* weakSelf = self;
     _family_members_fetcher = supervised_user::FetchListFamilyMembers(
-        *identity_manager, GetApplicationContext()->GetSharedURLLoaderFactory(),
+        *identity_manager,
+        self.mainInterface.browserState->GetSharedURLLoaderFactory(),
         base::BindOnce(&OnListFamilyMembersResponse, primary_account.gaia, data)
             .Then(base::BindOnce(^{
               [weakSelf presentUserFeedbackViewController:baseViewController

@@ -40,30 +40,12 @@
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
-@interface SceneStateWithFakeScene : SceneState
-
-- (instancetype)initWithScene:(id)scene NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
-
-@end
-
-@implementation SceneStateWithFakeScene
-
-- (instancetype)initWithScene:(id)scene {
-  if ((self = [super initWithAppState:nil])) {
-    [self setScene:scene];
-  }
-  return self;
-}
-
-@end
-
 class BrowserViewWranglerTest : public PlatformTest {
  protected:
   BrowserViewWranglerTest() {
     fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
-    scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_];
+    scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
+                                                         appState:nil];
 
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
