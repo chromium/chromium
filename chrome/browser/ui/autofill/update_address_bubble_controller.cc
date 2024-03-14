@@ -65,7 +65,8 @@ void UpdateAddressBubbleController::OnUserDecision(
 
 void UpdateAddressBubbleController::OnEditButtonClicked() {
   if (delegate_) {
-    delegate_->ShowEditor(GetFooterMessage());
+    delegate_->ShowEditor(GetFooterMessage(),
+                          /*is_editing_existing_address=*/true);
   }
 }
 

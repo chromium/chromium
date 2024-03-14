@@ -127,9 +127,9 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
                             : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE)
                      : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 
-  controller->SetUpAndShowBubble(
-      std::move(show_bubble_view_impl), std::move(page_action_icon_tootip),
-      profile, original_profile, options, std::move(callback));
+  controller->SetUpAndShowBubble(std::move(show_bubble_view_impl),
+                                 std::move(page_action_icon_tootip), profile,
+                                 options, std::move(callback));
 }
 
 // static
@@ -161,17 +161,17 @@ void AddressBubblesController::SetUpAndShowAddNewAddressBubble(
 
   controller->SetUpAndShowBubble(std::move(show_bubble_view_callback),
                                  std::move(page_action_icon_tootip), profile,
-                                 nullptr, {}, std::move(callback));
+                                 {}, std::move(callback));
 }
 
 void AddressBubblesController::ShowEditor(
-    const std::u16string& editor_footer_message) {
+    const std::u16string& editor_footer_message,
+    bool is_editing_existing_address) {
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(
-      *address_profile_, editor_footer_message,
-      /*is_editing_existing_address=*/original_profile_.has_value(),
+      *address_profile_, editor_footer_message, is_editing_existing_address,
       is_migration_to_account_,
       base::BindOnce(&AddressBubblesController::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -248,7 +248,6 @@ void AddressBubblesController::SetUpAndShowBubble(
     ShowBubbleViewCallback show_bubble_view_callback,
     std::u16string page_action_icon_tootip,
     const AutofillProfile& profile,
-    const AutofillProfile* original_profile,
     AutofillClient::SaveAddressProfilePromptOptions options,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
@@ -274,7 +273,6 @@ void AddressBubblesController::SetUpAndShowBubble(
   show_bubble_view_callback_ = std::move(show_bubble_view_callback);
   page_action_icon_tootip_ = std::move(page_action_icon_tootip);
   address_profile_ = profile;
-  original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
