@@ -14,11 +14,14 @@
 #include "ash/system/time/calendar_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
+#include "ash/system/time/date_helper.h"
 #include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -536,6 +539,50 @@ CalendarMonthView::CalendarMonthView(
 
     ++safe_index;
     if (safe_index == calendar_utils::kDateInOneWeek) {
+      // "CMV" stands for `CalendarMonthView`, the printed log should be like:
+      // CMV-locale  ru
+      // CMV-timezone America/Los_Angeles
+      // CMV-now_date_local 13 марта 2024 г.
+      // CMV-now_time_local 18:04
+      // CMV-week_header ПВСЧПСВ
+      // CMV-last_day_of_last_row  20240303
+      // CMV-last_day_of_last_row  500
+      // CMV-first_day_of_month 20240201
+      // CMV-first_day_of_month_time 1704
+      SCOPED_CRASH_KEY_STRING32("CMV", "locale",
+                                base::i18n::GetConfiguredLocale());
+      SCOPED_CRASH_KEY_STRING32(
+          "CMV", "time_zone",
+          base::UTF16ToUTF8(
+              system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID()));
+      SCOPED_CRASH_KEY_STRING32(
+          "CMV", "now_date_local",
+          base::UTF16ToUTF8(
+              calendar_utils::GetMonthDayYear(base::Time::Now())));
+      SCOPED_CRASH_KEY_STRING32(
+          "CMV", "now_time_local",
+          base::UTF16ToUTF8(
+              calendar_utils::GetTwentyFourHourClockTime(base::Time::Now())));
+      std::u16string week = u"";
+      for (const std::u16string& day :
+           DateHelper::GetInstance()->week_titles()) {
+        week += day;
+      }
+      SCOPED_CRASH_KEY_STRING32("CMV", "week_header", base::UTF16ToUTF8(week));
+      SCOPED_CRASH_KEY_NUMBER("CMV", "last_day_of_last_row",
+                              10000 * end_of_row_exploded.year +
+                                  100 * end_of_row_exploded.month +
+                                  end_of_row_exploded.day_of_month);
+      SCOPED_CRASH_KEY_NUMBER(
+          "CMV", "last_day_of_last_row_time",
+          100 * end_of_row_exploded.hour + end_of_row_exploded.minute);
+      SCOPED_CRASH_KEY_NUMBER("CMV", "first_day_of_month",
+                              10000 * first_day_of_month_exploded.year +
+                                  100 * first_day_of_month_exploded.month +
+                                  first_day_of_month_exploded.day_of_month);
+      SCOPED_CRASH_KEY_NUMBER("CMV", "first_day_of_month_time",
+                              100 * first_day_of_month_exploded.hour +
+                                  first_day_of_month_exploded.minute);
       NOTREACHED()
           << "Should not render more than 7 days as the gray out cells.";
       break;
