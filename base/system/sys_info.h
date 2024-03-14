@@ -270,6 +270,10 @@ class BASE_EXPORT SysInfo {
   // For example, iOS beta releases have the same version number but different
   // build number strings.
   static std::string GetIOSBuildNumber();
+
+  // Overrides the hardware model name. The overridden value is used instead of
+  // `StringSysctl({CTL_HW, HW_MACHINE})`. `name` should not be empty.
+  static void OverrideHardwareModelName(std::string name);
 #endif  // BUILDFLAG(IS_IOS)
 
   // Returns true for low-end devices that may require extreme tradeoffs,

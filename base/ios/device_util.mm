@@ -56,6 +56,8 @@ NSString* GenerateClientId() {
 
 namespace ios::device_util {
 
+// TODO(crbug.com/328241970): Remove this and call
+// base::SysInfo::HardwareModelName() directly.
 std::string GetPlatform() {
 #if TARGET_OS_SIMULATOR
   return getenv("SIMULATOR_MODEL_IDENTIFIER");
