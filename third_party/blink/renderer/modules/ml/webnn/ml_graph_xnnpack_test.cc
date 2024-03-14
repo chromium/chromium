@@ -822,7 +822,9 @@ struct EluTester {
   }
 };
 
-TEST_P(MLGraphXnnpackTest, EluTest) {
+// TODO: crbug.com/327337526 - Migrate this to WPTs. This test is temporarily
+// disabled due to suspected undefined behavior causing crashes on bots.
+TEST_P(MLGraphXnnpackTest, DISABLED_EluTest) {
   V8TestingScope scope;
   {
     // Test elu operator with default options.
@@ -924,7 +926,9 @@ struct SoftmaxTester {
   }
 };
 
-TEST_P(MLGraphXnnpackTest, SoftmaxTest) {
+// TODO: crbug.com/327337526 - Migrate this to WPTs. This test is temporarily
+// disabled due to suspected undefined behavior causing crashes on bots.
+TEST_P(MLGraphXnnpackTest, DISABLED_SoftmaxTest) {
   V8TestingScope scope;
   {
     // Test softmax operator for input operand with [2, 2] dimensions.

@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/webnn/buildflags.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,10 +47,9 @@ class WebNNContextProviderImplTest : public testing::Test {
 // backend. It relies on a real GPU adapter and is tested by
 // `WebNNContextDMLImplTest`.
 //
-// For Linux platform, `tflite::ContextImpl` is implemented using TFLite which
-// is always available.
+// For platforms using TFLite, `tflite::ContextImpl` is always available.
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(WEBNN_USE_TFLITE)
 
 TEST_F(WebNNContextProviderImplTest, NotSupported) {
 #if BUILDFLAG(IS_MAC)
