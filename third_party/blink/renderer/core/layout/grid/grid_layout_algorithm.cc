@@ -4092,18 +4092,17 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   while (ExpandRow())
     PlaceItems();
 
-  if (fragmentainer_space != kIndefiniteSize) {
-    // Encompass any fragmentainer overflow (caused by monolithic content). We
-    // want this to contribute to the grid container fragment size, and it is
-    // also needed to shift any breakpoints all the way into the next
-    // fragmentainer.
-    fragmentainer_space = std::max(fragmentainer_space, max_item_block_end);
-  }
-
   // See if we need to take a row break-point, and if-so re-run |PlaceItems()|.
   // We only need to do this once.
-  if (ShiftBreakpointIntoNextFragmentainer())
+  if (ShiftBreakpointIntoNextFragmentainer()) {
     PlaceItems();
+  } else if (fragmentainer_space != kIndefiniteSize) {
+    // Encompass any fragmentainer overflow (caused by monolithic content)
+    // that hasn't been accounted for. We want this to contribute to the
+    // grid container fragment size, and it is also needed to shift any
+    // breakpoints all the way into the next fragmentainer.
+    fragmentainer_space = std::max(fragmentainer_space, max_item_block_end);
+  }
 
   if (has_subsequent_children)
     container_builder_.SetHasSubsequentChildren();
