@@ -13,6 +13,8 @@ namespace content {
 
 ClipboardPasteData::ClipboardPasteData() = default;
 ClipboardPasteData::ClipboardPasteData(const ClipboardPasteData&) = default;
+ClipboardPasteData& ClipboardPasteData::operator=(const ClipboardPasteData&) =
+    default;
 ClipboardPasteData::ClipboardPasteData(ClipboardPasteData&&) = default;
 ClipboardPasteData& ClipboardPasteData::operator=(ClipboardPasteData&&) =
     default;

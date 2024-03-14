@@ -27,6 +27,7 @@ class WebContents;
 struct CONTENT_EXPORT ClipboardPasteData {
   ClipboardPasteData();
   ClipboardPasteData(const ClipboardPasteData&);
+  ClipboardPasteData& operator=(const ClipboardPasteData&);
   ClipboardPasteData(ClipboardPasteData&&);
   ClipboardPasteData& operator=(ClipboardPasteData&&);
   ~ClipboardPasteData();
