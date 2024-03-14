@@ -177,10 +177,7 @@ if (use_blink) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "tracking_protection_onboarding_unittest.cc",
-    "tracking_protection_settings_unittest.cc",
-  ]
+  sources = [ "tracking_protection_onboarding_unittest.cc" ]
 
   deps = [
     ":features",
@@ -189,6 +186,7 @@ source_set("unit_tests") {
     ":tracking_protection_prefs",
     ":tracking_protection_settings",
     "//base/test:test_support",
+    "//components/content_settings/core/common",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/version_info",
@@ -201,6 +199,7 @@ source_set("unit_tests") {
       "privacy_sandbox_settings_impl_unittest.cc",
       "privacy_sandbox_test_util_unittest.cc",
       "tpcd_experiment_eligibility_unittest.cc",
+      "tracking_protection_settings_unittest.cc",
     ]
 
     deps += [

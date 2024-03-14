@@ -128,6 +128,12 @@ void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
       return;
     case TrackingProtectionOnboarding::OnboardingStatus::kOnboarded:
       pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+      // If the user chose to block all 3PC pre-3PCD, copy this over.
+      if (base::FeatureList::IsEnabled(kTrackingProtectionSettingsLaunch) &&
+          pref_service_->GetInteger(prefs::kCookieControlsMode) ==
+              1 /* BlockThirdParty */) {
+        pref_service_->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
+      }
       return;
   }
 }
