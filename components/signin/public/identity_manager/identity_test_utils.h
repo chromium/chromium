@@ -72,6 +72,11 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                                   const std::string& email,
                                   ConsentLevel consent_level);
 
+// When this is set for the given `identity_manager`, access token requests
+// will be automatically granted with an access token value of "access_token".
+void SetAutomaticIssueOfAccessTokens(IdentityManager* identity_manager,
+                                     bool grant);
+
 // Sets a refresh token for the primary account (which must already be set).
 // Blocks until the refresh token is set. If |token_value| is empty a default
 // value will be used instead.
