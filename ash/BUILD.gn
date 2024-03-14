@@ -2921,6 +2921,8 @@ component("ash") {
     "wm/window_restore/pine_context_menu_model.h",
     "wm/window_restore/pine_controller.cc",
     "wm/window_restore/pine_controller.h",
+    "wm/window_restore/pine_item_view.cc",
+    "wm/window_restore/pine_item_view.h",
     "wm/window_restore/pine_items_container_view.cc",
     "wm/window_restore/pine_items_container_view.h",
     "wm/window_restore/pine_items_overflow_view.cc",

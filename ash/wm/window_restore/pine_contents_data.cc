@@ -15,8 +15,12 @@ PineContentsData::AppInfo::AppInfo(const std::string& app_id)
 
 PineContentsData::AppInfo::AppInfo(const std::string& app_id,
                                    const std::u16string& tab_title,
-                                   const std::vector<GURL>& tab_urls)
-    : app_id(app_id), tab_title(tab_title), tab_urls(tab_urls) {}
+                                   const std::vector<GURL>& tab_urls,
+                                   const size_t tab_count)
+    : app_id(app_id),
+      tab_title(tab_title),
+      tab_urls(tab_urls),
+      tab_count(tab_count) {}
 
 PineContentsData::AppInfo::AppInfo(const AppInfo&) = default;
 

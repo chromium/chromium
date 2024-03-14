@@ -26,6 +26,7 @@
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
 #include "ash/wm/window_restore/pine_test_api.h"
@@ -376,6 +377,26 @@ TEST_F(PineTest, ClickRestoreToExit) {
   overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(overview_grid);
   EXPECT_FALSE(OverviewGridTestApi(overview_grid).pine_widget());
+}
+TEST_F(PineTest, PineItemView) {
+  // Test when the tab count is within regular limits.
+  auto item_view = std::make_unique<PineItemView>(
+      u"TEST", std::vector<GURL>{GURL(), GURL(), GURL(), GURL()}, 4u);
+  EXPECT_EQ(PineItemViewTestApi(item_view.get())
+                .favicon_container_view_for_testing()
+                ->children()
+                .size(),
+            4u);
+  item_view.reset();
+
+  // Test the when the tab count has overflow.
+  item_view = std::make_unique<PineItemView>(
+      u"TEST", std::vector<GURL>{GURL(), GURL(), GURL(), GURL(), GURL()}, 10u);
+  EXPECT_EQ(PineItemViewTestApi(item_view.get())
+                .favicon_container_view_for_testing()
+                ->children()
+                .size(),
+            5u);
 }
 
 }  // namespace ash

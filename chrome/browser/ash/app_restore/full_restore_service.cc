@@ -752,7 +752,8 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
           break;
         }
       }
-      pine_contents_data->apps_infos.emplace_back(app_id, tab_title, tab_urls);
+      pine_contents_data->apps_infos.emplace_back(app_id, tab_title, tab_urls,
+                                                  tab_urls.size());
     }
   }
   return pine_contents_data;

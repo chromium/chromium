@@ -27,7 +27,8 @@ struct ASH_EXPORT PineContentsData {
     explicit AppInfo(const std::string& id);
     AppInfo(const std::string& app_id,
             const std::u16string& tab_title,
-            const std::vector<GURL>& tab_urls);
+            const std::vector<GURL>& tab_urls,
+            const size_t tab_count);
     AppInfo(const AppInfo&);
     ~AppInfo();
     // App id. Used to retrieve the app name and app icon from the app registry
@@ -38,6 +39,8 @@ struct ASH_EXPORT PineContentsData {
     // Used by browser only. Urls of up to 5 tabs including the active tab. Used
     // to retrieve favicons.
     std::vector<GURL> tab_urls;
+    // The total number of tabs, including ones not listed in `tab_urls`.
+    size_t tab_count = 0u;
   };
 
   using AppsInfos = std::vector<AppInfo>;

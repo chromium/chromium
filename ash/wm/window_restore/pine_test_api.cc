@@ -17,6 +17,11 @@ PineContentsViewTestApi::PineContentsViewTestApi(
 
 PineContentsViewTestApi::~PineContentsViewTestApi() = default;
 
+PineItemViewTestApi::PineItemViewTestApi(const PineItemView* pine_item_view)
+    : pine_item_view_(pine_item_view) {}
+
+PineItemViewTestApi::~PineItemViewTestApi() = default;
+
 PineItemsOverflowViewTestApi::PineItemsOverflowViewTestApi(
     const PineItemsOverflowView* overflow_view)
     : overflow_view_(overflow_view) {}

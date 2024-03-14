@@ -7,6 +7,7 @@
 
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_controller.h"
+#include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
 #include "base/memory/raw_ptr.h"
@@ -38,6 +39,21 @@ class PineContentsViewTestApi {
 
  private:
   const raw_ptr<const PineContentsView> pine_contents_view_;
+};
+
+class PineItemViewTestApi {
+ public:
+  explicit PineItemViewTestApi(const PineItemView* pine_item_view);
+  PineItemViewTestApi(const PineItemViewTestApi&) = delete;
+  PineItemViewTestApi& operator=(const PineItemViewTestApi&) = delete;
+  ~PineItemViewTestApi();
+
+  const views::BoxLayoutView* favicon_container_view_for_testing() {
+    return pine_item_view_->favicon_container_view_;
+  }
+
+ private:
+  const raw_ptr<const PineItemView> pine_item_view_;
 };
 
 class PineItemsOverflowViewTestApi {

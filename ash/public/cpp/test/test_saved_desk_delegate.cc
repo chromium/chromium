@@ -7,6 +7,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/color/color_provider.h"
@@ -48,7 +49,15 @@ void TestSavedDeskDelegate::GetFaviconForUrl(
     const std::string& page_url,
     uint64_t lacros_profile_id,
     base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-    base::CancelableTaskTracker* tracker) const {}
+    base::CancelableTaskTracker* tracker) const {
+  // TODO(b/329454790): Replace default icon when one is added for Pine, or
+  // revert this to no-op.
+  // Create a placeholder `gfx::ImageSkia` so the image data is not empty.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(SK_ColorCYAN);
+  std::move(callback).Run(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+}
 
 void TestSavedDeskDelegate::GetIconForAppId(
     const std::string& app_id,

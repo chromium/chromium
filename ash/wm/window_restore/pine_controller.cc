@@ -178,13 +178,19 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
   data->restore_callback = std::move(split.first);
   data->cancel_callback = std::move(split.second);
 
+  // NOTE: Comment/uncomment the following apps locally, but avoid changes as to
+  // reduce merge conflicts.
+
   // Chrome.
   data->apps_infos.emplace_back(
       "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Chrome",
       std::vector<GURL>{
           GURL("https://www.cnn.com/"), GURL("https://www.reddit.com/"),
           GURL("https://www.youtube.com/"), GURL("https://www.waymo.com/"),
-          GURL("https://www.google.com/")});
+          GURL("https://www.google.com/")},
+      /*tab_count=*/10u);
+  // Meet (PWA).
+  data->apps_infos.emplace_back("kjgfgldnnfoeklkmfkjfagphfepbbdan");
   // Camera.
   data->apps_infos.emplace_back("njfbnohfdkmbmnjapinfcopialeghnmh");
   // Settings.
@@ -196,15 +202,17 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
   // Chrome.
   data->apps_infos.emplace_back(
       "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Maps",
-      std::vector<GURL>{GURL("https://www.google.com/maps/")});
-  // // Files.
-  // data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb");
-  // // Chrome.
-  // data->apps_infos.emplace_back(
-  //     "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Twitter",
-  //     std::vector<GURL>{GURL("https://www.twitter.com/"),
-  //                       GURL("https://www.youtube.com/"),
-  //                       GURL("https://www.google.com/")});
+      std::vector<GURL>{GURL("https://www.google.com/maps/")},
+      /*tab_count=*/1);
+  // Files.
+  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb");
+  // Chrome.
+  data->apps_infos.emplace_back(
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Twitter",
+      std::vector<GURL>{GURL("https://www.twitter.com/"),
+                        GURL("https://www.youtube.com/"),
+                        GURL("https://www.google.com/")},
+      /*tab_count=*/3u);
 
   MaybeStartPineOverviewSession(std::move(data));
 }
