@@ -19,17 +19,15 @@
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{privacyPageTitle}">
-      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
-        <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-          <cr-link-row id="privacyHubSubpageTrigger"
-              start-icon="[[rowIcons_.privacyHub]]"
-              on-click="onPrivacyHubClick_"
-              label="$i18n{privacyHubTitle}"
-              sub-label="$i18n{privacyHubSubtext}"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-          <div class="hr"></div>
-        </template>
+      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+        <cr-link-row id="privacyHubSubpageTrigger"
+            start-icon="[[rowIcons_.privacyHub]]"
+            on-click="onPrivacyHubClick_"
+            label="$i18n{privacyHubTitle}"
+            sub-label="$i18n{privacyHubSubtext}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <div class="hr"></div>
       </template>
       <template is="dom-if" if="[[!isGuestMode_]]" restamp>
         <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
@@ -69,14 +67,6 @@
       </template>
 
 <if expr="_google_chrome">
-      <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
-        <settings-metrics-consent-toggle-button
-            id="metricsConsentToggle"
-            deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
-            prefs="{{prefs}}">
-        </settings-metrics-consent-toggle-button>
-        <div class="hr"></div>
-      </template>
       <template is="dom-if" if="[[isRevenBranding_]]">
         <settings-toggle-button
             id="enable-hw-data-usage"
@@ -87,17 +77,6 @@
         <div class="hr"></div>
       </template>
 </if>
-      <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
-        <settings-toggle-button
-            id="contentRecommendationsToggle"
-            icon="[[rowIcons_.suggestedContent]]"
-            pref="{{prefs.settings.suggested_content_enabled}}"
-            label="$i18n{enableSuggestedContent}"
-            sub-label="$i18n{enableSuggestedContentDesc}"
-            learn-more-url="$i18n{suggestedContentLearnMoreURL}">
-        </settings-toggle-button>
-        <div class="hr"></div>
-      </template>
       <settings-toggle-button
           id="verifiedAccessToggle"
           icon="[[rowIcons_.verifiedAccess]]"
@@ -107,16 +86,14 @@
           on-settings-boolean-control-change="onVerifiedAccessChange_"
           deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
       </settings-toggle-button>
-      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
-        <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-          <cr-link-row id="privacyHubSubpageTrigger"
-              class="hr"
-              on-click="onPrivacyHubClick_"
-              label="$i18n{privacyHubTitle}"
-              sub-label="$i18n{privacyHubSubtext}"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
+      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+        <cr-link-row id="privacyHubSubpageTrigger"
+            class="hr"
+            on-click="onPrivacyHubClick_"
+            label="$i18n{privacyHubTitle}"
+            sub-label="$i18n{privacyHubSubtext}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
       </template>
       <template is="dom-if" if="[[isThunderboltSupported_]]">
         <div class="hr"></div>

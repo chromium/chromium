@@ -625,8 +625,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showAppPermissionsInsidePrivacyHub",
       ash::features::IsCrosPrivacyHubAppPermissionsEnabled());
-  html_source->AddBoolean("showPrivacyHubPage",
-                          true);  // TODO(b/326572459): remove
   html_source->AddBoolean("showPrivacyHubLocationControl",
                           ash::features::IsCrosPrivacyHubLocationEnabled());
   html_source->AddBoolean("showSpeakOnMuteDetectionPage",

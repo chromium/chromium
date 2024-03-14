@@ -47,7 +47,6 @@ function overriddenValues(privacyHubVersion: string) {
   switch (privacyHubVersion) {
     case PrivacyHubVersion.V0: {
       return {
-        showPrivacyHubPage: true,
         showPrivacyHubLocationControl: false,
         showSpeakOnMuteDetectionPage: true,
         showAppPermissionsInsidePrivacyHub: false,
@@ -55,7 +54,6 @@ function overriddenValues(privacyHubVersion: string) {
     }
     case PrivacyHubVersion.V0AndLocation: {
       return {
-        showPrivacyHubPage: true,
         showPrivacyHubLocationControl: true,
         showSpeakOnMuteDetectionPage: true,
         showAppPermissionsInsidePrivacyHub: false,
@@ -658,7 +656,6 @@ suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
 
   setup(async () => {
     loadTimeData.overrideValues({
-      showPrivacyHubPage: true,
       showAppPermissionsInsidePrivacyHub: true,
     });
 
@@ -983,13 +980,11 @@ suite('<settings-privacy-hub-subpage> AllBuilds app permissions', () => {
 });
 
 
-async function parametrizedTestsuiteForMetricsConsentToggle(
-    isPrivacyHubVisible: boolean) {
+async function testsuiteForMetricsConsentToggle() {
   let settingsPage: SettingsPrivacyHubSubpage|OsSettingsPrivacyPageElement;
 
   // Which settings page to run the tests on.
-  const pageId = isPrivacyHubVisible ? 'settings-privacy-hub-subpage' :
-                                       'os-settings-privacy-page';
+  const pageId = 'settings-privacy-hub-subpage';
 
   const prefs_ = {
     'cros': {
@@ -1017,9 +1012,6 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
   let metricsConsentBrowserProxy: TestMetricsConsentBrowserProxy;
 
   setup(async () => {
-    loadTimeData.overrideValues({
-      showPrivacyHubPage: isPrivacyHubVisible,
-    });
     metricsConsentBrowserProxy = new TestMetricsConsentBrowserProxy();
     MetricsConsentBrowserProxyImpl.setInstanceForTesting(
         metricsConsentBrowserProxy);
@@ -1056,7 +1048,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
             settingsPage.shadowRoot!.querySelector('#metricsConsentToggle');
 
         assertEquals(
-            isPrivacyHubVisible, element === null,
+            element, null,
             'Send usage toggle should only be visible here when privacy hub' +
                 ' is hidden.');
       });
@@ -1064,20 +1056,18 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
   test(
       'Send usage stats toggle visibility in settings-privacy-hub-subpage',
       async () => {
-        if (isPrivacyHubVisible) {
-          settingsPage = document.createElement('settings-privacy-hub-subpage');
-          settingsPage.prefs = {...PRIVACY_HUB_PREFS};
-          document.body.appendChild(settingsPage);
-          flush();
+        settingsPage = document.createElement('settings-privacy-hub-subpage');
+        settingsPage.prefs = {...PRIVACY_HUB_PREFS};
+        document.body.appendChild(settingsPage);
+        flush();
 
-          const element =
-              settingsPage.shadowRoot!.querySelector('#metricsConsentToggle');
+        const element =
+            settingsPage.shadowRoot!.querySelector('#metricsConsentToggle');
 
-          assertFalse(
-              element === null,
-              'Send usage toggle should be visible in the privacy hub' +
-                  ' subpage.');
-        }
+        assertFalse(
+            element === null,
+            'Send usage toggle should be visible in the privacy hub' +
+                ' subpage.');
       });
 
   test('Deep link to send usage stats', async () => {
@@ -1085,8 +1075,7 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
 
     const params = new URLSearchParams();
     params.append('settingId', '1103');
-    Router.getInstance().navigateTo(
-        isPrivacyHubVisible ? routes.PRIVACY_HUB : routes.OS_PRIVACY, params);
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
 
     flush();
 
@@ -1174,11 +1163,5 @@ async function parametrizedTestsuiteForMetricsConsentToggle(
 }
 
 suite(
-    '<os-settings-privacy-page> OfficialBuild PrivacyHubVisible',
-    () => parametrizedTestsuiteForMetricsConsentToggle(
-        /*isPrivacyHubVisible=*/ true));
-
-suite(
-    '<os-settings-privacy-page> OfficialBuild PrivacyHubHidden',
-    () => parametrizedTestsuiteForMetricsConsentToggle(
-        /*isPrivacyHubVisible=*/ false));
+    '<os-settings-privacy-page> OfficialBuild',
+    () => testsuiteForMetricsConsentToggle());

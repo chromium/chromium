@@ -228,50 +228,12 @@ suite('<os-settings-privacy-page>', () => {
   test(
       'Suggested content, hidden when privacy hub feature flag is enabled',
       () => {
-        loadTimeData.overrideValues({
-          showPrivacyHubPage: true,
-        });
-
         privacyPage = document.createElement('os-settings-privacy-page');
         document.body.appendChild(privacyPage);
         flush();
 
         assertFalse(elementExists('#contentRecommendationsToggle'));
       });
-
-  test('Suggested content, pref disabled', () => {
-    loadTimeData.overrideValues({
-      showPrivacyHubPage: false,
-    });
-
-    privacyPage = document.createElement('os-settings-privacy-page');
-    document.body.appendChild(privacyPage);
-    flush();
-
-    // The default state of the pref is disabled.
-    const suggestedContent =
-        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#contentRecommendationsToggle');
-    assertTrue(!!suggestedContent);
-    assertFalse(suggestedContent.checked);
-  });
-
-  test('Suggested content, pref enabled', () => {
-    loadTimeData.overrideValues({
-      showPrivacyHubPage: false,
-    });
-
-    // Update the backing pref to enabled.
-    privacyPage.set('prefs.settings.suggested_content_enabled.value', true);
-    flush();
-
-    // The checkbox reflects the updated pref state.
-    const suggestedContent =
-        privacyPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#contentRecommendationsToggle');
-    assertTrue(!!suggestedContent);
-    assertTrue(suggestedContent.checked);
-  });
 
   test('Deep link to verified access', async () => {
     const params = new URLSearchParams();
@@ -523,10 +485,6 @@ suite('<os-settings-privacy-page>', () => {
   });
 
   test('Open PrivacyHub', async () => {
-    loadTimeData.overrideValues({
-      showPrivacyHubPage: true,
-    });
-
     const privacyHubBrowserProxy = new TestPrivacyHubBrowserProxy();
     PrivacyHubBrowserProxyImpl.setInstanceForTesting(privacyHubBrowserProxy);
 
