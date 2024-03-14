@@ -14,6 +14,9 @@ per-file SslPreferencesTest.java=file://android_webview/browser/network_service/
 per-file OnDiskFileTest.java=file://android_webview/browser/network_service/OWNERS
 per-file CookieManager*=file://android_webview/browser/network_service/OWNERS
 
+# Prerendering
+per-file AwPrerenderTest.java=file://content/browser/preloading/prerender/OWNERS
+
 # Safe Browsing
 per-file SafeBrowsingTest.java=file://android_webview/browser/safe_browsing/OWNERS
 
