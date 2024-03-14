@@ -309,12 +309,12 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
             // `PersonalDataManager`, as a keyed service, will always outlive
             // the bubble, which is bound to a tab.
             personal_data_manager_));
+  } else {
+    driver.browser_events().RendererShouldTriggerSuggestions(
+        /*field_id=*/{driver.GetFrameToken(),
+                      FieldRendererId(params_.field_renderer_id)},
+        AutofillSuggestionTriggerSource::kManualFallbackAddress);
   }
-
-  driver.browser_events().RendererShouldTriggerSuggestions(
-      /*field_id=*/{driver.GetFrameToken(),
-                    FieldRendererId(params_.field_renderer_id)},
-      AutofillSuggestionTriggerSource::kManualFallbackAddress);
   LogManualFallbackContextMenuEntryAccepted(
       static_cast<BrowserAutofillManager&>(manager), FillingProduct::kAddress);
 }

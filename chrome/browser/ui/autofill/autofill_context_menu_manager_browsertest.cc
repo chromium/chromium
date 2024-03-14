@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(
   autofill_context_menu_manager()->AppendItems();
 
   ASSERT_EQ(AddressBubblesController::FromWebContents(web_contents()), nullptr);
-
+  EXPECT_CALL(*driver(), RendererShouldTriggerSuggestions).Times(0);
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS);
 
