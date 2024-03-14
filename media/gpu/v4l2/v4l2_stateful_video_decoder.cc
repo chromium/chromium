@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_framerate_control.h"
@@ -245,6 +246,9 @@ class H264FrameReassembler {
 };
 
 // static
+base::AtomicRefCount V4L2StatefulVideoDecoder::num_decoder_instances_(0);
+
+// static
 std::unique_ptr<VideoDecoderMixin> V4L2StatefulVideoDecoder::Create(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -268,6 +272,19 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   if (config.is_encrypted() || !!cdm_context) {
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+    return;
+  }
+
+  // Verify there's still room for more decoders before querying whether
+  // |config| is supported because some drivers (e.g. Qualcomm Venus on SC7180)
+  // would not allow for opening the device fd and we'd think it an error.
+  static const auto decoder_instances_limit =
+      V4L2StatefulVideoDecoder::GetMaxNumDecoderInstances();
+  const bool can_create_decoder =
+      num_decoder_instances_.Increment() < decoder_instances_limit;
+  if (!can_create_decoder) {
+    num_decoder_instances_.Decrement();
+    std::move(init_cb).Run(DecoderStatus::Codes::kTooManyDecoders);
     return;
   }
 
@@ -623,6 +640,7 @@ V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
 
   CAPTURE_queue_.reset();
   OUTPUT_queue_.reset();
+  num_decoder_instances_.Decrement();
 
   if (event_task_runner_) {
     // Destroy the two ScopedFDs (hence the PostTask business ISO DeleteSoon) on
@@ -1113,6 +1131,33 @@ void V4L2StatefulVideoDecoder::PrintAndTraceQueueStates(
 bool V4L2StatefulVideoDecoder::IsInitialized() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !!OUTPUT_queue_;
+}
+
+// static
+int V4L2StatefulVideoDecoder::GetMaxNumDecoderInstances() {
+  if (!base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances)) {
+    return std::numeric_limits<int>::max();
+  }
+  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
+  base::ScopedFD device_fd(HANDLE_EINTR(
+      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+  if (!device_fd.is_valid()) {
+    return std::numeric_limits<int>::max();
+  }
+  struct v4l2_capability caps = {};
+  if (HandledIoctl(device_fd.get(), VIDIOC_QUERYCAP, &caps) != kIoctlOk) {
+    PLOG(ERROR) << "Failed querying caps";
+    return std::numeric_limits<int>::max();
+  }
+  const bool is_mtk8173 = base::Contains(
+      std::string(reinterpret_cast<const char*>(caps.card)), "8173");
+  // Experimentally MTK8173 (e.g. Hana) can initialize the driver  up to 30
+  // times simultaneously, however legacy code limits this to 10 [1] . All other
+  // drivers used to limit this to 32 [2] but in practice I could only open up
+  // to 15 with e.g. Qualcomm SC7180.
+  // [1] https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/v4l2/legacy/v4l2_video_decode_accelerator.h;l=449-454;drc=83195d4d1e1a4e54f148ddc80d0edcf5daa755ff
+  // [2] https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/v4l2/v4l2_video_decoder.h;l=183-189;drc=90fa47c897b589bc4857fb7ccafab46a4be2e2ae
+  return is_mtk8173 ? 10 : 15;
 }
 
 std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>

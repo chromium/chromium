@@ -233,6 +233,7 @@ test("v4l2_unittest") {
     "//base/test:test_support",
     "//build/config/linux/libdrm",
     "//media:test_support",
+    "//media/gpu/chromeos:chromeos",
     "//testing/gtest",
     "//ui/gfx/linux:gbm",
   ]
