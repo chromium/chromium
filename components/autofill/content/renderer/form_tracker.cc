@@ -136,11 +136,6 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   DCHECK(!element.DynamicTo<WebInputElement>().IsNull() ||
          form_util::IsTextAreaElement(element));
-
-  if (ignore_control_changes_) {
-    return;
-  }
-
   // If the element isn't focused then the changes don't matter. This check is
   // required to properly handle IME interactions.
   if (!element.Focused()) {
@@ -154,11 +149,9 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
       return;
     }
   }
-
   if (!unsafe_render_frame()) {
     return;
   }
-
   // Disregard text changes that aren't caused by user gestures or pastes. Note
   // that pastes aren't necessarily user gestures because Blink's conception of
   // user gestures is centered around creating new windows/tabs.
@@ -167,7 +160,6 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
       !unsafe_render_frame()->IsPasting()) {
     return;
   }
-
   // We post a task for doing the Autofill as the caret position is not set
   // properly at this point (http://bugs.webkit.org/show_bug.cgi?id=16976) and
   // it is needed to trigger autofill.
@@ -183,14 +175,9 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
 
 void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-
-  if (ignore_control_changes_)
-    return;
-
   if (!unsafe_render_frame()) {
     return;
   }
-
   // Post a task to avoid processing select control change while it is changing.
   weak_ptr_factory_.InvalidateWeakPtrs();
   unsafe_render_frame()
@@ -245,10 +232,6 @@ void FormTracker::ElementDisappeared(const blink::WebElement& element) {
 void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   DCHECK(element.IsAutofilled());
-
-  if (ignore_control_changes_) {
-    return;
-  }
   ResetLastInteractedElements();
   if (blink::WebFormElement form = form_util::GetOwningForm(element);
       !form.IsNull()) {

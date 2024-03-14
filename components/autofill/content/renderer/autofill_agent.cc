@@ -1095,17 +1095,11 @@ void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
                                          WebFormControlElement& element,
                                          WebAutofillState autofill_state) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-
-  form_tracker_->set_ignore_control_changes(true);
-
   element.SetAutofillValue(WebString::FromUTF16(value), autofill_state);
-
   UpdateStateForTextChange(element,
                            autofill_state == WebAutofillState::kAutofilled
                                ? FieldPropertiesFlags::kAutofilled
                                : FieldPropertiesFlags::kUserTyped);
-
-  form_tracker_->set_ignore_control_changes(false);
 }
 
 void AutofillAgent::TriggerFormExtraction() {

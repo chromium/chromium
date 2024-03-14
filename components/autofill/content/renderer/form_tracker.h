@@ -129,10 +129,6 @@ class FormTracker : public content::RenderFrameObserver,
   // by PWM.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
 
-  void set_ignore_control_changes(bool ignore_control_changes) {
-    ignore_control_changes_ = ignore_control_changes;
-  }
-
  private:
   friend class FormTrackerTestApi;
 
@@ -195,7 +191,6 @@ class FormTracker : public content::RenderFrameObserver,
   const UserGestureRequired user_gesture_required_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-  bool ignore_control_changes_ = false;
   FormRef last_interacted_form_;
   FieldRef last_interacted_formless_element_;
 
