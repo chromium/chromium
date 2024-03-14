@@ -89,9 +89,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_DIALOG_TITLE);
     case AutofillProgressDialogType::kUnspecified:
-      // TODO(crbug.com/1510471): Replace all below with `NOTREACHED_NORETURN`.
-      NOTREACHED();
-      return std::u16string();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -105,8 +103,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationTitle()
           IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_DIALOG_TITLE);
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
     case AutofillProgressDialogType::kUnspecified:
-      NOTREACHED();
-      return std::u16string();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -123,8 +120,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL);
     case AutofillProgressDialogType::kUnspecified:
-      NOTREACHED();
-      return std::u16string();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -142,8 +138,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_IBAN_UNMASK_PROGRESS_BAR_MESSAGE);
     case AutofillProgressDialogType::kUnspecified:
-      NOTREACHED();
-      return std::u16string();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -158,8 +153,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationMessage()
           IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE);
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
     case AutofillProgressDialogType::kUnspecified:
-      NOTREACHED();
-      return std::u16string();
+      NOTREACHED_NORETURN();
   }
 }
 
