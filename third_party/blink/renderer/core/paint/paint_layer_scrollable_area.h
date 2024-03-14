@@ -83,7 +83,9 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   void Trace(Visitor* visitor) const {}
 
   std::optional<cc::SnapContainerData> snap_container_data_;
-  std::optional<cc::SnappedTargetData> snapchanging_target_data_;
+  // The ids of the elements that were reported as the selected snap targets
+  // along each axis during the last snapchanging event that fired.
+  std::optional<cc::TargetSnapAreaElementIds> snapchanging_target_ids_;
   std::unique_ptr<cc::SnapSelectionStrategy> impl_snap_strategy_;
   // The ids of the elements that were reported as the selected snap targets
   // along each axis during the last snapchanged event that fired.
@@ -556,10 +558,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
       std::optional<cc::TargetSnapAreaElementIds>) override;
   void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
 
-  const cc::SnappedTargetData* GetSnapChangingTargetData() const override;
-  void SetSnapChangingTargetData(std::optional<cc::SnappedTargetData>) override;
+  // Functions related to firing snapchanging events.
+  std::optional<cc::TargetSnapAreaElementIds> GetSnapchangingTargetIds()
+      const override;
+  void SetSnapchangingTargetIds(
+      std::optional<cc::TargetSnapAreaElementIds>) override;
   void UpdateSnapChangingTargetsAndEnqueueSnapChanging(
-      const gfx::PointF&) override;
+      const cc::TargetSnapAreaElementIds& new_target_ids) override;
   const cc::SnapSelectionStrategy* GetImplSnapStrategy() const override;
   void SetImplSnapStrategy(
       std::unique_ptr<cc::SnapSelectionStrategy> strategy) override;

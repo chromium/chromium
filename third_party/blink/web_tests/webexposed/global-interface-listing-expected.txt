@@ -9480,10 +9480,6 @@ interface SnapEvent : Event
     getter snapTargetBlock
     getter snapTargetInline
     method constructor
-interface SnapEventDeprecated : Event
-    attribute @@toStringTag
-    getter snapTargets
-    method constructor
 interface SoftNavigationEntry : PerformanceEntry
     attribute @@toStringTag
     method constructor

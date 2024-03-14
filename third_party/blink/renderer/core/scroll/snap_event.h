@@ -19,33 +19,6 @@ namespace blink {
 // SnapEvents are sent to a scroller when it snaps to a different element from
 // the element to which it was previously snapped along either axis.
 // https://drafts.csswg.org/css-scroll-snap-2/#snapchanged-and-snapchanging
-class SnapEventDeprecated : public Event {
-  DEFINE_WRAPPERTYPEINFO();
-
- public:
-  static SnapEventDeprecated* Create(const AtomicString& type,
-                                     HeapVector<Member<Node>>& targets);
-  SnapEventDeprecated(const AtomicString& type,
-                      HeapVector<Member<Node>>& targets);
-
-  StaticNodeList* snapTargets() { return snap_targets_.Get(); }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(snap_targets_);
-    Event::Trace(visitor);
-  }
-
- private:
-  // This contains elements to which the scrolling container is currently
-  // snapped along both axes.
-  Member<StaticNodeList> snap_targets_;
-};
-
-// This class implements the SnapEvent interface for scroll-snap-related
-// JavaScript events, snapchanged and snapchanging.
-// SnapEvents are sent to a scroller when it snaps to a different element from
-// the element to which it was previously snapped along either axis.
-// https://drafts.csswg.org/css-scroll-snap-2/#snapchanged-and-snapchanging
 class SnapEvent : public Event {
   DEFINE_WRAPPERTYPEINFO();
 

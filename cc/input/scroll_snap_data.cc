@@ -403,21 +403,6 @@ bool SnapContainerData::FindSnapPositionForMutualSnap(
   return found;
 }
 
-std::set<ElementId> SnapContainerData::FindSnappedTargetsAtScrollOffset(
-    const SnapContainerData* container_data,
-    const gfx::PointF& scroll_offset) {
-  std::set<ElementId> snapped_target_ids;
-  if (container_data) {
-    for (size_t i = 0; i < container_data->size(); i++) {
-      const auto& area = container_data->at(i);
-      if (container_data->IsSnappedToArea(area, scroll_offset)) {
-        snapped_target_ids.insert(area.element_id);
-      }
-    }
-  }
-  return snapped_target_ids;
-}
-
 std::optional<SnapSearchResult>
 SnapContainerData::GetTargetSnapAreaSearchResult(
     const SnapSelectionStrategy& strategy,
@@ -976,12 +961,6 @@ void SnapContainerData::SelectAlternativeIdForSearchResult(
     }
   }
 }
-
-SnappedTargetData::SnappedTargetData() = default;
-SnappedTargetData::SnappedTargetData(const SnappedTargetData& other) = default;
-SnappedTargetData::SnappedTargetData(const std::set<ElementId>& ids)
-    : snapped_target_ids_(std::move(ids)) {}
-SnappedTargetData::~SnappedTargetData() = default;
 
 std::ostream& operator<<(std::ostream& ostream, const SnapAreaData& area_data) {
   return ostream << area_data.rect.ToString();

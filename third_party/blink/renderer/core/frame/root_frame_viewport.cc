@@ -746,20 +746,20 @@ void RootFrameViewport::UpdateSnappedTargetsAndEnqueueSnapChanged() {
   LayoutViewport().UpdateSnappedTargetsAndEnqueueSnapChanged();
 }
 
-const cc::SnappedTargetData* RootFrameViewport::GetSnapChangingTargetData()
-    const {
-  return LayoutViewport().GetSnapChangingTargetData();
+std::optional<cc::TargetSnapAreaElementIds>
+RootFrameViewport::GetSnapchangingTargetIds() const {
+  return LayoutViewport().GetSnapchangingTargetIds();
 }
 
-void RootFrameViewport::SetSnapChangingTargetData(
-    std::optional<cc::SnappedTargetData> data) {
-  LayoutViewport().SetSnapChangingTargetData(data);
+void RootFrameViewport::SetSnapchangingTargetIds(
+    std::optional<cc::TargetSnapAreaElementIds> new_target_ids) {
+  LayoutViewport().SetSnapchangingTargetIds(new_target_ids);
 }
 
 void RootFrameViewport::UpdateSnapChangingTargetsAndEnqueueSnapChanging(
-    const gfx::PointF& scroll_offset) {
+    const cc::TargetSnapAreaElementIds& new_target_ids) {
   LayoutViewport().UpdateSnapChangingTargetsAndEnqueueSnapChanging(
-      scroll_offset);
+      new_target_ids);
 }
 
 const cc::SnapSelectionStrategy* RootFrameViewport::GetImplSnapStrategy()

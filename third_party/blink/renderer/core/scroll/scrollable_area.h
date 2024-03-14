@@ -588,13 +588,14 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   bool ScrollOffsetIsNoop(const ScrollOffset& offset) const;
 
   void EnqueueSnapChangingEvent() const;
-  virtual const cc::SnappedTargetData* GetSnapChangingTargetData() const {
-    return nullptr;
+  virtual std::optional<cc::TargetSnapAreaElementIds> GetSnapchangingTargetIds()
+      const {
+    return std::nullopt;
   }
-  virtual void SetSnapChangingTargetData(std::optional<cc::SnappedTargetData>) {
-  }
+  virtual void SetSnapchangingTargetIds(
+      std::optional<cc::TargetSnapAreaElementIds>) {}
   virtual void UpdateSnapChangingTargetsAndEnqueueSnapChanging(
-      const gfx::PointF&) {}
+      const cc::TargetSnapAreaElementIds& ids) {}
   virtual const cc::SnapSelectionStrategy* GetImplSnapStrategy() const {
     return nullptr;
   }
@@ -699,9 +700,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   void ScrollToScrollStartTarget(const LayoutBox*, cc::SnapAxis);
   void ScrollToScrollStartTargets(const ScrollStartTargetCandidates*);
-
-  HeapVector<Member<Node>> PrepareSnapEventTargets(
-      const cc::SnappedTargetData* target_data) const;
 
   // This animator is used to handle painting animations for MacOS scrollbars
   // using AppKit-specific code (Cocoa APIs). It requires input from

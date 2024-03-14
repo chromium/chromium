@@ -6093,29 +6093,12 @@ void Document::EnqueueOverscrollEventForNode(Node* target,
 }
 
 void Document::EnqueueSnapChangedEvent(Node* target,
-                                       HeapVector<Member<Node>>& snap_targets) {
-  Event* snapchanged_event =
-      SnapEventDeprecated::Create(event_type_names::kSnapchanged, snap_targets);
-  snapchanged_event->SetTarget(target);
-  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
-}
-
-void Document::EnqueueSnapChangedEvent(Node* target,
                                        Member<Node>& block_target,
                                        Member<Node>& inline_target) {
   Event* snapchanged_event = SnapEvent::Create(event_type_names::kSnapchanged,
                                                block_target, inline_target);
   snapchanged_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(snapchanged_event);
-}
-
-void Document::EnqueueSnapChangingEvent(
-    Node* target,
-    HeapVector<Member<Node>>& snap_targets) {
-  Event* snapchanging_event = SnapEventDeprecated::Create(
-      event_type_names::kSnapchanging, snap_targets);
-  snapchanging_event->SetTarget(target);
-  scripted_animation_controller_->EnqueuePerFrameEvent(snapchanging_event);
 }
 
 void Document::EnqueueSnapChangingEvent(Node* target,

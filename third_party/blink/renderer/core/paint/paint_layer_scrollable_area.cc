@@ -1885,11 +1885,9 @@ bool PaintLayerScrollableArea::SetTargetSnapAreaElementIds(
   return false;
 }
 
-const cc::SnappedTargetData*
-PaintLayerScrollableArea::GetSnapChangingTargetData() const {
-  return RareData() && RareData()->snapchanging_target_data_
-             ? &RareData()->snapchanging_target_data_.value()
-             : nullptr;
+std::optional<cc::TargetSnapAreaElementIds>
+PaintLayerScrollableArea::GetSnapchangingTargetIds() const {
+  return RareData() ? RareData()->snapchanging_target_ids_ : std::nullopt;
 }
 
 const cc::SnapSelectionStrategy* PaintLayerScrollableArea::GetImplSnapStrategy()
@@ -3125,20 +3123,19 @@ void PaintLayerScrollableArea::UpdateSnappedTargetsAndEnqueueSnapChanged() {
            ? (new_target_ids.x != rare_data.snapchanged_target_ids_->x ||
               new_target_ids.y != rare_data.snapchanged_target_ids_->y)
            : true);
-
   if (snapchanged) {
     rare_data.snapchanged_target_ids_ = new_target_ids;
     EnqueueSnapChangedEvent();
   }
 }
 
-void PaintLayerScrollableArea::SetSnapChangingTargetData(
-    std::optional<cc::SnappedTargetData> data) {
-  EnsureRareData().snapchanging_target_data_ = data;
+void PaintLayerScrollableArea::SetSnapchangingTargetIds(
+    std::optional<cc::TargetSnapAreaElementIds> ids) {
+  EnsureRareData().snapchanging_target_ids_ = ids;
 }
 
 void PaintLayerScrollableArea::UpdateSnapChangingTargetsAndEnqueueSnapChanging(
-    const gfx::PointF& scroll_offset) {
+    const cc::TargetSnapAreaElementIds& new_target_ids) {
   if (!RuntimeEnabledFeatures::CSSSnapChangingEventEnabled()) {
     return;
   }
@@ -3146,22 +3143,14 @@ void PaintLayerScrollableArea::UpdateSnapChangingTargetsAndEnqueueSnapChanging(
   if (!container_data) {
     return;
   }
-  const cc::SnappedTargetData* snapchanging_target_data =
-      GetSnapChangingTargetData();
-  if (!snapchanging_target_data) {
-    return;
-  }
-
-  const std::set<cc::ElementId> new_snapchanging_targets =
-      cc::SnapContainerData::FindSnappedTargetsAtScrollOffset(container_data,
-                                                              scroll_offset);
-  if (snapchanging_target_data->GetSnappedTargetIds() !=
-      new_snapchanging_targets) {
-    if (!EnsureRareData().snapchanging_target_data_) {
-      RareData()->snapchanging_target_data_ = cc::SnappedTargetData();
-    }
-    RareData()->snapchanging_target_data_->SetSnappedTargetIds(
-        std::move(new_snapchanging_targets));
+  auto& rare_data = EnsureRareData();
+  bool snapchanging =
+      (rare_data.snapchanging_target_ids_
+           ? (new_target_ids.x != rare_data.snapchanging_target_ids_->x ||
+              new_target_ids.y != rare_data.snapchanging_target_ids_->y)
+           : true);
+  if (snapchanging) {
+    rare_data.snapchanging_target_ids_ = new_target_ids;
     EnqueueSnapChangingEvent();
   }
 }
@@ -3176,7 +3165,7 @@ void PaintLayerScrollableArea::EnqueueSnapChangingEventFromImplIfNeeded() {
     return;
   }
   cc::SnapPositionData snap = container_data->FindSnapPosition(*strategy);
-  UpdateSnapChangingTargetsAndEnqueueSnapChanging(snap.position);
+  UpdateSnapChangingTargetsAndEnqueueSnapChanging(snap.target_element_ids);
 }
 
 Node* PaintLayerScrollableArea::GetSnapEventTargetAlongAxis(
@@ -3192,8 +3181,7 @@ Node* PaintLayerScrollableArea::GetSnapEventTargetAlongAxis(
   if (event_type == event_type_names::kSnapchanged) {
     ids = RareData()->snapchanged_target_ids_;
   } else {
-    // TODO(crbug.com/329111147): use (to-be-added) snapchanging_target_ids_
-    // here.
+    ids = RareData()->snapchanging_target_ids_;
   }
   if (!ids) {
     return nullptr;

@@ -608,8 +608,10 @@ bool ScrollableArea::ProgrammaticScrollHelper(
       std::move(callback), WrapWeakPersistent(this)));
 
   // Enqueue snapchanging if necessary.
-  UpdateSnapChangingTargetsAndEnqueueSnapChanging(
-      gfx::PointF(offset.x(), offset.y()));
+  if (auto* snap_container = GetSnapContainerData()) {
+    UpdateSnapChangingTargetsAndEnqueueSnapChanging(
+        snap_container->GetTargetSnapAreaElementIds());
+  }
 
   if (should_use_animation) {
     GetProgrammaticScrollAnimator().AnimateToOffset(offset, is_sequenced_scroll,
@@ -1308,11 +1310,9 @@ bool ScrollableArea::PerformSnapping(
   // We should set the snapchanging targets of a snap container the first
   // time it is laid out to avoid a spurious snapchanging event firing the first
   // time the scroller is scrolled.
-  if (!GetSnapChangingTargetData()) {
-    std::set<cc::ElementId> snap_targets =
-        cc::SnapContainerData::FindSnappedTargetsAtScrollOffset(
-            GetSnapContainerData(), snap_point.value());
-    SetSnapChangingTargetData(cc::SnappedTargetData(std::move(snap_targets)));
+  if (!GetSnapchangingTargetIds()) {
+    SetSnapchangingTargetIds(
+        GetSnapContainerData()->GetTargetSnapAreaElementIds());
   }
 
   CancelScrollAnimation();
@@ -1398,25 +1398,6 @@ bool ScrollableArea::ScrollOffsetIsNoop(const ScrollOffset& offset) const {
               : offset);
 }
 
-HeapVector<Member<Node>> ScrollableArea::PrepareSnapEventTargets(
-    const cc::SnappedTargetData* target_data) const {
-  HeapVector<Member<Node>> target_nodes;
-  if (target_data) {
-    for (const cc::ElementId& id : target_data->GetSnappedTargetIds()) {
-      if (Node* node =
-              DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(id))) {
-        target_nodes.push_back(node);
-      }
-    }
-    auto compare_targets = [](Node* node1, Node* node2) {
-      return node1->compareDocumentPosition(node2) &
-             Node::kDocumentPositionFollowing;
-    };
-    std::sort(target_nodes.begin(), target_nodes.end(), compare_targets);
-  }
-  return target_nodes;
-}
-
 void ScrollableArea::EnqueueSnapChangedEvent() const {
   DCHECK(RuntimeEnabledFeatures::CSSSnapChangedEventEnabled());
   Node* target_node = EventTargetNode();
@@ -1437,10 +1418,12 @@ void ScrollableArea::EnqueueSnapChangingEvent() const {
   if (!target_node) {
     return;
   }
-  HeapVector<Member<Node>> snap_targets =
-      PrepareSnapEventTargets(GetSnapChangingTargetData());
-  target_node->GetDocument().EnqueueSnapChangingEvent(target_node,
-                                                      snap_targets);
+  Member<Node> block_target = GetSnapEventTargetAlongAxis(
+      event_type_names::kSnapchanging, cc::SnapAxis::kBlock);
+  Member<Node> inline_target = GetSnapEventTargetAlongAxis(
+      event_type_names::kSnapchanging, cc::SnapAxis::kInline);
+  target_node->GetDocument().EnqueueSnapChangingEvent(target_node, block_target,
+                                                      inline_target);
 }
 
 }  // namespace blink

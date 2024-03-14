@@ -73,6 +73,7 @@
   </div>
   <script>
     const scroller = document.getElementById("scroller");
+    const snap_area_2 = document.getElementById("snap_area_2");
 
     promise_test(async (t) => {
       await waitForCompositorCommit();
@@ -81,13 +82,13 @@
         scrolling_function: async () => {
           scroller.scrollTo(0, snap_area_2.offsetTop);
         },
-        expected_snap_targets: [snap_area_2.id],
+        expected_snap_targets: { block: snap_area_2, inline: null },
         expected_scroll_offsets: {
           x: 0,
           y: snap_area_2.offsetTop
         }
       };
-      await test_snap_event_deprecated(t, test_data, "snapchanging");
+      await test_snap_event(t, test_data, "snapchanging");
     }, "snapchanging fires on programmatic scrolls that changes a scroller's" +
     " snap targets.");
 
