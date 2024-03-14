@@ -5,51 +5,7 @@
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './selection_overlay.html.js';
-
-// The number of pixels the pointer needs to move before being considered a drag
-const DRAG_THRESHOLD = 5;
-
-enum DragFeature {
-  NONE = 0,
-  TEXT = 1,
-  MANUAL_REGION = 2,
-}
-
-enum GestureState {
-  // No gesture is currently happening.
-  NOT_STARTED = 0,
-  // A gesture is starting, indicated by a pointerdown event.
-  STARTING = 1,
-  // A drag is currently happening, indicated by pointer moving far enough away
-  // from the initial gesture position.
-  DRAGGING = 2,
-  // A drag is finished, indicated by a pointerup event.
-  FINISHED = 3,
-}
-
-interface GestureEvent {
-  // The state of this event.
-  state: GestureState;
-  // The x coordinate (pixel value) this gesture started at.
-  startX: number;
-  // The y coordinate (pixel value) this gesture started at.
-  startY: number;
-  // The x coordinate (pixel value) this gesture is currently at.
-  clientX: number;
-  // The y coordinate (pixel value) this gesture is currently at.
-  clientY: number;
-}
-
-// Returns an empty GestureEvent
-function emptyGestureEvent(): GestureEvent {
-  return {
-    state: GestureState.NOT_STARTED,
-    startX: 0,
-    startY: 0,
-    clientX: 0,
-    clientY: 0,
-  };
-}
+import {DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
 
 /*
  * Element responsible for coordinating selections between the various selection
