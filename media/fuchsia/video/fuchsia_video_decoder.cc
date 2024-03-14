@@ -124,40 +124,24 @@ class FuchsiaVideoDecoder::OutputMailbox {
                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
                      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
 
-    if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-      // The GMB is either YUV_420_BIPLANAR (SIF kNV12) or YVU_420 (SIF kYV12).
-      auto shared_image_format = viz::MultiPlaneFormat::kNV12;
-      switch (buffer_format) {
-        case gfx::BufferFormat::YUV_420_BIPLANAR:
-          break;
-        case gfx::BufferFormat::YVU_420:
-          shared_image_format = viz::MultiPlaneFormat::kYV12;
-          break;
-        default:
-          NOTREACHED_NORETURN();
-      }
-      shared_image_format.SetPrefersExternalSampler();
-
-      shared_image_ =
-          raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-              {shared_image_format, size, color_space, usage,
-               "FuchsiaVideoDecoder"},
-              std::move(gmb_handle));
-    } else {
-      // Note that we are keeping |gmb| creation intact here for the sake of not
-      // changing this path. This path should anyways go away when we fully move
-      // to supporting MultiPlanarSI above.
-      auto gmb = gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          pixmap_factory, std::move(gmb_handle), size, buffer_format,
-          gfx::BufferUsage::GPU_READ,
-          gpu::GpuMemoryBufferImpl::DestructionCallback());
-
-      shared_image_ =
-          raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-              gmb.get(), nullptr, gfx::BufferPlane::DEFAULT,
-              {color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-               usage, "FuchsiaVideoDecoder"});
+    // The GMB is either YUV_420_BIPLANAR (SIF kNV12) or YVU_420 (SIF kYV12).
+    auto shared_image_format = viz::MultiPlaneFormat::kNV12;
+    switch (buffer_format) {
+      case gfx::BufferFormat::YUV_420_BIPLANAR:
+        break;
+      case gfx::BufferFormat::YVU_420:
+        shared_image_format = viz::MultiPlaneFormat::kYV12;
+        break;
+      default:
+        NOTREACHED_NORETURN();
     }
+    shared_image_format.SetPrefersExternalSampler();
+
+    shared_image_ =
+        raster_context_provider_->SharedImageInterface()->CreateSharedImage(
+            {shared_image_format, size, color_space, usage,
+             "FuchsiaVideoDecoder"},
+            std::move(gmb_handle));
 
     create_sync_token_ = raster_context_provider_->SharedImageInterface()
                              ->GenVerifiedSyncToken();
@@ -201,10 +185,8 @@ class FuchsiaVideoDecoder::OutputMailbox {
             &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
         coded_size, visible_rect, natural_size, timestamp);
 
-    if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-      frame->set_shared_image_format_type(
-          media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-    }
+    frame->set_shared_image_format_type(
+        media::SharedImageFormatType::kSharedImageFormatExternalSampler);
 
     // Request a fence we'll wait on before reusing the buffer.
     frame->metadata().read_lock_fences_enabled = true;
