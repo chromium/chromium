@@ -930,6 +930,12 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/renderer/core/css/properties/css_color_function_parser.cc'],
+        'allowed': [
+            'base::MakeFixedFlatMap',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/editing/ime'],
         'allowed': [
             'ui::ImeTextSpan',

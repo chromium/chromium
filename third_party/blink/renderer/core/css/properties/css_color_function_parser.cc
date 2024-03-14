@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_color_function_parser.h"
+
 #include <cmath>
+
+#include "base/containers/fixed_flat_map.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
@@ -15,7 +18,18 @@
 
 namespace blink {
 
-static Color::ColorSpace CSSValueIDToColorSpace(const CSSValueID& id) {
+struct ColorFunctionParser::FunctionMetadata {
+  // The name/binding for positional color channels 0, 1 and 2.
+  std::array<CSSValueID, 3> channel_name;
+
+  // The value (number) that equals 100% for the corresponding positional color
+  // channel.
+  std::array<double, 3> channel_percentage;
+};
+
+namespace {
+
+Color::ColorSpace CSSValueIDToColorSpace(const CSSValueID& id) {
   switch (id) {
     case CSSValueID::kRgb:
     case CSSValueID::kRgba:
@@ -55,7 +69,92 @@ static Color::ColorSpace CSSValueIDToColorSpace(const CSSValueID& id) {
   }
 }
 
-static bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
+// Unique entries in kFunctionMetadataMap.
+enum class FunctionMetadataEntry : uint8_t {
+  kLegacyRgb,  // Color::ColorSpace::kSRGBLegacy
+  kColorRgb,   // Color::ColorSpace::kSRGB,
+               // Color::ColorSpace::kSRGBLinear,
+               // Color::ColorSpace::kDisplayP3,
+               // Color::ColorSpace::kA98RGB,
+               // Color::ColorSpace::kProPhotoRGB,
+               // Color::ColorSpace::kRec2020
+  kColorXyz,   // Color::ColorSpace::kXYZD50,
+               // Color::ColorSpace::kXYZD65
+  kLab,        // Color::ColorSpace::kLab
+  kOkLab,      // Color::ColorSpace::kOklab
+  kLch,        // Color::ColorSpace::kLch
+  kOkLch,      // Color::ColorSpace::kOklch
+  kHsl,        // Color::ColorSpace::kHSL
+  kHwb,        // Color::ColorSpace::kHWB
+};
+
+constexpr double kPercentNotApplicable =
+    std::numeric_limits<double>::quiet_NaN();
+
+constexpr auto kFunctionMetadataMap =
+    base::MakeFixedFlatMap<FunctionMetadataEntry,
+                           ColorFunctionParser::FunctionMetadata>({
+        // rgb(); percentage mapping: r,g,b=255
+        {FunctionMetadataEntry::kLegacyRgb,
+         {{CSSValueID::kR, CSSValueID::kG, CSSValueID::kB}, {255, 255, 255}}},
+
+        // color(... <predefined-rgb-params> ...); percentage mapping: r,g,b=1
+        {FunctionMetadataEntry::kColorRgb,
+         {{CSSValueID::kR, CSSValueID::kG, CSSValueID::kB}, {1, 1, 1}}},
+
+        // color(... <xyz-params> ...); percentage mapping: x,y,z=1
+        {FunctionMetadataEntry::kColorXyz,
+         {{CSSValueID::kX, CSSValueID::kY, CSSValueID::kZ}, {1, 1, 1}}},
+
+        // lab(); percentage mapping: l=100 a,b=125
+        {FunctionMetadataEntry::kLab,
+         {{CSSValueID::kL, CSSValueID::kA, CSSValueID::kB}, {100, 125, 125}}},
+
+        // oklab(); percentage mapping: l=1 a,b=0.4
+        {FunctionMetadataEntry::kOkLab,
+         {{CSSValueID::kL, CSSValueID::kA, CSSValueID::kB}, {1, 0.4, 0.4}}},
+
+        // lch(); percentage mapping: l=100 c=150 h=n/a
+        {FunctionMetadataEntry::kLch,
+         {{CSSValueID::kL, CSSValueID::kC, CSSValueID::kH},
+          {100, 150, kPercentNotApplicable}}},
+
+        // oklch(); percentage mapping: l=1 c=0.4 h=n/a
+        {FunctionMetadataEntry::kOkLch,
+         {{CSSValueID::kL, CSSValueID::kC, CSSValueID::kH},
+          {1, 0.4, kPercentNotApplicable}}},
+
+        // hsl(); percentage mapping: h=n/a s,l=100
+        {FunctionMetadataEntry::kHsl,
+         {{CSSValueID::kH, CSSValueID::kS, CSSValueID::kL},
+          {kPercentNotApplicable, 100, 100}}},
+
+        // hwb(); percentage mapping: h=n/a w,b=100
+        {FunctionMetadataEntry::kHwb,
+         {{CSSValueID::kH, CSSValueID::kW, CSSValueID::kB},
+          {kPercentNotApplicable, 100, 100}}},
+    });
+
+constexpr auto kColorSpaceFunctionMap =
+    base::MakeFixedFlatMap<Color::ColorSpace, FunctionMetadataEntry>({
+        {Color::ColorSpace::kSRGBLegacy, FunctionMetadataEntry::kLegacyRgb},
+        {Color::ColorSpace::kSRGB, FunctionMetadataEntry::kColorRgb},
+        {Color::ColorSpace::kSRGBLinear, FunctionMetadataEntry::kColorRgb},
+        {Color::ColorSpace::kDisplayP3, FunctionMetadataEntry::kColorRgb},
+        {Color::ColorSpace::kA98RGB, FunctionMetadataEntry::kColorRgb},
+        {Color::ColorSpace::kProPhotoRGB, FunctionMetadataEntry::kColorRgb},
+        {Color::ColorSpace::kRec2020, FunctionMetadataEntry::kColorRgb},
+        {Color::ColorSpace::kXYZD50, FunctionMetadataEntry::kColorXyz},
+        {Color::ColorSpace::kXYZD65, FunctionMetadataEntry::kColorXyz},
+        {Color::ColorSpace::kLab, FunctionMetadataEntry::kLab},
+        {Color::ColorSpace::kOklab, FunctionMetadataEntry::kOkLab},
+        {Color::ColorSpace::kLch, FunctionMetadataEntry::kLch},
+        {Color::ColorSpace::kOklch, FunctionMetadataEntry::kOkLch},
+        {Color::ColorSpace::kHSL, FunctionMetadataEntry::kHsl},
+        {Color::ColorSpace::kHWB, FunctionMetadataEntry::kHwb},
+    });
+
+bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
   if (color_space == Color::ColorSpace::kHSL ||
       color_space == Color::ColorSpace::kHWB) {
     if (channel == 0) {
@@ -75,9 +174,9 @@ static bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
 // e.g. lab(from magenta l a b), consume the "magenta" after the from. The
 // result needs to be a blink::Color as we need actual values for the color
 // parameters.
-static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
-                                       const CSSParserContext& context,
-                                       Color& result) {
+bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
+                                const CSSParserContext& context,
+                                Color& result) {
   if (!RuntimeEnabledFeatures::CSSRelativeColorEnabled()) {
     return false;
   }
@@ -111,10 +210,12 @@ static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
   return false;
 }
 
-static std::optional<double> ConsumeRelativeColorChannel(
+std::optional<double> ConsumeRelativeColorChannel(
     CSSParserTokenRange& input_range,
     const CSSParserContext& context,
-    const HashMap<CSSValueID, double>& color_channel_keyword_values) {
+    const HashMap<CSSValueID, double>& color_channel_keyword_values,
+    CalculationResultCategorySet expected_categories,
+    const double percentage_base = 0) {
   const CSSParserToken& token = input_range.Peek();
   // Relative color channels can be calc() functions with color channel
   // replacements. e.g. In "color(from magenta srgb calc(r / 2) 0 0)", the
@@ -132,12 +233,29 @@ static std::optional<double> ConsumeRelativeColorChannel(
             color_channel_keyword_values),
         CSSPrimitiveValue::ValueRange::kAll);
     if (calc_value) {
-      if (calc_value->Category() != kCalcNumber) {
+      const CalculationResultCategory category = calc_value->Category();
+      if (!expected_categories.Has(category)) {
         return std::nullopt;
+      }
+      double value;
+      switch (category) {
+        case kCalcNumber:
+          value = calc_value->GetDoubleValueWithoutClamping();
+          break;
+        case kCalcPercent:
+          value = calc_value->GetDoubleValue() / 100;
+          value *= percentage_base;
+          break;
+        case kCalcAngle:
+          value = calc_value->ComputeDegrees();
+          break;
+        default:
+          NOTREACHED();
+          return std::nullopt;
       }
       // Consume the range, since it has succeeded.
       input_range = calc_range;
-      return calc_value->GetDoubleValueWithoutClamping();
+      return value;
     }
   }
 
@@ -151,60 +269,8 @@ static std::optional<double> ConsumeRelativeColorChannel(
   return std::nullopt;
 }
 
-// Relative color syntax requires "channel keyword" substitutions for color
-// channels. Each color space has three "channel keywords", plus "alpha", that
-// correspond to the three parameters stored on the origin color. This function
-// generates a map between the channel keywords and the stored values in order
-// to make said substitutions. e.g. color(from magenta srgb r g b) will need to
-// generate srgb keyword values for the origin color "magenta". This function
-// will return: {CSSValueID::kR: 1, CSSValueID::kG: 0, CSSValueID::kB: 1}.
-static HashMap<CSSValueID, double> GenerateChannelKeywordValues(
-    Color::ColorSpace color_space,
-    Color origin_color) {
-  std::vector<CSSValueID> channel_names;
-  switch (color_space) {
-    case Color::ColorSpace::kSRGB:
-    case Color::ColorSpace::kSRGBLinear:
-    case Color::ColorSpace::kSRGBLegacy:
-    case Color::ColorSpace::kDisplayP3:
-    case Color::ColorSpace::kA98RGB:
-    case Color::ColorSpace::kProPhotoRGB:
-    case Color::ColorSpace::kRec2020:
-      channel_names = {CSSValueID::kR, CSSValueID::kG, CSSValueID::kB};
-      break;
-    case Color::ColorSpace::kXYZD50:
-    case Color::ColorSpace::kXYZD65:
-      channel_names = {CSSValueID::kX, CSSValueID::kY, CSSValueID::kZ};
-      break;
-    case Color::ColorSpace::kLab:
-    case Color::ColorSpace::kOklab:
-      channel_names = {CSSValueID::kL, CSSValueID::kA, CSSValueID::kB};
-      break;
-    case Color::ColorSpace::kLch:
-    case Color::ColorSpace::kOklch:
-      channel_names = {CSSValueID::kL, CSSValueID::kC, CSSValueID::kH};
-      break;
-    case Color::ColorSpace::kHSL:
-      channel_names = {CSSValueID::kH, CSSValueID::kS, CSSValueID::kL};
-      break;
-    case Color::ColorSpace::kHWB:
-      channel_names = {CSSValueID::kH, CSSValueID::kW, CSSValueID::kB};
-      break;
-    case Color::ColorSpace::kNone:
-      NOTREACHED();
-      break;
-  }
-
-  return {
-      {channel_names[0], origin_color.Param0()},
-      {channel_names[1], origin_color.Param1()},
-      {channel_names[2], origin_color.Param2()},
-      {CSSValueID::kAlpha, origin_color.Alpha()},
-  };
-}
-
 // https://www.w3.org/TR/css-color-4/#color-function
-static bool IsValidColorSpaceForColorFunction(Color::ColorSpace color_space) {
+bool IsValidColorSpaceForColorFunction(Color::ColorSpace color_space) {
   return color_space == Color::ColorSpace::kSRGB ||
          color_space == Color::ColorSpace::kSRGBLinear ||
          color_space == Color::ColorSpace::kDisplayP3 ||
@@ -214,6 +280,8 @@ static bool IsValidColorSpaceForColorFunction(Color::ColorSpace color_space) {
          color_space == Color::ColorSpace::kXYZD50 ||
          color_space == Color::ColorSpace::kXYZD65;
 }
+
+}  // namespace
 
 bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     CSSParserTokenRange& range,
@@ -255,10 +323,29 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     is_relative_color_ = true;
   }
 
+  auto function_entry = kColorSpaceFunctionMap.find(color_space_);
+  CHECK_NE(function_entry, kColorSpaceFunctionMap.end());
+  auto function_metadata_entry =
+      kFunctionMetadataMap.find(function_entry->second);
+  CHECK_NE(function_metadata_entry, kFunctionMetadataMap.end());
+  function_metadata_ = &function_metadata_entry->second;
+
   if (is_relative_color_) {
     origin_color_.ConvertToColorSpace(color_space_);
-    channel_keyword_values_ =
-        GenerateChannelKeywordValues(color_space_, origin_color_);
+    // Relative color syntax requires "channel keyword" substitutions for color
+    // channels. Each color space has three "channel keywords", plus "alpha",
+    // that correspond to the three parameters stored on the origin color. This
+    // function generates a map between the channel keywords and the stored
+    // values in order to make said substitutions. e.g. color(from magenta srgb
+    // r g b) will need to generate srgb keyword values for the origin color
+    // "magenta". This will produce a map like: {CSSValueID::kR: 1,
+    // CSSValueID::kG: 0, CSSValueID::kB: 1, CSSValueID::kAlpha: 1}.
+    channel_keyword_values_ = {
+        {function_metadata_->channel_name[0], origin_color_.Param0()},
+        {function_metadata_->channel_name[1], origin_color_.Param1()},
+        {function_metadata_->channel_name[2], origin_color_.Param2()},
+        {CSSValueID::kAlpha, origin_color_.Alpha()},
+    };
   }
 
   return true;
@@ -308,10 +395,12 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
   if (ColorChannelIsHue(color_space_, i)) {
     if ((channels_[i] = ConsumeHue(args, context))) {
       channel_types_[i] = ChannelType::kNumber;
-    } else if (is_relative_color_ &&
-               (channels_[i] = ConsumeRelativeColorChannel(
-                    args, context, channel_keyword_values_))) {
-      channel_types_[i] = ChannelType::kRelative;
+    } else if (is_relative_color_) {
+      if ((channels_[i] = ConsumeRelativeColorChannel(
+               args, context, channel_keyword_values_,
+               {kCalcNumber, kCalcAngle}))) {
+        channel_types_[i] = ChannelType::kRelative;
+      }
     }
 
     if (!channels_[i].has_value()) {
@@ -339,15 +428,18 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
 
   if ((temp = css_parsing_utils::ConsumePercent(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
-    channels_[i] = temp->GetDoubleValue() / 100.0;
+    const double value = temp->GetDoubleValue();
+    channels_[i] = (value / 100.0) * function_metadata_->channel_percentage[i];
     channel_types_[i] = ChannelType::kPercentage;
     return true;
   }
 
   if (is_relative_color_) {
     channel_types_[i] = ChannelType::kRelative;
-    if ((channels_[i] = ConsumeRelativeColorChannel(args, context,
-                                                    channel_keyword_values_))) {
+    if ((channels_[i] = ConsumeRelativeColorChannel(
+             args, context, channel_keyword_values_,
+             {kCalcNumber, kCalcPercent},
+             function_metadata_->channel_percentage[i]))) {
       return true;
     }
   }
@@ -378,14 +470,16 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
   }
 
   if ((alpha_ = ConsumeRelativeColorChannel(
-           args, context, {{CSSValueID::kAlpha, origin_color_.Alpha()}}))) {
+           args, context, {{CSSValueID::kAlpha, origin_color_.Alpha()}},
+           {kCalcNumber, kCalcPercent}, 1.0))) {
     // Same as above, check if the channel contains only the keyword
     // "alpha", because that can be either an rgb or an xyz param.
     return true;
   }
 
   if (is_relative_color_ && (alpha_ = ConsumeRelativeColorChannel(
-                                 args, context, channel_keyword_values_))) {
+                                 args, context, channel_keyword_values_,
+                                 {kCalcNumber, kCalcPercent}, 1.0))) {
     return true;
   }
 
@@ -408,7 +502,6 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
           return false;
         }
         uses_percentage = true;
-        channels_[i].value() *= 255.0;
       } else if (channel_types_[i] == ChannelType::kNumber) {
         if (uses_percentage && is_legacy_syntax_) {
           return false;
@@ -450,47 +543,14 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
         }
         // Raw numbers are interpreted as percentages in these color spaces.
         channels_[i] = channels_[i].value() / 100.0;
+      } else if (channel_types_[i] == ChannelType::kPercentage) {
+        channels_[i] = channels_[i].value() / 100.0;
       }
       if (channels_[i].has_value() && is_legacy_syntax_) {
         channels_[i] = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
       }
     }
   }
-
-  if (Color::IsLightnessFirstComponent(color_space_)) {
-    // "Lightness" (param0) for lab/lch is in the range [0, 100], with 100%
-    // corresponding to 100. "Lightness" (param0) for oklab/oklch is in the
-    // range [0, 1], with 100% corresponding to 1. This means that we can just
-    // take the numbers as input, with the exception that percentages for
-    // lab/lch must be multiplied by 100.
-    if (channel_types_[0] == ChannelType::kPercentage &&
-        (color_space_ == Color::ColorSpace::kLab ||
-         color_space_ == Color::ColorSpace::kLch)) {
-      channels_[0].value() *= 100.0;
-    }
-
-    // For lab() and oklab() percentage inputs for a or b need to be mapped onto
-    // the correct ranges. https://www.w3.org/TR/css-color-4/#specifying-lab-lch
-    if (!Color::IsChromaSecondComponent(color_space_)) {
-      const double ab_coefficient_for_percentages =
-          (color_space_ == Color::ColorSpace::kLab) ? 125 : 0.4;
-
-      if (channel_types_[1] == ChannelType::kPercentage) {
-        channels_[1].value() *= ab_coefficient_for_percentages;
-      }
-      if (channel_types_[2] == ChannelType::kPercentage) {
-        channels_[2].value() *= ab_coefficient_for_percentages;
-      }
-    } else {
-      // Same as above, mapping percentage values for chroma in lch()/oklch().
-      const double chroma_coefficient_for_percentages =
-          (color_space_ == Color::ColorSpace::kLch) ? 150 : 0.4;
-      if (channel_types_[1] == ChannelType::kPercentage) {
-        channels_[1].value() *= chroma_coefficient_for_percentages;
-      }
-    }
-  }
-
   return true;
 }
 

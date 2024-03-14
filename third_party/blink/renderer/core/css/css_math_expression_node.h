@@ -72,6 +72,10 @@ enum CalculationResultCategory {
   kCalcIdent,
   kCalcOther,
 };
+using CalculationResultCategorySet =
+    base::EnumSet<CalculationResultCategory,
+                  CalculationResultCategory::kCalcNumber,
+                  CalculationResultCategory::kCalcOther>;
 
 class CORE_EXPORT CSSMathExpressionNode
     : public GarbageCollected<CSSMathExpressionNode> {
