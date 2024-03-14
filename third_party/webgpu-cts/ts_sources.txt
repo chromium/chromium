@@ -801,6 +801,7 @@ src/webgpu/shader/validation/shader_io/workgroup_size.spec.ts
 src/webgpu/shader/validation/types/alias.spec.ts
 src/webgpu/shader/validation/types/atomics.spec.ts
 src/webgpu/shader/validation/types/struct.spec.ts
+src/webgpu/shader/validation/types/textures.spec.ts
 src/webgpu/shader/validation/types/vector.spec.ts
 src/webgpu/shader/validation/uniformity/uniformity.spec.ts
 src/webgpu/util/copy_to_texture.ts
