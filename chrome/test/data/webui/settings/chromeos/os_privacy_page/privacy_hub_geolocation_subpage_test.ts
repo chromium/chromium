@@ -5,8 +5,9 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {PrivacyHubBrowserProxyImpl, SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, Router, routes, setAppPermissionProviderForTesting, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, Router, routes, setAppPermissionProviderForTesting, SettingsDropdownMenuElement, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertLT, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -326,6 +327,11 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         metrics.countMetricValue(histogram(), GeolocationAccessLevel.ALLOWED));
   });
 
+  function getGeolocationDropdown(): SettingsDropdownMenuElement|null {
+    return privacyHubGeolocationSubpage.shadowRoot!
+        .querySelector<SettingsDropdownMenuElement>('#geolocationDropdown');
+  }
+
   function getManagePermissionsInChromeRow(): CrLinkRowElement|null {
     return privacyHubGeolocationSubpage.shadowRoot!
         .querySelector<CrLinkRowElement>('#managePermissionsInChromeRow');
@@ -466,5 +472,16 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         sunsetScheduleString(secondSunsetSchedule),
         getSystemServicePermissionText(systemServices[1]!));
   });
+
+  test('Location control is disabled for secondary users', async () => {
+    // Simulate secondary user flow.
+    loadTimeData.overrideValues({
+      isSecondaryUser: true,
+    });
+    await initPage();
+
+    assertTrue(getGeolocationDropdown()!.disabled);
+  });
+
 
 });

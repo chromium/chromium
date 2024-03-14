@@ -74,4 +74,14 @@ suite('<settings-privacy-hub-geolocation-advanced-subpage>', () => {
     const toggle = getGeoLocationAccuracyToggle();
     assertNull(toggle);
   });
+
+  test('Location accuracy is disabled for secondary users', async () => {
+    // Simulate secondary user flow.
+    loadTimeData.overrideValues({
+      isSecondaryUser: true,
+    });
+    await initPage(/** showPrivacyHubLocationControl */ true);
+
+    assertTrue(getGeoLocationAccuracyToggle()!.disabled);
+  });
 });

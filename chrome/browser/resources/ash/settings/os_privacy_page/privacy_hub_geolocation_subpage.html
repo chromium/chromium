@@ -30,9 +30,18 @@
 <div
     id="geolocationDropdownDiv"
     class="settings-box first">
+  <template is="dom-if" if="[[isSecondaryUser_]]">
+    <cr-tooltip-icon
+        class="secondary-accounts-disabled-tooltip"
+        icon-class="cr:group"
+        tooltip-text="[[settingControlledByPrimaryUserText_()]]"
+        icon-aria-label="[[settingControlledByPrimaryUserText_()]]">
+    </cr-tooltip-icon>
+  </template>
   <settings-dropdown-menu
       id="geolocationDropdown"
       label="Label here"
+      disabled="[[isSecondaryUser_]]"
       menu-options="[[geolocationMapTargets_]]"
       on-settings-control-change="recordMetric_"
       pref="{{prefs.ash.user.geolocation_access_level}}">

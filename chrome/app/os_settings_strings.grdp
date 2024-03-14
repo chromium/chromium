@@ -6556,6 +6556,9 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ADVANCED_AREA_TITLE" desc="The title of the advanced location settings page.">
     Advanced location settings
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_PRIMARY_USER_CONTROLLED" desc="Text to show when the geolocation setting is controlled by the primary user.">
+    This setting is controlled by <ph name="USER_EMAIL">$1<ex>joe@gmail.com</ex></ph>.
+  </message>
   <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in ChromeOS Flex.">
     <ph name="DEVICE_OS">$1<ex>ChromeOS Flex</ex></ph> hardware support and stability
   </message>

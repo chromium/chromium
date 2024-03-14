@@ -9,15 +9,19 @@
  */
 
 import './privacy_hub_app_permission_row.js';
+import 'chrome://resources/ash/common/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExhaustive, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {isSecondaryUser} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {App, AppPermissionsHandlerInterface, AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
@@ -104,6 +108,13 @@ export class SettingsPrivacyHubGeolocationSubpage extends
             'prefs.ash.user.geolocation_access_level.value,' +
             'currentTimeZoneName_)',
       },
+      isSecondaryUser_: {
+        type: Boolean,
+        value() {
+          return isSecondaryUser();
+        },
+        readOnly: true,
+      },
       isGeolocationAllowedForApps_: {
         type: Boolean,
         computed: 'computedIsGeolocationAllowedForApps_(' +
@@ -156,6 +167,7 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   private geolocationMapTargets_: DropdownMenuOptionList;
   private appList_: App[];
   private appPermissionsObserverReceiver_: AppPermissionsObserverReceiver|null;
+  private isSecondaryUser_: boolean;
   private isGeolocationAllowedForApps_: boolean;
   private mojoInterfaceProvider_: AppPermissionsHandlerInterface;
   private browserProxy_: PrivacyHubBrowserProxy;
@@ -192,6 +204,12 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.appPermissionsObserverReceiver_!.$.close();
+  }
+
+  private settingControlledByPrimaryUserText_(): string {
+    return this.i18n(
+        'geolocationControlledByPrimaryUserText',
+        loadTimeData.getString('primaryUserEmail'));
   }
 
   /**

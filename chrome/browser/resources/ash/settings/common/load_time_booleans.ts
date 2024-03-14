@@ -19,6 +19,10 @@ export function isChild(): boolean {
   return loadTimeData.getBoolean('isChild');
 }
 
+export function isSecondaryUser(): boolean {
+  return loadTimeData.getBoolean('isSecondaryUser');
+}
+
 export function isRevampWayfindingEnabled(): boolean {
   return loadTimeData.getBoolean('isRevampWayfindingEnabled');
 }
