@@ -32,19 +32,21 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
   if (mojo_frame) {
     for (const auto& segment : mojo_frame->segments) {
       if (segment->is_text()) {
-        url_passages.passages.push_back(segment->get_text());
+        url_passages.passages.add_passages(segment->get_text());
       }
     }
     base::UmaHistogramTimes("History.Embeddings.Passages.ExtractionTime",
                             extraction_time);
   }
-  const size_t total_text_size = std::accumulate(
-      url_passages.passages.cbegin(), url_passages.passages.cend(), 0u,
-      [](size_t acc, const std::string& passage) {
-        return acc + passage.size();
-      });
+  // Save passages
+  const size_t total_text_size =
+      std::accumulate(url_passages.passages.passages().cbegin(),
+                      url_passages.passages.passages().cend(), 0u,
+                      [](size_t acc, const std::string& passage) {
+                        return acc + passage.size();
+                      });
   base::UmaHistogramCounts1000("History.Embeddings.Passages.PassageCount",
-                               url_passages.passages.size());
+                               url_passages.passages.passages_size());
   base::UmaHistogramCounts10M("History.Embeddings.Passages.TotalTextSize",
                               total_text_size);
   std::move(callback).Run(std::move(url_passages));
@@ -53,7 +55,7 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
 std::vector<Embedding> StubComputePassagesEmbeddings(
     const UrlPassages& url_passages) {
   // TODO(b/328114635): Synchronous inference to compute vector embeddings?
-  return std::vector<Embedding>(url_passages.passages.size(),
+  return std::vector<Embedding>(url_passages.passages.passages_size(),
                                 Embedding({1.0f, 2.0f, 3.0f, 4.0f}));
 }
 
@@ -116,16 +118,7 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
   vector_database.AddUrlEmbeddings(std::move(url_embeddings));
   vector_database.SaveTo(&sql_database);
 
-  // Save passages
-  proto::PassagesValue passages_value;
-  for (std::string& passage : url_passages.passages) {
-    // passages_value.add_passages(std::move(passage));
-    passages_value.add_passages(passage);
-  }
-
-  sql_database.InsertOrReplacePassages(url_passages.url_id,
-                                       url_passages.visit_id,
-                                       url_passages.visit_time, passages_value);
+  sql_database.InsertOrReplacePassages(url_passages);
 }
 
 void HistoryEmbeddingsService::OnPassagesRetrieved(PassagesCallback callback,

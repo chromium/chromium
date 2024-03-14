@@ -47,8 +47,8 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
   // Note: Currently the passage extraction algorithm does not recurse
   // into iframes. If that changes then the passage structure and content
   // here will need to change accordingly.
-  ASSERT_EQ(url_passages.passages.size(), 1u);
-  ASSERT_EQ(url_passages.passages[0], "A B C D");
+  ASSERT_EQ(url_passages.passages.passages_size(), 1);
+  ASSERT_EQ(url_passages.passages.passages(0), "A B C D");
 }
 
 }  // namespace history_embeddings

@@ -77,7 +77,7 @@ namespace {
 }  // namespace
 
 SqlDatabase::SqlDatabase(const base::FilePath& storage_dir)
-    : storage_dir_(storage_dir) {}
+    : storage_dir_(storage_dir), weak_ptr_factory_(this) {}
 
 SqlDatabase::~SqlDatabase() = default;
 
@@ -154,11 +154,7 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir) {
   return sql::InitStatus::INIT_OK;
 }
 
-bool SqlDatabase::InsertOrReplacePassages(
-    history::URLID url_id,
-    history::VisitID visit_id,
-    base::Time visit_time,
-    const proto::PassagesValue& passages) {
+bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit()) {
     return false;
@@ -171,11 +167,11 @@ bool SqlDatabase::InsertOrReplacePassages(
   DCHECK(db_.IsSQLValid(kSqlInsertOrReplacePassages));
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kSqlInsertOrReplacePassages));
-  statement.BindInt64(0, url_id);
-  statement.BindInt64(1, visit_id);
-  statement.BindTime(2, visit_time);
+  statement.BindInt64(0, url_passages.url_id);
+  statement.BindInt64(1, url_passages.visit_id);
+  statement.BindTime(2, url_passages.visit_time);
 
-  std::vector<uint8_t> blob = PassagesProtoToBlob(passages);
+  std::vector<uint8_t> blob = PassagesProtoToBlob(url_passages.passages);
   if (blob.empty()) {
     return false;
   }
@@ -260,20 +256,31 @@ SqlDatabase::MakeEmbeddingsIterator() {
 
   DCHECK(db_.IsSQLValid(kSqlSelectEmbeddings));
 
-  // TODO(orinj): Keep statement ownership within SqlDatabase (declare after
-  //  db_) and use WeakPtr to access it so the statement can never outlive db_.
   struct RowEmbeddingsIterator : public EmbeddingsIterator {
-    explicit RowEmbeddingsIterator(sql::Database& db)
-        : statement(
-              db.GetCachedStatement(SQL_FROM_HERE, kSqlSelectEmbeddings)) {}
-    ~RowEmbeddingsIterator() override = default;
+    explicit RowEmbeddingsIterator(base::WeakPtr<SqlDatabase> sql_database)
+        : sql_database(sql_database) {
+      CHECK(!sql_database->iteration_statement_);
+      sql_database->iteration_statement_ =
+          std::make_unique<sql::Statement>(sql_database->db_.GetCachedStatement(
+              SQL_FROM_HERE, kSqlSelectEmbeddings));
+    }
+    ~RowEmbeddingsIterator() override {
+      if (sql_database) {
+        sql_database->iteration_statement_.reset();
+      }
+    }
 
     const UrlEmbeddings* Next() override {
-      if (statement.Step()) {
-        data = UrlEmbeddings(/*url_id=*/statement.ColumnInt64(0),
-                             /*visit_id=*/statement.ColumnInt64(1),
-                             /*visit_time=*/statement.ColumnTime(2));
-        base::span<const uint8_t> blob = statement.ColumnBlob(3);
+      if (!sql_database) {
+        return nullptr;
+      }
+      sql::Statement* statement = sql_database->iteration_statement_.get();
+      CHECK(statement);
+      if (statement->Step()) {
+        data = UrlEmbeddings(/*url_id=*/statement->ColumnInt64(0),
+                             /*visit_id=*/statement->ColumnInt64(1),
+                             /*visit_time=*/statement->ColumnTime(2));
+        base::span<const uint8_t> blob = statement->ColumnBlob(3);
 
         proto::EmbeddingsValue value;
         if (!value.ParseFromArray(blob.data(), blob.size())) {
@@ -290,11 +297,12 @@ SqlDatabase::MakeEmbeddingsIterator() {
       }
     }
 
-    sql::Statement statement;
+    base::WeakPtr<SqlDatabase> sql_database;
     UrlEmbeddings data;
   };
 
-  return std::make_unique<RowEmbeddingsIterator>(db_);
+  return std::make_unique<RowEmbeddingsIterator>(
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void SqlDatabase::DatabaseErrorCallback(int extended_error,

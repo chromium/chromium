@@ -33,11 +33,11 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadPassages) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
 
   // Write passages
-  proto::PassagesValue original_proto;
+  UrlPassages url_passages(1, 1, base::Time::Now());
+  proto::PassagesValue& original_proto = url_passages.passages;
   original_proto.add_passages("fake passage 1");
   original_proto.add_passages("fake passage 2");
-  EXPECT_TRUE(sql_database->InsertOrReplacePassages(1, 1, base::Time::Now(),
-                                                    original_proto));
+  EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
 
   // Reset and reload.
   sql_database.reset();
@@ -118,14 +118,13 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, WriteCloseAndThenReadEmbeddings) {
 TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
   auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
 
-  proto::PassagesValue original_proto;
-  original_proto.add_passages("fake passage 1");
-  original_proto.add_passages("fake passage 2");
-  EXPECT_TRUE(sql_database->InsertOrReplacePassages(1, 1, base::Time::Now(),
-                                                    original_proto));
-  original_proto.add_passages("fake passage 3");
-  EXPECT_TRUE(sql_database->InsertOrReplacePassages(1, 2, base::Time::Now(),
-                                                    original_proto));
+  UrlPassages url_passages(1, 1, base::Time::Now());
+  url_passages.passages.add_passages("fake passage 1");
+  url_passages.passages.add_passages("fake passage 2");
+  EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
+  url_passages.visit_id = 2;
+  url_passages.passages.add_passages("fake passage 3");
+  EXPECT_TRUE(sql_database->InsertOrReplacePassages(url_passages));
 
   // Verify that the new one has replaced the old one.
   auto read_proto = sql_database->GetPassages(1);
@@ -136,6 +135,40 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, InsertOrReplacePassages) {
   EXPECT_EQ(read_proto->passages()[2], "fake passage 3");
 
   EXPECT_FALSE(sql_database->GetPassages(2));
+}
+
+TEST_F(HistoryEmbeddingsSqlDatabaseTest, IteratorMaySafelyOutliveDatabase) {
+  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+
+  UrlEmbeddings url_embeddings(1, 1, base::Time::Now());
+  url_embeddings.embeddings.push_back(Embedding({
+      1.0f,
+      2.0f,
+      3.0f,
+      4.0f,
+  }));
+  EXPECT_TRUE(sql_database->AddUrlEmbeddings(url_embeddings));
+
+  // Without database reset, iteration reads data.
+  {
+    std::unique_ptr<VectorDatabase::EmbeddingsIterator> iterator =
+        sql_database->MakeEmbeddingsIterator();
+    EXPECT_TRUE(iterator);
+    EXPECT_TRUE(iterator->Next());
+  }
+
+  // With database reset, iteration gracefully ends.
+  {
+    std::unique_ptr<VectorDatabase::EmbeddingsIterator> iterator =
+        sql_database->MakeEmbeddingsIterator();
+    EXPECT_TRUE(iterator);
+
+    // Reset database while iterator is still in scope.
+    sql_database.reset();
+
+    // Iterator access with dead database doesn't crash, just ends iteration.
+    EXPECT_FALSE(iterator->Next());
+  }
 }
 
 }  // namespace history_embeddings

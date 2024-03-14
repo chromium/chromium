@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace history_embeddings {
@@ -26,7 +27,7 @@ struct UrlPassages {
   history::URLID url_id;
   history::VisitID visit_id;
   base::Time visit_time;
-  std::vector<std::string> passages;
+  proto::PassagesValue passages;
 };
 
 class Embedding {
