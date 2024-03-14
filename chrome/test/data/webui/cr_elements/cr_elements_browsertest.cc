@@ -17,6 +17,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrButton) {
   RunTest("cr_elements/cr_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrChip) {
+  RunTest("cr_elements/cr_chip_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrContainerShadowMixin) {
   RunTest("cr_elements/cr_container_shadow_mixin_test.js", "mocha.run()");
 }

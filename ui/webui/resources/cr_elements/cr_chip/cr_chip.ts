@@ -2,59 +2,66 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PaperRippleMixin} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrPaperRippleMixin} from '../cr_paper_ripple_mixin.js';
 
-import {getTemplate} from './cr_chip.html.js';
+import {getCss} from './cr_chip.css.js';
+import {getHtml} from './cr_chip.html.js';
 
-const CrChipElementBase = PaperRippleMixin(PolymerElement);
+const CrChipElementBase = CrPaperRippleMixin(CrLitElement);
 
-export class CrChip extends CrChipElementBase {
+export interface CrChipElement {
+  $: {
+    button: HTMLButtonElement,
+  };
+}
+
+export class CrChipElement extends CrChipElementBase {
   static get is() {
     return 'cr-chip';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      disabled: Boolean,
-      chipRole: String,
-      selected: Boolean,
+      disabled: {type: Boolean},
+      chipRole: {type: String},
+      selected: {type: Boolean},
     };
   }
 
-  disabled: boolean;
-  chipRole: string;
-  selected: boolean;
+  disabled: boolean = false;
+  chipRole: string = '';
+  selected: boolean = false;
 
   constructor() {
     super();
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
-    }
+    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
   }
 
   private onPointerDown_() {
     this.ensureRipple();
   }
 
-  // Overridden from PaperRippleMixin
-  /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  override _createRipple() {
-    this._rippleContainer = this.shadowRoot!.querySelector('button');
-    return super._createRipple();
+  // Overridden from CrPaperRippleMixin
+  override createRipple() {
+    this.rippleContainer = this.shadowRoot!.querySelector('button');
+    return super.createRipple();
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-chip': CrChip;
+    'cr-chip': CrChipElement;
   }
 }
 
-customElements.define(CrChip.is, CrChip);
+customElements.define(CrChipElement.is, CrChipElement);
