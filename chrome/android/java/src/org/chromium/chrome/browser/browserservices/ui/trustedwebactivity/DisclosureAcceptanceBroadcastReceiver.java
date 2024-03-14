@@ -14,8 +14,8 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.BrowserServicesStore;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
 /**
@@ -36,19 +36,19 @@ public class DisclosureAcceptanceBroadcastReceiver extends BroadcastReceiver {
     private static final String ID_EXTRA = "TWADisclosureResp.id_extra";
     private static final String PACKAGE_EXTRA = "TWADisclosureResp.package_extra";
 
-    private final NotificationManagerProxy mNotificationManager;
+    private final BaseNotificationManagerProxy mNotificationManager;
     private final BrowserServicesStore mStore;
 
     /** Constructor used by the Android framework. */
     public DisclosureAcceptanceBroadcastReceiver() {
         this(
-                new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()),
+                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()),
                 new BrowserServicesStore(ChromeSharedPreferences.getInstance()));
     }
 
     /** Constructor that allows dependency injection for use in tests. */
     public DisclosureAcceptanceBroadcastReceiver(
-            NotificationManagerProxy notificationManager, BrowserServicesStore store) {
+            BaseNotificationManagerProxy notificationManager, BrowserServicesStore store) {
         mNotificationManager = notificationManager;
         mStore = store;
     }

@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -210,7 +210,7 @@ public class DisplayAgent {
     }
 
     private static void closeNotification(String guid) {
-        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext())
+        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
                 .cancel(DISPLAY_AGENT_TAG, guid.hashCode());
     }
 
@@ -336,7 +336,8 @@ public class DisplayAgent {
         }
 
         NotificationWrapper notification = builder.buildNotificationWrapper();
-        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext()).notify(notification);
+        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
+                .notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
                         platformData.systemNotificationType, notification.getNotification());

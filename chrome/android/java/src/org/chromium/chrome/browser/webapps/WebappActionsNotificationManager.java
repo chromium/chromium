@@ -32,8 +32,7 @@ import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFacto
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
@@ -94,8 +93,7 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
 
         Context appContext = ContextUtils.getApplicationContext();
         NotificationWrapper notification = createNotification(appContext, tab, webappExtras);
-        NotificationManagerProxy nm = new NotificationManagerProxyImpl(appContext);
-        nm.notify(notification);
+        BaseNotificationManagerProxyFactory.create(appContext).notify(notification);
 
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
