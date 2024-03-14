@@ -4,6 +4,8 @@
 
 #include "base/android/jni_string.h"
 
+#include <string_view>
+
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -15,8 +17,7 @@
 namespace {
 
 // Internal version that does not use a scoped local pointer.
-jstring ConvertUTF16ToJavaStringImpl(JNIEnv* env,
-                                     const base::StringPiece16& str) {
+jstring ConvertUTF16ToJavaStringImpl(JNIEnv* env, std::u16string_view str) {
   jstring result = env->NewString(reinterpret_cast<const jchar*>(str.data()),
                                   base::checked_cast<jsize>(str.length()));
   base::android::CheckException(env);
@@ -82,7 +83,7 @@ std::string ConvertJavaStringToUTF8(JNIEnv* env, const JavaRef<jstring>& str) {
 }
 
 ScopedJavaLocalRef<jstring> ConvertUTF8ToJavaString(JNIEnv* env,
-                                                    const StringPiece& str) {
+                                                    std::string_view str) {
   // JNI's NewStringUTF expects "modified" UTF8 so instead create the string
   // via our own UTF16 conversion utility.
   // Further, Dalvik requires the string passed into NewStringUTF() to come from
@@ -148,7 +149,7 @@ std::u16string ConvertJavaStringToUTF16(JNIEnv* env,
 }
 
 ScopedJavaLocalRef<jstring> ConvertUTF16ToJavaString(JNIEnv* env,
-                                                     const StringPiece16& str) {
+                                                     std::u16string_view str) {
   return ScopedJavaLocalRef<jstring>(env,
                                      ConvertUTF16ToJavaStringImpl(env, str));
 }
