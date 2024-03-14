@@ -26,7 +26,7 @@ NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
       [items addObject:[GridItemIdentifier groupIdentifier:group_item]];
 
       // Skip the webStates that belong to `group_item`.
-      incrementer = web_state_list->GetWebStates(tab_group).count();
+      incrementer = web_state_list->GetGroupRange(tab_group).count();
 
     } else {
       web::WebState* web_state = web_state_list->GetWebStateAt(i);

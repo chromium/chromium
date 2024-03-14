@@ -46,7 +46,7 @@
     case GridItemType::Group: {
       [_itemsIdentifiers addObject:item];
       const TabGroup* group = item.tabGroupItem.tabGroup;
-      WebStateList::Range range = _webStateList->GetWebStates(group);
+      WebStateList::Range range = _webStateList->GetGroupRange(group);
       for (int i : range) {
         web::WebStateID webStateID =
             _webStateList->GetWebStateAt(i)->GetUniqueIdentifier();
@@ -72,7 +72,7 @@
     }
     case GridItemType::Group: {
       const TabGroup* group = item.tabGroupItem.tabGroup;
-      WebStateList::Range range = _webStateList->GetWebStates(group);
+      WebStateList::Range range = _webStateList->GetGroupRange(group);
       for (int i : range) {
         web::WebStateID webStateID =
             _webStateList->GetWebStateAt(i)->GetUniqueIdentifier();

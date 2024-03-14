@@ -376,7 +376,7 @@ class WebStateList {
 
   // Returns the range of WebStates belonging to the tab group. The group must
   // be valid and belong to this WebStateList.
-  Range GetWebStates(const TabGroup* group) const;
+  Range GetGroupRange(const TabGroup* group) const;
 
   // Returns the list of all groups.
   std::set<const TabGroup*> GetGroups() const;
