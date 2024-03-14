@@ -3049,3 +3049,26 @@ TEST_F(WebStateListTest, RemoveFromGroups_KeepsActive) {
   EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
   EXPECT_EQ(nullptr, observer_.web_state_moved_new_group());
 }
+
+// Tests deleting a group. It keeps the active WebState and doesn’t touch the
+// other groups.
+TEST_F(WebStateListTest, DeleteGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [0 a* b] [ 1 c ] d"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  web_state_list_.DeleteGroup(group_0);
+
+  EXPECT_EQ("| a* b [ 1 c ] d",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(0, web_state_list_.GetWebStates(group_0).count());
+  EXPECT_EQ(WebStateList::Range(2, 1), web_state_list_.GetWebStates(group_1));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(2, observer_.status_only_count());
+  EXPECT_FALSE(observer_.web_state_activated());
+  EXPECT_EQ(group_0, observer_.status_only_old_group());
+  EXPECT_EQ(nullptr, observer_.status_only_new_group());
+}

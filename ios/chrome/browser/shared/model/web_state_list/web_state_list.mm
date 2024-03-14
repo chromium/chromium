@@ -403,6 +403,12 @@ void WebStateList::RemoveFromGroups(const std::set<int>& indices) {
   RemoveFromGroupsImpl(indices);
 }
 
+void WebStateList::DeleteGroup(const TabGroup* group) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+  DeleteGroupImpl(group);
+}
+
 base::AutoReset<bool> WebStateList::LockForMutation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!locked_) << "WebStateList is not re-entrant; it is an error to try to "
@@ -863,6 +869,16 @@ void WebStateList::RemoveFromGroupsImpl(const std::set<int>& indices) {
       MoveWebStateWrapperAt(*it, to_index, /*pinned=*/false,
                             /*new_group=*/nullptr);
     }
+  }
+}
+
+void WebStateList::DeleteGroupImpl(const TabGroup* group) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
+
+  for (int index : GetWebStates(group)) {
+    MoveWebStateWrapperAt(index, index, /*pinned=*/false,
+                          /*new_group=*/nullptr);
   }
 }
 

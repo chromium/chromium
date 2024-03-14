@@ -403,6 +403,11 @@ class WebStateList {
   // if any. The WebStates are reordered out of the groups if necessary.
   void RemoveFromGroups(const std::set<int>& indices);
 
+  // Removes all WebStates from the group. The WebStates stay where they are.
+  // The group is destroyed.
+  // TODO(crbug.com/325422747): Actually destroy the group.
+  void DeleteGroup(const TabGroup* group);
+
   // Adds an observer to the model.
   void AddObserver(WebStateListObserver* observer);
 
@@ -504,6 +509,13 @@ class WebStateList {
   //
   // Assumes that the WebStateList is locked.
   void RemoveFromGroupsImpl(const std::set<int>& indices);
+
+  // Removes all WebStates from the group. The WebStates stay where they are.
+  // The group is destroyed.
+  // TODO(crbug.com/325422747): Actually destroy the group.
+  //
+  // Assumes that the WebStateList is locked.
+  void DeleteGroupImpl(const TabGroup* group);
 
   // Sets the opener of any WebState that reference the WebState at the
   // specified index to null.
