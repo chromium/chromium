@@ -13800,22 +13800,44 @@ be describing additional metrics about the same event.
       optimization guide prediction arriving for the navigation.
     </summary>
   </metric>
+  <metric
+      name="OptimizationGuidePredictionCorrectlyPredictedLowPriorityOrigins">
+    <summary>
+      The number of predicted subresource origins that were only used by the
+      page for low-priority subresource loads before it unloaded. This will be
+      recorded if the Optimization Guide was consulted for the page load and the
+      Optimization Guide had a prediction for it. If more than 100 subresource
+      origins were correctly predicted, this will be capped at 100.
+    </summary>
+  </metric>
+  <metric
+      name="OptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresources">
+    <summary>
+      The number of predicted subresources that were only used by the page for
+      low-priority subresource loads before it unloaded. This will be recorded
+      if the Optimization Guide was consulted for the page load and the
+      Optimization Guide had a prediction for it. If more than 100 subresources
+      were predicted, this will be capped at 100.
+    </summary>
+  </metric>
   <metric name="OptimizationGuidePredictionCorrectlyPredictedOrigins">
     <summary>
       The number of subresource origins that were correctly predicted by the
-      Optimization Guide. This will be recorded if the Optimization Guide was
-      consulted for the page load and the Optimization Guide had a prediction
-      for it. If more than 100 subresource origins were correctly predicted,
-      this will be capped at 100.
+      Optimization Guide. This only counts origins of high-priority subresources
+      that are used before the page finishes loading. This will be recorded if
+      the Optimization Guide was consulted for the page load and the
+      Optimization Guide had a prediction for it. If more than 100 subresource
+      origins were correctly predicted, this will be capped at 100.
     </summary>
   </metric>
   <metric name="OptimizationGuidePredictionCorrectlyPredictedSubresources">
     <summary>
       The number of subresources that were correctly predicted by the
-      Optimization Guide. This will be recorded if the Optimization Guide was
-      consulted for the page load and the Optimization Guide had a prediction
-      for it. If more than 100 subresources were predicted, this will be capped
-      at 100.
+      Optimization Guide. This only counts high-priority subresources used
+      before the page finishes loading. This will be recorded if the
+      Optimization Guide was consulted for the page load and the Optimization
+      Guide had a prediction for it. If more than 100 subresources were
+      predicted, this will be capped at 100.
     </summary>
   </metric>
   <metric name="OptimizationGuidePredictionDecision"

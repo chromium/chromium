@@ -100,8 +100,7 @@ class LoadingPredictorTabHelper
 
     bool has_local_preconnect_predictions_for_current_navigation_ = false;
 
-    // The optimization guide prediction for the current navigation. If set,
-    // this will be cleared on |DocumentOnLoadCompletedInPrimaryMainFrame|.
+    // The optimization guide prediction for the current navigation.
     std::optional<OptimizationGuidePrediction>
         last_optimization_guide_prediction_;
 
@@ -109,6 +108,8 @@ class LoadingPredictorTabHelper
     // order to determine the current state of the navigation.
     base::WeakPtr<DocumentPageDataHolder> document_page_data_holder_;
     base::WeakPtr<NavigationPageDataHolder> navigation_page_data_holder_;
+
+    base::WeakPtr<LoadingPredictor> predictor_;
 
    private:
     friend class base::RefCounted<PageData>;

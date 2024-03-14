@@ -55,6 +55,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -1820,10 +1821,19 @@ IN_PROC_BROWSER_TEST_P(LoadingPredictorBrowserTestWithOptimizationGuide,
   content::AwaitDocumentOnLoadCompleted(observer->web_contents());
   ASSERT_TRUE(observer->WaitForNavigationFinished());
 
-  // Navigate to another URL - make sure optimization guide prediction is
-  // cleared.
+  // Navigate to another URL and wait until the previous RFH is destroyed (i.e.
+  // until the optimization guide prediction is cleared and metrics are
+  // recorded).
+  content::RenderFrameHostWrapper rfh(
+      observer->web_contents()->GetPrimaryMainFrame());
+  // Disable BFCache to ensure the navigation below unloads |rfh|.
+  content::DisableBackForwardCacheForTesting(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::BackForwardCache::DisableForTestingReason::
+          TEST_REQUIRES_NO_CACHING);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("nohints.com", "/")));
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.PreconnectLearningRecall.OptimizationGuide", 0, 1);

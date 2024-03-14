@@ -52,10 +52,10 @@ class MockLoadingDataCollector : public LoadingDataCollector {
   MOCK_METHOD3(RecordFinishNavigation, void(NavigationId, const GURL&, bool));
   MOCK_METHOD2(RecordResourceLoadComplete,
                void(NavigationId, const blink::mojom::ResourceLoadInfo&));
-  MOCK_METHOD2(RecordMainFrameLoadComplete,
+  MOCK_METHOD1(RecordMainFrameLoadComplete, void(NavigationId));
+  MOCK_METHOD2(RecordPageDestroyed,
                void(NavigationId,
                     const std::optional<OptimizationGuidePrediction>&));
-  MOCK_METHOD2(RecordFirstContentfulPaint, void(NavigationId, base::TimeTicks));
 };
 
 MockLoadingDataCollector::MockLoadingDataCollector(
@@ -106,6 +106,11 @@ void LoadingPredictorTabHelperTest::SetUp() {
   auto mock_collector =
       std::make_unique<StrictMock<MockLoadingDataCollector>>(config);
   mock_collector_ = mock_collector.get();
+  // RecordPageDestroyed will be called at the end of all tests when a page
+  // is destroyed, so we add a default catch-all expectation here. Tests can
+  // override this with more specific expectations inside the test.
+  EXPECT_CALL(*mock_collector_, RecordPageDestroyed)
+      .Times(testing::AnyNumber());
   loading_predictor_->set_mock_loading_data_collector(
       std::move(mock_collector));
 
@@ -221,7 +226,6 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
   navigation->CommitErrorPage();
 
   EXPECT_EQ(ukm_source_id,
-
             web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
@@ -246,7 +250,7 @@ TEST_F(LoadingPredictorTabHelperTest, DocumentOnLoadCompleted) {
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_));
   tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
@@ -323,12 +327,10 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderTest
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuideSameOrigin) {
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
-  // Trigger onLoad to get rid of previous prediction.
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   base::HistogramTester histogram_tester;
 
+  EXPECT_CALL(*mock_collector_, RecordPageDestroyed(_, Eq(std::nullopt)));
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               CanApplyOptimization(
                   _, optimization_guide::proto::LOADING_PREDICTOR,
@@ -336,24 +338,14 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       .Times(0);
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org/otherpage");
 
-  // Adding subframe navigation to ensure that the committed main frame url will
-  // be used.
-  auto* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  NavigateAndCommitInFrame("http://sub.test.org", subframe);
-
-  const std::optional<OptimizationGuidePrediction>
-      null_optimization_guide_prediction;
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(
-                                    _, null_optimization_guide_prediction));
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_));
   tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectTotalCount(
       "LoadingPredictor.OptimizationHintsReceiveStatus", 0);
 }
 
-// Tests that document on load completed is recorded with correct navigation
-// id and optimization guide prediction.
+// Tests that document on load completed is recorded.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuide) {
   base::HistogramTester histogram_tester;
@@ -373,11 +365,34 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
           ByRef(optimization_metadata)));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
-  // Adding subframe navigation to ensure that the committed main frame url will
-  // be used.
-  auto* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  NavigateAndCommitInFrame("http://sub.test.org", subframe);
+  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_));
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
+
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.OptimizationHintsReceiveStatus",
+      OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
+}
+
+// Tests that page destruction is recorded with the correct navigation id and
+// optimization guide prediction.
+TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+       PageDestroyedOptimizationGuide) {
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::OptimizationMetadata optimization_metadata;
+  optimization_guide::proto::LoadingPredictorMetadata lp_metadata;
+  lp_metadata.add_subresources()->set_url("http://test.org/resource1");
+  lp_metadata.add_subresources()->set_url("http://other.org/resource2");
+  lp_metadata.add_subresources()->set_url("http://other.org/resource3");
+  optimization_metadata.set_loading_predictor_metadata(lp_metadata);
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(optimization_metadata)));
+  NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
@@ -392,18 +407,19 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   prediction->predicted_subresources = {GURL("http://test.org/resource1"),
                                         GURL("http://other.org/resource2"),
                                         GURL("http://other.org/resource3")};
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.OptimizationHintsReceiveStatus",
       OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
+
+  // Called when the frame is destroyed by the test destructor.
+  EXPECT_CALL(*mock_collector_, RecordPageDestroyed(_, prediction));
 }
 
-// Tests that document on load completed is recorded with correct navigation
-// id and optimization guide prediction.
+// Tests that predictions are recorded correctly when they come after the
+// navigation commits.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
-       DocumentOnLoadCompletedOptimizationGuidePredictionComesAfterCommit) {
+       PageDestroyedOptimizationGuidePredictionComesAfterCommit) {
   base::HistogramTester histogram_tester;
 
   optimization_guide::OptimizationMetadata optimization_metadata;
@@ -428,11 +444,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,
                           optimization_metadata);
 
-  // Adding subframe navigation to ensure that the committed main frame url will
-  // be used.
-  auto* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  NavigateAndCommitInFrame("http://sub.test.org", subframe);
+  // Optimization guide predictions came after commit.
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.OptimizationHintsReceiveStatus",
+      OptimizationHintsReceiveStatus::kAfterNavigationFinish, 1);
 
   std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
@@ -447,19 +462,14 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   prediction->predicted_subresources = {GURL("http://test.org/resource1"),
                                         GURL("http://other.org/resource2"),
                                         GURL("http://other.org/resource3")};
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
-
-  // Optimization guide predictions came after commit.
-  histogram_tester.ExpectUniqueSample(
-      "LoadingPredictor.OptimizationHintsReceiveStatus",
-      OptimizationHintsReceiveStatus::kAfterNavigationFinish, 1);
+  // Called when the frame is destroyed by the test destructor.
+  EXPECT_CALL(*mock_collector_, RecordPageDestroyed(_, prediction));
 }
 
 // Tests that predictions are recorded correctly when they arrive after a
 // redirect.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
-       DocumentOnLoadCompletedOptimizationGuidePredictionArrivedAfterRedirect) {
+       PageDestroyedOptimizationGuidePredictionArrivedAfterRedirect) {
   base::HistogramTester histogram_tester;
 
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
@@ -500,24 +510,33 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                                      /* is_error_page */ false));
   navigation->Commit();
 
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.OptimizationHintsReceiveStatus",
+      OptimizationHintsReceiveStatus::kAfterRedirectOrNextNavigationStart, 1);
+
   // Prediction decision should be unknown since what came in was for the wrong
   // navigation ID.
   std::optional<OptimizationGuidePrediction> optimization_guide_prediction =
       OptimizationGuidePrediction();
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
-
-  histogram_tester.ExpectUniqueSample(
-      "LoadingPredictor.OptimizationHintsReceiveStatus",
-      OptimizationHintsReceiveStatus::kAfterRedirectOrNextNavigationStart, 1);
+  EXPECT_CALL(*mock_collector_,
+              RecordPageDestroyed(_, optimization_guide_prediction));
+  optimization_guide::OptimizationMetadata optimization_metadata_2;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(optimization_metadata_2)));
+  NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org/next.html");
 }
 
-// Tests that document on load completed is recorded with correct navigation
-// id and optimization guide prediction when the prediction has not arrived.
+// Tests that page destruction is recorded with correct navigation id and
+// optimization guide prediction when the prediction has not arrived.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
-       DocumentOnLoadCompletedOptimizationGuidePredictionHasNotArrived) {
+       PageDestroyedOptimizationGuidePredictionHasNotArrived) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
@@ -526,30 +545,23 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                   An<optimization_guide::OptimizationGuideDecisionCallback>()));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
-  // Adding subframe navigation to ensure that the committed main frame url will
-  // be used.
-  auto* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  NavigateAndCommitInFrame("http://sub.test.org", subframe);
+  // Histogram should not be recorded since prediction did not come back.
+  histogram_tester.ExpectTotalCount(
+      "LoadingPredictor.OptimizationHintsReceiveStatus", 0);
 
   std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
-
-  // Histogram should not be recorded since prediction did not come back.
-  histogram_tester.ExpectTotalCount(
-      "LoadingPredictor.OptimizationHintsReceiveStatus", 0);
+  // Called when the frame is destroyed by the test destructor.
+  EXPECT_CALL(*mock_collector_, RecordPageDestroyed(_, prediction));
 }
 
-// Tests that document on load completed is recorded with correct navigation
-// id and optimization guide prediction and does not crash if callback comes
-// after everything has been recorded.
-TEST_F(
-    LoadingPredictorTabHelperOptimizationGuideDeciderTest,
-    DocumentOnLoadCompletedOptimizationGuidePredictionComesAfterDocumentOnLoad) {
+// Tests that page destroyed is recorded with correct navigation id and
+// optimization guide prediction and does not crash if callback comes after
+// everything has been recorded.
+TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
+       PageDestroyedOptimizationGuidePredictionComesAfterPageDestroyed) {
   base::HistogramTester histogram_tester;
 
   optimization_guide::OptimizationMetadata optimization_metadata;
@@ -570,33 +582,35 @@ TEST_F(
           })));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
-  // Adding subframe navigation to ensure that the committed main frame url will
-  // be used.
-  auto* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  NavigateAndCommitInFrame("http://sub.test.org", subframe);
-
   std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
+  EXPECT_CALL(*mock_collector_, RecordPageDestroyed(_, prediction));
+  optimization_guide::OptimizationMetadata optimization_metadata_2;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(optimization_metadata_2)));
+  NavigateAndCommitInMainFrameAndVerifyMetrics("http://site.net");
 
-  // Invoke callback after document completed in main frame..
+  // Invoke callback after page destroyed.
   std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,
                           optimization_metadata);
 
   // Optimization guide predictions came after commit.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "LoadingPredictor.OptimizationHintsReceiveStatus",
       OptimizationHintsReceiveStatus::kAfterNavigationFinish, 1);
 }
 
-// Tests that document on load completed is recorded with correct navigation
-// id and optimization guide prediction with no prediction..
+// Tests that page destruction is recorded with correct navigation and
+// optimization guide prediction with no prediction..
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
-       DocumentOnLoadCompletedOptimizationGuidePredictionArrivedNoPrediction) {
+       PageDestroyedOptimizationGuidePredictionArrivedNoPrediction) {
   base::HistogramTester histogram_tester;
 
   // The problem here is that mock_collector_ is a strict mock, which expects
@@ -613,30 +627,24 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
           ByRef(optimization_metadata)));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
-  // Adding subframe navigation to ensure that the committed main frame url will
-  // be used.
-  auto* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  NavigateAndCommitInFrame("http://sub.test.org", subframe);
-
-  std::optional<OptimizationGuidePrediction> prediction =
-      OptimizationGuidePrediction();
-  prediction->decision = optimization_guide::OptimizationGuideDecision::kFalse;
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
-
   // Histogram should still be recorded even though no predictions were
   // returned.
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.OptimizationHintsReceiveStatus",
       OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
+
+  std::optional<OptimizationGuidePrediction> prediction =
+      OptimizationGuidePrediction();
+  prediction->decision = optimization_guide::OptimizationGuideDecision::kFalse;
+  // Called when the frame is destroyed by the test destructor.
+  EXPECT_CALL(*mock_collector_, RecordPageDestroyed(_, prediction));
 }
 
-// Tests that document on load completed is recorded with correct navigation
-// id and optimization guide prediction with no prediction..
+// Tests that page destruction is recorded with correct navigation id and
+// optimization guide prediction with no prediction..
 TEST_F(
     LoadingPredictorTabHelperOptimizationGuideDeciderTest,
-    DocumentOnLoadCompletedOptimizationGuidePredictionArrivedNoLoadingPredictorMetadata) {
+    PageDestroyedOptimizationGuidePredictionArrivedNoLoadingPredictorMetadata) {
   base::HistogramTester histogram_tester;
 
   // The problem here is that mock_collector_ is a strict mock, which expects
@@ -653,26 +661,20 @@ TEST_F(
           ByRef(optimization_metadata)));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
-  // Adding subframe navigation to ensure that the committed main frame url will
-  // be used.
-  auto* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  NavigateAndCommitInFrame("http://sub.test.org", subframe);
+  // Histogram should still be recorded even though no predictions were
+  // returned.
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.OptimizationHintsReceiveStatus",
+      OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
 
   // Decision should be unknown since we got invalid data.
   std::optional<OptimizationGuidePrediction> optimization_guide_prediction =
       OptimizationGuidePrediction();
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
+  // Called when the frame is destroyed by the test destructor.
   EXPECT_CALL(*mock_collector_,
-              RecordMainFrameLoadComplete(_, optimization_guide_prediction));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
-
-  // Histogram should still be recorded even though no predictions were
-  // returned.
-  histogram_tester.ExpectUniqueSample(
-      "LoadingPredictor.OptimizationHintsReceiveStatus",
-      OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
+              RecordPageDestroyed(_, optimization_guide_prediction));
 }
 
 class LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest
@@ -693,10 +695,10 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
-// Tests that document on load completed is recorded with correct navigation
-// id and optimization guide prediction.
+// Tests that page destruction is recorded with correct navigation id and
+// optimization guide prediction.
 TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
-       DocumentOnLoadCompletedOptimizationGuide) {
+       PageDestroyedOptimizationGuide) {
   base::HistogramTester histogram_tester;
 
   optimization_guide::OptimizationMetadata optimization_metadata;
@@ -717,11 +719,9 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
           ByRef(optimization_metadata)));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
-  // Adding subframe navigation to ensure that the committed main frame url will
-  // be used.
-  auto* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  NavigateAndCommitInFrame("http://sub.test.org", subframe);
+  histogram_tester.ExpectUniqueSample(
+      "LoadingPredictor.OptimizationHintsReceiveStatus",
+      OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
 
   std::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
@@ -749,12 +749,9 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
   prediction->predicted_subresources = {
       GURL("http://test.org/resource1"), GURL("http://other.org/resource2"),
       GURL("http://other.org/resource3"), GURL("http://preconnectonly.com/")};
-  EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
-  histogram_tester.ExpectUniqueSample(
-      "LoadingPredictor.OptimizationHintsReceiveStatus",
-      OptimizationHintsReceiveStatus::kBeforeNavigationFinish, 1);
+  // Called when frame is destroyed by test destructor.
+  EXPECT_CALL(*mock_collector_, RecordPageDestroyed(_, prediction));
 }
 
 class TestLoadingDataCollector : public LoadingDataCollector {
@@ -775,10 +772,11 @@ class TestLoadingDataCollector : public LoadingDataCollector {
     EXPECT_EQ(expected_request_priority_, resource_load_info.request_priority);
   }
 
-  void RecordMainFrameLoadComplete(
-      NavigationId navigation_id,
-      const std::optional<OptimizationGuidePrediction>&
-          optimization_guide_prediction) override {}
+  void RecordMainFrameLoadComplete(NavigationId navigation_id) override {}
+
+  void RecordPageDestroyed(NavigationId navigation_id,
+                           const std::optional<OptimizationGuidePrediction>&
+                               optimization_guide_prediction) override {}
 
   void SetExpectedResourcePriority(net::RequestPriority request_priority) {
     expected_request_priority_ = request_priority;

@@ -57,12 +57,14 @@ struct PageRequestSummary {
       const blink::mojom::ResourceLoadInfo& resource_load_info);
   void AddPreconnectAttempt(const GURL& preconnect_url);
   void AddPrefetchAttempt(const GURL& prefetch_url);
+  void MainFrameLoadComplete();
 
   const ukm::SourceId ukm_source_id;
   GURL main_frame_url;
   const GURL initial_url;
   const base::TimeTicks navigation_started;
-  base::TimeTicks navigation_committed{base::TimeTicks::Max()};
+  std::optional<base::TimeTicks> navigation_committed;
+  bool main_frame_load_complete{false};
 
   // Map of origin -> OriginRequestSummary. Only one instance of each origin
   // is kept per navigation, but the summary is updated several times.
@@ -81,10 +83,35 @@ struct PageRequestSummary {
   // navigation.
   std::optional<base::TimeTicks> first_prefetch_initiated;
 
+  // Equivalents of |origins_| and |subresource_urls| that store URLs/origins
+  // that are not learned by LoadingPredictor. These are from low-priority
+  // subresource loads, or subresource loads after the load event for the page
+  // has been dispatched. They are used to record metrics to understand the
+  // precision of optimization guide predictions.
+  base::flat_set<url::Origin> low_priority_origins;
+  base::flat_set<GURL> low_priority_subresource_urls;
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, HandledResourceTypes);
+  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, ShouldRecordMainFrameLoad);
+  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
+                           ShouldRecordSubresourceLoadAfterFCP);
+  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
+                           ShouldRecordSubresourceLoad);
+  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
+                           ShouldRecordSubresourceLoadAfterLoadComplete);
+
+  enum ShouldRecordResourceLoadResult { kNo, kLowPriority, kYes };
+  ShouldRecordResourceLoadResult ShouldRecordResourceLoad(
+      const blink::mojom::ResourceLoadInfo& resource_load_info) const;
+  // Returns true if the resource has a supported type.
+  static bool IsHandledResourceType(
+      network::mojom::RequestDestination destination,
+      const std::string& mime_type);
   void UpdateOrAddToOrigins(
       const url::Origin& origin,
-      const blink::mojom::CommonNetworkInfoPtr& network_info);
+      const blink::mojom::CommonNetworkInfoPtr& network_info,
+      bool is_low_priority);
 };
 
 // Records navigation events as reported by various observers to the database
@@ -120,11 +147,13 @@ class LoadingDataCollector {
 
   // Called when the main frame of a page completes loading. We treat this point
   // as the "completion" of the navigation. The resources requested by the page
-  // up to this point are the only ones considered.
-  virtual void RecordMainFrameLoadComplete(
+  // up to this point are the only ones considered by |predictor_|.
+  virtual void RecordMainFrameLoadComplete(NavigationId navigation_id);
+
+  // Called when the page committed by the navigation is destroyed.
+  virtual void RecordPageDestroyed(
       NavigationId navigation_id,
-      const std::optional<OptimizationGuidePrediction>&
-          optimization_guide_prediction);
+      const std::optional<OptimizationGuidePrediction>& prediction);
 
  private:
   using NavigationMap =
@@ -132,7 +161,6 @@ class LoadingDataCollector {
 
   friend class LoadingDataCollectorTest;
 
-  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, HandledResourceTypes);
   FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, ShouldRecordMainFrameLoad);
   FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
                            ShouldRecordSubresourceLoad);
@@ -148,16 +176,11 @@ class LoadingDataCollector {
                            RecordPreconnectInitiatedNoInflightNavigation);
   FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
                            RecordPrefetchInitiatedNoInflightNavigation);
+  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest,
+                           ShouldRecordSubresourceLoadAfterLoadComplete);
+  FRIEND_TEST_ALL_PREFIXES(LoadingDataCollectorTest, RecordPageDestroyed);
 
   static void SetAllowPortInUrlsForTesting(bool state);
-
-  bool ShouldRecordResourceLoad(
-      const blink::mojom::ResourceLoadInfo& resource_load_info) const;
-
-  // Returns true if the resource has a supported type.
-  static bool IsHandledResourceType(
-      network::mojom::RequestDestination destination,
-      const std::string& mime_type);
 
   // Cleanup inflight_navigations_ and call a cleanup for stats_collector_.
   void CleanupAbandonedNavigations();

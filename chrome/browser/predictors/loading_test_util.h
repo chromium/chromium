@@ -27,14 +27,13 @@ class MockResourcePrefetchPredictor : public ResourcePrefetchPredictor {
                                 Profile* profile);
   ~MockResourcePrefetchPredictor() override;
 
-  void RecordPageRequestSummary(
-      std::unique_ptr<PageRequestSummary> summary) override {
-    RecordPageRequestSummaryProxy(summary.get());
+  void RecordPageRequestSummary(const PageRequestSummary& summary) override {
+    RecordPageRequestSummaryProxy(summary);
   }
 
   MOCK_CONST_METHOD2(PredictPreconnectOrigins,
                      bool(const GURL&, PreconnectPrediction*));
-  MOCK_METHOD1(RecordPageRequestSummaryProxy, void(PageRequestSummary*));
+  MOCK_METHOD1(RecordPageRequestSummaryProxy, void(const PageRequestSummary&));
 };
 
 // |include_scheme| and |include_port| can be set to false to simulate legacy
@@ -86,7 +85,8 @@ PageRequestSummary CreatePageRequestSummary(
     const std::string& main_frame_url,
     const std::string& initial_url,
     const std::vector<blink::mojom::ResourceLoadInfoPtr>& resource_load_infos,
-    base::TimeTicks navigation_started = base::TimeTicks::Now());
+    base::TimeTicks navigation_started = base::TimeTicks::Now(),
+    bool main_frame_load_complete = true);
 
 blink::mojom::ResourceLoadInfoPtr CreateResourceLoadInfo(
     const std::string& url,

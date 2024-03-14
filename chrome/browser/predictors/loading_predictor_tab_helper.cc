@@ -284,8 +284,16 @@ LoadingPredictorTabHelper::DocumentPageDataHolder::DocumentPageDataHolder(
     content::RenderFrameHost* rfh)
     : content::DocumentUserData<DocumentPageDataHolder>(rfh),
       page_data_(base::MakeRefCounted<PageData>()) {}
-LoadingPredictorTabHelper::DocumentPageDataHolder::~DocumentPageDataHolder() =
-    default;
+
+LoadingPredictorTabHelper::DocumentPageDataHolder::~DocumentPageDataHolder() {
+  if (page_data_->predictor_) {
+    page_data_->predictor_->loading_data_collector()->RecordPageDestroyed(
+        page_data_->navigation_id_,
+        page_data_->last_optimization_guide_prediction_);
+  }
+  page_data_->last_optimization_guide_prediction_ = std::nullopt;
+}
+
 LoadingPredictorTabHelper::NavigationPageDataHolder::NavigationPageDataHolder(
     content::NavigationHandle& navigation_handle)
     : page_data_(base::MakeRefCounted<PageData>()),
@@ -332,6 +340,7 @@ void LoadingPredictorTabHelper::DidStartNavigation(
   }
 
   PageData& page_data = PageData::CreateForNavigationHandle(*navigation_handle);
+  page_data.predictor_ = predictor_;
 
   page_data.has_local_preconnect_predictions_for_current_navigation_ =
       predictor_->OnNavigationStarted(
@@ -497,11 +506,7 @@ void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
     return;
 
   predictor_->loading_data_collector()->RecordMainFrameLoadComplete(
-      page_data->navigation_id_,
-      page_data->last_optimization_guide_prediction_);
-
-  // Clear out Optimization Guide Prediction, as it is no longer needed.
-  page_data->last_optimization_guide_prediction_ = std::nullopt;
+      page_data->navigation_id_);
 }
 
 void LoadingPredictorTabHelper::OnOptimizationGuideDecision(

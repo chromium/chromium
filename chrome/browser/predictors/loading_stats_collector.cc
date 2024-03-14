@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -169,6 +170,10 @@ void LoadingStatsCollector::RecordPageRequestSummary(
     const PageRequestSummary& summary,
     const std::optional<OptimizationGuidePrediction>&
         optimization_guide_prediction) {
+  if (!summary.main_frame_load_complete) {
+    return;
+  }
+
   const GURL& initial_url = summary.initial_url;
 
   ukm::builders::LoadingPredictor builder(summary.ukm_source_id);
@@ -208,15 +213,25 @@ void LoadingStatsCollector::RecordPageRequestSummary(
       builder.SetOptimizationGuidePredictionSubresources(std::min(
           ukm_cap,
           optimization_guide_prediction->predicted_subresources.size()));
-      const auto& actual_subresource_urls = summary.subresource_urls;
       size_t correctly_predicted_subresources = base::ranges::count_if(
           optimization_guide_prediction->predicted_subresources,
-          [&actual_subresource_urls](const GURL& subresource_url) {
-            return actual_subresource_urls.find(subresource_url) !=
-                   actual_subresource_urls.end();
+          [&summary](const GURL& subresource_url) {
+            return base::Contains(summary.subresource_urls, subresource_url);
           });
       builder.SetOptimizationGuidePredictionCorrectlyPredictedSubresources(
           std::min(ukm_cap, correctly_predicted_subresources));
+      size_t correctly_predicted_low_priority_subresources =
+          base::ranges::count_if(
+              optimization_guide_prediction->predicted_subresources,
+              [&summary](const GURL& subresource_url) {
+                return base::Contains(summary.low_priority_subresource_urls,
+                                      subresource_url) &&
+                       !base::Contains(summary.subresource_urls,
+                                       subresource_url);
+              });
+      builder
+          .SetOptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresources(
+              std::min(ukm_cap, correctly_predicted_low_priority_subresources));
 
       url::Origin main_frame_origin = url::Origin::Create(summary.initial_url);
       std::set<url::Origin> predicted_origins;
@@ -231,15 +246,21 @@ void LoadingStatsCollector::RecordPageRequestSummary(
       }
       builder.SetOptimizationGuidePredictionOrigins(
           std::min(ukm_cap, predicted_origins.size()));
-      const auto& actual_subresource_origins = summary.origins;
       size_t correctly_predicted_origins = base::ranges::count_if(
-          predicted_origins,
-          [&actual_subresource_origins](const url::Origin& subresource_origin) {
-            return actual_subresource_origins.find(subresource_origin) !=
-                   actual_subresource_origins.end();
+          predicted_origins, [&summary](const url::Origin& subresource_origin) {
+            return base::Contains(summary.origins, subresource_origin);
           });
       builder.SetOptimizationGuidePredictionCorrectlyPredictedOrigins(
           std::min(ukm_cap, correctly_predicted_origins));
+      size_t correctly_predicted_low_priority_origins = base::ranges::count_if(
+          predicted_origins, [&summary](const url::Origin& subresource_origin) {
+            return base::Contains(summary.low_priority_origins,
+                                  subresource_origin) &&
+                   !base::Contains(summary.origins, subresource_origin);
+          });
+      builder
+          .SetOptimizationGuidePredictionCorrectlyPredictedLowPriorityOrigins(
+              std::min(ukm_cap, correctly_predicted_low_priority_origins));
     }
     recorded_ukm = true;
   }
@@ -290,9 +311,9 @@ void LoadingStatsCollector::RecordPageRequestSummary(
 
   if (recorded_ukm) {
     // Only record nav start to commit if we had any predictions.
-    if (summary.navigation_committed != base::TimeTicks::Max()) {
+    if (summary.navigation_committed) {
       builder.SetNavigationStartToNavigationCommit(
-          (summary.navigation_committed - summary.navigation_started)
+          (summary.navigation_committed.value() - summary.navigation_started)
               .InMilliseconds());
     }
     builder.Record(ukm::UkmRecorder::Get());

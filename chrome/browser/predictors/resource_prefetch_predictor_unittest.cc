@@ -358,8 +358,7 @@ TEST_F(ResourcePrefetchPredictorTest, NavigationUrlNotInDB) {
   StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
   EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary));
 
-  predictor_->RecordPageRequestSummary(
-      std::make_unique<PageRequestSummary>(page_summary));
+  predictor_->RecordPageRequestSummary(page_summary);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
   OriginData origin_data = CreateOriginData("www.google.test");
@@ -431,8 +430,7 @@ TEST_F(ResourcePrefetchPredictorTest,
   StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
   EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary));
 
-  predictor_->RecordPageRequestSummary(
-      std::make_unique<PageRequestSummary>(page_summary));
+  predictor_->RecordPageRequestSummary(page_summary);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
   OriginData origin_data = CreateOriginData("www.google.test");
@@ -497,8 +495,7 @@ TEST_F(ResourcePrefetchPredictorTest, NavigationUrlInDB) {
   StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
   EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary));
 
-  predictor_->RecordPageRequestSummary(
-      std::make_unique<PageRequestSummary>(page_summary));
+  predictor_->RecordPageRequestSummary(page_summary);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
   RedirectData host_redirect_data = CreateRedirectData("www.google.test");
@@ -541,8 +538,7 @@ TEST_F(ResourcePrefetchPredictorTest, NavigationUrlNotInDBAndDBFull) {
   StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
   EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary));
 
-  predictor_->RecordPageRequestSummary(
-      std::make_unique<PageRequestSummary>(page_summary));
+  predictor_->RecordPageRequestSummary(page_summary);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
   RedirectData host_redirect_data = CreateRedirectData("www.foo.test");
@@ -583,8 +579,7 @@ TEST_F(ResourcePrefetchPredictorTest,
   StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
   EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary));
 
-  predictor_->RecordPageRequestSummary(
-      std::make_unique<PageRequestSummary>(page_summary));
+  predictor_->RecordPageRequestSummary(page_summary);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
   OriginData origin_data = CreateOriginData("www.google.test");
@@ -611,8 +606,7 @@ TEST_F(ResourcePrefetchPredictorTest, RedirectUrlNotInDB) {
   StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
   EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary));
 
-  predictor_->RecordPageRequestSummary(
-      std::make_unique<PageRequestSummary>(page_summary));
+  predictor_->RecordPageRequestSummary(page_summary);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
   RedirectData host_redirect_data = CreateRedirectData("baz.test");
@@ -640,8 +634,7 @@ TEST_F(ResourcePrefetchPredictorTest, RedirectUrlInDB) {
   StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
   EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary));
 
-  predictor_->RecordPageRequestSummary(
-      std::make_unique<PageRequestSummary>(page_summary));
+  predictor_->RecordPageRequestSummary(page_summary);
   profile_->BlockUntilHistoryProcessesPendingRequests();
 
   RedirectData host_redirect_data = CreateRedirectData("baz.test");
@@ -674,8 +667,7 @@ TEST_F(ResourcePrefetchPredictorTest, RedirectUrlInDB_MultipleSchemes) {
     StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
     EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary_https));
 
-    predictor_->RecordPageRequestSummary(
-        std::make_unique<PageRequestSummary>(page_summary_https));
+    predictor_->RecordPageRequestSummary(page_summary_https);
     profile_->BlockUntilHistoryProcessesPendingRequests();
 
     RedirectData host_redirect_data_https = CreateRedirectData("baz.test");
@@ -711,8 +703,7 @@ TEST_F(ResourcePrefetchPredictorTest, RedirectUrlInDB_MultipleSchemes) {
     StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
     EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary_http));
 
-    predictor_->RecordPageRequestSummary(
-        std::make_unique<PageRequestSummary>(page_summary_http));
+    predictor_->RecordPageRequestSummary(page_summary_http);
     profile_->BlockUntilHistoryProcessesPendingRequests();
 
     RedirectData host_redirect_data_http = CreateRedirectData("baz.test");

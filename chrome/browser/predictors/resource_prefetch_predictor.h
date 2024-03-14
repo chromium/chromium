@@ -198,8 +198,7 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
 
   // Called by the collector after a page has finished loading resources and
   // assembled a PageRequestSummary.
-  virtual void RecordPageRequestSummary(
-      std::unique_ptr<PageRequestSummary> summary);
+  virtual void RecordPageRequestSummary(const PageRequestSummary& summary);
 
   static bool IsURLValidForLcpp(const GURL& url);
 

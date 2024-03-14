@@ -332,18 +332,18 @@ bool ResourcePrefetchPredictor::TryEnsureRecordingPrecondition() {
 }
 
 void ResourcePrefetchPredictor::RecordPageRequestSummary(
-    std::unique_ptr<PageRequestSummary> summary) {
+    const PageRequestSummary& summary) {
   if (!TryEnsureRecordingPrecondition()) {
     return;
   }
 
-  LearnRedirect(summary->initial_url.host(), summary->main_frame_url);
-  LearnOrigins(summary->main_frame_url.host(),
-               summary->main_frame_url.DeprecatedGetOriginAsURL(),
-               summary->origins);
+  LearnRedirect(summary.initial_url.host(), summary.main_frame_url);
+  LearnOrigins(summary.main_frame_url.host(),
+               summary.main_frame_url.DeprecatedGetOriginAsURL(),
+               summary.origins);
 
   if (observer_)
-    observer_->OnNavigationLearned(*summary);
+    observer_->OnNavigationLearned(summary);
 }
 
 bool ResourcePrefetchPredictor::PredictPreconnectOrigins(
