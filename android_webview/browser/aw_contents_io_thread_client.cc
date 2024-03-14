@@ -14,11 +14,13 @@
 #include "android_webview/browser/network_service/aw_web_resource_request.h"
 #include "android_webview/browser_jni_headers/AwContentsBackgroundThreadClient_jni.h"
 #include "android_webview/browser_jni_headers/AwContentsIoThreadClient_jni.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/devtools_instrumentation.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -85,6 +87,9 @@ class RfhToIoThreadClientMap {
   // update both maps at the same time.
   void Set(RenderFrameHost* rfh, const JavaObjectWeakGlobalRef& client);
   void Erase(RenderFrameHost* rfh);
+
+  void RenderFrameHostChanged(RenderFrameHost* old_rfh,
+                              RenderFrameHost* new_rfh);
 
  private:
   base::Lock map_lock_;
@@ -175,6 +180,88 @@ void RfhToIoThreadClientMap::Erase(RenderFrameHost* rfh) {
   rfh_to_weak_global_ref_.erase(rfh_token);
 }
 
+void RfhToIoThreadClientMap::RenderFrameHostChanged(RenderFrameHost* old_rfh,
+                                                    RenderFrameHost* new_rfh) {
+  // Handles FrameTree swap, which occurs only in prerender activation.
+
+  if (!base::FeatureList::IsEnabled(features::kWebViewPrerender2)) {
+    return;
+  }
+
+  if (old_rfh == nullptr) {
+    return;
+  }
+  // Ensured by `WebContentsObserver::RenderFrameHostChanged()`.
+  CHECK(new_rfh);
+
+  // If the swap is for subframes, it's not a prerender activation and therefore
+  // not a FrameTree swap.
+  if (old_rfh->GetParentOrOuterDocument() ||
+      new_rfh->GetParentOrOuterDocument()) {
+    return;
+  }
+
+  // If this is a prerender activation, `new_rfh` should initially be associated
+  // with a prerendering FrameTree's root FrameTreeNode before getting
+  // transferred to the primary FrameTree's root FrameTreeNode during the
+  // navigation commit. (See also `PrerenderHost::Activate()`.) This means the
+  // entry for `new_rfh` used in `frame_tree_node_to_weak_global_ref_` will be
+  // keyed by the prerendering FrameTreeNode id. We want to move that entry to
+  // the primary root FTN's entry, so that future lookups will be correct.
+  //
+  // If `pre_swap_ftn_id` and `post_swap_ftn_id` are the same, it's not a
+  // FrameTree swap (and therefore not a prerender activation). So, there's no
+  // need to move entries.
+  int pre_swap_ftn_id = content::RenderFrameHost::kNoFrameTreeNodeId;
+  int post_swap_ftn_id = new_rfh->GetFrameTreeNodeId();
+  CHECK_EQ(post_swap_ftn_id, old_rfh->GetFrameTreeNodeId());
+
+  base::AutoLock lock(map_lock_);
+
+  for (auto& [frame_tree_node_id, entry] :
+       frame_tree_node_to_weak_global_ref_) {
+    if (entry.first.contains(new_rfh)) {
+      pre_swap_ftn_id = frame_tree_node_id;
+      break;
+    }
+  }
+
+  CHECK_NE(pre_swap_ftn_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  if (pre_swap_ftn_id == post_swap_ftn_id) {
+    return;
+  }
+
+  // Otherwise, it is a prerender activation and `new_rfh` is now attached to
+  // frame tree node with `post_swap_ftn_id`. So, we move entry with key
+  // `(pre_swap_ftn_id, new_rfh)` to `(post_swap_ftn_id, new_rfh)`.
+
+  HostsAndWeakGlobalRefPair& pre_swap_entry =
+      frame_tree_node_to_weak_global_ref_[pre_swap_ftn_id];
+  HostsAndWeakGlobalRefPair& post_swap_entry =
+      frame_tree_node_to_weak_global_ref_[post_swap_ftn_id];
+
+  // Note that `post_swap_entry.second == pre_swap_entry.second` must hold
+  // because `old_rfh` and `new_rfh` belongs to the same WebContents. It's nice
+  // to `CHECK_EQ`, but we can't because `JavaObjectWeakGlobalRef` doesn't
+  // provide comparison.
+  //
+  // Note that we don't modify `rfh_to_weak_global_ref_` in this function, as we
+  // are only handling the moving of the entries of
+  // `frame_tree_node_to_weak_global_ref_` that is affected by the FrameTreeNode
+  // change here. Addition/deletion of RenderFrameHosts is handled by
+  // `WebContentsObserver::RenderFrameCreated()` and
+  // `WebContentsObserver::RenderFrameDeleted()` calling `Set()` and `Erase()`
+  // respectively.
+
+  size_t num_erased = pre_swap_entry.first.erase(new_rfh);
+  CHECK_EQ(num_erased, 1u);
+  post_swap_entry.first.insert(new_rfh);
+
+  CHECK(pre_swap_entry.first.empty());
+  frame_tree_node_to_weak_global_ref_.erase(pre_swap_ftn_id);
+}
+
 // ClientMapEntryUpdater ------------------------------------------------------
 
 class ClientMapEntryUpdater : public content::WebContentsObserver {
@@ -185,6 +272,8 @@ class ClientMapEntryUpdater : public content::WebContentsObserver {
 
   void RenderFrameCreated(RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
+  void RenderFrameHostChanged(RenderFrameHost* old_rfh,
+                              RenderFrameHost* new_rfh) override;
   void WebContentsDestroyed() override;
 
  private:
@@ -208,6 +297,12 @@ void ClientMapEntryUpdater::RenderFrameCreated(RenderFrameHost* rfh) {
 
 void ClientMapEntryUpdater::RenderFrameDeleted(RenderFrameHost* rfh) {
   RfhToIoThreadClientMap::GetInstance()->Erase(rfh);
+}
+
+void ClientMapEntryUpdater::RenderFrameHostChanged(RenderFrameHost* old_rfh,
+                                                   RenderFrameHost* new_rfh) {
+  RfhToIoThreadClientMap::GetInstance()->RenderFrameHostChanged(old_rfh,
+                                                                new_rfh);
 }
 
 void ClientMapEntryUpdater::WebContentsDestroyed() {
