@@ -1276,20 +1276,14 @@ class DevToolsProtocolTest_RelatedWebsiteSets : public DevToolsProtocolTest {
   }
 };
 
-// TODO(crbug.com/329530175): Re-enable this test
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_GetRelatedWebsiteSets DISABLED_GetRelatedWebsiteSets
-#else
-#define MAYBE_GetRelatedWebsiteSets GetRelatedWebsiteSets
-#endif
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_RelatedWebsiteSets,
-                       MAYBE_GetRelatedWebsiteSets) {
+                       GetRelatedWebsiteSets) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   Attach();
 
-  SendCommandSync("Storage.getRelatedWebsiteSets");
+  SendCommandAsync("Storage.getRelatedWebsiteSets");
 
   const base::Value::List* set_list = result()->FindList("sets");
   ASSERT_TRUE(set_list);
