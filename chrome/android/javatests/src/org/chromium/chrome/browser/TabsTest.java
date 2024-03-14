@@ -476,7 +476,6 @@ public class TabsTest {
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisabledTest(message = "https://crbug.com/1347598")
     public void testQuickSwitchBetweenTabAndSwitcherMode() {
         final String[] urls = {
             getUrl("/chrome/test/data/android/navigate/one.html"),
@@ -781,7 +780,6 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisabledTest(message = "https://crbug.com/1347598")
     public void testLastClosedTabTriggersNotifyChangedCall() {
         final TabModel model =
                 sActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
