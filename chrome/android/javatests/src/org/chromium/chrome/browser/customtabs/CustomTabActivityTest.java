@@ -1923,7 +1923,6 @@ public class CustomTabActivityTest {
         "ignore-certificate-errors",
         "ignore-google-port-numbers"
     })
-    @DisabledTest(message = "https://crbug.com/1238931")
     public void testMayLaunchUrlAddsClientDataHeader() throws Exception {
         TestWebServer webServer = TestWebServer.start();
         webServer.setServerHost("www.google.com");
