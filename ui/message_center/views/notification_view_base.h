@@ -94,8 +94,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   NotificationViewBase& operator=(const NotificationViewBase&) = delete;
   ~NotificationViewBase() override;
 
-  void Activate();
-
   // MessageView:
   void OnFocus() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -395,8 +393,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Counter for view layouting, which is used during the CreateOrUpdate*
   // phases to keep track of the view ordering. See crbug.com/901045
   size_t left_content_count_;
-
-  std::unique_ptr<ui::EventHandler> click_activator_;
 
   base::TimeTicks last_mouse_pressed_timestamp_;
 

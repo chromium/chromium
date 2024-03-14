@@ -84,25 +84,6 @@ constexpr int kProgressBarHeight = 4;
 // the ratio of the message width is limited to this value.
 constexpr double kProgressNotificationMessageRatio = 0.7;
 
-class ClickActivator : public ui::EventHandler {
- public:
-  explicit ClickActivator(NotificationViewBase* owner) : owner_(owner) {}
-  ClickActivator(const ClickActivator&) = delete;
-  ClickActivator& operator=(const ClickActivator&) = delete;
-  ~ClickActivator() override = default;
-
- private:
-  // ui::EventHandler
-  void OnEvent(ui::Event* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED ||
-        event->type() == ui::ET_GESTURE_TAP) {
-      owner_->Activate();
-    }
-  }
-
-  const raw_ptr<NotificationViewBase> owner_;
-};
-
 // Creates a view responsible for drawing each list notification item's title
 // and message next to each other within a single column.
 std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
@@ -217,19 +198,10 @@ void NotificationViewBase::CreateOrUpdateViews(
 
 NotificationViewBase::NotificationViewBase(const Notification& notification)
     : MessageView(notification), for_ash_notification_(IsForAshNotification()) {
-  click_activator_ = std::make_unique<ClickActivator>(this);
-  // Reasons to use pretarget handler instead of OnMousePressed:
-  // - NotificationViewBase::OnMousePresssed would not fire on the inline reply
-  //   textfield click in native notification.
-  // - To make it look similar to ArcNotificationContentView::EventForwarder.
-  AddPreTargetHandler(click_activator_.get());
-
   UpdateCornerRadius(kNotificationCornerRadius, kNotificationCornerRadius);
 }
 
-NotificationViewBase::~NotificationViewBase() {
-  RemovePreTargetHandler(click_activator_.get());
-}
+NotificationViewBase::~NotificationViewBase() = default;
 
 void NotificationViewBase::OnFocus() {
   MessageView::OnFocus();
@@ -838,11 +810,6 @@ void NotificationViewBase::ToggleSnoozeSettings(const ui::Event& event) {
       return;
     }
   }
-}
-
-void NotificationViewBase::Activate() {
-  GetWidget()->widget_delegate()->SetCanActivate(true);
-  GetWidget()->Activate();
 }
 
 void NotificationViewBase::InkDropAnimationStarted() {
