@@ -3031,7 +3031,7 @@
     },
     {
       name: "PrivateAggregationAuctionReportBuyerDebugModeConfig",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PrivateNetworkAccessNonSecureContextsAllowed",
