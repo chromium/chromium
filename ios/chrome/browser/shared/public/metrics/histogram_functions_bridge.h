@@ -14,9 +14,12 @@
 /// `histogram`: The name of the histogram.
 /// `sample`: The enum value that we want to record.
 /// `maxValue:` The last value of the recorded enum.
-+ (void)RecordHistogram:(NSString*)histogram
++ (void)recordHistogram:(NSString*)histogram
              withSample:(NSInteger)sample
                maxValue:(NSInteger)maxValue;
+
+// Records the memory related histogram.
++ (void)recordHistogram:(NSString*)histogram withMemoryKB:(NSInteger)sample;
 
 @end
 

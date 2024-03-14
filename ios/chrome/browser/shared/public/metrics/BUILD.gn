@@ -9,6 +9,5 @@ source_set("metrics_bridge") {
     "user_metrics_bridge.h",
     "user_metrics_bridge.mm",
   ]
-  deps = []
-  public_deps = [ "//base" ]
+  deps = [ "//base" ]
 }

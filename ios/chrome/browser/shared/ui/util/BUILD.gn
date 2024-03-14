@@ -71,6 +71,14 @@ source_set("util") {
   ]
 }
 
+source_set("util_bridge") {
+  sources = [
+    "uikit_ui_util_bridge.h",
+    "uikit_ui_util_bridge.mm",
+  ]
+  deps = [ ":util" ]
+}
+
 swift_source_set("util_swift") {
   sources = [
     "UIView+WindowCoordinates.swift",

@@ -8,14 +8,19 @@
 #import "base/strings/sys_string_conversions.h"
 
 using base::UmaHistogramExactLinear;
+using base::UmaHistogramMemoryKB;
 
 @implementation HistogramUtils
 
-+ (void)RecordHistogram:(NSString*)histogram
++ (void)recordHistogram:(NSString*)histogram
              withSample:(NSInteger)sample
                maxValue:(NSInteger)maxValue {
   UmaHistogramExactLinear(base::SysNSStringToUTF8(histogram), sample,
                           maxValue + 1);
+}
+
++ (void)recordHistogram:(NSString*)histogram withMemoryKB:(NSInteger)sample {
+  UmaHistogramMemoryKB(base::SysNSStringToUTF8(histogram), sample);
 }
 
 @end
