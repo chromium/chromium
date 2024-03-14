@@ -172,7 +172,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
     &kCreateNewTabInitializeRenderer,
-    &kCCTBrandTransparencyMemoryImprovement,
     &kCCTClientDataHeader,
     &kCCTEmbedderSpecialBehaviorTrigger,
     &kCCTExtendTrustedCdnPublisher,
@@ -488,10 +487,6 @@ BASE_FEATURE(kClearOmniboxFocusAfterNavigation,
 BASE_FEATURE(kCreateNewTabInitializeRenderer,
              "CreateNewTabInitializeRenderer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTBrandTransparencyMemoryImprovement,
-             "CCTBrandTransparencyMemoryImprovement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTClientDataHeader,
              "CCTClientDataHeader",

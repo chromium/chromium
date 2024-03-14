@@ -202,8 +202,6 @@ public abstract class ChromeFeatureList {
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
-    public static final String CCT_BRAND_TRANSPARENCY_MEMORY_IMPROVEMENT =
-            "CCTBrandTransparencyMemoryImprovement";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
     public static final String CCT_EMBEDDER_SPECIAL_BEHAVIOR_TRIGGER =
             "CCTEmbedderSpecialBehaviorTrigger";
@@ -535,8 +533,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
-    public static final CachedFlag sCctBrandTransparencyMemoryImprovement =
-            newCachedFlag(CCT_BRAND_TRANSPARENCY_MEMORY_IMPROVEMENT, true);
     public static final CachedFlag sCctFeatureUsage = newCachedFlag(CCT_FEATURE_USAGE, false);
     public static final CachedFlag sCctIncognitoAvailableToThirdParty =
             newCachedFlag(CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false);
@@ -688,7 +684,6 @@ public abstract class ChromeFeatureList {
                     sBackGestureRefactorAndroid,
                     sBlockIntentsWhileLocked,
                     sCctAutoTranslate,
-                    sCctBrandTransparencyMemoryImprovement,
                     sCctFeatureUsage,
                     sCctIncognitoAvailableToThirdParty,
                     sCctIntentFeatureOverrides,

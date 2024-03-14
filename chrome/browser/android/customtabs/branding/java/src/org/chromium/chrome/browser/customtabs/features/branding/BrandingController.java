@@ -20,7 +20,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.crash.PureJavaExceptionReporter;
 import org.chromium.ui.widget.Toast;
 
@@ -58,7 +57,6 @@ public class BrandingController {
     private @Nullable Toast mToast;
     private long mToolbarInitializedTime;
     private boolean mIsDestroyed;
-    private boolean mReleaseStorageOnFinished;
 
     /**
      * Branding controller responsible for showing branding.
@@ -77,8 +75,6 @@ public class BrandingController {
         mExceptionReporter = exceptionReporter;
         mBrandingDecision.onAvailable(
                 mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
-        mReleaseStorageOnFinished =
-                ChromeFeatureList.sCctBrandTransparencyMemoryImprovement.isEnabled();
 
         // TODO(https://crbug.com/1350661): Start branding checker during CCT warm up.
         mBrandingChecker =
@@ -177,18 +173,12 @@ public class BrandingController {
 
         Toast toast =
                 new Toast(mContext.getApplicationContext(), /* toastView= */ runInChromeTextView);
-        if (mReleaseStorageOnFinished) {
-            toast.setDuration(Toast.LENGTH_LONG);
-            toast.show();
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_BEST_EFFORT,
-                    mCallbackController.makeCancelable(toast::cancel),
-                    durationMs);
-            return;
-        }
-        mToast = toast;
-        mToast.setDuration((int) durationMs);
-        mToast.show();
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
+        PostTask.postDelayedTask(
+                TaskTraits.UI_BEST_EFFORT,
+                mCallbackController.makeCancelable(toast::cancel),
+                durationMs);
     }
 
     /** Prevent any updates to this instance and cancel all scheduled callbacks. */
@@ -221,7 +211,7 @@ public class BrandingController {
 
                             // Release the in-memory share pref from the current session if branding
                             // checker didn't timeout.
-                            if (mReleaseStorageOnFinished && !mBrandingChecker.isCancelled()) {
+                            if (!mBrandingChecker.isCancelled()) {
                                 SharedPreferencesBrandingTimeStorage.resetInstance();
                             }
                         }));
