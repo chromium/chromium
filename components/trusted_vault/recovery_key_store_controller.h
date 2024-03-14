@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_frontend.h"
@@ -27,21 +28,6 @@ namespace trusted_vault {
 // store service.
 class RecoveryKeyStoreController {
  public:
-  // ApplicationKey describes a single key pair that was successfully uploaded
-  // to the recovery key store. This typically is a virtual device member of a
-  // security domain.
-  struct ApplicationKey {
-    ApplicationKey(std::string name, std::vector<uint8_t> public_key);
-    ApplicationKey(ApplicationKey&);
-    ApplicationKey(ApplicationKey&&);
-    ApplicationKey& operator=(ApplicationKey&);
-    ApplicationKey& operator=(ApplicationKey&&);
-    ~ApplicationKey();
-
-    std::string name;
-    std::vector<uint8_t> public_key;
-  };
-
   // The RecoveryKeyProvider is responsible for assembling platform-specific
   // data to be uploaded to the recovery key store service.
   class RecoveryKeyProvider {
@@ -55,24 +41,23 @@ class RecoveryKeyStoreController {
         RecoveryKeyStoreDataCallback) = 0;
   };
 
-  // The observer interface lets implementers receive application keys after
-  // they were uploaded successfully.
-  class Observer {
+  // The delegate interface persists recovery key store state to disk.
+  class Delegate {
    public:
     // Invoked whenever an attempt to upload to recovery key store completes
     // successfully.
-    virtual void OnUpdateRecoveryKeyStore(
-        const std::vector<ApplicationKey>& application_keys) = 0;
+    virtual void WriteRecoveryKeyStoreState(
+        const trusted_vault_pb::RecoveryKeyStoreState&) = 0;
   };
 
   static constexpr base::TimeDelta kDefaultUpdatePeriod = base::Hours(23);
 
-  // `recovery_key_provider`, `connection` and `observer` must not be null.
-  // `observer` must outlive `this`.
+  // `recovery_key_provider`, `connection` and `delegate` must not be null.
+  // `delegate` must outlive `this`.
   RecoveryKeyStoreController(
       std::unique_ptr<RecoveryKeyProvider> recovery_key_provider,
       std::unique_ptr<RecoveryKeyStoreConnection> connection,
-      Observer* observer);
+      Delegate* delegate);
 
   RecoveryKeyStoreController(const RecoveryKeyStoreController&) = delete;
 
@@ -82,15 +67,15 @@ class RecoveryKeyStoreController {
   ~RecoveryKeyStoreController();
 
   // Enables periodic uploads to the recovery key store service for the account
-  // identified by `account_info`. `last_update` is the time of the most recent
-  // successful key store upload. `update_period` determines the frequency
-  // of future uploads.
+  // identified by `account_info`. `state` is the last persisted state by the
+  // delegate. `update_period` determines the frequency of future uploads.
   //
   // Any uploads that are already scheduled or in-flight will be stopped. (I.e.,
   // concurrent scheduling for multiple accounts is not implemented.)
-  void StartPeriodicUploads(CoreAccountInfo account_info,
-                            base::Time last_update,
-                            base::TimeDelta update_period);
+  void StartPeriodicUploads(
+      CoreAccountInfo account_info,
+      const trusted_vault_pb::RecoveryKeyStoreState& state,
+      base::TimeDelta update_period);
 
   // Disables future uploads to the recovery key store service.
   void StopPeriodicUploads();
@@ -109,15 +94,18 @@ class RecoveryKeyStoreController {
   void UpdateRecoveryKeyStore();
   void OnGetCurrentRecoveryKeyStoreData(
       std::optional<trusted_vault_pb::Vault> request);
-  void OnUpdateRecoveryKeyStore(std::vector<ApplicationKey> application_keys,
-                                UpdateRecoveryKeyStoreStatus status);
-  void CompleteUpdateRequest(const std::vector<ApplicationKey>& result);
+  void OnUpdateRecoveryKeyStore(
+      trusted_vault_pb::ApplicationKey application_key,
+      UpdateRecoveryKeyStoreStatus status);
+  void CompleteUpdateRequest(
+      std::optional<trusted_vault_pb::ApplicationKey> application_key);
 
   std::unique_ptr<RecoveryKeyProvider> recovery_key_provider_;
   std::unique_ptr<RecoveryKeyStoreConnection> connection_;
-  raw_ptr<Observer> observer_;
+  raw_ptr<Delegate> delegate_;
 
   std::optional<CoreAccountInfo> account_info_;
+  trusted_vault_pb::RecoveryKeyStoreState state_;
   base::TimeDelta update_period_;
   base::OneShotTimer next_update_timer_;
 

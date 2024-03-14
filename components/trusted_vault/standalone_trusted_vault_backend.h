@@ -42,7 +42,7 @@ namespace trusted_vault {
 class StandaloneTrustedVaultBackend
     : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>,
       public TrustedVaultDegradedRecoverabilityHandler::Delegate,
-      public RecoveryKeyStoreController::Observer {
+      public RecoveryKeyStoreController::Delegate {
  public:
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
@@ -170,10 +170,9 @@ class StandaloneTrustedVaultBackend
 
   bool AreConnectionRequestsThrottledForTesting();
 
-  // RecoveryKeyStoreController::Observer:
-  void OnUpdateRecoveryKeyStore(
-      const std::vector<RecoveryKeyStoreController::ApplicationKey>&
-          application_keys) override;
+  // RecoveryKeyStoreController::Delegate:
+  void WriteRecoveryKeyStoreState(
+      const trusted_vault_pb::RecoveryKeyStoreState& state) override;
 
   // Specifies how long requests shouldn't be retried after encountering
   // transient error. Note, that this doesn't affect requests related to

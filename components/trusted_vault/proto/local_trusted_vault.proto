@@ -67,6 +67,10 @@ message RecoveryKeyStoreState {
 
   // The last time an update to recovery key store succeeded.
   optional int64 last_recovery_key_store_update_millis_since_unix_epoch = 2;
+
+  // The public part of the LSKF-wrapped application key pair that was uploaded
+  // to the recovery key store service.
+  optional bytes public_key = 3;
 };
 
 message LocalTrustedVaultPerUser {

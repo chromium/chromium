@@ -303,6 +303,7 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
       connection_(std::move(connection)),
       clock_(base::DefaultClock::GetInstance()) {
   if (recovery_key_provider) {
+    // TODO(crbug.com/1223853): Initialize/recreate in SetPrimaryAccount().
     CHECK(recovery_key_store_connection);
     recovery_key_store_controller_ =
         std::make_unique<RecoveryKeyStoreController>(
@@ -721,6 +722,8 @@ void StandaloneTrustedVaultBackend::SetRecoveryKeyStoreUploadEnabled(
   // method is called.
   CHECK(recovery_key_store_controller_);
 
+  // TODO(crbug.com/1223853): Shift responsibility for updating the enabled bit
+  // in the state to the RecoveryKeyStoreController.
   trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(account_info.gaia);
   if (!per_user_vault) {
@@ -759,11 +762,8 @@ void StandaloneTrustedVaultBackend::MaybeStartRecoveryKeyStoreUploads() {
   if (!recovery_key_store_state.recovery_key_store_upload_enabled()) {
     return;
   }
-  base::Time last_recovery_key_store_update = ProtoTimeToTime(
-      recovery_key_store_state
-          .last_recovery_key_store_update_millis_since_unix_epoch());
   recovery_key_store_controller_->StartPeriodicUploads(
-      *primary_account_, last_recovery_key_store_update,
+      *primary_account_, recovery_key_store_state,
       RecoveryKeyStoreController::kDefaultUpdatePeriod);
 }
 
@@ -1238,24 +1238,14 @@ void StandaloneTrustedVaultBackend::WriteDataToDisk() {
   delegate_->NotifyStateChanged();
 }
 
-void StandaloneTrustedVaultBackend::OnUpdateRecoveryKeyStore(
-    const std::vector<RecoveryKeyStoreController::ApplicationKey>&
-        application_keys) {
-  if (!primary_account_) {
-    return;
-  }
-
+void StandaloneTrustedVaultBackend::WriteRecoveryKeyStoreState(
+    const trusted_vault_pb::RecoveryKeyStoreState& state) {
+  CHECK(primary_account_);
+  CHECK(state.recovery_key_store_upload_enabled());
   trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account_->gaia);
-  trusted_vault_pb::RecoveryKeyStoreState* recovery_key_store_state =
-      per_user_vault->mutable_recovery_key_store_state();
-  recovery_key_store_state
-      ->set_last_recovery_key_store_update_millis_since_unix_epoch(
-          base::Time::Now().InMillisecondsSinceUnixEpoch());
+  *per_user_vault->mutable_recovery_key_store_state() = state;
   WriteDataToDisk();
-
-  // TODO: crbug.com/1223853 - Register the application key as a security domain
-  // member and keep track of the result in the RecoveryKeyStoreState.
 }
 
 }  // namespace trusted_vault

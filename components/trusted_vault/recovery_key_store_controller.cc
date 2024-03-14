@@ -6,25 +6,11 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
 
 namespace trusted_vault {
-
-RecoveryKeyStoreController::ApplicationKey::ApplicationKey(
-    std::string name,
-    std::vector<uint8_t> public_key)
-    : name(std::move(name)), public_key(std::move(public_key)) {}
-RecoveryKeyStoreController::ApplicationKey::ApplicationKey(ApplicationKey&) =
-    default;
-RecoveryKeyStoreController::ApplicationKey::ApplicationKey(ApplicationKey&&) =
-    default;
-RecoveryKeyStoreController::ApplicationKey&
-RecoveryKeyStoreController::ApplicationKey::operator=(ApplicationKey&) =
-    default;
-RecoveryKeyStoreController::ApplicationKey&
-RecoveryKeyStoreController::ApplicationKey::operator=(ApplicationKey&&) =
-    default;
-RecoveryKeyStoreController::ApplicationKey::~ApplicationKey() = default;
 
 RecoveryKeyStoreController::RecoveryKeyProvider::~RecoveryKeyProvider() =
     default;
@@ -39,20 +25,20 @@ RecoveryKeyStoreController::OngoingUpdate::~OngoingUpdate() = default;
 RecoveryKeyStoreController::RecoveryKeyStoreController(
     std::unique_ptr<RecoveryKeyProvider> recovery_key_provider,
     std::unique_ptr<RecoveryKeyStoreConnection> connection,
-    Observer* observer)
+    Delegate* delegate)
     : recovery_key_provider_(std::move(recovery_key_provider)),
       connection_(std::move(connection)),
-      observer_(observer) {
+      delegate_(delegate) {
   CHECK(recovery_key_provider_);
   CHECK(connection_);
-  CHECK(observer_);
+  CHECK(delegate_);
 }
 
 RecoveryKeyStoreController::~RecoveryKeyStoreController() = default;
 
 void RecoveryKeyStoreController::StartPeriodicUploads(
     CoreAccountInfo account_info,
-    base::Time last_update,
+    const trusted_vault_pb::RecoveryKeyStoreState& state,
     base::TimeDelta update_period) {
   // Cancel scheduled and in-progress uploads, if any.
   if (account_info_) {
@@ -63,12 +49,19 @@ void RecoveryKeyStoreController::StartPeriodicUploads(
   CHECK(!next_update_timer_.IsRunning());
   CHECK(!ongoing_update_);
 
+  update_period_ = update_period;
+  state_ = state;
+  CHECK(state_.recovery_key_store_upload_enabled());
+
   // Schedule the next update. If an update has occurred previously, delay the
   // update by the remainder of the partially elapsed `update_period`. Note that
   // `last_update` may actually be in the future.
   account_info_ = account_info;
-  update_period_ = update_period;
-
+  base::Time last_update;
+  if (state_.last_recovery_key_store_update_millis_since_unix_epoch()) {
+    last_update = ProtoTimeToTime(
+        state_.last_recovery_key_store_update_millis_since_unix_epoch());
+  }
   auto now = base::Time::Now();
   last_update = std::min(now, last_update);
   base::TimeDelta delay;
@@ -83,6 +76,7 @@ void RecoveryKeyStoreController::StopPeriodicUploads() {
   account_info_.reset();
   next_update_timer_.Stop();
   ongoing_update_.reset();
+  state_ = {};
 }
 
 void RecoveryKeyStoreController::ScheduleNextUpdate(base::TimeDelta delay) {
@@ -108,23 +102,17 @@ void RecoveryKeyStoreController::OnGetCurrentRecoveryKeyStoreData(
     return;
   }
 
-  std::vector<ApplicationKey> uploaded_application_keys;
-  for (const trusted_vault_pb::ApplicationKey& key :
-       vault->application_keys()) {
-    uploaded_application_keys.push_back(ApplicationKey{
-        key.key_name(),
-        std::vector<uint8_t>(key.asymmetric_key_pair().public_key().begin(),
-                             key.asymmetric_key_pair().public_key().end())});
-  }
+  CHECK_EQ(vault->application_keys().size(), 1);
+  const trusted_vault_pb::ApplicationKey& uploaded_application_key =
+      *vault->application_keys().begin();
   ongoing_update_->request = connection_->UpdateRecoveryKeyStore(
       *account_info_, std::move(*vault),
       base::BindOnce(&RecoveryKeyStoreController::OnUpdateRecoveryKeyStore,
-                     weak_factory_.GetWeakPtr(),
-                     std::move(uploaded_application_keys)));
+                     weak_factory_.GetWeakPtr(), uploaded_application_key));
 }
 
 void RecoveryKeyStoreController::OnUpdateRecoveryKeyStore(
-    std::vector<ApplicationKey> application_keys,
+    trusted_vault_pb::ApplicationKey application_key,
     UpdateRecoveryKeyStoreStatus status) {
   if (status != UpdateRecoveryKeyStoreStatus::kSuccess) {
     DVLOG(1) << "UpdateRecoveryKeyStore failed: " << static_cast<int>(status);
@@ -132,16 +120,21 @@ void RecoveryKeyStoreController::OnUpdateRecoveryKeyStore(
     return;
   }
 
-  CompleteUpdateRequest(application_keys);
+  CompleteUpdateRequest(std::move(application_key));
 }
 
 void RecoveryKeyStoreController::CompleteUpdateRequest(
-    const std::vector<ApplicationKey>& application_keys) {
-  CHECK(ongoing_update_);
+    std::optional<trusted_vault_pb::ApplicationKey> uploaded_application_key) {
   CHECK(ongoing_update_);
   ongoing_update_ = std::nullopt;
-  if (!application_keys.empty()) {
-    observer_->OnUpdateRecoveryKeyStore(application_keys);
+  if (uploaded_application_key) {
+    state_.set_last_recovery_key_store_update_millis_since_unix_epoch(
+        base::Time::Now().InMillisecondsSinceUnixEpoch());
+    state_.set_public_key(
+        uploaded_application_key->asymmetric_key_pair().public_key());
+    // TODO: crbug.com/1223853 - Register the ApplicationKey as a security
+    // domain member and keep track of the result in `state_`.
+    delegate_->WriteRecoveryKeyStoreState(state_);
   }
   ScheduleNextUpdate(update_period_);
 }
