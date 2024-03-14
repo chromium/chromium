@@ -14,18 +14,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/display/display_observer.h"
 
 namespace ui {
+class Layer;
 class LayerTreeOwner;
-}
+}  // namespace ui
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 namespace ash {
 class WallpaperView;
@@ -34,7 +36,8 @@ class WallpaperView;
 // WallpaperWidgetController is owned by RootWindowController.
 // Exported for tests.
 class ASH_EXPORT WallpaperWidgetController
-    : public ui::ImplicitAnimationObserver {
+    : public ui::ImplicitAnimationObserver,
+      public display::DisplayObserver {
  public:
   explicit WallpaperWidgetController(aura::Window* root_window);
 
@@ -44,8 +47,14 @@ class ASH_EXPORT WallpaperWidgetController
 
   ~WallpaperWidgetController() override;
 
-  // Initialize the widget. |lock| specifies if the wallpaper should be created
-  // for the locked state.
+  WallpaperView* wallpaper_view() { return wallpaper_view_; }
+
+  ui::Layer* wallpaper_underlay_layer() {
+    return wallpaper_underlay_layer_.get();
+  }
+
+  // Initialize the widget. `locked` determines if the wallpaper should be
+  // created for the locked state.
   void Init(bool locked);
 
   views::Widget* GetWidget();
@@ -79,13 +88,17 @@ class ASH_EXPORT WallpaperWidgetController
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
-  WallpaperView* wallpaper_view() { return wallpaper_view_; }
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t metrics) override;
 
   ui::LayerTreeOwner* old_layer_tree_owner_for_testing() {
     return old_layer_tree_owner_.get();
   }
 
  private:
+  void CreateWallpaperUnderlayLayer();
+
   // Runs callbacks in |animation_end_callbacks_|.
   void RunAnimationEndCallbacks();
 
@@ -106,9 +119,15 @@ class ASH_EXPORT WallpaperWidgetController
   // for: #addr-of
   RAW_PTR_EXCLUSION WallpaperView* wallpaper_view_ = nullptr;
 
+  // A solid-color layer stacked below the clipped `wallpaper_view_`
+  // layer and above the `shield_view_` if exists.
+  std::unique_ptr<ui::Layer> wallpaper_underlay_layer_;
+
   // Callbacks to be run when the |animating_widget_| stops animating and gets
   // set as the active widget.
   std::list<base::OnceClosure> animation_end_callbacks_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

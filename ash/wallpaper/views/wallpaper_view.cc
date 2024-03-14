@@ -72,7 +72,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
       child->SetBounds(0, 0, display.size().width(), display.size().height());
       gfx::Transform transform;
       // Apply RTL transform explicitly becacuse Views layer code
-      // doesn't handle RTL.  crbug.com/458753.
+      // doesn't handle RTL. crbug.com/458753.
       transform.Translate(-child->GetMirroredX(), 0);
       child->SetTransform(transform);
     }

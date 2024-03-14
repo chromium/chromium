@@ -10818,12 +10818,22 @@ class OakTest : public OverviewTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Tests that the wallpaper layer is correctly clipped with rounded corners
-// during overview sessions, and fully restored upon exiting overview.
+// Test that the wallpaper layer's clipping (with rounded corners) is applied
+// correctly during overview sessions, restores fully upon exit, and that the
+// wallpaper underlay layer's visibility refreshes properly upon entering and
+// exiting overview.
 TEST_F(OakTest, WallpaperClipRectAndRoundedCorners) {
   const gfx::Rect display_bounds(
       GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
-  auto* wallpaper_view_layer = GetWallpaperViewLayer();
+  auto* wallpaper_widget_controller =
+      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
+  auto* wallpaper_view_layer =
+      wallpaper_widget_controller->wallpaper_view()->layer();
+  auto* wallpaper_underlay_layer =
+      wallpaper_widget_controller->wallpaper_underlay_layer();
+  EXPECT_FALSE(wallpaper_underlay_layer->IsVisible());
+  EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
+
   // Ensure the wallpaper begins with its original dimensions (matching the
   // active display) and has square corners.
   EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
@@ -10839,11 +10849,52 @@ TEST_F(OakTest, WallpaperClipRectAndRoundedCorners) {
   EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
             wallpaper_view_layer->rounded_corner_radii());
 
-  // Exit overview. Check that the wallpaper has been fully restored..
+  EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
+
+  // Exit overview. Check that the wallpaper has been fully restored.
   ToggleOverview();
   EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
   EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
   EXPECT_TRUE(wallpaper_view_layer->rounded_corner_radii().IsEmpty());
+
+  EXPECT_FALSE(wallpaper_underlay_layer->IsVisible());
+}
+
+// Tests that the wallpaper clipping and wallpaper underlay layer refresh their
+// bounds appropriately on display change.
+TEST_F(OakTest, DisplayChange) {
+  auto* wallpaper_widget_controller =
+      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
+  auto* wallpaper_view_layer =
+      wallpaper_widget_controller->wallpaper_view()->layer();
+  auto* wallpaper_underlay_layer =
+      wallpaper_widget_controller->wallpaper_underlay_layer();
+
+  UpdateDisplay("800x600");
+  const gfx::Rect display_bounds1(
+      GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
+
+  EXPECT_EQ(display_bounds1, wallpaper_underlay_layer->bounds());
+  EXPECT_EQ(display_bounds1, wallpaper_view_layer->bounds());
+
+  UpdateDisplay("1200x900");
+  const gfx::Rect display_bounds2(
+      GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
+  EXPECT_EQ(display_bounds2, wallpaper_underlay_layer->bounds());
+  EXPECT_EQ(display_bounds2, wallpaper_view_layer->bounds());
+
+  ToggleOverview();
+  OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
+  EXPECT_EQ(display_bounds2, wallpaper_underlay_layer->bounds());
+  EXPECT_EQ(overview_grid->GetGridEffectiveBounds(),
+            wallpaper_view_layer->clip_rect());
+  EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
+
+  UpdateDisplay("800x600");
+  const gfx::Rect display_bounds3(
+      GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
+  EXPECT_EQ(display_bounds3, wallpaper_underlay_layer->bounds());
+  EXPECT_EQ(display_bounds3, wallpaper_view_layer->bounds());
 }
 
 // Tests that the wallpaper is clipped in partial overview mode and adjusts

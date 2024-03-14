@@ -6,7 +6,6 @@
 #define ASH_WM_OVERVIEW_SCOPED_OVERVIEW_WALLPAPER_CLIPPER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/compositor/layer.h"
 
 namespace ash {
 
@@ -23,13 +22,10 @@ class ScopedOverviewWallpaperClipper {
       const ScopedOverviewWallpaperClipper&) = delete;
   ~ScopedOverviewWallpaperClipper();
 
-  // Updates the bounds of wallpaper clip rect and `wallpaper_underlay_layer_`.
+  // Updates the bounds of wallpaper clip rect.
   void RefreshWallpaperClipBounds();
 
  private:
-  // A solid-color layer stacked below the clipped wallpaper.
-  ui::Layer wallpaper_underlay_layer_;
-
   raw_ptr<OverviewGrid> overview_grid_;
 };
 
