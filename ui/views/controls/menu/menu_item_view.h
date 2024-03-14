@@ -293,6 +293,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Sets the icon of this menu item.
   void SetIcon(const ui::ImageModel& icon);
+  const ui::ImageModel GetIcon() const;
 
   // Sets the view used to render the icon. This clobbers any icon set via
   // SetIcon(). MenuItemView takes ownership of |icon_view|.

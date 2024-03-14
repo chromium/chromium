@@ -11202,6 +11202,7 @@ if (!is_android && !is_chromeos_device) {
         "interaction/webcontents_interaction_test_util_interactive_uitest.cc",
       ]
       deps += [
+        "//chrome/app/vector_icons:vector_icons",
         "//chrome/browser/image_fetcher",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",
@@ -11220,6 +11221,7 @@ if (!is_android && !is_chromeos_device) {
         "//components/user_education/views",
         "//components/user_education/webui",
         "//components/user_notes:features",
+        "//components/webapps/browser:browser",
         "//ui/accessibility:test_support",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",

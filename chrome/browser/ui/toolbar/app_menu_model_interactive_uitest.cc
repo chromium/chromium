@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include <optional>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -10,6 +11,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/accelerator_utils.h"
@@ -17,7 +19,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/extensions/api/dashboard_private.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -27,16 +33,25 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
+#include "components/webapps/browser/banners/web_app_banner_data.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "url/gurl.h"
 
@@ -386,3 +401,180 @@ IN_PROC_BROWSER_TEST_F(CastListedFirstExperimentAppMenuModelInteractiveTest,
       SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
       EnsurePresent(AppMenuModel::kCastTitleItem));
 }
+
+using ui::test::ObservationStateObserver;
+using webapps::AppBannerManager;
+using webapps::InstallableWebAppCheckResult;
+using webapps::WebAppBannerData;
+
+class AppBannerManagerInstallStateObserver
+    : public ObservationStateObserver<InstallableWebAppCheckResult,
+                                      AppBannerManager,
+                                      AppBannerManager::Observer> {
+ public:
+  explicit AppBannerManagerInstallStateObserver(
+      AppBannerManager* app_banner_manager)
+      : ObservationStateObserver(app_banner_manager) {}
+  ~AppBannerManagerInstallStateObserver() override = default;
+
+  // ObservationStateObserver:
+  InstallableWebAppCheckResult GetStateObserverInitialState() const override {
+    return source()->GetInstallableWebAppCheckResult();
+  }
+
+  // AppBannerManager::Observer:
+  void OnInstallableWebAppStatusUpdated(
+      InstallableWebAppCheckResult result,
+      const std::optional<WebAppBannerData>& data) override {
+    OnStateObserverStateChanged(result);
+  }
+};
+
+namespace {
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(AppBannerManagerInstallStateObserver,
+                                    kAppBannerManagerState);
+}  // namespace
+
+class UniversalInstallAppMenuModelInteractiveTest
+    : public AppMenuModelInteractiveTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  UniversalInstallAppMenuModelInteractiveTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kWebAppUniversalInstall);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kWebAppUniversalInstall);
+    }
+  }
+  UniversalInstallAppMenuModelInteractiveTest(
+      const UniversalInstallAppMenuModelInteractiveTest&) = delete;
+  void operator=(const UniversalInstallAppMenuModelInteractiveTest&) = delete;
+  ~UniversalInstallAppMenuModelInteractiveTest() override = default;
+
+ protected:
+  GURL GetNonInstallableAppUrl() {
+    return embedded_test_server()->GetURL(
+        "/banners/no_manifest_test_page.html");
+  }
+
+  GURL GetInstallableAppUrl() {
+    return embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+  }
+
+  // If universal install is enabled, non installable sites (DIY apps) will have
+  // a corresponding menu item entry for installation, as well as the default
+  // install icon next to them.
+  auto VerifyDiyAppMenuItemViews() {
+    if (IsUniversalInstallEnabled()) {
+      const ui::ImageModel icon_image = ui::ImageModel::FromVectorIcon(
+          kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
+      return Steps(
+          EnsurePresent(AppMenuModel::kInstallAppItem),
+          CheckViewProperty(
+              AppMenuModel::kInstallAppItem, &views::MenuItemView::title,
+              l10n_util::GetStringUTF16(IDS_INSTALL_DIY_TO_OS_LAUNCH_SURFACE)),
+          CheckViewProperty(AppMenuModel::kInstallAppItem,
+                            &views::MenuItemView::GetIcon, icon_image));
+    } else {
+      return Steps(EnsureNotPresent(AppMenuModel::kInstallAppItem));
+    }
+  }
+
+  AppBannerManager* GetManager() {
+    return AppBannerManager::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  // If universal install is enabled, the app icon should be shown in the menu
+  // entry, so compare the middle most color as an indicator of similarity (as
+  // is the case for most web_applications/ based tests). For the other case,
+  // the default chrome refresh icon is a vector icon that is easy to compare,
+  // so we do a 1:1 comparison.
+  auto CompareIcons() {
+    return base::BindLambdaForTesting([&](views::MenuItemView* item_view) {
+      if (IsUniversalInstallEnabled()) {
+        EXPECT_TRUE(item_view->GetIcon().IsImage());
+        EXPECT_EQ(
+            GetMidColorFromBitmap(item_view->GetIcon().GetImage().AsBitmap()),
+            GetAppIconColorBasedOnBannerData());
+      } else {
+        EXPECT_EQ(item_view->GetIcon(),
+                  ui::ImageModel::FromVectorIcon(
+                      kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
+                      ui::SimpleMenuModel::kDefaultIconSize));
+      }
+    });
+  }
+
+ private:
+  bool IsUniversalInstallEnabled() { return GetParam(); }
+
+  SkColor GetAppIconColorBasedOnBannerData() {
+    std::optional<WebAppBannerData> banner_data =
+        GetManager()->GetCurrentWebAppBannerData();
+
+    if (banner_data->primary_icon.empty()) {
+      return SK_ColorTRANSPARENT;
+    }
+
+    gfx::ImageSkia primary_icon =
+        gfx::ImageSkia::CreateFrom1xBitmap(banner_data->primary_icon);
+    gfx::ImageSkia resized_app_icon =
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            primary_icon, skia::ImageOperations::RESIZE_BEST,
+            gfx::Size(ui::SimpleMenuModel::kDefaultIconSize,
+                      ui::SimpleMenuModel::kDefaultIconSize));
+
+    return GetMidColorFromBitmap(*resized_app_icon.bitmap());
+  }
+
+  SkColor GetMidColorFromBitmap(const SkBitmap& bitmap) {
+    return bitmap.getColor(bitmap.width() / 2, bitmap.height() / 2);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
+                       DIYAppMenuWorksCorrectly) {
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      ObserveState(kAppBannerManagerState, GetManager()),
+      NavigateWebContents(kPrimaryTabPageElementId, GetNonInstallableAppUrl()),
+      WaitForWebContentsReady(kPrimaryTabPageElementId),
+      WaitForState(kAppBannerManagerState, InstallableWebAppCheckResult::kNo),
+      PressButton(kToolbarAppMenuButtonElementId),
+      EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+      SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
+      VerifyDiyAppMenuItemViews());
+}
+
+IN_PROC_BROWSER_TEST_P(UniversalInstallAppMenuModelInteractiveTest,
+                       InstallAppMenuWorksCorrectly) {
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      ObserveState(kAppBannerManagerState, GetManager()),
+      NavigateWebContents(kPrimaryTabPageElementId, GetInstallableAppUrl()),
+      WaitForWebContentsReady(kPrimaryTabPageElementId),
+      WaitForState(kAppBannerManagerState,
+                   InstallableWebAppCheckResult::kYes_Promotable),
+      PressButton(kToolbarAppMenuButtonElementId),
+      EnsurePresent(AppMenuModel::kSaveAndShareMenuItem),
+      SelectMenuItem(AppMenuModel::kSaveAndShareMenuItem),
+      EnsurePresent(AppMenuModel::kInstallAppItem),
+      CheckViewProperty(
+          AppMenuModel::kInstallAppItem, &views::MenuItemView::title,
+          l10n_util::GetStringFUTF16(
+              IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
+              ui::EscapeMenuLabelAmpersands(u"Manifest test app"))),
+      WithView(AppMenuModel::kInstallAppItem, CompareIcons()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         UniversalInstallAppMenuModelInteractiveTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "UniversalInstallEnabled"
+                                             : "UniversalInstallDisabled";
+                         });

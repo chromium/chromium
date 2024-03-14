@@ -116,6 +116,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
 
@@ -151,6 +152,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPerformanceMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kInstallAppItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kReadingModeMenuItem);
@@ -234,8 +236,60 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
   if (app_name.empty()) {
     return std::u16string();
   }
+
   return l10n_util::GetStringFUTF16(IDS_INSTALL_TO_OS_LAUNCH_SURFACE,
                                     ui::EscapeMenuLabelAmpersands(app_name));
+}
+
+// TODO(b/328077967): Implement async updates of menu for app icon.
+ui::ImageModel GetInstallPWAIcon(Browser* browser) {
+  ui::ImageModel app_icon_to_use = ui::ImageModel::FromVectorIcon(
+      kInstallDesktopChromeRefreshIcon, ui::kColorMenuIcon,
+      ui::SimpleMenuModel::kDefaultIconSize);
+
+  // App icons in the app menu are only a part of the WebAppUniversalInstall
+  // feature.
+  if (!base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)) {
+    return app_icon_to_use;
+  }
+
+  content::WebContents* const web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return app_icon_to_use;
+  }
+
+  webapps::AppBannerManager* const banner =
+      webapps::AppBannerManager::FromWebContents(web_contents);
+  if (!banner) {
+    return app_icon_to_use;
+  }
+
+  // For sites that are not installable (DIY apps), do not return any icons,
+  // instead use the default chrome refresh icon for installing.
+  if (banner->GetInstallableWebAppCheckResult() ==
+      webapps::InstallableWebAppCheckResult::kNo) {
+    return app_icon_to_use;
+  }
+
+  std::optional<webapps::WebAppBannerData> install_config =
+      banner->GetCurrentWebAppBannerData();
+
+  // If no data or no icons have been obtained by the AppBannerManager, return
+  // the default icon.
+  if (!install_config || install_config->primary_icon.empty()) {
+    return app_icon_to_use;
+  }
+
+  gfx::ImageSkia primary_icon =
+      gfx::ImageSkia::CreateFrom1xBitmap(install_config->primary_icon);
+  gfx::ImageSkia resized_app_icon =
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          primary_icon, skia::ImageOperations::RESIZE_BEST,
+          gfx::Size(ui::SimpleMenuModel::kDefaultIconSize,
+                    ui::SimpleMenuModel::kDefaultIconSize));
+  app_icon_to_use = ui::ImageModel::FromImageSkia(resized_app_icon);
+  return app_icon_to_use;
 }
 
 // Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if
@@ -606,10 +660,8 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
   AddSeparator(ui::NORMAL_SEPARATOR);
   if (std::u16string install_item = GetInstallPWALabel(browser);
       !install_item.empty()) {
-    AddItemWithIcon(
-        IDC_INSTALL_PWA, install_item,
-        ui::ImageModel::FromVectorIcon(kInstallDesktopChromeRefreshIcon,
-                                       ui::kColorMenuIcon, kDefaultIconSize));
+    AddItemWithIcon(IDC_INSTALL_PWA, install_item, GetInstallPWAIcon(browser));
+    SetElementIdentifierAt(GetItemCount() - 1, AppMenuModel::kInstallAppItem);
   } else if (std::u16string open_item = GetOpenPWALabel(browser);
              !open_item.empty()) {
     AddItemWithIcon(

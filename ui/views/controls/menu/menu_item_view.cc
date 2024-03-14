@@ -556,6 +556,10 @@ void MenuItemView::SetIcon(const ui::ImageModel& icon) {
   SetIconView(std::move(icon_view));
 }
 
+const ui::ImageModel MenuItemView::GetIcon() const {
+  return icon_view_ ? icon_view_->GetImageModel() : ui::ImageModel();
+}
+
 void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
   {
     // See comment in `update_selection_based_state_in_view_herarchy_changed_`
