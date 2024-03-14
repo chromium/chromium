@@ -811,7 +811,7 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   // level), so short-circuiting out here is not simply an optimization but
   // is actually necessary.
   int num_accesses_already_present =
-      iosurface_backing->IncrementNumberOfOngoingWGPUTextureAccesses(texture_);
+      iosurface_backing->TrackBeginAccessToWGPUTexture(texture_);
   if (num_accesses_already_present > 0) {
     return texture_;
   }
@@ -857,7 +857,7 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     // incompatible with the format of the backing IOSurface to check error
     // handling.
     LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed";
-    iosurface_backing->DecrementNumberOfOngoingWGPUTextureAccesses(texture_);
+    iosurface_backing->TrackEndAccessToWGPUTexture(texture_);
     iosurface_backing->RemoveWGPUTextureFromCache(device_, texture_);
     texture_ = {};
 
@@ -885,7 +885,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   const bool readonly = (usage_ & ~kReadOnlyUsage) == 0;
   iosurface_backing->EndAccess(readonly);
   int num_outstanding_accesses =
-      iosurface_backing->DecrementNumberOfOngoingWGPUTextureAccesses(texture_);
+      iosurface_backing->TrackEndAccessToWGPUTexture(texture_);
 
   // However, if there is still an ongoing Dawn access on this texture,
   // short-circuit out of doing any other work. In particular, do not consume
@@ -1280,13 +1280,12 @@ IOSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
 }
 
 #if BUILDFLAG(USE_DAWN)
-int IOSurfaceImageBacking::IncrementNumberOfOngoingWGPUTextureAccesses(
+int IOSurfaceImageBacking::TrackBeginAccessToWGPUTexture(
     wgpu::Texture texture) {
   return wgpu_texture_ongoing_accesses_[texture.Get()]++;
 }
 
-int IOSurfaceImageBacking::DecrementNumberOfOngoingWGPUTextureAccesses(
-    wgpu::Texture texture) {
+int IOSurfaceImageBacking::TrackEndAccessToWGPUTexture(wgpu::Texture texture) {
   if (!wgpu_texture_ongoing_accesses_.contains(texture.Get())) {
     return 0;
   }
