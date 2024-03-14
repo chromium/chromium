@@ -14249,6 +14249,9 @@ Called by update_permissions_policy_enum.py.-->
 
 <enum name="LanguageName">
   <summary>
+    Deprecated: Instead use LocaleCodeISO639 since it supports script tags and
+    three letter language codes unlike LanguageName.
+
     Hash values for the first two letters of a locale code. This is mapped to
     the English name for each language. Only the first two letters are used so
     country and script codes are ignored. The hash is created by
