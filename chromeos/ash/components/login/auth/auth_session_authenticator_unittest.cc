@@ -107,7 +107,8 @@ MATCHER_P(WithPasswordFactorAuth, expected_label, "") {
   if (!arg.auth_input().has_password_input()) {
     return false;
   }
-  if (arg.auth_factor_label() != expected_label) {
+  if (arg.auth_factor_labels().size() != 1 ||
+      arg.auth_factor_labels(0) != expected_label) {
     return false;
   }
 
@@ -158,7 +159,8 @@ MATCHER(WithKioskFactorAuth, "") {
   if (!arg.auth_input().has_kiosk_input()) {
     return false;
   }
-  if (arg.auth_factor_label() != kCryptohomePublicMountLabel) {
+  if (arg.auth_factor_labels().size() != 1 ||
+      arg.auth_factor_labels(0) != kCryptohomePublicMountLabel) {
     return false;
   }
   return true;

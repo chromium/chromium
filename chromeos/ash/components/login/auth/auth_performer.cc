@@ -237,7 +237,7 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
     cryptohome::AuthFactorInput input(
         cryptohome::AuthFactorInput::Pin{key->GetSecret()});
     cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-    request.set_auth_factor_label(ref.label().value());
+    request.add_auth_factor_labels(ref.label().value());
   } else {
     cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPassword,
                                   cryptohome::KeyLabel{key->GetLabel()}};
@@ -245,7 +245,7 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
         cryptohome::AuthFactorInput::Password{key->GetSecret()});
 
     cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-    request.set_auth_factor_label(ref.label().value());
+    request.add_auth_factor_labels(ref.label().value());
   }
   client_->AuthenticateAuthFactor(
       request,
@@ -298,7 +298,7 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
       cryptohome::kCryptohomeKeyDelegateServiceName,
   });
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-  request.set_auth_factor_label(ref.label().value());
+  request.add_auth_factor_labels(ref.label().value());
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
                               weak_factory_.GetWeakPtr(), clock_->Now(),
@@ -399,7 +399,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
   cryptohome::AuthFactorInput input(cryptohome::AuthFactorInput::Kiosk{});
   cryptohome::SerializeAuthInput(existing_factor->ref(), input,
                                  request.mutable_auth_input());
-  request.set_auth_factor_label(existing_factor->ref().label().value());
+  request.add_auth_factor_labels(existing_factor->ref().label().value());
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
                               weak_factory_.GetWeakPtr(), clock_->Now(),
@@ -495,7 +495,7 @@ void AuthPerformer::AuthenticateWithRecovery(
   user_data_auth::AuthenticateAuthFactorRequest request;
 
   request.set_auth_session_id(context->GetAuthSessionId());
-  request.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
+  request.add_auth_factor_labels(kCryptohomeRecoveryKeyLabel);
 
   user_data_auth::CryptohomeRecoveryAuthInput* recovery_input =
       request.mutable_auth_input()->mutable_cryptohome_recovery_input();
