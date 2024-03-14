@@ -875,10 +875,15 @@ void FetchManager::Loader::Dispose() {
   SetExecutionContext(nullptr);
 }
 
+// https://fetch.spec.whatwg.org/#abort-fetch
+// To abort a fetch() call with a promise, request, responseObject, and an
+// error:
 void FetchManager::Loader::Abort() {
+  ScriptState* script_state = GetScriptState();
+  v8::Local<v8::Value> error = Signal()->reason(script_state).V8Value();
+  // 1. Reject promise with error.
   if (resolver_) {
-    resolver_->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+    resolver_->Reject(error);
     resolver_.Clear();
   }
   if (threadable_loader_) {
@@ -886,6 +891,16 @@ void FetchManager::Loader::Abort() {
     auto loader = threadable_loader_;
     threadable_loader_ = nullptr;
     loader->Cancel();
+  }
+
+  // 2. If request’s body is non-null and is readable, then cancel request’s
+  //  body with error.
+  if (FetchRequestData* fetch_request_data = GetFetchRequestData()) {
+    if (BodyStreamBuffer* body_stream_buffer = fetch_request_data->Buffer()) {
+      if (ReadableStream* readable_stream = body_stream_buffer->Stream()) {
+        ReadableStream::Cancel(script_state, readable_stream, error);
+      }
+    }
   }
   NotifyFinished();
 }
