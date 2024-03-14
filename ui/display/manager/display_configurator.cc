@@ -784,7 +784,7 @@ void DisplayConfigurator::ForceInitialConfigure() {
   configuration_task_ = std::make_unique<UpdateDisplayConfigurationTask>(
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, GetRequestedPowerState(),
-      kSetDisplayPowerForceProbe, kRefreshRateThrottleDisabled,
+      kSetDisplayPowerForceProbe, GetRequestedThrottleState(),
       GetRequestedVrrState(), /*force_configure=*/true, kConfigurationTypeFull,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -982,20 +982,8 @@ void DisplayConfigurator::MaybeSetRefreshRateThrottleState(
                << display_id;
     return;
   }
-  if (display->current_mode() == nullptr) {
-    VLOG(4) << "Mode not set for display.";
-    return;
-  }
 
-  std::vector<const DisplayMode*> matching_modes =
-      GetSeamlessRefreshRateModes(*display, *display->current_mode());
-  if (matching_modes.size() < 2) {
-    VLOG(4) << "No mode candidates for seamless refresh rate change.";
-    return;
-  }
-
-  if ((state == kRefreshRateThrottleEnabled) !=
-      (display->current_mode() == *matching_modes.begin())) {
+  if (GetRefreshRateThrottleStateForDisplay(*display) != state) {
     pending_refresh_rate_throttle_state_ = state;
     RunPendingConfiguration();
   }
@@ -1079,9 +1067,8 @@ void DisplayConfigurator::RunPendingConfiguration() {
   configuration_task_ = std::make_unique<UpdateDisplayConfigurationTask>(
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, pending_power_state_, pending_power_flags_,
-      pending_refresh_rate_throttle_state_.value_or(
-          kRefreshRateThrottleDisabled),
-      GetRequestedVrrState(), force_configure_, configuration_type,
+      GetRequestedThrottleState(), GetRequestedVrrState(), force_configure_,
+      configuration_type,
       base::BindOnce(&DisplayConfigurator::OnConfigured,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -1270,6 +1257,57 @@ const base::flat_set<int64_t> DisplayConfigurator::GetRequestedVrrState()
 
 bool DisplayConfigurator::ShouldConfigureVrr() const {
   return pending_vrr_state_.has_value();
+}
+
+RefreshRateThrottleState DisplayConfigurator::GetRequestedThrottleState()
+    const {
+  // If there is a full configuration pending, disable throttle to avoid a
+  // theoretical scenario where the display hardware is configured in such a way
+  // that we can't unthrottle seamlessly.
+  if (HasPendingFullConfiguration()) {
+    return kRefreshRateThrottleDisabled;
+  }
+
+  if (pending_refresh_rate_throttle_state_.has_value()) {
+    return pending_refresh_rate_throttle_state_.value();
+  }
+
+  for (DisplaySnapshot* cached_display : cached_displays_) {
+    if (cached_display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
+      return GetRefreshRateThrottleStateForDisplay(*cached_display);
+    }
+  }
+  return kRefreshRateThrottleDisabled;
+}
+
+// Determine whether |display|'s refresh rate is currently throttled or not
+// by comparing its current mode to its seamless refresh modes.
+RefreshRateThrottleState
+DisplayConfigurator::GetRefreshRateThrottleStateForDisplay(
+    const DisplaySnapshot& display) {
+  // The mode could be nullptr if the display is turned off (i.e. put to sleep
+  // after being idle). Consider throttling to be disabled in this case.
+  if (display.current_mode() == nullptr) {
+    VLOG(4) << "Mode not set for display.";
+    return kRefreshRateThrottleDisabled;
+  }
+
+  // If there are less than two such modes, throttling is not supported.
+  std::vector<const DisplayMode*> matching_modes =
+      GetSeamlessRefreshRateModes(display, *display.current_mode());
+  if (matching_modes.size() < 2) {
+    VLOG(4) << "No mode candidates for seamless refresh rate change.";
+    return kRefreshRateThrottleDisabled;
+  }
+
+  // |matching_modes| is in order from low refresh rate to high. If the
+  // display's current mode is the lowest refresh rate, that means that it is
+  // throttled.
+  if (display.current_mode() == *matching_modes.begin()) {
+    return kRefreshRateThrottleEnabled;
+  }
+
+  return kRefreshRateThrottleDisabled;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

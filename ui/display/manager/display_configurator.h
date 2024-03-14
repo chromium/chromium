@@ -431,6 +431,16 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // request.
   bool ShouldConfigureVrr() const;
 
+  // Returns the throttle state that should be used for a configuration attempt.
+  // If no new state has been requested, this will default to the current state
+  // unless a full configuration is pending, in which case the requested state
+  // will be disabled.
+  RefreshRateThrottleState GetRequestedThrottleState() const;
+
+  // Returns the current throttle state for |display|.
+  static RefreshRateThrottleState GetRefreshRateThrottleStateForDisplay(
+      const DisplaySnapshot& display);
+
   raw_ptr<StateController> state_controller_;
   raw_ptr<SoftwareMirroringController> mirroring_controller_;
   std::unique_ptr<NativeDisplayDelegate> native_display_delegate_;
