@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -39,6 +40,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -371,6 +378,10 @@ class AvatarToolbarButtonBrowserTest : public InProcessBrowserTest {
   }
 
   base::CallbackListSubscription dependency_manager_subscription_;
+
+  policy::ScopedManagementServiceOverrideForTesting platform_management_{
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE};
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
@@ -892,7 +903,10 @@ class AvatarToolbarButtonEnterpriseBadgingParamBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingParamBrowserTest,
-                       WorkProfileTextBadging) {
+                       WorkProfileTextBadgingUnManagedDevice) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
@@ -915,28 +929,81 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingParamBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingParamBrowserTest,
+                       WorkProfileTextBadgingManagedDevice) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  ASSERT_TRUE(avatar_button->GetText().empty());
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
+  std::u16string explicit_text = u"Explicit text";
+  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
+    EXPECT_EQ(avatar_button->GetText(), std::u16string());
+    auto clear_closure = avatar_button->ShowExplicitText(explicit_text);
+    EXPECT_EQ(avatar_button->GetText(), explicit_text);
+    clear_closure.RunAndReset();
+    EXPECT_EQ(avatar_button->GetText(), std::u16string());
+  } else {
+    EXPECT_EQ(avatar_button->GetText(), std::u16string());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    auto clear_closure = avatar_button->ShowExplicitText(explicit_text);
+    EXPECT_EQ(avatar_button->GetText(), explicit_text);
+    clear_closure.RunAndReset();
+    EXPECT_EQ(avatar_button->GetText(), std::u16string());
+#endif
+  }
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     AvatarToolbarButtonEnterpriseBadgingParamBrowserTest);
 
 class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     : public AvatarToolbarButtonBrowserTest {
  public:
-  void SetTransientModePref(bool enabled) {
-    g_browser_process->local_state()->SetInteger(
-        prefs::kToolbarAvatarLabelSettings, enabled);
+  void EnableToolbarAvatarLabelByPolicy(bool transient) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kToolbarAvatarLabelSettings,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(transient ? 1 : 0),
+                 nullptr);
+    provider_.UpdateChromePolicy(policies);
   }
 
- private:
+  void SetUpInProcessBrowserTestFixture() override {
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+ protected:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kEnterpriseProfileBadging};
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnTranientModeTimesOut) {
+                       WorkBadgeOnManagedDeviceNotShownByDefault) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  SetTransientModePref(true);
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkBadgeOnTransientModeTimesOut) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
 
   std::u16string work_label = u"Work";
   AvatarToolbarButtonTestObserver observer(avatar_button);
@@ -945,16 +1012,16 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   observer.WaitForShowEnterpriseTextEnded();
-  // After timoue the normal state is expect - no text.
+  // After timeout the normal state is expect - no text.
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeOnNonTranientModeDoesNotTimesOut) {
+                       WorkBadgeOnNonTransientModeDoesNotTimesOut) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  SetTransientModePref(false);
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
 
   std::u16string work_label = u"Work";
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
@@ -988,6 +1055,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        WorkNewBrowserShowsBadge) {
   std::u16string work_label = u"Work";
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
       browser()->profile(), true);
 
@@ -1003,7 +1071,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  SetTransientModePref(false);
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
   std::u16string work_label = u"Work";
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
       browser()->profile(), true);
@@ -1029,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 
   EnableSyncAndWait(u"work@managed.com");
 
-  SetTransientModePref(true);
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/true);
   std::u16string work_label = u"Work";
   AvatarToolbarButtonTestObserver observer(avatar_button);
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
@@ -1053,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
-  SetTransientModePref(false);
+  EnableToolbarAvatarLabelByPolicy(/*transient=*/false);
   std::u16string work_label = u"Work";
   chrome::enterprise_util::SetUserAcceptedAccountManagement(
       browser()->profile(), true);
