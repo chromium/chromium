@@ -59,7 +59,7 @@ struct ChunksToMove {
 struct ChunkPatch {
   // Offset relative to the chunk defined in ChunksToPatch.
   uint32 offset;
-  string data;
+  mojo_base.mojom.ByteString data;
 };
 
 struct ChunksToPatch {
