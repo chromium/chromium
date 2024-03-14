@@ -131,10 +131,10 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
     EXPECT_EQ(std::u16string(), converted_url_info->title);
   }
   EXPECT_TRUE(copy.HasFile());
-  std::vector<FileInfo> actual_files;
-  EXPECT_TRUE(copy.GetFilenames(&actual_files));
-  EXPECT_EQ(1u, actual_files.size());
-  EXPECT_EQ(file_path, actual_files[0].path);
+  std::optional<std::vector<FileInfo>> actual_files = copy.GetFilenames();
+  ASSERT_TRUE(actual_files.has_value());
+  EXPECT_EQ(1u, actual_files.value().size());
+  EXPECT_EQ(file_path, actual_files.value()[0].path);
 }
 
 TEST_F(OSExchangeDataTest, TestPickledData) {
@@ -183,13 +183,13 @@ TEST_F(OSExchangeDataTest, TestFilenames) {
     return data.provider().Clone();
   }());
 
-  std::vector<FileInfo> dropped_filenames;
-  EXPECT_TRUE(copy.GetFilenames(&dropped_filenames));
+  std::optional<std::vector<FileInfo>> dropped_filenames = copy.GetFilenames();
+  ASSERT_TRUE(dropped_filenames.has_value());
   // Only check the paths, not the display names, as those might be synthesized
   // during the clone while reading from the clipboard.
-  ASSERT_EQ(kTestFilenames.size(), dropped_filenames.size());
+  ASSERT_EQ(kTestFilenames.size(), dropped_filenames.value().size());
   for (size_t i = 0; i < kTestFilenames.size(); ++i) {
-    EXPECT_EQ(kTestFilenames[i].path, dropped_filenames[i].path);
+    EXPECT_EQ(kTestFilenames[i].path, dropped_filenames.value()[i].path);
   }
 }
 

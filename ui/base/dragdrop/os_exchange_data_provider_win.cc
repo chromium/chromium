@@ -19,6 +19,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/i18n/file_util_icu.h"
@@ -596,16 +597,16 @@ std::optional<std::vector<GURL>> OSExchangeDataProviderWin::GetURLs(
     FilenameToURLPolicy policy) const {
   std::vector<GURL> local_urls;
 
-  std::optional<UrlInfo> url_info =
-      GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-  if (url_info.has_value()) {
+  if (std::optional<UrlInfo> url_info =
+          GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+      url_info.has_value()) {
     local_urls.push_back(url_info->url);
   }
 
   if (policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
-    std::vector<FileInfo> fileinfos;
-    if (GetFilenames(&fileinfos)) {
-      for (const auto& fileinfo : fileinfos) {
+    if (std::optional<std::vector<FileInfo>> fileinfos = GetFilenames();
+        fileinfos.has_value()) {
+      for (const auto& fileinfo : fileinfos.value()) {
         local_urls.push_back(net::FilePathToFileURL(fileinfo.path));
       }
     }
@@ -617,17 +618,18 @@ std::optional<std::vector<GURL>> OSExchangeDataProviderWin::GetURLs(
   return std::nullopt;
 }
 
-bool OSExchangeDataProviderWin::GetFilenames(
-    std::vector<FileInfo>* filenames) const {
+std::optional<std::vector<FileInfo>> OSExchangeDataProviderWin::GetFilenames()
+    const {
   std::vector<std::wstring> filenames_local;
   bool success =
       clipboard_util::GetFilenames(source_object_.Get(), &filenames_local);
-  if (success) {
-    for (const std::wstring& filename_local : filenames_local)
-      filenames->push_back(
-          FileInfo(base::FilePath(filename_local), base::FilePath()));
+  if (!success) {
+    return std::nullopt;
   }
-  return success;
+
+  return base::ToVector(filenames_local, [](const std::wstring& filename) {
+    return FileInfo(base::FilePath(filename), base::FilePath());
+  });
 }
 
 bool OSExchangeDataProviderWin::HasVirtualFilenames() const {

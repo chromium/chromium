@@ -168,9 +168,8 @@ class MockAshNotificationDragDropDelegate
       if (data->HasHtml()) {
         HandleHtmlData();
       } else {
-        std::vector<ui::FileInfo> files;
-        data->GetFilenames(&files);
-        HandleFilePathData(files[0].path);
+        std::optional<std::vector<ui::FileInfo>> files = data->GetFilenames();
+        HandleFilePathData(files.value()[0].path);
       }
     }
   }

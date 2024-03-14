@@ -138,16 +138,16 @@ std::optional<std::vector<GURL>> OSExchangeDataProviderNonBacked::GetURLs(
     FilenameToURLPolicy policy) const {
   std::vector<GURL> local_urls;
 
-  std::optional<UrlInfo> url_info =
-      GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-  if (url_info.has_value()) {
+  if (std::optional<UrlInfo> url_info =
+          GetURLAndTitle(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+      url_info.has_value()) {
     local_urls.push_back(url_info->url);
   }
 
   if (policy == FilenameToURLPolicy::CONVERT_FILENAMES) {
-    std::vector<FileInfo> fileinfos;
-    if (GetFilenames(&fileinfos)) {
-      for (const auto& fileinfo : fileinfos) {
+    if (std::optional<std::vector<FileInfo>> fileinfos = GetFilenames();
+        fileinfos.has_value()) {
+      for (const auto& fileinfo : fileinfos.value()) {
         local_urls.push_back(net::FilePathToFileURL(fileinfo.path));
       }
     }
@@ -159,12 +159,12 @@ std::optional<std::vector<GURL>> OSExchangeDataProviderNonBacked::GetURLs(
   return std::nullopt;
 }
 
-bool OSExchangeDataProviderNonBacked::GetFilenames(
-    std::vector<FileInfo>* filenames) const {
+std::optional<std::vector<FileInfo>>
+OSExchangeDataProviderNonBacked::GetFilenames() const {
   if ((formats_ & OSExchangeData::FILE_NAME) == 0)
-    return false;
-  *filenames = filenames_;
-  return true;
+    return std::nullopt;
+
+  return filenames_;
 }
 
 bool OSExchangeDataProviderNonBacked::GetPickledData(

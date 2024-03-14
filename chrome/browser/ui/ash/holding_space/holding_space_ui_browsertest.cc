@@ -405,10 +405,11 @@ class DropTargetView : public views::WidgetDelegateView {
   void PerformDrop(const ui::DropTargetEvent& event,
                    ui::mojom::DragOperation& output_drag_op,
                    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-    std::vector<ui::FileInfo> files;
-    EXPECT_TRUE(event.data().GetFilenames(&files));
-    ASSERT_EQ(1u, files.size());
-    copied_file_path_ = files[0].path;
+    std::optional<std::vector<ui::FileInfo>> files =
+        event.data().GetFilenames();
+    ASSERT_TRUE(files.has_value());
+    ASSERT_EQ(1u, files.value().size());
+    copied_file_path_ = files.value()[0].path;
     output_drag_op = ui::mojom::DragOperation::kCopy;
   }
 

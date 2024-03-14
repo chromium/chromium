@@ -252,13 +252,15 @@ std::optional<std::vector<GURL>> OSExchangeDataProviderMac::GetURLs(
   return local_urls;
 }
 
-bool OSExchangeDataProviderMac::GetFilenames(
-    std::vector<FileInfo>* filenames) const {
+std::optional<std::vector<FileInfo>> OSExchangeDataProviderMac::GetFilenames()
+    const {
   std::vector<FileInfo> files =
       clipboard_util::FilesFromPasteboard(GetPasteboard());
-  bool result = !files.empty();
-  base::ranges::move(files, std::back_inserter(*filenames));
-  return result;
+  if (files.empty()) {
+    return std::nullopt;
+  }
+
+  return files;
 }
 
 bool OSExchangeDataProviderMac::GetPickledData(

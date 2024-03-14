@@ -89,10 +89,10 @@ TEST_F(OSExchangeDataProviderX11Test, URIListWithBoth) {
   EXPECT_TRUE(provider.HasURL(FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES));
 
   // We should only receive the file from GetFilenames().
-  std::vector<FileInfo> filenames;
-  EXPECT_TRUE(provider.GetFilenames(&filenames));
-  ASSERT_EQ(1u, filenames.size());
-  EXPECT_EQ(kFileName, filenames[0].path.value());
+  std::optional<std::vector<FileInfo>> filenames = provider.GetFilenames();
+  ASSERT_TRUE(filenames.has_value());
+  ASSERT_EQ(1u, filenames.value().size());
+  EXPECT_EQ(kFileName, filenames.value()[0].path.value());
 
   // We should only receive the URL here.
   std::optional<OSExchangeDataProvider::UrlInfo> url_info =

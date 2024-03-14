@@ -83,8 +83,8 @@ std::optional<std::vector<GURL>> OSExchangeData::GetURLs(
   return provider_->GetURLs(policy);
 }
 
-bool OSExchangeData::GetFilenames(std::vector<FileInfo>* filenames) const {
-  return provider_->GetFilenames(filenames);
+std::optional<std::vector<FileInfo>> OSExchangeData::GetFilenames() const {
+  return provider_->GetFilenames();
 }
 
 bool OSExchangeData::GetPickledData(const ClipboardFormatType& format,

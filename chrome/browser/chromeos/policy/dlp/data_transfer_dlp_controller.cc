@@ -368,10 +368,11 @@ void DataTransferDlpController::DropIfAllowed(
   if (drag_data->HasFile() && !IsFilesApp(destination)) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
-      std::vector<ui::FileInfo> dropped_files;
-      drag_data->GetFilenames(&dropped_files);
+      std::optional<std::vector<ui::FileInfo>> dropped_files =
+          drag_data->GetFilenames();
       files_controller->CheckIfPasteOrDropIsAllowed(
-          GetFilePathsFromFileInfos(dropped_files), destination.as_ptr(),
+          GetFilePathsFromFileInfos(dropped_files.value()),
+          destination.as_ptr(),
           base::BindOnce(
               [](base::OnceClosure drop_cb, bool is_allowed) {
                 if (is_allowed) {

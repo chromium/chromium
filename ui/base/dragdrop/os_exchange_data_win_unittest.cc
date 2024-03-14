@@ -545,10 +545,10 @@ TEST_F(OSExchangeDataWinTest, VirtualFilesRealFilesPreferred) {
 
     OSExchangeData copy(data.provider().Clone());
 
-    std::vector<FileInfo> real_filenames;
-    EXPECT_TRUE(copy.GetFilenames(&real_filenames));
-    EXPECT_EQ(kTestFilenames.size(), real_filenames.size());
-    EXPECT_EQ(kTestFilenames, real_filenames);
+    std::optional<std::vector<FileInfo>> real_filenames = copy.GetFilenames();
+    ASSERT_TRUE(real_filenames.has_value());
+    EXPECT_EQ(kTestFilenames.size(), real_filenames.value().size());
+    EXPECT_EQ(kTestFilenames, real_filenames.value());
 
     std::optional<std::vector<FileInfo>> file_infos =
         copy.GetVirtualFilenames();

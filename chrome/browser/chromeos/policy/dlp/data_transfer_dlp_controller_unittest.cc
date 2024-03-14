@@ -387,8 +387,9 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Blocked) {
   ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
 
   MockFilesController files_controller(*rules_manager_);
-  std::vector<ui::FileInfo> file_names;
-  ASSERT_TRUE(drag_data.GetFilenames(&file_names));
+  std::optional<std::vector<ui::FileInfo>> file_names =
+      drag_data.GetFilenames();
+  ASSERT_TRUE(file_names.has_value());
 
   EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(&files_controller));
@@ -412,8 +413,9 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
   ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
 
   MockFilesController files_controller(*rules_manager_);
-  std::vector<ui::FileInfo> file_names;
-  ASSERT_TRUE(drag_data.GetFilenames(&file_names));
+  std::optional<std::vector<ui::FileInfo>> file_names =
+      drag_data.GetFilenames();
+  ASSERT_TRUE(file_names.has_value());
 
   EXPECT_CALL(*rules_manager_, GetDlpFilesController)
       .WillOnce(testing::Return(&files_controller));

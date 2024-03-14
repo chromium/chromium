@@ -4,6 +4,7 @@
 
 #include "components/exo/data_offer.h"
 
+#include <iterator>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -257,9 +258,15 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     filenames = data_exchange_delegate->ParseFileSystemSources(data.GetSource(),
                                                                pickle);
   }
+
   if (filenames.empty() && data.HasFile()) {
-    data.GetFilenames(&filenames);
+    if (std::optional<std::vector<ui::FileInfo>> file_info =
+            data.GetFilenames();
+        file_info.has_value()) {
+      std::ranges::move(file_info.value(), std::back_inserter(filenames));
+    }
   }
+
   if (!filenames.empty()) {
     data_callbacks_.emplace(
         uri_list_mime_type,

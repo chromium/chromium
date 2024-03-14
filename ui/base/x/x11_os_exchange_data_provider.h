@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
       FilenameToURLPolicy policy) const override;
   std::optional<std::vector<GURL>> GetURLs(
       FilenameToURLPolicy policy) const override;
-  bool GetFilenames(std::vector<FileInfo>* filenames) const override;
+  std::optional<std::vector<FileInfo>> GetFilenames() const override;
   bool GetPickledData(const ClipboardFormatType& format,
                       base::Pickle* pickle) const override;
   bool HasString() const override;

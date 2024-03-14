@@ -706,48 +706,52 @@ void WebContentsViewAura::PrepareDropData(
 #endif
   drop_data->is_from_privileged = data.IsFromPrivileged();
 
-  if (std::optional<std::u16string> result = data.GetString();
-      result.has_value() && !result->empty()) {
-    drop_data->text = std::move(*result);
+  if (std::optional<std::u16string> string = data.GetString();
+      string.has_value() && !string->empty()) {
+    drop_data->text = std::move(*string);
   }
 
-  if (std::optional<ui::OSExchangeData::UrlInfo> result = data.GetURLAndTitle(
+  if (std::optional<ui::OSExchangeData::UrlInfo> url = data.GetURLAndTitle(
           ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
-      result.has_value() && result->url.is_valid()) {
-    drop_data->url = std::move(result->url);
-    drop_data->url_title = std::move(result->title);
+      url.has_value() && url->url.is_valid()) {
+    drop_data->url = std::move(url->url);
+    drop_data->url_title = std::move(url->title);
   }
 
-  std::optional<ui::OSExchangeData::HtmlInfo> html_content = data.GetHtml();
-  if (html_content.has_value()) {
-    drop_data->html = html_content->html;
-    if (html_content->base_url.is_valid()) {
-      drop_data->html_base_url = html_content->base_url;
+  if (std::optional<ui::OSExchangeData::HtmlInfo> html = data.GetHtml();
+      html.has_value()) {
+    drop_data->html = html->html;
+    if (html->base_url.is_valid()) {
+      drop_data->html_base_url = html->base_url;
     }
   }
 
-  // Only add FileContents if Filenames is empty to avoid duplicates
-  // (https://crbug.com/1251482). We prefer filenames since it supports multiple
-  // files and does not send all file data upfront.
-  // Do not add FileContents if this is a tainted-cross-origin same-page image
-  // (https://crbug.com/1264873).
-  bool access_allowed =
-      // Drag began in this top-level WebContents, and image access is allowed
-      // (not cross-origin).
-      drag_security_info_.IsImageAccessibleFromFrame();
-  data.GetFilenames(&drop_data->filenames);
-  if (access_allowed && drop_data->filenames.empty()) {
-    std::optional<ui::OSExchangeData::FileContentsInfo> file_contents =
-        data.GetFileContents();
-    if (file_contents.has_value()) {
-      drop_data->file_contents = std::move(file_contents->file_contents);
-      drop_data->file_contents_image_accessible = true;
-      drop_data->file_contents_source_url =
-          GURL(ui::FilePathToFileURL(file_contents->filename));
-      base::FilePath::StringType extension =
-          file_contents->filename.Extension();
-      if (!extension.empty()) {
-        drop_data->file_contents_filename_extension = extension.substr(1);
+  if (std::optional<std::vector<ui::FileInfo>> filenames = data.GetFilenames();
+      filenames.has_value()) {
+    drop_data->filenames = filenames.value();
+  } else {
+    // Only add FileContents if Filenames is empty to avoid duplicates
+    // (https://crbug.com/1251482). We prefer filenames since it supports
+    // multiple files and does not send all file data upfront. Do not add
+    // FileContents if this is a tainted-cross-origin same-page image
+    // (https://crbug.com/1264873).
+    bool access_allowed =
+        // Drag began in this top-level WebContents, and image access is allowed
+        // (not cross-origin).
+        drag_security_info_.IsImageAccessibleFromFrame();
+    if (access_allowed) {
+      if (std::optional<ui::OSExchangeData::FileContentsInfo> file_contents =
+              data.GetFileContents();
+          file_contents.has_value()) {
+        drop_data->file_contents = std::move(file_contents->file_contents);
+        drop_data->file_contents_image_accessible = true;
+        drop_data->file_contents_source_url =
+            GURL(ui::FilePathToFileURL(file_contents->filename));
+        base::FilePath::StringType extension =
+            file_contents->filename.Extension();
+        if (!extension.empty()) {
+          drop_data->file_contents_filename_extension = extension.substr(1);
+        }
       }
     }
   }
@@ -757,9 +761,9 @@ void WebContentsViewAura::PrepareDropData(
   // (will return empty vector if there are any non-virtual files in the data
   // store).
   if (ShouldIncludeVirtualFiles(*drop_data)) {
-    std::optional<std::vector<ui::FileInfo>> virtual_filenames =
-        data.GetVirtualFilenames();
-    if (virtual_filenames) {
+    if (std::optional<std::vector<ui::FileInfo>> virtual_filenames =
+            data.GetVirtualFilenames();
+        virtual_filenames.has_value()) {
       base::ranges::move(virtual_filenames.value(),
                          std::back_inserter(drop_data->filenames));
     }

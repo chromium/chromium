@@ -609,11 +609,13 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedUriList) {
       EXPECT_FALSE(drop_handler_->dropped_data()->HasFile());
     } else {
       EXPECT_TRUE(drop_handler_->dropped_data()->HasFile());
-      std::vector<FileInfo> filenames;
-      EXPECT_TRUE(drop_handler_->dropped_data()->GetFilenames(&filenames));
-      EXPECT_EQ(filenames.size(), kCase.expected_uris.size());
-      for (const auto& filename : filenames)
+      std::optional<std::vector<FileInfo>> filenames =
+          drop_handler_->dropped_data()->GetFilenames();
+      ASSERT_TRUE(filenames.has_value());
+      EXPECT_EQ(filenames->size(), kCase.expected_uris.size());
+      for (const auto& filename : filenames.value()) {
         EXPECT_EQ(kCase.expected_uris.count(filename.path.AsUTF8Unsafe()), 1U);
+      }
     }
 
     EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(AtMost(1));

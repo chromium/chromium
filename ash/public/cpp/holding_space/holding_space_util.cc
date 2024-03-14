@@ -8,10 +8,12 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 
@@ -30,16 +32,12 @@ std::vector<base::FilePath> ExtractFilePathsFromFilenames(
     return paths;
   }
 
-  std::vector<ui::FileInfo> filenames;
-  if (!data.GetFilenames(&filenames)) {
+  std::optional<std::vector<ui::FileInfo>> filenames = data.GetFilenames();
+  if (!filenames.has_value()) {
     return paths;
   }
 
-  for (const ui::FileInfo& filename : filenames) {
-    paths.emplace_back(filename.path);
-  }
-
-  return paths;
+  return base::ToVector(filenames.value(), &ui::FileInfo::path);
 }
 
 // TODO(http://b/279031685): Ask Files app team to own a util API for this.

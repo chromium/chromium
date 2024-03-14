@@ -92,9 +92,9 @@ TEST(OSExchangeDataProviderNonBackedTest, FileNameCloneTest) {
   original.SetFilename(base::FilePath(kFileName));
 
   std::unique_ptr<OSExchangeDataProvider> copy = original.Clone();
-  std::vector<FileInfo> filenames;
-  EXPECT_TRUE(copy->GetFilenames(&filenames));
-  EXPECT_EQ(base::FilePath(kFileName), filenames[0].path);
+  std::optional<std::vector<FileInfo>> filenames = copy->GetFilenames();
+  ASSERT_TRUE(filenames.has_value());
+  EXPECT_EQ(base::FilePath(kFileName), filenames.value()[0].path);
 }
 
 }  // namespace ui

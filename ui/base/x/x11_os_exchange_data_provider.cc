@@ -329,26 +329,28 @@ std::optional<std::vector<GURL>> XOSExchangeDataProvider::GetURLs(
   return std::nullopt;
 }
 
-bool XOSExchangeDataProvider::GetFilenames(
-    std::vector<FileInfo>* filenames) const {
+std::optional<std::vector<FileInfo>> XOSExchangeDataProvider::GetFilenames()
+    const {
   std::vector<x11::Atom> url_atoms = ui::GetURIListAtomsFrom();
   std::vector<x11::Atom> requested_types;
   GetAtomIntersection(url_atoms, GetTargets(), &requested_types);
 
-  filenames->clear();
   ui::SelectionData data(format_map_.GetFirstOf(requested_types));
-  if (data.IsValid()) {
-    std::vector<std::string> tokens = ui::ParseURIList(data);
-    for (const std::string& token : tokens) {
-      GURL url(token);
-      base::FilePath file_path;
-      if (url.SchemeIsFile() && net::FileURLToFilePath(url, &file_path)) {
-        filenames->push_back(FileInfo(file_path, base::FilePath()));
-      }
+  if (!data.IsValid()) {
+    return std::nullopt;
+  }
+
+  std::vector<FileInfo> filenames;
+  std::vector<std::string> tokens = ui::ParseURIList(data);
+  for (const std::string& token : tokens) {
+    GURL url(token);
+    base::FilePath file_path;
+    if (url.SchemeIsFile() && net::FileURLToFilePath(url, &file_path)) {
+      filenames.emplace_back(file_path, base::FilePath());
     }
   }
 
-  return !filenames->empty();
+  return filenames;
 }
 
 bool XOSExchangeDataProvider::GetPickledData(const ClipboardFormatType& format,

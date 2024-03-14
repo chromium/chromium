@@ -174,7 +174,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
       FilenameToURLPolicy policy) const override;
   std::optional<std::vector<GURL>> GetURLs(
       FilenameToURLPolicy policy) const override;
-  bool GetFilenames(std::vector<FileInfo>* filenames) const override;
+  std::optional<std::vector<FileInfo>> GetFilenames() const override;
   bool HasVirtualFilenames() const override;
   std::optional<std::vector<FileInfo>> GetVirtualFilenames() const override;
   void GetVirtualFilesAsTempFiles(
