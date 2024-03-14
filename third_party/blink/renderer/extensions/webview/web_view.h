@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_get_media_integrity_token_provider_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/extensions/webview/extensions_webview_export.h"
@@ -24,6 +25,11 @@ class EXTENSIONS_WEBVIEW_EXPORT WebView : public ScriptWrappable,
   static WebView& From(ExecutionContext&);
 
   explicit WebView(ExecutionContext&);
+
+  ScriptPromise getExperimentalMediaIntegrityTokenProvider(
+      ScriptState* script_state,
+      GetMediaIntegrityTokenProviderParams* params,
+      ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 };

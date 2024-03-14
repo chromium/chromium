@@ -20,21 +20,37 @@ config("extensions_webview_implementation") {
   defines = [ "BLINK_EXTENSIONS_WEBVIEW_IMPLEMENTATION=1" ]
 }
 
+blink_extensions_webview_sources("webview_extension") {
+  sources = [
+    "android.cc",
+    "android.h",
+    "extensions_webview_export.h",
+    "media_integrity/media_integrity_error.cc",
+    "media_integrity/media_integrity_error.h",
+    "media_integrity/media_integrity_token_provider.cc",
+    "media_integrity/media_integrity_token_provider.h",
+    "web_view.cc",
+    "web_view.h",
+    "webview_extensions.cc",
+    "webview_extensions.h",
+  ]
+
+  deps = [
+    "//third_party/blink/renderer/bindings:generate_bindings_all",
+    "//third_party/blink/renderer/platform",
+    "//v8",
+  ]
+}
+
 component("webview") {
   output_name = "blink_extensions_webview"
 
   visibility = []  # Allow re-assignment of list.
   visibility = [ "//third_party/blink/*" ]
 
-  sources = [
-    "android.cc",
-    "android.h",
-    "extensions_webview_export.h",
-    "web_view.cc",
-    "web_view.h",
-    "webview_extensions.cc",
-    "webview_extensions.h",
-  ]
+  # Sources are implemented in :webview_extension so they can be shared with
+  # sub-directories.
+  sources = []
 
   # This sets the default list of configs when the blink_modules_sources target
   # is defined. The default_compiler_configs comes from BUILDCONFIG.gn and
@@ -52,6 +68,9 @@ component("webview") {
     "//third_party/blink/renderer/modules",
   ]
 
-  public_deps =
-      [ "//third_party/blink/renderer/bindings/extensions/v8:v8_webview" ]
+  public_deps = [
+    # Allow third_party/blink/renderer/controller to depend on the :webview target
+    ":webview_extension",
+    "//third_party/blink/renderer/bindings/extensions/v8:v8_webview",
+  ]
 }
