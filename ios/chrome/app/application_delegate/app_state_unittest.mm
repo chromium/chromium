@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
+#import "ios/chrome/browser/ui/scoped_iphone_portrait_only/scoped_iphone_portrait_only.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -52,6 +53,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 // Subclass of AppState that allow returning a fake list of connected scenes.
 @interface TestAppState : AppState
@@ -642,4 +644,29 @@ TEST_F(AppStateTest,
   [appState queueTransitionToNextInitStage];
   [observer1 verify];
   [observer2 verify];
+}
+
+// Tests, on iPhone, that when ScopedIphonePortraitOnly is created,
+// `-AppState.portraitOnly` returns YES.
+TEST_F(AppStateTest, BlockIphonePortraitOnly) {
+  AppState* appState = GetAppStateWithMock();
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+    [[[GetWindowMock() stub] andReturn:nil] rootViewController];
+    SwizzleSafeModeShouldStart(NO);
+
+    [[[GetStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
+    [[GetStartupInformationMock() stub] setIsFirstRun:YES];
+    [[[GetStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
+
+    // Simulate finishing the initialization before going to background.
+    [GetAppStateWithMock() startInitialization];
+    [GetAppStateWithMock() queueTransitionToNextInitStage];
+
+    ASSERT_FALSE(appState.portraitOnly);
+    std::unique_ptr<ScopedIphonePortraitOnly> scopedIphonePortraitOnly =
+        std::make_unique<ScopedIphonePortraitOnly>(appState);
+    ASSERT_TRUE(appState.portraitOnly);
+    scopedIphonePortraitOnly.reset();
+    ASSERT_FALSE(appState.portraitOnly);
+  }
 }

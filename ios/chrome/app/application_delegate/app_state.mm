@@ -142,6 +142,9 @@ void FlushCookieStoreOnIOThread(
   // -applicationDidEnterBackground: can be called twice.
   // TODO(crbug.com/546196): Remove this once rdar://22392526 is fixed.
   BOOL _applicationInBackground;
+  // The counter of the number of views which want to block the screen to
+  // portrait mode for iPhone. This counter should always be 0 for iPad.
+  NSUInteger _iphonePortraitOnlyCounter;
 }
 
 @synthesize userInteracted = _userInteracted;
@@ -217,7 +220,9 @@ void FlushCookieStoreOnIOThread(
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return NO;
   }
-
+  if (_iphonePortraitOnlyCounter > 0) {
+    return YES;
+  }
   // Return YES if the First Run UI is showing.
   return self.initStage > InitStageSafeMode &&
          self.initStage <= InitStageFirstRun &&
@@ -615,6 +620,17 @@ void FlushCookieStoreOnIOThread(
     self.needsIncrementInitStage = NO;
     [self queueTransitionToNextInitStage];
   }
+}
+
+#pragma mark - IphonePortraitOnlyManager
+
+- (void)incrementIphonePortraitOnlyCounter {
+  ++_iphonePortraitOnlyCounter;
+}
+
+- (void)decrementIphonePortraitOnlyCounter {
+  CHECK_GT(_iphonePortraitOnlyCounter, 0ul);
+  --_iphonePortraitOnlyCounter;
 }
 
 #pragma mark - UIBlockerManager

@@ -10,6 +10,7 @@
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/ui/scoped_iphone_portrait_only/iphone_portrait_only_manager.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
 
 @class AppState;
@@ -42,7 +43,8 @@ enum class PostCrashAction {
 
 // Represents the application state and responds to application state changes
 // and system events.
-@interface AppState : NSObject <UIBlockerManager, SceneStateObserver>
+@interface AppState
+    : NSObject <IphonePortraitOnlyManager, SceneStateObserver, UIBlockerManager>
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -96,6 +98,7 @@ enum class PostCrashAction {
 
 // YES if the application is getting terminated.
 @property(nonatomic, readonly) BOOL appIsTerminating;
+@property(nonatomic, assign, readwrite) BOOL overridePortraitOnly;
 
 // Logs duration of the session and records that chrome is no longer in cold
 // start.

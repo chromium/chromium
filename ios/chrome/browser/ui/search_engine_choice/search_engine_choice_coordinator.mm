@@ -8,14 +8,18 @@
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
+#import "ios/chrome/browser/ui/scoped_iphone_portrait_only/scoped_iphone_portrait_only.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_coordinator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_mediator.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_view_controller.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface SearchEngineChoiceCoordinator () <
@@ -34,7 +38,9 @@
   // Whether the screen is being shown in the FRE.
   BOOL _firstRun;
   // First run screen delegate.
-  __weak id<FirstRunScreenDelegate> _first_run_delegate;
+  __weak id<FirstRunScreenDelegate> _firstRunDelegate;
+  // Force iPhone to be in portrait only for this coordinator.
+  std::unique_ptr<ScopedIphonePortraitOnly> _scopedIphonePortraitOnly;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -58,7 +64,7 @@
   if (self) {
     _baseNavigationController = navigationController;
     _firstRun = YES;
-    _first_run_delegate = delegate;
+    _firstRunDelegate = delegate;
   }
   return self;
 }
@@ -84,6 +90,11 @@
         search_engines::SearchEngineChoiceScreenEvents::
             kFreChoiceScreenWasDisplayed);
   } else {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
+      AppState* appState = self.browser->GetSceneState().appState;
+      _scopedIphonePortraitOnly =
+          std::make_unique<ScopedIphonePortraitOnly>(appState);
+    }
     [self.baseViewController presentViewController:_viewController
                                           animated:YES
                                         completion:nil];
@@ -108,7 +119,8 @@
   _viewController.mutator = nil;
   _viewController = nil;
   _baseNavigationController = nil;
-  _first_run_delegate = nil;
+  _firstRunDelegate = nil;
+  _scopedIphonePortraitOnly.reset();
   [super stop];
 }
 
@@ -156,7 +168,7 @@
 
 - (void)dismissChoiceScreen {
   if (_firstRun) {
-    [_first_run_delegate screenWillFinishPresenting];
+    [_firstRunDelegate screenWillFinishPresenting];
   } else {
     [self.delegate choiceScreenWillBeDismissed:self];
   }

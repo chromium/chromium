@@ -137,6 +137,7 @@ source_set("app_state_header") {
   ]
   public_deps = [
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/ui/scoped_iphone_portrait_only",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
   ]
 }
@@ -211,6 +212,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/tabs/model/inactive_tabs",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/main",
+    "//ios/chrome/browser/ui/scoped_iphone_portrait_only",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/web_state_list/model:session_metrics",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
