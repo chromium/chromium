@@ -85,6 +85,8 @@ source_set("app_list") {
     "views/app_list_view_util.h",
     "views/apps_collection_section_view.cc",
     "views/apps_collection_section_view.h",
+    "views/apps_collections_dismiss_dialog.cc",
+    "views/apps_collections_dismiss_dialog.h",
     "views/apps_container_view.cc",
     "views/apps_container_view.h",
     "views/apps_grid_context_menu.cc",

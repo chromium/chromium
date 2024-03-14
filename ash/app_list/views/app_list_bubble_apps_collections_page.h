@@ -25,6 +25,8 @@ namespace ash {
 class RoundedScrollBar;
 class AppListConfig;
 class AppListNudgeController;
+class AppsGridContextMenu;
+class SearchResultPageDialogController;
 
 // A page for the bubble / clamshell launcher. Contains a scroll view with
 // subsections of apps, one per each category of the Apps Collections. It also
@@ -37,10 +39,12 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   METADATA_HEADER(AppListBubbleAppsCollectionsPage, views::View)
 
  public:
-  AppListBubbleAppsCollectionsPage(AppListViewDelegate* view_delegate,
-                                   AppListConfig* app_list_config,
-                                   AppListA11yAnnouncer* a11y_announcer,
-                                   base::OnceClosure exit_page_callback);
+  AppListBubbleAppsCollectionsPage(
+      AppListViewDelegate* view_delegate,
+      AppListConfig* app_list_config,
+      AppListA11yAnnouncer* a11y_announcer,
+      SearchResultPageDialogController* dialog_controller,
+      base::OnceClosure exit_page_callback);
   AppListBubbleAppsCollectionsPage(const AppListBubbleAppsCollectionsPage&) =
       delete;
   AppListBubbleAppsCollectionsPage& operator=(
@@ -63,6 +67,9 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   void OnActiveAppListModelsChanged(AppListModel* model,
                                     SearchModel* search_model) override;
 
+  // Updates the controller that the page uses to show dialogs.
+  void SetDialogController(SearchResultPageDialogController* dialog_controller);
+
   // Which layer animates is an implementation detail.
   ui::Layer* GetPageAnimationLayerForTest();
 
@@ -70,6 +77,8 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   AppListToastContainerView* GetToastContainerViewForTest();
 
   views::ScrollView* scroll_view() { return scroll_view_; }
+
+  AppsGridContextMenu* context_menu_for_test() { return context_menu_.get(); }
 
  private:
   friend class AppListTestHelper;
@@ -80,6 +89,13 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
 
   void PopulateCollections(AppListModel* model);
 
+  // Invoked when the user attempts to sort apps from the AppsCollection page.
+  void RequestAppReorder(AppListSortOrder order);
+
+  // Invoked when the user causes the dismissal of the AppsCollections page by
+  // reordering the apps.
+  void DismissPageAndReorder(AppListSortOrder order);
+
   const raw_ptr<AppListViewDelegate> view_delegate_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<RoundedScrollBar> scroll_bar_ = nullptr;
@@ -87,7 +103,11 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   raw_ptr<views::View> sections_container_ = nullptr;
   const raw_ptr<AppListConfig> app_list_config_;
 
+  raw_ptr<SearchResultPageDialogController> dialog_controller_ = nullptr;
+
   std::unique_ptr<AppListNudgeController> app_list_nudge_controller_;
+
+  std::unique_ptr<AppsGridContextMenu> context_menu_;
 
   // A callback invoked when the nudge on this page is removed/dismissed.
   base::OnceClosure exit_page_callback_;

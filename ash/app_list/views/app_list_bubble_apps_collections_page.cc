@@ -16,9 +16,14 @@
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/apps_collection_section_view.h"
+#include "ash/app_list/views/apps_collections_dismiss_dialog.h"
+#include "ash/app_list/views/apps_grid_context_menu.h"
+#include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/app_menu_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -66,15 +71,48 @@ constexpr base::TimeDelta kShowPageAnimationDelay = base::Milliseconds(50);
 constexpr base::TimeDelta kShowPageAnimationOpacityDuration =
     base::Milliseconds(100);
 
+// A context menu definition for AppListBubbleAppsCollectionsPage. The menu will
+// be the same as the regular AppsGridContextMenu, however the action executed
+// will be delegated to the AppListBubbleAppsCollectionsPage.
+class AppsCollectionsContextMenu : public AppsGridContextMenu {
+ public:
+  using DismissalCallback = base::RepeatingCallback<void(AppListSortOrder)>;
+  explicit AppsCollectionsContextMenu(DismissalCallback callback)
+      : callback_(std::move(callback)) {}
+  AppsCollectionsContextMenu(const AppsCollectionsContextMenu&) = delete;
+  AppsCollectionsContextMenu& operator=(const AppsCollectionsContextMenu&) =
+      delete;
+  ~AppsCollectionsContextMenu() override = default;
+
+  // AppsGridContextMenu:
+  void ExecuteCommand(int command_id, int event_flags) override {
+    switch (command_id) {
+      case REORDER_BY_NAME_ALPHABETICAL:
+        callback_.Run(AppListSortOrder::kNameAlphabetical);
+        break;
+      case REORDER_BY_COLOR:
+        callback_.Run(AppListSortOrder::kColor);
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
+ private:
+  DismissalCallback callback_;
+};
+
 }  // namespace
 
 AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
     AppListViewDelegate* view_delegate,
     AppListConfig* app_list_config,
     AppListA11yAnnouncer* a11y_announcer,
+    SearchResultPageDialogController* dialog_controller,
     base::OnceClosure exit_page_callback)
     : view_delegate_(view_delegate),
       app_list_config_(app_list_config),
+      dialog_controller_(dialog_controller),
       app_list_nudge_controller_(std::make_unique<AppListNudgeController>()),
       exit_page_callback_(std::move(exit_page_callback)) {
   AppListModelProvider::Get()->AddObserver(this);
@@ -137,6 +175,11 @@ AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
   toast_container_->CreateTutorialNudgeView();
   toast_container_->UpdateVisibilityState(
       AppListToastContainerView::VisibilityState::kShown);
+
+  context_menu_ = std::make_unique<AppsCollectionsContextMenu>(
+      base::BindRepeating(&AppListBubbleAppsCollectionsPage::RequestAppReorder,
+                          weak_factory_.GetWeakPtr()));
+  set_context_menu_controller(context_menu_.get());
 }
 
 AppListBubbleAppsCollectionsPage::~AppListBubbleAppsCollectionsPage() {
@@ -266,6 +309,11 @@ void AppListBubbleAppsCollectionsPage::OnActiveAppListModelsChanged(
   PopulateCollections(model);
 }
 
+void AppListBubbleAppsCollectionsPage::SetDialogController(
+    SearchResultPageDialogController* dialog_controller) {
+  dialog_controller_ = dialog_controller;
+}
+
 void AppListBubbleAppsCollectionsPage::PopulateCollections(
     AppListModel* model) {
   sections_container_->RemoveAllChildViews();
@@ -282,6 +330,28 @@ void AppListBubbleAppsCollectionsPage::PopulateCollections(
     collection_view->UpdateAppListConfig(app_list_config_);
     collection_view->SetModel(model);
   }
+}
+
+void AppListBubbleAppsCollectionsPage::RequestAppReorder(
+    AppListSortOrder order) {
+  CHECK(dialog_controller_);
+
+  std::unique_ptr<views::WidgetDelegate> dialog =
+      std::make_unique<AppsCollectionsDismissDialog>(base::BindOnce(
+          &AppListBubbleAppsCollectionsPage::DismissPageAndReorder,
+          weak_factory_.GetWeakPtr(), order));
+  dialog_controller_->Show(std::move(dialog));
+}
+
+void AppListBubbleAppsCollectionsPage::DismissPageAndReorder(
+    AppListSortOrder order) {
+  AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(order);
+
+  AppsCollectionsController::Get()->SetAppsCollectionDismissed();
+
+  CHECK(exit_page_callback_);
+
+  std::move(exit_page_callback_).Run();
 }
 
 BEGIN_METADATA(AppListBubbleAppsCollectionsPage)

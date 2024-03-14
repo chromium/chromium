@@ -265,6 +265,10 @@ AppListBubbleView::~AppListBubbleView() {
   // (associated with the folder), so destroy it before the root apps grid view.
   delete folder_view_;
   folder_view_ = nullptr;
+
+  // Reset the dialog_controller for the AppsCollections page to prevent it from
+  // dangling at destruction after the views are removed.
+  apps_collections_page_->SetDialogController(nullptr);
 }
 
 void AppListBubbleView::UpdateSuggestions() {
@@ -326,6 +330,7 @@ void AppListBubbleView::InitContentsView(
   apps_collections_page_ = pages_container->AddChildView(
       std::make_unique<AppListBubbleAppsCollectionsPage>(
           view_delegate_, GetAppListConfig(), a11y_announcer_.get(),
+          search_page_dialog_controller_.get(),
           base::BindOnce(&AppListBubbleView::ShowPage,
                          weak_factory_.GetWeakPtr(),
                          AppListBubblePage::kApps)));
