@@ -522,6 +522,9 @@ public class SyncPromoController {
         boolean launchSigninFlow =
                 shouldLaunchSigninFlow(
                         mAccessPoint, identityManager, signinManager, accounts, prefService);
+        if (launchSigninFlow) {
+            view.getDescription().setText(R.string.signin_promo_description_bookmarks);
+        }
         view.getPrimaryButton()
                 .setOnClickListener(v -> signinWithDefaultAccount(context, launchSigninFlow));
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {

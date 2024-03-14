@@ -38,7 +38,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -60,17 +60,18 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.Wi
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.util.List;
@@ -80,10 +81,6 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncPromoControllerUITest {
-    @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
-            new NightModeTestUtils.NightModeParams().getParameters();
-
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
             new AutomotiveContextWrapperTestRule();
@@ -102,10 +99,6 @@ public class SyncPromoControllerUITest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final ChromeTabbedActivityTestRule mChromeActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
-    @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
@@ -114,20 +107,9 @@ public class SyncPromoControllerUITest {
 
     @Before
     public void setUp() {
-        // TODO(crbug.com/1297981): Remove dependency on ChromeTabbedActivityTestRule.
-        // Starting ChromeTabbedActivityTestRule to initialize the browser, which is needed when
-        // SyncPromoController.setUpSyncPromoView() is called.
-        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mActivityTestRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
-    }
-
-    /**
-     * @param nightModeEnabled A nitght mode flag injected by @ParameterAnnotations.ClassParameter.
-     */
-    public SyncPromoControllerUITest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
-        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
     @Test
@@ -150,6 +132,7 @@ public class SyncPromoControllerUITest {
 
     @Test
     @MediumTest
+    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
     public void testBookmarkSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
@@ -229,7 +212,7 @@ public class SyncPromoControllerUITest {
                 profileDataCache,
                 R.layout.sync_promo_view_bookmarks);
         onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
-        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_description_bookmarks)).check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
 
         onView(withId(R.id.sync_promo_signin_button)).perform(click());
@@ -315,7 +298,7 @@ public class SyncPromoControllerUITest {
                 profileDataCache,
                 R.layout.sync_promo_view_bookmarks);
         onView(withText(R.string.sync_promo_title_bookmarks)).check(matches(isDisplayed()));
-        onView(withText(R.string.sync_promo_description_bookmarks)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_promo_description_bookmarks)).check(matches(isDisplayed()));
         onView(withId(R.id.sync_promo_close_button)).check(matches(isDisplayed()));
 
         onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
@@ -473,7 +456,10 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testNTPSyncPromoViewSignedOutAndNoAccountAvailable() throws Throwable {
+    @UseMethodParameter(NightModeParams.class)
+    public void testNTPSyncPromoViewSignedOutAndNoAccountAvailable(boolean nightModeEnabled)
+            throws Throwable {
+        setUpNightMode(nightModeEnabled);
         ProfileDataCache profileDataCache =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> {
@@ -493,7 +479,10 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testNTPSyncPromoViewSignedOutAndAccountAvailable() throws Throwable {
+    @UseMethodParameter(NightModeParams.class)
+    public void testNTPSyncPromoViewSignedOutAndAccountAvailable(boolean nightModeEnabled)
+            throws Throwable {
+        setUpNightMode(nightModeEnabled);
         mSigninTestRule.addAccount(TEST_EMAIL);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
         View view =
@@ -508,7 +497,10 @@ public class SyncPromoControllerUITest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testNTPSyncPromoViewSignedInAndNotSyncing() throws Throwable {
+    @UseMethodParameter(NightModeParams.class)
+    public void testNTPSyncPromoViewSignedInAndNotSyncing(boolean nightModeEnabled)
+            throws Throwable {
+        setUpNightMode(nightModeEnabled);
         CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(TEST_EMAIL);
         SigninTestUtil.signin(coreAccountInfo);
         ProfileDataCache profileDataCache = createProfileDataCacheAndWaitForAccountData();
@@ -574,5 +566,10 @@ public class SyncPromoControllerUITest {
                             return promoView;
                         });
         return view;
+    }
+
+    private void setUpNightMode(boolean nightModeEnabled) {
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 }
