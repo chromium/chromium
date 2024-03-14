@@ -138,9 +138,9 @@ build_webui("build") {
             "$root_gen_dir/chrome/browser/resources/settings_shared/tsc/*",
             target_gen_dir) ]
 
+  webui_host = "password-manager"
   optimize = optimize_webui
   if (optimize) {
-    optimize_webui_host = "password-manager"
     optimize_webui_in_files = [ "password_manager.js" ]
     optimize_webui_external_paths =
         [ "/shared/settings|" + rebase_path(

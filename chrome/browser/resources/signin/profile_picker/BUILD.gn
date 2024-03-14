@@ -56,9 +56,9 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
+  webui_host = "profile-picker"
   optimize = optimize_webui
   if (optimize) {
-    optimize_webui_host = "profile-picker"
     optimize_webui_in_files = [
       "profile_picker.js",
       "lazy_load.js",

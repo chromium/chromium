@@ -294,10 +294,10 @@ template("build_webui") {
       ts_deps = invoker.ts_deps
       visibility = [ ":build_ts" ]
 
-      if (defined(invoker.optimize_webui_host)) {
-        is_untrusted = string_replace(invoker.optimize_webui_host,
-                                      "chrome-untrusted://",
-                                      "") != invoker.optimize_webui_host
+      if (defined(invoker.webui_host)) {
+        is_untrusted =
+            string_replace(invoker.webui_host, "chrome-untrusted://", "") !=
+            invoker.webui_host
       }
     }
   }
@@ -412,7 +412,7 @@ template("build_webui") {
   if (bundle) {
     bundle_js("build_bundle") {
       visibility = [ ":build_min_js" ]
-      host = invoker.optimize_webui_host
+      host = invoker.webui_host
       input = rebase_path(ts_out_dir, root_build_dir)
       js_module_in_files = invoker.optimize_webui_in_files
       out_folder = "$target_gen_dir/bundled"

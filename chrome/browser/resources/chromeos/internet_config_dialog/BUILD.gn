@@ -14,16 +14,16 @@ build_webui("build") {
   ts_composite = true
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_host = "internet-config-dialog"
   optimize = optimize_webui
   if (optimize) {
-    optimize_webui_host = "internet-config-dialog"
     optimize_webui_in_files = [ "internet_config_dialog.js" ]
     optimize_webui_excludes = [
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",

@@ -61,9 +61,9 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
+  webui_host = "history"
   optimize = optimize_webui
   if (optimize) {
-    optimize_webui_host = "history"
     optimize_webui_in_files = [
       "history.js",
       "lazy_load.js",

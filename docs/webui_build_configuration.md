@@ -604,17 +604,20 @@ optimize: Specifies whether any optimization steps will be used. Defaults to the
           When true, minify_js() will be invoked to minify JS code (using Terser).
           If |optimize_webui_in_files| is provided then bundle_js() will also be
           invoked to bundle JS code (using Rollup).
-          |optimize_webui_host| must be specified if |optimize_webui_in_files|
+          |webui_host| must be specified if |optimize_webui_in_files|
           is provided.
 optimize_webui_excludes: See |excludes| in bundle_js(). Optional.
 optimize_webui_external_paths: See |external_paths| in optimize_webui().
                                Optional.
-optimize_webui_host: See |host| in bundle_js(). Also used to determine whether
-                     the UI is untrusted, to set |is_untrusted| for
-                     webui_path_mappings().
 optimize_webui_in_files: See |in_files| in bundle_js().
 
 Other params:
+webui_host: Used to determine whether the UI is untrusted, to set
+            |is_untrusted| for webui_path_mappings(). When |optimize| is set
+            to true, also used for bundling; see |host| in bundle_js().
+            Required when |optimize| is set. Optional otherwise. If this
+            parameter is not set and |ts_deps| are non-empty, a chrome://
+            context will be assumed for import path mappings.
 generate_grdp: Whether to generate grdp file instead of a grd file. Defaults to
                false.
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.
