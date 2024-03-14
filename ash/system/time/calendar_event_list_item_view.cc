@@ -115,7 +115,7 @@ class CalendarEventListItemDot : public views::View {
 
  private:
   std::string_view LookupColorId(std::string color_id) {
-    const auto* iter = kEventHexColorCodes.find(color_id);
+    const auto iter = kEventHexColorCodes.find(color_id);
     if (iter == kEventHexColorCodes.end()) {
       return kEventHexColorCodes.at(kDefaultColorId);
     }

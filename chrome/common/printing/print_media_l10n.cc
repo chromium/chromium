@@ -720,7 +720,7 @@ MediaSizeInfo InfoForStandardSize(const gfx::Size& size) {
         return result < 0;
       });
 
-  auto* it = kMediaMap.find(
+  auto it = kMediaMap.find(
       {size.width() / kMicronsPerPwgUnit, size.height() / kMicronsPerPwgUnit});
   return it != kMediaMap.end()
              ? MediaSizeInfo{std::string(it->second.vendor_id),

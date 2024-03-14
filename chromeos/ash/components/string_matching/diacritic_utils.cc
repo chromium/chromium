@@ -54,7 +54,7 @@ const std::u16string RemoveDiacritics(const std::u16string& str) {
 
   std::u16string result;
   for (auto letter : str) {
-    auto* it = kConversionMap.find(letter);
+    auto it = kConversionMap.find(letter);
     result.push_back(it == kConversionMap.end() ? letter : it->second);
   }
   return result;

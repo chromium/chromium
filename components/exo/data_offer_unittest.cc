@@ -93,31 +93,33 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
 
 bool ReadString(base::ScopedFD fd, std::string* out) {
   std::array<char, 128> buffer;
-  char* it = buffer.begin();
-  while (it != buffer.end()) {
-    int result = read(fd.get(), it, buffer.end() - it);
+  char* it = buffer.data();
+  char* end = it + buffer.size();
+  while (it != end) {
+    int result = read(fd.get(), it, end - it);
     PCHECK(-1 != result);
     if (result == 0)
       break;
     it += result;
   }
   *out = std::string(reinterpret_cast<char*>(buffer.data()),
-                     (it - buffer.begin()) / sizeof(char));
+                     (it - buffer.data()) / sizeof(char));
   return true;
 }
 
 bool ReadString16(base::ScopedFD fd, std::u16string* out) {
   std::array<char, 128> buffer;
-  char* it = buffer.begin();
-  while (it != buffer.end()) {
-    int result = read(fd.get(), it, buffer.end() - it);
+  char* it = buffer.data();
+  char* end = it + buffer.size();
+  while (it != it + buffer.size()) {
+    int result = read(fd.get(), it, end - it);
     PCHECK(-1 != result);
     if (result == 0)
       break;
     it += result;
   }
   *out = std::u16string(reinterpret_cast<char16_t*>(buffer.data()),
-                        (it - buffer.begin()) / sizeof(char16_t));
+                        (it - buffer.data()) / sizeof(char16_t));
   return true;
 }
 

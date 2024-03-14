@@ -288,7 +288,7 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
               remote_cocoa::mojom::ToolbarVisibilityStyle::kAutohide},
              {FullscreenToolbarStyle::TOOLBAR_NONE,
               remote_cocoa::mojom::ToolbarVisibilityStyle::kNone}});
-    const auto* it = kStyleMap.find(new_style);
+    const auto it = kStyleMap.find(new_style);
     remote_cocoa::mojom::ToolbarVisibilityStyle mapped_style =
         it != kStyleMap.end()
             ? it->second

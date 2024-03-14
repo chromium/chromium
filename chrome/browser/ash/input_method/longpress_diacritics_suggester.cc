@@ -125,7 +125,7 @@ std::vector<std::u16string> GetDiacriticsFor(char key_character,
            {'u', u"ú;û;ü;ù;ū"},
            {'U', u"Ú;Û;Ü;Ù;Ū"}});
 
-  if (const auto* it = kUSEnglishDiacriticsMap.find(key_character);
+  if (const auto it = kUSEnglishDiacriticsMap.find(key_character);
       it != kUSEnglishDiacriticsMap.end()) {
     return SplitDiacritics(it->second);
   }

@@ -350,12 +350,12 @@ class OperationRecordTest : public Test {
     // to inline, depending i.e. on the optimization level. Therefore, we search
     // for the first common frame in both stack-traces. From there on, both must
     // be equal for the remaining number of frames.
-    auto* const* const it_stack_trace_begin = std::begin(stack_trace);
-    auto* const* const it_stack_trace_end =
+    auto const it_stack_trace_begin = std::begin(stack_trace);
+    auto const it_stack_trace_end =
         std::find(it_stack_trace_begin, std::end(stack_trace), nullptr);
     auto const it_reference_stack_trace_end = std::end(reference_stack_trace);
 
-    auto* const* it_stack_trace = std::find_first_of(
+    auto const it_stack_trace = std::find_first_of(
         it_stack_trace_begin, it_stack_trace_end,
         std::begin(reference_stack_trace), it_reference_stack_trace_end);
 

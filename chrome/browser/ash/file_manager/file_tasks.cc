@@ -513,7 +513,7 @@ TaskType StringToTaskType(const std::string& str) {
           {kPluginVmAppTaskType,        TASK_TYPE_PLUGIN_VM_APP},
           // clang-format on
       });
-  auto* itr = kStringToTaskTypeMapping.find(str);
+  auto itr = kStringToTaskTypeMapping.find(str);
   if (itr != kStringToTaskTypeMapping.end()) {
     return itr->second;
   }

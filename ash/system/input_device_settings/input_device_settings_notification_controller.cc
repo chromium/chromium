@@ -549,7 +549,7 @@ void InputDeviceSettingsNotificationController::
   CHECK_NE(blocked_modifier, SixPackShortcutModifier::kNone);
   CHECK(ui::KeyboardCapability::IsSixPackKey(key_code));
 
-  auto* it = kSixPackKeyToPrefName.find(key_code);
+  auto it = kSixPackKeyToPrefName.find(key_code);
   CHECK(it != kSixPackKeyToPrefName.end());
   const char* pref = it->second;
   PrefService* prefs =

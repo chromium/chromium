@@ -485,7 +485,7 @@ mojom::KeyEventPtr InputDataProviderKeyboard::ConstructInputKeyEvent(
   }
 
   // Do the same if F1-F15 was pressed.
-  const auto* jter = kFKeyOrder.find(event->key_code);
+  const auto jter = kFKeyOrder.find(event->key_code);
   if (event->top_row_position == -1 && jter != kFKeyOrder.end()) {
     event->top_row_position = jter->second;
   }

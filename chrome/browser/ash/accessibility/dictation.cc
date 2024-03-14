@@ -106,7 +106,7 @@ std::string GetSupportedLocale(const std::string& lang_or_locale) {
            {"cmn-TW", "zh-TW"}});
 
   // First check if this is a language code supported in the map above.
-  auto* iter = kLangsToDefaultLocales.find(lang_or_locale);
+  auto iter = kLangsToDefaultLocales.find(lang_or_locale);
   if (iter != kLangsToDefaultLocales.end())
     return std::string(iter->second);
 

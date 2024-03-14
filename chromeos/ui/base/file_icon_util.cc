@@ -327,7 +327,7 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".TINI", IconType::kTini},
       });
 
-  const auto* const it =
+  const auto it =
       extension_to_icon.find(base::ToUpperASCII(filepath.Extension()));
   if (it != extension_to_icon.end()) {
     return it->second;

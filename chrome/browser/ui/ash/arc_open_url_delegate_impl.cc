@@ -435,7 +435,7 @@ void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
 }
 
 void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {
-  if (auto* it = kOSSettingsMap.find(page); it != kOSSettingsMap.end()) {
+  if (auto it = kOSSettingsMap.find(page); it != kOSSettingsMap.end()) {
     Profile* profile = ProfileManager::GetActiveUserProfile();
     std::string sub_page = it->second;
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
@@ -443,13 +443,13 @@ void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {
     return;
   }
 
-  if (auto* it = kBrowserSettingsMap.find(page);
+  if (auto it = kBrowserSettingsMap.find(page);
       it != kBrowserSettingsMap.end()) {
     OpenUrlFromArc(GURL(chrome::kChromeUISettingsURL).Resolve(it->second));
     return;
   }
 
-  if (auto* it = kAboutPagesMap.find(page); it != kAboutPagesMap.end()) {
+  if (auto it = kAboutPagesMap.find(page); it != kAboutPagesMap.end()) {
     OpenUrlFromArc(GURL(it->second));
     return;
   }

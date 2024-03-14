@@ -421,7 +421,7 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
                           base::CompareCase::SENSITIVE)) {
       continue;
     }
-    const auto* it = kSettingsMap.find(
+    const auto it = kSettingsMap.find(
         std::string_view(item.first).substr(kSettingPrefixSize));
     base::UmaHistogramEnumeration(
         "Crostini.TerminalSettingsChanged",

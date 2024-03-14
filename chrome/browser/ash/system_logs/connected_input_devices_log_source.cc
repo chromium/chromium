@@ -43,7 +43,7 @@ void ConnectedInputDevicesLogSource::ProcessDeviceFillResponse(
   DCHECK(response);
   if (dev.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL)
     return;
-  auto* it = vendor_map.find(dev.vendor_id);
+  auto it = vendor_map.find(dev.vendor_id);
   std::string vendor_name;
   if (it != vendor_map.end())
     vendor_name.assign(static_cast<std::string>(it->second));

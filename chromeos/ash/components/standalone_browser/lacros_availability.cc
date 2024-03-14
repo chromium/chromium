@@ -38,7 +38,7 @@ BASE_FEATURE(kLacrosGooglePolicyRollout,
 
 std::optional<LacrosAvailability> ParseLacrosAvailability(
     std::string_view value) {
-  auto* it = kLacrosAvailabilityMap.find(value);
+  auto it = kLacrosAvailabilityMap.find(value);
   if (it != kLacrosAvailabilityMap.end()) {
     return it->second;
   }

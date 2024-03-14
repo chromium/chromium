@@ -49,7 +49,7 @@ void EmitScreenOpenDuration(const NavigationView screen,
            "ChromeOS.DiagnosticsUi.System.OpenDuration"},
       });
 
-  auto* iter = kOpenDurationMetrics.find(screen);
+  auto iter = kOpenDurationMetrics.find(screen);
   if (iter == kOpenDurationMetrics.end()) {
     NOTREACHED() << "Unknown NavigationView requested";
     return;

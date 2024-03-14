@@ -353,7 +353,7 @@ void FakeLorgnetteScannerManager::SetCancelScanResponse(
 
 void FakeLorgnetteScannerManager::MaybeSetScanDataBasedOnSettings(
     const lorgnette::ScanSettings& settings) {
-  const auto* match =
+  const auto match =
       kScanSettingsToAlphaMap.find(GetScanSettingsMapKey(settings));
   if (match != kScanSettingsToAlphaMap.end()) {
     SetScanResponse(

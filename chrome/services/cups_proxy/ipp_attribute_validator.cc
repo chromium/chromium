@@ -152,7 +152,7 @@ ValidateAttributeResult ValidateAttribute(ipp_op_t ipp_oper_id,
   }
 
   // Ensure |name| refers to an allowed attribute.
-  auto* attr_def = kAttributeDefinitions.find(name);
+  auto attr_def = kAttributeDefinitions.find(name);
   if (attr_def == kAttributeDefinitions.end()) {
     // TODO(crbug.com/945409): Tell caller to drop this attribute.
     return ValidateAttributeResult::kUnknownAttribute;

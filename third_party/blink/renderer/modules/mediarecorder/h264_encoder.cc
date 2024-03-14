@@ -40,7 +40,7 @@ std::optional<EProfileIdc> ToOpenH264Profile(media::VideoCodecProfile profile) {
           {media::H264PROFILE_HIGH, PRO_HIGH},
       });
 
-  const auto* it = kProfileToEProfileIdc.find(profile);
+  const auto it = kProfileToEProfileIdc.find(profile);
   if (it != kProfileToEProfileIdc.end()) {
     return it->second;
   }
@@ -69,7 +69,7 @@ std::optional<ELevelIdc> ToOpenH264Level(uint8_t level) {
           {52, LEVEL_5_2},
       });
 
-  const auto* it = kLevelToELevelIdc.find(level);
+  const auto it = kLevelToELevelIdc.find(level);
   if (it != kLevelToELevelIdc.end())
     return it->second;
   return std::nullopt;

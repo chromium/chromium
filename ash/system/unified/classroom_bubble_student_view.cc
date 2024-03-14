@@ -66,7 +66,7 @@ const char kLastSelectedAssignmentsListPref[] =
 std::u16string GetAssignmentListName(size_t index) {
   CHECK(index >= 0 || index < kStudentAssignmentsListTypeOrdered.size());
 
-  const auto* const iter = kStudentAssignmentsListTypeToLabel.find(
+  const auto iter = kStudentAssignmentsListTypeToLabel.find(
       kStudentAssignmentsListTypeOrdered[index]);
   CHECK(iter != kStudentAssignmentsListTypeToLabel.end());
 
@@ -93,8 +93,8 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
     const auto selected_list_type = static_cast<StudentAssignmentsListType>(
         Shell::Get()->session_controller()->GetActivePrefService()->GetInteger(
             kLastSelectedAssignmentsListPref));
-    const auto* const iter = base::ranges::find(
-        kStudentAssignmentsListTypeOrdered, selected_list_type);
+    const auto iter = base::ranges::find(kStudentAssignmentsListTypeOrdered,
+                                         selected_list_type);
     return iter != kStudentAssignmentsListTypeOrdered.end()
                ? iter - kStudentAssignmentsListTypeOrdered.begin()
                : 0;

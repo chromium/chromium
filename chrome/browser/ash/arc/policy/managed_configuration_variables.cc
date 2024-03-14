@@ -184,7 +184,7 @@ std::string SearchAndReplace(
     // Output the prefix skipped by PartialMatch until |capture| is found.
     DCHECK(capture.begin() >= search_input.begin());
     size_t prefix_size = capture.begin() - search_input.begin();
-    output.emplace_back(search_input.begin(), prefix_size);
+    output.emplace_back(search_input.data(), prefix_size);
     // Output the replacement for |capture|.
     output.emplace_back(replacement_getter.Run(capture));
 
@@ -192,7 +192,8 @@ std::string SearchAndReplace(
     DCHECK(search_input.length() >= prefix_size + capture.length());
     size_t remaining_size =
         search_input.length() - (prefix_size + capture.length());
-    search_input = std::string_view(capture.end(), remaining_size);
+    search_input =
+        std::string_view(capture.data() + capture.size(), remaining_size);
   }
   // Output the remaining |search_input|.
   output.emplace_back(search_input);

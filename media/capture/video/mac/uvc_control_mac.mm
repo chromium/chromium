@@ -663,13 +663,13 @@ bool UvcControl::IsControlAvailable(int control_selector) const {
   }
   size_t bitIndex;
   if (descriptor_subtype_ == uvc::kVcProcessingUnit) {
-    const auto* it = kProcessingUnitControlBitIndexes.find(control_selector);
+    const auto it = kProcessingUnitControlBitIndexes.find(control_selector);
     if (it == kProcessingUnitControlBitIndexes.end()) {
       return false;
     }
     bitIndex = it->second;
   } else if (descriptor_subtype_ == uvc::kVcInputTerminal) {
-    const auto* it = kCameraTerminalControlBitIndexes.find(control_selector);
+    const auto it = kCameraTerminalControlBitIndexes.find(control_selector);
     if (it == kCameraTerminalControlBitIndexes.end()) {
       return false;
     }

@@ -303,7 +303,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"ViewAllApps", IconCode::kKeyboardShortcutAllApps},
        {u"ZoomToggle", IconCode::kKeyboardShortcutZoom}});
 
-  auto* it = kIconCodes.find(key_string);
+  auto it = kIconCodes.find(key_string);
   if (it == kIconCodes.end()) {
     return std::nullopt;
   }

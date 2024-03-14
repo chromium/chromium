@@ -50,7 +50,7 @@ base::FilePath GetDebugdPathOfLog(const base::FilePath& log_file_name) {
            {"messages", "syslog"},
            {"ui.LATEST", "ui_log"},
            {"debug_vboot_noisy.log", "verified boot"}});
-  auto* log_name = kDebugdLogNames.find(log_file_name.value());
+  auto log_name = kDebugdLogNames.find(log_file_name.value());
   return log_name == kDebugdLogNames.end() ? log_file_name
                                            : base::FilePath(log_name->second);
 }

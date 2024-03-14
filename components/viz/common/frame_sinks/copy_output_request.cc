@@ -123,12 +123,12 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
 
 #if DCHECK_IS_ON()
   {
-    const gpu::MailboxHolder* first_zeroed_mailbox_it =
+    const auto first_zeroed_mailbox_it =
         base::ranges::find_if(blit_request.mailboxes(), &gpu::Mailbox::IsZero,
                               &gpu::MailboxHolder::mailbox);
 
-    size_t num_nonzeroed_mailboxes =
-        first_zeroed_mailbox_it - blit_request.mailboxes().begin();
+    size_t num_nonzeroed_mailboxes = static_cast<size_t>(
+        first_zeroed_mailbox_it - blit_request.mailboxes().begin());
 
     switch (result_format()) {
       case ResultFormat::RGBA:

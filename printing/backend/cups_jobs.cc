@@ -199,7 +199,7 @@ PrinterStatus::PrinterReason::Reason ToReason(std::string_view reason) {
           {kCupsPkiExpired, PReason::kCupsPkiExpired},
       });
 
-  const auto* entry = kLabelToReasonMap.find(reason);
+  const auto entry = kLabelToReasonMap.find(reason);
   return entry != kLabelToReasonMap.end() ? entry->second
                                           : PReason::kUnknownReason;
 }

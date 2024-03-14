@@ -25,7 +25,7 @@ const char* GetAcceleratorActionName(AcceleratorAction action) {
 #undef ACCELERATOR_ACTION_ENTRY
 #undef ACCELERATOR_ACTION_ENTRY_FIXED_VALUE
       });
-  auto* iter = kAcceleratorActionToName.find(action);
+  auto iter = kAcceleratorActionToName.find(action);
   CHECK(iter != kAcceleratorActionToName.end());
   return iter->second;
 }

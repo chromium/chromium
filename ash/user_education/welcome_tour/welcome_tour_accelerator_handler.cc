@@ -37,7 +37,7 @@ void WelcomeTourAcceleratorHandler::OnKeyEvent(ui::KeyEvent* event) {
     return;
   }
 
-  auto* action_it =
+  auto action_it =
       base::ranges::find(kAllowedActions, *action, &AllowedAction::action);
 
   if (action_it == kAllowedActions.cend()) {

@@ -241,7 +241,7 @@ void EventRewriterDelegateImpl::RecordSixPackEventRewrite(
           {ui::KeyboardCode::VKEY_NEXT,
            prefs::kKeyEventRemappedToSixPackPageUp},
       });
-  auto* it = kSixPackKeyToPrefMap.find(key_code);
+  auto it = kSixPackKeyToPrefMap.find(key_code);
   CHECK(it != kSixPackKeyToPrefMap.end());
   int count = pref_service->GetInteger(it->second);
   // `alt_based` tells us whether this "six pack" event was produced by an

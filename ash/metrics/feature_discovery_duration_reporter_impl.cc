@@ -60,10 +60,10 @@ void ReportFeatureDiscoveryDuration(const char* histogram,
 // Returns a trackable feature's info.
 const feature_discovery::TrackableFeatureInfo& FindMappedFeatureInfo(
     feature_discovery::TrackableFeature feature) {
-  auto* iter =
+  auto iter =
       base::ranges::find(feature_discovery::kTrackableFeatureArray, feature,
                          &feature_discovery::TrackableFeatureInfo::feature);
-  DCHECK_NE(feature_discovery::kTrackableFeatureArray.cend(), iter);
+  DCHECK(feature_discovery::kTrackableFeatureArray.cend() != iter);
   return *iter;
 }
 

@@ -67,8 +67,7 @@ IppVersion ToIppVersion(const base::Version& version) {
   }
 
   const auto target = MajorMinor(components[0], components[1]);
-  const VersionEntry* iter =
-      base::ranges::find(kVersions, target, &VersionEntry::first);
+  const auto iter = base::ranges::find(kVersions, target, &VersionEntry::first);
 
   if (iter == kVersions.end()) {
     return IppVersion::kUnknown;

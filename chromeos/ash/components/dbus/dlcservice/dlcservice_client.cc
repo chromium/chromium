@@ -79,7 +79,7 @@ class DlcserviceErrorResponseHandler {
         dlcservice::kErrorNoImageFound,
     });
     // Lookup the dlcservice error code and provide default on invalid.
-    auto* itr = kErrSet.find(err);
+    auto itr = kErrSet.find(err);
     if (itr == kErrSet.end()) {
       LOG(ERROR) << "Failed to set error based on ErrorResponse "
                     "defaulted to kErrorInternal, was:" << err;

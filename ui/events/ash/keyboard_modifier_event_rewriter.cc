@@ -434,7 +434,7 @@ KeyboardModifierEventRewriter::GetRemappedKey(mojom::ModifierKey modifier_key,
 
   auto modifier_value = delegate_->GetKeyboardRemappedModifierValue(
       device_id, modifier_key, std::string(pref_name));
-  auto* it = kRemappedKeyMap.find(modifier_value.value_or(modifier_key));
+  auto it = kRemappedKeyMap.find(modifier_value.value_or(modifier_key));
   CHECK(it != kRemappedKeyMap.end());
   return &it->second;
 }

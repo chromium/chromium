@@ -375,7 +375,7 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToMouseButtonEvents(
 
   std::vector<std::unique_ptr<ui::Event>> rewritten_events;
 
-  auto* flag_iter = kStaticActionToMouseButtonFlag.find(action);
+  auto flag_iter = kStaticActionToMouseButtonFlag.find(action);
   CHECK(flag_iter != kStaticActionToMouseButtonFlag.end());
   const int characteristic_flag = flag_iter->second;
 

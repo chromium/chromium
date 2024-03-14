@@ -74,7 +74,7 @@ std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
           {mojom::PrefPath::kIsolatedWebAppsEnabled,
            ash::prefs::kIsolatedWebAppsEnabled},
       });
-  auto* pref_name = kProfilePrefPathToName.find(path);
+  auto pref_name = kProfilePrefPathToName.find(path);
   DCHECK(pref_name != kProfilePrefPathToName.end());
   return pref_name->second;
 }
@@ -115,7 +115,7 @@ std::string_view GetExtensionPrefNameForPref(mojom::PrefPath path) {
            {mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled,
             ash::prefs::kAccessibilityVirtualKeyboardEnabled},
            {mojom::PrefPath::kProxy, ash::prefs::kProxy}});
-  auto* pref_name = kExtensionPrefPathToName.find(path);
+  auto pref_name = kExtensionPrefPathToName.find(path);
   DCHECK(pref_name != kExtensionPrefPathToName.end());
   return pref_name->second;
 }

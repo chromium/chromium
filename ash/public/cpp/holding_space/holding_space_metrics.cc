@@ -180,7 +180,7 @@ size_t FilePathToExtension(const base::FilePath& file_path) {
     return kEmptyExtension;
   }
 
-  const char* const* it = base::ranges::find(kKnownExtensions, extension);
+  const auto it = base::ranges::find(kKnownExtensions, extension);
   if (it == kKnownExtensions.end()) {
     return kOtherExtension;
   }

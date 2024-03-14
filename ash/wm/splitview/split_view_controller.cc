@@ -636,7 +636,7 @@ std::optional<float> SplitViewController::ComputeAutoSnapRatio(
           {{chromeos::kOneThirdSnapRatio, chromeos::kTwoThirdSnapRatio},
            {chromeos::kDefaultSnapRatio, chromeos::kDefaultSnapRatio},
            {chromeos::kTwoThirdSnapRatio, chromeos::kOneThirdSnapRatio}});
-  auto* it = kOppositeRatiosMap.find(*default_window_snap_ratio);
+  auto it = kOppositeRatiosMap.find(*default_window_snap_ratio);
   // TODO(sammiequon): Investigate if this check is needed. It may be needed for
   // rounding errors (i.e. 2/3 may be 0.67).
   if (it == kOppositeRatiosMap.end()) {

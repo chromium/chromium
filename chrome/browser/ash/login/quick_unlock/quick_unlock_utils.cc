@@ -336,7 +336,7 @@ void AddFingerprintResources(content::WebUIDataSource* html_source) {
 
 FingerprintDescriptionStrings GetFingerprintDescriptionStrings(
     FingerprintLocation location) {
-  auto* location_string_it = kFingerprintLocationToStringsMap.find(location);
+  auto location_string_it = kFingerprintLocationToStringsMap.find(location);
   CHECK(location_string_it != kFingerprintLocationToStringsMap.end());
   return location_string_it->second;
 }

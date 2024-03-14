@@ -696,7 +696,7 @@ void ScalableIph::PerformActionForIphSession(ActionType action_type) {
 }
 
 void ScalableIph::MaybeRecordAppListItemActivation(const std::string& id) {
-  auto* it = kAppListItemActivationEventsMap.find(id);
+  auto it = kAppListItemActivationEventsMap.find(id);
   if (it == kAppListItemActivationEventsMap.end()) {
     SCALABLE_IPH_LOG(GetLogger())
         << "Observed an app list item activation. But not recording an app "
@@ -713,7 +713,7 @@ void ScalableIph::MaybeRecordAppListItemActivation(const std::string& id) {
 }
 
 void ScalableIph::MaybeRecordShelfItemActivationById(const std::string& id) {
-  auto* it = kShelfItemActivationEventsMap.find(id);
+  auto it = kShelfItemActivationEventsMap.find(id);
   if (it == kShelfItemActivationEventsMap.end()) {
     SCALABLE_IPH_LOG(GetLogger())
         << "Observed a shelf item activation. But not recording a shelf item "

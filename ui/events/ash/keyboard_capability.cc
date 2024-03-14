@@ -541,7 +541,7 @@ KeyboardCapability::CreateEventDeviceInfoFromInputDevice(
 // static
 std::optional<TopRowActionKey> KeyboardCapability::ConvertToTopRowActionKey(
     ui::KeyboardCode key_code) {
-  const auto* action_key = kVKeyToTopRowActionKeyMap.find(key_code);
+  const auto action_key = kVKeyToTopRowActionKeyMap.find(key_code);
   return (action_key != kVKeyToTopRowActionKeyMap.end())
              ? std::make_optional<TopRowActionKey>(action_key->second)
              : std::nullopt;
@@ -664,7 +664,7 @@ bool KeyboardCapability::HasLauncherButtonOnAnyKeyboard() const {
 // static
 bool KeyboardCapability::IsTopRowKey(const KeyboardCode& key_code) {
   // A set that includes all top row keys from different keyboards.
-  const auto* action = kVKeyToTopRowActionKeyMap.find(key_code);
+  const auto action = kVKeyToTopRowActionKeyMap.find(key_code);
   return action != kVKeyToTopRowActionKeyMap.end();
 }
 

@@ -23,7 +23,7 @@ static constexpr auto kStringToComponentMap =
 }  // namespace
 
 Component GetComponentMapping(const std::string& component) {
-  auto* it = kStringToComponentMap.find(component);
+  auto it = kStringToComponentMap.find(component);
   return (it == kStringToComponentMap.end()) ? Component::kUnknownComponent
                                              : it->second;
 }
@@ -58,7 +58,7 @@ std::string GetComponentMapping(Component component) {
            {kDrive, ::dlp::DlpComponent::GOOGLE_DRIVE},
            {kUsb, ::dlp::DlpComponent::USB}});
 
-  auto* it = kComponentsMap.find(component);
+  auto it = kComponentsMap.find(component);
   return (it == kComponentsMap.end()) ? ::dlp::DlpComponent::UNKNOWN_COMPONENT
                                       : it->second;
 }

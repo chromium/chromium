@@ -67,7 +67,7 @@ std::string CreateFnmatchQuery(const std::u16string& query_input) {
             query.substr(sequence_start, i - sequence_start));
       }
 
-      auto* it = conversion_map.find(query[i]);
+      auto it = conversion_map.find(query[i]);
       if (it != conversion_map.end()) {
         std::u16string piece(it->second);
         query_pieces.push_back(std::move(piece));

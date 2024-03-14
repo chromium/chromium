@@ -19,7 +19,7 @@ std::string GetUnitDisplayText(const std::string& name) {
       base::MakeFixedFlatMap<std::string_view, int>(
           {{kPoundName, IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT}});
 
-  const auto* it = kUnitDisplayTextMap.find(name);
+  const auto it = kUnitDisplayTextMap.find(name);
   if (it == kUnitDisplayTextMap.end()) {
     return name;
   }

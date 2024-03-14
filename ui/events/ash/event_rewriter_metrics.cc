@@ -62,7 +62,7 @@ void RecordModifierKeyPressedRemappingInternal(
     const std::string_view metric_name,
     int device_id,
     DomCode dom_code) {
-  auto* it = kModifierKeyUsageMappings.find(dom_code);
+  auto it = kModifierKeyUsageMappings.find(dom_code);
   if (it == kModifierKeyUsageMappings.end()) {
     return;
   }

@@ -259,7 +259,7 @@ Channel GetStatefulLacrosChannel() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kLacrosStabilitySwitch);
   if (!stability_switch_value.empty()) {
-    if (auto* it = kStabilitySwitchToChannelMap.find(stability_switch_value);
+    if (auto it = kStabilitySwitchToChannelMap.find(stability_switch_value);
         it != kStabilitySwitchToChannelMap.end()) {
       return it->second;
     }
@@ -797,7 +797,7 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
 
 std::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
     std::string_view value) {
-  auto* it = kLacrosSelectionPolicyMap.find(value);
+  auto it = kLacrosSelectionPolicyMap.find(value);
   if (it != kLacrosSelectionPolicyMap.end())
     return it->second;
 
@@ -807,7 +807,7 @@ std::optional<LacrosSelectionPolicy> ParseLacrosSelectionPolicy(
 
 std::optional<LacrosDataBackwardMigrationMode>
 ParseLacrosDataBackwardMigrationMode(std::string_view value) {
-  auto* it = kLacrosDataBackwardMigrationModeMap.find(value);
+  auto it = kLacrosDataBackwardMigrationModeMap.find(value);
   if (it != kLacrosDataBackwardMigrationModeMap.end())
     return it->second;
 

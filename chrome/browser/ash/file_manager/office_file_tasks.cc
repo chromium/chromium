@@ -70,7 +70,7 @@ inline bool IsFilesAppId(const std::string& app_id) {
 
 OfficeOpenExtensions GetOfficeOpenExtension(const storage::FileSystemURL& url) {
   const std::string extension = base::ToLowerASCII(url.path().FinalExtension());
-  auto* itr = kExtensionToOfficeOpenExtensionsEnum.find(extension);
+  auto itr = kExtensionToOfficeOpenExtensionsEnum.find(extension);
   if (itr != kExtensionToOfficeOpenExtensionsEnum.end()) {
     return itr->second;
   }

@@ -388,7 +388,7 @@ std::string GetAppTypeHistogramName(apps::AppTypeName app_type_name) {
 }
 
 AppTypeName GetAppTypeNameFromString(const std::string& app_type_name) {
-  auto* it = kAppTypeNameMap.find(app_type_name);
+  auto it = kAppTypeNameMap.find(app_type_name);
   return it != kAppTypeNameMap.end() ? it->second : apps::AppTypeName::kUnknown;
 }
 

@@ -209,7 +209,7 @@ GetModifierRemappings(PrefService* prefs, const mojom::Keyboard& keyboard) {
       // The meta key is handled separately.
       continue;
     }
-    auto* it = kKeyboardModifierMappings.find(modifier_key);
+    auto it = kKeyboardModifierMappings.find(modifier_key);
     DCHECK(it != kKeyboardModifierMappings.end());
     const auto pref_modifier_key =
         static_cast<ui::mojom::ModifierKey>(prefs->GetInteger(it->second));
@@ -237,7 +237,7 @@ GetModifierRemappingsKnownUser(const user_manager::KnownUser& known_user,
       // The meta key is handled separately.
       continue;
     }
-    auto* it = kKeyboardModifierMappings.find(modifier_key);
+    auto it = kKeyboardModifierMappings.find(modifier_key);
     DCHECK(it != kKeyboardModifierMappings.end());
     const auto pref_modifier_key = static_cast<ui::mojom::ModifierKey>(
         known_user.FindIntPath(account_id, it->second)
