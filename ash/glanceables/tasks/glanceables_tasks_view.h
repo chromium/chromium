@@ -42,7 +42,7 @@ class ASH_EXPORT GlanceablesTasksViewBase : public GlanceableTrayChildBubble {
   METADATA_HEADER(GlanceablesTasksViewBase, GlanceableTrayChildBubble)
 
  public:
-  GlanceablesTasksViewBase();
+  explicit GlanceablesTasksViewBase(bool use_glanceables_container_style);
   GlanceablesTasksViewBase(const GlanceablesTasksViewBase&) = delete;
   GlanceablesTasksViewBase& operator=(const GlanceablesTasksViewBase&) = delete;
   ~GlanceablesTasksViewBase() override = default;

@@ -53,7 +53,7 @@ constexpr char kClassroomHomePage[] = "https://classroom.google.com/u/0/h";
 
 ClassroomBubbleBaseView::ClassroomBubbleBaseView(
     std::unique_ptr<ui::ComboboxModel> combobox_model)
-    : GlanceableTrayChildBubble(/*for_glanceables_container=*/true) {
+    : GlanceableTrayChildBubble(/*use_glanceables_container_style=*/true) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(gfx::Insets::TLBR(kInteriorGlanceableBubbleMargin,
                                             kInteriorGlanceableBubbleMargin, 0,

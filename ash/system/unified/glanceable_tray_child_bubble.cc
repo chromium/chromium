@@ -27,8 +27,8 @@ constexpr int kBubbleCornerRadius = 24;
 }  // namespace
 
 GlanceableTrayChildBubble::GlanceableTrayChildBubble(
-    bool for_glanceables_container) {
-  if (for_glanceables_container) {
+    bool use_glanceables_container_style) {
+  if (use_glanceables_container_style) {
     SetAccessibleRole(ax::mojom::Role::kGroup);
 
     SetPaintToLayer();

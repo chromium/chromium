@@ -31,10 +31,8 @@
 namespace ash {
 namespace {
 
-constexpr int kErrorMessageRoundedCornerRadius = 13;
 constexpr int kErrorMessageViewSize = 34;
-constexpr int kErrorMessageHorizontalMargin = 4;
-constexpr int kErrorMessageBottomMargin = 4;
+constexpr int kErrorMessageRoundedCornerRadius = kErrorMessageViewSize / 2;
 constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(8, 4, 8, 10);
 constexpr gfx::Insets kLabelInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
@@ -69,7 +67,7 @@ GlanceablesErrorMessageView::GlanceablesErrorMessageView(
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));
   SetBackground(
-      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemBase));
+      views::CreateThemedSolidBackground(cros_tokens::kCrosSysSystemOnBase));
   SetID(base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView));
 
   const auto* const typography_provider = TypographyProvider::Get();
@@ -101,10 +99,7 @@ void GlanceablesErrorMessageView::UpdateBoundsToContainer(
   gfx::Rect preferred_bounds(container_bounds);
 
   preferred_bounds.Inset(gfx::Insets::TLBR(
-      preferred_bounds.height() - kErrorMessageViewSize -
-          kErrorMessageBottomMargin,
-      kErrorMessageHorizontalMargin, kErrorMessageBottomMargin,
-      kErrorMessageHorizontalMargin));
+      preferred_bounds.height() - kErrorMessageViewSize, 0, 0, 0));
 
   SetBoundsRect(preferred_bounds);
 }

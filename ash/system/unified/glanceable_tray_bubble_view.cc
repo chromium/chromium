@@ -66,11 +66,12 @@ class TimeManagementContainer : public views::FlexLayoutView {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kGlanceablesContainerCornerRadius));
     SetOrientation(views::LayoutOrientation::kVertical);
     SetInteriorMargin(gfx::Insets(8));
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSystemBaseElevated,
-        kGlanceablesContainerCornerRadius));
+    SetBackground(views::CreateThemedSolidBackground(
+        cros_tokens::kCrosSysSystemBaseElevated));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kGlanceablesContainerCornerRadius,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));
@@ -287,8 +288,9 @@ void GlanceableTrayBubbleView::InitializeContents() {
     auto* calendar_parent_view = is_calendar_for_glanceables
                                      ? calendar_container_
                                      : scroll_view_->contents();
-    calendar_view_ = calendar_parent_view->AddChildView(
-        std::make_unique<CalendarView>(/*for_glanceables_container=*/true));
+    calendar_view_ =
+        calendar_parent_view->AddChildView(std::make_unique<CalendarView>(
+            /*use_glanceables_container_style=*/true));
     SetCalendarPreferredSize();
   }
 

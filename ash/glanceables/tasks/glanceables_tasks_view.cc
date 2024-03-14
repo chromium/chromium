@@ -61,7 +61,9 @@ namespace {
 
 constexpr auto kProgressBarPreferredSize = gfx::Size(0, 8);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 2);
-constexpr int kInteriorGlanceableBubbleMargin = 15;
+// The interior margin should be 12, but keep one pixel in the child views to
+// set as the border so that it can accommodate the focus ring.
+constexpr int kInteriorGlanceableBubbleMargin = 11;
 constexpr int kScrollViewBottomMargin = 12;
 constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
@@ -166,14 +168,21 @@ END_METADATA
 
 }  // namespace
 
-GlanceablesTasksViewBase::GlanceablesTasksViewBase()
-    : GlanceableTrayChildBubble(/*for_glanceables_container=*/true) {}
+GlanceablesTasksViewBase::GlanceablesTasksViewBase(
+    bool use_glanceables_container_style)
+    : GlanceableTrayChildBubble(use_glanceables_container_style) {}
 
 BEGIN_METADATA(GlanceablesTasksViewBase)
 END_METADATA
 
+// It is the parent container of GlanceablesTasksView that matches the style
+// of GlanceableTrayChildBubble, so `use_glanceables_container_style` is set to
+// false here.
 GlanceablesTasksView::GlanceablesTasksView(
-    const ui::ListModel<api::TaskList>* task_lists) {
+    const ui::ListModel<api::TaskList>* task_lists)
+    : GlanceablesTasksViewBase(/*use_glanceables_container_style=*/false) {
+  SetAccessibleRole(ax::mojom::Role::kGroup);
+
   auto* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager
@@ -181,15 +190,6 @@ GlanceablesTasksView::GlanceablesTasksView(
                                             kInteriorGlanceableBubbleMargin, 0,
                                             kInteriorGlanceableBubbleMargin))
       .SetOrientation(views::LayoutOrientation::kVertical);
-
-  // It is the parent container of GlanceablesTasksView that matches the style
-  // of GlanceableTrayChildBubble. Manually update this bubble to match the
-  // spec.
-  CHECK(layer());
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{16.f});
-  SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque));
-  SetBorder(nullptr);
 
   tasks_header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_header_view_->SetInteriorMargin(gfx::Insets::TLBR(1, 1, 0, 1));

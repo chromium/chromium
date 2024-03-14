@@ -75,10 +75,10 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   METADATA_HEADER(CalendarView, GlanceableTrayChildBubble)
 
  public:
-  // `for_glanceables_container` - Whether the calendar view is shown as a
+  // `use_glanceables_container_style` - Whether the calendar view is shown as a
   // bubble in glanceables container, or a `UnifiedSystemTrayBubble` (which is
   // the case if glanceables feature is not enabled).
-  explicit CalendarView(bool for_glanceables_container);
+  explicit CalendarView(bool use_glanceables_container_style);
   CalendarView(const CalendarView& other) = delete;
   CalendarView& operator=(const CalendarView& other) = delete;
   ~CalendarView() override;
