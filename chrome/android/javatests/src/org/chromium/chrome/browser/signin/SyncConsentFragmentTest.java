@@ -33,6 +33,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +44,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,6 +57,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -1142,8 +1145,8 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @Feature("RenderTest")
-    public void testSignedInWithMinorModeUnknownHasEqualButtonsOnDeadline() throws IOException {
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testSignedInWithMinorModeUnknownHasEqualButtonsOnDeadline() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
         CoreAccountInfo accountInfo =
@@ -1158,9 +1161,7 @@ public class SyncConsentFragmentTest {
         // Account with no capabilities must wait to be deadlined to show buttons.
         ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
 
-        mRenderTestRule.render(
-                mSyncConsentActivity.findViewById(R.id.fragment_container),
-                "signed_in_with_minor_mode_unknown_has_equal_buttons_on_deadline");
+        checkButtonsAreEquallyWeightedandVisible();
     }
 
     @Test
@@ -1193,8 +1194,8 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @Feature("RenderTest")
-    public void testSignedOutWithMinorModeUnknownHasEqualButtonsOnDeadline() throws IOException {
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testSignedOutWithMinorModeUnknownHasEqualButtonsOnDeadline() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(
@@ -1204,9 +1205,7 @@ public class SyncConsentFragmentTest {
         // Signed out account with no capabilities must wait to be deadlined to show buttons.
         ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
 
-        mRenderTestRule.render(
-                mSyncConsentActivity.findViewById(R.id.fragment_container),
-                "signed_out_with_minor_mode_unknown_has_equal_buttons_on_deadline");
+        checkButtonsAreEquallyWeightedandVisible();
     }
 
     @Test
@@ -1377,6 +1376,20 @@ public class SyncConsentFragmentTest {
                                     mChromeActivityTestRule.getActivity(),
                                     SigninAccessPoint.START_PAGE,
                                     accountInfo.getEmail());
+                });
+    }
+
+    void checkButtonsAreEquallyWeightedandVisible() {
+        onView(withId(R.id.button_primary)).check(matches(isDisplayed()));
+        onView(withId(R.id.button_secondary)).check(matches(isDisplayed()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
                 });
     }
 }
