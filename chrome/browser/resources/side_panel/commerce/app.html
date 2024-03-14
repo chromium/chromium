@@ -29,10 +29,6 @@
     font-weight: 400;
   }
 
-  .divider {
-    border-top: 4px solid var(--cr-separator-color);
-  }
-
   .section-title {
     color: var(--cr-primary-text-color);
     font-size: 13px;
@@ -95,7 +91,7 @@
     </insights-comment-row>
   </div>
   <template is="dom-if" if="[[priceInsightsInfo.history.length]]" restamp>
-    <div class="divider sp-cards-separator"></div>
+    <div class="sp-cards-separator"></div>
     <div class="section sp-card" id="historySection">
       <div class="section-title" id="historyTitle">
         [[getHistoryTitle_(priceInsightsInfo)]]
@@ -113,7 +109,7 @@
     </div>
   </template>
   <template is="dom-if" if="[[isProductTrackable_]]" restamp>
-    <div class="divider sp-cards-separator"></div>
+    <div class="sp-cards-separator"></div>
     <price-tracking-section class="section sp-card"
         id="priceTrackingSection"
         product-info="[[productInfo]]"
