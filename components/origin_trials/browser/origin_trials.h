@@ -121,11 +121,14 @@ class OriginTrials : public KeyedService,
       const std::optional<blink::mojom::OriginTrialFeature> trial_feature_match)
       const;
 
-  // Update the stored tokens for `origin` with the `new_tokens`, partitioned by
-  // `partition_site`.
-  // Will clean any tokens not found in `new_tokens` unless `append_only` is set
-  // to true.
-  void UpdatePersistedTokenSet(const url::Origin& origin,
+  // Update the stored tokens for `token_origin` with the `new_tokens`,
+  // partitioned by `partition_site`.
+  // If `append_only` is set to true, existing tokens for `token_origin` that
+  // aren't found in `new_tokens` will be cleared, unless they match subdomains,
+  // in which case they will only be cleared if `document_origin` equals
+  // `token_origin`.
+  void UpdatePersistedTokenSet(const url::Origin& document_origin,
+                               const url::Origin& token_origin,
                                base::span<const blink::TrialToken> new_tokens,
                                const std::string& partition_site,
                                bool append_only);

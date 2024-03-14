@@ -125,12 +125,24 @@ const char kFrobulatePersistentThirdPartyToken[] =
     "JlIjogIkZyb2J1bGF0ZVBlcnNpc3RlbnQiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzVGhp"
     "cmRQYXJ0eSI6IHRydWV9";
 
-// Valid token for FrobulatePersistentThirdPartyDeprecation
+// Valid header token for FrobulatePersistentThirdPartyDeprecation
+// generated with
+// tools/origin_trials/generate_token.py enabled.example.com
+// FrobulatePersistentThirdPartyDeprecation --expire-timestamp=2000000000
+// --is-subdomain
+const char kFrobulatePersistentThirdPartyDeprecationSubdomainToken[] =
+    "A13ICJLZZpEfymaQfvnaaE3gT9FdseEGYtN6gYnCw0+"
+    "48XhvDCtfT1rTCU6CAfrtB7j46aOYvvdO5gJ853FLkgYAAACPeyJvcmlnaW4iOiAiaHR0cHM6L"
+    "y9lbmFibGVkLmV4YW1wbGUuY29tOjQ0MyIsICJmZWF0dXJlIjogIkZyb2J1bGF0ZVBlcnNpc3R"
+    "lbnRUaGlyZFBhcnR5RGVwcmVjYXRpb24iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzU3ViZ"
+    "G9tYWluIjogdHJ1ZX0=";
+
+// Valid third-party token for FrobulatePersistentThirdPartyDeprecation
 // generated with
 // tools/origin_trials/generate_token.py enabled.thirdparty.com
 // FrobulatePersistentThirdPartyDeprecation --expire-timestamp=2000000000
 // --is-third-party
-const char kFrobulatePersistentThirdPartyDeprecationToken[] =
+const char kFrobulatePersistentThirdPartyDeprecationThirdPartyToken[] =
     "Az+ztSNd9o+3cmaiCk7QgSU5/2jSa1qiNKsoJOOxvMVxf/"
     "8xPWsKraWc0US05bYHmTAIdzZAxh1DMMRhMir5yg4AAACTeyJvcmlnaW4iOiAiaHR0cHM6Ly9l"
     "bmFibGVkLnRoaXJkcGFydHkuY29tOjQ0MyIsICJmZWF0dXJlIjogIkZyb2J1bGF0ZVBlcnNpc3"
@@ -143,7 +155,7 @@ const char kFrobulatePersistentThirdPartyDeprecationToken[] =
 // tools/origin_trials/generate_token.py enabled.thirdparty.com
 // FrobulatePersistentThirdPartyDeprecation --expire-timestamp=2000000000
 // --is-subdomain --is-third-party
-const char kFrobulatePersistentThirdPartyDeprecationSubdomainToken[] =
+const char kFrobulatePersistentThirdPartyDeprecationSubdomainThirdPartyToken[] =
     "A9uzT+"
     "YSACBeKX1GM2pukXch9Zwb35MV9NBpoQYj2EQMeiw0TwyNcOFXWItCDpewHcPSnGUrOX73AtEq"
     "eP69KwcAAACoeyJvcmlnaW4iOiAiaHR0cHM6Ly9lbmFibGVkLnRoaXJkcGFydHkuY29tOjQ0My"
@@ -448,7 +460,7 @@ TEST_F(OriginTrialsTest, ThirdPartyTokensCanBeAppendedOnlyIfDeprecation) {
   // Append third-party tokens.
   std::vector<std::string> third_party_tokens = {
       kFrobulatePersistentThirdPartyToken,
-      kFrobulatePersistentThirdPartyDeprecationToken};
+      kFrobulatePersistentThirdPartyDeprecationThirdPartyToken};
   url::Origin script_origin =
       url::Origin::Create(GURL(kThirdPartyTrialEnabledOrigin));
   std::vector<url::Origin> script_origins = {script_origin};
@@ -542,7 +554,7 @@ TEST_F(OriginTrialsTest,
 
   // Append third-party tokens.
   std::vector<std::string> third_party_tokens = {
-      kFrobulatePersistentThirdPartyDeprecationSubdomainToken};
+      kFrobulatePersistentThirdPartyDeprecationSubdomainThirdPartyToken};
   url::Origin script_origin =
       url::Origin::Create(GURL(kThirdPartyTrialEnabledOrigin));
   std::vector<url::Origin> script_origins = {script_origin};
@@ -566,6 +578,139 @@ TEST_F(OriginTrialsTest,
       OriginTrialFeature::
           kOriginTrialsSampleAPIPersistentThirdPartyDeprecationFeature,
       kValidTime));
+}
+
+// Verifies that a subdomain-matching header token being provided by a subdomain
+// of the token origin appends the token for the token origin (instead of
+// overwriting).
+TEST_F(OriginTrialsTest,
+       SubdomainTokensProvidedBySubdomainsAppendForTokenOrigin) {
+  // Provide a subdomain-matching token for `FrobulatePersistent` from a
+  // subdomain
+  // (`trial_enabled_origin_subdomain_`) of the token origin
+  // (`trial_enabled_origin_`).
+  std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+
+  {
+    base::flat_set<std::string> origin_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
+    ASSERT_EQ(1ul, origin_enabled_trials.size());
+    EXPECT_TRUE(origin_enabled_trials.contains(kPersistentTrialName));
+
+    base::flat_set<std::string> origin_subdomain_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_subdomain_,
+                                    kValidTime);
+    ASSERT_EQ(1ul, origin_subdomain_enabled_trials.size());
+    EXPECT_TRUE(origin_subdomain_enabled_trials.contains(kPersistentTrialName));
+  }
+
+  // Provide a subdomain-matching token for
+  // `FrobulatePersistentThirdPartyDeprecation` from a subdomain
+  // (`trial_enabled_origin_subdomain_`) of the token origin
+  // (`trial_enabled_origin_`).
+  std::vector<std::string> different_tokens = {
+      kFrobulatePersistentThirdPartyDeprecationSubdomainToken};
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, different_tokens,
+                          kValidTime);
+
+  {
+    base::flat_set<std::string> origin_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
+    EXPECT_EQ(2ul, origin_enabled_trials.size());
+    EXPECT_TRUE(origin_enabled_trials.contains(kPersistentTrialName));
+    EXPECT_TRUE(origin_enabled_trials.contains(
+        kPersistentThirdPartyDeprecationTrialName));
+
+    base::flat_set<std::string> origin_subdomain_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_subdomain_,
+                                    kValidTime);
+    EXPECT_EQ(2ul, origin_subdomain_enabled_trials.size());
+    EXPECT_TRUE(origin_subdomain_enabled_trials.contains(kPersistentTrialName));
+    EXPECT_TRUE(origin_subdomain_enabled_trials.contains(
+        kPersistentThirdPartyDeprecationTrialName));
+  }
+}
+
+// Checks that when a trial is enabled using a subdomain-matching token, the
+// trial is not disabled by subdomains of the token origin, even if the
+// subdomain provided the token.
+TEST_F(OriginTrialsTest, SubdomainTokenNotDisabledBySubdomain) {
+  // Provide a subdomain-matching token from a subdomain
+  // (`trial_enabled_origin_subdomain_`) of the token origin
+  // (`trial_enabled_origin_`).
+  std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+
+  {
+    base::flat_set<std::string> origin_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
+    ASSERT_EQ(1ul, origin_enabled_trials.size());
+    EXPECT_TRUE(origin_enabled_trials.contains(kPersistentTrialName));
+
+    base::flat_set<std::string> origin_subdomain_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_subdomain_,
+                                    kValidTime);
+    ASSERT_EQ(1ul, origin_subdomain_enabled_trials.size());
+    EXPECT_TRUE(origin_subdomain_enabled_trials.contains(kPersistentTrialName));
+  }
+
+  // Clear the tokens for the subdomain that provided the token
+  // (`trial_enabled_origin_subdomain_`).
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_,
+                          std::vector<std::string>(), kValidTime);
+
+  {
+    base::flat_set<std::string> origin_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
+    EXPECT_EQ(1ul, origin_enabled_trials.size());
+    EXPECT_TRUE(origin_enabled_trials.contains(kPersistentTrialName));
+
+    base::flat_set<std::string> origin_subdomain_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_subdomain_,
+                                    kValidTime);
+    EXPECT_EQ(1ul, origin_subdomain_enabled_trials.size());
+    EXPECT_TRUE(origin_subdomain_enabled_trials.contains(kPersistentTrialName));
+  }
+}
+
+// Checks that when a trial is enabled using a subdomain-matching token, the
+// trial is disabled if the origin that's stored in the token is loaded without
+// it.
+TEST_F(OriginTrialsTest, SubdomainTokenDisabledByTokenOrigin) {
+  // Provide a subdomain-matching token from a subdomain
+  // (`trial_enabled_origin_subdomain_`) of the token origin
+  // (`trial_enabled_origin_`).
+  std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+
+  {
+    base::flat_set<std::string> origin_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
+    ASSERT_EQ(1ul, origin_enabled_trials.size());
+    EXPECT_TRUE(origin_enabled_trials.contains(kPersistentTrialName));
+
+    base::flat_set<std::string> origin_subdomain_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_subdomain_,
+                                    kValidTime);
+    ASSERT_EQ(1ul, origin_subdomain_enabled_trials.size());
+    EXPECT_TRUE(origin_subdomain_enabled_trials.contains(kPersistentTrialName));
+  }
+
+  // Clear the tokens for the token origin (`trial_enabled_origin_`).
+  PersistTrialsFromTokens(trial_enabled_origin_, std::vector<std::string>(),
+                          kValidTime);
+
+  {
+    base::flat_set<std::string> origin_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
+    ASSERT_TRUE(origin_enabled_trials.empty());
+
+    base::flat_set<std::string> origin_subdomain_enabled_trials =
+        GetPersistedTrialsForOrigin(trial_enabled_origin_subdomain_,
+                                    kValidTime);
+    ASSERT_TRUE(origin_subdomain_enabled_trials.empty());
+  }
 }
 
 // Check that a stored trial name is not returned if that trial is no longer
@@ -687,6 +832,25 @@ TEST_F(OriginTrialsTest, NotifyOnDisableWithSubdomainMatching) {
                        /*match_subdomains=*/true, /*enabled=*/false));
 }
 
+// Verifies that the origin stored in a subdomain-matching token is provided in
+// the notification when one of its subdomain uses the token to enable a trial.
+TEST_F(OriginTrialsTest, NotifyUsingTokenOriginOnEnable) {
+  std::unique_ptr<TestStatusObserver> observer =
+      CreateAndAddObserver(kPersistentTrialName);
+
+  // Provide a subdomain-matching token from a subdomain
+  // (`trial_enabled_origin_subdomain_`) of the token origin
+  // (`trial_enabled_origin_`).
+  std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+
+  EXPECT_EQ(observer->on_status_changed_count(), 1);
+  EXPECT_EQ(observer->last_status_change(),
+            StatusInfo(trial_enabled_origin_,
+                       GetTokenPartitionSite(trial_enabled_origin_),
+                       /*match_subdomains=*/true, /*enabled=*/true));
+}
+
 TEST_F(OriginTrialsTest, DontNotifyOnDisableIfNotPreviouslyEnabled) {
   std::unique_ptr<TestStatusObserver> observer =
       CreateAndAddObserver(kPersistentTrialName);
@@ -773,7 +937,7 @@ TEST_F(OriginTrialsTest, NotifyForCorrectTrial) {
       url::Origin::Create(GURL(kThirdPartyTrialEnabledOrigin));
   std::vector<std::string> tokens_a = {kFrobulatePersistentToken};
   std::vector<std::string> tokens_b = {
-      kFrobulatePersistentThirdPartyDeprecationToken};
+      kFrobulatePersistentThirdPartyDeprecationThirdPartyToken};
 
   std::unique_ptr<TestStatusObserver> observer_a =
       CreateAndAddObserver(kPersistentTrialName);
