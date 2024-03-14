@@ -5,6 +5,8 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -65,21 +67,35 @@ void OpenAddressManualFillView() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Matcher for the expanded address manual fill view button.
+id<GREYMatcher> AddressManualFillViewButton() {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA)),
+                    grey_ancestor(grey_accessibilityID(
+                        kFormInputAccessoryViewAccessibilityID)),
+                    nil);
+}
+
+// Matcher for the address tab in the manual fill view.
+id<GREYMatcher> AddressManualFillViewTab() {
+  return grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL)),
+      grey_ancestor(
+          grey_accessibilityID(manual_fill::kExpandedManualFillHeaderViewID)),
+      nil);
+}
+
 // Opens the address manual fill view when there are no saved addresses and
 // verifies that the address view controller is visible afterwards. Only useful
 // when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
 void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Tap the button to open the expanded manual fill view.
-  id<GREYMatcher> manual_fill_view_button = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
-  [[EarlGrey selectElementWithMatcher:manual_fill_view_button]
+  [[EarlGrey selectElementWithMatcher:AddressManualFillViewButton()]
       performAction:grey_tap()];
 
   // Tap the address tab from the segmented control.
-  id<GREYMatcher> address_method_tab =
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL));
-  [[EarlGrey selectElementWithMatcher:address_method_tab]
+  [[EarlGrey selectElementWithMatcher:AddressManualFillViewTab()]
       performAction:grey_tap()];
 
   // Verify the address table view controller is visible.

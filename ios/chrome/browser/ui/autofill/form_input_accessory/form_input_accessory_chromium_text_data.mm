@@ -8,16 +8,24 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using l10n_util::GetNSString;
+
 FormInputAccessoryViewTextData* ChromiumAccessoryViewTextData() {
   return [[FormInputAccessoryViewTextData alloc]
-                initWithCloseButtonTitle:l10n_util::GetNSString(
-                                             IDS_IOS_AUTOFILL_INPUT_BAR_DONE)
-           closeButtonAccessibilityLabel:
-               l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_HIDE_KEYBOARD)
-            nextButtonAccessibilityLabel:
-                l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD)
-        previousButtonAccessibilityLabel:
-            l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD)
-      manualFillButtonAccessibilityLabel:
-          l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA)];
+                          initWithCloseButtonTitle:
+                              GetNSString(IDS_IOS_AUTOFILL_INPUT_BAR_DONE)
+                     closeButtonAccessibilityLabel:
+                         GetNSString(IDS_IOS_AUTOFILL_ACCNAME_HIDE_KEYBOARD)
+                      nextButtonAccessibilityLabel:
+                          GetNSString(IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD)
+                  previousButtonAccessibilityLabel:
+                      GetNSString(IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD)
+                manualFillButtonAccessibilityLabel:
+                    GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA)
+        passwordManualFillButtonAccessibilityLabel:
+            GetNSString(IDS_IOS_AUTOFILL_PASSWORD_AUTOFILL_DATA)
+      creditCardManualFillButtonAccessibilityLabel:
+          GetNSString(IDS_IOS_AUTOFILL_CREDIT_CARD_AUTOFILL_DATA)
+         addressManualFillButtonAccessibilityLabel:
+             GetNSString(IDS_IOS_AUTOFILL_ADDRESS_AUTOFILL_DATA)];
 }

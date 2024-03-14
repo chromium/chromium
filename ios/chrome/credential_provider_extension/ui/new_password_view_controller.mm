@@ -534,22 +534,25 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
     (FormInputAccessoryView*)sender {
   return [[FormInputAccessoryViewTextData alloc]
-                initWithCloseButtonTitle:
-                    NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_DONE",
-                                      @"Done")
-           closeButtonAccessibilityLabel:NSLocalizedString(
-                                             @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
-                                             @"PASSWORD_HIDE_KEYBOARD_HINT",
-                                             @"Hide Keyboard")
-            nextButtonAccessibilityLabel:
-                NSLocalizedString(
-                    @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_NEXT_FIELD_HINT",
-                    @"Next field")
-        previousButtonAccessibilityLabel:
-            NSLocalizedString(
-                @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_PREVIOUS_FIELD_HINT",
-                @"Previous field")
-      manualFillButtonAccessibilityLabel:nil];
+                          initWithCloseButtonTitle:
+                              NSLocalizedString(
+                                  @"IDS_IOS_CREDENTIAL_PROVIDER_DONE", @"Done")
+                     closeButtonAccessibilityLabel:
+                         NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
+                                           @"PASSWORD_HIDE_KEYBOARD_HINT",
+                                           @"Hide Keyboard")
+                      nextButtonAccessibilityLabel:
+                          NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
+                                            @"PASSWORD_NEXT_FIELD_HINT",
+                                            @"Next field")
+                  previousButtonAccessibilityLabel:
+                      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NEW_"
+                                        @"PASSWORD_PREVIOUS_FIELD_HINT",
+                                        @"Previous field")
+                manualFillButtonAccessibilityLabel:nil
+        passwordManualFillButtonAccessibilityLabel:nil
+      creditCardManualFillButtonAccessibilityLabel:nil
+         addressManualFillButtonAccessibilityLabel:nil];
 }
 
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:

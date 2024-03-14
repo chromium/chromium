@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -380,8 +381,12 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  id<GREYMatcher> manual_fill_button = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
+  id<GREYMatcher> manual_fill_button = grey_allOf(
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_AUTOFILL_PASSWORD_AUTOFILL_DATA)),
+      grey_ancestor(
+          grey_accessibilityID(kFormInputAccessoryViewAccessibilityID)),
+      nil);
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:manual_fill_button];
 

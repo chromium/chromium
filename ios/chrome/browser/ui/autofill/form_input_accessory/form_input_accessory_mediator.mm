@@ -416,6 +416,23 @@ class PasswordCounterDelegateBridge
   [self.consumer manualFillButtonPressed:sender.manualFillButton];
 }
 
+- (void)formInputAccessoryViewDidTapPasswordManualFillButton:
+    (FormInputAccessoryView*)sender {
+  [self.consumer
+      passwordManualFillButtonPressed:sender.passwordManualFillButton];
+}
+
+- (void)formInputAccessoryViewDidTapCreditCardManualFillButton:
+    (FormInputAccessoryView*)sender {
+  [self.consumer
+      creditCardManualFillButtonPressed:sender.creditCardManualFillButton];
+}
+
+- (void)formInputAccessoryViewDidTapAddressManualFillButton:
+    (FormInputAccessoryView*)sender {
+  [self.consumer addressManualFillButtonPressed:sender.addressManualFillButton];
+}
+
 - (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
     (FormInputAccessoryView*)sender {
   return ChromiumAccessoryViewTextData();

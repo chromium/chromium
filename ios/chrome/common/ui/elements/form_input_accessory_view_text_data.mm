@@ -7,13 +7,20 @@
 @implementation FormInputAccessoryViewTextData
 
 - (instancetype)initWithCloseButtonTitle:(NSString*)closeButtonTitle
-           closeButtonAccessibilityLabel:
-               (NSString*)closeButtonAccessibilityLabel
-            nextButtonAccessibilityLabel:(NSString*)nextButtonAccessibilityLabel
-        previousButtonAccessibilityLabel:
-            (NSString*)previousButtonAccessibilityLabel
-      manualFillButtonAccessibilityLabel:
-          (NSString*)manualFillButtonAccessibilityLabel {
+                   closeButtonAccessibilityLabel:
+                       (NSString*)closeButtonAccessibilityLabel
+                    nextButtonAccessibilityLabel:
+                        (NSString*)nextButtonAccessibilityLabel
+                previousButtonAccessibilityLabel:
+                    (NSString*)previousButtonAccessibilityLabel
+              manualFillButtonAccessibilityLabel:
+                  (NSString*)manualFillButtonAccessibilityLabel
+      passwordManualFillButtonAccessibilityLabel:
+          (NSString*)passwordManualFillButtonAccessibilityLabel
+    creditCardManualFillButtonAccessibilityLabel:
+        (NSString*)creditCardManualFillButtonAccessibilityLabel
+       addressManualFillButtonAccessibilityLabel:
+           (NSString*)addressManualFillButtonAccessibilityLabel {
   if (self = [super init]) {
     _closeButtonTitle = [closeButtonTitle copy];
     _closeButtonAccessibilityLabel = [closeButtonAccessibilityLabel copy];
@@ -21,6 +28,12 @@
     _previousButtonAccessibilityLabel = [previousButtonAccessibilityLabel copy];
     _manualFillButtonAccessibilityLabel =
         [manualFillButtonAccessibilityLabel copy];
+    _passwordManualFillButtonAccessibilityLabel =
+        [passwordManualFillButtonAccessibilityLabel copy];
+    _creditCardManualFillButtonAccessibilityLabel =
+        [creditCardManualFillButtonAccessibilityLabel copy];
+    _addressManualFillButtonAccessibilityLabel =
+        [addressManualFillButtonAccessibilityLabel copy];
   }
   return self;
 }

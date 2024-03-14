@@ -61,11 +61,23 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 
 @property(nonatomic, weak) UIButton* manualFillButton;
 
+@property(nonatomic, weak) UIButton* passwordManualFillButton;
+
+@property(nonatomic, weak) UIButton* creditCardManualFillButton;
+
+@property(nonatomic, weak) UIButton* addressManualFillButton;
+
 @property(nonatomic, weak) UIView* leadingView;
 
 @property(nonatomic, weak) UIView* trailingView;
 
 @property(nonatomic, strong) UIImage* manualFillSymbol;
+
+@property(nonatomic, strong) UIImage* passwordManualFillSymbol;
+
+@property(nonatomic, strong) UIImage* creditCardManualFillSymbol;
+
+@property(nonatomic, strong) UIImage* addressManualFillSymbol;
 
 @property(nonatomic, strong) UIImage* closeButtonSymbol;
 
@@ -93,32 +105,44 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 - (void)setUpWithLeadingView:(UIView*)leadingView
           customTrailingView:(UIView*)customTrailingView {
   [self setUpWithLeadingView:leadingView
-          customTrailingView:customTrailingView
-          navigationDelegate:nil
-            manualFillSymbol:nil
-           closeButtonSymbol:nil];
+              customTrailingView:customTrailingView
+              navigationDelegate:nil
+                manualFillSymbol:nil
+        passwordManualFillSymbol:nil
+      creditCardManualFillSymbol:nil
+         addressManualFillSymbol:nil
+               closeButtonSymbol:nil];
 }
 
 - (void)setUpWithLeadingView:(UIView*)leadingView
           navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate {
   [self setUpWithLeadingView:leadingView
-          customTrailingView:nil
-          navigationDelegate:delegate
-            manualFillSymbol:nil
-           closeButtonSymbol:nil];
+              customTrailingView:nil
+              navigationDelegate:delegate
+                manualFillSymbol:nil
+        passwordManualFillSymbol:nil
+      creditCardManualFillSymbol:nil
+         addressManualFillSymbol:nil
+               closeButtonSymbol:nil];
 }
 
 - (void)setUpWithLeadingView:(UIView*)leadingView
-          navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
-            manualFillSymbol:(UIImage*)manualFillSymbol
-           closeButtonSymbol:(UIImage*)closeButtonSymbol {
+            navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
+              manualFillSymbol:(UIImage*)manualFillSymbol
+      passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
+    creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
+       addressManualFillSymbol:(UIImage*)addressManualFillSymbol
+             closeButtonSymbol:(UIImage*)closeButtonSymbol {
   DCHECK(manualFillSymbol);
   _largeAccessoryViewEnabled = YES;
   [self setUpWithLeadingView:leadingView
-          customTrailingView:nil
-          navigationDelegate:delegate
-            manualFillSymbol:manualFillSymbol
-           closeButtonSymbol:closeButtonSymbol];
+              customTrailingView:nil
+              navigationDelegate:delegate
+                manualFillSymbol:manualFillSymbol
+        passwordManualFillSymbol:passwordManualFillSymbol
+      creditCardManualFillSymbol:creditCardManualFillSymbol
+         addressManualFillSymbol:addressManualFillSymbol
+               closeButtonSymbol:closeButtonSymbol];
 }
 
 - (void)setOmniboxTypingShieldHeight:(CGFloat)typingShieldHeight {
@@ -150,6 +174,18 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   [self.delegate formInputAccessoryViewDidTapManualFillButton:self];
 }
 
+- (void)passwordManualFillButtonTapped {
+  [self.delegate formInputAccessoryViewDidTapPasswordManualFillButton:self];
+}
+
+- (void)creditCardManualFillButtonTapped {
+  [self.delegate formInputAccessoryViewDidTapCreditCardManualFillButton:self];
+}
+
+- (void)addressManualFillButtonTapped {
+  [self.delegate formInputAccessoryViewDidTapAddressManualFillButton:self];
+}
+
 - (void)omniboxTypingShieldTapped {
   [self.delegate fromInputAccessoryViewDidTapOmniboxTypingShield:self];
 }
@@ -160,10 +196,13 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // `delegate` and `customTrailingView` is set, leadingView will take all the
 // space.
 - (void)setUpWithLeadingView:(UIView*)leadingView
-          customTrailingView:(UIView*)customTrailingView
-          navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
-            manualFillSymbol:(UIImage*)manualFillSymbol
-           closeButtonSymbol:(UIImage*)closeButtonSymbol {
+            customTrailingView:(UIView*)customTrailingView
+            navigationDelegate:(id<FormInputAccessoryViewDelegate>)delegate
+              manualFillSymbol:(UIImage*)manualFillSymbol
+      passwordManualFillSymbol:(UIImage*)passwordManualFillSymbol
+    creditCardManualFillSymbol:(UIImage*)creditCardManualFillSymbol
+       addressManualFillSymbol:(UIImage*)addressManualFillSymbol
+             closeButtonSymbol:(UIImage*)closeButtonSymbol {
   DCHECK(!self.subviews.count);  // This should only be called once.
 
   self.accessibilityIdentifier = kFormInputAccessoryViewAccessibilityID;
@@ -171,6 +210,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   self.backgroundColor = UIColor.clearColor;
   self.opaque = NO;
   self.manualFillSymbol = manualFillSymbol;
+  self.passwordManualFillSymbol = passwordManualFillSymbol;
+  self.creditCardManualFillSymbol = creditCardManualFillSymbol;
+  self.addressManualFillSymbol = addressManualFillSymbol;
   self.closeButtonSymbol = closeButtonSymbol;
 
   _contentView = [[UIView alloc] init];
@@ -299,10 +341,28 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   UIStackView* navigationView = nil;
   if (_largeAccessoryViewEnabled) {
     UIButton* manualFillButton = [self createManualFillButtonWithText:textData];
+    manualFillButton.hidden = YES;
     self.manualFillButton = manualFillButton;
 
-    navigationView = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ manualFillButton, closeButton ]];
+    UIButton* passwordManualFillButton =
+        [self createPasswordManualFillButtonWithText:textData];
+    passwordManualFillButton.hidden = YES;
+    self.passwordManualFillButton = passwordManualFillButton;
+
+    UIButton* creditCardManualFillButton =
+        [self createCreditCardManualFillButtonWithText:textData];
+    creditCardManualFillButton.hidden = YES;
+    self.creditCardManualFillButton = creditCardManualFillButton;
+
+    UIButton* addressManualFillButton =
+        [self createAddressManualFillButtonWithText:textData];
+    addressManualFillButton.hidden = YES;
+    self.addressManualFillButton = addressManualFillButton;
+
+    navigationView = [[UIStackView alloc] initWithArrangedSubviews:@[
+      passwordManualFillButton, creditCardManualFillButton,
+      addressManualFillButton, manualFillButton, closeButton
+    ]];
   } else {
     UIButton* previousButton = [self createPreviousButtonWithText:textData];
     self.previousButton = previousButton;
@@ -344,6 +404,33 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   return [self createImageButton:self.manualFillSymbol
                           action:@selector(manualFillButtonTapped)
               accessibilityLabel:textData.manualFillButtonAccessibilityLabel];
+}
+
+// Create the password manual fill button.
+- (UIButton*)createPasswordManualFillButtonWithText:
+    (FormInputAccessoryViewTextData*)textData {
+  return [self
+       createImageButton:self.passwordManualFillSymbol
+                  action:@selector(passwordManualFillButtonTapped)
+      accessibilityLabel:textData.passwordManualFillButtonAccessibilityLabel];
+}
+
+// Create the credit card manual fill button.
+- (UIButton*)createCreditCardManualFillButtonWithText:
+    (FormInputAccessoryViewTextData*)textData {
+  return [self
+       createImageButton:self.creditCardManualFillSymbol
+                  action:@selector(creditCardManualFillButtonTapped)
+      accessibilityLabel:textData.creditCardManualFillButtonAccessibilityLabel];
+}
+
+// Create the address manual fill button.
+- (UIButton*)createAddressManualFillButtonWithText:
+    (FormInputAccessoryViewTextData*)textData {
+  return [self
+       createImageButton:self.addressManualFillSymbol
+                  action:@selector(addressManualFillButtonTapped)
+      accessibilityLabel:textData.addressManualFillButtonAccessibilityLabel];
 }
 
 // Create the previous button.

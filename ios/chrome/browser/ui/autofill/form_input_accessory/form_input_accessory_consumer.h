@@ -44,10 +44,19 @@
 // And form navigation buttons on iPhone (iPad already includes those).
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions;
 
-// Invoked after the user taps the `manual fill` button.
+// Invoked after the user taps the "manual fill" button.
 - (void)manualFillButtonPressed:(UIButton*)button;
 
-// Preferred omnibox position was updated. `isBottomOmnibox`: whether the new
+// Invoked after the user taps the "password manual fill" button.
+- (void)passwordManualFillButtonPressed:(UIButton*)button;
+
+// Invoked after the user taps the "credit card manual fill" button.
+- (void)creditCardManualFillButtonPressed:(UIButton*)button;
+
+// Invoked after the user taps the "address manual fill" button.
+- (void)addressManualFillButtonPressed:(UIButton*)button;
+
+// Preferred omnibox position was updated. "isBottomOmnibox": whether the new
 // position is bottom omnibox.
 - (void)newOmniboxPositionIsBottom:(BOOL)isBottomOmnibox;
 

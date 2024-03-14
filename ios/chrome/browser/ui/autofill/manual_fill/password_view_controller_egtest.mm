@@ -15,11 +15,13 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -91,13 +93,24 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
                     grey_interactable(), nullptr);
 }
 
+// Matcher for the expanded password manual fill view button.
+id<GREYMatcher> PasswordManualFillViewButton() {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_AUTOFILL_PASSWORD_AUTOFILL_DATA)),
+                    grey_ancestor(grey_accessibilityID(
+                        kFormInputAccessoryViewAccessibilityID)),
+                    nil);
+}
+
 // Opens the password manual fill view and verifies that the password view
 // controller is visible afterwards.
-void OpenPasswordManualFillView() {
+void OpenPasswordManualFillView(bool has_suggestions) {
   id<GREYMatcher> button_to_tap;
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    button_to_tap = grey_accessibilityLabel(
-        l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA));
+    button_to_tap = has_suggestions
+                        ? grey_accessibilityLabel(l10n_util::GetNSString(
+                              IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA))
+                        : PasswordManualFillViewButton();
   } else {
     button_to_tap = ManualFallbackPasswordIconMatcher();
   }
@@ -121,7 +134,7 @@ void CheckPasswordManagerUIDismissesAfterFailedAuthentication(
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Simulate failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -249,7 +262,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Tap the "Select Password..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
@@ -277,7 +290,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
 
   // Open the password manual fill view and verify that the password controller
   // table view is visible.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 }
 
 // Tests that the passwords view controller contains the "Manage Passwords..."
@@ -293,7 +306,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Verify the password controller contains the "Manage Passwords..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackManagePasswordsMatcher()]
@@ -318,7 +331,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Tap the "Manage Passwords..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackManagePasswordsMatcher()]
@@ -360,7 +373,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Tap the "Manage Passwords..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackManageSettingsMatcher()]
@@ -405,7 +418,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Tap the "Manage Passwords..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackManagePasswordsMatcher()]
@@ -437,7 +450,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Tap the "Manage Settings..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackManageSettingsMatcher()]
@@ -485,7 +498,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Verify the status of the icon.
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordIconMatcher()]
@@ -546,7 +559,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Tap the "Select Password..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
@@ -680,7 +693,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Tap the "Select Password..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
@@ -724,7 +737,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Tap on the keyboard icon.
   [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
@@ -749,7 +762,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   [ChromeEarlGreyUI
       dismissByTappingOnTheWindowOfPopover:
@@ -779,7 +792,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
       performAction:grey_replaceText(@"text")];
@@ -799,7 +812,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                 error:nil];
@@ -826,7 +839,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
                  @"Keyboard Should be Shown");
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   CheckPasswordFillingOptionIsVisible(
       /*site=*/base::SysUTF8ToNSString(self.URL.host()));
@@ -861,7 +874,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
                  @"Keyboard Should be Shown");
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   CheckPasswordFillingOptionIsVisible(
       /*site=*/base::SysUTF8ToNSString(self.URL.host()));
@@ -914,7 +927,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementUsername)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Assert that the "no passwords found" message is visible.
   id<GREYMatcher> noPasswordsFoundMessage = grey_accessibilityLabel(
@@ -942,7 +955,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementPassword)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Select a 'Suggest Password...' option.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
@@ -972,7 +985,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementPassword)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Verify a 'Suggest Password...' option is showing.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
@@ -1006,7 +1019,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementPassword)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Verify the 'Suggest Password...' option is not shown.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]
@@ -1042,7 +1055,7 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
       performAction:TapWebElementWithId(kFormElementPassword)];
 
   // Open the password manual fill view.
-  OpenPasswordManualFillView();
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
 
   // Verify the 'Suggest Password...' option is not shown.
   [[EarlGrey selectElementWithMatcher:ManualFallbackSuggestPasswordMatcher()]

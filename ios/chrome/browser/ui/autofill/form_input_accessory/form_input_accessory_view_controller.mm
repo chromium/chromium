@@ -168,6 +168,16 @@ using manual_fill::ManualFillDataType;
 #pragma mark - FormInputAccessoryConsumer
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
+  BOOL hasSingleManualFillButton = suggestions.count > 0;
+  self.formInputAccessoryView.manualFillButton.hidden =
+      !hasSingleManualFillButton;
+  self.formInputAccessoryView.passwordManualFillButton.hidden =
+      hasSingleManualFillButton;
+  self.formInputAccessoryView.creditCardManualFillButton.hidden =
+      hasSingleManualFillButton;
+  self.formInputAccessoryView.addressManualFillButton.hidden =
+      hasSingleManualFillButton;
+
   [self createFormSuggestionViewIfNeeded];
   __weak __typeof(self) weakSelf = self;
   auto completion = ^(BOOL finished) {
@@ -188,14 +198,24 @@ using manual_fill::ManualFillDataType;
 }
 
 - (void)manualFillButtonPressed:(UIButton*)button {
-  DCHECK(IsKeyboardAccessoryUpgradeEnabled());
+  [self manualFillButtonPressed:button
+                    forDataType:[self manualFillDataTypeFromFillingProduct:
+                                          _mainFillingProduct]];
+}
 
-  ManualFillDataType dataType =
-      [self manualFillDataTypeFromFillingProduct:_mainFillingProduct];
-  [_formInputAccessoryViewControllerDelegate
-      formInputAccessoryViewController:self
-              didPressManualFillButton:button
-                           forDataType:dataType];
+- (void)passwordManualFillButtonPressed:(UIButton*)button {
+  [self manualFillButtonPressed:button
+                    forDataType:ManualFillDataType::kPassword];
+}
+
+- (void)creditCardManualFillButtonPressed:(UIButton*)button {
+  [self manualFillButtonPressed:button
+                    forDataType:ManualFillDataType::kPaymentMethod];
+}
+
+- (void)addressManualFillButtonPressed:(UIButton*)button {
+  [self manualFillButtonPressed:button
+                    forDataType:ManualFillDataType::kAddress];
 }
 
 - (void)newOmniboxPositionIsBottom:(BOOL)isBottomOmnibox {
@@ -269,6 +289,17 @@ using manual_fill::ManualFillDataType;
 
 #pragma mark - Private
 
+// Invoked after the user taps any of the `manual fill` buttons.
+- (void)manualFillButtonPressed:(UIButton*)button
+                    forDataType:(manual_fill::ManualFillDataType)dataType {
+  DCHECK(IsKeyboardAccessoryUpgradeEnabled());
+
+  [_formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+              didPressManualFillButton:button
+                           forDataType:dataType];
+}
+
 // Resets this view to its original state. Can be animated.
 - (void)resetAnimated:(BOOL)animated {
   [self.formSuggestionView resetContentInsetAndDelegateAnimated:animated];
@@ -308,13 +339,22 @@ using manual_fill::ManualFillDataType;
         self.manualFillAccessoryViewController.view;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       [formInputAccessoryView
-          setUpWithLeadingView:self.leadingView
-            navigationDelegate:self.navigationDelegate
-              manualFillSymbol:DefaultSymbolWithPointSize(
-                                   kExpandSymbol, kSymbolActionPointSize)
-             closeButtonSymbol:DefaultSymbolWithPointSize(
-                                   kKeyboardDownSymbol,
-                                   kSymbolActionPointSize)];
+                setUpWithLeadingView:self.leadingView
+                  navigationDelegate:self.navigationDelegate
+                    manualFillSymbol:DefaultSymbolWithPointSize(
+                                         kExpandSymbol, kSymbolActionPointSize)
+            passwordManualFillSymbol:CustomSymbolWithPointSize(
+                                         kPasswordSymbol,
+                                         kSymbolActionPointSize)
+          creditCardManualFillSymbol:DefaultSymbolWithPointSize(
+                                         kCreditCardSymbol,
+                                         kSymbolActionPointSize)
+             addressManualFillSymbol:CustomSymbolWithPointSize(
+                                         kLocationSymbol,
+                                         kSymbolActionPointSize)
+                   closeButtonSymbol:DefaultSymbolWithPointSize(
+                                         kKeyboardDownSymbol,
+                                         kSymbolActionPointSize)];
     } else {
       [formInputAccessoryView setUpWithLeadingView:self.leadingView
                                 navigationDelegate:self.navigationDelegate];
