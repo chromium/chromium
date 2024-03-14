@@ -139,6 +139,7 @@ NSAttributedString* Strikethrough(NSString* text) {
     tryButton.accessibilityLabel =
         [NSString stringWithFormat:@"%@, %@", tryButtonTitle, itemTitle];
     tryButton.layer.cornerRadius = 15;
+    tryButton.pointerInteractionEnabled = YES;
     [NSLayoutConstraint activateConstraints:@[
       [tryButton.widthAnchor constraintEqualToConstant:kTryButtonWidth],
     ]];

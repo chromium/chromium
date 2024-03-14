@@ -145,6 +145,7 @@ const CGFloat kSeparatorHeight = 0.5;
              forControlEvents:UIControlEventTouchUpInside];
     [_seeMoreButton setContentHuggingPriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisHorizontal];
+    _seeMoreButton.pointerInteractionEnabled = YES;
     [_titleStackView addArrangedSubview:_seeMoreButton];
     _seeMoreButton.accessibilityIdentifier = _seeMoreButton.titleLabel.text;
     _seeMoreButton.hidden = YES;
