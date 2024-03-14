@@ -203,15 +203,14 @@ Use the `DEBUG_DEPTH` (default: `10`) environment variable to see debug deeply n
 DEBUG_DEPTH=100 DEBUG=* npm run server
 ```
 
-Use the `CHANNEL=...` environment variable or `--channel=...` argument with one of
-the following values to run the specific Chrome channel: `stable`,
-`beta`, `canary`, `dev`.
-
-The requested Chrome version should be installed.
+Use the `CHANNEL=...` environment variable with one of the following values to run
+the specific Chrome channel: `stable`, `beta`, `canary`, `dev`, `local`. Default is
+`local`. The `local` channel means the pinned in `.browser` Chrome version will be
+downloaded if it is not yet in cache. Otherwise, the requested Chrome version should
+be installed.
 
 ```sh
 CHANNEL=dev npm run server
-npm run server -- --channel=dev
 ```
 
 Use the CLI argument `--verbose` to have CDP events printed to the console. Note: you have to enable debugging output `bidi:mapper:debug:*` as well.

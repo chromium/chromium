@@ -18,40 +18,58 @@
 import {execSync} from 'child_process';
 import {join} from 'path';
 
+import {Browser, computeSystemExecutablePath} from '@puppeteer/browsers';
+
 /**
  * Either return a value of `BROWSER_BIN` environment variable or gets the path
- * to the browser version defined in `.browser` file, downloading the required
- * version if needed.
+ * to the browser specified in `CHANNEL` environment variable if specified. If
+ * no channel or browser bin is provided in environment variable,
+ * returns defined in `.browser` file, downloading the required version if
+ * needed.
  * @return {string}
  */
 export function installAndGetChromePath() {
-  let BROWSER_BIN = process.env.BROWSER_BIN;
-  if (!BROWSER_BIN) {
-    BROWSER_BIN = execSync(
-      ['node', join('tools', 'install-browser.mjs')].join(' ')
-    )
+  if (process.env.BROWSER_BIN) {
+    return process.env.BROWSER_BIN;
+  }
+
+  const channel = getChannel();
+
+  if (channel === 'local') {
+    return execSync(['node', join('tools', 'install-browser.mjs')].join(' '))
       .toString()
       .trim();
   }
-  return BROWSER_BIN;
+
+  return computeSystemExecutablePath({
+    browser: Browser.CHROME,
+    channel,
+  });
 }
 
 /**
  * Either return a value of `CHROMEDRIVER_BIN` environment variable or gets the
  * path to the ChromeDriver for the browser version defined in `.browser` file,
- * downloading the required version if needed.
+ * downloading the required version if needed. Throws an error if the channel is
+ * not `local` and the `CHROMEDRIVER_BIN` environment variable is not set.
  * @return {string}
  */
 export function installAndGetChromeDriverPath() {
-  let CHROMEDRIVER_BIN = process.env.CHROMEDRIVER_BIN;
-  if (!CHROMEDRIVER_BIN) {
-    CHROMEDRIVER_BIN = execSync(
-      ['node', join('tools', 'install-browser.mjs'), '--chromedriver'].join(' ')
-    )
-      .toString()
-      .trim();
+  if (process.env.CHROMEDRIVER_BIN) {
+    return process.env.CHROMEDRIVER_BIN;
   }
-  return CHROMEDRIVER_BIN;
+
+  if (getChannel() !== 'local') {
+    throw new Error(
+      'Auto download of chromedriver is supported only for `local` channel. Either use `CHANNEL=local` or set `CHROMEDRIVER_BIN` environment variable to the path of the chromedriver binary matching required Chrome channel.'
+    );
+  }
+
+  return execSync(
+    ['node', join('tools', 'install-browser.mjs'), '--chromedriver'].join(' ')
+  )
+    .toString()
+    .trim();
 }
 
 /**
@@ -60,4 +78,8 @@ export function installAndGetChromeDriverPath() {
  */
 export function getBidiMapperPath() {
   return join('lib', 'iife', 'mapperTab.js');
+}
+
+function getChannel() {
+  return process.env.CHANNEL || 'local';
 }

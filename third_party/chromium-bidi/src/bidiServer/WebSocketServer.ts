@@ -16,7 +16,6 @@
  */
 import http from 'http';
 
-import type {ChromeReleaseChannel} from '@puppeteer/browsers';
 import debug from 'debug';
 import * as websocket from 'websocket';
 
@@ -24,7 +23,7 @@ import type {MapperOptions} from '../bidiMapper/BidiServer.js';
 import {ErrorCode} from '../protocol/protocol.js';
 import {uuidv4} from '../utils/uuid.js';
 
-import {BrowserInstance} from './BrowserInstance.js';
+import {BrowserInstance, type ChromeOptions} from './BrowserInstance.js';
 
 export const debugInfo = debug('bidi:server:info');
 const debugInternal = debug('bidi:server:internal');
@@ -41,12 +40,6 @@ type Session = {
   sessionOptions: Readonly<SessionOptions>;
 };
 
-type ChromeOptions = {
-  readonly chromeArgs: string[];
-  readonly chromeBinary?: string;
-  readonly channel: ChromeReleaseChannel;
-};
-
 type SessionOptions = {
   readonly mapperOptions: MapperOptions;
   readonly chromeOptions: ChromeOptions;
@@ -56,15 +49,13 @@ type SessionOptions = {
 export class WebSocketServer {
   #sessions = new Map<string, Session>();
   #port: number;
-  #channel: ChromeReleaseChannel;
   #verbose: boolean;
 
   #server: http.Server;
   #wsServer: websocket.server;
 
-  constructor(port: number, channel: ChromeReleaseChannel, verbose: boolean) {
+  constructor(port: number, verbose: boolean) {
     this.#port = port;
-    this.#channel = channel;
     this.#verbose = verbose;
 
     this.#server = http.createServer(this.#onRequest.bind(this));
@@ -142,10 +133,7 @@ export class WebSocketServer {
         //  tests clean up is switched to pure BiDi.
         browserInstancePromise: undefined,
         sessionOptions: {
-          chromeOptions: this.#getChromeOptions(
-            jsonBody.capabilities,
-            this.#channel
-          ),
+          chromeOptions: this.#getChromeOptions(jsonBody.capabilities),
           mapperOptions: this.#getMapperOptions(jsonBody.capabilities),
           verbose: this.#verbose,
         },
@@ -304,8 +292,7 @@ export class WebSocketServer {
         try {
           const sessionOptions = {
             chromeOptions: this.#getChromeOptions(
-              parsedCommandData.params?.capabilities,
-              this.#channel
+              parsedCommandData.params?.capabilities
             ),
             mapperOptions: this.#getMapperOptions(
               parsedCommandData.params?.capabilities
@@ -462,15 +449,11 @@ export class WebSocketServer {
     return {acceptInsecureCerts, sharedIdWithFrame};
   }
 
-  #getChromeOptions(
-    capabilities: any,
-    channel: ChromeReleaseChannel
-  ): ChromeOptions {
+  #getChromeOptions(capabilities: any): ChromeOptions {
     const chromeCapabilities =
       capabilities?.alwaysMatch?.['goog:chromeOptions'];
     return {
       chromeArgs: chromeCapabilities?.args ?? [],
-      channel,
       chromeBinary: chromeCapabilities?.binary ?? undefined,
     };
   }

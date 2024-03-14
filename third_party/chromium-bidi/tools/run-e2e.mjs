@@ -119,7 +119,7 @@ const syncFileStreams =
   process.env.VERBOSE === 'true' ? new PassThrough() : new SyncFileStreams();
 syncFileStreams.pipe(fileWriteStream);
 
-const serverProcess = createBiDiServerProcess(argv);
+const serverProcess = createBiDiServerProcess();
 
 if (serverProcess.stderr) {
   serverProcess.stdout.pipe(process.stdout);

@@ -21,10 +21,7 @@ import os from 'os';
 import path from 'path';
 
 import {
-  Browser,
   CDP_WEBSOCKET_ENDPOINT_REGEX,
-  type ChromeReleaseChannel,
-  computeSystemExecutablePath,
   launch,
   type Process,
 } from '@puppeteer/browsers';
@@ -41,10 +38,9 @@ import type {SimpleTransport} from './SimpleTransport.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 
-type ChromeOptions = {
+export type ChromeOptions = {
   chromeArgs: string[];
   chromeBinary?: string;
-  channel: ChromeReleaseChannel;
 };
 
 /**
@@ -92,12 +88,7 @@ export class BrowserInstance {
     ];
 
     const executablePath =
-      chromeOptions.chromeBinary ??
-      process.env['BROWSER_BIN'] ??
-      computeSystemExecutablePath({
-        browser: Browser.CHROME,
-        channel: chromeOptions.channel,
-      });
+      chromeOptions.chromeBinary ?? process.env['BROWSER_BIN'];
 
     if (!executablePath) {
       throw new Error('Could not find Chrome binary');

@@ -19,16 +19,11 @@
 
 import {createWriteStream} from 'fs';
 
-import {
-  createBiDiServerProcess,
-  parseCommandLineArgs,
-  createLogFile,
-} from './bidi-server.mjs';
+import {createBiDiServerProcess, createLogFile} from './bidi-server.mjs';
 
-const argv = parseCommandLineArgs();
 const LOG_FILE = createLogFile('server');
 const fileWriteStream = createWriteStream(LOG_FILE);
-const subprocess = createBiDiServerProcess(argv.headless);
+const subprocess = createBiDiServerProcess();
 
 if (subprocess.stderr) {
   subprocess.stderr.pipe(process.stdout);

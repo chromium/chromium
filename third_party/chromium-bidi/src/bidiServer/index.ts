@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-import {ChromeReleaseChannel} from '@puppeteer/browsers';
 import {ArgumentParser} from 'argparse';
 
 import {debugInfo, WebSocketServer} from './WebSocketServer.js';
 
 function parseArguments(): {
-  channel: ChromeReleaseChannel;
   port: number;
   verbose: boolean;
 } {
   const parser = new ArgumentParser({
     add_help: true,
     exit_on_error: true,
-  });
-
-  parser.add_argument('-c', '--channel', {
-    help:
-      'If set, the given installed Chrome Release Channel will be used ' +
-      'instead of one pointed by Puppeteer version',
-    choices: Object.values(ChromeReleaseChannel),
-    default: ChromeReleaseChannel.DEV,
   });
 
   parser.add_argument('-p', '--port', {
@@ -56,12 +46,12 @@ function parseArguments(): {
 (() => {
   try {
     const args = parseArguments();
-    const {channel, port} = args;
+    const {port} = args;
     const verbose = args.verbose === true;
 
     debugInfo('Launching BiDi server...');
 
-    new WebSocketServer(port, channel, verbose);
+    new WebSocketServer(port, verbose);
     debugInfo('BiDi server launched');
   } catch (e) {
     debugInfo('Error launching BiDi server', e);

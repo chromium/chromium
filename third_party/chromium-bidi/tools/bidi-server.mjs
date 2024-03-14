@@ -22,6 +22,8 @@ import {packageDirectorySync} from 'pkg-dir';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
+import {installAndGetChromePath} from './path-getter/path-getter.mjs';
+
 function log(message) {
   // eslint-disable-next-line no-console
   console.log(`(${basename(process.argv[1])}) ${message}`);
@@ -51,7 +53,7 @@ export function parseCommandLineArgs() {
   return yargs(hideBin(process.argv))
     .usage(
       `$0 [fileOrFolder]`,
-      `[CHANNEL=<stable | beta | canary | dev>] [DEBUG=*] [DEBUG_COLORS=<yes | no>] [LOG_DIR=logs] [NODE_OPTIONS=--unhandled-rejections=strict] [PORT=8080]`,
+      `[CHANNEL=<local | stable | beta | canary | dev>] [DEBUG=*] [DEBUG_COLORS=<yes | no>] [LOG_DIR=logs] [NODE_OPTIONS=--unhandled-rejections=strict] [PORT=8080]`,
       (yargs) => {
         yargs.positional('fileOrFolder', {
           describe: 'Provide a sub E2E file or folder to filter by',
@@ -71,23 +73,8 @@ export function parseCommandLineArgs() {
  * @returns {child_process.ChildProcessWithoutNullStreams}
  */
 export function createBiDiServerProcess() {
-  let BROWSER_BIN = process.env.BROWSER_BIN;
-  let CHANNEL = process.env.CHANNEL || 'local';
+  const BROWSER_BIN = installAndGetChromePath();
 
-  if (BROWSER_BIN) {
-    // Need to pass valid CHANNEL to the command below
-    CHANNEL = CHANNEL === 'local' ? 'canary' : CHANNEL;
-  }
-
-  if (!BROWSER_BIN && CHANNEL === 'local') {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    BROWSER_BIN = child_process
-      .spawnSync('node', [join('tools', 'install-browser.mjs')])
-      .stdout.toString()
-      .trim();
-    // Need to pass valid CHANNEL to the command below
-    CHANNEL = 'canary';
-  }
   // DEBUG = (empty string) is allowed.
   const DEBUG = process.env.DEBUG ?? 'bidi:*';
   const DEBUG_COLORS = process.env.DEBUG_COLORS || 'false';
@@ -96,14 +83,13 @@ export function createBiDiServerProcess() {
     process.env.NODE_OPTIONS ||
     '--unhandled-rejections=strict --trace-uncaught';
   const PORT = process.env.PORT || '8080';
+  const VERBOSE = true;
   log(`Starting BiDi Server with DEBUG='${DEBUG}'...`);
 
   return child_process.spawn(
     'node',
     [
       resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
-      `--channel`,
-      CHANNEL,
       ...process.argv.slice(2),
     ],
     {
@@ -117,7 +103,7 @@ export function createBiDiServerProcess() {
         DEBUG_DEPTH,
         NODE_OPTIONS,
         PORT,
-        VERBOSE: true,
+        VERBOSE,
         // keep-sorted end
       },
     }
