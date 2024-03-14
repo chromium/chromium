@@ -42,7 +42,8 @@ class DesktopCapturerProxy : public DesktopCapturer {
 
   // CreateCapturer() should be used if the capturer needs to be created on the
   // capturer thread. Otherwise, the capturer can be passed to set_capturer().
-  void CreateCapturer(const webrtc::DesktopCaptureOptions& options);
+  void CreateCapturer(const webrtc::DesktopCaptureOptions& options,
+                      SourceId id);
   void set_capturer(std::unique_ptr<webrtc::DesktopCapturer> capturer);
 
   // webrtc::DesktopCapturer interface.

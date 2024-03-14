@@ -223,27 +223,23 @@ std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(
   std::unique_ptr<DesktopCapturer> desktop_capturer;
   if (options_.capture_video_on_dedicated_thread()) {
     auto desktop_capturer_wrapper = std::make_unique<DesktopCapturerWrapper>();
-    desktop_capturer_wrapper->CreateCapturer(desktop_capture_options());
+    desktop_capturer_wrapper->CreateCapturer(desktop_capture_options(), id);
     desktop_capturer = std::move(desktop_capturer_wrapper);
   } else {
     auto desktop_capturer_proxy =
         std::make_unique<DesktopCapturerProxy>(std::move(capture_task_runner));
-    desktop_capturer_proxy->CreateCapturer(desktop_capture_options());
+    desktop_capturer_proxy->CreateCapturer(desktop_capture_options(), id);
     desktop_capturer = std::move(desktop_capturer_proxy);
   }
 
 #if BUILDFLAG(IS_APPLE)
   // Mac includes the mouse cursor in the captured image in curtain mode.
   if (options_.enable_curtaining()) {
-    desktop_capturer->SelectSource(id);
     return desktop_capturer;
   }
 #endif
-  auto composing_capturer =
-      std::make_unique<DesktopAndCursorConditionalComposer>(
-          std::move(desktop_capturer));
-  composing_capturer->SelectSource(id);
-  return composing_capturer;
+  return std::make_unique<DesktopAndCursorConditionalComposer>(
+      std::move(desktop_capturer));
 }
 
 BasicDesktopEnvironment::BasicDesktopEnvironment(
