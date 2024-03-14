@@ -277,6 +277,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Apps.AppInstallService.ArcAppInstaller.InstallResult{AppInstallSurface}"
+    enum="ArcAppInstallResultCode" expires_after="2024-07-03">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The overall result of installing an arc app through the App Install Service
+    for a given install surface.
+  </summary>
+  <token key="AppInstallSurface" variants="AppInstallSurface"/>
+</histogram>
+
+<histogram
     name="Apps.AppInstallService.WebAppInstaller.CommandResultCode{AppInstallSurface}"
     enum="WebAppInstallResultCode" expires_after="2024-07-03">
   <owner>tsergeant@chromium.org</owner>

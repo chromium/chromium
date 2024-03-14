@@ -42,6 +42,9 @@ BASE_DECLARE_FEATURE(kAppPreloadServiceForceRun);
 // are normally silently ignored.
 BASE_DECLARE_FEATURE(kAppPreloadServiceEnableTestApps);
 
+// Feature to allow installing arc apps returned by the server.
+BASE_DECLARE_FEATURE(kAppPreloadServiceEnableArcApps);
+
 class AppPreloadService : public KeyedService {
  public:
   explicit AppPreloadService(Profile* profile);

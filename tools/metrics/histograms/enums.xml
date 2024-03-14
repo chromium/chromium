@@ -647,6 +647,10 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="17" label="Bruschetta app"/>
 </enum>
 
+<enum name="ArcAppInstallResultCode">
+  <int value="0" label="Success"/>
+</enum>
+
 <enum name="ArcContinueBootImpulseStatus">
 <!-- To be kept in sync with ChromeOS enum ArcContinueBootImpulseStatus -->
 

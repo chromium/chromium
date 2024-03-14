@@ -46,12 +46,17 @@ source_set("implementation") {
       "app_install_almanac_connector.h",
       "app_install_service_ash.cc",
       "app_install_service_ash.h",
+      "arc_app_installer.cc",
+      "arc_app_installer.h",
       "web_app_installer.cc",
       "web_app_installer.h",
     ]
 
     deps += [
       ":proto",
+      "//ash/components/arc/mojom",
+      "//ash/components/arc/session",
+      "//ash/components/arc/session:connection_holder",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/profiles:profile",
@@ -119,12 +124,17 @@ source_set("unit_tests") {
   ]
 
   if (is_chromeos_ash) {
-    sources += [ "app_install_almanac_connector_unittest.cc" ]
+    sources += [
+      "app_install_almanac_connector_unittest.cc",
+      "arc_app_installer_unittest.cc",
+    ]
 
     deps += [
       ":proto",
+      "//ash/components/arc:arc_test_support",
       "//chrome/browser/apps/almanac_api_client/proto",
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/ash:test_support",
       "//services/network:test_support",
     ]
   }

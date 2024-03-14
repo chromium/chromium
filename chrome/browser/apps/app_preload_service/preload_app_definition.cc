@@ -54,6 +54,13 @@ AppInstallSurface PreloadAppDefinition::GetInstallSurface() const {
                         : AppInstallSurface::kAppPreloadServiceOem;
 }
 
+std::string PreloadAppDefinition::GetAndroidPackageName() const {
+  DCHECK_EQ(GetPlatform(), AppType::kArc);
+  DCHECK(package_id_.has_value());
+
+  return package_id_->identifier();
+}
+
 GURL PreloadAppDefinition::GetWebAppManifestUrl() const {
   DCHECK_EQ(GetPlatform(), AppType::kWeb);
 
@@ -79,13 +86,18 @@ std::string PreloadAppDefinition::GetWebAppId() const {
 }
 
 AppInstallData PreloadAppDefinition::ToAppInstallData() const {
-  DCHECK_EQ(GetPlatform(), AppType::kWeb);
   AppInstallData result(package_id_.value());
   result.name = GetName();
-  auto& web_app_data = result.app_type_data.emplace<WebAppInstallData>();
-  web_app_data.original_manifest_url = GetWebAppOriginalManifestUrl();
-  web_app_data.proxied_manifest_url = GetWebAppManifestUrl();
-  web_app_data.document_url = GetWebAppManifestId().GetWithEmptyPath();
+  if (GetPlatform() == AppType::kArc) {
+    // nothing.
+  } else if (GetPlatform() == AppType::kWeb) {
+    auto& web_app_data = result.app_type_data.emplace<WebAppInstallData>();
+    web_app_data.original_manifest_url = GetWebAppOriginalManifestUrl();
+    web_app_data.proxied_manifest_url = GetWebAppManifestUrl();
+    web_app_data.document_url = GetWebAppManifestId().GetWithEmptyPath();
+  } else {
+    NOTREACHED();
+  }
   return result;
 }
 
@@ -94,8 +106,12 @@ std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
   os << "- Name: " << app.GetName() << std::endl;
   os << "- Platform: " << EnumToString(app.GetPlatform()) << std::endl;
   os << "- OEM: " << app.IsOemApp() << std::endl;
+  os << "- Default: " << app.IsDefaultApp() << std::endl;
 
-  if (app.GetPlatform() == AppType::kWeb) {
+  if (app.GetPlatform() == AppType::kArc) {
+    os << "- Android Extras:" << std::endl;
+    os << "  - Package Name: " << app.GetAndroidPackageName() << std::endl;
+  } else if (app.GetPlatform() == AppType::kWeb) {
     os << "- Web Extras:" << std::endl;
     os << "  - Manifest URL: " << app.GetWebAppManifestUrl() << std::endl;
     os << "  - Original Manifest URL: " << app.GetWebAppOriginalManifestUrl()

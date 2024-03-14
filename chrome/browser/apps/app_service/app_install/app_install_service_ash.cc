@@ -105,6 +105,7 @@ AppInstallServiceAsh::InstallAppCallbackForTesting() {
 AppInstallServiceAsh::AppInstallServiceAsh(Profile& profile)
     : profile_(profile),
       device_info_manager_(&*profile_),
+      arc_app_installer_(&*profile_),
       web_app_installer_(&*profile_) {}
 
 AppInstallServiceAsh::~AppInstallServiceAsh() = default;
@@ -129,9 +130,6 @@ void AppInstallServiceAsh::InstallAppHeadless(
     AppInstallSurface surface,
     PackageId package_id,
     base::OnceCallback<void(bool success)> callback) {
-  // TODO(b/303350800): Generalize to work with all app types.
-  CHECK_EQ(package_id.app_type(), AppType::kWeb);
-
   FetchAppInstallData(
       package_id, base::BindOnce(&AppInstallServiceAsh::PerformInstallHeadless,
                                  weak_ptr_factory_.GetWeakPtr(), surface,
@@ -142,9 +140,6 @@ void AppInstallServiceAsh::InstallAppHeadless(
     AppInstallSurface surface,
     AppInstallData data,
     base::OnceCallback<void(bool success)> callback) {
-  // TODO(b/303350800): Generalize to work with all app types.
-  CHECK_EQ(data.package_id.app_type(), AppType::kWeb);
-
   PerformInstallHeadless(surface, data.package_id, std::move(callback), data);
 }
 
@@ -177,7 +172,16 @@ void AppInstallServiceAsh::PerformInstallHeadless(
     return;
   }
 
-  web_app_installer_.InstallApp(surface, std::move(*data), std::move(callback));
+  if (absl::holds_alternative<AndroidAppInstallData>(data->app_type_data)) {
+    arc_app_installer_.InstallApp(surface, std::move(*data),
+                                  std::move(callback));
+  } else if (absl::holds_alternative<WebAppInstallData>(data->app_type_data)) {
+    web_app_installer_.InstallApp(surface, std::move(*data),
+                                  std::move(callback));
+  } else {
+    LOG(ERROR) << "Unsupported AppInstallData type";
+    std::move(callback).Run(false);
+  }
 }
 
 void AppInstallServiceAsh::ShowDialogAndInstall(

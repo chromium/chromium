@@ -77,6 +77,10 @@ BASE_FEATURE(kAppPreloadServiceEnableTestApps,
              "AppPreloadServiceEnableTestApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAppPreloadServiceEnableArcApps,
+             "AppPreloadServiceEnableArcApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
       server_connector_(std::make_unique<AppPreloadServerConnector>()),
@@ -208,8 +212,12 @@ void AppPreloadService::OnFirstLoginFlowComplete(base::TimeTicks start_time,
 }
 
 bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
-  // We currently only preload web apps.
-  if (app.GetPlatform() != AppType::kWeb) {
+  // We preload android apps (when feature enabled) and web apps.
+  if (app.GetPlatform() == AppType::kArc) {
+    if (!base::FeatureList::IsEnabled(apps::kAppPreloadServiceEnableArcApps)) {
+      return false;
+    }
+  } else if (app.GetPlatform() != AppType::kWeb) {
     return false;
   }
 
@@ -225,6 +233,12 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
   // If the app is already installed with the relevant install reason, we do not
   // need to reinstall it. This avoids extra work in the case where we are
   // retrying the flow after an install error for a different app.
+
+  // TODO(crbug.com/329144520) Implement already installed check for android.
+  if (app.GetPlatform() == AppType::kArc) {
+    return true;
+  }
+
   InstallReason expected_reason =
       app.IsDefaultApp() ? InstallReason::kDefault : InstallReason::kOem;
   AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile_);
