@@ -35,7 +35,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -50,6 +51,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -58,7 +60,7 @@ import org.chromium.ui.test.util.ViewUtils;
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
-@Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 // TODO(crbug.com/41496906): Tests temporarily disabled for automotive. They should be
 // re-enabled once the new sign-in flow is implemented for automotive.
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
@@ -85,6 +87,7 @@ public class SigninAndHistoryOptInIntegrationTest {
             new BaseActivityTestRule(SigninAndHistoryOptInActivity.class);
 
     private SigninAndHistoryOptInActivity mActivity;
+    private @SigninAccessPoint int mSigninAccessPoint = SigninAccessPoint.NTP_SIGNED_OUT_ICON;
 
     @Before
     public void setUp() {
@@ -234,7 +237,33 @@ public class SigninAndHistoryOptInIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        // Verify that the collapsed sign-in bottom-sheet is shown, and start sign-in.
+        // Verify that the collapsed sign-in bottom-sheet is shown, and skip sign-in.
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_dismiss_button),
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+
+        verifySigninCancelled();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testWithExistingAccount_refuseSignin_fromBookmarks() {
+        // The new sign-in flow contains behaviors specific to the bookmark access point (enabling
+        // bookmark & reading list sync after successful sign-in) therefore the access point is
+        // overridden here to ensure correct dismissal behavior in this case.
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        launchActivity(
+                NoAccountSigninMode.BOTTOM_SHEET,
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistoryOptInMode.REQUIRED);
+
+        // Verify that the collapsed sign-in bottom-sheet is shown, and refuse sign-in.
         onView(
                         allOf(
                                 withId(R.id.account_picker_dismiss_button),
@@ -378,7 +407,7 @@ public class SigninAndHistoryOptInIntegrationTest {
                         noAccountSigninMode,
                         withAccountSigninMode,
                         historyOptInMode,
-                        SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                        mSigninAccessPoint);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
     }

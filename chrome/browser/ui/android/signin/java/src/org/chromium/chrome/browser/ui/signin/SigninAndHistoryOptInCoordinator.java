@@ -28,6 +28,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.base.WindowAndroid;
@@ -159,6 +160,16 @@ public class SigninAndHistoryOptInCoordinator
     /** Called when the sign-in successfully finishes. */
     @Override
     public void onSignInComplete() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && SyncFeatureMap.isEnabled(
+                        SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+                && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
+            Profile profile = mProfileSupplier.get();
+            SyncService syncService = SyncServiceFactory.getForProfile(profile);
+            syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
+            syncService.setSelectedType(UserSelectableType.READING_LIST, true);
+        }
+
         if (mAccountPickerCoordinator == null) {
             return;
         }
@@ -370,13 +381,6 @@ public class SigninAndHistoryOptInCoordinator
     }
 
     private void onFlowComplete() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
-            Profile profile = mProfileSupplier.get();
-            SyncService syncService = SyncServiceFactory.getForProfile(profile);
-            syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
-            syncService.setSelectedType(UserSelectableType.READING_LIST, true);
-        }
         mDelegate.onFlowComplete();
     }
 }
