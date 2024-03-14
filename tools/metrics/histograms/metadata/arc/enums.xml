@@ -37,6 +37,17 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed to enable (need powerwash)"/>
 </enum>
 
+<enum name="AllowActivationReason">
+  <summary>Reason of ARC activation</summary>
+  <int value="0" label="ImmediateActivation"/>
+  <int value="1" label="UserSessionStartUpTaskCompleted"/>
+  <int value="2" label="AlwaysStartIsEnabled"/>
+  <int value="3" label="ForcedByPolicy"/>
+  <int value="4" label="UserLaunchAction"/>
+  <int value="5" label="UserEnableAction"/>
+  <int value="6" label="RestoreApps"/>
+</enum>
+
 <enum name="AppErrorDialogType">
   <int value="0" label="UNSUPPORTED"/>
   <int value="1" label="AERR_APPLICATION"/>
@@ -875,6 +886,19 @@ chromium-metrics-reviews@google.com.
 <enum name="CrOSFileSystemMigrationStartStatus">
   <int value="1" label="Migration started"/>
   <int value="2" label="Migration resumed"/>
+</enum>
+
+<enum name="DeferArcActivationCategory">
+  <int value="0" label="Deferred"/>
+  <int value="1" label="NotDeferred"/>
+  <int value="2" label="NotTarget"/>
+</enum>
+
+<enum name="DeferArcActivationResult">
+  <int value="0" label="DeferSucceeded"/>
+  <int value="1" label="DeferFailed"/>
+  <int value="2" label="NotDeferSucceeded"/>
+  <int value="3" label="NotDeferFailed"/>
 </enum>
 
 <enum name="InstallationCounterReasonEnum">

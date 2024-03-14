@@ -417,6 +417,53 @@ bool ArcVmDataMigrationIsInProgress(PrefService* prefs) {
          ArcVmDataMigrationStatus::kStarted;
 }
 
+// The result status of deferring ARC activation until user session start up
+// task completion, used for UMA.
+enum class DeferArcActivationResult {
+  // Decided to defer, and the prediction succeeded, i.e. no activation
+  // happens during user session start up.
+  kDeferSucceeded = 0,
+
+  // Decided to defer, but the prediction failed, i.e. an activation happens
+  // during user session start up.
+  kDeferFailed = 1,
+
+  // Decided not to defer, and the prediction succeeded, i.e. an activation
+  // happens during user session start up.
+  kNotDeferSucceeded = 2,
+
+  // Decided not to defer, and the prediction failed, i.e. no activation
+  // happens during user session start up.
+  kNotDeferFailed = 3,
+
+  kMaxValue = kNotDeferFailed,
+};
+
+enum class DeferArcActivationCategory {
+  // ARC activation is deferred until the user session start up task completion.
+  kDeferred = 0,
+
+  // ARC activation is not deferred, because the user is suspected to activate
+  // ARC very soon.
+  kNotDeferred = 1,
+
+  // ARC is already activated, or the user session start up tasks are already
+  // completed. Thus, it was out of scope to decide deferring.
+  kNotTarget = 2,
+
+  kMaxValue = kNotTarget,
+};
+
+// Using 1ms as minimum for common practice.
+// The delay will be up to 20 seconds, because of the timer in the tracker.
+// Using 25 secs just in case for additional buffer. The number of buckets are
+// linearly extrapolated from the common one.
+void UmaHistogramDeferActivationTimes(const std::string& name,
+                                      base::TimeDelta elapsed) {
+  base::UmaHistogramCustomTimes(name, elapsed, base::Milliseconds(1),
+                                base::Seconds(25), 125);
+}
+
 }  // namespace
 
 // This class is used to track statuses on OptIn flow. It is created in case ARC
@@ -1004,6 +1051,45 @@ void ArcSessionManager::OnUserSessionStartUpTaskCompleted() {
 void ArcSessionManager::AllowActivation(AllowActivationReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (user_session_start_up_task_timer_.has_value() &&
+      reason != AllowActivationReason::kImmediateActivation) {
+    base::TimeDelta elapsed =
+        user_session_start_up_task_timer_->timer.Elapsed();
+    if (user_session_start_up_task_timer_->deferred) {
+      if (reason == AllowActivationReason::kUserSessionStartUpTaskCompleted) {
+        base::UmaHistogramEnumeration(
+            "Arc.DeferActivation.Result",
+            DeferArcActivationResult::kDeferSucceeded);
+        UmaHistogramDeferActivationTimes(
+            "Arc.DeferActivation.Deferred.Success.ElapsedTime", elapsed);
+      } else {
+        base::UmaHistogramEnumeration("Arc.DeferActivation.Result",
+                                      DeferArcActivationResult::kDeferFailed);
+        base::UmaHistogramEnumeration(
+            "Arc.DeferActivation.Deferred.Failure.Reason", reason);
+        UmaHistogramDeferActivationTimes(
+            "Arc.DeferActivation.Deferred.Failure.ElapsedTime", elapsed);
+      }
+    } else {
+      if (reason == AllowActivationReason::kUserSessionStartUpTaskCompleted) {
+        base::UmaHistogramEnumeration(
+            "Arc.DeferActivation.Result",
+            DeferArcActivationResult::kNotDeferFailed);
+        UmaHistogramDeferActivationTimes(
+            "Arc.DeferActivation.NotDeferred.Failure.ElapsedTime", elapsed);
+      } else {
+        base::UmaHistogramEnumeration(
+            "Arc.DeferActivation.Result",
+            DeferArcActivationResult::kNotDeferSucceeded);
+        base::UmaHistogramEnumeration(
+            "Arc.DeferActivation.NotDeferred.Success.Reason", reason);
+        UmaHistogramDeferActivationTimes(
+            "Arc.DeferActivation.NotDeferred.Success.ElapsedTime", elapsed);
+      }
+    }
+    user_session_start_up_task_timer_.reset();
+  }
+
   // Record the first activation is happening during the user session start up
   // to be referred whether or not to defer ARC for user session start up in
   // following user sessions.
@@ -1022,7 +1108,6 @@ void ArcSessionManager::AllowActivation(AllowActivationReason reason) {
   // First time that ARCVM is allowed in this user session.
   if (!activation_is_allowed_) {
     VLOG(1) << "ARCVM activation is allowed: " << static_cast<int>(reason);
-    // TODO(b/326065955): Take UMA about the `reason` here.
   }
 
   activation_is_allowed_ = true;
@@ -1198,11 +1283,31 @@ void ArcSessionManager::OnActivationNecessityChecked(bool result) {
 
   is_activation_delayed_ = !result;
   if (result) {
-    if (ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
-            profile_->GetPrefs()) &&
-        !activation_is_allowed_ &&
-        !session_manager::SessionManager::Get()
-             ->IsUserSessionStartUpTaskCompleted()) {
+    bool should_defer =
+        !activation_is_allowed_ && !session_manager::SessionManager::Get()
+                                        ->IsUserSessionStartUpTaskCompleted();
+    if (base::FeatureList::IsEnabled(
+            kDeferArcActivationUntilUserSessionStartUpTaskCompletion)) {
+      if (should_defer) {
+        should_defer =
+            ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
+                profile_->GetPrefs());
+        if (should_defer) {
+          base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
+                                        DeferArcActivationCategory::kDeferred);
+        } else {
+          base::UmaHistogramEnumeration(
+              "Arc.DeferActivation.Category",
+              DeferArcActivationCategory::kNotDeferred);
+        }
+        user_session_start_up_task_timer_.emplace(
+            UserSessionStartUpTaskTimer{base::ElapsedTimer(), should_defer});
+      } else {
+        base::UmaHistogramEnumeration("Arc.DeferActivation.Category",
+                                      DeferArcActivationCategory::kNotTarget);
+      }
+    }
+    if (should_defer) {
       // Wait for the user session start up task completion to prioritize
       // resources for them.
       VLOG(1) << "ARC activation is deferred until user sesssion start up "

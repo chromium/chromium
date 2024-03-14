@@ -210,26 +210,28 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   enum class AllowActivationReason {
     // Activated when ARCVM is ready to be launched.
-    kImmediateActivation,
+    kImmediateActivation = 0,
 
     // User session start up tasks are completed, so deferred ARC activation
     // is done.
-    kUserSessionStartUpTaskCompleted,
+    kUserSessionStartUpTaskCompleted = 1,
 
     // AlwaysStart option is set, so forced to launch ARC.
-    kAlwaysStartIsEnabled,
+    kAlwaysStartIsEnabled = 2,
 
     // Policy enforces to start ARC.
-    kForcedByPolicy,
+    kForcedByPolicy = 3,
 
     // User has taken an action to launch ARC app.
-    kUserLaunchAction,
+    kUserLaunchAction = 4,
 
     // User flipped the flag to enable ARC in the system.
-    kUserEnableAction,
+    kUserEnableAction = 5,
 
     // ARC app is being restored.
-    kRestoreApps,
+    kRestoreApps = 6,
+
+    kMaxValue = kRestoreApps,
   };
 
   // Allows changing the state from READY to ACTIVE. If the state is already
@@ -555,6 +557,16 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   base::TimeTicks pre_start_time_;
   // The time when ARC was about to start.
   base::TimeTicks start_time_;
+
+  // Timer set up when ARC necessity check is completed
+  // but user session start up task are not yet completed.
+  // Used to measure the elapsed time between it and the user session
+  // start up task completion.
+  struct UserSessionStartUpTaskTimer {
+    base::ElapsedTimer timer;
+    bool deferred;
+  };
+  std::optional<UserSessionStartUpTaskTimer> user_session_start_up_task_timer_;
 
   base::RepeatingClosure attempt_user_exit_callback_;
 

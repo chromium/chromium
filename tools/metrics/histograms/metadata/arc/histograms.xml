@@ -150,6 +150,11 @@ chromium-metrics-reviews@google.com.
   <variant name="SystemApp"/>
 </variants>
 
+<variants name="DeferArcActivationType">
+  <variant name="Deferred"/>
+  <variant name="NotDeferred"/>
+</variants>
+
 <variants name="SuccessFailure">
   <variant name=".Failure" summary="Operation failed"/>
   <variant name=".Success" summary="Operation succeeded"/>
@@ -913,6 +918,54 @@ chromium-metrics-reviews@google.com.
     Tracks status of SELinux contexts restore flows of Android /data for ARC++ P
     container. This also means ARC++ container boot delay.
   </summary>
+</histogram>
+
+<histogram name="Arc.DeferActivation.Category"
+    enum="DeferArcActivationCategory" expires_after="2025-01-01">
+  <owner>hidehiko@chromium.org</owner>
+  <owner>raging@google.com</owner>
+  <summary>
+    Records how &quot;deferring ARC activation until user session start up task
+    completion&quot; worked.
+  </summary>
+</histogram>
+
+<histogram name="Arc.DeferActivation.Result" enum="DeferArcActivationResult"
+    expires_after="2025-01-01">
+  <owner>hidehiko@chromium.org</owner>
+  <owner>raging@google.com</owner>
+  <summary>
+    Records whether the decision of &quot;deferring ARC activation until user
+    session start up task completion&quot;, which is prediction, was succeeded
+    or failed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Arc.DeferActivation.{DeferArcActivationType}{SuccessFailure}.ElapsedTime"
+    units="ms" expires_after="2025-01-01">
+  <owner>hidehiko@chromium.org</owner>
+  <owner>raging@google.com</owner>
+  <summary>
+    How long does it take since the activation necessity check until the
+    following activation for each group of deferring ARC pattern and its
+    success/failure status.
+  </summary>
+  <token key="DeferArcActivationType" variants="DeferArcActivationType"/>
+  <token key="SuccessFailure" variants="SuccessFailure"/>
+</histogram>
+
+<histogram
+    name="Arc.DeferActivation.{DeferArcActivationType}{SuccessFailure}.Result"
+    enum="AllowActivationReason" expires_after="2025-01-01">
+  <owner>hidehiko@chromium.org</owner>
+  <owner>raging@google.com</owner>
+  <summary>
+    The reason why the activation is allowed for each group of deferring ARC
+    pattern and its success/failure status.
+  </summary>
+  <token key="DeferArcActivationType" variants="DeferArcActivationType"/>
+  <token key="SuccessFailure" variants="SuccessFailure"/>
 </histogram>
 
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"

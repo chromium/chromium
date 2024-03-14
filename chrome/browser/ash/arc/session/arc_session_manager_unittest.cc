@@ -30,6 +30,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -507,6 +508,8 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithDeferringArcActivation) {
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
 
+  base::HistogramTester histogram_tester;
+
   // By default ARC is not enabled.
   EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
   ASSERT_FALSE(arc_session_manager()->IsActivationDelayed());
@@ -514,6 +517,8 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithDeferringArcActivation) {
   // Enabling ARC, does not yet activate ARC.
   arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+
+  histogram_tester.ExpectUniqueSample("Arc.DeferActivation.Category", 0, 1);
 
   // No history is updated yet.
   ASSERT_TRUE(
@@ -524,11 +529,19 @@ TEST_F(ArcSessionManagerTest, SignedInWorkflowWithDeferringArcActivation) {
   arc_session_manager()->OnUserSessionStartUpTaskCompleted();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 
+  histogram_tester.ExpectUniqueSample("Arc.DeferActivation.Result", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Arc.DeferActivation.Deferred.Success.ElapsedTime", 1);
+
   // Making sure activation is recorded.
   auto& history =
       prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
   ASSERT_EQ(1u, history.size());
   EXPECT_EQ(history.front(), base::Value(false));
+
+  histogram_tester.ExpectUniqueSample("Arc.DeferActivation.Result", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Arc.DeferActivation.Deferred.Success.ElapsedTime", 1);
 }
 
 TEST_F(ArcSessionManagerTest,
@@ -544,6 +557,8 @@ TEST_F(ArcSessionManagerTest,
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
 
+  base::HistogramTester histogram_tester;
+
   // By default ARC is not enabled.
   EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
   ASSERT_FALSE(arc_session_manager()->IsActivationDelayed());
@@ -551,6 +566,8 @@ TEST_F(ArcSessionManagerTest,
   // Enabling ARC, does not yet activate ARC.
   arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::READY, arc_session_manager()->state());
+
+  histogram_tester.ExpectUniqueSample("Arc.DeferActivation.Category", 0, 1);
 
   // No history is updated yet.
   ASSERT_TRUE(
@@ -561,6 +578,12 @@ TEST_F(ArcSessionManagerTest,
   arc_session_manager()->AllowActivation(
       ArcSessionManager::AllowActivationReason::kUserLaunchAction);
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  histogram_tester.ExpectUniqueSample("Arc.DeferActivation.Result", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Arc.DeferActivation.Deferred.Failure.Reason", 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "Arc.DeferActivation.Deferred.Failure.ElapsedTime", 1);
 
   // Making sure activation is recorded.
   auto& history =
@@ -574,6 +597,9 @@ TEST_F(ArcSessionManagerTest,
 
   // No more history is recorded, since it is one for each user session.
   EXPECT_EQ(1u, history.size());
+  histogram_tester.ExpectUniqueSample("Arc.DeferActivation.Result", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Arc.DeferActivation.Deferred.Failure.ElapsedTime", 1);
 }
 
 TEST_F(ArcSessionManagerTest,
@@ -600,6 +626,8 @@ TEST_F(ArcSessionManagerTest,
   arc_session_manager()->SetProfile(profile());
   arc_session_manager()->Initialize();
 
+  base::HistogramTester histogram_tester;
+
   // By default ARC is not enabled.
   EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
   ASSERT_FALSE(arc_session_manager()->IsActivationDelayed());
@@ -607,6 +635,8 @@ TEST_F(ArcSessionManagerTest,
   // Enabling ARC immediately activates.
   arc_session_manager()->RequestEnable();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  histogram_tester.ExpectUniqueSample("Arc.DeferActivation.Category", 1, 1);
 
   // No history is updated yet, even if the activation is done immediately.
   ASSERT_EQ(
@@ -622,6 +652,10 @@ TEST_F(ArcSessionManagerTest,
       prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
   ASSERT_EQ(kHistoryThreshold + 1u, history.size());
   EXPECT_EQ(history.back(), base::Value(false));
+
+  histogram_tester.ExpectUniqueSample("Arc.DeferActivation.Result", 3, 1);
+  histogram_tester.ExpectTotalCount(
+      "Arc.DeferActivation.NotDeferred.Failure.ElapsedTime", 1);
 }
 
 TEST_F(ArcSessionManagerTest,
