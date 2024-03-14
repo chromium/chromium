@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/service-worker-static-routing-api
-// Some features come from final-form.md.
+// https://w3c.github.io/ServiceWorker/#enumdef-routersourceenum
 enum RouterSourceEnum { "network", "race-network-and-fetch-handler", "fetch-event", "cache" };
 
+// https://w3c.github.io/ServiceWorker/#typedefdef-routersource
 typedef (RouterSourceEnum or RouterSource) RouterSourceInput;
 
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
-// TODO(crbug.com/1371756): implement final form.
+// https://w3c.github.io/ServiceWorker/#dictdef-routerrule
 dictionary RouterRule {
   RouterCondition condition;
   RouterSourceInput source;

@@ -325,8 +325,6 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       router_info->matched_source_type = source_type;
       response_head_->service_worker_router_info = std::move(router_info);
 
-      // TODO(crbug.com/1371756): support other sources in the full form.
-      // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
       switch (source_type) {
         case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
           // Network fallback is requested.

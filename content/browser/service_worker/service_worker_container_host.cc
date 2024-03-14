@@ -121,7 +121,7 @@ class ServiceWorkerContainerHost::PendingUpdateVersion {
 // and make the update notified to all the renderers via mojo IPC.
 //
 // See:
-// https://github.com/WICG/service-worker-static-routing-api/blob/main/final-form.md#use-service-worker-iif-running
+// https://w3c.github.io/ServiceWorker/#dom-routercondition-runningstatus
 class ServiceWorkerContainerHost::ServiceWorkerRunningStatusObserver final
     : public ServiceWorkerVersion::Observer {
  public:

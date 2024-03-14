@@ -946,7 +946,7 @@ constexpr base::FeatureParam<int>
     };
 
 // Enables ServiceWorker static routing API.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// https://github.com/WICG/service-worker-static-routing-api
 BASE_FEATURE(kServiceWorkerStaticRouter,
              "ServiceWorkerStaticRouter",
              base::FEATURE_ENABLED_BY_DEFAULT);

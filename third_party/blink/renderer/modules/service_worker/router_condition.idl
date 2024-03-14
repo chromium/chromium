@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+// https://w3c.github.io/ServiceWorker/#enumdef-runningstatus
 enum RunningStatusEnum { "running", "not-running" };
 
-// Experimental.
-// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// https://w3c.github.io/ServiceWorker/#dictdef-routercondition
 dictionary RouterCondition {
   // For the URLPattern condition.
   // https://wicg.github.io/urlpattern/#typedefdef-urlpatterncompatible

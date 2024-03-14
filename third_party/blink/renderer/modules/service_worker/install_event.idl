@@ -8,10 +8,12 @@
     Exposed=ServiceWorker
 ] interface InstallEvent : ExtendableEvent {
     constructor(DOMString type, optional ExtendableEventInit eventInitDict = {});
-    // Experimental
-    // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
-    // addRoutes() is going to be the final API surface. registerRouter() is
-    // eventually removed.
+    // https://w3c.github.io/ServiceWorker/#ref-for-dom-installevent-addroutes
     [RuntimeEnabled=ServiceWorkerStaticRouter, CallWith=ScriptState, RaisesException, MeasureAs=ServiceWorkerStaticRouter_AddRoutes] Promise<undefined> addRoutes((RouterRule or sequence<RouterRule>) rules);
+
+    // Deprecated.
+    // See:
+    // https://github.com/WICG/service-worker-static-routing-api/blob/main/README.md#how-chrome-implements-this
+    // TODO(crbug.com/329285464): remove this method.
     [RuntimeEnabled=ServiceWorkerStaticRouter, CallWith=ScriptState, RaisesException, MeasureAs=ServiceWorkerStaticRouter_RegisterRouter] Promise<undefined> registerRouter((RouterRule or sequence<RouterRule>) rules);
 };

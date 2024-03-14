@@ -324,12 +324,12 @@ std::optional<ServiceWorkerRouterRule> ConvertV8RouterRuleToBlink(
   // Set up sources.
   // TODO(crbug.com/1371756): support multiple sources.
   // i.e. support full form shown in
-  // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+  // https://github.com/WICG/service-worker-static-routing-api/blob/main/final-form.md
   //
-  // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/README.md
-  // explains the first step. It does not cover cases sequence of sources
-  // are set. The current IDL has been implemented for this level, but
-  // the mojo IPC has been implemented to support the final form.
+  // The ServiceWorker specification (https://w3c.github.io/ServiceWorker/)
+  // does not cover cases sequence of sources are set. The current IDL has
+  // been implemented for this level, but the mojo IPC has been implemented
+  // to support the final form.
   const std::optional<ServiceWorkerRouterSource> source =
       RouterSourceInputToBlink(input->source(), fetch_handler_type,
                                exception_state);
