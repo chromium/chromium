@@ -6,6 +6,8 @@ assert(!is_android)
 
 component("manta") {
   sources = [
+    "base_provider.cc",
+    "base_provider.h",
     "features.cc",
     "features.h",
     "mahi_provider.cc",
@@ -39,6 +41,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "base_provider_test_helper.cc",
+    "base_provider_test_helper.h",
     "orca_provider_unittest.cc",
     "snapper_provider_unittest.cc",
   ]
