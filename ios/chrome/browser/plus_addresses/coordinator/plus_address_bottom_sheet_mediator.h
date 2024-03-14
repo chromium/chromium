@@ -5,12 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_PLUS_ADDRESSES_COORDINATOR_PLUS_ADDRESS_BOTTOM_SHEET_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_PLUS_ADDRESSES_COORDINATOR_PLUS_ADDRESS_BOTTOM_SHEET_MEDIATOR_H_
 
+#import <Foundation/Foundation.h>
+
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "url/gurl.h"
-#import "url/origin.h"
-
-#import <Foundation/Foundation.h>
 
 namespace plus_addresses {
 class PlusAddressService;
@@ -18,6 +17,7 @@ class PlusAddressService;
 
 @protocol PlusAddressBottomSheetConsumer;
 class UrlLoadingBrowserAgent;
+
 // Mediator for the plus_addresses bottom sheet. It is responsible for service
 // interactions underlying the UI.
 @interface PlusAddressBottomSheetMediator

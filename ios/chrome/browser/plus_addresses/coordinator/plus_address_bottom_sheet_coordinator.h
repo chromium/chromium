@@ -5,9 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PLUS_ADDRESSES_COORDINATOR_PLUS_ADDRESS_BOTTOM_SHEET_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_PLUS_ADDRESSES_COORDINATOR_PLUS_ADDRESS_BOTTOM_SHEET_COORDINATOR_H_
 
-#import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "url/origin.h"
 
 // The coordinator responsible for the plus_address bottom sheet. Sets up
 // dependencies between the view controller and mediator.
