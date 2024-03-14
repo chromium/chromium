@@ -11,11 +11,13 @@
 module ash.cros_healthd.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom";
 
 // Routines interface exposed by the cros_healthd daemon.
 //
 // NextMinVersion: 3, NextIndex: 2
+[Stable]
 interface CrosHealthdRoutinesService {
   // Requests that a routine using the RoutineControl API is created on the
   // platform. This function creates a different routine based on the
@@ -72,18 +74,46 @@ interface CrosHealthdRoutinesService {
 
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 4, NextIndex: 4
+// NextMinVersion: 5, NextIndex: 18
 [Stable, Extensible]
 union RoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
-  [Default] bool unrecognizedArgument @0;
+  [Default] bool unrecognizedArgument@0;
   // Arguments to create a memory routine.
   [MinVersion=1] MemoryRoutineArgument memory@1;
   // Arguments to create a volume button routine.
   [MinVersion=2] VolumeButtonRoutineArgument volume_button@2;
   // Arguments to create a fan routine.
   [MinVersion=3] FanRoutineArgument fan@3;
+  // Arguments to create an audio driver malfunction test routine.
+  [MinVersion=4] AudioDriverRoutineArgument audio_driver@4;
+  // Arguments to create a CPU stress routine.
+  [MinVersion=4] CpuStressRoutineArgument cpu_stress@5;
+  // Arguments to create a UFS lifetime routine.
+  [MinVersion=4] UfsLifetimeRoutineArgument ufs_lifetime@6;
+  // Arguments to create a disk read routine.
+  [MinVersion=4] DiskReadRoutineArgument disk_read@7;
+  // Arguments to create a CPU cache routine.
+  [MinVersion=4] CpuCacheRoutineArgument cpu_cache@8;
+  // Arguments to create a prime search routine.
+  [MinVersion=4] PrimeSearchRoutineArgument prime_search@9;
+  // Arguments to create a LED lit up routine.
+  [MinVersion=4] LedLitUpRoutineArgument led_lit_up@10;
+  // Arguments to create a floating point routine.
+  [MinVersion=4] FloatingPointRoutineArgument floating_point@11;
+  // Arguments to create a Bluetooth power routine.
+  [MinVersion=4] BluetoothPowerRoutineArgument bluetooth_power@12;
+  // Arguments to create a Bluetooth discovery routine.
+  [MinVersion=4] BluetoothDiscoveryRoutineArgument bluetooth_discovery@13;
+  // Arguments to create a Bluetooth scanning routine.
+  [MinVersion=4] BluetoothScanningRoutineArgument bluetooth_scanning@14;
+  // Arguments to create a Bluetooth pairing routine.
+  [MinVersion=4] BluetoothPairingRoutineArgument bluetooth_pairing@15;
+  // Arguments to create a camera availability routine.
+  [MinVersion=4] CameraAvailabilityRoutineArgument camera_availability@16;
+  // Arguments to create a urandom routine.
+  [MinVersion=4] UrandomRoutineArgument urandom@17;
 };
 
 // This routine checks whether there is any memory problem by
@@ -95,6 +125,80 @@ struct MemoryRoutineArgument {
   // An optional field to indicate how much memory should be tested. If the
   // value is null, memory test will run with as much memory as possible.
   uint32? max_testing_mem_kib@0;
+};
+
+// |AudioDriverRoutineArgument| is the argument struct to create the audio
+// driver malfunction test routine by calling |CreateRoutine|. There is no input
+// parameters so the struct remains empty.
+//
+// The routine checks the health of audio driver. It contains the following
+// examinations:
+// - CRAS can detect at least one internal audio card.
+// - No audio devices failed to open.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct AudioDriverRoutineArgument {};
+
+// This routine checks whether there is any CPU problem by stress testing the
+// CPU.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct CpuStressRoutineArgument {
+  // |exec_duration| determines how long the stressapptest binary will run. If
+  // the provided value is null, default to running for 1 minute. The duration
+  // is rounded to the nearest seconds towards zero (see behaviour of
+  // std::trunc()).
+  mojo_base.mojom.TimeDelta? exec_duration@0;
+};
+
+// This routine checks the UFS drive's life time.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct UfsLifetimeRoutineArgument {};
+
+// The routine will create a test file with md5 checksum, read the test file
+// either randomly or linearly, repeatedly for a dedicated duration. If the md5
+// checksum of read back is validated, then the test will pass.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct DiskReadRoutineArgument {
+  // Type of how disk reading is performed, either linear or random.
+  DiskReadTypeEnum type@0;
+  // Expected duration to read the test file in the DiskRead routine, which will
+  // be rounded towards zero to the nearest second. This parameter should be
+  // strictly greater than zero.
+  mojo_base.mojom.TimeDelta disk_read_duration@1;
+  // Test file size, in megabytes (MiB), to test with DiskRead routine
+  uint32 file_size_mib@2;
+};
+
+// This routine checks whether there is any CPU cache problem by running a CPU
+// cache coherency test.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct CpuCacheRoutineArgument {
+  // |exec_duration| determines how long the stressapptest binary will run. If
+  // the provided value is null, default to running for 1 minute. The duration
+  // is rounded to the nearest seconds towards zero (see behaviour of
+  // std::trunc()).
+  mojo_base.mojom.TimeDelta? exec_duration@0;
+};
+
+// This routine checks whether there is any CPU problem by repeatedly
+// calculating prime numbers.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct PrimeSearchRoutineArgument {
+  // |exec_duration| determines how long the prime search test will run. If
+  // the provided value is null, default to running for 1 minute. If the value
+  // is less than 1 second, run for 1 second.
+  mojo_base.mojom.TimeDelta? exec_duration@0;
 };
 
 // This routine checks the functionality of the volume button. The routine
@@ -118,11 +222,125 @@ struct VolumeButtonRoutineArgument {
   mojo_base.mojom.TimeDelta timeout@1;
 };
 
+// Replier interface for the LED lit up routine.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+interface LedLitUpRoutineReplier {
+  // Returns whether the actual LED color matches the expected color.
+  //
+  // The response:
+  // * |matched| - true if the actual LED color matches the expected color.
+  //               Otherwise, false.
+  GetColorMatched@0() => (bool matched);
+};
+
+// The routine lights up the target LED in the specified color and requests the
+// caller to verify the change.
+//
+// The routine proceeds with the following steps:
+// 1. Set the specified LED with the specified color. If the LED name or color
+//    is not supported by EC, the routine reports error at this step.
+// 2. Invoke the |GetColorMatched| method of |replier|. The method should
+//    return |true| if the actual color matches the specified color and
+//    |false|, otherwise. Notice that there is no timeout so it will wait
+//    indefinitely.
+// 3. After receiving the response from |replier|, the color of the LED will
+//    be reset (back the auto control). If the replier disconnects before
+//    the response is received, the LED will also be reset.
+// 4. The status of the routine is then updated. The routine passes when the
+//    response is |true|. If the response is |false|, the routine fails.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct LedLitUpRoutineArgument {
+  // The LED to be lit up.
+  LedName name@0;
+  // The color to be lit up.
+  LedColor color@1;
+  // A replier to answer whether the actual LED color matches the expected
+  // color.
+  pending_remote<LedLitUpRoutineReplier> replier@2;
+};
+
+// This routine checks whether there is any CPU problem by repeatedly
+// calculating floating point values.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct FloatingPointRoutineArgument {
+  // `exec_duration` determines how long the prime search test will run. If
+  // the provided value is null, default to running for 1 minute. If the value
+  // is less than 1 second, run for 1 second.
+  mojo_base.mojom.TimeDelta? exec_duration@0;
+};
+
+// This routine checks whether the Bluetooth adapter can be powered off/on and
+// the powered status is consistent in both HCI and D-Bus levels.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct BluetoothPowerRoutineArgument {};
+
+// This routine checks whether the Bluetooth adapter can start/stop discovery
+// mode and the discovering status is consistent in both HCI and D-Bus levels.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct BluetoothDiscoveryRoutineArgument {};
+
 // This routine checks whether the fan is controllable.
 //
 // NextMinVersion: 1, NextIndex: 0
 [Stable]
 struct FanRoutineArgument {};
+
+// This routine checks whether the Bluetooth adapter can scan nearby Bluetooth
+// peripherals and collect peripherals' information.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct BluetoothScanningRoutineArgument {
+  // `exec_duration` determines how long the scanning routine will run. This
+  // parameter needs to be strictly greater than zero, otherwise the routine
+  // will fail with an exception. If the provided value is null, default to
+  // running for 5 seconds.
+  mojo_base.mojom.TimeDelta? exec_duration@0;
+};
+
+// This routine checks whether the adapter can find and pair with a device with
+// a specific peripheral id.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct BluetoothPairingRoutineArgument {
+  // The unique id of the target peripheral device to test, which can be
+  // obtained from `BluetoothScanningRoutineDetail`.
+  string peripheral_id@0;
+};
+
+// This routine checks the availability of services related to cameras.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct CameraAvailabilityRoutineArgument {
+  // Whether to check the availability of the camera service.
+  bool run_camera_service_available_check@0;
+  // Whether to check the availability of the camera diagnostic service.
+  bool run_camera_diagnostic_service_available_check@1;
+};
+
+// This routine checks whether there is any CPU problem by repeatedly
+// reading from urandom.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct UrandomRoutineArgument {
+  // `exec_duration` determines how long the prime search test will run. If
+  // the provided value is null, default to running for 1 minute. If the value
+  // is less than 1 second, run for 1 second.
+  mojo_base.mojom.TimeDelta? exec_duration@0;
+};
 
 // Interface exposed to clients for controlling a routine.
 //
@@ -130,6 +348,7 @@ struct FanRoutineArgument {};
 // Please check the Error Handling section of CrosHealthdRoutinesService.
 //
 // NextMinVersion: 2, NextIndex: 2
+[Stable]
 interface RoutineControl {
   // Gets the current state of the routine. Note that if the routine fails to
   // initialize, the RoutineControl will disconnect before the callback is
@@ -147,6 +366,7 @@ interface RoutineControl {
 // Implemented by clients who desire routine update notifications.
 //
 // NextMinVersion: 2, NextIndex: 1
+[Stable]
 interface RoutineObserver {
   // Called when the routine state has changed. This is also called as soon
   // as a routine is initialized (right after calling `CreateRoutine`).
@@ -158,6 +378,7 @@ interface RoutineObserver {
 // Used to pass information regarding routine state.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct RoutineState {
   // The percentage of the completion of the routine. 0 to 100.
   uint8 percentage@0;
@@ -168,6 +389,7 @@ struct RoutineState {
 // Possible routine states.
 //
 // NextMinVersion: 1, NextIndex: 4
+[Stable]
 union RoutineStateUnion {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -219,6 +441,7 @@ struct RoutineStateWaiting {
 // Information about a finished routine.
 //
 // NextMinVersion: 1, NextIndex: 2
+[Stable]
 struct RoutineStateFinished {
   // Whether the routine has passed or not.
   bool has_passed@0;
@@ -228,8 +451,8 @@ struct RoutineStateFinished {
 
 // Details about a finished routine.
 //
-// NextMinVersion: 1, NextIndex: 3
-[Extensible]
+// NextMinVersion: 1, NextIndex: 10
+[Stable, Extensible]
 union RoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
@@ -238,6 +461,20 @@ union RoutineDetail {
   MemoryRoutineDetail memory@1;
   // Details of a completed fan routine.
   FanRoutineDetail fan@2;
+  // Details of a completed audio driver routine.
+  AudioDriverRoutineDetail audio_driver@3;
+  // Details of a completed UFS lifetime routine.
+  UfsLifetimeRoutineDetail ufs_lifetime@4;
+  // Details of a completed Bluetooth power routine.
+  BluetoothPowerRoutineDetail bluetooth_power@5;
+  // Details of a completed Bluetooth discovery routine.
+  BluetoothDiscoveryRoutineDetail bluetooth_discovery@6;
+  // Details of a completed Bluetooth scanning routine.
+  BluetoothScanningRoutineDetail bluetooth_scanning@7;
+  // Details of a completed Bluetooth pairing routine.
+  BluetoothPairingRoutineDetail bluetooth_pairing@8;
+  // Details of a completed camera availability routine.
+  CameraAvailabilityRoutineDetail camera_availability@9;
 };
 
 // Details regarding memory routine.
@@ -251,15 +488,28 @@ struct MemoryRoutineDetail {
   MemtesterResult result@1;
 };
 
-// Result from running memtester.
+// Details regarding audio driver routine.
 //
 // NextMinVersion: 1, NextIndex: 2
 [Stable]
-struct MemtesterResult {
-  // Tests that have passed.
-  array<MemtesterTestItemEnum> passed_items@0;
-  // Tests that have failed.
-  array<MemtesterTestItemEnum> failed_items@1;
+struct AudioDriverRoutineDetail {
+  // Whether or not the routine can detect an internal audio card.
+  bool internal_card_detected@0;
+  // Whether or not all audio devices succeed to open.
+  bool audio_devices_succeed_to_open@1;
+};
+
+// Details regarding UFS lifetime routine.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct UfsLifetimeRoutineDetail {
+  // Pre-end of life information.
+  uint8 pre_eol_info@0;
+  // Device life time estimation (type A).
+  uint8 device_life_time_est_a@1;
+  // Device life time estimation (type B).
+  uint8 device_life_time_est_b@2;
 };
 
 // Enumeration of each possible memtester test item.
@@ -319,6 +569,232 @@ enum MemtesterTestItemEnum {
   k16BitWrites = 19,
 };
 
+// Result from running memtester.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct MemtesterResult {
+  // Tests that have passed.
+  array<MemtesterTestItemEnum> passed_items@0;
+  // Tests that have failed.
+  array<MemtesterTestItemEnum> failed_items@1;
+};
+
+// Details regarding Bluetooth powered state.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct BluetoothPoweredDetail {
+  // Bluetooth powered state in HCI level.
+  bool hci_powered@0;
+  // Bluetooth powered state in D-Bus level.
+  bool dbus_powered@1;
+};
+
+// Details regarding Bluetooth power routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct BluetoothPowerRoutineDetail {
+  // Result of powering off Bluetooth adapter, or null if error occurs.
+  BluetoothPoweredDetail? power_off_result@0;
+  // Result of powering on Bluetooth adapter, or null if error occurs.
+  BluetoothPoweredDetail? power_on_result@1;
+};
+
+// Details regarding Bluetooth discovering state.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct BluetoothDiscoveringDetail {
+  // Bluetooth discovering state in HCI level.
+  bool hci_discovering@0;
+  // Bluetooth discovering state in D-Bus level.
+  bool dbus_discovering@1;
+};
+
+// Details regarding Bluetooth discovery routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct BluetoothDiscoveryRoutineDetail {
+  // Result of starting discovery, or null if error occurs.
+  BluetoothDiscoveringDetail? start_discovery_result@0;
+  // Result of stopping discovery, or null if error occurs.
+  BluetoothDiscoveringDetail? stop_discovery_result@1;
+};
+
+// Details regarding the scanned peripheral.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct BluetoothScannedPeripheralInfo {
+  // All collected RSSI during the routine.
+  array<int16> rssi_history@0;
+  // The readable name of peripheral, which is reported when the average RSSI is
+  // higher than -60.
+  string? name@1;
+  // The unique id of peripheral, which is reported when the average RSSI is
+  // higher than -60.
+  string? peripheral_id@2;
+};
+
+// Details regarding Bluetooth scanning routine.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct BluetoothScanningRoutineDetail {
+  // Scanned nearby peripheral info.
+  array<BluetoothScannedPeripheralInfo> peripherals@0;
+};
+
+// Details regarding the scanned peripheral for pairing routine.
+//
+// NextMinVersion: 1, NextIndex: 7
+[Stable]
+struct BluetoothPairingPeripheralInfo {
+  // The error which is reported when the routine fails to finish pairing.
+  //
+  // NextMinVersion: 1, NextIndex: 6
+  [Stable, Extensible]
+  enum PairError {
+    // The default value is for backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // No error.
+    kNone = 1,
+    // Fails to start creating bond.
+    kBondFailed = 2,
+    // Gets bad status when creating bond.
+    kBadStatus = 3,
+    // Fails to handle Secure Simple Pairing request.
+    kSspFailed = 4,
+    // Timeout.
+    kTimeout = 5,
+  };
+  PairError pair_error@0;
+  // The error which is reported when the routine fails to establish a baseband
+  // connection when creating bond.
+  //
+  // NextMinVersion: 1, NextIndex: 4
+  [Stable, Extensible]
+  enum ConnectError {
+    // The default value is for backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // No error.
+    kNone = 1,
+    // Unable to receive connected event.
+    kNoConnectedEvent = 2,
+    // Connection state is not accessed successfully or `not connected`.
+    kNotConnected = 3,
+  };
+  ConnectError connect_error@1;
+  // The list of available services of peripheral.
+  array<mojo_base.mojom.Uuid> uuids@2;
+  // The Bluetooth class of device (CoD) of peripheral.
+  uint32? bluetooth_class@3;
+  // The address type of peripheral.
+  //
+  // NextMinVersion: 1, NextIndex: 4
+  [Stable, Extensible]
+  enum AddressType {
+    // The default value is for backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Unknown.
+    kUnknown = 1,
+    // Public address type.
+    kPublic = 2,
+    // Random address type.
+    kRandom = 3,
+  };
+  AddressType address_type@4;
+  // The result of peripheral address check.
+  bool is_address_valid@5;
+  // The first half of Bluetooth address, in the format XX:XX:XX (X: [0-9A-F]).
+  // It is reported when `is_address_valid` is false, `address_type` is not
+  // unknown and the address can be parsed successfully.
+  string? failed_manufacturer_id@6;
+};
+
+// Details regarding Bluetooth pairing routine.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct BluetoothPairingRoutineDetail {
+  // The info for the test peripheral, or null if the routine fails to find the
+  // peripheral.
+  BluetoothPairingPeripheralInfo? pairing_peripheral@0;
+};
+
+// All possible results for subtests of camera routines.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable, Extensible]
+enum CameraSubtestResult {
+  // The subtest was not run, possibly because the subtest was not enabled in
+  // the routine parameter. This value could also be used (as the default value)
+  // when there are Mojo version skews.
+  [Default] kNotRun = 0,
+  // The subtest was passed.
+  kPassed = 1,
+  // The subtest was failed.
+  kFailed = 2,
+};
+
+// Details regarding camera availability routine.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct CameraAvailabilityRoutineDetail {
+  // The subtest is passed if the camera service is available.
+  CameraSubtestResult camera_service_available_check@0;
+  // The subtest is passed if the camera diagnostic service is available. This
+  // subtest is informational, which means its result does not affect the passed
+  // or failed state of the main routine.
+  CameraSubtestResult camera_diagnostic_service_available_check@1;
+};
+
+// Enumeration of the possible DiskRead routine's command type.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable, Extensible]
+enum DiskReadTypeEnum {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kLinearRead = 1,
+  kRandomRead = 2,
+};
+
+// Enumeration of each possible LEDs on a device. This enum type is a mirror of
+// the enums defined in EC. To find out the actual names of each installed LEDs,
+// please refer to the EC firmware.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable, Extensible]
+enum LedName {
+  // The default value is for backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kBattery = 1,
+  kPower = 2,
+  kAdapter = 3,
+  kLeft = 4,
+  kRight = 5,
+};
+
+// Enumeration of each possible LED colors.
+//
+// NextMinVersion: 1, NextIndex: 7
+[Stable, Extensible]
+enum LedColor {
+  // The default value is for backward compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  kRed = 1,
+  kGreen = 2,
+  kBlue = 3,
+  kYellow = 4,
+  kWhite = 5,
+  kAmber = 6,
+};
+
 // Whether the given hardware probed matches the hardware description recorded.
 //
 // NextMinVersion: 1, NextIndex: 4
@@ -333,7 +809,6 @@ enum HardwarePresenceStatus {
   // There is no description available, skipping check.
   kNotConfigured = 3,
 };
-
 
 // Details regarding fan routine.
 //

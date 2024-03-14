@@ -68,6 +68,18 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     case healthd::RoutineDetail::Tag::kFan:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewFan(
           ConvertRoutinePtr(std::move(input->get_fan())));
+    // The following routines have not been added to crosapi yet.
+    case healthd::RoutineDetail::Tag::kAudioDriver:
+    case healthd::RoutineDetail::Tag::kUfsLifetime:
+    case healthd::RoutineDetail::Tag::kBluetoothPower:
+    case healthd::RoutineDetail::Tag::kBluetoothDiscovery:
+    case healthd::RoutineDetail::Tag::kBluetoothScanning:
+    case healthd::RoutineDetail::Tag::kBluetoothPairing:
+    case healthd::RoutineDetail::Tag::kCameraAvailability:
+      // The actual value of unrecognizedArgument should not be used. Assign an
+      // arbitrary value to it.
+      return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
+          /*unrecognizedArgument*/ false);
   }
   NOTREACHED_NORETURN();
 }
