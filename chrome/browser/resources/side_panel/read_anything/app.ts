@@ -1382,7 +1382,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   getCurrentHighlightColorVar(colorSuffix: string) {
     if (this.chromeRefresh2023Enabled_ && (colorSuffix === '')) {
-      return 'var(--color-sys-state-hover-on-subtle)';
+      return 'var(--color-sys-state-hover-dim-blend-protection)';
     }
     return `var(--color-read-anything-current-read-aloud-highlight${
         colorSuffix})`;
