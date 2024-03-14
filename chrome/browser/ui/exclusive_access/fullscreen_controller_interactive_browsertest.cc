@@ -714,6 +714,20 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       BlockingContentsExitsFullscreen) {
+  ASSERT_NO_FATAL_FAILURE(ToggleTabFullscreen(true));
+  ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
+
+  // Blocking the tab for a modal dialog exits fullscreen.
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = false});
+  static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser())
+      ->SetWebContentsBlocked(tab, true);
+  waiter.Wait();
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
                        CapturedContentEntersFullscreenWithinTab) {
   // Simulate tab capture, as used by getDisplayMedia() content sharing.
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -763,7 +777,24 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   EXPECT_EQ(popup, browser_list->GetLastActive());
   EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
             content::FullscreenMode::kPseudoContent);
-  capture_closure.RunAndReset();
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       BlockingContentsDoesNotExitFullscreenWithinTab) {
+  // Simulate visible tab capture and enter fullscreen-within-tab.
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  base::ScopedClosureRunner capture_closure = tab->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+  tab->GetDelegate()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
+  EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
+            content::FullscreenMode::kPseudoContent);
+  EXPECT_TRUE(tab->IsFullscreen());
+
+  // Blocking the tab for a modal dialog does not exit fullscreen-within-tab.
+  static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser())
+      ->SetWebContentsBlocked(tab, true);
+  EXPECT_EQ(tab->GetDelegate()->GetFullscreenState(tab).target_mode,
+            content::FullscreenMode::kPseudoContent);
 }
 
 // Tests the automatic fullscreen content setting in IWA and non-IWA contexts.
@@ -928,6 +959,17 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupEventuallyAfterExit) {
       FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(5300));
   run_loop.Run();
   EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad());
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, BlockingContentsDoesNotExit) {
+  EXPECT_TRUE(RequestFullscreen());
+  EXPECT_TRUE(web_contents_->IsFullscreen());
+  // Blocking the tab for a modal dialog does not exit fullscreen if the origin
+  // has been granted the automatic fullscreen content setting.
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser)
+      ->SetWebContentsBlocked(web_contents_, true);
+  EXPECT_TRUE(web_contents_->IsFullscreen());
 }
 
 INSTANTIATE_TEST_SUITE_P(, AutomaticFullscreenTest, ::testing::Bool());
