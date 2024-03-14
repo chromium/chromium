@@ -869,18 +869,17 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         boolean openWebApkItemVisible =
                 resolveInfo != null && resolveInfo.activityInfo.packageName != null;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
+            // When Universal Install is active, we only show this menu item if we are browsing
+            // the root page of an already installed app.
+            openWebApkItemVisible &= "/".equals(currentTab.getUrl().getPath());
+        }
 
         if (openWebApkItemVisible) {
             // This is the 'webapp is already installed' case, so we offer to open the webapp.
             String appName = resolveInfo.loadLabel(mContext.getPackageManager()).toString();
             openWebApkItem.setTitle(mContext.getString(R.string.menu_open_webapk, appName));
             openWebApkItem.setVisible(true);
-
-            // If universal install flag is enabled, we also offer the universal install dialog so
-            // that the user still has the option to setup a shortcut to the webapp.
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
-                universalInstallItem.setVisible(true);
-            }
             return;
         }
 

@@ -265,13 +265,30 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         mAppType = appType;
         if (mToast != null) mToast.cancel();
 
-        // Check if we need to redirect without showing the dialog (and log the outcome).
-        if (mWaitingToShow
-                && (mAppType == AppType.SHORTCUT
-                        || (mIsRoot
-                                && (mAppType == AppType.WEBAPK
-                                        || mAppType == AppType.WEBAPK_DIY)))) {
-            mWaitingToShow = false;
+        boolean appAlreadyInstalled =
+                mMediator.getModel().get(PwaUniversalInstallProperties.VIEW_STATE)
+                        == PwaUniversalInstallProperties.ViewState.APP_ALREADY_INSTALLED;
+        if (!appAlreadyInstalled) {
+            // This is guarded by checking if the app is installed, because if it is then the dialog
+            // is already showing the right information, and we shouldn't change it.
+            mMediator
+                    .getModel()
+                    .set(
+                            PwaUniversalInstallProperties.VIEW_STATE,
+                            (appType == AppType.WEBAPK || appType == AppType.WEBAPK_DIY)
+                                    ? PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE
+                                    : PwaUniversalInstallProperties.ViewState
+                                            .APP_IS_NOT_INSTALLABLE);
+        }
+
+        if (!mWaitingToShow) {
+            return;
+        }
+
+        // We haven't shown the dialog yet, so there's an opportunity to skip this dialog and
+        // redirect straight to the Install App/Create Shortcut dialog.
+        if (mAppType == AppType.SHORTCUT
+                || (mIsRoot && (mAppType == AppType.WEBAPK || mAppType == AppType.WEBAPK_DIY))) {
             switch (mAppType) {
                 case AppType.SHORTCUT:
                     mAddShortcutCallback.run();
@@ -294,28 +311,13 @@ public class PwaUniversalInstallBottomSheetCoordinator {
                             REDIRECT_TO_INSTALL_APP_DIY,
                             DIALOG_RESULT_COUNT);
                     break;
+                default:
+                    assert false;
             }
             return;
         }
 
-        boolean alreadyInstalled =
-                mMediator.getModel().get(PwaUniversalInstallProperties.VIEW_STATE)
-                        == PwaUniversalInstallProperties.ViewState.APP_ALREADY_INSTALLED;
-        if (alreadyInstalled) {
-            return;
-        }
-
-        mMediator
-                .getModel()
-                .set(
-                        PwaUniversalInstallProperties.VIEW_STATE,
-                        (appType == AppType.WEBAPK || appType == AppType.WEBAPK_DIY)
-                                ? PwaUniversalInstallProperties.ViewState.APP_IS_INSTALLABLE
-                                : PwaUniversalInstallProperties.ViewState.APP_IS_NOT_INSTALLABLE);
-
-        if (mWaitingToShow) {
-            show(/* wasTimeout= */ false);
-        }
+        show(/* wasTimeout= */ false);
     }
 
     @NativeMethods
