@@ -186,7 +186,9 @@ public class HistoryManager
                         mSelectableListLayout.initializeToolbar(
                                 R.layout.history_toolbar,
                                 mSelectionDelegate,
-                                R.string.menu_history,
+                                appSpecificHistory
+                                        ? R.string.menu_web_history
+                                        : R.string.menu_history,
                                 R.id.normal_menu_group,
                                 R.id.selection_mode_menu_group,
                                 this,

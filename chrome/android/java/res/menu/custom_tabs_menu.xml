@@ -45,7 +45,7 @@ found in the LICENSE file.
           </menu>
         </item>
         <item android:id="@+id/open_history_menu_id"
-            android:title="@string/menu_history"
+            android:title="@string/menu_web_history"
             android:orderInCategory="2" />
         <item android:id="@+id/page_insights_id"
             android:title="@string/menu_page_insights"
