@@ -126,8 +126,16 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
   // browser explicitly.
 }
 
+// TODO(crbug.com/329645039): Re-enable this test once fixed
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
+  DISABLED_ServiceWorkerPermissionAfterRendererCrash
+#else
+#define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
+  ServiceWorkerPermissionAfterRendererCrash
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
-                       ServiceWorkerPermissionAfterRendererCrash) {
+                       MAYBE_ServiceWorkerPermissionAfterRendererCrash) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 
   content::RenderProcessHostWatcher crash_observer(
