@@ -23,6 +23,19 @@ E2ETestBase = class extends AccessibilityTestBase {
   }
 
   /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+
+    await Promise.all([
+      // Alphabetical by file path.
+      importModule('AsyncUtil', '/common/async_util.js'),
+      importModule('EventGenerator', '/common/event_generator.js'),
+      importModule('KeyCode', '/common/key_code.js'),
+      importModule('constants', '/common/constants.js'),
+    ]);
+  }
+
+  /** @override */
   testGenCppIncludes() {
     GEN(`
   #include "ash/accessibility/accessibility_delegate.h"
