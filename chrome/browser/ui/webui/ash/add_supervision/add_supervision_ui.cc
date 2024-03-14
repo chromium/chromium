@@ -30,6 +30,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -139,9 +140,14 @@ bool AddSupervisionDialog::ShouldCloseDialogOnEscape() const {
   return should_close_on_escape_;
 }
 
+bool AddSupervisionDialog::ShouldShowDialogTitle() const {
+  return false;
+}
+
 AddSupervisionDialog::AddSupervisionDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kChromeUIAddSupervisionURL),
-                              std::u16string()) {}
+    : SystemWebDialogDelegate(
+          GURL(chrome::kChromeUIAddSupervisionURL),
+          l10n_util::GetStringUTF16(IDS_ADD_SUPERVISION_PAGE_TITLE)) {}
 
 AddSupervisionDialog::~AddSupervisionDialog() = default;
 

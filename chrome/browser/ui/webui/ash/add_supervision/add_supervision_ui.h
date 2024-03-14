@@ -56,6 +56,7 @@ class AddSupervisionDialog : public SystemWebDialogDelegate {
   bool OnDialogCloseRequested() override;
   void OnDialogWillClose() override;
   bool ShouldCloseDialogOnEscape() const override;
+  bool ShouldShowDialogTitle() const override;
 
  protected:
   AddSupervisionDialog();
