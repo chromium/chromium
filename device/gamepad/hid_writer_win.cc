@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <windows.h>
 
+#include "base/strings/string_util_win.h"
+
 namespace device {
 
 HidWriterWin::HidWriterWin(HANDLE device) {
@@ -16,13 +18,13 @@ HidWriterWin::HidWriterWin(HANDLE device) {
   UINT result =
       ::GetRawInputDeviceInfo(device, RIDI_DEVICENAME, nullptr, &size);
   if (result == 0U) {
-    std::unique_ptr<wchar_t[]> name_buffer(new wchar_t[size]);
-    result = ::GetRawInputDeviceInfo(device, RIDI_DEVICENAME, name_buffer.get(),
-                                     &size);
+    std::wstring name_buffer;
+    result = ::GetRawInputDeviceInfo(
+        device, RIDI_DEVICENAME, base::WriteInto(&name_buffer, size), &size);
     if (result == size) {
       // Open the device handle for asynchronous I/O.
       hid_handle_.Set(
-          ::CreateFile(name_buffer.get(), GENERIC_READ | GENERIC_WRITE,
+          ::CreateFile(name_buffer.c_str(), GENERIC_READ | GENERIC_WRITE,
                        FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
                        OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
     }

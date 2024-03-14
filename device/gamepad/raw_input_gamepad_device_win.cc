@@ -377,7 +377,7 @@ bool RawInputGamepadDeviceWin::QueryDeviceName() {
   }
   DCHECK_EQ(size, result);
 
-  name_ = buffer.data();
+  name_ = std::move(buffer);
 
   return true;
 }
