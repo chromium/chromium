@@ -264,12 +264,13 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   };
   base::flat_set<wgpu::Device, WGPUDeviceCompare> wgpu_devices_pending_flush_;
 
-  bool WGPUTextureHasOngoingAccess(wgpu::Texture texture);
-
   // Returns the number of ongoing accesses that were already present on this
   // texture prior to the increment.
   int IncrementNumberOfOngoingWGPUTextureAccesses(wgpu::Texture texture);
-  void DecrementNumberOfOngoingWGPUTextureAccesses(wgpu::Texture texture);
+
+  // Returns the number of ongoing accesses that are still present on this
+  // texture after the decrement.
+  int DecrementNumberOfOngoingWGPUTextureAccesses(wgpu::Texture texture);
 
   // Returns a pointer to the WGPUTextureCache instance for this device, or
   // nullptr if there is no instance.

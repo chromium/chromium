@@ -884,13 +884,14 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
       static_cast<IOSurfaceImageBacking*>(backing());
   const bool readonly = (usage_ & ~kReadOnlyUsage) == 0;
   iosurface_backing->EndAccess(readonly);
-  iosurface_backing->DecrementNumberOfOngoingWGPUTextureAccesses(texture_);
+  int num_outstanding_accesses =
+      iosurface_backing->DecrementNumberOfOngoingWGPUTextureAccesses(texture_);
 
   // However, if there is still an ongoing Dawn access on this texture,
   // short-circuit out of doing any other work. In particular, do not consume
   // fences or end the access at the level of SharedTextureMemory. That work
   // will happen when the last ongoing Dawn access finishes.
-  if (iosurface_backing->WGPUTextureHasOngoingAccess(texture_)) {
+  if (num_outstanding_accesses > 0) {
     texture_ = nullptr;
     usage_ = wgpu::TextureUsage::None;
     return;
@@ -1279,27 +1280,26 @@ IOSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
 }
 
 #if BUILDFLAG(USE_DAWN)
-bool IOSurfaceImageBacking::WGPUTextureHasOngoingAccess(wgpu::Texture texture) {
-  return wgpu_texture_ongoing_accesses_.contains(texture.Get());
-}
-
 int IOSurfaceImageBacking::IncrementNumberOfOngoingWGPUTextureAccesses(
     wgpu::Texture texture) {
   return wgpu_texture_ongoing_accesses_[texture.Get()]++;
 }
 
-void IOSurfaceImageBacking::DecrementNumberOfOngoingWGPUTextureAccesses(
+int IOSurfaceImageBacking::DecrementNumberOfOngoingWGPUTextureAccesses(
     wgpu::Texture texture) {
   if (!wgpu_texture_ongoing_accesses_.contains(texture.Get())) {
-    return;
+    return 0;
   }
 
-  wgpu_texture_ongoing_accesses_[texture.Get()]--;
-  CHECK_GE(wgpu_texture_ongoing_accesses_[texture.Get()], 0);
+  int num_outstanding_accesses =
+      --wgpu_texture_ongoing_accesses_[texture.Get()];
+  CHECK_GE(num_outstanding_accesses, 0);
 
-  if (!wgpu_texture_ongoing_accesses_[texture.Get()]) {
+  if (num_outstanding_accesses == 0) {
     wgpu_texture_ongoing_accesses_.erase(texture.Get());
   }
+
+  return num_outstanding_accesses;
 }
 
 IOSurfaceImageBacking::WGPUTextureCache*
