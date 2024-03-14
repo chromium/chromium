@@ -16,6 +16,56 @@
 
 namespace ui {
 
+ControllerConfigParams::ControllerConfigParams(
+    int64_t display_id,
+    scoped_refptr<DrmDevice> drm,
+    uint32_t crtc,
+    uint32_t connector,
+    gfx::Point origin,
+    std::unique_ptr<drmModeModeInfo> pmode,
+    bool enable_vrr,
+    uint64_t base_connector)
+    : display_id(display_id),
+      drm(drm),
+      crtc(crtc),
+      connector(connector),
+      base_connector_id(base_connector ? base_connector
+                                       : static_cast<uint64_t>(connector)),
+      origin(origin),
+      mode(std::move(pmode)),
+      enable_vrr(enable_vrr) {}
+
+ControllerConfigParams::ControllerConfigParams(
+    const ControllerConfigParams& other)
+    : display_id(other.display_id),
+      drm(other.drm),
+      crtc(other.crtc),
+      connector(other.connector),
+      base_connector_id(other.base_connector_id),
+      origin(other.origin),
+      enable_vrr(other.enable_vrr) {
+  if (other.mode) {
+    drmModeModeInfo mode_obj = *other.mode.get();
+    mode = std::make_unique<drmModeModeInfo>(mode_obj);
+  }
+}
+
+ControllerConfigParams::ControllerConfigParams(ControllerConfigParams&& other)
+    : display_id(other.display_id),
+      drm(other.drm),
+      crtc(other.crtc),
+      connector(other.connector),
+      base_connector_id(other.base_connector_id),
+      origin(other.origin),
+      enable_vrr(other.enable_vrr) {
+  if (other.mode) {
+    drmModeModeInfo mode_obj = *other.mode.get();
+    mode = std::make_unique<drmModeModeInfo>(mode_obj);
+  }
+}
+
+ControllerConfigParams::~ControllerConfigParams() = default;
+
 bool GetDrmPropertyForName(DrmWrapper* drm,
                            drmModeObjectProperties* properties,
                            const std::string& name,

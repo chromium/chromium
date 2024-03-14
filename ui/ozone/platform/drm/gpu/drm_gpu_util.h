@@ -11,10 +11,35 @@
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
+#include "ui/ozone/platform/drm/gpu/drm_device.h"
 
+typedef struct _drmModeModeInfo drmModeModeInfo;
 struct skcms_Matrix3x3;
 
 namespace ui {
+
+struct ControllerConfigParams {
+  ControllerConfigParams(int64_t display_id,
+                         scoped_refptr<DrmDevice> drm,
+                         uint32_t crtc,
+                         uint32_t connector,
+                         gfx::Point origin,
+                         std::unique_ptr<drmModeModeInfo> pmode,
+                         bool enable_vrr = false,
+                         uint64_t base_connector_id = 0);
+  ControllerConfigParams(const ControllerConfigParams& other);
+  ControllerConfigParams(ControllerConfigParams&& other);
+  ~ControllerConfigParams();
+
+  const int64_t display_id;
+  const scoped_refptr<DrmDevice> drm;
+  uint32_t crtc;
+  const uint32_t connector;
+  const uint64_t base_connector_id;
+  const gfx::Point origin;
+  std::unique_ptr<drmModeModeInfo> mode;
+  const bool enable_vrr;
+};
 
 using ConnectorCrtcMap =
     base::flat_map<uint32_t /*connector_id*/, uint32_t /*crtc_id*/>;

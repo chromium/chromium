@@ -136,7 +136,7 @@ void MAYBE_DrmWindowTest::SetUp() {
   connector_id_ = drm_->connector_property(0).id;
 
   screen_manager_->AddDisplayController(drm_, crtc_id_, connector_id_);
-  std::vector<ScreenManager::ControllerConfigParams> controllers_to_enable;
+  std::vector<ControllerConfigParams> controllers_to_enable;
   controllers_to_enable.emplace_back(
       1 /*display_id*/, drm_, crtc_id_, connector_id_, gfx::Point(),
       std::make_unique<drmModeModeInfo>(kDefaultMode));
@@ -208,7 +208,7 @@ TEST_F(MAYBE_DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
 
   screen_manager_->AddDisplayController(drm, crtc_id_, connector_id_);
 
-  std::vector<ScreenManager::ControllerConfigParams> controllers_to_enable;
+  std::vector<ControllerConfigParams> controllers_to_enable;
   controllers_to_enable.emplace_back(
       /*display_id=*/2, drm, crtc_id_, connector_id_,
       gfx::Point(0, kDefaultMode.vdisplay),

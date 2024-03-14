@@ -330,7 +330,7 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
 bool DrmGpuDisplayManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     display::ModesetFlags modeset_flags) {
-  ScreenManager::ControllerConfigsList controllers_to_configure;
+  std::vector<ControllerConfigParams> controllers_to_configure;
   for (const auto& config : config_requests) {
     int64_t display_id = config.id;
     DrmDisplay* display = FindDisplay(display_id);
@@ -350,10 +350,10 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
     }
 
     scoped_refptr<DrmDevice> drm = display->drm();
-    ScreenManager::ControllerConfigParams params(
-        display->display_id(), drm, display->crtc(), display->connector(),
-        config.origin, std::move(mode_ptr), config.enable_vrr,
-        display->base_connector_id());
+    ControllerConfigParams params(display->display_id(), drm, display->crtc(),
+                                  display->connector(), config.origin,
+                                  std::move(mode_ptr), config.enable_vrr,
+                                  display->base_connector_id());
     controllers_to_configure.push_back(std::move(params));
   }
 

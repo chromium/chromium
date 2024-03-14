@@ -211,7 +211,7 @@ void MAYBE_DrmOverlayValidatorTest::SetupControllers() {
   screen_manager_ = std::make_unique<ScreenManager>();
   screen_manager_->AddDisplayController(drm_, primary_crtc_id,
                                         primary_connector_id);
-  std::vector<ScreenManager::ControllerConfigParams> controllers_to_enable;
+  std::vector<ControllerConfigParams> controllers_to_enable;
   controllers_to_enable.emplace_back(
       1 /*display_id*/, drm_, primary_crtc_id, primary_connector_id,
       gfx::Point(), std::make_unique<drmModeModeInfo>(kDefaultMode));
