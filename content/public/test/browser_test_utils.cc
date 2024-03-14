@@ -1667,11 +1667,13 @@ class ExecuteJavaScriptForTestsWaiter : public WebContentsObserver {
   base::WeakPtrFactory<ExecuteJavaScriptForTestsWaiter> weak_ptr_factory_{this};
 };
 
-EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
-                          base::StringPiece script,
-                          base::StringPiece source_url,
-                          int options,
-                          int32_t world_id) {
+EvalJsResult EvalJsRunner(
+    const ToRenderFrameHost& execution_target,
+    base::StringPiece script,
+    base::StringPiece source_url,
+    int options,
+    int32_t world_id,
+    base::OnceClosure after_script_invoke = base::DoNothing()) {
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(execution_target.render_frame_host());
   if (!rfh->IsRenderFrameLive()) {
@@ -1689,6 +1691,8 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
   rfh->ExecuteJavaScriptForTests(base::UTF8ToUTF16(script), user_gesture,
                                  resolve_promises, world_id,
                                  waiter.GetCallback());
+
+  std::move(after_script_invoke).Run();
 
   bool has_value = waiter.Wait();
   if (!has_value) {
@@ -1735,7 +1739,8 @@ EvalJsResult EvalJsRunner(const ToRenderFrameHost& execution_target,
 EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
                     base::StringPiece script,
                     int options,
-                    int32_t world_id) {
+                    int32_t world_id,
+                    base::OnceClosure after_script_invoke) {
   TRACE_EVENT1("test", "EvalJs", "script", script);
 
   // The sourceURL= parameter provides a string that replaces <anonymous> in
@@ -1750,7 +1755,7 @@ EvalJsResult EvalJs(const ToRenderFrameHost& execution_target,
       base::StrCat({"{", script, "\n}\n//# sourceURL=", kSourceURL});
 
   return EvalJsRunner(execution_target, modified_script, kSourceURL, options,
-                      world_id);
+                      world_id, std::move(after_script_invoke));
 }
 
 EvalJsResult EvalJsAfterLifecycleUpdate(
