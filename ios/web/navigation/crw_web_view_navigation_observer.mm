@@ -139,32 +139,19 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
     return;
   }
 
-  web::NavigationContextImpl* existingContext = [self.navigationHandler
-      contextForPendingMainFrameNavigationWithURL:webViewURL];
-
   // When traversing history restored from a previous session, WKWebView does
   // not fire 'pageshow', 'onload', 'popstate' or any of the
   // WKNavigationDelegate callbacks for back/forward navigation from an about:
-  // scheme placeholder URL to another entry or if either of the redirect fails
-  // to load (e.g. in airplane mode, <iOS13). Loading state KVO is the only
+  // scheme placeholder URL to another entry. Loading state KVO is the only
   // observable event in this scenario, so force a reload to trigger redirect
   // from restore_session.html to the restored URL.
   bool previousURLHasAboutScheme =
       self.documentURL.SchemeIs(url::kAboutScheme) ||
       web::GetWebClient()->IsAppSpecificURL(self.documentURL);
-  bool needs_back_forward_navigation_reload =
-      existingContext &&
-      (existingContext->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK);
-  // The back-forward workaround isn't need on iOS13.
-  needs_back_forward_navigation_reload = false;
-
-  if (IsRestoreSessionUrl(webViewURL)) {
-    if (previousURLHasAboutScheme || needs_back_forward_navigation_reload) {
-      [self.webView reload];
-      self.navigationHandler.navigationState =
-          web::WKNavigationState::REQUESTED;
-      return;
-    }
+  if (IsRestoreSessionUrl(webViewURL) && previousURLHasAboutScheme) {
+    [self.webView reload];
+    self.navigationHandler.navigationState = web::WKNavigationState::REQUESTED;
+    return;
   }
 
   // For failed navigations, WKWebView will sometimes revert to the previous URL
@@ -178,6 +165,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
     return;
   }
 
+  web::NavigationContextImpl* existingContext = [self.navigationHandler
+      contextForPendingMainFrameNavigationWithURL:webViewURL];
   if (!navigationWasCommitted &&
       !self.navigationHandler.pendingNavigationInfo.cancelled) {
     // A fast back-forward navigation does not call `didCommitNavigation:`, so
