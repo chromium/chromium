@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
+#include "third_party/blink/renderer/platform/text/emoji_segmentation_category_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -25,7 +26,11 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   DISALLOW_NEW();
 
  public:
-  UTF16RagelIterator() : buffer_(nullptr), buffer_size_(0), cursor_(0) {}
+  UTF16RagelIterator()
+      : buffer_(nullptr),
+        buffer_size_(0),
+        cursor_(0),
+        cached_category_(EmojiSegmentationCategory::kInvalidCacheEntry) {}
 
   UTF16RagelIterator(const UChar* buffer,
                      unsigned buffer_size,
@@ -33,9 +38,7 @@ class PLATFORM_EXPORT UTF16RagelIterator {
       : buffer_(buffer),
         buffer_size_(buffer_size),
         cursor_(cursor),
-        cached_category_(EmojiSegmentationCategory::kMaxCategory) {
-    UpdateCachedCategory();
-  }
+        cached_category_(EmojiSegmentationCategory::kInvalidCacheEntry) {}
 
   UTF16RagelIterator end() {
     UTF16RagelIterator ret = *this;
@@ -43,7 +46,15 @@ class PLATFORM_EXPORT UTF16RagelIterator {
     return ret;
   }
 
-  UTF16RagelIterator& SetCursor(unsigned new_cursor);
+  unsigned size() { return buffer_size_; }
+
+  UTF16RagelIterator& SetCursor(unsigned new_cursor) {
+    DCHECK_GE(new_cursor, 0u);
+    DCHECK_LT(new_cursor, buffer_size_);
+    cursor_ = new_cursor;
+    InvalidateCache();
+    return *this;
+  }
 
   unsigned Cursor() { return cursor_; }
 
@@ -53,7 +64,7 @@ class PLATFORM_EXPORT UTF16RagelIterator {
     } else if (v < 0) {
       U16_BACK_N(buffer_, 0, cursor_, -v);
     }
-    UpdateCachedCategory();
+    InvalidateCache();
     return *this;
   }
 
@@ -74,14 +85,14 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   UTF16RagelIterator& operator++() {
     DCHECK_LT(cursor_, buffer_size_);
     U16_FWD_1(buffer_, cursor_, buffer_size_);
-    UpdateCachedCategory();
+    InvalidateCache();
     return *this;
   }
 
   UTF16RagelIterator& operator--() {
     DCHECK_GT(cursor_, 0u);
     U16_BACK_1(buffer_, 0, cursor_);
-    UpdateCachedCategory();
+    InvalidateCache();
     return *this;
   }
 
@@ -107,8 +118,17 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   }
 
   EmojiSegmentationCategory operator*() {
-    CHECK(buffer_size_);
+    DCHECK(buffer_size_);
+    if (cached_category_ == EmojiSegmentationCategory::kInvalidCacheEntry) {
+      UChar32 codepoint;
+      U16_GET(buffer_, 0, cursor_, buffer_size_, codepoint);
+      cached_category_ = GetEmojiSegmentationCategory(codepoint);
+    }
     return cached_category_;
+  }
+
+  inline void InvalidateCache() {
+    cached_category_ = EmojiSegmentationCategory::kInvalidCacheEntry;
   }
 
   bool operator==(const UTF16RagelIterator& other) const {
@@ -121,15 +141,6 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   }
 
  private:
-  UChar32 Codepoint() const {
-    DCHECK_GT(buffer_size_, 0u);
-    UChar32 output;
-    U16_GET(buffer_, 0, cursor_, buffer_size_, output);
-    return output;
-  }
-
-  void UpdateCachedCategory();
-
   const UChar* buffer_;
   unsigned buffer_size_;
   unsigned cursor_;

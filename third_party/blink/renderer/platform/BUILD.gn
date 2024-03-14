@@ -784,7 +784,6 @@ component("platform") {
     "fonts/typesetting_features.h",
     "fonts/unicode_range_set.cc",
     "fonts/unicode_range_set.h",
-    "fonts/utf16_ragel_iterator.cc",
     "fonts/utf16_ragel_iterator.h",
     "fonts/utf16_text_iterator.cc",
     "fonts/utf16_text_iterator.h",

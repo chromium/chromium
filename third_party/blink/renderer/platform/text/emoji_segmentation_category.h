@@ -29,7 +29,8 @@ enum class EmojiSegmentationCategory : uint8_t {
   TAG_SEQUENCE = 14,
   TAG_TERM = 15,
 
-  kMaxCategory = 16
+  kMaxCategory = 16,
+  kInvalidCacheEntry = 17
 };
 
 // These operators are needed for the generated code at
