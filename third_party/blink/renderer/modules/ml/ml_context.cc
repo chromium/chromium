@@ -38,9 +38,10 @@ webnn::mojom::blink::PowerPreference ConvertBlinkPowerPreferenceToMojo(
 }  // namespace
 
 // static
-void MLContext::ValidateAndCreate(ScriptPromiseResolver* resolver,
-                                  MLContextOptions* options,
-                                  ML* ml) {
+void MLContext::ValidateAndCreate(
+    ScriptPromiseResolverTyped<MLContext>* resolver,
+    MLContextOptions* options,
+    ML* ml) {
   ScopedMLTrace scoped_trace("MLContext::ValidateAndCreate");
   auto* context = MakeGarbageCollected<MLContext>(
       options->devicePreference(), options->deviceType(),
@@ -176,7 +177,7 @@ void MLContext::CreateWebNNGraph(
 
 void MLContext::OnCreateWebNNContext(
     ScopedMLTrace scoped_trace,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<MLContext>* resolver,
     webnn::mojom::blink::CreateContextResultPtr result) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state) {

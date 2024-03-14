@@ -20,7 +20,6 @@
 namespace blink {
 
 class MLContextOptions;
-class ScriptPromise;
 class ScriptState;
 
 // This class represents the "Machine Learning" object "navigator.ml" and will
@@ -51,9 +50,9 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   void Trace(blink::Visitor*) const override;
 
   // IDL interface:
-  ScriptPromise createContext(ScriptState* state,
-                              MLContextOptions* option,
-                              ExceptionState& exception_state);
+  ScriptPromiseTyped<MLContext> createContext(ScriptState* state,
+                                              MLContextOptions* option,
+                                              ExceptionState& exception_state);
 
  private:
   // Binds the ModelLoader Mojo connection to browser process if needed.

@@ -120,10 +120,11 @@ base::expected<flatbuffers::DetachedBuffer, String> BuildTfLiteModel(
 }  // namespace
 
 // static
-void MLGraphModelLoader::ValidateAndBuild(ScopedMLTrace scoped_trace,
-                                          MLContext* ml_context,
-                                          const MLNamedOperands& named_outputs,
-                                          ScriptPromiseResolver* resolver) {
+void MLGraphModelLoader::ValidateAndBuild(
+    ScopedMLTrace scoped_trace,
+    MLContext* ml_context,
+    const MLNamedOperands& named_outputs,
+    ScriptPromiseResolverTyped<MLGraph>* resolver) {
   scoped_trace.AddStep("MLGraphModelLoader::ValidateAndBuild");
   auto* script_state = resolver->GetScriptState();
   auto* execution_context = ExecutionContext::From(script_state);
@@ -143,9 +144,10 @@ void MLGraphModelLoader::Trace(Visitor* visitor) const {
   MLGraph::Trace(visitor);
 }
 
-void MLGraphModelLoader::BuildImpl(ScopedMLTrace scoped_trace,
-                                   const MLNamedOperands& outputs,
-                                   ScriptPromiseResolver* resolver) {
+void MLGraphModelLoader::BuildImpl(
+    ScopedMLTrace scoped_trace,
+    const MLNamedOperands& outputs,
+    ScriptPromiseResolverTyped<MLGraph>* resolver) {
   DOMArrayBuffer* buffer = nullptr;
   if (g_flatbuffer_for_testing) {
     buffer = DOMArrayBuffer::Create(g_flatbuffer_for_testing->data(),
@@ -174,7 +176,7 @@ void MLGraphModelLoader::BuildImpl(ScopedMLTrace scoped_trace,
 void MLGraphModelLoader::OnRemoteModelLoad(
     ScopedMLTrace scoped_trace,
     ExecutionContext* execution_context,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<MLGraph>* resolver,
     ml::model_loader::mojom::blink::LoadModelResult result,
     mojo::PendingRemote<ml::model_loader::mojom::blink::Model> pending_remote,
     ml::model_loader::mojom::blink::ModelInfoPtr tensor_info) {

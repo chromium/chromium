@@ -123,7 +123,7 @@ void MLGraph::Compute(ScopedMLTrace scoped_trace,
 
 void MLGraph::Build(ScopedMLTrace scoped_trace,
                     const MLNamedOperands& named_outputs,
-                    ScriptPromiseResolver* resolver) {
+                    ScriptPromiseResolverTyped<MLGraph>* resolver) {
   String error_message;
   if (!ValidateAndInitializeResourcesInfo(named_outputs, error_message)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

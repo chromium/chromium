@@ -10,6 +10,7 @@
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -34,6 +35,7 @@ class MLEluOptions;
 class MLGatherOptions;
 class MLGemmOptions;
 class MLGruOptions;
+class MLGraph;
 class MLHardSigmoidOptions;
 class MLInstanceNormalizationOptions;
 class MLLayerNormalizationOptions;
@@ -50,7 +52,6 @@ class MLTransposeOptions;
 class MLTriangularOptions;
 class MLOperand;
 class MLOperandDescriptor;
-class ScriptPromiseResolver;
 
 typedef HeapVector<std::pair<String, Member<MLOperand>>> MLNamedOperands;
 
@@ -357,17 +358,18 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    const MLOperand* false_value,
                    ExceptionState& exception_state);
 
-  ScriptPromise build(ScriptState* script_state,
-                      const MLNamedOperands& outputs,
-                      ExceptionState& exception_state);
+  ScriptPromiseTyped<MLGraph> build(ScriptState* script_state,
+                                    const MLNamedOperands& outputs,
+                                    ExceptionState& exception_state);
 
   // The test cases can override the graph building behavior by implementing
   // this class and setting its instance by SetBackendForTesting().
   class BackendForTesting {
    public:
-    virtual void BuildGraphImpl(MLContext* context,
-                                const MLNamedOperands& named_outputs,
-                                ScriptPromiseResolver* resolver) = 0;
+    virtual void BuildGraphImpl(
+        MLContext* context,
+        const MLNamedOperands& named_outputs,
+        ScriptPromiseResolverTyped<MLGraph>* resolver) = 0;
   };
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);

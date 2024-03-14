@@ -74,7 +74,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // specific graph.
   void Build(ScopedMLTrace scoped_trace,
              const MLNamedOperands& named_outputs,
-             ScriptPromiseResolver* resolver);
+             ScriptPromiseResolverTyped<MLGraph>* resolver);
 
   // An MLGraph backend should implement this method to build and compile a
   // platform specific graph asynchronously. The actual graph construction and
@@ -84,7 +84,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // rejected with a DOMException accordingly.
   virtual void BuildImpl(ScopedMLTrace scoped_trace,
                          const MLNamedOperands& outputs,
-                         ScriptPromiseResolver* resolver) = 0;
+                         ScriptPromiseResolverTyped<MLGraph>* resolver) = 0;
 
   // An MLGraph backend should implement this method to execute the compiled
   // platform graph asynchronously. The actual graph execution work should be

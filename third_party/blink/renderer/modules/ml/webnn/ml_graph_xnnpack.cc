@@ -1985,10 +1985,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
 }  // namespace
 
 // static
-void MLGraphXnnpack::ValidateAndBuild(ScopedMLTrace scoped_trace,
-                                      MLContext* context,
-                                      const MLNamedOperands& named_outputs,
-                                      ScriptPromiseResolver* resolver) {
+void MLGraphXnnpack::ValidateAndBuild(
+    ScopedMLTrace scoped_trace,
+    MLContext* context,
+    const MLNamedOperands& named_outputs,
+    ScriptPromiseResolverTyped<MLGraph>* resolver) {
   scoped_trace.AddStep("MLGraphXnnpack::ValidateAndBuild");
   auto* graph = MakeGarbageCollected<MLGraphXnnpack>(context);
   graph->Build(std::move(scoped_trace), named_outputs, resolver);
@@ -2024,7 +2025,7 @@ const Vector<xnn_external_value>& MLGraphXnnpack::GetXnnExternalValuesTesting()
 
 void MLGraphXnnpack::BuildImpl(ScopedMLTrace scoped_trace,
                                const MLNamedOperands& named_outputs,
-                               ScriptPromiseResolver* resolver) {
+                               ScriptPromiseResolverTyped<MLGraph>* resolver) {
   CHECK(!xnn_runtime_wrapper_);
   PostCrossThreadTask(
       *xnnpack_task_runner_, FROM_HERE,
@@ -2041,7 +2042,7 @@ void MLGraphXnnpack::GetSharedXnnpackContextOnBackgroundThread(
     ScopedMLTrace scoped_trace,
     CrossThreadHandle<MLGraphXnnpack> graph,
     CrossThreadHandle<MLNamedOperands> named_outputs,
-    CrossThreadHandle<ScriptPromiseResolver> resolver,
+    CrossThreadHandle<ScriptPromiseResolverTyped<MLGraph>> resolver,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   CHECK(!IsMainThread());
   // Get or create the SharedXnnpackContext.
@@ -2062,7 +2063,7 @@ void MLGraphXnnpack::OnDidGetSharedXnnpackContext(
     ScopedMLTrace scoped_trace,
     scoped_refptr<SharedXnnpackContext> xnn_context,
     MLNamedOperands* named_outputs,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<MLGraph>* resolver,
     String error_message) {
   if (!xnn_context) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -2100,7 +2101,7 @@ void MLGraphXnnpack::CreateXnnRuntimeOnBackgroundThread(
     Vector<DataBuffer> static_data_buffers,
     CrossThreadHandle<MLGraphXnnpack> graph,
     uint32_t num_threads,
-    CrossThreadHandle<ScriptPromiseResolver> resolver,
+    CrossThreadHandle<ScriptPromiseResolverTyped<MLGraph>> resolver,
     scoped_refptr<base::SequencedTaskRunner> resolver_task_runner) {
   CHECK(!IsMainThread());
   String error_message;
@@ -2120,7 +2121,7 @@ void MLGraphXnnpack::CreateXnnRuntimeOnBackgroundThread(
 void MLGraphXnnpack::OnDidCreateXnnRuntime(
     ScopedMLTrace scoped_trace,
     scoped_refptr<XnnRuntimeWrapper> xnn_runtime_wrapper,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<MLGraph>* resolver,
     String error_message) {
   if (!xnn_runtime_wrapper) {
     resolver->Reject(MakeGarbageCollected<DOMException>(

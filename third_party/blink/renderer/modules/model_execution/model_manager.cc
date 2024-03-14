@@ -103,14 +103,14 @@ ModelManager::canCreateGenericSession(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise ModelManager::createGenericSession(
+ScriptPromiseTyped<ModelGenericSession> ModelManager::createGenericSession(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid() ||
       !GetModelManagerRemote().is_connected()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<ModelGenericSession>();
   }
 
   base::UmaHistogramEnumeration(
@@ -118,16 +118,17 @@ ScriptPromise ModelManager::createGenericSession(
           ModelExecutionMetrics::ModelExecutionSessionType::kGeneric),
       ModelExecutionMetrics::ModelExecutionAPI::kModelCreateSession);
 
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<ModelGenericSession>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   ModelGenericSession* generic_session =
       MakeGarbageCollected<ModelGenericSession>(task_runner_);
   GetModelManagerRemote()->CreateGenericSession(
       generic_session->GetModelSessionReceiver(),
       WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver,
+          [](ScriptPromiseResolverTyped<ModelGenericSession>* resolver,
              ModelGenericSession* generic_session, bool success) {
             if (success) {
               resolver->Resolve(generic_session);

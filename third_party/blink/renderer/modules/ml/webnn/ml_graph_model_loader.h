@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_MODEL_LOADER_H_
 
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -17,8 +18,6 @@
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace blink {
-
-class ScriptPromiseResolver;
 
 // Provides a mechanism to delegate an ML model (as a format-agnostic blob) to
 // the browser for inferencing.
@@ -36,7 +35,7 @@ class MODULES_EXPORT MLGraphModelLoader final : public MLGraph {
   static void ValidateAndBuild(ScopedMLTrace scoped_trace,
                                MLContext* context,
                                const MLNamedOperands& named_outputs,
-                               ScriptPromiseResolver* resolver);
+                               ScriptPromiseResolverTyped<MLGraph>* resolver);
 
   // The constructor shouldn't be called directly, use ValidateAndBuild()
   // method instead, and the declaration must be public to be called by
@@ -56,7 +55,7 @@ class MODULES_EXPORT MLGraphModelLoader final : public MLGraph {
   void OnRemoteModelLoad(
       ScopedMLTrace scoped_trace,
       ExecutionContext* execution_context,
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<MLGraph>* resolver,
       ml::model_loader::mojom::blink::LoadModelResult result,
       mojo::PendingRemote<ml::model_loader::mojom::blink::Model> pending_remote,
       ml::model_loader::mojom::blink::ModelInfoPtr model_info);
@@ -66,7 +65,7 @@ class MODULES_EXPORT MLGraphModelLoader final : public MLGraph {
   // FlatBuffers.
   void BuildImpl(ScopedMLTrace scoped_trace,
                  const MLNamedOperands& named_outputs,
-                 ScriptPromiseResolver* resolver) override;
+                 ScriptPromiseResolverTyped<MLGraph>* resolver) override;
 
   // Compute the converted model with asynchronous call of `Model` interface.
   void ComputeImpl(ScopedMLTrace scoped_trace,

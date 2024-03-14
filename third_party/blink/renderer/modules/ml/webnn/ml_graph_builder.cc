@@ -2010,17 +2010,18 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
   return output.value();
 }
 
-ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
-                                    const MLNamedOperands& named_outputs,
-                                    ExceptionState& exception_state) {
+ScriptPromiseTyped<MLGraph> MLGraphBuilder::build(
+    ScriptState* script_state,
+    const MLNamedOperands& named_outputs,
+    ExceptionState& exception_state) {
   ScopedMLTrace scoped_trace("MLGraphBuilder::build");
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
-    return ScriptPromise();
+    return ScriptPromiseTyped<MLGraph>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<MLGraph>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 

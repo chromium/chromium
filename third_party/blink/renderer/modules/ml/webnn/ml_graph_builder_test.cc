@@ -6324,7 +6324,7 @@ class FakeMLGraphBackend final : public MLGraph {
   // this concrete object if no errors.
   static void ValidateAndBuild(MLContext* context,
                                const MLNamedOperands& named_outputs,
-                               ScriptPromiseResolver* resolver) {
+                               ScriptPromiseResolverTyped<MLGraph>* resolver) {
     auto* graph = MakeGarbageCollected<FakeMLGraphBackend>(context);
     graph->Build(ScopedMLTrace("Build"), named_outputs, resolver);
   }
@@ -6340,7 +6340,7 @@ class FakeMLGraphBackend final : public MLGraph {
   // input and output resources info.
   void BuildImpl(ScopedMLTrace scoped_trace,
                  const MLNamedOperands& named_outputs,
-                 ScriptPromiseResolver* resolver) override {
+                 ScriptPromiseResolverTyped<MLGraph>* resolver) override {
     resolver->Resolve(this);
   }
 
@@ -6369,7 +6369,7 @@ class FakeMLGraphBuilderBackend : public MLGraphBuilder::BackendForTesting {
  public:
   void BuildGraphImpl(MLContext* context,
                       const MLNamedOperands& named_outputs,
-                      ScriptPromiseResolver* resolver) override {
+                      ScriptPromiseResolverTyped<MLGraph>* resolver) override {
     FakeMLGraphBackend::ValidateAndBuild(context, named_outputs, resolver);
   }
 };

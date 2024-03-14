@@ -119,10 +119,11 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
 }  // namespace
 
 // static
-void MLGraphMojo::ValidateAndBuild(ScopedMLTrace scoped_trace,
-                                   MLContext* context,
-                                   const MLNamedOperands& named_outputs,
-                                   ScriptPromiseResolver* resolver) {
+void MLGraphMojo::ValidateAndBuild(
+    ScopedMLTrace scoped_trace,
+    MLContext* context,
+    const MLNamedOperands& named_outputs,
+    ScriptPromiseResolverTyped<MLGraph>* resolver) {
   auto* graph =
       MakeGarbageCollected<MLGraphMojo>(resolver->GetScriptState(), context);
   scoped_trace.AddStep("MLGraphMojo::ValidateAndBuild");
@@ -144,7 +145,7 @@ void MLGraphMojo::Trace(Visitor* visitor) const {
 
 void MLGraphMojo::BuildImpl(ScopedMLTrace scoped_trace,
                             const MLNamedOperands& outputs,
-                            ScriptPromiseResolver* resolver) {
+                            ScriptPromiseResolverTyped<MLGraph>* resolver) {
   auto graph_info = BuildWebNNGraphInfo(outputs);
   if (!graph_info.has_value()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -246,9 +247,10 @@ void MLGraphMojo::OnDidCompute(
 
 // TODO: crbug.com/325612086 - Once all backends use mojo, consider refactoring
 // MLGraph creation such that this logic can live in MLContext.
-void MLGraphMojo::OnCreateWebNNGraph(ScopedMLTrace scoped_trace,
-                                     ScriptPromiseResolver* resolver,
-                                     blink_mojom::CreateGraphResultPtr result) {
+void MLGraphMojo::OnCreateWebNNGraph(
+    ScopedMLTrace scoped_trace,
+    ScriptPromiseResolverTyped<MLGraph>* resolver,
+    blink_mojom::CreateGraphResultPtr result) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state) {
     return;

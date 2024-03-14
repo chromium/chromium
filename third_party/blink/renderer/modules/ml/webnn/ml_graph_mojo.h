@@ -7,6 +7,7 @@
 
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -16,8 +17,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
-
-class ScriptPromiseResolver;
 
 // The `Mojo` in the class name means this graph is backed by a service running
 // outside of Blink.
@@ -29,7 +28,7 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   static void ValidateAndBuild(ScopedMLTrace scoped_trace,
                                MLContext* context,
                                const MLNamedOperands& named_outputs,
-                               ScriptPromiseResolver* resolver);
+                               ScriptPromiseResolverTyped<MLGraph>* resolver);
 
   MLGraphMojo(ScriptState* script_state, MLContext* context);
   ~MLGraphMojo() override;
@@ -42,7 +41,7 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   // learning API in the WebNN Service.
   void BuildImpl(ScopedMLTrace scoped_trace,
                  const MLNamedOperands& outputs,
-                 ScriptPromiseResolver* resolver) override;
+                 ScriptPromiseResolverTyped<MLGraph>* resolver) override;
 
   void ComputeImpl(ScopedMLTrace scoped_trace,
                    const MLNamedArrayBufferViews& inputs,
@@ -64,7 +63,7 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   // The returned `CreateGraphResultPtr` contains a `pending_remote<WebNNGraph>`
   // if the graph was successfully created and an `Error` otherwise.
   void OnCreateWebNNGraph(ScopedMLTrace scoped_trace,
-                          ScriptPromiseResolver* resolver,
+                          ScriptPromiseResolverTyped<MLGraph>* resolver,
                           webnn::mojom::blink::CreateGraphResultPtr result);
 
   Member<MLContext> ml_context_;

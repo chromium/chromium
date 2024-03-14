@@ -8,6 +8,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_model_format.h"
@@ -36,7 +37,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
  public:
   // Resolves `resolver` with a newly created MLContext. The caller must call
   // `Promise()` on `resolver` before calling this method.
-  static void ValidateAndCreate(ScriptPromiseResolver* resolver,
+  static void ValidateAndCreate(ScriptPromiseResolverTyped<MLContext>* resolver,
                                 MLContextOptions* options,
                                 ML* ml);
 
@@ -96,7 +97,7 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // Return `CreateContextResult::kNotSupported` on non-supported input
   // configuration.
   void OnCreateWebNNContext(ScopedMLTrace scoped_trace,
-                            ScriptPromiseResolver* resolver,
+                            ScriptPromiseResolverTyped<MLContext>* resolver,
                             webnn::mojom::blink::CreateContextResultPtr result);
 
   V8MLDevicePreference device_preference_;
