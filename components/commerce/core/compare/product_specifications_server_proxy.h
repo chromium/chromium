@@ -35,35 +35,6 @@ namespace commerce {
 
 class AccountChecker;
 
-struct ProductSpecifications {
- public:
-  typedef uint64_t ProductDimensionId;
-
-  ProductSpecifications();
-  ProductSpecifications(const ProductSpecifications&);
-  ~ProductSpecifications();
-
-  struct Product {
-   public:
-    Product();
-    Product(const Product&);
-    ~Product();
-
-    uint64_t product_cluster_id;
-    std::string mid;
-    std::string title;
-    GURL image_url;
-    std::map<ProductDimensionId, std::vector<std::string>>
-        product_dimension_values;
-  };
-
-  // A map of each product dimension ID to its human readable name.
-  std::map<ProductDimensionId, std::string> product_dimension_map;
-
-  // The list of products in the specification group.
-  std::vector<Product> products;
-};
-
 class ProductSpecificationsServerProxy {
  public:
   ProductSpecificationsServerProxy(
@@ -81,8 +52,7 @@ class ProductSpecificationsServerProxy {
   // compared and the specifications data.
   void GetProductSpecificationsForClusterIds(
       std::vector<uint64_t> cluster_ids,
-      base::OnceCallback<void(std::vector<uint64_t>,
-                              std::optional<ProductSpecifications>)> callback);
+      ProductSpecificationsCallback callback);
 
  protected:
   virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(

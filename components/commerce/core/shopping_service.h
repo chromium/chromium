@@ -108,6 +108,7 @@ class ScheduledMetricsManager;
 class BookmarkUpdateManager;
 class DiscountsStorage;
 class ParcelsManager;
+class ProductSpecificationsServerProxy;
 class ProductSpecificationsService;
 class ShoppingPowerBookmarkDataProvider;
 class ShoppingBookmarkModelObserver;
@@ -308,6 +309,10 @@ class ShoppingService : public KeyedService,
   // the fetch is completed.
   virtual void GetDiscountInfoForUrls(const std::vector<GURL>& urls,
                                       DiscountInfoCallback callback);
+
+  virtual void GetProductSpecificationsForUrls(
+      const std::vector<GURL>& urls,
+      ProductSpecificationsCallback callback);
 
   // This API fetches whether the provided |url| is a shopping-related page and
   // passes the result back to the caller via |callback|. Call will run after
@@ -714,6 +719,8 @@ class ShoppingService : public KeyedService,
   // A cache that retains commerce information for a URL as long as at least one
   // instance of the URL is open in a tab or mainteined by some other subsystem.
   CommerceInfoCache commerce_info_cache_;
+
+  std::unique_ptr<ProductSpecificationsServerProxy> product_specs_server_proxy_;
 
   // This is a cache that maps URL to a cache entry that may or may not contain
   // price insights info.

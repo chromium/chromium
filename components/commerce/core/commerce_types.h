@@ -130,6 +130,36 @@ struct ProductInfo {
   bool server_image_available{false};
 };
 
+// Information provided by the product specifications backend.
+struct ProductSpecifications {
+ public:
+  typedef uint64_t ProductDimensionId;
+
+  ProductSpecifications();
+  ProductSpecifications(const ProductSpecifications&);
+  ~ProductSpecifications();
+
+  struct Product {
+   public:
+    Product();
+    Product(const Product&);
+    ~Product();
+
+    uint64_t product_cluster_id;
+    std::string mid;
+    std::string title;
+    GURL image_url;
+    std::map<ProductDimensionId, std::vector<std::string>>
+        product_dimension_values;
+  };
+
+  // A map of each product dimension ID to its human readable name.
+  std::map<ProductDimensionId, std::string> product_dimension_map;
+
+  // The list of products in the specification group.
+  std::vector<Product> products;
+};
+
 // Information returned by Parcels API.
 struct ParcelTrackingStatus {
  public:
@@ -163,6 +193,9 @@ using PriceInsightsInfoCallback =
 using ProductInfoCallback =
     base::OnceCallback<void(const GURL&,
                             const std::optional<const ProductInfo>&)>;
+using ProductSpecificationsCallback =
+    base::OnceCallback<void(std::vector<uint64_t>,
+                            std::optional<ProductSpecifications>)>;
 using IsShoppingPageCallback =
     base::OnceCallback<void(const GURL&, std::optional<bool>)>;
 using GetParcelStatusCallback = base::OnceCallback<

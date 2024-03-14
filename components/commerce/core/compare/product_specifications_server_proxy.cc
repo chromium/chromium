@@ -83,17 +83,6 @@ constexpr net::NetworkTrafficAnnotationTag kShoppingListTrafficAnnotation =
 
 }  // namespace
 
-ProductSpecifications::ProductSpecifications() = default;
-
-ProductSpecifications::ProductSpecifications(const ProductSpecifications&) =
-    default;
-ProductSpecifications::~ProductSpecifications() = default;
-
-ProductSpecifications::Product::Product() = default;
-ProductSpecifications::Product::Product(const ProductSpecifications::Product&) =
-    default;
-ProductSpecifications::Product::~Product() = default;
-
 ProductSpecificationsServerProxy::ProductSpecificationsServerProxy(
     AccountChecker* account_checker,
     signin::IdentityManager* identity_manager,
@@ -106,8 +95,7 @@ ProductSpecificationsServerProxy::~ProductSpecificationsServerProxy() = default;
 
 void ProductSpecificationsServerProxy::GetProductSpecificationsForClusterIds(
     std::vector<uint64_t> cluster_ids,
-    base::OnceCallback<void(std::vector<uint64_t>,
-                            std::optional<ProductSpecifications>)> callback) {
+    ProductSpecificationsCallback callback) {
   if (IsProductSpecificationsEnabled(account_checker_)) {
     std::move(callback).Run(cluster_ids, std::nullopt);
     return;

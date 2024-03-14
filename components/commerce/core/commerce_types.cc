@@ -11,6 +11,17 @@ ProductInfo::ProductInfo(const ProductInfo&) = default;
 ProductInfo& ProductInfo::operator=(const ProductInfo&) = default;
 ProductInfo::~ProductInfo() = default;
 
+ProductSpecifications::ProductSpecifications() = default;
+
+ProductSpecifications::ProductSpecifications(const ProductSpecifications&) =
+    default;
+ProductSpecifications::~ProductSpecifications() = default;
+
+ProductSpecifications::Product::Product() = default;
+ProductSpecifications::Product::Product(const ProductSpecifications::Product&) =
+    default;
+ProductSpecifications::Product::~Product() = default;
+
 MerchantInfo::MerchantInfo() = default;
 MerchantInfo::MerchantInfo(const MerchantInfo&) = default;
 MerchantInfo& MerchantInfo::operator=(const MerchantInfo&) = default;

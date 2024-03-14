@@ -267,4 +267,18 @@ void MockShoppingService::SetGetAllParcelStatusesCallbackValue(
 void StopTrackingParcel(const std::string& tracking_id,
                         base::OnceCallback<void(bool)> callback) {}
 
+void MockShoppingService::SetResponseForGetProductSpecificationsForUrls(
+    ProductSpecifications specs) {
+  ON_CALL(*this, GetProductSpecificationsForUrls)
+      .WillByDefault(
+          [specs = std::move(specs)](const std::vector<GURL>& urls,
+                                     ProductSpecificationsCallback callback) {
+            std::vector<uint64_t> ids{0};
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), std::move(ids),
+                                          std::optional<ProductSpecifications>(
+                                              std::move(specs))));
+          });
+}
+
 }  // namespace commerce

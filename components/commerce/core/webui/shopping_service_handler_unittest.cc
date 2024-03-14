@@ -622,6 +622,39 @@ TEST_F(ShoppingServiceHandlerTest, TestShowBookmarkEditorForCurrentUrl) {
   handler_->ShowBookmarkEditorForCurrentUrl();
 }
 
+TEST_F(ShoppingServiceHandlerTest, TestGetProductSpecifications) {
+  ProductSpecifications specs;
+  specs.product_dimension_map[1] = "color";
+  ProductSpecifications::Product product;
+  product.product_cluster_id = 12345L;
+  product.title = "title";
+  product.product_dimension_values[1] = {"red"};
+  specs.products.push_back(std::move(product));
+
+  shopping_service_->SetResponseForGetProductSpecificationsForUrls(
+      std::move(specs));
+
+  base::RunLoop run_loop;
+  handler_->GetProductSpecificationsForUrls(
+      {GURL("http://example.com")},
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             shopping_service::mojom::ProductSpecificationsPtr specs_ptr) {
+            ASSERT_EQ("color", specs_ptr->product_dimension_map[1]);
+
+            ASSERT_EQ(12345u, specs_ptr->products[0]->product_cluster_id);
+            ASSERT_EQ("red",
+                      specs_ptr->products[0]->product_dimension_values[1][0]);
+            ASSERT_EQ("title", specs_ptr->products[0]->title);
+
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+
+  handler_->ShowBookmarkEditorForCurrentUrl();
+}
+
 TEST_F(ShoppingServiceHandlerTest, TestBookmarkNodeMoved) {
   uint64_t cluster_id = 12345u;
 

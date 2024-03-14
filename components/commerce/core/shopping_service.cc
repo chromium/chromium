@@ -23,6 +23,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/compare/product_specifications_server_proxy.h"
 #include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
@@ -211,6 +212,10 @@ ShoppingService::ShoppingService(
               dangling_sub_count);
         }));
   }
+
+  product_specs_server_proxy_ =
+      std::make_unique<ProductSpecificationsServerProxy>(
+          account_checker_.get(), identity_manager, url_loader_factory);
 }
 
 AccountChecker* ShoppingService::GetAccountChecker() {
@@ -681,6 +686,37 @@ void ShoppingService::GetDiscountInfoForUrls(const std::vector<GURL>& urls,
                      std::move(callback)));
   for (const GURL& url : urls) {
     GetDiscountInfoFromOptGuide(url, barrier_callback);
+  }
+}
+
+void ShoppingService::GetProductSpecificationsForUrls(
+    const std::vector<GURL>& urls,
+    ProductSpecificationsCallback callback) {
+  auto cluster_id_callback =
+      base::BarrierCallback<const UrlProductIdentifierTuple&>(
+          urls.size(),
+          base::BindOnce(
+              [](ProductSpecificationsCallback callback,
+                 base::WeakPtr<ShoppingService> service,
+                 const std::vector<UrlProductIdentifierTuple>& data) {
+                std::vector<uint64_t> cluster_ids;
+                for (const UrlProductIdentifierTuple& t : data) {
+                  if (std::get<1>(t).has_value()) {
+                    cluster_ids.push_back(std::get<1>(t).value());
+                  }
+                }
+                if (!service || cluster_ids.empty()) {
+                  std::move(callback).Run(std::move(cluster_ids), std::nullopt);
+                  return;
+                }
+                service->product_specs_server_proxy_
+                    ->GetProductSpecificationsForClusterIds(
+                        cluster_ids, std::move(callback));
+              },
+              std::move(callback), weak_ptr_factory_.GetWeakPtr()));
+
+  for (const GURL& url : urls) {
+    GetProductIdentifierForUrl(url, cluster_id_callback);
   }
 }
 
