@@ -98,14 +98,7 @@ void AssertRegularCellMovedToNewPosition(unsigned int tab_index,
 // Checks that dragging a regular cell to a new position correctly moves the
 // cell.
 // TODO(crbug.com/1493679): Test is flaky on simluator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testDragTabStripTabCellInTabStripView \
-  FLAKY_testDragTabStripTabCellInTabStripView
-#else
-#define MAYBE_testDragTabStripTabCellInTabStripView \
-  testDragTabStripTabCellInTabStripView
-#endif
-- (void)MAYBE_testDragTabStripTabCellInTabStripView {
+- (void)FLAKY_testDragTabStripTabCellInTabStripView {
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
