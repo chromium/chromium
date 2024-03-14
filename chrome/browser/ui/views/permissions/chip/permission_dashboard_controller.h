@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "content/public/browser/global_routing_id.h"
 #include "ui/views/view_tracker.h"
 
 class Browser;
@@ -85,6 +86,7 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   // icon. It appears without animation.
   bool is_verbose_ = false;
   bool blocked_on_system_level_ = false;
+  content::GlobalRenderFrameHostId main_frame_id_;
   views::ViewTracker page_info_bubble_tracker_;
   base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
       observation_{this};

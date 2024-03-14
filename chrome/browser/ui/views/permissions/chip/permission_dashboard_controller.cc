@@ -147,7 +147,14 @@ bool PermissionDashboardController::Update(
       return false;
     }
 
-    if (is_verbose_) {
+    // In case `GetPrimaryMainFrame()` changed, we should immediately hide
+    // indicators without the collapse animation.
+    bool same_frame = main_frame_id_ == location_bar_view_->GetWebContents()
+                                            ->GetPrimaryMainFrame()
+                                            ->GetGlobalId();
+
+    if (is_verbose_ && same_frame) {
+      // At first show the collapse animation and then hide indicators.
       Collapse(/*hide=*/true);
     } else {
       HideIndicators();
@@ -157,6 +164,11 @@ bool PermissionDashboardController::Update(
   }
 
   indicator_model_ = indicator_model;
+  // Save the currently displayed frame id to avoid unnecessary animation if the
+  // main frame gets changed.
+  main_frame_id_ = location_bar_view_->GetWebContents()
+                       ->GetPrimaryMainFrame()
+                       ->GetGlobalId();
   permission_dashboard_view_->SetVisible(true);
 
   indicator_chip->SetChipIcon(indicator_model->icon());
@@ -267,7 +279,8 @@ void PermissionDashboardController::Collapse(bool hide) {
 
 void PermissionDashboardController::HideIndicators() {
   collapse_timer_.AbandonAndStop();
-
+  permission_dashboard_view_->GetIndicatorChip()->ResetAnimation();
+  is_verbose_ = false;
   permission_dashboard_view_->GetIndicatorChip()
       ->GetViewAccessibility()
       .SetIsIgnored(true);
