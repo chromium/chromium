@@ -509,6 +509,12 @@ public class StripLayoutHelperManager
             }
         }
 
+        mLayerTitleCacheSupplier.addObserver(
+                (LayerTitleCache layerTitleCache) -> {
+                    layerTitleCache.addObserver(mNormalHelper);
+                    layerTitleCache.addObserver(mIncognitoHelper);
+                });
+
         // TODO (crbug.com/326290073): Update this to check the actual activity resumption state
         // because it is technically possible for the current activity to lose the top resumed
         // activity status before the StripLayoutHelperManager instance is instantiated.
@@ -553,6 +559,11 @@ public class StripLayoutHelperManager
 
     /** Cleans up internal state. */
     public void destroy() {
+        LayerTitleCache layerTitleCache = mLayerTitleCacheSupplier.get();
+        if (layerTitleCache != null) {
+            layerTitleCache.removeObserver(mNormalHelper);
+            layerTitleCache.removeObserver(mIncognitoHelper);
+        }
         mTabStripTreeProvider.destroy();
         mTabStripTreeProvider = null;
         mIncognitoHelper.destroy();

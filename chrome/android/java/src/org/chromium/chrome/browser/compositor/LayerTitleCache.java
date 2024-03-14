@@ -10,10 +10,13 @@ import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TitleBitmapFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,11 +52,26 @@ public class LayerTitleCache {
     private FaviconHelper mFaviconHelper;
     private DefaultFaviconHelper mDefaultFaviconHelper;
 
+    private ObserverList<GroupTitleObserver> mGroupTitleObservers = new ObserverList<>();
+
     /** Responsible for building titles on light themes or standard tabs. */
     protected TitleBitmapFactory mStandardTitleBitmapFactory;
 
     /** Responsible for building incognito or dark theme titles. */
     protected TitleBitmapFactory mDarkTitleBitmapFactory;
+
+    /** Observer for tab group title layers. */
+    public interface GroupTitleObserver {
+        /**
+         * This method will be called when the result group title bitmap is ready.
+         *
+         * @param incognito Whether the title's source group is Incognito or not.
+         * @param rootId The title's source group's root ID.
+         * @param title The text the group title bitmap represents.
+         * @param widthPx The width of the title in px.
+         */
+        void onGroupTitleUpdated(boolean incognito, int rootId, String title, int widthPx);
+    }
 
     /** Builds an instance of the LayerTitleCache. */
     public LayerTitleCache(Context context, ResourceManager resourceManager) {
@@ -187,6 +205,9 @@ public class LayerTitleCache {
         }
 
         Bitmap titleBitmap = titleBitmapFactory.getTitleBitmap(mContext, titleString);
+        for (GroupTitleObserver observer : mGroupTitleObservers) {
+            observer.onGroupTitleUpdated(incognito, rootId, titleString, titleBitmap.getWidth());
+        }
         title.set(titleBitmap);
 
         if (mNativeLayerTitleCache != 0) {
@@ -300,6 +321,24 @@ public class LayerTitleCache {
         LayerTitleCacheJni.get()
                 .updateGroupLayer(
                         mNativeLayerTitleCache, LayerTitleCache.this, rootId, -1, false, false);
+    }
+
+    /**
+     * Adds an observer.
+     *
+     * @param observer The observer to add.
+     */
+    public void addObserver(@NonNull GroupTitleObserver observer) {
+        mGroupTitleObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer.
+     *
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(@NonNull GroupTitleObserver observer) {
+        mGroupTitleObservers.removeObserver(observer);
     }
 
     private class Title {

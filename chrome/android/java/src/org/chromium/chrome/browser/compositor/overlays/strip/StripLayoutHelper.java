@@ -39,6 +39,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -72,14 +73,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class handles managing the positions and behavior of all tabs in a tab strip.  It is
+ * This class handles managing the positions and behavior of all tabs in a tab strip. It is
  * responsible for both responding to UI input events and model change notifications, adjusting and
  * animating the tab strip as required.
  *
- * <p>
- * The stacking and visual behavior is driven by setting a {@link StripStacker}.
+ * <p>The stacking and visual behavior is driven by setting a {@link StripStacker}.
  */
-public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate {
+public class StripLayoutHelper
+        implements StripLayoutTab.StripLayoutTabDelegate, LayerTitleCache.GroupTitleObserver {
     /** A property for animations to use for changing the X offset of the tab. */
     public static final FloatProperty<StripLayoutHelper> SCROLL_OFFSET =
             new FloatProperty<StripLayoutHelper>("scrollOffset") {
@@ -2140,16 +2141,34 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         return animationList;
     }
 
-    private StripLayoutGroupTitle findOrCreateGroupTitle(int rootId) {
+    @Override
+    public void onGroupTitleUpdated(boolean incognito, int rootId, String title, int widthPx) {
+        if (mIncognito == incognito) updateGroupTitle(rootId, title, widthPx);
+    }
+
+    private void updateGroupTitle(int rootId, String title, int widthPx) {
+        StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+        if (groupTitle == null) return;
+
+        float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
+        groupTitle.updateTitle(title, widthDp);
+    }
+
+    private StripLayoutGroupTitle findGroupTitle(int rootId) {
         for (int i = 0; i < mStripGroupTitles.length; i++) {
             final StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
             if (groupTitle.getRootId() == rootId) return groupTitle;
         }
-        return createGroupTitle(rootId);
+        return null;
+    }
+
+    private StripLayoutGroupTitle findOrCreateGroupTitle(int rootId) {
+        StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
+        return groupTitle == null ? createGroupTitle(rootId) : groupTitle;
     }
 
     private StripLayoutGroupTitle createGroupTitle(int rootId) {
-        StripLayoutGroupTitle groupTitle = new StripLayoutGroupTitle(mContext, rootId);
+        StripLayoutGroupTitle groupTitle = new StripLayoutGroupTitle(mContext, mUpdateHost, rootId);
         pushPropertiesToGroupTitle(groupTitle);
         return groupTitle;
     }
