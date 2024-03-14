@@ -164,9 +164,29 @@ bool IsArcCompatibleFilesystem(const base::FilePath& path) {
 FileSystemCompatibilityState GetFileSystemCompatibilityPref(
     const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  return static_cast<FileSystemCompatibilityState>(
-      known_user.FindIntPath(account_id, prefs::kArcCompatibleFilesystemChosen)
-          .value_or(kFileSystemIncompatible));
+  if (auto pref = known_user.FindIntPath(account_id,
+                                         prefs::kArcCompatibleFilesystemChosen);
+      pref) {
+    return static_cast<FileSystemCompatibilityState>(pref.value());
+  }
+  VLOG(1) << "arc.compatible_filesystem.chosen not set. Assuming incompatible.";
+  return kFileSystemIncompatible;
+}
+
+// Similar to GetFileSystemCompatibilityPref, but when the pref is not found,
+// it optimistically assumes that the file system is compatible. This is for
+// the mitigation of issues like b/327969092 that unexpectedly clears the pref
+// during the initial sign-in.
+FileSystemCompatibilityState GetFileSystemCompatibilityPrefOptimistic(
+    const AccountId& account_id) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (auto pref = known_user.FindIntPath(account_id,
+                                         prefs::kArcCompatibleFilesystemChosen);
+      pref) {
+    return static_cast<FileSystemCompatibilityState>(pref.value());
+  }
+  VLOG(1) << "arc.compatible_filesystem.chosen not set. Assuming compatible.";
+  return kFileSystemCompatible;
 }
 
 // Stores the result of IsArcCompatibleFilesystem posted back from the blocking
@@ -454,7 +474,7 @@ bool IsArcCompatibleFileSystemUsedForUser(const user_manager::User* user) {
   // ash::UserSessionManager does the actual file system check and stores
   // the result to prefs, so that it survives crash-restart.
   FileSystemCompatibilityState filesystem_compatibility =
-      GetFileSystemCompatibilityPref(user->GetAccountId());
+      GetFileSystemCompatibilityPrefOptimistic(user->GetAccountId());
   const bool is_filesystem_compatible =
       filesystem_compatibility != kFileSystemIncompatible ||
       g_known_compatible_users.Get().count(user->GetAccountId()) != 0;

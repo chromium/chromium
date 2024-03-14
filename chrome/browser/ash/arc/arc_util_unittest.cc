@@ -357,7 +357,7 @@ TEST_F(ChromeArcUtilTest, IsArcCompatibleFileSystemUsedForProfile) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile());
 
   // Unconfirmed
-  EXPECT_FALSE(IsArcCompatibleFileSystemUsedForUser(user));
+  EXPECT_TRUE(IsArcCompatibleFileSystemUsedForUser(user));
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // Old FS
