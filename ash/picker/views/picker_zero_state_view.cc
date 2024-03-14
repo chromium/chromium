@@ -222,8 +222,12 @@ void PickerZeroStateView::ClearCapsNudge() {
       .SetDuration(kNudgeHideAnimationDuration)
       // To hide the caps nudge, we just animate the entire view upwards whilst
       // fading the opacity.
-      .SetTransform(this, gfx::Transform::MakeTranslation(
-                              0, -caps_nudge_view_->bounds().height()))
+      .SetTransform(
+          this,
+          gfx::Transform::MakeTranslation(
+              0,
+              -(caps_nudge_view_->bounds().height() +
+                caps_nudge_view_->GetProperty(views::kMarginsKey)->height())))
       .SetOpacity(caps_nudge_view_, /*opacity=*/0);
 }
 
