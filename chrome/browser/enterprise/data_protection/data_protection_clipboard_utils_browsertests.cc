@@ -453,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, CopyAllowed) {
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
   IsClipboardCopyAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(
@@ -461,10 +462,11 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, CopyAllowed) {
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("foo", "", {}),
+      future.GetCallback());
 
-  auto data = future.Get<std::u16string>();
-  EXPECT_EQ(data, u"foo");
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
@@ -482,7 +484,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
   set_expected_dialog_type(
       data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
 
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
   IsClipboardCopyAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(
@@ -490,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest, CopyBlocked) {
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("foo", "", {}),
+      future.GetCallback());
 
   WaitForDialogToInitialize();
   CancelDialog();
@@ -512,7 +516,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   set_expected_dialog_type(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
   IsClipboardCopyAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(
@@ -520,7 +525,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("foo", "", {}),
+      future.GetCallback());
 
   WaitForDialogToInitialize();
 
@@ -550,7 +556,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   set_expected_dialog_type(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
   IsClipboardCopyAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(
@@ -558,7 +565,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("foo", "", {}),
+      future.GetCallback());
 
   WaitForDialogToInitialize();
 
@@ -585,7 +593,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   set_expected_dialog_type(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
   IsClipboardCopyAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(
@@ -593,7 +602,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("foo", "", {}),
+      future.GetCallback());
 
   WaitForDialogToInitialize();
 
@@ -604,10 +614,11 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   AcceptDialog();
   WaitForDialogToClose();
 
-  auto data = future.Get<std::u16string>();
-  EXPECT_EQ(data, u"foo");
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
 
   auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
 }
 
 IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
@@ -626,7 +637,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   set_expected_dialog_type(
       data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
 
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
   IsClipboardCopyAllowedByPolicy(
       /*source=*/content::ClipboardEndpoint(
@@ -634,7 +646,8 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
           base::BindLambdaForTesting(
               [this]() { return contents()->GetBrowserContext(); }),
           *contents()->GetPrimaryMainFrame()),
-      /*metadata=*/{.size = 1234}, u"foo", future.GetCallback());
+      /*metadata=*/{.size = 1234}, MakeClipboardPasteData("foo", "", {}),
+      future.GetCallback());
 
   WaitForDialogToInitialize();
 
@@ -645,10 +658,11 @@ IN_PROC_BROWSER_TEST_F(DataControlsClipboardUtilsBrowserTest,
   AcceptDialog();
   WaitForDialogToClose();
 
-  auto data = future.Get<std::u16string>();
-  EXPECT_EQ(data, u"foo");
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
 
   auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
 }
 
 }  // namespace enterprise_data_protection

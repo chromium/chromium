@@ -236,7 +236,7 @@ void OnDlpRulesCheckDone(
 void IsCopyToOSClipboardRestricted(
     const content::ClipboardEndpoint& source,
     const content::ClipboardMetadata& metadata,
-    const std::u16string& data,
+    const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(data, std::nullopt);
@@ -262,7 +262,7 @@ void IsCopyToOSClipboardRestricted(
 void OnDataControlsCopyWarning(
     const content::ClipboardEndpoint& source,
     const content::ClipboardMetadata& metadata,
-    const std::u16string& data,
+    const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback,
     bool bypassed) {
   if (bypassed) {
@@ -275,7 +275,7 @@ void OnDataControlsCopyWarning(
 void IsCopyRestrictedByDialog(
     const content::ClipboardEndpoint& source,
     const content::ClipboardMetadata& metadata,
-    const std::u16string& data,
+    const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(data, std::nullopt);
@@ -361,7 +361,7 @@ void PasteIfAllowedByPolicy(
 void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardEndpoint& source,
     const content::ClipboardMetadata& metadata,
-    const std::u16string& data,
+    const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
   DCHECK(source.web_contents());
   DCHECK(source.browser_context());

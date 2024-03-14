@@ -582,26 +582,30 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
 }
 
 void ClipboardHostImpl::WriteText(const std::u16string& text) {
+  ClipboardPasteData data;
+  data.text = text;
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       CreateClipboardEndpoint(),
       {
           .size = text.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::PlainTextType(),
       },
-      text,
+      data,
       base::BindOnce(&ClipboardHostImpl::OnCopyTextAllowedResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
                                   const GURL& url) {
+  ClipboardPasteData data;
+  data.html = markup;
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       CreateClipboardEndpoint(),
       {
           .size = markup.size() * sizeof(std::u16string::value_type),
           .format_type = ui::ClipboardFormatType::HtmlType(),
       },
-      markup,
+      data,
       base::BindOnce(&ClipboardHostImpl::OnCopyHtmlAllowedResult,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }
@@ -787,7 +791,7 @@ void ClipboardHostImpl::FinishPasteIfAllowed(
 }
 
 void ClipboardHostImpl::OnCopyTextAllowedResult(
-    const std::u16string& text,
+    const ClipboardPasteData& data,
     std::optional<std::u16string> replacement_data) {
   if (replacement_data) {
     clipboard_writer_->WriteText(std::move(*replacement_data));
@@ -795,13 +799,13 @@ void ClipboardHostImpl::OnCopyTextAllowedResult(
     clipboard_writer_->SetDataSourceURL(
         render_frame_host().GetMainFrame()->GetLastCommittedURL(),
         render_frame_host().GetLastCommittedURL());
-    clipboard_writer_->WriteText(text);
+    clipboard_writer_->WriteText(data.text);
   }
 }
 
 void ClipboardHostImpl::OnCopyHtmlAllowedResult(
     const GURL& source_url,
-    const std::u16string& markup,
+    const ClipboardPasteData& data,
     std::optional<std::u16string> replacement_data) {
   if (replacement_data) {
     clipboard_writer_->WriteText(std::move(*replacement_data));
@@ -809,7 +813,7 @@ void ClipboardHostImpl::OnCopyHtmlAllowedResult(
     clipboard_writer_->SetDataSourceURL(
         render_frame_host().GetMainFrame()->GetLastCommittedURL(),
         render_frame_host().GetLastCommittedURL());
-    clipboard_writer_->WriteHTML(markup, source_url.spec());
+    clipboard_writer_->WriteHTML(data.html, source_url.spec());
   }
 }
 

@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -242,10 +243,10 @@ class CONTENT_EXPORT ClipboardHostImpl
   // the corresponding text/markup data to the clipboard. If it is not, instead
   // write the replacement string to the clipboard as plaintext. This can be
   // called asynchronously.
-  void OnCopyTextAllowedResult(const std::u16string& text,
+  void OnCopyTextAllowedResult(const ClipboardPasteData& data,
                                std::optional<std::u16string> replacement_data);
   void OnCopyHtmlAllowedResult(const GURL& url,
-                               const std::u16string& markup,
+                               const ClipboardPasteData& data,
                                std::optional<std::u16string> replacement_data);
 
   using CopyAllowedCallback = base::OnceCallback<void()>;

@@ -1434,7 +1434,7 @@ void ContentBrowserClient::IsClipboardPasteAllowedByPolicy(
 void ContentBrowserClient::IsClipboardCopyAllowedByPolicy(
     const ClipboardEndpoint& source,
     const ClipboardMetadata& metadata,
-    const std::u16string& data,
+    const ClipboardPasteData& data,
     IsClipboardCopyAllowedCallback callback) {
   std::move(callback).Run(data, std::nullopt);
 }

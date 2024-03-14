@@ -40,7 +40,7 @@ void PasteIfAllowedByPolicy(
 void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardEndpoint& source,
     const content::ClipboardMetadata& metadata,
-    const std::u16string& data,
+    const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
 
 }  // namespace enterprise_data_protection

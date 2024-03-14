@@ -196,12 +196,14 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(CopyEndpoint(GURL("https://source.com")),
-                                 CopyMetadata(), u"foo", future.GetCallback());
-  auto data = future.Get<std::u16string>();
-  EXPECT_EQ(data, u"foo");
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
@@ -221,12 +223,14 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
                     ]
                   })"});
 
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(CopyEndpoint(GURL("https://source.com")),
-                                 CopyMetadata(), u"foo", future.GetCallback());
-  auto data = future.Get<std::u16string>();
-  EXPECT_EQ(data, u"foo");
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_TRUE(replacement);
@@ -248,13 +252,15 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
                     ]
                   })"});
 
-  base::test::TestFuture<const std::u16string&, std::optional<std::u16string>>
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
       future;
-  IsClipboardCopyAllowedByPolicy(CopyEndpoint(GURL("https://random.com")),
-                                 CopyMetadata(), u"foo", future.GetCallback());
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://random.com")), CopyMetadata(),
+      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
 
-  auto data = future.Get<std::u16string>();
-  EXPECT_EQ(data, u"foo");
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
