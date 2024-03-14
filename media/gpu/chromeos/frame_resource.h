@@ -20,6 +20,9 @@ namespace media {
 // Forward declare for use in AsVideoFrameResource.
 class VideoFrameResource;
 
+// Forward declare for use in AsNativePixmapFrameResource
+class NativePixmapFrameResource;
+
 // Base class for holding an object like a VideoFrame. It provides accessors for
 // the metadata or data. This can be implemented using different backing types
 // e.g. VideoFrame or NativePixmap.
@@ -34,6 +37,10 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   // accessor that is needed by encoders. The returned pointer is only valid as
   // long as |this| is alive.
   virtual VideoFrameResource* AsVideoFrameResource();
+
+  // Allows safe downcasting to a NativePixmapFrameResource. The returned
+  // pointer is only valid as long as |this| is alive.
+  virtual const NativePixmapFrameResource* AsNativePixmapFrameResource() const;
 
   // Unique identifier for this video frame generated at construction time. The
   // first ID is 1. The identifier is unique within a process % overflows (which

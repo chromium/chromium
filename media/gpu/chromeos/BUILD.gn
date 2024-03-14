@@ -78,6 +78,8 @@ source_set("common") {
     "libyuv_image_processor_backend.h",
     "mailbox_video_frame_converter.cc",
     "mailbox_video_frame_converter.h",
+    "native_pixmap_frame_resource.cc",
+    "native_pixmap_frame_resource.h",
     "oop_video_decoder.h",
     "platform_video_frame_pool.cc",
     "platform_video_frame_pool.h",
