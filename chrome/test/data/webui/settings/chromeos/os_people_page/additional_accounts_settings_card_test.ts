@@ -41,7 +41,7 @@ suite('<additonal-accounts-settings-card>', () => {
     document.body.appendChild(additionalAccountSettingsCard);
     const list =
         additionalAccountSettingsCard.shadowRoot!.querySelector<DomRepeat>(
-            '#accountList');
+            '#secondaryAccountsList');
     assertTrue(!!list);
     accountList = list;
 

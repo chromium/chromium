@@ -319,8 +319,8 @@ export class AdditionalAccountsSettingsCardElement extends
         this.actionMenuAccount_, newArcAvailability);
 
     const actionMenuAccountIndex =
-        this.shadowRoot!.querySelector<DomRepeat>('#account-list')!.items!
-            .indexOf(this.actionMenuAccount_);
+        this.shadowRoot!.querySelector<DomRepeat>('#secondaryAccountsList')!
+            .items!.indexOf(this.actionMenuAccount_);
     if (actionMenuAccountIndex >= 0) {
       // Focus 'More actions' button for the current account.
       this.shadowRoot!
@@ -332,7 +332,7 @@ export class AdditionalAccountsSettingsCardElement extends
           'Couldn\'t find active account in the list: ',
           this.actionMenuAccount_);
       this.shadowRoot!.querySelector<CrButtonElement>(
-                          '#add-account-button')!.focus();
+                          '#addAccountButton')!.focus();
     }
     this.actionMenuAccount_ = null;
   }
