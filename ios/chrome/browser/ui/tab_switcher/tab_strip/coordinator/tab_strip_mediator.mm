@@ -42,12 +42,11 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
   NSMutableArray<TabStripItemIdentifier*>* items =
       [[NSMutableArray alloc] init];
   for (int i = 0; i < web_state_list->count(); i++) {
-    const TabGroup* tab_group = web_state_list->GetGroupOfWebStateAt(i);
-    if (tab_group && web_state_list->GetWebStates(tab_group).start() == i) {
+    const TabGroup* group = web_state_list->GetGroupOfWebStateAt(i);
+    if (group && web_state_list->GetWebStates(group).range_begin() == i) {
       // If WebState at index `i` is the first of its TabGroup, add a
       // `TabGroupItem` to the result before adding the `TabSwitcherItem`.
-      TabGroupItem* group_item =
-          [[TabGroupItem alloc] initWithTabGroup:tab_group];
+      TabGroupItem* group_item = [[TabGroupItem alloc] initWithTabGroup:group];
       TabStripItemIdentifier* group_item_identifier =
           [TabStripItemIdentifier groupIdentifier:group_item];
       [items addObject:group_item_identifier];

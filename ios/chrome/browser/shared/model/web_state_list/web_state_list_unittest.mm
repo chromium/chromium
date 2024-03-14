@@ -344,9 +344,9 @@ TEST_F(WebStateListRangeTest, ZeroRange) {
   WebStateList::Range range(0, 0);
 
   EXPECT_TRUE(range.IsValid());
-  EXPECT_EQ(0, range.start());
+  EXPECT_EQ(0, range.range_begin());
   EXPECT_EQ(0, range.count());
-  EXPECT_EQ(0, range.end());
+  EXPECT_EQ(0, range.range_end());
 
   EXPECT_FALSE(range.contains(-1));
   EXPECT_FALSE(range.contains(0));
@@ -364,9 +364,9 @@ TEST_F(WebStateListRangeTest, SomeRange) {
   WebStateList::Range range(1, 2);
 
   EXPECT_TRUE(range.IsValid());
-  EXPECT_EQ(1, range.start());
+  EXPECT_EQ(1, range.range_begin());
   EXPECT_EQ(2, range.count());
-  EXPECT_EQ(3, range.end());
+  EXPECT_EQ(3, range.range_end());
 
   EXPECT_FALSE(range.contains(-1));
   EXPECT_FALSE(range.contains(0));
@@ -416,6 +416,20 @@ TEST_F(WebStateListRangeTest, Contract) {
 
   range.ContractRight();
   EXPECT_EQ(WebStateList::Range(2, 0), range);
+}
+
+// Tests iterating over the indices from a range in a range-based for-loop lists
+// all indices correctly.
+TEST_F(WebStateListRangeTest, ForLoop) {
+  WebStateList::Range range(12, 3);
+  std::vector<int> indices;
+
+  for (int i : range) {
+    indices.push_back(i);
+  }
+
+  std::vector<int> expected = {12, 13, 14};
+  EXPECT_EQ(expected, indices);
 }
 
 class WebStateListTest : public PlatformTest {
@@ -473,7 +487,8 @@ class WebStateListTest : public PlatformTest {
           web_state_list_.ContainsIndex(index - 1)
               ? web_state_list_.GetGroupOfWebStateAt(index - 1)
               : nullptr;
-      if (current_group != prev_group && current_group_range.start() != index) {
+      if (current_group != prev_group &&
+          current_group_range.range_begin() != index) {
         // The current TabGroup differs from the previous but the start of the
         // range does not match the current index.
         return false;
@@ -483,7 +498,7 @@ class WebStateListTest : public PlatformTest {
               ? web_state_list_.GetGroupOfWebStateAt(index + 1)
               : nullptr;
       if (current_group != next_group &&
-          current_group_range.end() != index + 1) {
+          current_group_range.range_end() != index + 1) {
         // The current TabGroup differs from the next but the end of the range
         // does not match the current index plus one.
         return false;

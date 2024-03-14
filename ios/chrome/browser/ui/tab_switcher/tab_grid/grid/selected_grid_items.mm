@@ -47,7 +47,7 @@
       [_itemsIdentifiers addObject:item];
       const TabGroup* group = item.tabGroupItem.tabGroup;
       WebStateList::Range range = _webStateList->GetWebStates(group);
-      for (int i = range.start(); i < range.start() + range.count(); i++) {
+      for (int i : range) {
         web::WebStateID webStateID =
             _webStateList->GetWebStateAt(i)->GetUniqueIdentifier();
         if ([self isItemWithIDShareable:webStateID]) {
@@ -73,7 +73,7 @@
     case GridItemType::Group: {
       const TabGroup* group = item.tabGroupItem.tabGroup;
       WebStateList::Range range = _webStateList->GetWebStates(group);
-      for (int i = range.start(); i < range.start() + range.count(); i++) {
+      for (int i : range) {
         web::WebStateID webStateID =
             _webStateList->GetWebStateAt(i)->GetUniqueIdentifier();
         _sharableItemsIDs.erase(webStateID);

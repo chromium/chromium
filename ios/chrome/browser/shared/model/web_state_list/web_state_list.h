@@ -196,11 +196,11 @@ class WebStateList {
     constexpr bool IsValid() const { return *this != InvalidRange(); }
 
     // Getters.
-    constexpr int start() const { return start_; }
+    constexpr int range_begin() const { return start_; }
     constexpr int count() const { return count_; }
 
-    // End is the first index not in the range.
-    constexpr int end() const { return start_ + count_; }
+    // `range_end` is the first index not in the range.
+    constexpr int range_end() const { return start_ + count_; }
     // Whether the index is inside the range.
     constexpr bool contains(int index) const {
       return start_ <= index && index < start_ + count_;
@@ -230,6 +230,29 @@ class WebStateList {
 
     constexpr bool operator==(const Range& other) const = default;
     constexpr bool operator!=(const Range& other) const = default;
+
+    // Support for range-based for-loops. Ex:
+    //
+    //  Range range = ...;
+    //  for (int i : range) {
+    //    // ... do something with the index from the range.
+    //  }
+    //
+    class iterator {
+     public:
+      constexpr iterator(int current) : current_(current) {}
+
+      int operator*() const { return current_; }
+      void operator++() { ++current_; }
+      bool operator!=(const iterator& other) const {
+        return current_ != other.current_;
+      }
+
+     private:
+      int current_;
+    };
+    iterator begin() const { return iterator{start_}; }
+    iterator end() const { return iterator{range_end()}; }
 
    private:
     int start_;

@@ -448,8 +448,8 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
   int range_end = count();
   if (group) {
     const Range tab_group_range = GetWebStates(group);
-    range_begin = tab_group_range.start();
-    range_end = tab_group_range.end();
+    range_begin = tab_group_range.range_begin();
+    range_end = tab_group_range.range_end();
   } else if (pinned) {
     range_end = pinned_tabs_count_;
   } else {
@@ -519,7 +519,7 @@ int WebStateList::InsertWebStateImpl(std::unique_ptr<web::WebState> web_state,
     Range& group_range = group_it->second;
     if (group_it->first.get() == group) {
       group_range.ExpandRight();
-    } else if (group_range.start() >= index) {
+    } else if (group_range.range_begin() >= index) {
       group_range.MoveRight();
     }
   }
@@ -653,7 +653,7 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
     Range& group_range = group_it->second;
     if (group_it->first.get() == group) {
       group_range.ContractRight();
-    } else if (group_range.start() > index) {
+    } else if (group_range.range_begin() > index) {
       group_range.MoveLeft();
     }
   }
@@ -789,7 +789,7 @@ const TabGroup* WebStateList::CreateGroupImpl(
                                        ? GetGroupOfWebStateAt(first_index - 1)
                                        : nullptr;
     if (group && group == group_before) {
-      pivot_index = GetWebStates(group).end();
+      pivot_index = GetWebStates(group).range_end();
     } else {
       pivot_index = first_index;
     }
@@ -823,9 +823,9 @@ void WebStateList::MoveToGroupImpl(const std::set<int>& indices,
   std::vector<int> before_group;
   std::vector<int> after_group;
   for (const auto& index : indices) {
-    if (index < group_range.start()) {
+    if (index < group_range.range_begin()) {
       before_group.push_back(index);
-    } else if (index >= group_range.end()) {
+    } else if (index >= group_range.range_end()) {
       after_group.push_back(index);
     } else {
       // Indices already in the group range are not updated.
@@ -835,14 +835,14 @@ void WebStateList::MoveToGroupImpl(const std::set<int>& indices,
   // Iterate over the WebStates on the left of the group.
   // Reverse `before_group` to start from the rightmost, to keep indices valid.
   std::reverse(before_group.begin(), before_group.end());
-  int to_index = group_range.end() - 1;
+  int to_index = group_range.range_end() - 1;
   for (int index : before_group) {
     MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, group);
     --to_index;
   }
 
   // Iterate over the WebStates on the right of the group.
-  to_index = group_range.end();
+  to_index = group_range.range_end();
   for (int index : after_group) {
     MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, group);
     ++to_index;
@@ -859,7 +859,7 @@ void WebStateList::RemoveFromGroupsImpl(const std::set<int>& indices) {
     const int index = *it;
     const TabGroup* group = GetGroupOfWebStateAt(index);
     if (group) {
-      const int to_index = GetWebStates(group).end() - 1;
+      const int to_index = GetWebStates(group).range_end() - 1;
       MoveWebStateWrapperAt(*it, to_index, /*pinned=*/false,
                             /*new_group=*/nullptr);
     }
@@ -963,13 +963,13 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
       group_range.ContractRight();
     }
     // Slide all groups after the removed tab to the left.
-    if (from_index < group_range.start()) {
+    if (from_index < group_range.range_begin()) {
       group_range.MoveLeft();
     }
     // Add the item to the new group.
     if (group == new_group) {
       group_range.ExpandRight();
-    } else if (to_index <= group_range.start()) {
+    } else if (to_index <= group_range.range_begin()) {
       // Slide all groups at or after the added tab to the right.
       group_range.MoveRight();
     }
