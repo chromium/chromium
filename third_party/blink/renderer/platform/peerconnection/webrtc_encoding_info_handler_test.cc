@@ -36,8 +36,8 @@ class MockVideoEncoderFactory : public webrtc::VideoEncoderFactory {
  public:
   // webrtc::VideoEncoderFactory implementation:
   MOCK_METHOD(std::unique_ptr<webrtc::VideoEncoder>,
-              CreateVideoEncoder,
-              (const webrtc::SdpVideoFormat& format),
+              Create,
+              (const webrtc::Environment&, const webrtc::SdpVideoFormat&),
               (override));
   MOCK_METHOD(std::vector<webrtc::SdpVideoFormat>,
               GetSupportedFormats,

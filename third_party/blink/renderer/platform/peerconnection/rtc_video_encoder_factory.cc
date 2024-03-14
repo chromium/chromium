@@ -301,8 +301,8 @@ void RTCVideoEncoderFactory::CheckAndWaitEncoderSupportStatusIfNeeded() const {
   }
 }
 
-std::unique_ptr<webrtc::VideoEncoder>
-RTCVideoEncoderFactory::CreateVideoEncoder(
+std::unique_ptr<webrtc::VideoEncoder> RTCVideoEncoderFactory::Create(
+    const webrtc::Environment& env,
     const webrtc::SdpVideoFormat& format) {
   CheckAndWaitEncoderSupportStatusIfNeeded();
 
