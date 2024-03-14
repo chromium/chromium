@@ -199,16 +199,6 @@
     height: 29px;
   }
 
-<if expr="chromeos_ash">
-  #assistant-checkbox-container {
-    align-items: flex-start;
-    line-height: 20px;
-    margin-bottom: 20px;
-    margin-top: 7px;
-    vertical-align: text-top;
-  }
-</if>
-
   #consent-container {
     margin-top: 10px;
   }
@@ -417,13 +407,6 @@
     <label id="sys-info-label">$i18nRaw{sysInfo}</label>
   </div>
 <if expr="chromeos_ash">
-  <!-- Assistant Debug Logs (Googler Internal Only) -->
-  <div id="assistant-checkbox-container" class="checkbox-field-container"
-        hidden>
-    <input id="assistant-info-checkbox" type="checkbox"
-            checked aria-labelledby="assistant-info-label">
-    <label id="assistant-info-label">$i18nRaw{assistantInfo}</label>
-  </div>
   <!-- Performance Feedback -->
   <div id="performance-info-area" hidden>
     <input id="performance-info-checkbox" type="checkbox">

@@ -45,7 +45,6 @@ export class FeedbackAppElement extends PolymerElement {
    * The object will be manipulated by sendReport().
    */
   private feedbackInfo: chrome.feedbackPrivate.FeedbackInfo = {
-    assistantDebugInfoAllowed: false,
     attachedFile: undefined,
     attachedFileBlobUuid: undefined,
     autofillMetadata: '',
@@ -54,7 +53,6 @@ export class FeedbackAppElement extends PolymerElement {
     descriptionPlaceholder: undefined,
     email: undefined,
     flow: chrome.feedbackPrivate.FeedbackFlow.REGULAR,
-    fromAssistant: false,
     fromAutofill: false,
     includeBluetoothLogs: false,
     pageUrl: undefined,
@@ -134,16 +132,6 @@ export class FeedbackAppElement extends PolymerElement {
           .addEventListener(
               'input', (e: Event) => this.checkForShowQuestionnaire(e));
     }
-
-    // <if expr="chromeos_ash">
-    if (this.shadowRoot!.querySelector<HTMLElement>(
-            '#assistant-checkbox-container') != null &&
-        feedbackInfo.flow ===
-            chrome.feedbackPrivate.FeedbackFlow.GOOGLE_INTERNAL &&
-        feedbackInfo.fromAssistant) {
-      this.getRequiredElement('#assistant-checkbox-container').hidden = false;
-    }
-    // </if>
 
     if (this.shadowRoot!.querySelector<HTMLElement>(
             '#autofill-checkbox-container') != null &&
@@ -333,23 +321,6 @@ export class FeedbackAppElement extends PolymerElement {
             termsOfServiceUrlElement, FEEDBACK_TERM_OF_SERVICE_URL,
             false /* useAppWindow */);
       }
-
-      // <if expr="chromeos_ash">
-      const assistantLogsInfoLinkElement =
-          this.shadowRoot!.querySelector<HTMLElement>(
-              '#assistant-logs-info-link');
-      if (assistantLogsInfoLinkElement) {
-        assistantLogsInfoLinkElement.onclick = (e: Event) => {
-          e.preventDefault();
-
-          FeedbackBrowserProxyImpl.getInstance().showAssistantLogsInfo();
-
-          assistantLogsInfoLinkElement.onauxclick = (e: Event) => {
-            e.preventDefault();
-          };
-        };
-      }
-      // </if>
     }
 
     // Make sure our focus starts on the description field.
@@ -651,14 +622,6 @@ export class FeedbackAppElement extends PolymerElement {
     }
 
     // <if expr="chromeos_ash">
-    const assistantCheckbox = this.shadowRoot!.querySelector<HTMLInputElement>(
-        '#assistant-info-checkbox');
-    if (assistantCheckbox != null && assistantCheckbox.checked &&
-        !this.getRequiredElement('#assistant-checkbox-container').hidden) {
-      // User consent to link Assistant debug info on Assistant server.
-      this.feedbackInfo.assistantDebugInfoAllowed = true;
-    }
-
     const performanceCheckbox =
         this.shadowRoot!.querySelector<HTMLInputElement>(
             '#performance-info-checkbox');

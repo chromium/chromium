@@ -28,8 +28,6 @@ void AddStringResources(content::WebUIDataSource* source,
   static constexpr webui::LocalizedString kStrings[] = {
       {"additionalInfo", IDS_FEEDBACK_ADDITIONAL_INFO_LABEL},
       {"anonymousUser", IDS_FEEDBACK_ANONYMOUS_EMAIL_OPTION},
-      {"assistantInfo", IDS_FEEDBACK_INCLUDE_ASSISTANT_INFORMATION_CHKBOX},
-      {"assistantLogsMessage", IDS_FEEDBACK_ASSISTANT_LOGS_MESSAGE},
       {"attachFileLabel", IDS_FEEDBACK_ATTACH_FILE_LABEL},
       {"attachFileNote", IDS_FEEDBACK_ATTACH_FILE_NOTE},
       {"attachFileToBig", IDS_FEEDBACK_ATTACH_FILE_TO_BIG},

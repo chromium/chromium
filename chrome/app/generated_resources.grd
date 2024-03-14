@@ -10349,9 +10349,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_FEEDBACK_INCLUDE_PERFORMANCE_TRACE_CHECKBOX" desc="Checkbox for including system performance data on the bug report dialog box">
           Send performance trace data
         </message>
-        <message name="IDS_FEEDBACK_ASSISTANT_LOGS_MESSAGE" desc="Message shown after user clicks on the assistant logs hyperlink">
-          This information helps us better understand your Assistant issue. It's stored for up to 90 days and access is restricted to appropriate engineering and feedback teams.
-        </message>
         <message name="IDS_FEEDBACK_OFFLINE_DIALOG_TITLE" desc="The title of the message box displayed when the user attempts to send a report while offline">
           Feedback Report
         </message>
@@ -10371,9 +10368,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
             Send <ph name="BEGIN_LINK1">&lt;a href="#" id="sys-info-url"&gt;</ph>system and app information<ph name="END_LINK1">&lt;/a&gt;</ph>, and <ph name="BEGIN_LINK2">&lt;a href="#" id="histograms-url"&gt;</ph>metrics<ph name="END_LINK2">&lt;/a&gt;</ph>
           </message>
         </if>
-        <message name="IDS_FEEDBACK_INCLUDE_ASSISTANT_INFORMATION_CHKBOX" desc="Checkbox for including Assistant debug information in the feedback report">
-          Include recent Assistant history via Sherlog. This may include your identity, location, and debug info. <ph name="BEGIN_LINK">&lt;a href="#" id="assistant-logs-info-link"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-        </message>
         <message name="IDS_FEEDBACK_ATTACH_FILE_NOTE" desc="Text for describing the maximum size for an attached file">
           File will be sent to Google for debugging
         </message>

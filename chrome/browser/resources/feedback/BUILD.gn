@@ -24,13 +24,6 @@ build_webui("build") {
     "images/button_butter_bar_close_pressed.png",
   ]
 
-  if (is_chromeos_ash) {
-    static_files += [
-      "css/logs_info.css",
-      "html/assistant_logs_info.html",
-    ]
-  }
-
   web_component_files = [
     "app.ts",
     "autofill_metadata_app.ts",

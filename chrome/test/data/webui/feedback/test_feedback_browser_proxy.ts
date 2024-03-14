@@ -17,9 +17,6 @@ export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
       'closeDialog', 'getSystemInformation', 'getUserEmail',
       'getDialogArguments', 'getUserMedia', 'sendFeedback',
       'showAutofillMetadataInfo', 'showDialog', 'showMetrics', 'showSystemInfo',
-      // <if expr="chromeos_ash">
-      'showAssistantLogsInfo',
-      // </if>
     ]);
   }
 
@@ -73,12 +70,6 @@ export class TestFeedbackBrowserProxy extends TestBrowserProxy implements
   closeDialog() {
     this.methodCalled('closeDialog');
   }
-
-  // <if expr="chromeos_ash">
-  showAssistantLogsInfo() {
-    this.methodCalled('showAssistantLogsInfo');
-  }
-  // </if>
 
   showSystemInfo() {
     this.methodCalled('showSystemInfo');
