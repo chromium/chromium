@@ -200,7 +200,7 @@ SharedImageFactory::SharedImageFactory(
       memory_tracker_(std::make_unique<MemoryTypeTracker>(memory_tracker)),
       is_for_display_compositor_(is_for_display_compositor),
       gr_context_type_(context_state ? context_state->gr_context_type()
-                                     : GrContextType::kGL),
+                                     : GrContextType::kNone),
       gpu_preferences_(gpu_preferences),
       workarounds_(workarounds) {
 #if defined(USE_OZONE)
@@ -240,41 +240,30 @@ SharedImageFactory::SharedImageFactory(
     return;
   }
 
-  scoped_refptr<gles2::FeatureInfo> feature_info;
-  if (shared_context_state_) {
-    feature_info = shared_context_state_->feature_info();
-  }
+  CHECK(shared_context_state_);
+  scoped_refptr<gles2::FeatureInfo> feature_info =
+      shared_context_state_->feature_info();
 
-  if (!feature_info) {
-    // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
-    // could be nullptr.
-    bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
-                           gles2::PassthroughCommandDecoderSupported();
-    feature_info = new gles2::FeatureInfo(workarounds, gpu_feature_info);
-    feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
-                             use_passthrough, gles2::DisallowedFeatures());
-  }
-
-  if (context_state) {
+  // If Skia is disabled but GL is still enabled then shared images are only
+  // needed for WebGL.
+  if (gr_context_type_ != GrContextType::kNone) {
     auto wrapped_sk_image_factory =
         std::make_unique<WrappedSkImageBackingFactory>(context_state);
     factories_.push_back(std::move(wrapped_sk_image_factory));
-  }
 
-  if (features::IsUsingRawDraw() && context_state) {
-    auto factory = std::make_unique<RawDrawImageBackingFactory>();
-    factories_.push_back(std::move(factory));
+    if (features::IsUsingRawDraw()) {
+      auto factory = std::make_unique<RawDrawImageBackingFactory>();
+      factories_.push_back(std::move(factory));
+    }
   }
 
   bool use_gl =
-      gl::GetGLImplementation() != gl::kGLImplementationNone &&
-      (!is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL);
+      !is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL;
   if (use_gl) {
     auto gl_texture_backing_factory =
         std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences, workarounds, feature_info.get(),
-            shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr,
+            shared_context_state_->progress_reporter(),
             /*for_cpu_upload_usage=*/false);
     factories_.push_back(std::move(gl_texture_backing_factory));
   }
@@ -299,8 +288,7 @@ SharedImageFactory::SharedImageFactory(
     auto gl_texture_backing_factory =
         std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences, workarounds, feature_info.get(),
-            shared_context_state_ ? shared_context_state_->progress_reporter()
-                                  : nullptr,
+            shared_context_state_->progress_reporter(),
             /*for_cpu_upload_usage=*/true);
     factories_.push_back(std::move(gl_texture_backing_factory));
   }
@@ -384,18 +372,10 @@ SharedImageFactory::SharedImageFactory(
 
 #if BUILDFLAG(IS_APPLE)
   {
-    // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
-    // could be nullptr.
-    int32_t max_texture_size = shared_context_state_
-                                   ? shared_context_state_->GetMaxTextureSize()
-                                   : 8192;
-    auto* progress_reporter = shared_context_state_
-                                  ? shared_context_state_->progress_reporter()
-                                  : nullptr;
     auto iosurface_backing_factory =
         std::make_unique<IOSurfaceImageBackingFactory>(
-            gpu_preferences.gr_context_type, max_texture_size,
-            feature_info.get(), progress_reporter);
+            gr_context_type_, shared_context_state_->GetMaxTextureSize(),
+            feature_info.get(), shared_context_state_->progress_reporter());
     factories_.push_back(std::move(iosurface_backing_factory));
   }
 #endif
