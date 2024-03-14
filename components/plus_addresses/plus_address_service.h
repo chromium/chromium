@@ -116,14 +116,6 @@ class PlusAddressService : public KeyedService,
   // virtual to allow mocking in tests that don't want to do identity setup.
   virtual std::optional<std::string> GetPrimaryEmail();
 
-  // Gets the up-to-date mapping from the remote server from the
-  // PlusAddressHttpClient and returns it via `callback`.
-  // This is only intended to be called by `polling_timer_`.
-  //
-  // TODO (crbug.com/1467623): Make this private when testing improves.
-  // Virtual to allow overriding the behavior in tests.
-  virtual void SyncPlusAddressMapping();
-
   bool is_enabled() const;
 
   // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
@@ -137,6 +129,10 @@ class PlusAddressService : public KeyedService,
   // This has no effect if this service is not enabled or the timer is already
   // running.
   void CreateAndStartTimer();
+
+  // Gets the up-to-date plus address mapping mapping from the remote server
+  // from the PlusAddressHttpClient.
+  void SyncPlusAddressMapping();
 
   // Checks whether `error` is a `HTTP_FORBIDDEN` network error and, if there
   // have been more than `kMaxAllowedForbiddenResponses` such calls without a

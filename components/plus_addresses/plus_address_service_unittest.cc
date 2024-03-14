@@ -114,7 +114,8 @@ class PlusAddressServiceTest : public ::testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -582,8 +583,6 @@ class PlusAddressServicePolling : public PlusAddressServiceRequestsTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO: b/305696884 - Make this test simulate timer firing instead of
-// directly calling SyncPlusAddressMapping.
 TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   // The service starts the timer on construction and issues a request to
   // poll. Unblock the initial polling request.
@@ -593,8 +592,9 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
   EXPECT_FALSE(service().IsPlusAddress("plus+foo@plus.plus"));
   EXPECT_FALSE(service().IsPlusAddress("plus+bar@plus.plus"));
 
-  service().SyncPlusAddressMapping();
-  // Note: The above call blocks until we provide a response to the request.
+  task_environment().FastForwardBy(
+      features::kEnterprisePlusAddressTimerDelay.Get() + base::Seconds(1));
+  EXPECT_EQ(url_loader_factory().NumPending(), 1);
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint,
       test::MakeListResponse(
@@ -679,18 +679,11 @@ TEST_F(PlusAddressServicePolling, PrimaryAccountCleared_TogglesPollingOff) {
   // Unblock initial poll.
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint, test::MakeListResponse({}));
-
   identity_env().ClearPrimaryAccount();
-  service().SyncPlusAddressMapping();
-  // The above doesn't block since it doesn't make network requests in this
-  // state.
 
   // Toggle polling back on by signing into a primary account.
   identity_env().MakePrimaryAccountAvailable("plus2@plus.plus",
                                              signin::ConsentLevel::kSignin);
-  service().SyncPlusAddressMapping();
-  // TODO: b/305696884 - Remove above call to verify that observing
-  // OnPrimaryAccountChanged will trigger this via CreateAndStartTimer().
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint,
       test::MakeListResponse({PlusProfile{
@@ -714,7 +707,6 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
       primary_account.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   task_environment().RunUntilIdle();
-  service().SyncPlusAddressMapping();
   // No network requests are expected because the service is not enabled.
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
@@ -724,10 +716,7 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
       GoogleServiceAuthError(GoogleServiceAuthError::NONE));
   task_environment().RunUntilIdle();
 
-  service().SyncPlusAddressMapping();
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
-  // TODO: b/305696884 - Remove above call to verify that observing
-  // OnPrimaryAccountChanged will trigger this via CreateAndStartTimer().
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint,
       test::MakeListResponse({PlusProfile{

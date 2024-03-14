@@ -387,10 +387,12 @@ void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
       primary_account.account_id != account_info.account_id) {
     return;
   }
+  primary_account_auth_error_ = error;
   if (error.state() != GoogleServiceAuthError::NONE) {
     HandleSignout();
+  } else {
+    CreateAndStartTimer();
   }
-  primary_account_auth_error_ = error;
 }
 
 void PlusAddressService::HandleSignout() {
