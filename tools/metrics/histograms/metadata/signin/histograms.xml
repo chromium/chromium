@@ -1894,6 +1894,33 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SyncButtons.Clicked" enum="SyncButtonClicked"
+    expires_after="2024-09-01">
+  <owner>tju@chromium.org</owner>
+  <owner>chrome-kids-team@google.com</owner>
+  <summary>
+    Records the flavour of the button clicked on sync or history sync opt in
+    screens, including buttons function (accept or decline) and appearance
+    (equal or not-equal weighted).
+
+    Recorded when the user clicks on the button.
+
+    Recorded in Android only.
+  </summary>
+</histogram>
+
+<histogram name="Signin.SyncButtons.Shown" enum="SyncButtonsType"
+    expires_after="2024-09-01">
+  <owner>tju@chromium.org</owner>
+  <owner>chrome-kids-team@google.com</owner>
+  <summary>
+    Records the appearance of the button set on sync or history sync opt in
+    screens. Recorded when the buttons are displayed to the user.
+
+    Recorded in Android only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SyncDisabledNotificationShown" enum="SigninAccessPoint"
     expires_after="2024-08-22">
   <owner>birnie@google.com</owner>

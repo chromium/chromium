@@ -19,6 +19,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
+import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.UiUtils;
@@ -50,6 +51,8 @@ class SigninView extends LinearLayout {
 
     private OnClickListener mAcceptOnClickListener;
     private ConsentTextUpdater mAcceptConsentTextUpdater;
+
+    private @DualControlLayout.ButtonType int mAcceptButtonType;
 
     public SigninView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -153,7 +156,36 @@ class SigninView extends LinearLayout {
         if (this.mAcceptOnClickListener == null) {
             return;
         }
+
+        if (this.mAcceptButtonType == ButtonType.PRIMARY_FILLED) {
+            MinorModeHelper.recordButtonClicked(
+                    MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
+        } else {
+            MinorModeHelper.recordButtonClicked(
+                    MinorModeHelper.SyncButtonClicked.SYNC_OPT_IN_EQUAL_WEIGHTED);
+        }
+
         this.mAcceptOnClickListener.onClick(view);
+    }
+
+    private void refuseOnClickListener(View view) {
+        if (this.mAcceptButtonType == ButtonType.PRIMARY_FILLED) {
+            MinorModeHelper.recordButtonClicked(
+                    MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
+        } else {
+            MinorModeHelper.recordButtonClicked(
+                    MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_EQUAL_WEIGHTED);
+        }
+    }
+
+    void settingsClicked() {
+        if (this.mAcceptButtonType == ButtonType.PRIMARY_FILLED) {
+            MinorModeHelper.recordButtonClicked(
+                    MinorModeHelper.SyncButtonClicked.SYNC_SETTINGS_NOT_EQUAL_WEIGHTED);
+        } else {
+            MinorModeHelper.recordButtonClicked(
+                    MinorModeHelper.SyncButtonClicked.SYNC_SETTINGS_EQUAL_WEIGHTED);
+        }
     }
 
     /**
@@ -180,7 +212,10 @@ class SigninView extends LinearLayout {
     private void createButtons() {
         mRefuseButton =
                 DualControlLayout.createButtonForLayout(
-                        getContext(), DualControlLayout.ButtonType.SECONDARY, "", null);
+                        getContext(),
+                        DualControlLayout.ButtonType.SECONDARY,
+                        "",
+                        this::refuseOnClickListener);
         mRefuseButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -211,8 +246,7 @@ class SigninView extends LinearLayout {
 
         Button oldButton = mAcceptButton;
 
-        @DualControlLayout.ButtonType
-        int acceptButtonType =
+        mAcceptButtonType =
                 screenMode == ScreenMode.UNRESTRICTED
                         ? DualControlLayout.ButtonType.PRIMARY_FILLED
                         : DualControlLayout.ButtonType.PRIMARY_TEXT;
@@ -220,7 +254,7 @@ class SigninView extends LinearLayout {
         mAcceptButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(),
-                        acceptButtonType,
+                        mAcceptButtonType,
                         oldButton.getText().toString(),
                         this::acceptOnClickListenerProxy);
         mAcceptButton.setLayoutParams(
@@ -232,6 +266,15 @@ class SigninView extends LinearLayout {
         // This button is not changed, make it unconditionally visible.
         mRefuseButton.setVisibility(View.VISIBLE);
         addButtonsToButtonBar();
+
+        // Only at this point buttons were made visible and added to the button bar, so record the
+        // displayed button type.
+        if (mAcceptButtonType == ButtonType.PRIMARY_FILLED) {
+            MinorModeHelper.recordButtonsShown(
+                    MinorModeHelper.SyncButtonsType.SYNC_NOT_EQUAL_WEIGHTED);
+        } else {
+            MinorModeHelper.recordButtonsShown(MinorModeHelper.SyncButtonsType.SYNC_EQUAL_WEIGHTED);
+        }
     }
 
     private void addButtonsToButtonBar() {

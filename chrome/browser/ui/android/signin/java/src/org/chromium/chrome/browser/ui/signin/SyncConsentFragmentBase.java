@@ -678,6 +678,8 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     protected void onSettingsLinkClicked(View view) {
+        mSigninView.settingsClicked();
+
         if (!areControlsEnabled()) return;
         mIsSigninInProgress = true;
         RecordUserAction.record("Signin_Signin_WithAdvancedSyncSettings");
