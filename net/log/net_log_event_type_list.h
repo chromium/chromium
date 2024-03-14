@@ -258,6 +258,26 @@ EVENT_TYPE(HOST_RESOLVER_DNS_TASK_EXTRACTION_RESULTS)
 //   }
 EVENT_TYPE(HOST_RESOLVER_DNS_TASK_TIMEOUT)
 
+// Logged when a ServiceEndpointListBuilder updates intermediate service
+// endpoints. Contains the following parameters:
+//
+//   {
+//      "endpoints": [{
+//        "ipv4_endpoints": <List of IPv4 endpoint>,
+//        "ipv6_endpoints": <List of IPv6 endpoint>,
+//        "metadata": <ConnectionEndpointMetadata of this service endpoint>
+//      }]
+//   }
+EVENT_TYPE(HOST_RESOLVER_SERVICE_ENDPOINTS_UPDATED)
+
+// Logged when a ServiceEndpointListBuilder's resolution timer is timed out,
+// or AAAA response is received before the timer timed out.
+//   {
+//      "timedout": <Whether or not the timer is timed out>,
+//      "elapsed": <Elapsed time in milliseconds>
+//   }
+EVENT_TYPE(HOST_RESOLVER_SERVICE_ENDPOINTS_RESOLUTION_DELAY)
+
 // ------------------------------------------------------------------------
 // InitProxyResolver
 // ------------------------------------------------------------------------
