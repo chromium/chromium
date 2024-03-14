@@ -48,6 +48,7 @@ std::vector<Command> supported_commands = {
     Command::kStartPasswordManagerTutorial,
     Command::kStartSavedTabGroupTutorial,
     Command::kOpenAISettings,
+    Command::kOpenSafetyCheckFromWhatsNew,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -366,6 +367,20 @@ TEST_F(BrowserCommandHandlerTest, OpenSafetyCheckCommand) {
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kSafetyCheckSubPage)),
                     DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(Command::kOpenSafetyCheck, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenSafetyCheckFromWhatsNewCommand) {
+  // The OpenSafetyCheck command opens a new settings window with the Safety
+  // Check, and the correct disposition.
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  EXPECT_CALL(
+      *command_handler_,
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kSafetyCheckSubPage)),
+                    DispositionFromClick(*info)));
+  EXPECT_TRUE(
+      ExecuteCommand(Command::kOpenSafetyCheckFromWhatsNew, std::move(info)));
 }
 
 TEST_F(BrowserCommandHandlerTest,

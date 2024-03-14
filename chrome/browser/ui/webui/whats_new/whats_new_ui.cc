@@ -90,6 +90,7 @@ void WhatsNewUI::CreateBrowserCommandHandler(
   std::vector<browser_command::mojom::Command> supported_commands = {
       browser_command::mojom::Command::kStartSavedTabGroupTutorial,
       browser_command::mojom::Command::kOpenAISettings,
+      browser_command::mojom::Command::kOpenSafetyCheckFromWhatsNew,
   };
   command_handler_ = std::make_unique<BrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands);
