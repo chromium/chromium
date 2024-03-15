@@ -342,8 +342,8 @@ def main():
 # //build/fuchsia/gen_build_def.py.
 # Any changes made to this file will be discarded.
 
-import("//third_party/fuchsia-gn-sdk/src/{}")
-      """.format(gn_file))
+import("/%s/%s")
+      """ % (GN_SDK_GN_ROOT, gn_file))
 
   ProcessSdkManifest()
 
