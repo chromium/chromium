@@ -494,7 +494,9 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
       AddEvent(node, Event::DESCRIPTION_CHANGED);
       break;
     case ax::mojom::StringAttribute::kFontFamily:
-      AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
+      if (node->HasState(ax::mojom::State::kRichlyEditable)) {
+        AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
+      }
       break;
     case ax::mojom::StringAttribute::kImageAnnotation:
       // The image annotation is reported as part of the accessible name.
@@ -556,7 +558,6 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
       }
       break;
     default:
-      AddEvent(node, Event::OTHER_ATTRIBUTE_CHANGED);
       break;
   }
 }
@@ -647,18 +648,21 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
     case ax::mojom::IntAttribute::kTextOverlineStyle:
     case ax::mojom::IntAttribute::kTextStrikethroughStyle:
     case ax::mojom::IntAttribute::kTextUnderlineStyle:
-      AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
+      if (node->HasState(ax::mojom::State::kRichlyEditable)) {
+        AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
+      }
       break;
     case ax::mojom::IntAttribute::kTextAlign:
       // Alignment is exposed as an object attribute because it cannot apply to
       // a substring. However, for some platforms (e.g. ATK), alignment is a
       // text attribute. Therefore fire both events to ensure platforms get the
       // expected notifications.
-      AddEvent(node, Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
-      AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
+      if (node->HasState(ax::mojom::State::kRichlyEditable)) {
+        AddEvent(node, Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
+        AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
+      }
       break;
     default:
-      AddEvent(node, Event::OTHER_ATTRIBUTE_CHANGED);
       break;
   }
 }
@@ -685,18 +689,21 @@ void AXEventGenerator::OnFloatAttributeChanged(AXTree* tree,
       break;
     case ax::mojom::FloatAttribute::kFontSize:
     case ax::mojom::FloatAttribute::kFontWeight:
-      AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
+      if (node->HasState(ax::mojom::State::kRichlyEditable)) {
+        AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
+      }
       break;
     case ax::mojom::FloatAttribute::kTextIndent:
       // Indentation is exposed as an object attribute because it cannot apply
       // to a substring. However, for some platforms (e.g. ATK), alignment is a
       // text attribute. Therefore fire both events to ensure platforms get the
       // expected notifications.
-      AddEvent(node, Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
-      AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
+      if (node->HasState(ax::mojom::State::kRichlyEditable)) {
+        AddEvent(node, Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
+        AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
+      }
       break;
     default:
-      AddEvent(node, Event::OTHER_ATTRIBUTE_CHANGED);
       break;
   }
 }
@@ -733,7 +740,6 @@ void AXEventGenerator::OnBoolAttributeChanged(AXTree* tree,
       break;
     }
     default:
-      AddEvent(node, Event::OTHER_ATTRIBUTE_CHANGED);
       break;
   }
 }
@@ -778,7 +784,7 @@ void AXEventGenerator::OnIntListAttributeChanged(
       // adjust the node we fire that event on here.
       if (AXNode* text_field = node->GetTextFieldAncestor()) {
         AddEvent(text_field, Event::TEXT_ATTRIBUTE_CHANGED);
-      } else {
+      } else if (node->HasState(ax::mojom::State::kRichlyEditable)) {
         AddEvent(node, Event::TEXT_ATTRIBUTE_CHANGED);
       }
       break;
@@ -786,7 +792,6 @@ void AXEventGenerator::OnIntListAttributeChanged(
       AddEvent(node, Event::CARET_BOUNDS_CHANGED);
       break;
     default:
-      AddEvent(node, Event::OTHER_ATTRIBUTE_CHANGED);
       break;
   }
 }
@@ -968,17 +973,21 @@ void AXEventGenerator::FireActiveDescendantEvents() {
 }
 
 bool CanContributeToValueOfTextfield(AXNode* target_node) {
-  // TODO(accessibility) Changes to inline text boxes should be redundant with
-  // changes in their parent static text containers. We should probably return
-  // false for those in order to save on performance.
+  // Inline textboxes contribute the same text as their static text ancestors,
+  // and their redundant contributions can be ignored to improve performance.
+  if (target_node->GetRole() == ax::mojom::Role::kInlineTextBox) {
+    return false;
+  }
 
   // Text and line breaks contribute.
-  if (ui::IsText(target_node->GetRole()))
+  if (ui::IsText(target_node->GetRole())) {
     return true;
+  }
 
   // Non-text leaf nodes contribute, e.g. images.
-  if (target_node->GetChildCount() == 0)
+  if (target_node->GetChildCount() == 0) {
     return true;
+  }
 
   return false;
 }
@@ -1172,15 +1181,6 @@ void AXEventGenerator::PostprocessEvents() {
       // events.
       TrimEventsDueToAncestorIgnoredChanged(node, ancestor_ignored_changed_map);
       RemoveEventsDueToIgnoredChanged(&node_events);
-    }
-
-    // When the selected option in an expanded select element changes, the
-    // foreground and background colors change. But we don't want to treat
-    // those as text attribute changes. This can also happen when a widget
-    // such as a button becomes enabled/disabled.
-    if (HasEvent(node_events, Event::SELECTED_CHANGED) ||
-        HasEvent(node_events, Event::ENABLED_CHANGED)) {
-      RemoveEvent(&node_events, Event::TEXT_ATTRIBUTE_CHANGED);
     }
 
     AXNode* parent = node->GetUnignoredParent();
@@ -1396,8 +1396,6 @@ const char* ToString(AXEventGenerator::Event event) {
       return "objectAttributeChanged";
     case AXEventGenerator::Event::ORIENTATION_CHANGED:
       return "orientationChanged";
-    case AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
-      return "otherAttributeChanged";
     case AXEventGenerator::Event::PARENT_CHANGED:
       return "parentChanged";
     case AXEventGenerator::Event::PLACEHOLDER_CHANGED:

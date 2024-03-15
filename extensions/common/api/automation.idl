@@ -94,7 +94,6 @@
     nameChanged,
     objectAttributeChanged,
     orientationChanged,
-    otherAttributeChanged,
     parentChanged,
     placeholderChanged,
     portalActivated,
