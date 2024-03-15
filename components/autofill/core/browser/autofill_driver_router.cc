@@ -430,19 +430,24 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
                     ? internal::FormForest::SecurityOptions::TrustAllOrigins()
                     : internal::FormForest::SecurityOptions(&triggered_origin,
                                                             &field_type_map));
+  // Collect the fields per frame and emit a single fill operation per frame,
+  // even if multiple renderer forms belong to the same iframe due to
+  // flattening.
+  base::flat_map<AutofillDriver*, std::vector<FormFieldData::FillData>>
+      fields_of_driver;
   for (FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
-      std::vector<FormFieldData::FillData> fields;
       for (const FormFieldData& field : renderer_form.fields) {
         // Skip unsafe fields so that they do not get filled in the renderer.
         if (renderer_forms.safe_fields.contains(field.global_id())) {
-          fields.emplace_back(field);
+          fields_of_driver[target].emplace_back(field);
         }
       }
-      if (!fields.empty()) {
-        callback(target, action_type, action_persistence, fields);
-      }
     }
+  }
+  for (const auto& [target, fields] : fields_of_driver) {
+    CHECK(!fields.empty());
+    callback(target, action_type, action_persistence, fields);
   }
   return renderer_forms.safe_fields;
 }
