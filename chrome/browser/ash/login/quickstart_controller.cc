@@ -208,6 +208,7 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
   bootstrap_controller_->CloseOpenConnections(
       ConnectionClosedReasonFromAbortFlowReason(reason));
   bootstrap_controller_->StopAdvertising();
+  bootstrap_controller_->Cleanup();
   ResetState();
 
   // Triggers a screen exit if there is a UiDelegate driving the UI.
@@ -380,8 +381,9 @@ void QuickStartController::OnStatusChanged(
       AbortFlow(AbortFlowReason::ERROR);
       return;
     case Step::FLOW_ABORTED:
-      [[fallthrough]];
+      return;
     case Step::SETUP_COMPLETE:
+      ResetState();
       return;
   }
 }
@@ -590,7 +592,8 @@ void QuickStartController::ResetState() {
   auto* wizard_context = LoginDisplayHost::default_host()->GetWizardContext();
   wizard_context->quick_start_setup_ongoing = false;
   wizard_context->quick_start_wifi_credentials.reset();
-  bootstrap_controller_->Cleanup();
+  // Don't cleanup |bootstrap_controller_| state here, since it may be waiting
+  // for source device to gracefully drop connection.
 }
 
 /******************* Bluetooth dialog related functions *******************/
