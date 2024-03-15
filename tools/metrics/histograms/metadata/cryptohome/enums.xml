@@ -178,6 +178,9 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="New CryptoHome">
     There is nothing to migrate. Simply set the xattr to &quot;migrated&quot;.
   </int>
+  <int value="10" label="Already Migrated">
+    Folder ~/MyFiles/Downloads is already marked as &quot;migrated&quot;
+  </int>
 </enum>
 
 <enum name="CryptohomeError">
