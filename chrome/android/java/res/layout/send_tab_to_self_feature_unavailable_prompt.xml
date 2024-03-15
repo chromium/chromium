@@ -22,7 +22,7 @@ found in the LICENSE file.
         android:layout_width ="match_parent"
         android:paddingTop="16dp"
         android:paddingBottom="24dp"
-        android:contentDescription="@string/sharing_hub_no_devices_available_text"
+        android:contentDescription="@null"
         app:srcCompat="@drawable/shared_clipboard_zero_state"/>
 
     <TextView
