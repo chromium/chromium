@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_TEST_SUPPORT_FAKE_ADAPTER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/services/sharing/nearby/test_support/fake_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -56,6 +57,9 @@ class FakeAdapter : public mojom::Adapter {
   const std::vector<uint8_t>* GetRegisteredAdvertisementServiceData(
       const device::BluetoothUUID& service_uuid);
   void SetShouldDiscoverySucceed(bool should_discovery_succeed);
+  void SetCreateLocalGattServiceCallback(base::OnceClosure callback);
+  void SetCreateLocalGattServiceResult(
+      std::unique_ptr<FakeGattService> fake_gatt_service);
   void SetDiscoverySessionDestroyedCallback(base::OnceClosure callback);
   bool IsDiscoverySessionActive();
   void NotifyDeviceAdded(mojom::DeviceInfoPtr device_info);
@@ -84,6 +88,7 @@ class FakeAdapter : public mojom::Adapter {
   std::map<device::BluetoothUUID, std::vector<uint8_t>>
       registered_advertisements_map_;
   base::OnceClosure on_advertisement_destroyed_callback_;
+  base::OnceClosure create_local_gatt_service_callback_;
 
   bool should_discovery_succeed_ = true;
   raw_ptr<mojom::DiscoverySession> discovery_session_ = nullptr;
@@ -93,6 +98,8 @@ class FakeAdapter : public mojom::Adapter {
       allowed_connections_for_address_and_uuid_pair_;
   std::set<std::pair<std::string, device::BluetoothUUID>>
       allowed_connections_for_service_name_and_uuid_pair_;
+
+  std::unique_ptr<FakeGattService> fake_gatt_service_;
 
   mojo::RemoteSet<mojom::AdapterObserver> observers_;
 };

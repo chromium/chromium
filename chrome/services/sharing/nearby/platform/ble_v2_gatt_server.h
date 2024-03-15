@@ -5,14 +5,19 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLE_V2_GATT_SERVER_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLE_V2_GATT_SERVER_H_
 
+#include "base/containers/flat_map.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_adapter.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble_v2.h"
 
 namespace nearby::chrome {
 
-class BleV2GattServer : public ::nearby::api::ble_v2::GattServer {
+class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
+                        public bluetooth::mojom::GattServiceObserver {
  public:
   explicit BleV2GattServer(
       const mojo::SharedRemote<bluetooth::mojom::Adapter>& adapter);
@@ -38,7 +43,21 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer {
   void Stop() override;
 
  private:
+  struct GattService {
+    GattService();
+    ~GattService();
+
+    mojo::Remote<bluetooth::mojom::GattService> gatt_service_remote;
+    base::flat_map<Uuid, api::ble_v2::GattCharacteristic>
+        characteristic_uuid_to_characteristic_map;
+  };
+
   std::unique_ptr<BluetoothAdapter> bluetooth_adapter_;
+
+  base::flat_map<Uuid, std::unique_ptr<GattService>> uuid_to_gatt_service_map_;
+  mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_remote_;
+  mojo::Receiver<bluetooth::mojom::GattServiceObserver> gatt_service_observer_{
+      this};
 };
 
 }  // namespace nearby::chrome

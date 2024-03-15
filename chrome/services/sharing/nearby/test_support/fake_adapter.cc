@@ -227,7 +227,15 @@ void FakeAdapter::CreateLocalGattService(
     const device::BluetoothUUID& service_id,
     mojo::PendingRemote<mojom::GattServiceObserver> observer,
     CreateLocalGattServiceCallback callback) {
-  NOTIMPLEMENTED();
+  mojo::PendingRemote<mojom::GattService> pending_gatt_service;
+  mojo::MakeSelfOwnedReceiver(
+      std::move(fake_gatt_service_),
+      pending_gatt_service.InitWithNewPipeAndPassReceiver());
+  std::move(callback).Run(std::move(pending_gatt_service));
+
+  if (create_local_gatt_service_callback_) {
+    std::move(create_local_gatt_service_callback_).Run();
+  }
 }
 
 void FakeAdapter::SetShouldDiscoverySucceed(bool should_discovery_succeed) {
@@ -237,6 +245,16 @@ void FakeAdapter::SetShouldDiscoverySucceed(bool should_discovery_succeed) {
 void FakeAdapter::SetAdvertisementDestroyedCallback(
     base::OnceClosure callback) {
   on_advertisement_destroyed_callback_ = std::move(callback);
+}
+
+void FakeAdapter::SetCreateLocalGattServiceCallback(
+    base::OnceClosure callback) {
+  create_local_gatt_service_callback_ = std::move(callback);
+}
+
+void FakeAdapter::SetCreateLocalGattServiceResult(
+    std::unique_ptr<FakeGattService> fake_gatt_service) {
+  fake_gatt_service_ = std::move(fake_gatt_service);
 }
 
 const std::vector<uint8_t>* FakeAdapter::GetRegisteredAdvertisementServiceData(
