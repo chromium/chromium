@@ -6779,8 +6779,8 @@ crbug.com/41491846 http/tests/devtools/resource-har-conversion.js [ Failure Pass
 
 crbug.com/1467464 http/tests/devtools/a11y-axe-core/sources/event-listener-breakpoints-a11y-test.js [ Failure Pass ]
 
-# Gardener: 2024-02-06
-crbug.com/41491793 [ Mac ] virtual/disable-intersection-optimization/external/wpt/html/semantics/embedded-content/the-img-element/srcset/avoid-reload-on-resize.html [ Failure Pass ]
+# TODO(crbug.com/328677885): Re-enable this test.
+crbug.com/328677885 external/wpt/html/semantics/embedded-content/the-img-element/srcset/avoid-reload-on-resize.html [ Failure Pass ]
 
 # Gardener: 2024-02-14
 crbug.com/325227176 [ Linux ] http/tests/misc/resource-timing-iframe-restored-from-history-cross-origin.html [ Failure Pass ]
