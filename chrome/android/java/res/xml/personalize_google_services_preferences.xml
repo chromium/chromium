@@ -16,8 +16,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="web_and_app_activity"
-        android:title="@string/personalized_google_services_waa_title"
-        android:summary="@string/personalized_google_services_waa_summary"/>
+        android:title="@string/personalized_google_services_waa_title"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="linked_google_services"
