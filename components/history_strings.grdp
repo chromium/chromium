@@ -121,4 +121,14 @@
     Unknown device
   </message>
 
+  <!-- TODO(b/328300718): Replace strings and mark as translateable. -->
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from yesterday" translateable="false">
+    Yesterday
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_2" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last week" translateable="false">
+    Last week
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last month" translateable="false">
+    Last month
+  </message>
 </grit-part>

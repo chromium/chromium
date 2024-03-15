@@ -29,3 +29,12 @@ hr {
 </cr-chip>
 
 <hr></hr>
+
+<div id="suggestions">
+  <template is="dom-repeat" items="[[suggestions_]]">
+    <cr-chip on-click="onSuggestionClick_"
+        selected$="[[isSuggestionSelected_(item, selectedSuggestion)]]">
+      [[item]]
+    </cr-chip>
+  </template>
+</div>

@@ -163,9 +163,17 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       "lastSelectedTab",
       prefs->GetInteger(history_clusters::prefs::kLastSelectedTab));
 
-  source->AddBoolean(
-      "enableHistoryEmbeddings",
-      base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings));
+  bool enable_history_embeddings =
+      base::FeatureList::IsEnabled(history_embeddings::kHistoryEmbeddings);
+  source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
+  if (enable_history_embeddings) {
+    static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
+        {"historyEmbeddingsSuggestion1", IDS_HISTORY_EMBEDDINGS_SUGGESTION_1},
+        {"historyEmbeddingsSuggestion2", IDS_HISTORY_EMBEDDINGS_SUGGESTION_2},
+        {"historyEmbeddingsSuggestion3", IDS_HISTORY_EMBEDDINGS_SUGGESTION_3},
+    };
+    source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
+  }
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);

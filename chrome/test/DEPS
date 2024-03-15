@@ -39,6 +39,7 @@ include_rules = [
   "+components/history_clusters/history_clusters_internals/webui",
   "+components/history/content",
   "+components/history/core",
+  "+components/history_embeddings",
   "+components/infobars/content",
   "+components/infobars/core",
   "+components/javascript_dialogs",

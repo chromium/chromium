@@ -10,6 +10,8 @@ import './icons.html.js';
 
 import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getTemplate} from './filter_chips.html.js';
 
@@ -30,22 +32,54 @@ export class HistoryEmbeddingsFilterChips extends PolymerElement {
 
   static get properties() {
     return {
+      selectedSuggestion: {
+        type: String,
+        notify: true,
+      },
       showResultsByGroup: {
         type: Boolean,
         notify: true,
         value: false,
       },
+      suggestions_: {
+        type: Array,
+        value: () => {
+          return [
+            loadTimeData.getString('historyEmbeddingsSuggestion1')
+                .toLowerCase(),
+            loadTimeData.getString('historyEmbeddingsSuggestion2')
+                .toLowerCase(),
+            loadTimeData.getString('historyEmbeddingsSuggestion3')
+                .toLowerCase(),
+          ];
+        },
+      },
     };
   }
 
+  selectedSuggestion?: string;
   showResultsByGroup: boolean;
+  private suggestions_: string[];
 
   private getByGroupIcon_(): string {
     return this.showResultsByGroup ? 'cr:check' : 'history-embeddings:by-group';
   }
 
+  private isSuggestionSelected_(suggestion: string): boolean {
+    return this.selectedSuggestion === suggestion;
+  }
+
   private onByGroupClick_() {
     this.showResultsByGroup = !this.showResultsByGroup;
+  }
+
+  private onSuggestionClick_(e: DomRepeatEvent<string>) {
+    const clickedSuggestion = e.model.item;
+    if (this.isSuggestionSelected_(clickedSuggestion)) {
+      this.selectedSuggestion = undefined;
+    } else {
+      this.selectedSuggestion = clickedSuggestion;
+    }
   }
 }
 

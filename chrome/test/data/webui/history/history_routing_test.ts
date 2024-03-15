@@ -258,6 +258,9 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
       enableHistoryEmbeddings: true,
       isHistoryClustersEnabled: true,
       isHistoryClustersVisible: true,
+      historyEmbeddingsSuggestion1: 'suggestion 1',
+      historyEmbeddingsSuggestion2: 'suggestion 2',
+      historyEmbeddingsSuggestion3: 'suggestion 3',
     });
   });
 
