@@ -856,6 +856,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* InvalidateChildren(AXObject* obj);
 
   Member<Document> document_;
+  // Any popup document except for the popup for <select size=1>.
   Member<Document> popup_document_;
 
   ui::AXMode ax_mode_;

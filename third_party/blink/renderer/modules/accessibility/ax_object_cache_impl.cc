@@ -1510,6 +1510,21 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   CHECK(!has_been_disposed_)
       << "Don't attempt to create AXObject during teardown: " << node << " "
       << layout_object;
+  // The object must be in one of two documents:
+  // 1. The main document retrieved from GetDocument().
+  // 2. The popup document retrieved from GetPopupDocumentIfShowing(). Note
+  // that this must be null iff the current popup is <select size=1>, as
+  // we do not want to create objects inside of that kind of popup document
+  // since they would be duplicating objects in the subtree built by
+  // AXMenuList* classes.
+  // TODO(accessibility) turn into a CHECK once we stop supporting AXMenuList.
+  Document& document_for_ax_object =
+      node ? node->GetDocument() : layout_object->GetDocument();
+  if (document_for_ax_object != GetDocument() &&
+      &document_for_ax_object != GetPopupDocumentIfShowing()) {
+    return nullptr;
+  }
+
   // Determine the type of accessibility object to be created.
   AXObjectType ax_type =
       DetermineAXObjectType(node, layout_object, parent_if_known);
@@ -1915,6 +1930,17 @@ void AXObjectCacheImpl::RemovePopup(Document* popup_document) {
   // the popup document. This method is only be called for the popup document,
   // because if the main document is shutting down, the cache is disposed.
   DCHECK(popup_document);
+
+  // This can be called even when GetPopupDocumentIfShowing() when the popup
+  // is from a <select size=1>, which is a special case since AXMenuList*
+  // classes build their subtrees manually, and in order to avoid duplicate
+  // objects, which treat that situations as if there is no popup showing.
+  // TODO(accessibility) Remove this early return once AXMenuList* is removed,
+  // because at that point, the popup document will not be null in the
+  // select size=1 case anymore.
+  if (!GetPopupDocumentIfShowing()) {
+    return;
+  }
   DCHECK(IsPopup(*popup_document)) << "Use Dispose() to remove main document.";
   RemoveSubtreeWhenSafe(popup_document);
 
@@ -2644,6 +2670,13 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
 
   Document* document = DynamicTo<Document>(node);
   if (document) {
+    Element* focused_element = GetDocument().FocusedElement();
+    if (IsA<HTMLSelectElement>(focused_element) &&
+        ShouldCreateAXMenuListFor(focused_element->GetLayoutObject())) {
+      // HTML <select> has its own specialized handling.
+      // TODO(accessibility) Remove this rule once we stop using AXMenuList*.
+      return;
+    }
     // A popup is being shown.
     DCHECK(*document != GetDocument());
     DCHECK(!popup_document_) << "Last popup was not cleared.";
@@ -2652,7 +2685,7 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
     popup_document_ = document;
     DCHECK(IsPopup(*document));
     // Fire children changed on the focused element that owns this popup.
-    ChildrenChanged(GetDocument().FocusedElement());
+    ChildrenChanged(focused_element);
     return;
   }
 
@@ -3446,8 +3479,8 @@ bool AXObjectCacheImpl::IsPopup(Document& document) const {
   // There are 1-2 documents per AXObjectCache: the main document and
   // sometimes a popup document.
   int is_popup = document != GetDocument();
-#if DCHECK_IS_ON()
   if (is_popup) {
+#if DCHECK_IS_ON()
     // Verify that the popup document's owner is the main document.
     LocalFrame* frame = document.GetFrame();
     DCHECK(frame);
@@ -3457,9 +3490,11 @@ bool AXObjectCacheImpl::IsPopup(Document& document) const {
         << "The popup document's owner should be in the main document.";
     Page* main_page = GetDocument().GetPage();
     DCHECK(main_page);
-    DCHECK_EQ(&document, popup_document_);
-  }
 #endif
+    // TODO(accessibility) Change back to DCHECK once AXMenuList* is removed.
+    // DCHECK_EQ(&document, popup_document_);
+    return &document == GetPopupDocumentIfShowing();
+  }
   return is_popup;
 }
 
