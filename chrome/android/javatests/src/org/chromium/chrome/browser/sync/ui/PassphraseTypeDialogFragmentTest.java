@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.sync.ui;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
@@ -61,7 +62,9 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
     @Feature({"Sync"})
     public void testKeystoreEncryptionOptions() {
         createFragment(PassphraseType.KEYSTORE_PASSPHRASE, true);
-        onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(isNotChecked()));
+        onView(withId(R.id.explicit_passphrase_checkbox))
+                .inRoot(isDialog())
+                .check(matches(isNotChecked()));
         onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(isEnabled()));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isChecked()));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isEnabled()));
@@ -73,7 +76,9 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
     @Feature({"Sync"})
     public void testCustomEncryptionOptions() {
         createFragment(PassphraseType.CUSTOM_PASSPHRASE, true);
-        onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(isChecked()));
+        onView(withId(R.id.explicit_passphrase_checkbox))
+                .inRoot(isDialog())
+                .check(matches(isChecked()));
         onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(not(isEnabled())));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isNotChecked()));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(not(isEnabled())));
@@ -85,7 +90,9 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
     @Feature({"Sync"})
     public void testFrozenImplicitEncryptionOptions() {
         createFragment(PassphraseType.FROZEN_IMPLICIT_PASSPHRASE, true);
-        onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(isChecked()));
+        onView(withId(R.id.explicit_passphrase_checkbox))
+                .inRoot(isDialog())
+                .check(matches(isChecked()));
         onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(not(isEnabled())));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isNotChecked()));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(not(isEnabled())));
@@ -97,7 +104,9 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
     @Feature({"Sync"})
     public void testImplicitEncryptionOptions() {
         createFragment(PassphraseType.IMPLICIT_PASSPHRASE, true);
-        onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(isNotChecked()));
+        onView(withId(R.id.explicit_passphrase_checkbox))
+                .inRoot(isDialog())
+                .check(matches(isNotChecked()));
         onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(isEnabled()));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isChecked()));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isEnabled()));
@@ -109,7 +118,9 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
     @Feature({"Sync"})
     public void testKeystoreEncryptionOptionsCustomPassphraseDisallowed() {
         createFragment(PassphraseType.KEYSTORE_PASSPHRASE, false);
-        onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(isNotChecked()));
+        onView(withId(R.id.explicit_passphrase_checkbox))
+                .inRoot(isDialog())
+                .check(matches(isNotChecked()));
         onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(not(isEnabled())));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isChecked()));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isEnabled()));
@@ -121,7 +132,9 @@ public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCas
     @Feature({"Sync"})
     public void testImplicitEncryptionOptionsCustomPassphraseDisallowed() {
         createFragment(PassphraseType.IMPLICIT_PASSPHRASE, false);
-        onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(isNotChecked()));
+        onView(withId(R.id.explicit_passphrase_checkbox))
+                .inRoot(isDialog())
+                .check(matches(isNotChecked()));
         onView(withId(R.id.explicit_passphrase_checkbox)).check(matches(not(isEnabled())));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isChecked()));
         onView(withId(R.id.keystore_passphrase_checkbox)).check(matches(isEnabled()));

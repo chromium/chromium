@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -182,6 +183,7 @@ public class SafeBrowsingSettingsFragmentTest {
 
         // The dialog is displayed.
         onView(withText(R.string.safe_browsing_no_protection_confirmation_dialog_title))
+                .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         // Don't confirm.
         onView(withText(R.string.cancel)).perform(click());
@@ -227,6 +229,7 @@ public class SafeBrowsingSettingsFragmentTest {
 
         // The dialog is displayed.
         onView(withText(R.string.safe_browsing_no_protection_confirmation_dialog_title))
+                .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         // Confirm.
         onView(withText(R.string.safe_browsing_no_protection_confirmation_dialog_confirm))

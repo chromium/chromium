@@ -911,21 +911,15 @@ public class SigninFirstRunFragmentTest {
 
         clickOnUmaDialogLinkAndWait();
 
-        onView(withText(R.string.signin_fre_uma_dialog_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-        onView(withId(R.id.fre_uma_dialog_switch)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.fre_uma_dialog_switch)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_uma_dialog_first_section_header))
-                .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_uma_dialog_first_section_body))
-                .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_uma_dialog_second_section_header))
-                .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_uma_dialog_second_section_body))
-                .inRoot(isDialog())
                 .check(matches(isDisplayed()));
         onView(withText(R.string.done)).check(matches(isDisplayed()));
     }
@@ -959,7 +953,6 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisabledTest(message = "b/329570561")
     public void testUmaDialogSwitchIsOffWhenAllowCrashUploadWasTurnedOffBefore() {
         launchActivityWithFragment();
         clickOnUmaDialogLinkAndWait();
@@ -1456,7 +1449,10 @@ public class SigninFirstRunFragmentTest {
      */
     private void clickOnUmaDialogLinkAndWait() {
         onView(withId(R.id.signin_fre_footer)).perform(clickOnUmaDialogLink());
-        ViewUtils.onViewWaiting(withText(R.string.done)).check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(
+                        withText(R.string.done),
+                        true) // Sets dialog to be in focus. Needed for API 30+.
+                .check(matches(isDisplayed()));
     }
 
     private ViewAction clickOnUmaDialogLink() {

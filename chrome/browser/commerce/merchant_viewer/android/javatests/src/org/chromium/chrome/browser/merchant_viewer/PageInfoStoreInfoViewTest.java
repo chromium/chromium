@@ -98,7 +98,9 @@ public class PageInfoStoreInfoViewTest {
         doReturn(true).when(mMockShoppingService).isMerchantViewerEnabled();
     }
 
-    private void openPageInfoFromStoreIcon(boolean fromStoreIcon) {
+    // dialogCheck ensures that a dialog is in focus when checking the view. If not
+    // used it can cause flakiness issues for apis >= 30.
+    private void openPageInfoFromStoreIcon(boolean fromStoreIcon, boolean dialogCheck) {
         ChromeActivity activity = sActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -112,18 +114,14 @@ public class PageInfoStoreInfoViewTest {
                                     null)
                             .show(tab, ChromePageInfoHighlight.forStoreInfo(fromStoreIcon));
                 });
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
-    }
-
-    private void openPageInfo() {
-        openPageInfoFromStoreIcon(false);
+        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()), dialogCheck);
     }
 
     @Test
     @MediumTest
     public void testStoreInfoRowInvisibleWithoutData() {
         mockShoppingServiceResponse(null);
-        openPageInfo();
+        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(false);
     }
 
@@ -132,7 +130,7 @@ public class PageInfoStoreInfoViewTest {
     @Feature({"RenderTest"})
     public void testStoreInfoRowVisibleWithData() throws IOException {
         mockShoppingServiceResponse(mFakeMerchantTrustSignals);
-        openPageInfo();
+        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row");
     }
@@ -142,7 +140,7 @@ public class PageInfoStoreInfoViewTest {
     @Feature({"RenderTest"})
     public void testStoreInfoRowVisibleWithData_Highlight() throws IOException {
         mockShoppingServiceResponse(mFakeMerchantTrustSignals);
-        openPageInfoFromStoreIcon(true);
+        openPageInfoFromStoreIcon(true, false); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row_highlight");
     }
@@ -155,7 +153,7 @@ public class PageInfoStoreInfoViewTest {
                 new MerchantInfo(4.5f, 0, new GURL("http://dummy/url"), false, 0f, false, false);
         mockShoppingServiceResponse(fakeMerchantTrustSignals);
 
-        openPageInfo();
+        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row_without_reviews");
     }
@@ -168,7 +166,7 @@ public class PageInfoStoreInfoViewTest {
                 new MerchantInfo(0f, 0, new GURL("http://dummy/url"), true, 0f, false, false);
         mockShoppingServiceResponse(fakeMerchantTrustSignals);
 
-        openPageInfo();
+        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row_without_rating");
     }
@@ -177,7 +175,7 @@ public class PageInfoStoreInfoViewTest {
     @MediumTest
     public void testStoreInfoRowClick() {
         mockShoppingServiceResponse(mFakeMerchantTrustSignals);
-        openPageInfo();
+        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         onView(withId(PageInfoStoreInfoController.STORE_INFO_ROW_ID)).perform(click());
         onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());

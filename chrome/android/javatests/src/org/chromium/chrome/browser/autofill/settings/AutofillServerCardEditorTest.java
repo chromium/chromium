@@ -600,7 +600,7 @@ public class AutofillServerCardEditorTest {
                                 fakeVirtualCardEnrollmentFields));
 
         // Verify that the dialog was displayed.
-        onView(withId(R.id.dialog_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.dialog_title)).inRoot(isDialog()).check(matches(isDisplayed()));
 
         // Click positive button on enrollment dialog.
         onView(withId(R.id.positive_button)).perform(click());
