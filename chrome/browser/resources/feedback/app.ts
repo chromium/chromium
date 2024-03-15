@@ -100,10 +100,6 @@ export class FeedbackAppElement extends PolymerElement {
         this.cancel(e);
     this.getRequiredElement('#remove-attached-file').onclick =
         this.clearAttachedFile.bind(this);
-    // <if expr="chromeos_ash">
-    this.getRequiredElement('#performance-info-checkbox')
-        .addEventListener('change', this.performanceFeedbackChanged.bind(this));
-    // </if>
 
     // Dispatch event used by tests.
     this.dispatchEvent(new CustomEvent('ready-for-testing'));
@@ -232,19 +228,6 @@ export class FeedbackAppElement extends PolymerElement {
       this.getRequiredElement('#attach-file-container').hidden = true;
       this.getRequiredElement('#attach-file-note').hidden = true;
     }
-
-    // <if expr="chromeos_ash">
-    if (feedbackInfo.traceId &&
-        (this.shadowRoot!.querySelector<HTMLElement>(
-            '#performance-info-area'))) {
-      this.getRequiredElement('#performance-info-area').hidden = false;
-      this.getRequiredElement<HTMLInputElement>('#performance-info-checkbox')
-          .checked = true;
-      this.performanceFeedbackChanged();
-      this.getRequiredElement<HTMLAnchorElement>('#performance-info-link')
-          .onclick = this.openSlowTraceWindow;
-    }
-    // </if>
 
     const autofillMetadataUrlElement =
         this.shadowRoot!.querySelector<HTMLElement>('#autofill-metadata-url');
@@ -427,15 +410,6 @@ export class FeedbackAppElement extends PolymerElement {
       e.preventDefault();
     };
   }
-
-  // <if expr="chromeos_ash">
-  /**
-   * Opens a new window with chrome://slow_trace, downloading performance data.
-   */
-  private openSlowTraceWindow() {
-    window.open('chrome://slow_trace/tracing.zip#' + this.feedbackInfo.traceId);
-  }
-  // </if>
 
   /**
    * Checks if any keywords related to bluetooth have been typed. If they are,
@@ -621,15 +595,6 @@ export class FeedbackAppElement extends PolymerElement {
       this.feedbackInfo.sendAutofillMetadata = true;
     }
 
-    // <if expr="chromeos_ash">
-    const performanceCheckbox =
-        this.shadowRoot!.querySelector<HTMLInputElement>(
-            '#performance-info-checkbox');
-    if (performanceCheckbox == null || !performanceCheckbox.checked) {
-      this.feedbackInfo.traceId = undefined;
-    }
-    // </if>
-
     this.feedbackInfo.sendHistograms = useHistograms;
 
     if (this.getRequiredElement<HTMLInputElement>('#screenshot-checkbox')
@@ -664,29 +629,6 @@ export class FeedbackAppElement extends PolymerElement {
     e.preventDefault();
     this.scheduleWindowClose();
   }
-
-  // <if expr="chromeos_ash">
-  /**
-   * Update the page when performance feedback state is changed.
-   */
-  private performanceFeedbackChanged() {
-    const screenshotCheckbox =
-        this.getRequiredElement<HTMLInputElement>('#screenshot-checkbox');
-    const fileInput = this.getRequiredElement<HTMLInputElement>('#attach-file');
-
-    if (this.getRequiredElement<HTMLInputElement>('#performance-info-checkbox')
-            .checked) {
-      fileInput.disabled = true;
-      fileInput.checked = false;
-
-      screenshotCheckbox.disabled = true;
-      screenshotCheckbox.checked = false;
-    } else {
-      fileInput.disabled = false;
-      screenshotCheckbox.disabled = false;
-    }
-  }
-  // </if>
 
   private resizeAppWindow() {
     // TODO(crbug.com/1167223): The UI is now controlled by a WebDialog delegate

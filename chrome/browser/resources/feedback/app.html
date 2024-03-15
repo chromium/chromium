@@ -406,14 +406,6 @@
             aria-labelledby="sys-info-label" checked>
     <label id="sys-info-label">$i18nRaw{sysInfo}</label>
   </div>
-<if expr="chromeos_ash">
-  <!-- Performance Feedback -->
-  <div id="performance-info-area" hidden>
-    <input id="performance-info-checkbox" type="checkbox">
-    <a id="performance-info-link" href="#">$i18n{performanceTrace}
-    </a>
-  </div>
-</if>
   <!-- Privacy note -->
   <div id="privacy-note" class="privacy-note">$i18nRaw{privacyNote}</div>
 <if expr="chromeos_ash">

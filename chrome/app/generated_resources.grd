@@ -10358,9 +10358,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_FEEDBACK_SCREENSHOT_A11Y_TEXT" desc="Accessibility label text for screenshot of system, which shows contents of screen apart from feedback dialog">
           Screenshot of programs that are currently on the screen
         </message>
-        <message name="IDS_FEEDBACK_INCLUDE_PERFORMANCE_TRACE_CHECKBOX" desc="Checkbox for including system performance data on the bug report dialog box">
-          Send performance trace data
-        </message>
         <message name="IDS_FEEDBACK_OFFLINE_DIALOG_TITLE" desc="The title of the message box displayed when the user attempts to send a report while offline">
           Feedback Report
         </message>

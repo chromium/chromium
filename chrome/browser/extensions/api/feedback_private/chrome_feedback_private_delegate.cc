@@ -92,8 +92,6 @@ base::Value::Dict ChromeFeedbackPrivateDelegate::GetStrings(
   SET_STRING("cancel", IDS_CANCEL);
   SET_STRING("noDescription", IDS_FEEDBACK_NO_DESCRIPTION);
   SET_STRING("privacyNote", IDS_FEEDBACK_PRIVACY_NOTE);
-  SET_STRING("performanceTrace",
-             IDS_FEEDBACK_INCLUDE_PERFORMANCE_TRACE_CHECKBOX);
 
   // Add the localized strings needed for the "system information" page.
   SET_STRING("sysinfoPageTitle", IDS_FEEDBACK_SYSINFO_PAGE_TITLE);
