@@ -1632,7 +1632,6 @@
                     "enable_features": [
                         "AutofillKeyboardAccessory",
                         "AutofillManualFallbackAndroid",
-                        "AutofillTouchToFillForCreditCardsAndroid",
                         "AutofillVirtualCardsOnTouchToFillAndroid",
                         "RecoverFromNeverSaveAndroid"
                     ]

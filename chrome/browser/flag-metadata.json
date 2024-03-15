@@ -2290,11 +2290,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-autofill-touch-to-fill-for-credit-cards",
-    "owners": [ "vishwasuppoor@chromium.org", "izuzic@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-autofill-virtual-cards-on-touch-to-fill",
     "owners": ["vishwasuppoor@chromium.org"],
     "expiry_milestone": 120
