@@ -142,7 +142,9 @@
 }
 
 - (void)updateConsumer {
-  [_consumer setSnapshots:_snapshots favicons:_favicons];
+  [_consumer setSnapshots:_snapshots
+                   favicons:_favicons
+      numberOfSelectedItems:_identifiers.size()];
 }
 
 @end

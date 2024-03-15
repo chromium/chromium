@@ -13,8 +13,10 @@
 
 // Sets the default group color.
 - (void)setDefaultGroupColor:(tab_groups::TabGroupColorId)color;
-// Sets snapshots and favicons.
-- (void)setSnapshots:(NSArray*)snapshots favicons:(NSArray*)favicons;
+// Sets snapshots, favicons and the total number of selected items.
+- (void)setSnapshots:(NSArray*)snapshots
+                 favicons:(NSArray*)favicons
+    numberOfSelectedItems:(NSInteger)numberOfSelectedItems;
 
 @end
 

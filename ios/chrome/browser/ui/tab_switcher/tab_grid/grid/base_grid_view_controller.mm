@@ -1688,7 +1688,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     cell.state = GridCellStateNotEditing;
   }
   [item fetchFavicon:^(TabSwitcherItem* itemForFavicon, UIImage* favicon) {
-    [item fetchSnapshot:^(TabSwitcherItem* itemForSnapshot, UIImage* snapshot) {
+    [itemForFavicon fetchSnapshot:^(TabSwitcherItem* itemForSnapshot,
+                                    UIImage* snapshot) {
       // Only update the icon if the cell is not already reused for another
       // item.
       if (cell.itemIdentifier == itemForFavicon.identifier and
@@ -1699,13 +1700,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
         GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
         snapshotFavicon.snapshot = snapshot;
         snapshotFavicon.favicon = favicon;
+
         // The `snapshotFavicon` is for demo purposes only, it will be replaced
         // when the group tab model is available, the objects in `groupTabInfos`
         // can be updated manually to view the different group tab
         // configurations.
         NSArray<GroupTabInfo*>* groupTabInfos = @[
           snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
-          snapshotFavicon, snapshotFavicon
+          snapshotFavicon, snapshotFavicon, snapshotFavicon
         ];
         [cell configureWithGroupTabInfos:groupTabInfos totalTabsCount:101];
       }

@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/group_tab_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_snapshots_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
@@ -42,6 +44,7 @@ constexpr CGFloat kSnapshotViewCornerRadius = 18;
 constexpr CGFloat kSnapshotViewVerticalMargin = 25;
 constexpr CGFloat kSingleSnapshotRatio = 0.75;
 constexpr CGFloat kContainersMaxWidth = 400;
+constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
 }  // namespace
 
 @implementation CreateTabGroupViewController {
@@ -71,6 +74,8 @@ constexpr CGFloat kContainersMaxWidth = 400;
   UIView* _snapshotsContainer;
   // Tab group to edit.
   const TabGroup* _tabGroup;
+  // Number of selected items.
+  NSInteger _numberOfSelectedItems;
 }
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
@@ -627,12 +632,39 @@ constexpr CGFloat kContainersMaxWidth = 400;
   snapshotsBackground.layer.cornerRadius = kSnapshotViewCornerRadius;
   snapshotsBackground.opaque = NO;
 
-  // TODO(crbug.com/1501837): Manage more than one snapshot and favicons.
-  UIView* snapshotView = [[TabGroupSnapshotsView alloc]
-      initWithSnapshot:[self imageFromObject:_snapshots.firstObject]
-               favicon:[self imageFromObject:_favicons.firstObject]];
+  UIView* snapshotView;
+  CGFloat sizeConstraint;
+  // TODO(crbug.com/1501837): Remove this and move it inside
+  // TabGroupSnapshotsView so it uses the group tab view object.
+  if ([_snapshots count] == 1u || [_favicons count] == 1u) {
+    snapshotView = [[TabGroupSnapshotsView alloc]
+        initWithSnapshot:[self imageFromObject:_snapshots.firstObject]
+                 favicon:[self imageFromObject:_favicons.firstObject]];
 
-  [snapshotsBackground addSubview:snapshotView];
+    [snapshotsBackground addSubview:snapshotView];
+    sizeConstraint = kSingleSnapshotRatio;
+  } else {
+    // TODO(crbug.com/1501837): Remove the creation of tab group infos once the
+    // appropriate method is implemented.
+    NSMutableArray<GroupTabInfo*>* tabGroupInfos =
+        [[NSMutableArray alloc] init];
+    for (NSUInteger i = 0; i < [_snapshots count] && i < [_favicons count];
+         i++) {
+      GroupTabInfo* tabGroupInfo = [[GroupTabInfo alloc] init];
+      tabGroupInfo.snapshot = _snapshots[i];
+      tabGroupInfo.favicon = _favicons[i];
+      [tabGroupInfos addObject:tabGroupInfo];
+    }
+    snapshotView = [[TabGroupSnapshotsView alloc]
+        initWithTabGroupInfos:tabGroupInfos
+                         size:_numberOfSelectedItems
+                        light:self.traitCollection.userInterfaceStyle ==
+                              UIUserInterfaceStyleLight
+                         cell:NO];
+
+    [snapshotsBackground addSubview:snapshotView];
+    sizeConstraint = kMultipleSnapshotsRatio;
+  }
 
   NSLayoutConstraint* backgroundHeightConstraint =
       [snapshotsBackground.heightAnchor
@@ -646,16 +678,16 @@ constexpr CGFloat kContainersMaxWidth = 400;
     [snapshotsBackground.widthAnchor
         constraintEqualToAnchor:snapshotsBackground.heightAnchor
                      multiplier:kSnapshotViewRatio],
-    [snapshotView.widthAnchor
-        constraintEqualToAnchor:snapshotsBackground.widthAnchor
-                     multiplier:kSingleSnapshotRatio],
-    [snapshotView.heightAnchor
-        constraintEqualToAnchor:snapshotsBackground.heightAnchor
-                     multiplier:kSingleSnapshotRatio],
     [snapshotView.centerXAnchor
         constraintEqualToAnchor:snapshotsBackground.centerXAnchor],
     [snapshotView.centerYAnchor
         constraintEqualToAnchor:snapshotsBackground.centerYAnchor],
+    [snapshotView.widthAnchor
+        constraintEqualToAnchor:snapshotsBackground.widthAnchor
+                     multiplier:sizeConstraint],
+    [snapshotView.heightAnchor
+        constraintEqualToAnchor:snapshotsBackground.heightAnchor
+                     multiplier:sizeConstraint],
   ]];
 
   return snapshotsBackground;
@@ -668,9 +700,12 @@ constexpr CGFloat kContainersMaxWidth = 400;
 }
 
 - (void)setSnapshots:(NSArray<UIImage*>*)snapshots
-            favicons:(NSArray<UIImage*>*)favicons {
+                 favicons:(NSArray<UIImage*>*)favicons
+    numberOfSelectedItems:(NSInteger)numberOfSelectedItems {
+  // TODO(crbug.com/1501837): Pass an array of Group Tab Info.
   _snapshots = snapshots;
   _favicons = favicons;
+  _numberOfSelectedItems = numberOfSelectedItems;
 }
 
 #pragma mark - Private Helpers
@@ -678,7 +713,7 @@ constexpr CGFloat kContainersMaxWidth = 400;
 // Returns the picture is it is a picture and nil if not.
 - (UIImage*)imageFromObject:(id)object {
   if ([object isKindOfClass:[NSNull class]]) {
-    return nil;
+    return [[UIImage alloc] init];
   }
   return object;
 }

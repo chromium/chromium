@@ -86,10 +86,9 @@ source_set("tab_group_creation_ui") {
   sources = [
     "create_tab_group_view_controller.h",
     "create_tab_group_view_controller.mm",
-    "tab_group_snapshots_view.h",
-    "tab_group_snapshots_view.mm",
   ]
   deps = [
+    ":snapshots_view",
     ":tab_group_consumer",
     ":tab_group_mutator",
     ":tab_groups_commands",
@@ -103,9 +102,32 @@ source_set("tab_group_creation_ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:group_tab_info",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+  ]
+}
+
+source_set("snapshots_view") {
+  sources = [
+    "group_tab_view.h",
+    "group_tab_view.mm",
+    "tab_group_snapshots_view.h",
+    "tab_group_snapshots_view.mm",
+  ]
+  deps = [
+    ":tab_groups_constant",
+    "//base",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:group_tab_info",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/util",
   ]
 }
 

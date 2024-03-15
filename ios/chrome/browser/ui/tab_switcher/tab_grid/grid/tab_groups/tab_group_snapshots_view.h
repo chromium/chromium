@@ -7,11 +7,22 @@
 
 #import <UIKit/UIKit.h>
 
+@class GroupTabInfo;
+
 // View controller that manages the tab group sample view with multiples
 // snapshots.
 @interface TabGroupSnapshotsView : UIView
 
 - (instancetype)initWithSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon;
+
+- (instancetype)initWithTabGroupInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos
+                                 size:(NSUInteger)size
+                                light:(BOOL)isLight
+                                 cell:(BOOL)isCell;
+
+- (void)configureTabGroupSnapshotsViewWithTabGroupInfos:
+            (NSArray<GroupTabInfo*>*)tabGroupInfos
+                                                   size:(NSUInteger)size;
 
 @end
 
