@@ -21,6 +21,7 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
+#include "chrome/common/chrome_version.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -88,6 +89,11 @@ struct EnclaveManager::PendingAction {
 };
 
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+constexpr char kUserVerifyingKeyKeychainAccessGroup[] =
+    MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING ".webauthn-uvk";
+#endif  // BUILDFLAG(IS_MAC)
 
 // These URLs distribute the public keys for the recovery key store.
 constexpr char kCertFileURL[] =
@@ -185,7 +191,7 @@ bool IsValidUncompressedP256X962(base::span<const uint8_t> x962) {
   const EC_GROUP* group = EC_group_p256();
   bssl::UniquePtr<EC_POINT> point(EC_POINT_new(group));
   return 1 == EC_POINT_oct2point(group, point.get(), x962.data(), x962.size(),
-                                 /*bn_ctx=*/nullptr);
+                                 /*ctx=*/nullptr);
 }
 
 std::optional<int> CheckPINInvariants(
@@ -520,18 +526,8 @@ base::flat_set<std::string> GetGaiaIDs(
   return result;
 }
 
-std::optional<crypto::UserVerifyingKeyLabel> CreateUserVerifyingKeyLabel() {
-#if BUILDFLAG(IS_WIN)
-  std::vector<uint8_t> random(16);
-  crypto::RandBytes(random);
-  return base::StrCat({"enclave-uvkey-", base::Base64Encode(random)});
-#else
-  return std::nullopt;
-#endif
-}
-
 std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return label;
 #else
   return std::string();
@@ -540,7 +536,7 @@ std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
 
 std::optional<crypto::UserVerifyingKeyLabel> UserVerifyingKeyLabelFromString(
     std::string saved_label) {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return saved_label;
 #else
   return std::nullopt;
@@ -718,6 +714,14 @@ base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
   }
 
   return new_secrets;
+}
+
+crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig() {
+  return {
+#if BUILDFLAG(IS_MAC)
+      .keychain_access_group = kUserVerifyingKeyKeychainAccessGroup,
+#endif  // BUILDFLAG(IS_MAC)
+  };
 }
 
 }  // namespace
@@ -1100,38 +1104,35 @@ class EnclaveManager::StateMachine {
 
     manager_->user_verifying_key_.reset();
 
-    crypto::AreUserVerifyingKeysSupported(base::BindOnce(
-        [](base::WeakPtr<StateMachine> state_machine,
-           bool is_uv_key_supported) {
-          if (!state_machine) {
-            return;
-          }
-          if (is_uv_key_supported) {
-            std::optional<crypto::UserVerifyingKeyLabel> key_label;
-            // TODO(enclave): Reusing the label makes sense on Windows because
-            // it will overwrite the existing key with a new one. This might be
-            // different on other platforms.
-            if (!state_machine->user_->wrapped_uv_private_key().empty()) {
-              key_label = UserVerifyingKeyLabelFromString(
-                  state_machine->user_->wrapped_uv_private_key());
-            } else {
-              key_label = CreateUserVerifyingKeyLabel();
-            }
-            state_machine->user_verifying_key_provider_ =
-                crypto::GetUserVerifyingKeyProvider();
-            if (state_machine->user_verifying_key_provider_ && key_label) {
-              state_machine->user_verifying_key_provider_
-                  ->GenerateUserVerifyingSigningKey(
-                      *key_label, kSigningAlgorithms,
-                      base::BindOnce(&StateMachine::GenerateHardwareKey,
-                                     state_machine));
-              return;
-            }
-          }
-          // UV keys are not available, so skip to generating a hardware key.
-          state_machine->GenerateHardwareKey(nullptr);
-        },
-        weak_ptr_factory_.GetWeakPtr()));
+    crypto::AreUserVerifyingKeysSupported(
+        MakeUserVerifyingKeyConfig(),
+        base::BindOnce(
+            [](base::WeakPtr<StateMachine> state_machine,
+               bool is_uv_key_supported) {
+              if (!state_machine) {
+                return;
+              }
+              if (is_uv_key_supported) {
+                if (!state_machine->user_->wrapped_uv_private_key().empty()) {
+                  // TODO(nsatragno): remove the previous key entry.
+                }
+                state_machine->user_verifying_key_provider_ =
+                    crypto::GetUserVerifyingKeyProvider(
+                        MakeUserVerifyingKeyConfig());
+                if (state_machine->user_verifying_key_provider_) {
+                  state_machine->user_verifying_key_provider_
+                      ->GenerateUserVerifyingSigningKey(
+                          kSigningAlgorithms,
+                          base::BindOnce(&StateMachine::GenerateHardwareKey,
+                                         state_machine));
+                  return;
+                }
+              }
+              // UV keys are not available, so skip to generating a hardware
+              // key.
+              state_machine->GenerateHardwareKey(nullptr);
+            },
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   void GenerateHardwareKey(
@@ -2010,7 +2011,8 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
     return;
   }
 
-  auto user_verifying_key_provider = crypto::GetUserVerifyingKeyProvider();
+  auto user_verifying_key_provider =
+      crypto::GetUserVerifyingKeyProvider(MakeUserVerifyingKeyConfig());
   if (!user_verifying_key_provider) {
     // This indicates the platform key provider was available, but now is not.
     // TODO(enclave): Clear registration state.
@@ -2083,28 +2085,27 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback() {
                 std::move(result_callback).Run(std::nullopt);
                 return;
               }
-              uv_signing_key->key()
-                  .Sign(
-                      message_to_be_signed,
-                      base::BindOnce(
-                          [](std::string device_id,
-                             base::OnceCallback<void(
-                                 std::optional<enclave::ClientSignature>)>
-                                 result_callback,
-                             std::optional<std::vector<uint8_t>> signature) {
-                            if (!signature) {
-                              std::move(result_callback).Run(std::nullopt);
-                              return;
-                            }
-                            enclave::ClientSignature client_signature;
-                            client_signature.device_id = ToVector(device_id);
-                            client_signature.signature = std::move(*signature);
-                            client_signature.key_type =
-                                enclave::ClientKeyType::kUserVerified;
-                            std::move(result_callback)
-                                .Run(std::move(client_signature));
-                          },
-                          std::move(device_id), std::move(result_callback)));
+              uv_signing_key->key().Sign(
+                  message_to_be_signed,
+                  base::BindOnce(
+                      [](std::string device_id,
+                         base::OnceCallback<void(
+                             std::optional<enclave::ClientSignature>)>
+                             result_callback,
+                         std::optional<std::vector<uint8_t>> signature) {
+                        if (!signature) {
+                          std::move(result_callback).Run(std::nullopt);
+                          return;
+                        }
+                        enclave::ClientSignature client_signature;
+                        client_signature.device_id = ToVector(device_id);
+                        client_signature.signature = std::move(*signature);
+                        client_signature.key_type =
+                            enclave::ClientKeyType::kUserVerified;
+                        std::move(result_callback)
+                            .Run(std::move(client_signature));
+                      },
+                      std::move(device_id), std::move(result_callback)));
             },
             enclave_manager->user_->device_id(),
             std::move(message_to_be_signed), std::move(result_callback));

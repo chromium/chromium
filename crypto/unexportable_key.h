@@ -64,6 +64,22 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
   // Platform-specific configuration parameters for the provider.
   struct Config {
 #if BUILDFLAG(IS_MAC)
+    // Determines the level of user verification needed to sign with the key.
+    // https://developer.apple.com/documentation/security/secaccesscontrolcreateflags?language=objc
+    enum class AccessControl {
+      // No access control. User presence is not required to access this secret.
+      kNone,
+
+      // Either biometry or the local account password are required to access
+      // this secret. This is equivalent to kSecAccessControlUserPresence.
+      // Note that if you set this and choose not to pass an authenticated
+      // LAContext when signing, macOS will prompt the user for biometrics and
+      // the thread will block until that resolves.
+      // TODO(nsatragno): allow some way to pass an authenticated LAContext when
+      // signing.
+      kUserPresence,
+    };
+
     // The keychain access group the key is shared with. The binary must be
     // codesigned with the corresponding entitlement.
     // https://developer.apple.com/documentation/bundleresources/entitlements/keychain-access-groups?language=objc
@@ -77,6 +93,9 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
     // tag.
     // https://developer.apple.com/documentation/security/ksecattrapplicationtag?language=objc
     std::string application_tag;
+
+    // The access control set for keys created by the provider.
+    AccessControl access_control = AccessControl::kNone;
 #endif  // BUILDFLAG(IS_MAC)
   };
 

@@ -178,11 +178,12 @@ class UnexportableSigningKeyMac : public UnexportableSigningKey {
 // TODO(nsatragno): add facilities to remove keys.
 class UnexportableKeyProviderMac : public UnexportableKeyProvider {
  public:
-  explicit UnexportableKeyProviderMac(std::string keychain_access_group,
-                                      std::string application_tag)
+  explicit UnexportableKeyProviderMac(Config config)
       : keychain_access_group_(
-            base::SysUTF8ToNSString(std::move(keychain_access_group))),
-        application_tag_(base::SysUTF8ToNSString(std::move(application_tag))) {}
+            base::SysUTF8ToNSString(std::move(config.keychain_access_group))),
+        application_tag_(
+            base::SysUTF8ToNSString(std::move(config.application_tag))),
+        access_control_(config.access_control) {}
   ~UnexportableKeyProviderMac() override = default;
 
   std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
@@ -203,11 +204,20 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
     }
 
     // Generate the key pair.
+    SecAccessControlCreateFlags control_flags =
+        kSecAccessControlPrivateKeyUsage;
+    switch (access_control_) {
+      case UnexportableKeyProvider::Config::AccessControl::kUserPresence:
+        control_flags |= kSecAccessControlUserPresence;
+        break;
+      case UnexportableKeyProvider::Config::AccessControl::kNone:
+        // No additional flag.
+        break;
+    }
     base::apple::ScopedCFTypeRef<SecAccessControlRef> access(
         SecAccessControlCreateWithFlags(
             kCFAllocatorDefault,
-            kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
-            kSecAccessControlPrivateKeyUsage,
+            kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly, control_flags,
             /*error=*/nil));
 
     NSDictionary* key_attributes = @{
@@ -288,17 +298,17 @@ class UnexportableKeyProviderMac : public UnexportableKeyProvider {
  private:
   NSString* __strong keychain_access_group_;
   NSString* __strong application_tag_;
+  const Config::AccessControl access_control_;
 };
 
 }  // namespace
 
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
-    std::string keychain_access_group,
-    std::string application_tag) {
+    UnexportableKeyProvider::Config config) {
   if (!base::FeatureList::IsEnabled(crypto::kEnableMacUnexportableKeys)) {
     return nullptr;
   }
-  CHECK(!keychain_access_group.empty())
+  CHECK(!config.keychain_access_group.empty())
       << "A keychain access group must be set when using unexportable keys on "
          "macOS";
   if (![AppleKeychainV2::GetInstance().GetTokenIDs()
@@ -308,15 +318,15 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
   // Inspecting the binary for the entitlement is not available on iOS, assume
   // it is available.
 #if !BUILDFLAG(IS_IOS)
-  if (!ExecutableHasKeychainAccessGroupEntitlement(keychain_access_group)) {
+  if (!ExecutableHasKeychainAccessGroupEntitlement(
+          config.keychain_access_group)) {
     LOG(ERROR) << "Unexportable keys unavailable because keychain-access-group "
                   "entitlement missing or incorrect. Expected value: "
-               << keychain_access_group;
+               << config.keychain_access_group;
     return nullptr;
   }
 #endif  // !BUILDFLAG(IS_IOS)
-  return std::make_unique<UnexportableKeyProviderMac>(
-      std::move(keychain_access_group), std::move(application_tag));
+  return std::make_unique<UnexportableKeyProviderMac>(std::move(config));
 }
 
 }  // namespace crypto

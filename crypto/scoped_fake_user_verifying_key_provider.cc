@@ -7,10 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
+#include "crypto/random.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
@@ -58,11 +61,14 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
   ~FakeUserVerifyingKeyProvider() override = default;
 
   void GenerateUserVerifyingSigningKey(
-      UserVerifyingKeyLabel key_label,
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) override {
+    std::vector<uint8_t> random(16);
+    crypto::RandBytes(random);
+    UserVerifyingKeyLabel key_label =
+        base::StrCat({"uvkey-", base::Base64Encode(random)});
     auto software_unexportable_key =
         GetSoftwareUnsecureUnexportableKeyProvider()->GenerateSigningKeySlowly(
             acceptable_algorithms);

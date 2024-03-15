@@ -11,10 +11,12 @@
 #include <windows.security.cryptography.core.h>
 #include <windows.storage.streams.h>
 
+#include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -23,6 +25,7 @@
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/winrt_storage_util.h"
+#include "crypto/random.h"
 #include "crypto/user_verifying_key.h"
 
 using ABI::Windows::Foundation::IAsyncOperation;
@@ -374,7 +377,6 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
   ~UserVerifyingKeyProviderWin() override = default;
 
   void GenerateUserVerifyingSigningKey(
-      UserVerifyingKeyLabel key_label,
       base::span<const SignatureVerifier::SignatureAlgorithm>
           acceptable_algorithms,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
@@ -389,7 +391,12 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
       return;
     }
 
+    std::vector<uint8_t> random(16);
+    crypto::RandBytes(random);
+    UserVerifyingKeyLabel key_label =
+        base::StrCat({"uvkey-", base::Base64Encode(random)});
     auto key_name = base::win::ScopedHString::Create(key_label);
+
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});

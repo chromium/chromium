@@ -26,8 +26,7 @@ std::unique_ptr<VirtualUnexportableKeyProvider>
 GetVirtualUnexportableKeyProviderWin();
 #elif BUILDFLAG(IS_MAC)
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
-    std::string keychain_access_group,
-    std::string application_tag);
+    UnexportableKeyProvider::Config config);
 #endif
 
 // Implemented in unexportable_key_software_unsecure.cc.
@@ -43,8 +42,7 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
 #if BUILDFLAG(IS_WIN)
   return GetUnexportableKeyProviderWin();
 #elif BUILDFLAG(IS_MAC)
-  return GetUnexportableKeyProviderMac(std::move(config.keychain_access_group),
-                                       std::move(config.application_tag));
+  return GetUnexportableKeyProviderMac(std::move(config));
 #else
   return nullptr;
 #endif

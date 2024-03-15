@@ -81,7 +81,10 @@ component("crypto") {
     ]
 
     if (is_mac) {
-      sources += [ "apple_keychain_mac.cc" ]
+      sources += [
+        "apple_keychain_mac.cc",
+        "user_verifying_key_mac.mm",
+      ]
     } else if (is_ios) {
       sources += [ "apple_keychain_ios.mm" ]
     }
@@ -181,10 +184,14 @@ test("crypto_unittests") {
   ]
 
   if (is_win || is_mac) {
+    sources += [ "unexportable_key_metrics_unittest.cc" ]
+  }
+
+  if (is_mac) {
     sources += [
       "apple_keychain_util_unittest.mm",
       "unexportable_key_mac_unittest.mm",
-      "unexportable_key_metrics_unittest.cc",
+      "user_verifying_key_mac_unittest.mm",
     ]
   }
 
@@ -215,7 +222,7 @@ static_library("test_support") {
     "scoped_mock_unexportable_key_provider.h",
   ]
 
-  if (is_win) {
+  if (is_win || is_mac) {
     sources += [
       "scoped_fake_user_verifying_key_provider.cc",
       "scoped_fake_user_verifying_key_provider.h",
