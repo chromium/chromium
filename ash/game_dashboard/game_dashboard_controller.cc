@@ -10,12 +10,17 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/functional/bind.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -23,6 +28,7 @@
 #include "extensions/common/constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 
@@ -188,10 +194,16 @@ void GameDashboardController::OnDisplayTabletStateChanged(
     display::TabletState state) {
   switch (state) {
     case display::TabletState::kInClamshellMode:
+      // Cancel the tablet toast if it is still shown.
+      Shell::Get()->toast_manager()->Cancel(game_dashboard::kTabletToastId);
       MaybeEnableFeatures(/*enable=*/true,
                           GameDashboardMainMenuToggleMethod::kTabletMode);
       break;
-    case display::TabletState::kEnteringTabletMode:
+    case display::TabletState::kEnteringTabletMode: {
+      const int toast_text_id =
+          active_recording_context_
+              ? IDS_ASH_GAME_DASHBOARD_TABLET_STOP_RECORDING_TOAST
+              : IDS_ASH_GAME_DASHBOARD_TABLET_TOAST;
       if (active_recording_context_) {
         auto* capture_mode_controller = CaptureModeController::Get();
         CHECK(capture_mode_controller->is_recording_in_progress());
@@ -202,9 +214,15 @@ void GameDashboardController::OnDisplayTabletStateChanged(
       }
       MaybeEnableFeatures(/*enable=*/false,
                           GameDashboardMainMenuToggleMethod::kTabletMode);
-      // TODO(b/316036118): Show the UI to notify users this is not available in
-      // the tablet mode.
+      // Show the toast to notify users when there is any game window open.
+      if (!game_window_contexts_.empty()) {
+        Shell::Get()->toast_manager()->Show(
+            ToastData(game_dashboard::kTabletToastId,
+                      ToastCatalogName::kGameDashboardEnterTablet,
+                      l10n_util::GetStringUTF16(toast_text_id)));
+      }
       break;
+    }
     case display::TabletState::kInTabletMode:
     case display::TabletState::kExitingTabletMode:
       break;

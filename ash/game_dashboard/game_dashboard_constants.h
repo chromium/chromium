@@ -17,6 +17,9 @@ inline constexpr int kWelcomeDialogEdgePadding = 8;
 // Welcome dialog fixed width.
 inline constexpr int kWelcomeDialogFixedWidth = 360;
 
+// Toast id when entring the tablet mode with any gaming window launched.
+inline constexpr char kTabletToastId[] = "GameDashboardTabletToast";
+
 }  // namespace ash::game_dashboard
 
 #endif  // ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONSTANTS_H_

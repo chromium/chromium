@@ -238,7 +238,7 @@ enum class NudgeCatalogName {
 
 // A living catalog that registers toasts.
 // Current values should not be renumbered or removed. Please keep in sync with
-// "ToastCatalogName" in tools/metrics/histograms/enums.xml.
+// "ToastCatalogName" in tools/metrics/histograms/metadata/ash/enums.xml
 // To deprecate comment out the entry.
 enum class ToastCatalogName {
   kVirtualDesksLimitMax = 0,
@@ -291,7 +291,8 @@ enum class ToastCatalogName {
   kDictationMicMuted = 47,
   kVideoConferenceTraySpeakOnMuteOptInConfirmation = 48,
   kAppNotClosable = 49,
-  kMaxValue = kAppNotClosable
+  kGameDashboardEnterTablet = 50,
+  kMaxValue = kGameDashboardEnterTablet
 };
 
 }  // namespace ash

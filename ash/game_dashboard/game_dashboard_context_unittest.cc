@@ -34,6 +34,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
@@ -1721,19 +1722,35 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
 
   // App is launched in desktop mode in Setup and switch to the tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
+  EXPECT_TRUE(
+      ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
   // Switch back to the desktop mode and this feature is resumed.
   ash::TabletModeControllerTestApi().LeaveTabletMode();
+  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);
+  EXPECT_FALSE(
+      ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
   CloseGameWindow();
 
-  // Launch app in the tablet mode and switch to the desktop mode.
+  // No toast shown when there is no game window.
   ash::TabletModeControllerTestApi().EnterTabletMode();
+  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(
+      ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
+
+  // Launch app in the tablet mode and switch to the desktop mode.
   CreateGameWindow(IsArcGame());
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
+  EXPECT_FALSE(
+      ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
   // Switch back to the desktop mode and this feature is resumed.
   ash::TabletModeControllerTestApi().LeaveTabletMode();
+  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/true);
+  EXPECT_FALSE(
+      ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
 
   // Start recording in the desktop mode and switch to the tablet mode.
   test_api_->OpenTheMainMenu();
@@ -1746,6 +1763,8 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
   EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
   ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+  EXPECT_TRUE(
+      ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
 }
 
 // -----------------------------------------------------------------------------

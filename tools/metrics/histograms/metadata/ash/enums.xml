@@ -1987,6 +1987,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="46" label="Battery Saver Enabled"/>
   <int value="47" label="Dictation Mic Muted"/>
   <int value="48" label="Video Conference Speak On Mute Opt In Confirmation"/>
+  <int value="50" label="Game Dashboard Disabled In Tablet Mode"/>
 </enum>
 
 <enum name="TrayBackgroundViewCatalogName">
