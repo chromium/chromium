@@ -38,6 +38,10 @@ class AutofillTabHelper : public web::WebStateObserver,
   // Returns an object that can provide Autofill suggestions.
   id<FormSuggestionProvider> GetSuggestionProvider();
 
+  autofill::ChromeAutofillClientIOS* autofill_client() {
+    return autofill_client_.get();
+  }
+
  private:
   friend class web::WebStateUserData<AutofillTabHelper>;
 

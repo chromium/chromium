@@ -7,7 +7,9 @@
 
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 
-#import "base/memory/raw_ref.h"
+#import <memory>
+
+#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 
 class ChromeBrowserState;
 
@@ -40,13 +42,20 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   void CreditCardUploadCompleted(bool card_saved) override;
   void ShowAutofillErrorDialog(
       AutofillErrorDialogContext error_context) override;
-
   PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+
+  std::unique_ptr<AutofillProgressDialogControllerImpl>
+  GetProgressDialogModel() {
+    return std::move(progress_dialog_controller_);
+  }
 
  private:
   const raw_ref<autofill::ChromeAutofillClientIOS> client_;
 
   std::unique_ptr<PaymentsNetworkInterface> payments_network_interface_;
+
+  std::unique_ptr<AutofillProgressDialogControllerImpl>
+      progress_dialog_controller_;
 };
 
 }  // namespace payments

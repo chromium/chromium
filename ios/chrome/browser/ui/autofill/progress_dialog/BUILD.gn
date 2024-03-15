@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("progress_dialog") {
+  sources = [
+    "autofill_progress_dialog_coordinator.h",
+    "autofill_progress_dialog_coordinator.mm",
+  ]
+  deps = [
+    "//base:base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model:model_internal",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
+    "//ios/chrome/browser/ui/autofill",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

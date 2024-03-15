@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 
 @protocol AutofillCommands;
 @class UIViewController;
@@ -42,10 +43,6 @@ class WebState;
 }
 
 namespace autofill {
-
-namespace payments {
-class IOSChromePaymentsAutofillClient;
-}  // namespace payments
 
 // Chrome iOS implementation of AutofillClient.
 class ChromeAutofillClientIOS : public AutofillClient {
@@ -83,7 +80,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   FormDataImporter* GetFormDataImporter() override;
-  payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
+  payments::IOSChromePaymentsAutofillClient* GetPaymentsAutofillClient()
+      override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
