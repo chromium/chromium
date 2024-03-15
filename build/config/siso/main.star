@@ -124,7 +124,7 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/fuchsia_web/runners/cast_runner_integration_tests__exec/cast_runner_integration_test.o",
         "./obj/fuchsia_web/webengine/web_engine_core/frame_impl.o",
 
-        # Fallback happens with follwoing args.gn (try/linux_chromium_asan_rel_ng).
+        # Fallback happens with follwoing args.gn (try/linux_chromium_asan_rel_ng, or try/linux_chromium_asan_siso_rel_ng-compilator).
         # dcheck_always_on = true
         # fail_on_san_warnings = true
         # is_asan = true
@@ -134,21 +134,29 @@ def __use_large_b289968566(ctx, step_config):
         # symbol_level = 1
         # use_remoteexec = true
         "./obj/components/autofill/core/browser/unit_tests/browser_autofill_manager_unittest.o",
+        "./obj/content/browser/browser/render_frame_host_impl.o",
+        "./obj/content/browser/browser/web_contents_impl.o",
+        "./obj/content/test/content_browsertests/back_forward_cache_features_browsertest.o",
+        "./obj/content/test/content_browsertests/back_forward_cache_internal_browsertest.o",
         "./obj/content/test/content_browsertests/fenced_frame_browsertest.o",
         "./obj/content/test/content_browsertests/interest_group_browsertest.o",
         "./obj/content/test/content_browsertests/navigation_controller_impl_browsertest.o",
+        "./obj/content/test/content_browsertests/navigation_request_browsertest.o",
         "./obj/content/test/content_browsertests/prerender_browsertest.o",
         "./obj/content/test/content_browsertests/render_frame_host_impl_browsertest.o",
+        "./obj/content/test/content_browsertests/shared_storage_browsertest.o",
         "./obj/content/test/content_browsertests/site_per_process_browsertest.o",
         "./obj/content/test/content_browsertests/web_contents_impl_browsertest.o",
         "./obj/content/test/content_unittests/ad_auction_service_impl_unittest.o",
         "./obj/content/test/content_unittests/auction_runner_unittest.o",
         "./obj/content/test/content_unittests/authenticator_impl_unittest.o",
+        "./obj/content/test/content_unittests/web_usb_service_impl_unittest.o",
         "./obj/net/third_party/quiche/quiche_tests/quic_connection_test.o",
         "./obj/third_party/abseil-cpp/absl/functional/any_invocable_test/any_invocable_test.o",
         "./obj/third_party/blink/renderer/core/unit_tests/web_frame_test.o",
         "./obj/third_party/blink/renderer/core/unit_tests/web_media_player_impl_unittest.o",
         "./obj/third_party/perfetto/protos/perfetto/trace/merged_trace_lite/perfetto_trace.pb.o",
+        "./obj/ui/gl/gl_unittest_utils/gl_bindings_autogen_mock.o",
     ]
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
