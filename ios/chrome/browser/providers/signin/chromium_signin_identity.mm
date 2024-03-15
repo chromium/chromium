@@ -42,6 +42,10 @@ class ChromiumSystemIdentityManager final : public SystemIdentityManager {
       id<SystemIdentity> identity,
       UIViewController* view_controller,
       bool animated) final;
+  DismissViewCallback PresentLinkedServicesSettingsDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      bool animated) final;
   id<SystemIdentityInteractionManager> CreateInteractionManager() final;
   void IterateOverIdentities(IdentityIteratorCallback callback) final;
   void ForgetIdentity(id<SystemIdentity> identity,
@@ -106,6 +110,15 @@ ChromiumSystemIdentityManager::PresentAccountDetailsController(
 
 SystemIdentityManager::DismissViewCallback
 ChromiumSystemIdentityManager::PresentWebAndAppSettingDetailsController(
+    id<SystemIdentity> identity,
+    UIViewController* view_controller,
+    bool animated) {
+  NOTREACHED();
+  return {};
+}
+
+SystemIdentityManager::DismissViewCallback
+ChromiumSystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
     id<SystemIdentity> identity,
     UIViewController* view_controller,
     bool animated) {

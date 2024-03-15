@@ -208,6 +208,15 @@ FakeSystemIdentityManager::PresentWebAndAppSettingDetailsController(
   return base::DoNothing();
 }
 
+FakeSystemIdentityManager::DismissViewCallback
+FakeSystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
+    id<SystemIdentity> identity,
+    UIViewController* view_controller,
+    bool animated) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::DoNothing();
+}
+
 id<SystemIdentityInteractionManager>
 FakeSystemIdentityManager::CreateInteractionManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

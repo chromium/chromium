@@ -148,6 +148,16 @@ class SystemIdentityManager {
       UIViewController* view_controller,
       bool animated) = 0;
 
+  // Presents a new Linked Services Settings Details view and returns a callback
+  // that can be used to dismiss the view (can be ignore if not needed).
+  // `identity` is the identity used to present the view, `view_controller`
+  // is the view used to present the details, `animated` controls whether the
+  // view is presented with an animation.
+  virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      bool animated);
+
   // Creates a new SystemIdentityInteractionManager instance.
   virtual id<SystemIdentityInteractionManager> CreateInteractionManager() = 0;
 

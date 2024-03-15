@@ -35307,6 +35307,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_MyGoogleUI_LinkedServicesControls">
+  <owner>rubindl@google.com</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <description>
+    Recorded when the user opens MyGoogleUI linked services Controls.
+  </description>
+</action>
+
 <action name="Signin_Promo_Close">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

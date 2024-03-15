@@ -6,11 +6,14 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
+#import "base/metrics/user_metrics.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 
 namespace {
 
 using CapabilityResult = SystemIdentityManager::CapabilityResult;
+using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 // Helper function used to extract the capability from `capabilities` in
 // `CanShowHistorySyncOptInsWithoutMinorModeRestrictions()` and
@@ -82,4 +85,17 @@ void SystemIdentityManager::FireIdentityAccessTokenRefreshFailed(
   for (auto& observer : observers_) {
     observer.OnIdentityAccessTokenRefreshFailed(identity, error);
   }
+}
+
+// TODO(crbug.com/324091979): Remove once it is replaced by the internal
+// implementetion.
+DismissViewCallback
+SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
+    id<SystemIdentity> identity,
+    UIViewController* view_controller,
+    bool animated) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::RecordAction(
+      base::UserMetricsAction("Signin_MyGoogleUI_LinkedServicesControls"));
+  return base::DoNothing();
 }
