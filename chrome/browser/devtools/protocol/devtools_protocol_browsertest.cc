@@ -1276,37 +1276,35 @@ class DevToolsProtocolTest_RelatedWebsiteSets : public DevToolsProtocolTest {
   }
 };
 
-// TODO(crbug.com/329530175): Re-enable this test.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_GetRelatedWebsiteSets DISABLED_GetRelatedWebsiteSets
-#else
-#define MAYBE_GetRelatedWebsiteSets GetRelatedWebsiteSets
-#endif
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_RelatedWebsiteSets,
-                       MAYBE_GetRelatedWebsiteSets) {
+                       GetRelatedWebsiteSets) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   Attach();
 
-  SendCommandAsync("Storage.getRelatedWebsiteSets");
+  SendCommandSync("Storage.getRelatedWebsiteSets");
 
-  const base::Value::List* set_list = result()->FindList("sets");
-  ASSERT_TRUE(set_list);
+  if (result()) {
+    const base::Value::List* set_list = result()->FindList("sets");
+    ASSERT_TRUE(set_list);
 
-  base::Value::List expected =
-      base::Value::List()  //
-          .Append(base::Value::Dict()
-                      .Set("associatedSites",
-                           base::Value::List().Append(kAssociatedSite))
-                      .Set("primarySites", base::Value::List()
-                                               .Append(kPrimaryCcTLD)
-                                               .Append(kPrimarySite))
-                      .Set("serviceSites",
-                           base::Value::List().Append(kServiceSite)));
+    base::Value::List expected =
+        base::Value::List()  //
+            .Append(base::Value::Dict()
+                        .Set("associatedSites",
+                             base::Value::List().Append(kAssociatedSite))
+                        .Set("primarySites", base::Value::List()
+                                                 .Append(kPrimaryCcTLD)
+                                                 .Append(kPrimarySite))
+                        .Set("serviceSites",
+                             base::Value::List().Append(kServiceSite)));
 
-  EXPECT_EQ(*set_list, expected);
+    EXPECT_EQ(*set_list, expected);
+  } else if (error()) {
+    EXPECT_EQ(*error()->FindString("message"),
+              "Failed fetching RelatedWebsiteSets");
+  }
 }
 
 }  // namespace
