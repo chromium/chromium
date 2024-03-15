@@ -230,7 +230,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     selectItem(selectedItem)
     applySnapshot(
       diffableDataSource: diffableDataSource, snapshot: snapshot,
-      animatingDifferences: UIAccessibility.isReduceMotionEnabled,
+      animatingDifferences: !UIAccessibility.isReduceMotionEnabled,
       numberOfItemChanged: true)
     selectItem(selectedItem)
   }
@@ -291,7 +291,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
 
     applySnapshot(
       diffableDataSource: diffableDataSource, snapshot: snapshot,
-      animatingDifferences: UIAccessibility.isReduceMotionEnabled,
+      animatingDifferences: !UIAccessibility.isReduceMotionEnabled,
       numberOfItemChanged: true)
 
     if insertedLast {
@@ -328,7 +328,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     snapshot.deleteItems(items)
     applySnapshot(
       diffableDataSource: diffableDataSource, snapshot: snapshot,
-      animatingDifferences: UIAccessibility.isReduceMotionEnabled,
+      animatingDifferences: !UIAccessibility.isReduceMotionEnabled,
       numberOfItemChanged: true)
   }
 
@@ -560,7 +560,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     }
     self.collectionView.setContentOffset(
       CGPoint(x: offset, y: 0),
-      animated: UIAccessibility.isReduceMotionEnabled)
+      animated: !UIAccessibility.isReduceMotionEnabled)
   }
 
   /// Ensures `collectionView.indexPathsForSelectedItems` is consistent with
