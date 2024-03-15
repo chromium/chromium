@@ -707,6 +707,7 @@ src/webgpu/shader/validation/decl/ptr_spelling.spec.ts
 src/webgpu/shader/validation/decl/var.spec.ts
 src/webgpu/shader/validation/decl/var_access_mode.spec.ts
 src/webgpu/shader/validation/expression/access/vector.spec.ts
+src/webgpu/shader/validation/expression/binary/add_sub_mul.spec.ts
 src/webgpu/shader/validation/expression/binary/and_or_xor.spec.ts
 src/webgpu/shader/validation/expression/binary/bitwise_shift.spec.ts
 src/webgpu/shader/validation/expression/binary/comparison.spec.ts
@@ -754,10 +755,13 @@ src/webgpu/shader/validation/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSample.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSampleCompare.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/textureSampleCompareLevel.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/textureSampleGrad.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xU8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/workgroupUniformLoad.spec.ts
 src/webgpu/shader/validation/expression/unary/address_of_and_indirection.spec.ts
+src/webgpu/shader/validation/expression/unary/arithmetic_negation.spec.ts
 src/webgpu/shader/validation/expression/unary/bitwise_complement.spec.ts
 src/webgpu/shader/validation/expression/unary/logical_negation.spec.ts
 src/webgpu/shader/validation/extension/pointer_composite_access.spec.ts
@@ -786,6 +790,7 @@ src/webgpu/shader/validation/parse/pipeline_stage.spec.ts
 src/webgpu/shader/validation/parse/requires.spec.ts
 src/webgpu/shader/validation/parse/semicolon.spec.ts
 src/webgpu/shader/validation/parse/source.spec.ts
+src/webgpu/shader/validation/parse/statement_behavior.spec.ts
 src/webgpu/shader/validation/parse/unary_ops.spec.ts
 src/webgpu/shader/validation/parse/var_and_let.spec.ts
 src/webgpu/shader/validation/shader_io/binding.spec.ts
