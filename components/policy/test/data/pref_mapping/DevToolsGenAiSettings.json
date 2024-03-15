@@ -9,14 +9,6 @@
       ],
       "policy_pref_mapping_tests": [
         {
-          "policies": {},
-          "prefs": {
-            "devtools.gen_ai_settings": {
-              "default_value": 0
-            }
-          }
-        },
-        {
           "policies": {
             "DevToolsGenAiSettings": 0
           },
@@ -43,6 +35,41 @@
           "prefs": {
             "devtools.gen_ai_settings": {
               "value": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "note": "The default is changed by default_for_enterprise_users only on Chrome OS",
+      "os": [
+        "chromeos_ash",
+        "chromeos_lacros"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "policies": {},
+          "prefs": {
+            "devtools.gen_ai_settings": {
+              "value": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "note": "The default is changed by default_for_enterprise_users only on Chrome OS",
+      "os": [
+        "win",
+        "linux",
+        "mac"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "policies": {},
+          "prefs": {
+            "devtools.gen_ai_settings": {
+              "default_value": 0
             }
           }
         }

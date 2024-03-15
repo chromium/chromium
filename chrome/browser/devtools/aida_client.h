@@ -20,6 +20,7 @@
 // The possible values for the DevTools AI enterprise policy.
 enum class DevToolsGenAiEnterprisePolicyValue {
   kAllow = 0,
+  kAllowWithoutLogging = 1,
   kDisable = 2,
 };
 
