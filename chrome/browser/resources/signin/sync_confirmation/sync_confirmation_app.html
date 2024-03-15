@@ -61,13 +61,24 @@
   #avatarContainer {
     --avatar-border-width: 2px;
     --avatar-size: var(--tangible-sync-style-avatar-size);
+
+    align-items: center;
+    background-color: var(--sync-benefits-list-color);
+    border-radius: 50%;
+    display: flex;
     height: var(--avatar-size);
+    justify-content: center;
     left: 0;
     margin: auto;
     position: relative;
     right: 0;
     width: var(--avatar-size);
     z-index: 1;
+  }
+
+  .loading-spinner {
+    height: 50%;
+    width: 50%;
   }
 
   #avatar {
@@ -250,7 +261,8 @@
       hidden="[[isModalDialog_]]">
   <div id="contentContainer" class$="[[animationClasses_]]">
     <div id="avatarContainer">
-      <iron-icon src="chrome://resources/images/throbber_small.svg"
+      <iron-icon class="loading-spinner"
+        src="chrome://resources/images/throbber_small.svg"
         hidden="[[!isPending_(screenMode_)]]">
       </iron-icon>
       <img id="avatar" alt="" src="[[accountImageSrc_]]"
