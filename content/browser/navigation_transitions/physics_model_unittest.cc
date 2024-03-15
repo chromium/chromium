@@ -49,62 +49,57 @@ class PhysicsModelUnittest : public ::testing::Test {
 
   // Nine gestures: simulate the finger moves from 0px to 900px, before the
   // commit-stop 918px.
+  // Every 100px finger move -> every 85px foreground layer move -> every 25px
+  // background layer move.
   std::vector<FingerDragCurveConfig> NineGestureProgressed(
       base::TimeDelta increment) {
     return {
         FingerDragCurveConfig{
             .movement_timestamp = {100.f,
                                    NextTimeTickAfter(base::Milliseconds(0))},
-            .expected =
-                PhysicsModel::Result{.foreground_offset_physical = 85,
-                                     .background_offset_physical = -208.25,
-                                     .done = false}},
+            .expected = PhysicsModel::Result{.foreground_offset_physical = 85,
+                                             .background_offset_physical = -245,
+                                             .done = false}},
         FingerDragCurveConfig{
             .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
             .expected = PhysicsModel::Result{.foreground_offset_physical = 170,
-                                             .background_offset_physical = -187,
+                                             .background_offset_physical = -220,
                                              .done = false}},
         FingerDragCurveConfig{
             .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
-            .expected =
-                PhysicsModel::Result{.foreground_offset_physical = 255,
-                                     .background_offset_physical = -165.75,
-                                     .done = false}},
+            .expected = PhysicsModel::Result{.foreground_offset_physical = 255,
+                                             .background_offset_physical = -195,
+                                             .done = false}},
         FingerDragCurveConfig{
             .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
-            .expected =
-                PhysicsModel::Result{.foreground_offset_physical = 340,
-                                     .background_offset_physical = -144.5,
-                                     .done = false}},
+            .expected = PhysicsModel::Result{.foreground_offset_physical = 340,
+                                             .background_offset_physical = -170,
+                                             .done = false}},
         FingerDragCurveConfig{
             .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
-            .expected =
-                PhysicsModel::Result{.foreground_offset_physical = 425,
-                                     .background_offset_physical = -123.25,
-                                     .done = false}},
+            .expected = PhysicsModel::Result{.foreground_offset_physical = 425,
+                                             .background_offset_physical = -145,
+                                             .done = false}},
         FingerDragCurveConfig{
             .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
             .expected = PhysicsModel::Result{.foreground_offset_physical = 510,
-                                             .background_offset_physical = -102,
+                                             .background_offset_physical = -120,
                                              .done = false}},
         FingerDragCurveConfig{
             .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
-            .expected =
-                PhysicsModel::Result{.foreground_offset_physical = 595,
-                                     .background_offset_physical = -80.75,
-                                     .done = false}},
+            .expected = PhysicsModel::Result{.foreground_offset_physical = 595,
+                                             .background_offset_physical = -95,
+                                             .done = false}},
         FingerDragCurveConfig{
             .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
-            .expected =
-                PhysicsModel::Result{.foreground_offset_physical = 680,
-                                     .background_offset_physical = -59.5,
-                                     .done = false}},
+            .expected = PhysicsModel::Result{.foreground_offset_physical = 680,
+                                             .background_offset_physical = -70,
+                                             .done = false}},
         FingerDragCurveConfig{
             .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
-            .expected =
-                PhysicsModel::Result{.foreground_offset_physical = 765,
-                                     .background_offset_physical = -38.25,
-                                     .done = false}},
+            .expected = PhysicsModel::Result{.foreground_offset_physical = 765,
+                                             .background_offset_physical = -45,
+                                             .done = false}},
     };
   }
 
@@ -115,8 +110,8 @@ class PhysicsModelUnittest : public ::testing::Test {
     auto nine = NineGestureProgressed(increment);
     nine.push_back(FingerDragCurveConfig{
         .movement_timestamp = {100.f, NextTimeTickAfter(increment)},
-        .expected = PhysicsModel::Result{.foreground_offset_physical = 850,
-                                         .background_offset_physical = -17,
+        .expected = PhysicsModel::Result{.foreground_offset_physical = 850.f,
+                                         .background_offset_physical = -20.f,
                                          .done = false}});
     return nine;
   }
@@ -171,7 +166,7 @@ TEST_F(PhysicsModelUnittest, ProgressInvoke_LiftBeforeCommitStop) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 765,
-                               .background_offset_physical = -38.25,
+                               .background_offset_physical = -45,
                                .done = false}},
               // The foreground has reached the commit-stop point. From this
               // point on the background will have offset=0 - it will not
@@ -235,7 +230,7 @@ TEST_F(PhysicsModelUnittest, ProgressInvoke_LiftAfterCommitStop) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 850,
-                               .background_offset_physical = -17,
+                               .background_offset_physical = -20,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
@@ -284,12 +279,12 @@ TEST_F(PhysicsModelUnittest, ProgressCommitStopInvoke_LiftBeforeCommitStop) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 765,
-                               .background_offset_physical = -38.25,
+                               .background_offset_physical = -45,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 867.43,
-                               .background_offset_physical = -12.64,
+                               .background_offset_physical = -14.87,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
@@ -386,7 +381,7 @@ TEST_F(PhysicsModelUnittest, ProgressCommitStopInvoke_LiftAfterCommitStop) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 850,
-                               .background_offset_physical = -17,
+                               .background_offset_physical = -20,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
@@ -488,22 +483,22 @@ TEST_F(PhysicsModelUnittest, ProgressCancel_LiftBeforeCommitStop) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 765,
-                               .background_offset_physical = -38.25,
+                               .background_offset_physical = -45,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 111.73,
-                               .background_offset_physical = -201.57,
+                               .background_offset_physical = -237.14,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 0,
-                               .background_offset_physical = -229.5,
+                               .background_offset_physical = -270,
                                .done = true}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 0,
-                               .background_offset_physical = -229.5,
+                               .background_offset_physical = -270,
                                .done = true}},
           },
       .invoke = {},
@@ -537,22 +532,22 @@ TEST_F(PhysicsModelUnittest, ProgressCancel_LiftAfterCommitStop) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 850,
-                               .background_offset_physical = -17,
+                               .background_offset_physical = -20,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 122.91,
-                               .background_offset_physical = -198.77,
+                               .background_offset_physical = -233.85,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 0,
-                               .background_offset_physical = -229.5,
+                               .background_offset_physical = -270,
                                .done = true}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 0,
-                               .background_offset_physical = -229.5,
+                               .background_offset_physical = -270,
                                .done = true}},
           },
       .invoke = {},
@@ -587,27 +582,27 @@ TEST_F(PhysicsModelUnittest, ProgressAndCancelNav) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 765,
-                               .background_offset_physical = -38.25,
+                               .background_offset_physical = -45,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 416.61,
-                               .background_offset_physical = -125.35,
+                               .background_offset_physical = -147.47,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 111.73,
-                               .background_offset_physical = -201.57,
+                               .background_offset_physical = -237.14,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 17.45,
-                               .background_offset_physical = -225.14,
+                               .background_offset_physical = -264.87,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 0,
-                               .background_offset_physical = -229.5,
+                               .background_offset_physical = -270,
                                .done = true}},
           },
       .invoke = {},
@@ -643,7 +638,7 @@ TEST_F(PhysicsModelUnittest, ProgressCommitPendingAndCancelNav) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
                   .expected = {.foreground_offset_physical = 765,
-                               .background_offset_physical = -38.25,
+                               .background_offset_physical = -45,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(100)),
@@ -666,22 +661,22 @@ TEST_F(PhysicsModelUnittest, ProgressCommitPendingAndCancelNav) {
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 511.11,
-                               .background_offset_physical = -101.72,
+                               .background_offset_physical = -119.67,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 136.29,
-                               .background_offset_physical = -195.43,
+                               .background_offset_physical = -229.91,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 21.12,
-                               .background_offset_physical = -224.22,
+                               .background_offset_physical = -263.79,
                                .done = false}},
               SpringConfig{
                   .timestamp = NextTimeTickAfter(base::Milliseconds(50)),
                   .expected = {.foreground_offset_physical = 0,
-                               .background_offset_physical = -229.5,
+                               .background_offset_physical = -270,
                                .done = true}},
           },
       .invoke = {},

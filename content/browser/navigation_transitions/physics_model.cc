@@ -257,12 +257,12 @@ PhysicsModel::Result PhysicsModel::OnAnimate(
   switch (animation_driver_) {
     case Driver::kSpringCommitPending: {
       spring_position = spring_commit_pending_->GetPosition(
-          viewport_width_ * kTargetCommitPending -
+          viewport_width_ * kTargetCommitPendingRatio -
               animation_start_offset_viewport_,
           raf_since_start);
       // Prevent overshoot the right edge.
       foreground_offset_viewport_ = std::min(
-          viewport_width_, viewport_width_ * kTargetCommitPending -
+          viewport_width_, viewport_width_ * kTargetCommitPendingRatio -
                                spring_position.equilibrium_offset_viewport);
       // https://crbug.com/326850774: The commit-pending spring can also
       // overshoot the left edge.
@@ -299,7 +299,8 @@ PhysicsModel::Result PhysicsModel::OnAnimate(
   }
 
   foreground_has_reached_target_commit_pending_ |=
-      foreground_offset_viewport_ >= kTargetCommitPending * viewport_width_;
+      foreground_offset_viewport_ >=
+      kTargetCommitPendingRatio * viewport_width_;
 
   last_request_animation_frame_ = request_animation_frame;
 
@@ -466,25 +467,39 @@ void PhysicsModel::StartAnimating(base::TimeTicks time) {
   animation_start_offset_viewport_ = foreground_offset_viewport_;
 }
 
-float PhysicsModel::ForegroundToBackGroundOffset(float fg_offset) {
+float PhysicsModel::ForegroundToBackGroundOffset(float fg_offset_viewport) {
+  float bg_offset_viewport = 0.f;
+
   if ((animation_driver_ == Driver::kSpringCommitPending ||
        animation_driver_ == Driver::kSpringInvoke) &&
       foreground_has_reached_target_commit_pending_) {
     // Do not bounce the background page when the foreground page has reached
     // the commit-pending point, once we have switched to the commit-pending
-    // spring.
-    return 0.f;
+    // spring or the invoke spring.
+    return bg_offset_viewport;
   }
-  // TODO(https://crbug.com/325541315): The initial position of the screenshot
-  // layer isn't correct. It should be (-W*kScreenshotInitialPosition, 0)
-  // instead of (-W*kScreenshotInitialPosition*kTargetCommitPending, 0).
-  return std::min(0.f,
-                  kScreenshotInitialPosition *
-                      (fg_offset - viewport_width_ * kTargetCommitPending));
+
+  // Maps:
+  // fg_offset_viewport      0 -> 0.85W -> W
+  // To:
+  // bg_offset_viewport -0.25W ->     0 -> 0
+  const float fg_commit_position_viewport =
+      viewport_width_ * kTargetCommitPendingRatio;
+  // If the foreground has passed the commit position, the background should be
+  // at origin.
+  if (fg_offset_viewport > fg_commit_position_viewport) {
+    return bg_offset_viewport;
+  }
+  const float fg_progress_to_commit_position =
+      fg_offset_viewport / fg_commit_position_viewport;
+  bg_offset_viewport = (1 - fg_progress_to_commit_position) *
+                       kScreenshotInitialPositionRatio * viewport_width_;
+  return bg_offset_viewport;
 }
 
 float PhysicsModel::FingerDragCurve(float movement_viewport) {
-  return foreground_offset_viewport_ + kTargetCommitPending * movement_viewport;
+  return foreground_offset_viewport_ +
+         kTargetCommitPendingRatio * movement_viewport;
 }
 
 float PhysicsModel::CalculateVelocity() {

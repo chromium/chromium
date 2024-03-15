@@ -190,7 +190,7 @@ void ExpectedLayerTransforms(WebContentsImpl* web_contents,
                                    ->web_contents_view_android()
                                    ->parent_for_web_page_widgets());
     auto actual = layers[0]->transform();
-    EXPECT_TRANSFORM_EQ(actual, transforms.active_page)
+    EXPECT_TRANSFORM_NEAR(actual, transforms.active_page, kFloatTolerance)
         << "Active page: actual " << actual.ToString() << " expected "
         << transforms.active_page.ToString();
   } else {
@@ -199,11 +199,13 @@ void ExpectedLayerTransforms(WebContentsImpl* web_contents,
                                    ->web_contents_view_android()
                                    ->parent_for_web_page_widgets());
     auto actual_screenshot = layers[0]->transform();
-    EXPECT_TRANSFORM_EQ(actual_screenshot, transforms.screenshot.value())
+    EXPECT_TRANSFORM_NEAR(actual_screenshot, transforms.screenshot.value(),
+                          kFloatTolerance)
         << "Screenshot: actual " << actual_screenshot.ToString() << " expected "
         << transforms.screenshot->ToString();
     auto actual_active_page = layers[1]->transform();
-    EXPECT_TRANSFORM_EQ(actual_active_page, transforms.active_page)
+    EXPECT_TRANSFORM_NEAR(actual_active_page, transforms.active_page,
+                          kFloatTolerance)
         << "Active page: actual " << actual_active_page.ToString()
         << " expected " << transforms.active_page.ToString();
   }
@@ -305,9 +307,7 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
     static LayerTransforms on_cancelled{
         .active_page = gfx::Transform::MakeTranslation(0.f, 0.f),
         .screenshot = gfx::Transform::MakeTranslation(
-            -width * PhysicsModel::kScreenshotInitialPosition *
-                PhysicsModel::kTargetCommitPending,
-            0.f)};
+            width * PhysicsModel::kScreenshotInitialPositionRatio, 0.f)};
     ExpectedLayerTransforms(wcva_->web_contents(), on_cancelled);
     BackForwardTransitionAnimator::OnCancelAnimationDisplayed();
   }
@@ -533,19 +533,35 @@ class BackForwardTransitionAnimationManagerBrowserTest
 
   GURL BlueURL() const { return embedded_test_server()->GetURL("/blue.html"); }
 
-  LayerTransforms GetLayerTransformsForProgress(GestureType gesture) {
-    float gesture_progress = GetProgress(gesture, SwipeEdge::LEFT);
-
-    // TODO(https://crbug.com/325541315): The initial position of the screenshot
-    // is incorrect. And set hard-coded transform instead of calculating them.
-    float commit_pending =
-        GetViewportSize().width() * PhysicsModel::kTargetCommitPending;
-    return {.active_page = gfx::Transform::MakeTranslation(
-                commit_pending * gesture_progress, 0.f),
-            .screenshot = gfx::Transform::MakeTranslation(
-                -commit_pending * PhysicsModel::kScreenshotInitialPosition *
-                    (1 - gesture_progress),
-                0.f)};
+  LayerTransforms GetLayerTransformsForGestureProgress(GestureType gesture) {
+    int width = GetViewportSize().width();
+    float commit_pending = width * PhysicsModel::kTargetCommitPendingRatio;
+    float screenshot_initial =
+        width * PhysicsModel::kScreenshotInitialPositionRatio;
+    switch (gesture) {
+      case GestureType::kStart:
+        return {.active_page = gfx::Transform::MakeTranslation(0.f, 0.f),
+                .screenshot =
+                    gfx::Transform::MakeTranslation(screenshot_initial, 0.f)};
+      case GestureType::k30ViewportWidth:
+        return {.active_page =
+                    gfx::Transform::MakeTranslation(commit_pending * 0.3f, 0.f),
+                .screenshot = gfx::Transform::MakeTranslation(
+                    screenshot_initial * 0.7f, 0.f)};
+      case GestureType::k60ViewportWidth:
+        return {.active_page =
+                    gfx::Transform::MakeTranslation(commit_pending * 0.6f, 0.f),
+                .screenshot = gfx::Transform::MakeTranslation(
+                    screenshot_initial * 0.4f, 0.f)};
+      case GestureType::k90ViewportWidth:
+        return {.active_page =
+                    gfx::Transform::MakeTranslation(commit_pending * 0.9f, 0.f),
+                .screenshot = gfx::Transform::MakeTranslation(
+                    screenshot_initial * 0.1f, 0.f)};
+      case GestureType::kCancel:
+      case GestureType::kInvoke:
+        NOTREACHED_NORETURN();
+    }
   }
 
   // Perform a history back navigation by sending the specified gesture events.
@@ -636,7 +652,7 @@ class BackForwardTransitionAnimationManagerBrowserTest
 
   void ExpectLayerTransformsAndScrimForGestureProgress(GestureType gesture) {
     ExpectedLayerTransforms(web_contents(),
-                            GetLayerTransformsForProgress(gesture));
+                            GetLayerTransformsForGestureProgress(gesture));
     const auto& layers =
         static_cast<WebContentsViewAndroid*>(web_contents()->GetView())
             ->GetNativeView()
