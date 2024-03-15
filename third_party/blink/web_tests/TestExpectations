@@ -2489,7 +2489,6 @@ crbug.com/932343 [ Mac ] external/wpt/css/css-pseudo/active-selection-014.html [
 crbug.com/1371358 external/wpt/navigation-timing/prefetch-transfer-size-iframe.html [ Failure ]
 
 # css-highlight-inheritance/
-crbug.com/1217745 external/wpt/css/css-pseudo/active-selection-018.html [ Failure ]
 crbug.com/1467328 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-15.html [ Failure ]
 crbug.com/1467692 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-16.html [ Failure ]
 
