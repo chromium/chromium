@@ -951,19 +951,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Migration finished successfully"/>
 </enum>
 
-<enum name="SyncTypedUrlDatabaseError">
-  <int value="0" label="Error in MergeFullSyncData(): reading"/>
-  <int value="1" label="Error in MergeFullSyncData(): writing data"/>
-  <int value="2" label="Error in MergeFullSyncData(): writing metadata"/>
-  <int value="3" label="Error in ApplyIncrementalSyncChanges(): writing data"/>
-  <int value="4"
-      label="Error in ApplyIncrementalSyncChanges(): writing metadata"/>
-  <int value="5" label="Error in OnURLsDeleted(): reading metadata"/>
-  <int value="6" label="OnDatabaseError() called"/>
-  <int value="7" label="Error in LoadMetadata(): opening DB"/>
-  <int value="8" label="Error in LoadMetadata(): reading"/>
-</enum>
-
 <enum name="SyncUserEventType">
   <int value="0" label="Unknown"/>
   <int value="1" label="TestEvent"/>

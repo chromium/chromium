@@ -86,7 +86,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".SHARED_TAB_GROUP_DATA" summary="SHARED_TAB_GROUP_DATA"/>
   <variant name=".SHARING_MESSAGE" summary="SHARING_MESSAGE"/>
   <variant name=".THEME" summary="THEME"/>
-  <variant name=".TYPED_URL" summary="TYPED_URL"/>
   <variant name=".USER_CONSENT" summary="USER_CONSENT"/>
   <variant name=".USER_EVENT" summary="USER_EVENT"/>
   <variant name=".WALLET_METADATA" summary="WALLET_METADATA"/>
@@ -2058,17 +2057,6 @@ chromium-metrics-reviews@google.com.
     Records the status of the degraded recoverability upon the request
     completion. Note that this is the status on the server side, which could be
     error if the request was failed.
-  </summary>
-</histogram>
-
-<histogram name="Sync.TypedURLDatabaseError" enum="SyncTypedUrlDatabaseError"
-    expires_after="2024-02-25">
-  <owner>mastiz@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Recorded when TypedURLSyncBridge encounters a database error. As a result,
-    the bridge stops operating (and tracking metadata) for the rest of the
-    runtime of Chrome.
   </summary>
 </histogram>
 
