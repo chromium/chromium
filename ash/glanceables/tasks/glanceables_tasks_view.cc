@@ -476,8 +476,15 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
     }
   }
   task_list_initially_empty_ = num_tasks_shown == 0;
+  // Set `task_items_container_view_` to invisible if there is no task so that
+  // the layout manager won't include it as a visible view.
+  task_items_container_view_->SetVisible(
+      task_items_container_view_->children().size() > 0);
   list_footer_view_->SetVisible(tasks->item_count() >= kMaximumTasks);
 
+  task_list_combo_box_view_->SetTooltipText(
+      l10n_util::GetStringFUTF16(IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME,
+                                 base::UTF8ToUTF16(task_list_title)));
   task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,
       base::UTF8ToUTF16(task_list_title)));
@@ -691,8 +698,9 @@ void GlanceablesTasksView::CreateComboBoxView() {
                                views::MaximumFlexSizeRule::kPreferred));
   combobox_view_observation_.Observe(task_list_combo_box_view_);
 
-  task_list_combo_box_view_->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME));
+  // Assign a default value for tooltip and accessible text.
+  task_list_combo_box_view_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME, u""));
   task_list_combo_box_view_->SetAccessibleDescription(u"");
   task_list_combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &GlanceablesTasksView::SelectedTasksListChanged, base::Unretained(this)));

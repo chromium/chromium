@@ -7352,7 +7352,7 @@ New install
         Classwork type: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME">$1<ex>Due soon</ex></ph>
       </message>
       <message name="IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the dropdown menu allowing to switch tasks lists.">
-        Google tasks list
+        Task list: <ph name="GLANCEABLES_TASKS_LIST_NAME">$1<ex>Task List 1</ex></ph>
       </message>
       <message name="IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the active tasks list.">
         Google tasks list: <ph name="GLANCEABLES_TASKS_LIST_NAME">$1<ex>Task List 1</ex></ph>
