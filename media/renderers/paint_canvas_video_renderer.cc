@@ -325,6 +325,7 @@ const libyuv::YuvConstants* GetYuvContantsForColorSpace(SkYUVColorSpace cs) {
     case kBT2020_12bit_Limited_SkYUVColorSpace:
       return &YUV_MATRIX(libyuv::kYuv2020Constants);
     case kIdentity_SkYUVColorSpace:
+    default:
       NOTREACHED_NORETURN();
   };
 }

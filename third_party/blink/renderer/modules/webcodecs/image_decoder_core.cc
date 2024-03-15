@@ -77,6 +77,7 @@ gfx::ColorSpace YUVColorSpaceToGfxColorSpace(
                              gfx::ColorSpace::MatrixID::BT2020_NCL,
                              gfx::ColorSpace::RangeID::LIMITED);
     case kIdentity_SkYUVColorSpace:
+    default:
       NOTREACHED();
       return gfx::ColorSpace();
   };
