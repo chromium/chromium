@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.13](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.12...chromium-bidi-v0.5.13) (2024-03-15)
+
+
+### Features
+
+* `invalid selector` error ([#1985](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1985)) ([cba1d35](https://github.com/GoogleChromeLabs/chromium-bidi/commit/cba1d3502edc8ff5d9f541e5dd7b850c79b3c813))
+* add support for `contexts` in `addInterception` ([#1945](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1945)) ([fc76be7](https://github.com/GoogleChromeLabs/chromium-bidi/commit/fc76be7c4742f743e01d613168b2946651a77463))
+* start implementing `browsingContext.locateNodes` ([#1970](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1970)) ([d61f154](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d61f154d6236b53cda2173fc689099c4d7c9f751))
+* support `network.continueResponse` authorization ([#1961](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1961)) ([528ad63](https://github.com/GoogleChromeLabs/chromium-bidi/commit/528ad63c66b09d3636ea0085a3dae19a3f2761fc))
+* support base64 cookie values ([#1933](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1933)) ([9d1b975](https://github.com/GoogleChromeLabs/chromium-bidi/commit/9d1b975522ede4f275fe73b5cc8317c35d790d2d))
+* support xpath locators ([#1986](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1986)) ([b49184f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b49184f55038ff547dc6f6fd6d56de7cf0b11df9))
+
+
+### Bug Fixes
+
+* add `authChallenges` to response ([#1919](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1919)) ([e4a519a](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e4a519a1684ab75c95b4760a1e031337e483967e))
+* always provide `userContext` in cookie's `partitionKey` ([#1938](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1938)) ([0adf6d1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0adf6d1e00e7a972923eeb951bb3af4cd583178e))
+* correctly process `NoSuchUserContextException` in cookie operations ([#1940](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1940)) ([7407608](https://github.com/GoogleChromeLabs/chromium-bidi/commit/74076089eb1f4f99a8a813fa724d11007e7f2b97))
+* don't block on unsubscribed events ([#1954](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1954)) ([0abbff8](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0abbff888987e81216ca88434958843619dbff1e))
+* don't throw unhandled errors ([#1996](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1996)) ([ab1c6d2](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ab1c6d2c45b51fc05d2f14d7d547fb25e357610e))
+* emit for target id ([#1979](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1979)) ([d1091bd](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d1091bd673968ba37c1cc0f02f3c013f92cac62f))
+* the pattern matching logic ([#1995](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1995)) ([66010d1](https://github.com/GoogleChromeLabs/chromium-bidi/commit/66010d1e545949ecd41f0db0b88148acbbdd751d))
+* workaround issue with Script.Target ([#1947](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1947)) ([3cc317b](https://github.com/GoogleChromeLabs/chromium-bidi/commit/3cc317be7c6f05b5850728dc71feeadd9451d105))
+
 ## [0.5.12](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.11...chromium-bidi-v0.5.12) (2024-02-29)
 
 
