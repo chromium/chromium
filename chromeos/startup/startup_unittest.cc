@@ -24,7 +24,7 @@
 namespace chromeos {
 namespace {
 
-base::ScopedFD CreateMemoryFile(const base::StringPiece content) {
+base::ScopedFD CreateMemoryFile(const std::string_view content) {
   base::ScopedFD file(memfd_create("test", 0));
   if (!file.is_valid()) {
     PLOG(ERROR) << "Failed to create a memory file";

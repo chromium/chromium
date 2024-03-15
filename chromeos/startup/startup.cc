@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 #include <sys/mman.h>
+
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -20,7 +22,7 @@ namespace chromeos {
 namespace {
 
 std::optional<std::string> ReadStartupDataFromCmdlineSwitch(
-    base::StringPiece cmdline_switch) {
+    std::string_view cmdline_switch) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(cmdline_switch))
     return std::nullopt;
