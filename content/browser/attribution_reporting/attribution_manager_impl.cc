@@ -920,28 +920,30 @@ void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
                                      /*is_debug_report=*/true));
 }
 
-// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
-// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::GetActiveSourcesForWebUI(
     base::OnceCallback<void(std::vector<StoredSource>)> callback) {
+  OnUserVisibleTaskStarted();
+
   const int kMaxSources = 1000;
   attribution_storage_.AsyncCall(&AttributionStorage::GetActiveSources)
       .WithArgs(kMaxSources)
-      .Then(std::move(callback));
+      .Then(std::move(callback).Then(
+          base::BindOnce(&AttributionManagerImpl::OnUserVisibleTaskComplete,
+                         weak_factory_.GetWeakPtr())));
 }
 
-// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
-// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::GetPendingReportsForInternalUse(
     int limit,
     base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
+  OnUserVisibleTaskStarted();
+
   attribution_storage_.AsyncCall(&AttributionStorage::GetAttributionReports)
       .WithArgs(/*max_report_time=*/base::Time::Max(), limit)
-      .Then(std::move(callback));
+      .Then(std::move(callback).Then(
+          base::BindOnce(&AttributionManagerImpl::OnUserVisibleTaskComplete,
+                         weak_factory_.GetWeakPtr())));
 }
 
-// TODO(apaseltiner): Consider `OnUserVisibleTaskStarted()` here, since this is
-// used by the internals UI, which is user-visible.
 void AttributionManagerImpl::SendReportForWebUI(AttributionReport::Id id,
                                                 base::OnceClosure done) {
   DCHECK(done);
@@ -951,6 +953,11 @@ void AttributionManagerImpl::SendReportForWebUI(AttributionReport::Id id,
     std::move(done).Run();
     return;
   }
+
+  OnUserVisibleTaskStarted();
+  done = std::move(done).Then(
+      base::BindOnce(&AttributionManagerImpl::OnUserVisibleTaskComplete,
+                     weak_factory_.GetWeakPtr()));
 
   attribution_storage_.AsyncCall(&AttributionStorage::GetReport)
       .WithArgs(id)
