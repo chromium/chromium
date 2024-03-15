@@ -2010,7 +2010,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'gbE2IYL3RAHQeFB4g9GrMLsi_FwkEWrOy0L3YKiQBzgC',
+        'version': 'o_CtOytqDUg_MpZfEY1ReitXzZn3KYZpSsREHB1k1sAC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
