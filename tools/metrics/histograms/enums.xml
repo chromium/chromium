@@ -11345,6 +11345,18 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4896" label="QuirksModeCursorHand"/>
   <int value="4897" label="TrustedTypesCreatePolicyWithEmptyName"/>
   <int value="4898" label="V8RTCEncodedAudioFrame_Constructor"/>
+  <int value="4899" label="TCPSocketConstructor"/>
+  <int value="4900" label="TCPSocketOpenedAttribute"/>
+  <int value="4901" label="TCPSocketClosedAttribute"/>
+  <int value="4902" label="TCPSocketCloseFunction"/>
+  <int value="4903" label="UDPSocketConstructor"/>
+  <int value="4904" label="UDPSocketOpenedAttribute"/>
+  <int value="4905" label="UDPSocketClosedAttribute"/>
+  <int value="4906" label="UDPSocketCloseFunction"/>
+  <int value="4907" label="TCPServerSocketConstructor"/>
+  <int value="4908" label="TCPServerSocketOpenedAttribute"/>
+  <int value="4909" label="TCPServerSocketClosedAttribute"/>
+  <int value="4910" label="TCPServerSocketCloseFunction"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

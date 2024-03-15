@@ -4263,6 +4263,20 @@ enum WebFeature {
   kTrustedTypesCreatePolicyWithEmptyName = 4897,
   kV8RTCEncodedAudioFrame_Constructor = 4898,
 
+  // Direct Sockets API:
+  kTCPSocketConstructor = 4899,
+  kTCPSocketOpenedAttribute = 4900,
+  kTCPSocketClosedAttribute = 4901,
+  kTCPSocketCloseFunction= 4902,
+  kUDPSocketConstructor = 4903,
+  kUDPSocketOpenedAttribute = 4904,
+  kUDPSocketClosedAttribute = 4905,
+  kUDPSocketCloseFunction= 4906,
+  kTCPServerSocketConstructor = 4907,
+  kTCPServerSocketOpenedAttribute = 4908,
+  kTCPServerSocketClosedAttribute = 4909,
+  kTCPServerSocketCloseFunction= 4910,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in
