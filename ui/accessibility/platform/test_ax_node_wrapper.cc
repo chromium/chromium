@@ -554,7 +554,8 @@ std::optional<int32_t> TestAXNodeWrapper::GetCellId(int row_index,
 std::optional<int32_t> TestAXNodeWrapper::GetCellIdAriaCoords(
     int aria_row_index,
     int aria_col_index) const {
-  AXNode* cell = node_->GetTableCellFromAriaCoords(aria_row_index, aria_col_index);
+  AXNode* cell =
+      node_->GetTableCellFromAriaCoords(aria_row_index, aria_col_index);
   if (!cell) {
     return std::nullopt;
   }

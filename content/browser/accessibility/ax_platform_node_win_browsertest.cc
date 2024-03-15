@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/accessibility_content_browsertest.h"
@@ -233,6 +234,34 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
                                   flows_from_variant.Receive());
   ASSERT_EQ(VT_ARRAY | VT_UNKNOWN, flows_from_variant.type());
   ASSERT_EQ(nullptr, V_ARRAY(flows_from_variant.ptr()));
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
+                       UIAGetPropertyValueWebContentsHistogram) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <p>Hello World</p>
+      </html>
+  )HTML"));
+
+  base::HistogramTester histogram_tester;
+  base::win::ScopedVariant property_value;
+  ComPtr<IRawElementProviderSimple> node_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          FindNode(ax::mojom::Role::kStaticText, "Hello World"));
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.WinAPIs.WebContents.UMA_API_GET_PROPERTY_"
+      "VALUE",
+      0);
+
+  node_provider->GetPropertyValue(UIA_NamePropertyId, property_value.Receive());
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.WinAPIs.WebContents.UMA_API_GET_PROPERTY_"
+      "VALUE",
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,

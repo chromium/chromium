@@ -150,6 +150,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Compare(ITextRangeProvider* other,
       AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_COMPARE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_COMPARE);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_COMPARE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(other, result);
 
   Microsoft::WRL::ComPtr<AXPlatformNodeTextRangeProviderWin> other_provider;
@@ -172,6 +173,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::CompareEndpoints(
     int* result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_COMPAREENDPOINTS);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_COMPAREENDPOINTS);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+      UMA_API_TEXTRANGE_COMPAREENDPOINTS);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(other, result);
 
   Microsoft::WRL::ComPtr<AXPlatformNodeTextRangeProviderWin> other_provider;
@@ -205,6 +208,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnit(
     TextUnit unit) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_EXPANDTOENCLOSINGUNIT);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_EXPANDTOENCLOSINGUNIT);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+      UMA_API_TEXTRANGE_EXPANDTOENCLOSINGUNIT);
   return ExpandToEnclosingUnitImpl(unit);
 }
 
@@ -375,6 +380,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindAttribute(
   //    The previously matched range is the final match we found.
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_FINDATTRIBUTE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDATTRIBUTE);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDATTRIBUTE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(result);
   // Use a cloned range so that FindAttribute does not introduce side-effects
   // while normalizing the original range.
@@ -503,6 +509,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
 
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
   // The following has to be called after setting the
   // ax_embedded_object_behavior. This is because it can modify `this`'s `start`
   // and `end`, and it will do so assuming
@@ -566,6 +573,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     VARIANT* value) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETATTRIBUTEVALUE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETATTRIBUTEVALUE);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+      UMA_API_TEXTRANGE_GETATTRIBUTEVALUE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(value);
 
   base::win::VariantVector attribute_value;
@@ -673,6 +682,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetBoundingRectangles(
     SAFEARRAY** screen_physical_pixel_rectangles) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETBOUNDINGRECTANGLES);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETBOUNDINGRECTANGLES);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+      UMA_API_TEXTRANGE_GETBOUNDINGRECTANGLES);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(screen_physical_pixel_rectangles);
 
   *screen_physical_pixel_rectangles = nullptr;
@@ -718,6 +729,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetEnclosingElement(
     IRawElementProviderSimple** element) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETENCLOSINGELEMENT);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETENCLOSINGELEMENT);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+      UMA_API_TEXTRANGE_GETENCLOSINGELEMENT);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(element);
 
   AXPlatformNodeWin* enclosing_node = GetLowestAccessibleCommonPlatformNode();
@@ -736,6 +749,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetText(int max_count, BSTR* text) {
       AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETTEXT);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETTEXT);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETTEXT);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(text);
 
   // -1 is a valid value that signifies that the caller wants complete text.
@@ -762,6 +776,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::Move(TextUnit unit,
                                                  int* units_moved) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_MOVE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_MOVE);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_MOVE);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(units_moved);
 
   // Per MSDN, move with zero count has no effect.
@@ -833,6 +848,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnit(
     int* units_moved) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENDPOINTBYUNIT);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENDPOINTBYUNIT);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+      UMA_API_TEXTRANGE_MOVEENDPOINTBYUNIT);
   return MoveEndpointByUnitImpl(endpoint, unit, count, units_moved);
 }
 
@@ -913,6 +930,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByRange(
     TextPatternRangeEndpoint other_endpoint) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+      UMA_API_TEXTRANGE_MOVEENPOINTBYRANGE);
 
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN(other);
 
@@ -1139,6 +1158,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
 HRESULT AXPlatformNodeTextRangeProviderWin::GetChildren(SAFEARRAY** children) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETCHILDREN);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETCHILDREN);
+  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETCHILDREN);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(children);
   std::vector<gfx::NativeViewAccessible> descendants;
 
@@ -1276,6 +1296,14 @@ AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
         platform_tree_manager->GetPlatformNodeFromTree(*anchor));
   }
 
+  return nullptr;
+}
+
+AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate()
+    const {
+  if (GetOwner()) {
+    return GetOwner()->GetDelegate();
+  }
   return nullptr;
 }
 
