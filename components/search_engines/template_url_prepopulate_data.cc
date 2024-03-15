@@ -6,10 +6,12 @@
 
 #include <algorithm>
 #include <random>
+#include <vector>
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -39,31 +41,9 @@ namespace {
 std::vector<std::unique_ptr<TemplateURLData>>
 GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
                                             PrefService* prefs) {
-  std::vector<std::unique_ptr<TemplateURLData>> t_urls;
-  std::vector<const PrepopulatedEngine*> top_engines;
-  std::vector<const PrepopulatedEngine*> tying_engines;
-  std::vector<const PrepopulatedEngine*> remaining_engines;
-
   CHECK(search_engines::IsEeaChoiceCountry(country_id) &&
         search_engines::IsChoiceScreenFlagEnabled(
             search_engines::ChoicePromo::kAny));
-
-  const std::vector<EngineAndTier> country_engines =
-      GetPrepopulationSetFromCountryID(country_id);
-
-  for (const EngineAndTier& country_engine : country_engines) {
-    switch (country_engine.tier) {
-      case SearchEngineTier::kTopEngines:
-        top_engines.push_back(country_engine.search_engine);
-        break;
-      case SearchEngineTier::kTyingEngines:
-        tying_engines.push_back(country_engine.search_engine);
-        break;
-      case SearchEngineTier::kRemainingEngines:
-        remaining_engines.push_back(country_engine.search_engine);
-        break;
-    }
-  }
 
   uint64_t profile_seed;
   if (prefs) {
@@ -91,36 +71,17 @@ GetPrepopulatedEnginesForEeaRegionCountries(int country_id,
     profile_seed = 42;
   }
 
-  // Randomize all vectors using the generated seed.
+  std::vector<std::unique_ptr<TemplateURLData>> t_urls = base::ToVector(
+      GetPrepopulationSetFromCountryID(country_id),
+      [](const EngineAndTier& entry) {
+        return TemplateURLDataFromPrepopulatedEngine(*entry.search_engine);
+      });
+
   std::default_random_engine generator;
   generator.seed(profile_seed);
-  std::shuffle(top_engines.begin(), top_engines.end(), generator);
-  std::shuffle(tying_engines.begin(), tying_engines.end(), generator);
-  std::shuffle(remaining_engines.begin(), remaining_engines.end(), generator);
+  std::shuffle(t_urls.begin(), t_urls.end(), generator);
 
-  size_t current_number_of_engines = 0;
-  for (const PrepopulatedEngine* engine : top_engines) {
-    if (current_number_of_engines == kMaxEeaPrepopulatedEngines) {
-      break;
-    }
-    t_urls.push_back(TemplateURLDataFromPrepopulatedEngine(*engine));
-    current_number_of_engines++;
-  }
-  for (const PrepopulatedEngine* engine : tying_engines) {
-    if (current_number_of_engines == kMaxEeaPrepopulatedEngines) {
-      break;
-    }
-    t_urls.push_back(TemplateURLDataFromPrepopulatedEngine(*engine));
-    current_number_of_engines++;
-  }
-  for (const PrepopulatedEngine* engine : remaining_engines) {
-    if (current_number_of_engines == kMaxEeaPrepopulatedEngines) {
-      break;
-    }
-    t_urls.push_back(TemplateURLDataFromPrepopulatedEngine(*engine));
-    current_number_of_engines++;
-  }
-
+  CHECK_LE(t_urls.size(), kMaxEeaPrepopulatedEngines);
   return t_urls;
 }
 
@@ -294,11 +255,6 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
 
 #endif
 
-std::vector<const PrepopulatedEngine*> GetAllPrepopulatedEngines() {
-  return std::vector<const PrepopulatedEngine*>(
-      &kAllEngines[0], &kAllEngines[0] + kAllEnginesLength);
-}
-
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService* prefs,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
@@ -363,4 +319,17 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedDefaultSearch(
              : nullptr;
 }
 
+// Test Utilities -------------------------------------------------------------
+
+std::vector<const PrepopulatedEngine*> GetAllPrepopulatedEngines() {
+  CHECK_IS_TEST();
+  return std::vector<const PrepopulatedEngine*>(
+      &kAllEngines[0], &kAllEngines[0] + kAllEnginesLength);
+}
+
+const std::vector<raw_ptr<const PrepopulatedEngine>>
+GetPrepopulationSetFromCountryIDForTesting(int country_id) {
+  return base::ToVector(GetPrepopulationSetFromCountryID(country_id),
+                        &EngineAndTier::search_engine);
+}
 }  // namespace TemplateURLPrepopulateData

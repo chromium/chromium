@@ -503,13 +503,16 @@ TEST_F(TemplateURLServiceUtilLoadTest,
   base::test::ScopedFeatureList feature_list{
       switches::kSearchEngineChoiceTrigger};
   prefs().SetInteger(country_codes::kCountryIDAtInstall, kEeaCountryId);
+  const size_t kEeaKeywordEnginesCount =
+      TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
+          kEeaCountryId)
+          .size();
 
   const KeywordTestMetadata kDefaultUpdatedState = {
       .data_version = kCurrentDataVersion,
       .milestone = kCurrentMilestone,
       .country = kEeaCountryId,
-      .keyword_engines_count =
-          TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines,
+      .keyword_engines_count = kEeaKeywordEnginesCount,
       .use_extended_list = true};
   const KeywordTestMetadata kNoUpdate = {.data_version = 0,
                                          .milestone = 0,

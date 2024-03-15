@@ -56,8 +56,13 @@ class MockSearchEngineChoiceDialogService
       std::vector<std::unique_ptr<TemplateURL>> choices;
       auto choice = TemplateURLData();
 
-      for (size_t i = 0;
-           i < TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines; i++) {
+      // Current design is built around having 8 items, but the max is defined
+      // acknowledging that we have some exceptions where there are more items.
+      const size_t kItemsCount = 8;
+      static_assert(kItemsCount <=
+                    TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines);
+
+      for (size_t i = 0; i < kItemsCount; i++) {
         const std::u16string kShortName = u"Test" + base::NumberToString16(i);
         // Start from 1 because a `prepopulate_id` of 0 is for custom search
         // engines.

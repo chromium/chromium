@@ -8,9 +8,11 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -245,6 +247,40 @@ TEST_F(TemplateURLPrepopulateDataTest, NumberOfEntriesPerCountryConsistency) {
           << " for country "
           << country_codes::CountryIDToCountryString(country_id);
     }
+  }
+}
+
+TEST_F(TemplateURLPrepopulateDataTest, EntriesPerCountryConsistency) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(switches::kSearchEngineChoiceTrigger);
+
+  for (int country_id : kAllCountryIds) {
+    if (!search_engines::IsEeaChoiceCountry(country_id)) {
+      // "unhandled" countries can cause some issues when inheriting a config
+      // from an EEA country. Covering them via
+      // TemplateURLPrepopulateDataTest.NumberOfEntriesPerCountryConsistency is
+      // enough, so they we exclude non-EEA countries in the rest of this test
+      // for simplicity.
+      continue;
+    }
+
+    OverrideCountryId(country_id);
+
+    // Obtained by calling the normal API to fetch engines for the current
+    // country.
+    std::vector<std::string> actual_urls =
+        base::ToVector(TemplateURLPrepopulateData::GetPrepopulatedEngines(
+                           &prefs_, search_engine_choice_service(),
+                           /*default_search_provider_index=*/nullptr),
+                       [](const auto& t_url) { return t_url->url(); });
+
+    // Pulled straight from the country -> engine mapping.
+    auto expected_urls = base::ToVector(
+        TemplateURLPrepopulateData::GetPrepopulationSetFromCountryIDForTesting(
+            country_id),
+        &TemplateURLPrepopulateData::PrepopulatedEngine::search_url);
+
+    EXPECT_THAT(actual_urls, testing::UnorderedElementsAreArray(expected_urls));
   }
 }
 
