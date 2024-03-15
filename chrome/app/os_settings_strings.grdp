@@ -5110,7 +5110,7 @@ Press an assigned switch or key to remove assignment.
     Unlock automatically once PIN is entered
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_MORE_BUTTON_ARIA_LABEL" desc="ARIA (accessibility) label describing the three-dots button that shows menu with extra actions for PIN authentication factor.">
-    More actions
+    More actions for PIN
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_AUTOSUBMIT_PROMPT" desc="Text above a PIN input field that tells the user they need to submit their PIN to enable auto submit.">
     Confirm PIN to turn on automatic unlock
