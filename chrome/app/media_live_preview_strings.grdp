@@ -44,4 +44,9 @@
     <ph name="DEVICE_NAME">$1</ph> (System default)
   </message>
 
+<!-- General Strings -->
+  <message name="IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE" desc="Text for accessiblity announcement, triggered when the selected device changes dynamically (e.g. The selected device was disconnected and chrome has fallen back to another one.)">
+    The selected device changed to <ph name="DEVICE_NAME">$1<ex>HD Web Camera</ex></ph>
+  </message>
+
 </grit-part>

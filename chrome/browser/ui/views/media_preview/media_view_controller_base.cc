@@ -5,13 +5,17 @@
 #include "chrome/browser/ui/views/media_preview/media_view_controller_base.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -92,7 +96,8 @@ MediaViewControllerBase::~MediaViewControllerBase() {
 }
 
 void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
-  bool has_devices = device_count > 0;
+  const std::u16string previous_device_name = device_name_label_->GetText();
+  const bool has_devices = device_count > 0;
   if (!has_devices) {
     live_feed_container_->SetVisible(false);
     no_devices_found_label_->SetVisible(true);
@@ -102,6 +107,8 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
     device_name_label_->SetVisible(true);
     device_selector_combobox_->SetVisible(false);
     base_view_->RefreshSize();
+    AnnounceDynamicChangeIfNeeded(previous_device_name,
+                                  no_devices_found_label_->GetText());
     return;
   }
 
@@ -112,6 +119,13 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
   device_selector_combobox_->SetVisible(allow_device_selection_);
   OnComboboxSelection();
   base_view_->RefreshSize();
+  if (allow_device_selection_) {
+    AnnounceDynamicChangeIfNeeded(
+        previous_device_name,
+        l10n_util::GetStringFUTF16(
+            IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
+            device_name_label_->GetText()));
+  }
 }
 
 void MediaViewControllerBase::OnComboboxSelection() {
@@ -124,4 +138,20 @@ void MediaViewControllerBase::UpdateDeviceNameLabel() {
   device_name_label_->SetText(
       device_selector_combobox_->GetModel()->GetItemAt(index.value()));
   device_name_label_->SetEnabledColorId(ui::ColorIds::kColorSysOnSurface);
+}
+
+void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
+    std::u16string previous_device_name,
+    std::u16string announcement) {
+  if (!has_device_list_changed_before_) {
+    has_device_list_changed_before_ = true;
+    return;
+  }
+
+  if (previous_device_name == device_name_label_->GetText()) {
+    return;
+  }
+
+  // TODO(b/329888948): Add test coverage for announcement.
+  device_name_label_->GetViewAccessibility().AnnouncePolitely(announcement);
 }
