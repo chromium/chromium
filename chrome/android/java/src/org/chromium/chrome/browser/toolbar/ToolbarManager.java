@@ -100,6 +100,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -327,10 +328,7 @@ public class ToolbarManager
 
     private final boolean mIsCustomTab;
 
-    @Nullable ObservableSupplier<String> mReadAloudReadabilitySupplier;
-
-    private final Callback<String> mOnReadAloudReadabilitySuccess =
-            this::onReadAloudReadabilitySuccess;
+    private ReadAloudController mReadAloudController;
 
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
@@ -576,7 +574,8 @@ public class ToolbarManager
             boolean initializeWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
-            @Nullable View baseChromeLayout) {
+            @Nullable View baseChromeLayout,
+            ObservableSupplier<ReadAloudController> readAloudControllerSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -1291,23 +1290,22 @@ public class ToolbarManager
                     }
                 };
         profileSupplier.addObserver(profileObserver);
+        readAloudControllerSupplier.addObserver(
+                readAloudController -> {
+                    mReadAloudController = readAloudController;
+                    if (readAloudController != null) {
+                        readAloudController.addReadabilityUpdateListener(
+                                this::onReadAloudReadabilityUpdated);
+                    }
+                });
         TraceEvent.end("ToolbarManager.ToolbarManager");
     }
 
     // TODO(b/315204103): add tests
-    public void setReadAloudReadabilitySupplier(
-            ObservableSupplier<String> readAloudReadabilitySupplier) {
-        mReadAloudReadabilitySupplier = readAloudReadabilitySupplier;
-        mReadAloudReadabilitySupplier.addObserver(mOnReadAloudReadabilitySuccess);
-    }
-
-    // TODO(b/315204103): add tests
-    private void onReadAloudReadabilitySuccess(String url) {
-        // Checks if ReadAloud is set as the customized button and the readable url matches the
-        // current tab
+    private void onReadAloudReadabilityUpdated() {
+        // Update the button if ReadAloud is set as the customized button.
         if (ChromeSharedPreferences.getInstance().readInt(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS)
-                        == AdaptiveToolbarButtonVariant.READ_ALOUD
-                && mTabModelSelector.getCurrentTab().getUrl().getSpec().equals(url)) {
+                == AdaptiveToolbarButtonVariant.READ_ALOUD) {
             updateButtonStatus();
         }
     }
@@ -1990,9 +1988,10 @@ public class ToolbarManager
             mStartSurfaceHeaderOffsetChangeListener = null;
         }
 
-        if (mReadAloudReadabilitySupplier != null) {
-            mReadAloudReadabilitySupplier.removeObserver(mOnReadAloudReadabilitySuccess);
-            mReadAloudReadabilitySupplier = null;
+        if (mReadAloudController != null) {
+            mReadAloudController.removeReadabilityUpdateListener(
+                    this::onReadAloudReadabilityUpdated);
+            mReadAloudController = null;
         }
 
         mTabObscuringHandler.removeObserver(this);

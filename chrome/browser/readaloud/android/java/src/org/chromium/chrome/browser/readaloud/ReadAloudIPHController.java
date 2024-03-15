@@ -89,8 +89,8 @@ public class ReadAloudIPHController {
      *
      * @param url URL the readability check returns
      */
-    public void maybeShowReadAloudAppMenuIPH(String url) {
-        if (shouldShowIPH(url)) {
+    public void maybeShowReadAloudAppMenuIPH() {
+        if (shouldShowIPH()) {
             boolean isHighlightEnabled =
                     mShowAppMenuTextBubble
                             ? true
@@ -120,28 +120,26 @@ public class ReadAloudIPHController {
         mAppMenuHandler.clearMenuHighlight();
     }
 
-    private boolean shouldShowIPH(String url) {
+    private boolean shouldShowIPH() {
         if (mCurrentTabSupplier.get() == null
                 || !mCurrentTabSupplier.get().getUrl().isValid()
                 || mReadAloudControllerSupplier.get() == null) {
             return false;
         }
-        if (mCurrentTabSupplier.get().getUrl().getSpec().equals(url)) {
-            return mReadAloudControllerSupplier.get().isReadable(mCurrentTabSupplier.get());
-        }
-        return false;
+        return mReadAloudControllerSupplier.get().isReadable(mCurrentTabSupplier.get());
     }
 
     void readAloudControllerReady(@Nullable ReadAloudController readAloudController) {
         if (readAloudController != null) {
-            mReadAloudReadabilitySupplier = readAloudController.getReadabilitySupplier();
-            mReadAloudReadabilitySupplier.addObserver(this::maybeShowReadAloudAppMenuIPH);
+            readAloudController.addReadabilityUpdateListener(this::maybeShowReadAloudAppMenuIPH);
         }
     }
 
     public void destroy() {
-        if (mReadAloudReadabilitySupplier != null) {
-            mReadAloudReadabilitySupplier.removeObserver(this::maybeShowReadAloudAppMenuIPH);
+        if (mReadAloudControllerSupplier.get() != null) {
+            mReadAloudControllerSupplier
+                    .get()
+                    .removeReadabilityUpdateListener(this::maybeShowReadAloudAppMenuIPH);
         }
     }
 

@@ -97,7 +97,7 @@ public class ReadAloudIPHControllerUnitTest {
     @Test
     @SmallTest
     public void maybeShowReadAloudAppMenuIPH() {
-        mController.maybeShowReadAloudAppMenuIPH(sTestGURL.getSpec());
+        mController.maybeShowReadAloudAppMenuIPH();
         verify(mUserEducationHelper).requestShowIPH(mIPHCommandCaptor.capture());
 
         IPHCommand command = mIPHCommandCaptor.getValue();
@@ -113,22 +113,21 @@ public class ReadAloudIPHControllerUnitTest {
     public void maybeShowReadAloudAppMenuIPH_false() {
         doReturn(false).when(mReadAloudController).isReadable(mTab);
 
-        mController.maybeShowReadAloudAppMenuIPH(sTestGURL.getSpec());
+        mController.maybeShowReadAloudAppMenuIPH();
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
     }
 
     @Test
     @SmallTest
     public void maybeShowReadAloudAppMenuIPH_invalid() {
-        // mismatched urls
-        mController.maybeShowReadAloudAppMenuIPH("https://en.wikipedia.org/wiki/Google");
+        // invalid tab URL
+        mTab.setGurlOverrideForTesting(new GURL("http://0x100.0/"));
+        mController.maybeShowReadAloudAppMenuIPH();
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
-        // invalid url
-        mController.maybeShowReadAloudAppMenuIPH("http://0x100.0/");
-        verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
+
         // null tab
         doReturn(null).when(mMockTabProvider).get();
-        mController.maybeShowReadAloudAppMenuIPH(sTestGURL.getSpec());
+        mController.maybeShowReadAloudAppMenuIPH();
         verify(mUserEducationHelper, never()).requestShowIPH(mIPHCommandCaptor.capture());
     }
 
@@ -136,7 +135,7 @@ public class ReadAloudIPHControllerUnitTest {
     @SmallTest
     public void maybeShowReadAloudAppMenuIPH_noTextBubble_disabledHighlight() {
         mController.setShowAppMenuTextBubble(false);
-        mController.maybeShowReadAloudAppMenuIPH(sTestGURL.getSpec());
+        mController.maybeShowReadAloudAppMenuIPH();
         // we shouldn't show the text bubble
         verify(mUserEducationHelper, times(1)).requestShowIPH(mIPHCommandCaptor.capture());
         IPHCommand command = mIPHCommandCaptor.getValue();
@@ -151,7 +150,7 @@ public class ReadAloudIPHControllerUnitTest {
     @EnableFeatures({ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT})
     public void maybeShowReadAloudAppMenuIPH_noTextBubble_enabledHighlight() {
         mController.setShowAppMenuTextBubble(false);
-        mController.maybeShowReadAloudAppMenuIPH(sTestGURL.getSpec());
+        mController.maybeShowReadAloudAppMenuIPH();
         // we shouldn't show the text bubble
         verify(mUserEducationHelper, times(1)).requestShowIPH(mIPHCommandCaptor.capture());
         IPHCommand command = mIPHCommandCaptor.getValue();
