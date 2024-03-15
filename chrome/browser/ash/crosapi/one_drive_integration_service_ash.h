@@ -39,6 +39,7 @@ class OneDriveIntegrationServiceAsh
   void OnProvidedFileSystemUnmount(
       const ash::file_system_provider::ProvidedFileSystemInfo& file_system_info,
       base::File::Error error) override;
+  void OnShutDown() override;
 
  private:
   // This class supports any number of connections. This allows the client to

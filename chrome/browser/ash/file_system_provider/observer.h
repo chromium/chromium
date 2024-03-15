@@ -34,6 +34,9 @@ class Observer {
   virtual void OnProvidedFileSystemUnmount(
       const ProvidedFileSystemInfo& file_system_info,
       base::File::Error error) = 0;
+
+  // Called when the observed file_system_provider::Service is being shutdown.
+  virtual void OnShutDown() {}
 };
 
 }  // namespace ash::file_system_provider

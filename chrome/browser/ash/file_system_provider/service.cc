@@ -81,6 +81,10 @@ void Service::Shutdown() {
   }
 
   DCHECK_EQ(0u, file_system_map_.size());
+
+  for (auto& observer : observers_) {
+    observer.OnShutDown();
+  }
 }
 
 void Service::AddObserver(Observer* observer) {

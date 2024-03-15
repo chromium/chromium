@@ -87,4 +87,11 @@ void OneDriveIntegrationServiceAsh::OnProvidedFileSystemUnmount(
   }
 }
 
+void OneDriveIntegrationServiceAsh::OnShutDown() {
+  if (!file_system_provider_observation_.IsObserving()) {
+    return;
+  }
+  file_system_provider_observation_.Reset();
+}
+
 }  // namespace crosapi
