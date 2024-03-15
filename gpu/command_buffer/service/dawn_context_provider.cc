@@ -453,6 +453,8 @@ bool DawnContextProvider::Initialize(
   device.SetUncapturedErrorCallback(&LogError, static_cast<void*>(this));
   device.SetDeviceLostCallback(&LogDeviceLost, static_cast<void*>(this));
   device.SetLoggingCallback(&LogInfo, nullptr);
+
+  adapter_ = std::move(adapter);
   device_ = std::move(device);
 
   backend_type_ = backend_type;

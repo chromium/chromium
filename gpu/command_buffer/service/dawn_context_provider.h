@@ -64,6 +64,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   bool is_vulkan_swiftshader_adapter() const {
     return is_vulkan_swiftshader_adapter_;
   }
+  wgpu::Adapter GetAdapter() const { return adapter_; }
   wgpu::Instance GetInstance() const;
 
   void SetCachingInterface(
@@ -109,6 +110,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
   std::unique_ptr<dawn::platform::Platform> platform_;
   std::unique_ptr<webgpu::DawnInstance> instance_;
+  wgpu::Adapter adapter_;
   wgpu::Device device_;
   wgpu::BackendType backend_type_;
   bool is_vulkan_swiftshader_adapter_ = false;

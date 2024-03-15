@@ -228,8 +228,9 @@ bool IsVulkanV2EnabledForMali(const GPUInfo& gpu_info) {
 }
 
 // Only Adreno 630 with drivers newer than 444.0
-bool IsVulkanV1EnabledForAdreno(const GPUInfo& gpu_info,
-                                const VulkanPhysicalDeviceInfo& device_info) {
+bool IsVulkanV1EnabledForAdreno(
+    const GPUInfo& gpu_info,
+    const VulkanPhysicalDeviceProperties& device_properties) {
   // https://crbug.com/1246857
   if (IsDeviceBlocked(gpu_info.gpu.driver_version,
                       "324.0|331.0|334.0|378.0|415.0|420.0|444.0")) {
@@ -237,13 +238,13 @@ bool IsVulkanV1EnabledForAdreno(const GPUInfo& gpu_info,
   }
 
   // https:://crbug.com/1165783: Performance is not yet as good as GL.
-  return device_info.properties.deviceName ==
-         base::StringPiece("Adreno (TM) 630");
+  return device_properties.device_name == base::StringPiece("Adreno (TM) 630");
 }
 
 // Adreno 630+ and 2022 deQP tests.
-bool IsVulkanV2EnabledForAdreno(const GPUInfo& gpu_info,
-                                const VulkanPhysicalDeviceInfo& device_info) {
+bool IsVulkanV2EnabledForAdreno(
+    const GPUInfo& gpu_info,
+    const VulkanPhysicalDeviceProperties& device_properties) {
   std::vector<const char*> slow_gpus_for_v2 = {
       "Adreno (TM) 2??", "Adreno (TM) 3??", "Adreno (TM) 4??",
       "Adreno (TM) 5??", "Adreno (TM) 61?", "Adreno (TM) 62?",
@@ -251,7 +252,7 @@ bool IsVulkanV2EnabledForAdreno(const GPUInfo& gpu_info,
 
   const bool is_slow_gpu_for_v2 =
       base::ranges::any_of(slow_gpus_for_v2, [&](const char* pattern) {
-        return base::MatchPattern(device_info.properties.deviceName, pattern);
+        return base::MatchPattern(device_properties.device_name, pattern);
       });
 
   // Don't run vulkan for old gpus or if we are not in v2.
@@ -259,8 +260,9 @@ bool IsVulkanV2EnabledForAdreno(const GPUInfo& gpu_info,
 }
 
 // Adreno 610+ and drivers 502+.
-bool IsVulkanV3EnabledForAdreno(const GPUInfo& gpu_info,
-                                const VulkanPhysicalDeviceInfo& device_info) {
+bool IsVulkanV3EnabledForAdreno(
+    const GPUInfo& gpu_info,
+    const VulkanPhysicalDeviceProperties& device_properties) {
   std::vector<const char*> slow_gpus_for_v3 = {
       "Adreno (TM) 2??",
       "Adreno (TM) 3??",
@@ -270,7 +272,7 @@ bool IsVulkanV3EnabledForAdreno(const GPUInfo& gpu_info,
 
   const bool is_slow_gpu_for_v3 =
       base::ranges::any_of(slow_gpus_for_v3, [&](const char* pattern) {
-        return base::MatchPattern(device_info.properties.deviceName, pattern);
+        return base::MatchPattern(device_properties.device_name, pattern);
       });
 
   if (is_slow_gpu_for_v3) {
@@ -278,7 +280,7 @@ bool IsVulkanV3EnabledForAdreno(const GPUInfo& gpu_info,
   }
 
   constexpr uint32_t kMinVersion = 0x801F6000;  // 502.0
-  if (device_info.properties.driverVersion < kMinVersion) {
+  if (device_properties.driver_version < kMinVersion) {
     return false;
   }
 
@@ -294,7 +296,18 @@ bool IsVulkanV3EnabledForAdreno(const GPUInfo& gpu_info,
 }
 
 #endif
-}
+}  // namespace
+
+VulkanPhysicalDeviceProperties::VulkanPhysicalDeviceProperties() = default;
+
+VulkanPhysicalDeviceProperties::VulkanPhysicalDeviceProperties(
+    const VkPhysicalDeviceProperties& properties)
+    : driver_version(properties.driverVersion),
+      vendor_id(properties.vendorID),
+      device_id(properties.deviceID),
+      device_name(properties.deviceName) {}
+
+VulkanPhysicalDeviceProperties::~VulkanPhysicalDeviceProperties() = default;
 
 bool SubmitSignalVkSemaphores(VkQueue vk_queue,
                               const base::span<VkSemaphore>& vk_semaphores,
@@ -408,8 +421,9 @@ VkResult VulkanQueuePresentKHRHook(VkQueue queue,
   return vkQueuePresentKHR(queue, pPresentInfo);
 }
 
-bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
-                                const GPUInfo& gpu_info) {
+bool CheckVulkanCompatibilities(
+    const VulkanPhysicalDeviceProperties& device_properties,
+    const GPUInfo& gpu_info) {
 // Android uses AHB and SyncFD for interop. They are imported into GL with other
 // API.
 #if !BUILDFLAG(IS_ANDROID)
@@ -449,22 +463,17 @@ bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
     return false;
   }
 
-  if (vulkan_info.physical_devices.empty())
-    return false;
-
-  const auto& device_info = vulkan_info.physical_devices.front();
-
-  if (device_info.properties.vendorID == kVendorARM) {
+  if (device_properties.vendor_id == kVendorARM) {
     int emui_version = GetEMUIVersion();
     // TODO(crbug.com/1096222) Display problem with Huawei EMUI < 11 and Honor
     // devices with Mali GPU. The Mali driver version is < 19.0.0.
-    if (device_info.properties.driverVersion < VK_MAKE_VERSION(19, 0, 0) &&
+    if (device_properties.driver_version < VK_MAKE_VERSION(19, 0, 0) &&
         emui_version < 11) {
       return false;
     }
 
     // Remove "Mali-" prefix.
-    base::StringPiece device_name(device_info.properties.deviceName);
+    base::StringPiece device_name(device_properties.device_name);
     if (!base::StartsWith(device_name, "Mali-")) {
       LOG(ERROR) << "Unexpected device_name " << device_name;
       return false;
@@ -479,31 +488,32 @@ bool CheckVulkanCompatibilities(const VulkanInfo& vulkan_info,
     std::vector<const char*> slow_gpus = {"2??", "3??", "4??", "T???",
                                           "G31", "G51", "G52"};
     for (base::StringPiece slow_gpu : slow_gpus) {
-      if (base::MatchPattern(device_name, slow_gpu))
+      if (base::MatchPattern(device_name, slow_gpu)) {
         return false;
+      }
     }
 
     return IsVulkanV1EnabledForMali(gpu_info) ||
            IsVulkanV2EnabledForMali(gpu_info);
   }
 
-  if (device_info.properties.vendorID == kVendorQualcomm) {
-    return IsVulkanV1EnabledForAdreno(gpu_info, device_info) ||
-           IsVulkanV2EnabledForAdreno(gpu_info, device_info) ||
-           IsVulkanV3EnabledForAdreno(gpu_info, device_info);
+  if (device_properties.vendor_id == kVendorQualcomm) {
+    return IsVulkanV1EnabledForAdreno(gpu_info, device_properties) ||
+           IsVulkanV2EnabledForAdreno(gpu_info, device_properties) ||
+           IsVulkanV3EnabledForAdreno(gpu_info, device_properties);
   }
 
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
   // Imagination GPUs.
-  if (device_info.properties.vendorID == kVendorImagination) {
+  if (device_properties.vendor_id == kVendorImagination) {
     // Not allowed with V1.
     return IsVulkanV2EnabledForImagination(gpu_info);
   }
 
   // Some devices implement Vulkan using Swiftshader. We do not want those,
   // because of performance, and stability (crbug.com/1479335).
-  if (device_info.properties.vendorID == kVendorGoogle &&
-      device_info.properties.deviceID == kDeviceSwiftShader) {
+  if (device_properties.vendor_id == kVendorGoogle &&
+      device_properties.device_id == kDeviceSwiftShader) {
     return false;
   }
 

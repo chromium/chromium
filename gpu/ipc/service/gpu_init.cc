@@ -5,6 +5,7 @@
 #include "gpu/ipc/service/gpu_init.h"
 
 #include <cstdlib>
+#include <cstring>
 #include <optional>
 #include <string>
 
@@ -88,6 +89,7 @@
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"  // nogncheck
 #endif
 
 namespace gpu {
@@ -1123,6 +1125,29 @@ bool GpuInit::InitializeDawn() {
       GpuDriverBugWorkarounds(
           gpu_feature_info_.enabled_gpu_driver_bug_workarounds));
   if (dawn_context_provider_) {
+    if (dawn_context_provider_->backend_type() == wgpu::BackendType::Vulkan) {
+#if BUILDFLAG(ENABLE_VULKAN)
+      // Even though Dawn successfully initialized Vulkan we still have to check
+      // if the Vulkan driver is problematic and shouldn't be used.
+      wgpu::AdapterProperties adapter_properties;
+      wgpu::AdapterPropertiesVk adapter_properties_vk;
+      adapter_properties.nextInChain = &adapter_properties_vk;
+      dawn_context_provider_->GetAdapter().GetProperties(&adapter_properties);
+
+      VulkanPhysicalDeviceProperties device_properties;
+      device_properties.device_name = adapter_properties.name;
+      device_properties.vendor_id = adapter_properties.vendorID;
+      device_properties.device_id = adapter_properties.deviceID;
+      device_properties.driver_version = adapter_properties_vk.driverVersion;
+
+      if (!CheckVulkanCompatibilities(device_properties, gpu_info_)) {
+        // The device is not compatible with Vulkan.
+        dawn_context_provider_.reset();
+        return false;
+      }
+#endif
+    }
+
     return true;
   }
 #endif
@@ -1171,10 +1196,16 @@ bool GpuInit::InitializeVulkan() {
     return false;
   }
 
+  auto& vulkan_info =
+      vulkan_implementation_->GetVulkanInstance()->vulkan_info();
+  if (vulkan_info.physical_devices.empty()) {
+    return false;
+  }
+
+  VulkanPhysicalDeviceProperties device_properties(
+      vulkan_info.physical_devices.front().properties);
   if (!use_swiftshader && !forced_native &&
-      !CheckVulkanCompatibilities(
-          vulkan_implementation_->GetVulkanInstance()->vulkan_info(),
-          gpu_info_)) {
+      !CheckVulkanCompatibilities(device_properties, gpu_info_)) {
     vulkan_implementation_.reset();
     return false;
   }
