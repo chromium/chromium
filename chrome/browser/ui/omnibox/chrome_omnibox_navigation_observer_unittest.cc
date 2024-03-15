@@ -69,6 +69,9 @@ class ChromeOmniboxNavigationObserverTest
   static std::u16string policy_search_keyword() {
     return u"policy_search_keyword";
   }
+  static std::u16string starter_pack_keyword() {
+    return u"starter_pack_keyword";
+  }
 
  private:
   // ChromeRenderViewHostTestHarness:
@@ -107,6 +110,11 @@ void ChromeOmniboxNavigationObserverTest::SetUp() {
   policy_turl.created_by_policy =
       TemplateURLData::CreatedByPolicy::kDefaultSearchProvider;
   factory_util.model()->Add(std::make_unique<TemplateURL>(policy_turl));
+
+  TemplateURLData starter_pack_turl;
+  starter_pack_turl.SetKeyword(starter_pack_keyword());
+  starter_pack_turl.starter_pack_id = 1;
+  factory_util.model()->Add(std::make_unique<TemplateURL>(starter_pack_turl));
 }
 
 namespace {
@@ -145,7 +153,8 @@ TEST_F(ChromeOmniboxNavigationObserverTest, DeleteBrokenCustomSearchEngines) {
       {non_auto_generated_search_keyword(), 404, true},
       {default_search_keyword(), 404, true},
       {prepopulated_search_keyword(), 404, true},
-      {policy_search_keyword(), 404, true}};
+      {policy_search_keyword(), 404, true},
+      {starter_pack_keyword(), 404, true}};
 
   std::u16string query = u" text";
   for (size_t i = 0; i < cases.size(); ++i) {

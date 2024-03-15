@@ -312,8 +312,10 @@ void ChromeOmniboxNavigationObserver::On404() {
   // If there's any hint that we should keep this search engine around, don't
   // mess with it.
   if (template_url_service->ShowInDefaultList(template_url) ||
-      !template_url->safe_for_autoreplace())
+      !template_url->safe_for_autoreplace() ||
+      template_url->starter_pack_id() != 0) {
     return;
+  }
   // This custom search engine is safe to delete.
   template_url_service->Remove(template_url);
 }
