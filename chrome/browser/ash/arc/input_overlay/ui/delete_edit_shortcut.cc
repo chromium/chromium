@@ -40,7 +40,8 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
                                        ActionViewListItem* anchor_view)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::LEFT_CENTER,
-                                      views::BubbleBorder::DIALOG_SHADOW),
+                                      // TODO(b/329895423): Add shadow.
+                                      views::BubbleBorder::NO_SHADOW),
       controller_(controller) {
   set_margins(gfx::Insets(12));
   set_corner_radius(20);
