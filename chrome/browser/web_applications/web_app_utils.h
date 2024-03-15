@@ -166,13 +166,14 @@ constexpr char kAppSettingsPageEntryPointsHistogramName[] =
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
 // AppSettingsPageEntryPoint enum listing in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/webapps/enums.xml.
 enum class AppSettingsPageEntryPoint {
   kPageInfoView = 0,
   kChromeAppsPage = 1,
   kBrowserCommand = 2,
   kSubAppsInstallPrompt = 3,
-  kMaxValue = kSubAppsInstallPrompt,
+  kNotificationSettingsButton = 4,
+  kMaxValue = kNotificationSettingsButton,
 };
 
 // When user_display_mode indicates a user preference for opening in

@@ -117,6 +117,7 @@ chromium-metrics-reviews@google.com.
       label="From a browser command, currently the App Menu in the menu bar
              on Mac OS"/>
   <int value="3" label="From a sub apps install dialog"/>
+  <int value="4" label="From the settings button on a notification"/>
 </enum>
 
 <enum name="AppTypeToMenuEntry">

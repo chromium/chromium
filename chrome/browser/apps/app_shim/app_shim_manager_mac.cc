@@ -635,8 +635,9 @@ void AppShimManager::BindNotificationService(
 
 void AppShimManager::OnNotificationAction(
     mac_notifications::mojom::NotificationActionInfoPtr info) {
-  ProcessMacNotificationResponse(mac_notifications::NotificationStyle::kAppShim,
-                                 std::move(info));
+  ProcessMacNotificationResponse(
+      mac_notifications::NotificationStyle::kAppShim, std::move(info),
+      notification_action_handler_receivers_.current_context());
 }
 
 void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
@@ -739,7 +740,7 @@ void AppShimManager::OnShimProcessConnected(
   if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
       notification_action_handler) {
     notification_action_handler_receivers_.Add(
-        this, std::move(notification_action_handler));
+        this, std::move(notification_action_handler), bootstrap->GetAppId());
   }
 
   switch (bootstrap->GetLaunchType()) {

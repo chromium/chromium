@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_UTILS_H_
 #define CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_UTILS_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/services/mac_notifications/public/cpp/notification_style.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class Profile;
@@ -39,7 +41,8 @@ std::u16string CreateMacNotificationContext(
 // (click close, etc.).
 void ProcessMacNotificationResponse(
     mac_notifications::NotificationStyle notification_style,
-    mac_notifications::mojom::NotificationActionInfoPtr info);
+    mac_notifications::mojom::NotificationActionInfoPtr info,
+    std::optional<webapps::AppId> web_app_id = std::nullopt);
 
 // Returns if the given |notification| should be shown as an alert.
 bool IsAlertNotificationMac(const message_center::Notification& notification);

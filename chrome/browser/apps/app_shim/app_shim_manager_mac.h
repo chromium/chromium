@@ -492,7 +492,8 @@ class AppShimManager
   // and this class to make sure notification actions can be handled even if the
   // browser process has never tried to connect to the notification service
   // in an app shim.
-  mojo::ReceiverSet<mac_notifications::mojom::MacNotificationActionHandler>
+  mojo::ReceiverSet<mac_notifications::mojom::MacNotificationActionHandler,
+                    webapps::AppId>
       notification_action_handler_receivers_;
 
   // Set in some tests to short-circuit ShowNotificationPermissionRequest.
