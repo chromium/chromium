@@ -169,6 +169,8 @@ TEST_F(AudioRendererMixerInputTest, StartAfterStop) {
 
   mixer_input_->GetOutputDeviceInfoAsync(base::DoNothing());
   task_environment_.RunUntilIdle();
+
+  mixer_input_->Initialize(audio_parameters_, fake_callback_.get());
   mixer_input_->Start();
   mixer_input_->Stop();
 }
@@ -311,6 +313,7 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceAfterStopBeforeRestart) {
                      base::Unretained(this), &run_loop));
   run_loop.Run();
 
+  mixer_input_->Initialize(audio_parameters_, fake_callback_.get());
   mixer_input_->Start();
   mixer_input_->Stop();
 }

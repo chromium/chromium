@@ -93,10 +93,10 @@ void AudioRendererMixerInput::Stop() {
 
   if (mixer_) {
     mixer_->RemoveErrorCallback(this);
-    mixer_pool_->ReturnMixer(mixer_);
-    mixer_ = nullptr;
+    mixer_pool_->ReturnMixer(mixer_.ExtractAsDangling());
+    DCHECK(!mixer_);
   }
-
+  callback_ = nullptr;
   started_ = false;
 }
 
@@ -324,7 +324,10 @@ void AudioRendererMixerInput::OnDeviceSwitchReady(
   device_info_ = device_info;
   device_id_ = device_info.device_id();
 
+  auto callback = callback_;
   Stop();
+  callback_ = callback;
+
   if (has_mixer) {
     Start();
     if (is_playing) {
