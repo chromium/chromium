@@ -35,7 +35,7 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
-#             intel-0x3e92 intel-0x3e9b intel-0x5912 intel-0x9bc5
+#             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
 #         qualcomm qualcomm-0x41333430 ]
 # Architecture
@@ -775,6 +775,10 @@ crbug.com/1502174 [ linux nvidia-0x2184 angle-opengl passthrough ] conformance2/
 ## Linux AMD RX 5500 XT ##
 
 crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
+
+## Linux Intel UHD 770 **
+
+crbug.com/329698340 [ linux intel-0x4680 angle-opengl passthrough ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
 ####################
 # Android failures #
