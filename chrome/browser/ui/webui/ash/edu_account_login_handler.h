@@ -118,10 +118,10 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   // ListFamilyMembers fetch handlers.
   void OnListFamilyMembersResponse(
       const supervised_user::ProtoFetcherStatus& status,
-      std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+      std::unique_ptr<kids_chrome_management::ListMembersResponse>
           response);
   void OnListFamilyMembersSuccess(
-      const kids_chrome_management::ListFamilyMembersResponse& response);
+      const kids_chrome_management::ListMembersResponse& response);
   void OnListFamilyMembersFailure(
       const supervised_user::ProtoFetcherStatus& status);
 
@@ -154,7 +154,7 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   // state.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
   std::unique_ptr<supervised_user::ProtoFetcher<
-      kids_chrome_management::ListFamilyMembersResponse>>
+      kids_chrome_management::ListMembersResponse>>
       list_family_members_fetcher_;
 
   std::unique_ptr<ProfileImageFetcher> profile_image_fetcher_;

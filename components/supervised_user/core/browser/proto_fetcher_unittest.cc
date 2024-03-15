@@ -44,8 +44,6 @@ using ::kids_chrome_management::ClassifyUrlRequest;
 using ::kids_chrome_management::ClassifyUrlResponse;
 using ::kids_chrome_management::CreatePermissionRequestResponse;
 using ::kids_chrome_management::FamilyRole;
-using ::kids_chrome_management::ListFamilyMembersRequest;
-using ::kids_chrome_management::ListFamilyMembersResponse;
 using ::kids_chrome_management::PermissionRequest;
 using ::network::GetUploadData;
 using ::network::TestURLLoaderFactory;

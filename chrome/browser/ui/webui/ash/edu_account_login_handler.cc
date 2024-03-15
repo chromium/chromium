@@ -250,7 +250,7 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
 
 void EduAccountLoginHandler::OnListFamilyMembersResponse(
     const supervised_user::ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+    std::unique_ptr<kids_chrome_management::ListMembersResponse>
         response) {
   if (!status.IsOk()) {
     OnListFamilyMembersFailure(status);
@@ -261,7 +261,7 @@ void EduAccountLoginHandler::OnListFamilyMembersResponse(
 }
 
 void EduAccountLoginHandler::OnListFamilyMembersSuccess(
-    const kids_chrome_management::ListFamilyMembersResponse& response) {
+    const kids_chrome_management::ListMembersResponse& response) {
   list_family_members_fetcher_.reset();
   base::Value::List parents;
   std::map<std::string, GURL> profile_image_urls;

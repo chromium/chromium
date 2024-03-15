@@ -40,7 +40,7 @@ struct Family {
 
   Family() = delete;
   explicit Family(
-      const kids_chrome_management::ListFamilyMembersResponse& response) {
+      const kids_chrome_management::ListMembersResponse& response) {
     for (const kids_chrome_management::FamilyMember& member :
          response.members()) {
       switch (member.role()) {
@@ -121,7 +121,7 @@ void SetIsChildAccountStatusKnown(PrefService& pref_service) {
 
 void RegisterFamilyPrefs(
     PrefService& pref_service,
-    const kids_chrome_management::ListFamilyMembersResponse& response) {
+    const kids_chrome_management::ListMembersResponse& response) {
   Family family(response);
 
   if (family.GetHeadOfHousehold().has_value()) {

@@ -301,7 +301,7 @@ TEST_F(SceneControllerTest, TestReportAnIssueViewControllerWithFamilyResponse) {
                               completion:std::move(completion)];
 
   // Create the family members fetch response.
-  kids_chrome_management::ListFamilyMembersResponse
+  kids_chrome_management::ListMembersResponse
       list_family_members_response;
   supervised_user::SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(), kids_chrome_management::CHILD,

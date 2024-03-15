@@ -57,7 +57,7 @@ TEST_F(SupervisedUserPreferencesTest, ToggleParentalControls) {
 }
 
 TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
-  kids_chrome_management::ListFamilyMembersResponse
+  kids_chrome_management::ListMembersResponse
       list_family_members_response;
   supervised_user::SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(),
@@ -83,7 +83,7 @@ TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
 
 TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
   {
-    kids_chrome_management::ListFamilyMembersResponse
+    kids_chrome_management::ListMembersResponse
         list_family_members_response;
     supervised_user::SetFamilyMemberAttributesForTesting(
         list_family_members_response.add_members(),
@@ -101,7 +101,7 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
   }
 
   {
-    kids_chrome_management::ListFamilyMembersResponse
+    kids_chrome_management::ListMembersResponse
         list_family_members_response;
     supervised_user::RegisterFamilyPrefs(pref_service_,
                                          list_family_members_response);

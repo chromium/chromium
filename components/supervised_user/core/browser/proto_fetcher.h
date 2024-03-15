@@ -533,18 +533,18 @@ namespace {
 using ClassifyUrlFetcher =
     ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
 using ListFamilyMembersFetcher =
-    ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>;
+    ProtoFetcher<kids_chrome_management::ListMembersResponse>;
 using PermissionRequestFetcher =
     ProtoFetcher<kids_chrome_management::CreatePermissionRequestResponse>;
 }  // namespace
 
 // Fetches list family members. The returned fetcher is already started.
-std::unique_ptr<ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>>
+std::unique_ptr<ProtoFetcher<kids_chrome_management::ListMembersResponse>>
 FetchListFamilyMembers(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TypedProtoFetcher<
-        kids_chrome_management::ListFamilyMembersResponse>::Callback callback,
+        kids_chrome_management::ListMembersResponse>::Callback callback,
     const FetcherConfig& config = kListFamilyMembersConfig);
 
 // Creates a disposable instance of an access token consumer that will classify

@@ -18,7 +18,7 @@ namespace supervised_user {
 // Register preferences that describe parental controls.
 void RegisterFamilyPrefs(
     PrefService& pref_service,
-    const kids_chrome_management::ListFamilyMembersResponse& response);
+    const kids_chrome_management::ListMembersResponse& response);
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Set preferences that describe parental controls.

@@ -44,10 +44,10 @@ class FamilyInfoFeedbackSource {
 
   void OnResponse(
       const supervised_user::ProtoFetcherStatus& status,
-      std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+      std::unique_ptr<kids_chrome_management::ListMembersResponse>
           response);
   void OnSuccess(
-      const kids_chrome_management::ListFamilyMembersResponse& response);
+      const kids_chrome_management::ListMembersResponse& response);
   void OnFailure(const supervised_user::ProtoFetcherStatus& status);
 
   // Cleans up following the call to ListFamilyMembers
@@ -55,7 +55,7 @@ class FamilyInfoFeedbackSource {
 
   raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
   std::unique_ptr<supervised_user::ProtoFetcher<
-      kids_chrome_management::ListFamilyMembersResponse>>
+      kids_chrome_management::ListMembersResponse>>
       list_family_members_fetcher_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

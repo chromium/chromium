@@ -36,7 +36,7 @@ TEST_F(ListFamilyMembersServiceTest, FamilyFlowsFromFetcherToPreferences) {
   // the last step with `hoh_username`.
   std::string hoh_username;
   auto extract_hoh_display_name_from_response = base::BindLambdaForTesting(
-      [&](const kids_chrome_management::ListFamilyMembersResponse& response) {
+      [&](const kids_chrome_management::ListMembersResponse& response) {
         ASSERT_FALSE(response.members().empty());
         ASSERT_EQ("", hoh_username);
         hoh_username = response.members().at(0).profile().display_name();
@@ -58,7 +58,7 @@ TEST_F(ListFamilyMembersServiceTest, FamilyFlowsFromFetcherToPreferences) {
   ASSERT_NE(nullptr, pending_request);
 
   // Create and deliver the list family response.
-  kids_chrome_management::ListFamilyMembersResponse
+  kids_chrome_management::ListMembersResponse
       list_family_members_response;
   supervised_user::SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(),

@@ -48,8 +48,8 @@ constexpr char kFakeParentGaiaId2[] = "anotherObfuscatedGaiaId";
 constexpr char kFakeParentCredential[] = "someParentCredential";
 constexpr char kFakeAccessToken[] = "someAccessToken";
 
-kids_chrome_management::ListFamilyMembersResponse GetFakeFamilyMembers() {
-  kids_chrome_management::ListFamilyMembersResponse members;
+kids_chrome_management::ListMembersResponse GetFakeFamilyMembers() {
+  kids_chrome_management::ListMembersResponse members;
 
   kids_chrome_management::FamilyMember* homer = members.add_members();
   homer->set_role(kids_chrome_management::HEAD_OF_HOUSEHOLD);

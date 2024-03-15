@@ -60,7 +60,7 @@ void ListFamilyMembersService::Cancel() {
 
 void ListFamilyMembersService::OnResponse(
     const ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+    std::unique_ptr<kids_chrome_management::ListMembersResponse>
         response) {
   // Built-in mechanism for retrying will take care of internal retrying, but
   // the outer-loop of daily refetches is still implemented here. OnResponse

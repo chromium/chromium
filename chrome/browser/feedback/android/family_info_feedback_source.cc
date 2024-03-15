@@ -57,7 +57,7 @@ void FamilyInfoFeedbackSource::GetFamilyMembers() {
 
 void FamilyInfoFeedbackSource::OnResponse(
     const supervised_user::ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+    std::unique_ptr<kids_chrome_management::ListMembersResponse>
         response) {
   if (!status.IsOk()) {
     OnFailure(status);
@@ -68,7 +68,7 @@ void FamilyInfoFeedbackSource::OnResponse(
 }
 
 void FamilyInfoFeedbackSource::OnSuccess(
-    const kids_chrome_management::ListFamilyMembersResponse& response) {
+    const kids_chrome_management::ListMembersResponse& response) {
   std::string primary_account_gaia =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;

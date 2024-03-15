@@ -91,7 +91,7 @@ KidsManagementApiServerMock::ListFamilyMembers(
     return nullptr;
   }
 
-  kids_chrome_management::ListFamilyMembersResponse response;
+  kids_chrome_management::ListMembersResponse response;
   supervised_user::SetFamilyMemberAttributesForTesting(
       response.add_members(), kids_chrome_management::HEAD_OF_HOUSEHOLD,
       "marge@gmail.com");

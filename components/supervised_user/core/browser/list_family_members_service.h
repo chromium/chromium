@@ -31,7 +31,7 @@ namespace supervised_user {
 class ListFamilyMembersService : public KeyedService {
  public:
   using SuccessfulFetchCallback =
-      void(const kids_chrome_management::ListFamilyMembersResponse&);
+      void(const kids_chrome_management::ListMembersResponse&);
 
   ListFamilyMembersService() = delete;
   ListFamilyMembersService(
@@ -52,10 +52,10 @@ class ListFamilyMembersService : public KeyedService {
  private:
   void OnResponse(
       const ProtoFetcherStatus& status,
-      std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+      std::unique_ptr<kids_chrome_management::ListMembersResponse>
           response);
   void OnSuccess(
-      const kids_chrome_management::ListFamilyMembersResponse& response);
+      const kids_chrome_management::ListMembersResponse& response);
   void OnFailure(const ProtoFetcherStatus& status);
   void ScheduleNextUpdate(base::TimeDelta delay);
 
@@ -69,7 +69,7 @@ class ListFamilyMembersService : public KeyedService {
 
   // Attributes.
   std::unique_ptr<
-      ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>>
+      ProtoFetcher<kids_chrome_management::ListMembersResponse>>
       fetcher_;
   base::OneShotTimer timer_;
 };

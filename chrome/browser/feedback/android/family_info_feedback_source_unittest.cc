@@ -43,10 +43,10 @@ const char kFeedbackTagFamilyMemberRole[] = "Family_Member_Role";
 const char kFeedbackTagParentalControlSitesChild[] =
     "Parental_Control_Sites_Child";
 
-kids_chrome_management::ListFamilyMembersResponse CreateFamilyWithOneMember(
+kids_chrome_management::ListMembersResponse CreateFamilyWithOneMember(
     const std::string& gaia_id,
     kids_chrome_management::FamilyRole role) {
-  kids_chrome_management::ListFamilyMembersResponse response;
+  kids_chrome_management::ListMembersResponse response;
   kids_chrome_management::FamilyMember* member = response.add_members();
 
   member->set_user_id(gaia_id);
@@ -100,7 +100,7 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
 
   void OnListFamilyMembersSuccess(
       base::WeakPtr<FamilyInfoFeedbackSource> feedback_source,
-      const kids_chrome_management::ListFamilyMembersResponse& members) {
+      const kids_chrome_management::ListMembersResponse& members) {
     feedback_source->OnSuccess(members);
   }
 
@@ -144,7 +144,7 @@ TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
   supervised_user_service_->GetURLFilter()->SetDefaultFilteringBehavior(
       GetParam());
 
-  kids_chrome_management::ListFamilyMembersResponse members =
+  kids_chrome_management::ListMembersResponse members =
       CreateFamilyWithOneMember(primary_account.gaia, role_);
 
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =
@@ -223,7 +223,7 @@ class FamilyInfoFeedbackSourceTest
 
   void OnListFamilyMembersSuccess(
       base::WeakPtr<FamilyInfoFeedbackSource> feedback_source,
-      const kids_chrome_management::ListFamilyMembersResponse& members) {
+      const kids_chrome_management::ListMembersResponse& members) {
     feedback_source->OnSuccess(members);
   }
 
@@ -275,7 +275,7 @@ TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
           kTestEmail, signin::ConsentLevel::kSignin);
 
   kids_chrome_management::FamilyRole role = GetParam();
-  kids_chrome_management::ListFamilyMembersResponse members =
+  kids_chrome_management::ListMembersResponse members =
       CreateFamilyWithOneMember(primary_account.gaia, role);
 
   if (is_child()) {
@@ -318,7 +318,7 @@ TEST_F(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedInNoFamily) {
 
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =
       CreateFamilyInfoFeedbackSource();
-  kids_chrome_management::ListFamilyMembersResponse members;
+  kids_chrome_management::ListMembersResponse members;
   OnListFamilyMembersSuccess(feedback_source, members);
 
   EXPECT_EQ("", GetFeedbackValue());
@@ -339,7 +339,7 @@ TEST_F(FamilyInfoFeedbackSourceTest, GetFamilyMembersOnFailure) {
 }
 
 TEST_F(FamilyInfoFeedbackSourceTest, FeedbackSourceDestroyedOnCompletion) {
-  kids_chrome_management::ListFamilyMembersResponse members;
+  kids_chrome_management::ListMembersResponse members;
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =
       CreateFamilyInfoFeedbackSource();
   OnListFamilyMembersSuccess(feedback_source, members);

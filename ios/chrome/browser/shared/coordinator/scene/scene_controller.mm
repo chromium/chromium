@@ -312,7 +312,7 @@ void OnListFamilyMembersResponse(
     const std::string& primary_account_gaia,
     UserFeedbackData* data,
     const supervised_user::ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+    std::unique_ptr<kids_chrome_management::ListMembersResponse>
         response) {
   if (!status.IsOk()) {
     return;
@@ -363,7 +363,7 @@ void OnListFamilyMembersResponse(
 
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ProtoFetcher<
-      kids_chrome_management::ListFamilyMembersResponse>>
+      kids_chrome_management::ListMembersResponse>>
       _family_members_fetcher;
 }
 

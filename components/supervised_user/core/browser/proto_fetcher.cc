@@ -475,9 +475,9 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
     ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config) {
   std::unique_ptr<ListFamilyMembersFetcher> fetcher =
-      CreateFetcher<kids_chrome_management::ListFamilyMembersResponse>(
+      CreateFetcher<kids_chrome_management::ListMembersResponse>(
           identity_manager, url_loader_factory,
-          kids_chrome_management::ListFamilyMembersRequest(), config);
+          kids_chrome_management::ListMembersRequest(), config);
   fetcher->Start(std::move(callback));
   return fetcher;
 }
