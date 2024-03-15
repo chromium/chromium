@@ -10,8 +10,10 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.payments.ui.PaymentUiService;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.EditableOption;
@@ -383,7 +385,9 @@ public class ChromePaymentRequestService
                         selectedShippingOption,
                         mPaymentUiService.getSelectedContact(),
                         selectedPaymentApp,
-                        mSpec.getPaymentOptions());
+                        mSpec.getPaymentOptions(),
+                        PersonalDataManagerFactory.getForProfile(
+                                Profile.fromWebContents(mWebContents)));
         mPaymentRequestService.invokePaymentApp(selectedPaymentApp, paymentResponseHelper);
         return true;
     }

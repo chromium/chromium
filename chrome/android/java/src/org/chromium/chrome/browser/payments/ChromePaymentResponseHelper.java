@@ -35,19 +35,22 @@ public class ChromePaymentResponseHelper
     private PayerData mPayerDataFromPaymentApp;
 
     /**
-     * Builds a helper to contruct and fill a PaymentResponse.
+     * Builds a helper to construct and fill a PaymentResponse.
+     *
      * @param selectedShippingAddress The shipping address picked by the user.
-     * @param selectedShippingOption  The shipping option picked by the user.
-     * @param selectedContact         The contact info picked by the user, can be null.
-     * @param selectedPaymentApp      The payment app picked by the user.
-     * @param paymentOptions          The paymentOptions of the corresponding payment request.
+     * @param selectedShippingOption The shipping option picked by the user.
+     * @param selectedContact The contact info picked by the user, can be null.
+     * @param selectedPaymentApp The payment app picked by the user.
+     * @param paymentOptions The paymentOptions of the corresponding payment request.
+     * @param personalDataManager The context appropriate PersonalDataManager reference.
      */
     public ChromePaymentResponseHelper(
             EditableOption selectedShippingAddress,
             EditableOption selectedShippingOption,
             @Nullable AutofillContact selectedContact,
             PaymentApp selectedPaymentApp,
-            PaymentOptions paymentOptions) {
+            PaymentOptions paymentOptions,
+            PersonalDataManager personalDataManager) {
         mPaymentResponse = new PaymentResponse();
         mPaymentResponse.payer = new PayerDetail();
 
@@ -76,8 +79,8 @@ public class ChromePaymentResponseHelper
             assert mSelectedShippingAddress.isComplete();
 
             // Record the use of the profile.
-            PersonalDataManager.getInstance()
-                    .recordAndLogProfileUse(mSelectedShippingAddress.getProfile().getGUID());
+            personalDataManager.recordAndLogProfileUse(
+                    mSelectedShippingAddress.getProfile().getGUID());
 
             mPaymentResponse.shippingAddress = mSelectedShippingAddress.toPaymentAddress();
 
