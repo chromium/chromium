@@ -1296,6 +1296,52 @@ TEST_F(BookmarkModelTest, MoveFolder) {
   matches.clear();
 }
 
+TEST_F(BookmarkModelTest, MoveWithUuidCollision) {
+  model_->CreateAccountPermanentFolders();
+  const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
+  const BookmarkNode* account_bookmark_bar_node =
+      model_->account_bookmark_bar_node();
+
+  ASSERT_NE(nullptr, account_bookmark_bar_node);
+
+  // Create two folders with the same UUID. One is local and the other one is an
+  // account bookmark, so using the same UUID is allowed.
+  const BookmarkNode* folder1 =
+      model_->AddFolder(bookmark_bar_node, 0, u"local folder");
+  const base::Uuid kInitialUuid = folder1->uuid();
+  const BookmarkNode* folder2 =
+      model_->AddFolder(account_bookmark_bar_node, 0, u"account folder",
+                        /*meta_info=*/nullptr,
+                        /*creation_time=*/std::nullopt, kInitialUuid);
+
+  ClearCounts();
+
+  model_->Move(folder1, account_bookmark_bar_node, 0);
+
+  // Should update the hierarchy.
+  AssertObserverCount(0, 1, 0, 0, 0, 0, 0, 0, 0);
+  observer_details_.ExpectEquals(bookmark_bar_node, account_bookmark_bar_node,
+                                 0, 0, false);
+  EXPECT_EQ(bookmark_bar_node->children().size(), 0u);
+  EXPECT_EQ(account_bookmark_bar_node->children().size(), 2u);
+
+  // The UUID should have changed for the moved folder.
+  EXPECT_NE(folder1->uuid(), kInitialUuid);
+
+  // The other folder involved in the collision should continue having the
+  // original UUID.
+  EXPECT_EQ(folder2->uuid(), kInitialUuid);
+
+  EXPECT_EQ(nullptr,
+            model_->GetNodeByUuid(
+                kInitialUuid, NodeTypeForUuidLookup::kLocalOrSyncableNodes));
+  EXPECT_EQ(folder2, model_->GetNodeByUuid(
+                         kInitialUuid, NodeTypeForUuidLookup::kAccountNodes));
+  EXPECT_EQ(folder1,
+            model_->GetNodeByUuid(folder1->uuid(),
+                                  NodeTypeForUuidLookup::kAccountNodes));
+}
+
 TEST_F(BookmarkModelTest, Copy) {
   const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
   static const std::string model_string("a 1:[ b c ] d 2:[ e f g ] h ");

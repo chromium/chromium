@@ -2399,18 +2399,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksWithAccountStorageSyncTest,
     ShouldExposeDuplicatedBookmarksAfterTurningSyncOffAndSignIn) {
+  const std::string kTitle1 = "Title 1";
+  const std::string kTitle2 = "Title 2";
+
   ASSERT_TRUE(SetupClients());
 
   BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
 
-  // Create a local bookmark folder while the user is signed out and sync is
-  // off.
+  // Create two local folders while the user is signed out and sync is off.
   AddFolder(kSingleProfileIndex, /*parent=*/model->bookmark_bar_node(),
-            /*index=*/0, kBookmarkTitle);
+            /*index=*/0, kTitle1);
+  AddFolder(kSingleProfileIndex, /*parent=*/model->bookmark_bar_node(),
+            /*index=*/1, kTitle2);
 
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  {{kBookmarkTitle, /*url=*/GURL()}},
+                  {{kTitle1, /*url=*/GURL()}, {kTitle2, /*url=*/GURL()}},
                   /*cryptographer=*/nullptr)
                   .Wait());
   ASSERT_THAT(model->account_bookmark_bar_node(), IsNull());
@@ -2418,8 +2422,9 @@ IN_PROC_BROWSER_TEST_F(
   // Turn Sync off by removing the primary account.
   GetClient(0)->SignOutPrimaryAccount();
 
-  ASSERT_THAT(model->bookmark_bar_node()->children(),
-              ElementsAre(IsFolderWithTitle(kBookmarkTitle)));
+  ASSERT_THAT(
+      model->bookmark_bar_node()->children(),
+      ElementsAre(IsFolderWithTitle(kTitle1), IsFolderWithTitle(kTitle2)));
 
   // Sign in again, but don't actually enable Sync-the-feature (so that Sync
   // will start in transport mode).
@@ -2441,11 +2446,35 @@ IN_PROC_BROWSER_TEST_F(
                   .Has(syncer::BOOKMARKS));
   ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
 
-  // The folder should now be duplicated in local and account bookmarks.
-  EXPECT_THAT(model->bookmark_bar_node()->children(),
-              ElementsAre(IsFolderWithTitle(kBookmarkTitle)));
-  EXPECT_THAT(model->account_bookmark_bar_node()->children(),
-              ElementsAre(IsFolderWithTitle(kBookmarkTitle)));
+  // The folders should now be duplicated in local and account bookmarks.
+  EXPECT_THAT(
+      model->bookmark_bar_node()->children(),
+      ElementsAre(IsFolderWithTitle(kTitle1), IsFolderWithTitle(kTitle2)));
+  EXPECT_THAT(
+      model->account_bookmark_bar_node()->children(),
+      ElementsAre(IsFolderWithTitle(kTitle1), IsFolderWithTitle(kTitle2)));
+
+  // Move one folder individually from local to account, involving a UUID
+  // collision.
+  ASSERT_EQ(2u, model->bookmark_bar_node()->children().size());
+  ASSERT_EQ(model->bookmark_bar_node()->children()[0]->uuid(),
+            model->account_bookmark_bar_node()->children()[0]->uuid());
+  model->Move(model->bookmark_bar_node()->children()[0].get(),
+              /*new_parent=*/model->account_bookmark_bar_node(),
+              /*index=*/model->account_bookmark_bar_node()->children().size());
+  EXPECT_THAT(
+      model->account_bookmark_bar_node()->children(),
+      ElementsAre(IsFolderWithTitle(kTitle1), IsFolderWithTitle(kTitle2),
+                  IsFolderWithTitle(kTitle1)));
+
+  // Move one folder individually from account to local, involving a UUID
+  // collision.
+  ASSERT_EQ(1u, model->bookmark_bar_node()->children().size());
+  ASSERT_EQ(model->bookmark_bar_node()->children()[0]->uuid(),
+            model->account_bookmark_bar_node()->children()[1]->uuid());
+  model->Move(model->account_bookmark_bar_node()->children()[1].get(),
+              /*new_parent=*/model->bookmark_bar_node(),
+              /*index=*/model->bookmark_bar_node()->children().size());
 }
 
 // Android doesn't currently support PRE_ tests, see crbug.com/1117345.

@@ -482,9 +482,15 @@ void BookmarkModel::Move(const BookmarkNode* node,
 
   if (old_type_for_uuid_lookup != new_type_for_uuid_lookup) {
     uuid_index_[old_type_for_uuid_lookup].erase(node);
-    bool uuid_is_unique =
-        uuid_index_[new_type_for_uuid_lookup].insert(node).second;
-    DUMP_WILL_BE_CHECK(uuid_is_unique);
+
+    bool success = uuid_index_[new_type_for_uuid_lookup].insert(node).second;
+
+    if (!success) {
+      // It is possible that the UUID exists in the new index. In this case, to
+      // avoid the collision, it is necessary to assign a new UUID.
+      AsMutable(node)->SetNewRandomUuid();
+      CHECK(uuid_index_[new_type_for_uuid_lookup].insert(node).second);
+    }
   }
 
   BookmarkNode* mutable_old_parent = AsMutable(old_parent);
