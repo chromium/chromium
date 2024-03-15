@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -255,8 +254,6 @@ class CONTENT_EXPORT TrustedSignalsRequestManager {
 
   mojo::Remote<auction_worklet::mojom::AuctionNetworkEventsHandler>
       auction_network_events_handler_;
-
-  base::WeakPtrFactory<TrustedSignalsRequestManager> weak_ptr_factory{this};
 };
 
 }  // namespace auction_worklet
