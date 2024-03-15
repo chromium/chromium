@@ -206,10 +206,6 @@ export class KeyboardRemapModifierKeyRowElement extends
         name: this.i18n('perDeviceKeyboardKeyAssistant'),
       },
       {
-        value: ModifierKey.kRightAlt,
-        name: this.i18n('perDeviceKeyboardKeyRightAlt'),
-      },
-      {
         value: ModifierKey.kVoid,
         name: this.i18n('perDeviceKeyboardKeyDisabled'),
       },
