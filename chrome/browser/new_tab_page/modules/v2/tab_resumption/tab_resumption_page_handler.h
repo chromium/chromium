@@ -62,10 +62,9 @@ class TabResumptionPageHandler
   std::vector<history::mojom::TabPtr> GetForeignTabs();
 
   // Callback to return annotated visits for a set of url results.
-  void OnGetMostRecentVisitForEachURLComplete(
-      std::vector<history::mojom::TabPtr> tabs,
-      GetTabsCallback callback,
-      std::map<GURL, history::VisitRow> visit_pairs);
+  void OnQueryURLsComplete(std::vector<history::mojom::TabPtr> tabs,
+                           GetTabsCallback callback,
+                           std::vector<history::QueryURLResult> results);
 
   // Callback to return the tabs from the associated annotated visits based
   // on if their visibility scores pass a visibility threshold.

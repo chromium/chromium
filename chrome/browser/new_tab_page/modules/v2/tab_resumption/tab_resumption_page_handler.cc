@@ -5,15 +5,13 @@
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
 
 #include <stddef.h>
-#include <memory>
+
 #include <set>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_util.h"
@@ -161,13 +159,15 @@ TabResumptionPageHandler::TabResumptionPageHandler(
 
 TabResumptionPageHandler::~TabResumptionPageHandler() = default;
 
-void TabResumptionPageHandler::OnGetMostRecentVisitForEachURLComplete(
+void TabResumptionPageHandler::OnQueryURLsComplete(
     std::vector<history::mojom::TabPtr> tabs,
     GetTabsCallback callback,
-    std::map<GURL, history::VisitRow> visit_pairs) {
+    std::vector<history::QueryURLResult> results) {
   history::VisitVector visit_rows;
-  for (const auto& visit : visit_pairs) {
-    visit_rows.push_back(visit.second);
+  for (auto result : results) {
+    for (auto visit : result.visits) {
+      visit_rows.push_back(visit);
+    }
   }
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
@@ -221,6 +221,8 @@ void TabResumptionPageHandler::OnAnnotatedVisits(
     return;
   }
 
+  std::sort(scored_tabs.begin(), scored_tabs.end(), CompareTabsByTime);
+
   std::move(callback).Run(std::move(scored_tabs));
 }
 
@@ -244,9 +246,6 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   }
 
   auto tabs_mojom = GetForeignTabs();
-  // Sort tabs now so when we check for matching urls later the most recent
-  // is already first.
-  std::sort(tabs_mojom.begin(), tabs_mojom.end(), CompareTabsByTime);
   std::vector<GURL> urls;
   for (const auto& tab : tabs_mojom) {
     urls.push_back(tab->url);
@@ -259,12 +258,11 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
 
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
-  history_service->GetMostRecentVisitForEachURL(
-      urls,
-      base::BindOnce(
-          &TabResumptionPageHandler::OnGetMostRecentVisitForEachURLComplete,
-          weak_ptr_factory_.GetWeakPtr(), std::move(tabs_mojom),
-          std::move(callback)),
+  history_service->QueryURLs(
+      urls, /*want_visits=*/true,
+      base::BindOnce(&TabResumptionPageHandler::OnQueryURLsComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(tabs_mojom),
+                     std::move(callback)),
       &task_tracker_);
 }
 
