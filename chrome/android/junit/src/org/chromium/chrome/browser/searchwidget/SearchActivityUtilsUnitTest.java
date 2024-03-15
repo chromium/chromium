@@ -47,9 +47,13 @@ public class SearchActivityUtilsUnitTest {
 
         SearchActivityClient client = new SearchActivityUtils();
         for (int origin : origins) {
+            String action =
+                    String.format(
+                            SearchActivityUtils.ACTION_SEARCH_FORMAT, origin, SearchType.TEXT);
+
             // null URL
             var intent = client.createIntent(mActivity, origin, null, SearchType.TEXT);
-            assertEquals(SearchActivityUtils.ACTION_TEXT_SEARCH, intent.getAction());
+            assertEquals(action, intent.getAction());
             assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
             assertEquals(SearchType.TEXT, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
@@ -58,7 +62,7 @@ public class SearchActivityUtilsUnitTest {
             intent =
                     client.createIntent(
                             mActivity, origin, new GURL("http://abc.xyz"), SearchType.TEXT);
-            assertEquals(SearchActivityUtils.ACTION_TEXT_SEARCH, intent.getAction());
+            assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
                     intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
@@ -79,9 +83,13 @@ public class SearchActivityUtilsUnitTest {
 
         SearchActivityClient client = new SearchActivityUtils();
         for (int origin : origins) {
+            String action =
+                    String.format(
+                            SearchActivityUtils.ACTION_SEARCH_FORMAT, origin, SearchType.VOICE);
+
             // null URL
             var intent = client.createIntent(mActivity, origin, null, SearchType.VOICE);
-            assertEquals(SearchActivityUtils.ACTION_VOICE_SEARCH, intent.getAction());
+            assertEquals(action, intent.getAction());
             assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
             assertEquals(SearchType.VOICE, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
@@ -90,7 +98,7 @@ public class SearchActivityUtilsUnitTest {
             intent =
                     client.createIntent(
                             mActivity, origin, new GURL("http://abc.xyz"), SearchType.VOICE);
-            assertEquals(SearchActivityUtils.ACTION_VOICE_SEARCH, intent.getAction());
+            assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
                     intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
@@ -111,9 +119,13 @@ public class SearchActivityUtilsUnitTest {
 
         SearchActivityClient client = new SearchActivityUtils();
         for (int origin : origins) {
+            String action =
+                    String.format(
+                            SearchActivityUtils.ACTION_SEARCH_FORMAT, origin, SearchType.LENS);
+
             // null URL
             var intent = client.createIntent(mActivity, origin, null, SearchType.LENS);
-            assertEquals(SearchActivityUtils.ACTION_LENS_SEARCH, intent.getAction());
+            assertEquals(action, intent.getAction());
             assertNull(intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));
             assertEquals(SearchType.LENS, SearchActivityUtils.getIntentSearchType(intent));
             assertEquals(origin, SearchActivityUtils.getIntentOrigin(intent));
@@ -122,7 +134,7 @@ public class SearchActivityUtilsUnitTest {
             intent =
                     client.createIntent(
                             mActivity, origin, new GURL("http://abc.xyz"), SearchType.LENS);
-            assertEquals(SearchActivityUtils.ACTION_LENS_SEARCH, intent.getAction());
+            assertEquals(action, intent.getAction());
             assertEquals(
                     "http://abc.xyz/",
                     intent.getStringExtra(SearchActivityUtils.EXTRA_CURRENT_URL));

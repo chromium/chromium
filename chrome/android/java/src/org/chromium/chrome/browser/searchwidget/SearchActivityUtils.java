@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ComponentName;
@@ -33,16 +34,8 @@ public class SearchActivityUtils implements SearchActivityClient {
     // Responsibility to define values for PendingIntents could be offset to Caller; meantime we
     // offer complimentary default values.
     @VisibleForTesting
-    /* package */ static final String ACTION_TEXT_SEARCH =
-            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_TEXT_SEARCH";
-
-    @VisibleForTesting
-    /* package */ static final String ACTION_VOICE_SEARCH =
-            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_VOICE_SEARCH";
-
-    @VisibleForTesting
-    /* package */ static final String ACTION_LENS_SEARCH =
-            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_LENS_SEARCH";
+    /* package */ static final String ACTION_SEARCH_FORMAT =
+            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_SEARCH:%d:%d";
 
     @Override
     public Intent createIntent(
@@ -50,12 +43,11 @@ public class SearchActivityUtils implements SearchActivityClient {
             @IntentOrigin int origin,
             @Nullable GURL url,
             @SearchType int searchType) {
-        String action =
-                switch (searchType) {
-                    case SearchType.VOICE -> ACTION_VOICE_SEARCH;
-                    case SearchType.LENS -> ACTION_LENS_SEARCH;
-                    default -> ACTION_TEXT_SEARCH;
-                };
+        // Ensure `action` is unique especially across different Widget implementations.
+        // Otherwise, a QuickActionSearchWidget action may override the SearchActivity widget,
+        // triggering functionality we might not want to activate.
+        @SuppressLint("DefaultLocale")
+        String action = String.format(ACTION_SEARCH_FORMAT, origin, searchType);
 
         var intent = buildTrustedIntent(context, action);
         intent.putExtra(EXTRA_ORIGIN, origin)
@@ -81,8 +73,14 @@ public class SearchActivityUtils implements SearchActivityClient {
             @Nullable Activity activity, @NonNull GURL currentUrl) {
         if (activity == null) return;
 
+        @SuppressLint("DefaultLocale")
         var intent =
-                buildTrustedIntent(activity, ACTION_TEXT_SEARCH)
+                buildTrustedIntent(
+                                activity,
+                                String.format(
+                                        ACTION_SEARCH_FORMAT,
+                                        IntentOrigin.CUSTOM_TAB,
+                                        SearchType.TEXT))
                         .putExtra(EXTRA_CURRENT_URL, currentUrl.getSpec())
                         .putExtra(EXTRA_ORIGIN, IntentOrigin.CUSTOM_TAB)
                         .putExtra(EXTRA_SEARCH_TYPE, SearchType.TEXT)
