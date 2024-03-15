@@ -46,7 +46,8 @@ class MockComposeClient : public compose::ComposeClient {
               (override));
   MOCK_METHOD(bool,
               ShouldTriggerPopup,
-              (const autofill::FormFieldData& trigger_field),
+              (const autofill::FormFieldData& trigger_field,
+               autofill::AutofillSuggestionTriggerSource trigger_source),
               (override));
   MOCK_METHOD(compose::PageUkmTracker*, getPageUkmTracker, (), (override));
 };

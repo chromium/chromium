@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_COMPOSE_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_COMPOSE_DELEGATE_H_
 
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -31,7 +32,9 @@ class AutofillComposeDelegate {
     kContextMenu,
   };
   // Returns whether the compose popup is available for this `trigger_field`.
-  virtual bool ShouldOfferComposePopup(const FormFieldData& trigger_field) = 0;
+  virtual bool ShouldOfferComposePopup(
+      const FormFieldData& trigger_field,
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Returns whether the `trigger_field_id` has an existing state saved for
   // `trigger_field_id`. Saved state allows the user to return to a field and

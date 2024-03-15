@@ -24,7 +24,8 @@ class ComposeManagerImpl : public ComposeManager {
 
   // AutofillComposeDelegate
   bool ShouldOfferComposePopup(
-      const autofill::FormFieldData& trigger_field) override;
+      const autofill::FormFieldData& trigger_field,
+      autofill::AutofillSuggestionTriggerSource trigger_source) override;
   bool HasSavedState(const autofill::FieldGlobalId& trigger_field_id) override;
   void OpenCompose(autofill::AutofillDriver& driver,
                    autofill::FormGlobalId form_id,

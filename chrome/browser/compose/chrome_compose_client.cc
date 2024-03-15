@@ -485,7 +485,8 @@ compose::PageUkmTracker* ChromeComposeClient::getPageUkmTracker() {
 }
 
 bool ChromeComposeClient::ShouldTriggerPopup(
-    const autofill::FormFieldData& form_field_data) {
+    const autofill::FormFieldData& form_field_data,
+    autofill::AutofillSuggestionTriggerSource trigger_source) {
   // Saved state notification needs the active field set earlier here at nudge
   // triggering, rather than later when the compose dialog is shown so that we
   // can know if the user focused on a different field.
@@ -503,7 +504,8 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   return compose_enabling_->ShouldTriggerPopup(
       form_field_data.autocomplete_attribute, profile_, translate_manager,
       HasSession(form_field_data.global_id()),
-      top_level_frame->GetLastCommittedOrigin(), form_field_data.origin, url);
+      top_level_frame->GetLastCommittedOrigin(), form_field_data.origin, url,
+      trigger_source);
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(

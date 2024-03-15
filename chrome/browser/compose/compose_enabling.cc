@@ -189,8 +189,18 @@ bool ComposeEnabling::ShouldTriggerPopup(
     bool ongoing_session,
     const url::Origin& top_level_frame_origin,
     const url::Origin& element_frame_origin,
-    GURL url) {
-  if (!base::FeatureList::IsEnabled(compose::features::kEnableComposeNudge)) {
+    GURL url,
+    autofill::AutofillSuggestionTriggerSource trigger_source) {
+  if (trigger_source ==
+          autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus &&
+      !base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeSavedStateNotification)) {
+    return false;
+  }
+
+  if (trigger_source !=
+          autofill::AutofillSuggestionTriggerSource::kComposeDialogLostFocus &&
+      !base::FeatureList::IsEnabled(compose::features::kEnableComposeNudge)) {
     return false;
   }
 

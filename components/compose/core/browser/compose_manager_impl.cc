@@ -50,8 +50,9 @@ ComposeManagerImpl::ComposeManagerImpl(ComposeClient* client)
 ComposeManagerImpl::~ComposeManagerImpl() = default;
 
 bool ComposeManagerImpl::ShouldOfferComposePopup(
-    const autofill::FormFieldData& trigger_field) {
-  return client_->ShouldTriggerPopup(trigger_field);
+    const autofill::FormFieldData& trigger_field,
+    autofill::AutofillSuggestionTriggerSource trigger_source) {
+  return client_->ShouldTriggerPopup(trigger_field, trigger_source);
 }
 
 bool ComposeManagerImpl::HasSavedState(

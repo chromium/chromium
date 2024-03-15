@@ -6888,9 +6888,11 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsOnFocusWithoutClick) {
 
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .Times(0);
-  EXPECT_CALL(compose_delegate,
-              ShouldOfferComposePopup(Property(&FormFieldData::global_id,
-                                               Eq(form.fields[3].global_id()))))
+  EXPECT_CALL(compose_delegate, ShouldOfferComposePopup(
+                                    Property(&FormFieldData::global_id,
+                                             Eq(form.fields[3].global_id())),
+                                    autofill::AutofillSuggestionTriggerSource::
+                                        kTextareaFocusedWithoutClick))
       .WillOnce(Return(true));
   GetAutofillSuggestions(
       form, form.fields[3],
@@ -6915,9 +6917,11 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
 
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
       .Times(0);
-  EXPECT_CALL(compose_delegate,
-              ShouldOfferComposePopup(Property(&FormFieldData::global_id,
-                                               Eq(form.fields[0].global_id()))))
+  EXPECT_CALL(
+      compose_delegate,
+      ShouldOfferComposePopup(
+          Property(&FormFieldData::global_id, Eq(form.fields[0].global_id())),
+          autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange))
       .WillOnce(Return(true));
   EXPECT_CALL(compose_delegate, HasSavedState(form.fields[0].global_id()))
       .WillOnce(Return(true));

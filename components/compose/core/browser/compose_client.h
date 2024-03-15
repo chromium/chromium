@@ -42,7 +42,8 @@ class ComposeClient {
 
   // Checks if the popup (aka nudge) should be presented for the provided field.
   virtual bool ShouldTriggerPopup(
-      const autofill::FormFieldData& trigger_field) = 0;
+      const autofill::FormFieldData& trigger_field,
+      autofill::AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Getter for the PageUkmTracker instance for the currently loaded page.
   virtual PageUkmTracker* getPageUkmTracker() = 0;

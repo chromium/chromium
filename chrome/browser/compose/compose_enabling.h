@@ -14,6 +14,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -52,13 +53,15 @@ class ComposeEnabling {
   static ScopedOverride ScopedEnableComposeForTesting();
   static ScopedOverride ScopedSkipUserCheckForTesting();
 
-  bool ShouldTriggerPopup(std::string_view autocomplete_attribute,
-                          Profile* profile,
-                          translate::TranslateManager* translate_manager,
-                          bool ongoing_session,
-                          const url::Origin& top_level_frame_origin,
-                          const url::Origin& element_frame_origin,
-                          GURL url);
+  bool ShouldTriggerPopup(
+      std::string_view autocomplete_attribute,
+      Profile* profile,
+      translate::TranslateManager* translate_manager,
+      bool ongoing_session,
+      const url::Origin& top_level_frame_origin,
+      const url::Origin& element_frame_origin,
+      GURL url,
+      autofill::AutofillSuggestionTriggerSource trigger_source);
   bool ShouldTriggerContextMenu(Profile* profile,
                                 translate::TranslateManager* translate_manager,
                                 content::RenderFrameHost* rfh,

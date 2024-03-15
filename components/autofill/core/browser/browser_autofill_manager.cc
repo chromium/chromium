@@ -2803,7 +2803,8 @@ std::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source) {
   AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
-  if (!compose_delegate || !compose_delegate->ShouldOfferComposePopup(field)) {
+  if (!compose_delegate ||
+      !compose_delegate->ShouldOfferComposePopup(field, trigger_source)) {
     return std::nullopt;
   }
   std::u16string suggestion_text;
