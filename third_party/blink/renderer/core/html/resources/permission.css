@@ -19,7 +19,6 @@ permission {
   width: 188px;
   font-weight: normal;
   font-style: normal;
-  word-spacing: normal;
  }
 
 permission:granted {
@@ -41,5 +40,4 @@ permission::-internal-permission-text {
   white-space:nowrap !important;
   word-wrap: normal !important;
   width: 100%;
-  word-spacing: inherit;
 }
