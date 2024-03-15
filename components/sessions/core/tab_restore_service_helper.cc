@@ -209,18 +209,20 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
     auto tab = std::make_unique<Tab>();
     PopulateTab(tab.get(), tab_index, context,
                 context->GetLiveTabAt(tab_index));
-    if (!tab->navigations.empty()) {
-      if (tab->group.has_value())
-        seen_groups.insert(tab->group.value());
-      tab->browser_id = context->GetSessionID().id();
-      window->tabs.push_back(std::move(tab));
+    if (tab->navigations.empty()) {
+      continue;
     }
-  }
 
-  for (const tab_groups::TabGroupId& group : seen_groups) {
-    const tab_groups::TabGroupVisualData* visual_data =
-        context->GetVisualDataForGroup(group);
-    window->tab_groups.emplace(group, std::move(*visual_data));
+    if (tab->group.has_value() && !seen_groups.contains(tab->group.value())) {
+      // Add new groups to the mapping if we haven't already.
+      seen_groups.insert(tab->group.value());
+      const tab_groups::TabGroupVisualData* visual_data =
+          context->GetVisualDataForGroup(tab->group.value());
+      window->tab_groups.emplace(tab->group.value(), *visual_data);
+    }
+
+    tab->browser_id = context->GetSessionID().id();
+    window->tabs.push_back(std::move(tab));
   }
 
   if (window->tabs.size() == 1 && window->app_name.empty()) {
