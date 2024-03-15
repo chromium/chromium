@@ -17,6 +17,7 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/reading_list/core",
+    "//components/sync/base:features",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/model/browser_state",
