@@ -7,7 +7,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
-#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 
@@ -108,7 +107,7 @@ void SharedStorageWorkletHostManager::RemoveSharedStorageObserver(
 
 void SharedStorageWorkletHostManager::NotifySharedStorageAccessed(
     SharedStorageObserverInterface::AccessType type,
-    const GlobalRenderFrameHostId& main_frame_id,
+    int main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   // Don't bother getting the time if there are no observers.

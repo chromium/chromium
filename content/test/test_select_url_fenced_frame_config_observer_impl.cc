@@ -19,7 +19,7 @@ TestSelectURLFencedFrameConfigObserverImpl::
 void TestSelectURLFencedFrameConfigObserverImpl::OnSharedStorageAccessed(
     const base::Time& access_time,
     AccessType type,
-    const GlobalRenderFrameHostId& main_frame_id,
+    int main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {}
 

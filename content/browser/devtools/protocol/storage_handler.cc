@@ -54,7 +54,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -358,7 +357,7 @@ class StorageHandler::SharedStorageObserver
   void OnSharedStorageAccessed(
       const base::Time& access_time,
       AccessType type,
-      const GlobalRenderFrameHostId& main_frame_id,
+      int main_frame_id,
       const std::string& owner_origin,
       const SharedStorageEventParams& params) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1472,12 +1471,15 @@ void StorageHandler::ResetSharedStorageBudget(
 
 namespace {
 
-std::string GetFrameTokenFromGlobalId(const GlobalRenderFrameHostId& frame_id) {
-  if (!frame_id) {
+std::string GetFrameTokenFromFrameTreeNodeId(int frame_id) {
+  if (frame_id == FrameTreeNode::kFrameTreeNodeInvalidId) {
     return std::string();
   }
-  auto* rfh = RenderFrameHostImpl::FromID(frame_id);
-  return rfh ? rfh->devtools_frame_token().ToString() : std::string();
+  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_id);
+  return frame_tree_node ? frame_tree_node->current_frame_host()
+                               ->devtools_frame_token()
+                               .ToString()
+                         : std::string();
 }
 
 }  // namespace
@@ -1486,7 +1488,7 @@ void StorageHandler::NotifySharedStorageAccessed(
     const base::Time& access_time,
     SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType
         type,
-    const GlobalRenderFrameHostId& main_frame_id,
+    int main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1610,10 +1612,10 @@ void StorageHandler::NotifySharedStorageAccessed(
     protocol_params->SetUrlsWithMetadata(std::move(protocol_urls));
   }
 
-  frontend_->SharedStorageAccessed(access_time.InSecondsFSinceUnixEpoch(),
-                                   type_enum,
-                                   GetFrameTokenFromGlobalId(main_frame_id),
-                                   owner_origin, std::move(protocol_params));
+  frontend_->SharedStorageAccessed(
+      access_time.InSecondsFSinceUnixEpoch(), type_enum,
+      GetFrameTokenFromFrameTreeNodeId(main_frame_id), owner_origin,
+      std::move(protocol_params));
 }
 
 DispatchResponse StorageHandler::SetStorageBucketTracking(

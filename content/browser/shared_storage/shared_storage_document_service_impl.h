@@ -13,7 +13,6 @@
 
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
-#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
@@ -53,7 +52,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
 
   const url::Origin& main_frame_origin() const { return main_frame_origin_; }
 
-  GlobalRenderFrameHostId main_frame_id() const { return main_frame_id_; }
+  int main_frame_id() const { return main_frame_id_; }
 
   void Bind(mojo::PendingAssociatedReceiver<
             blink::mojom::SharedStorageDocumentService> receiver);
@@ -109,9 +108,9 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   // save the value of the main frame origin in the constructor.
   const url::Origin main_frame_origin_;
 
-  // The GlobalRenderFrameHostId for the main frame, to be used by notifications
+  // The FrameTreeNodeId for the main frame, to be used by notifications
   // to DevTools. (DevTools will convert this to a DevTools frame token.)
-  const GlobalRenderFrameHostId main_frame_id_;
+  const int main_frame_id_;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 

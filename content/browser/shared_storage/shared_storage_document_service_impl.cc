@@ -331,7 +331,7 @@ SharedStorageDocumentServiceImpl::SharedStorageDocumentServiceImpl(
           rfh->GetOutermostMainFrame()->GetLastCommittedOrigin()),
       main_frame_id_(
           static_cast<RenderFrameHostImpl*>(rfh->GetOutermostMainFrame())
-              ->GetGlobalId()) {}
+              ->GetFrameTreeNodeId()) {}
 
 storage::SharedStorageManager*
 SharedStorageDocumentServiceImpl::GetSharedStorageManager() {

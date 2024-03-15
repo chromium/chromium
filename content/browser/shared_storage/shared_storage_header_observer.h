@@ -17,7 +17,6 @@
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -112,23 +111,22 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
 
  private:
   bool Invoke(const url::Origin& request_origin,
-              const GlobalRenderFrameHostId& main_frame_id,
+              int main_frame_id,
               OperationPtr operation);
 
   bool Set(const url::Origin& request_origin,
-           const GlobalRenderFrameHostId& main_frame_id,
+           int main_frame_id,
            std::string key,
            std::string value,
            network::mojom::OptionalBool ignore_if_present);
   bool Append(const url::Origin& request_origin,
-              const GlobalRenderFrameHostId& main_frame_id,
+              int main_frame_id,
               std::string key,
               std::string value);
   bool Delete(const url::Origin& request_origin,
-              const GlobalRenderFrameHostId& main_frame_id,
+              int main_frame_id,
               std::string key);
-  bool Clear(const url::Origin& request_origin,
-             const GlobalRenderFrameHostId& main_frame_id);
+  bool Clear(const url::Origin& request_origin, int main_frame_id);
 
   storage::SharedStorageManager* GetSharedStorageManager();
 
@@ -143,7 +141,7 @@ class CONTENT_EXPORT SharedStorageHeaderObserver {
       std::string* out_debug_message = nullptr);
 
   void NotifySharedStorageAccessed(AccessType type,
-                                   const GlobalRenderFrameHostId& main_frame_id,
+                                   int main_frame_id,
                                    const url::Origin& request_origin,
                                    const SharedStorageEventParams& params);
 
