@@ -45,7 +45,7 @@ found in the LICENSE file.
     <style name="TinyCircularProgress">
         <item name="android:layout_width">36dp</item>
         <item name="android:layout_height">36dp</item>
-        <item name="android:tint">@color/modern_blue_600</item>
+        <item name="android:tint">@color/baseline_primary_40</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="resumeSrc">@drawable/circular_progress_bar_resume_tiny</item>
         <item name="retrySrc">@drawable/circular_progress_bar_retry_tiny</item>

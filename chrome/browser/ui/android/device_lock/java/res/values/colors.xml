@@ -8,7 +8,7 @@ found in the LICENSE file.
     <color name="device_lock_illustration_yellow">@color/modern_yellow_500</color>
     <color name="device_lock_illustration_red">@color/default_red</color>
     <color name="device_lock_illustration_green">@color/google_green_600</color>
-    <color name="device_lock_illustration_blue">@color/modern_blue_600</color>
+    <color name="device_lock_illustration_blue">@color/baseline_primary_40</color>
     <color name="device_lock_illustration_medium_blue_grey">@color/modern_grey_400</color>
     <color name="device_lock_illustration_medium_grey">@color/modern_grey_400</color>
     <color name="device_lock_illustration_screen">@color/modern_white</color>
@@ -19,7 +19,7 @@ found in the LICENSE file.
     <color name="device_lock_illustration_screen_bottom_line">@color/modern_grey_200</color>
     <color name="device_lock_illustration_camera_outline">@color/modern_grey_100</color>
     <color name="device_lock_illustration_background_polygon">@color/modern_grey_200</color>
-    <color name="device_lock_illustration_top_polygon_fill">@color/modern_blue_600</color>
+    <color name="device_lock_illustration_top_polygon_fill">@color/baseline_primary_40</color>
     <color name="device_lock_illustration_top_polygon_border">@color/modern_grey_200</color>
     <color name="device_lock_illustration_burst">@color/modern_grey_400</color>
     <color name="device_lock_illustration_exclamation_point">@color/modern_grey_800</color>
