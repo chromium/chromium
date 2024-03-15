@@ -1995,20 +1995,11 @@ void ShelfLayoutManager::UpdateWorkAreaInsetsAndNotifyObservers(
 }
 
 void ShelfLayoutManager::HandleScrollableShelfContainerBoundsChange() {
+  // Update desk button widget layout with animation.
   DeskButtonWidget* desk_button = shelf_widget_->desk_button_widget();
   if (desk_button && desk_button->ShouldReserveSpaceFromShelf()) {
-    // If desk button widget changes its state, update hotseat widget layout.
-    const bool old_zero_state = desk_button->zero_state();
     CalculateDeskButtonAndHotseatTargetBounds();
-    if (desk_button->zero_state() != old_zero_state) {
-      // Update hotseat widget layout with animation.
-      shelf_->hotseat_widget()->UpdateLayout(/*animate=*/true);
-      // Update desk button widget layout without animation.
-      shelf_->desk_button_widget()->UpdateLayout(/*animate=*/false);
-    } else {
-      // Update desk button widget layout with animation.
-      shelf_->desk_button_widget()->UpdateLayout(/*animate=*/true);
-    }
+    desk_button->UpdateLayout(/*animate=*/true);
   }
 }
 
@@ -3189,9 +3180,8 @@ void ShelfLayoutManager::CalculateDeskButtonAndHotseatTargetBounds() {
         shelf_->desk_button_widget()->ShouldReserveSpaceFromShelf());
 
   auto reserve_space_for_desk_button_widget = [](Shelf* shelf) {
-    const int length_needed = DeskButtonWidget::GetMaxLength(
-        shelf->IsHorizontalAlignment(),
-        shelf->desk_button_widget()->zero_state());
+    const int length_needed =
+        DeskButtonWidget::GetMaxLength(shelf->IsHorizontalAlignment());
     shelf->hotseat_widget()->ReserveSpaceForAdjacentWidgets(
         shelf->IsHorizontalAlignment()
             ? (base::i18n::IsRTL() ? gfx::Insets::TLBR(0, 0, 0, length_needed)
@@ -3199,27 +3189,10 @@ void ShelfLayoutManager::CalculateDeskButtonAndHotseatTargetBounds() {
             : gfx::Insets::TLBR(length_needed, 0, 0, 0));
   };
 
-  // First calculate target bounds of the hotseat widget.
-  if (shelf_->IsHorizontalAlignment() &&
-      !shelf_->desk_button_widget()->IsForcedZeroState()) {
-    // Try to reserve length for expanded desk button widget first.
-    shelf_->desk_button_widget()->set_zero_state(false);
-    reserve_space_for_desk_button_widget(shelf_);
-    shelf_->hotseat_widget()->CalculateTargetBounds();
-
-    // If hotseat overflows, reserve length for zero state desk button widget
-    // to save shelf space.
-    if (shelf_->hotseat_widget()->CalculateShelfOverflow(
-            /*use_target_bounds=*/true)) {
-      shelf_->desk_button_widget()->set_zero_state(true);
-      reserve_space_for_desk_button_widget(shelf_);
-      shelf_->hotseat_widget()->CalculateTargetBounds();
-    }
-  } else {
-    shelf_->desk_button_widget()->set_zero_state(true);
-    reserve_space_for_desk_button_widget(shelf_);
-    shelf_->hotseat_widget()->CalculateTargetBounds();
-  }
+  // First reserve space for the desk button widget and calculate target bounds
+  // of the hotseat widget.
+  reserve_space_for_desk_button_widget(shelf_);
+  shelf_->hotseat_widget()->CalculateTargetBounds();
 
   // Then calculate target bounds of the desk button widget.
   shelf_->desk_button_widget()->CalculateTargetBounds();

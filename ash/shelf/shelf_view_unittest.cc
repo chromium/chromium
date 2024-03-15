@@ -3900,24 +3900,6 @@ TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 }
 
-// Verify that the desk button is 218px wide if the screen width is greater than
-// or equal to 1280px, 118px if the screen width is less than 1280px. We also
-// test that the button is 48x50 in vertical alignment.
-TEST_F(ShelfViewDeskButtonTest, Position) {
-  SetShowDeskButtonInShelfPref(prefs_, true);
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
-  UpdateDisplay("1281x400");
-  EXPECT_EQ(218, desk_button_widget()->GetTargetBounds().width());
-  UpdateDisplay("200x1281");
-  EXPECT_EQ(118, desk_button_widget()->GetTargetBounds().width());
-  UpdateDisplay("1280x400");
-  EXPECT_EQ(218, desk_button_widget()->GetTargetBounds().width());
-
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-  EXPECT_EQ(48, desk_button_widget()->GetTargetBounds().width());
-  EXPECT_EQ(50, desk_button_widget()->GetTargetBounds().height());
-}
-
 // Verify that the desk button does not appear by default, appears when the user
 // has more than 1 desk, and stays even if they go back to having just one desk.
 TEST_F(ShelfViewDeskButtonTest, NewDeskVisibility) {

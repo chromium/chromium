@@ -39,16 +39,14 @@ bool DeskButtonContainer::ShouldShowDeskProfilesUi() {
 }
 
 // static
-int DeskButtonContainer::GetMaxLength(bool horizontal_shelf, bool zero_state) {
-  if (horizontal_shelf) {
-    if (ShouldShowDeskProfilesUi()) {
-      return zero_state ? kDeskButtonContainerWidthHorizontalZeroWithAvatar
-                        : kDeskButtonContainerWidthHorizontalExpandedWithAvatar;
-    }
-    return zero_state ? kDeskButtonContainerWidthHorizontalZeroNoAvatar
-                      : kDeskButtonContainerWidthHorizontalExpandedNoAvatar;
+int DeskButtonContainer::GetMaxLength(bool zero_state) {
+  if (zero_state) {
+    return kDeskButtonContainerHeightVertical;
   }
-  return kDeskButtonContainerHeightVertical;
+  if (ShouldShowDeskProfilesUi()) {
+    return kDeskButtonContainerWidthHorizontalExpandedWithAvatar;
+  }
+  return kDeskButtonContainerWidthHorizontalExpandedNoAvatar;
 }
 
 void DeskButtonContainer::OnProfileUpsert(const LacrosProfileSummary& summary) {
@@ -69,10 +67,10 @@ void DeskButtonContainer::OnFirstSessionStarted() {
 }
 
 gfx::Size DeskButtonContainer::CalculatePreferredSize() const {
-  if (IsHorizontalShelf()) {
-    return {GetPreferredLength(), kDeskButtonContainerHeightHorizontal};
+  if (zero_state_) {
+    return {kDeskButtonContainerWidthVertical, GetPreferredLength()};
   }
-  return {kDeskButtonContainerWidthVertical, GetPreferredLength()};
+  return {GetPreferredLength(), kDeskButtonContainerHeightHorizontal};
 }
 
 void DeskButtonContainer::Layout(PassKey) {
@@ -80,7 +78,12 @@ void DeskButtonContainer::Layout(PassKey) {
     return;
   }
 
-  if (IsHorizontalShelf()) {
+  if (zero_state_) {
+    desk_button_->SetBoundsRect(
+        gfx::Rect({kDeskButtonContainerInsetsVertical.left(),
+                   kDeskButtonContainerInsetsVertical.top()},
+                  desk_button_->GetPreferredSize()));
+  } else {
     auto get_spacing = [&](views::View* view1, views::View* view2) {
       if ((view1 == prev_desk_button_ && view2 == next_desk_button_) ||
           (view1 == next_desk_button_ && view2 == prev_desk_button_)) {
@@ -110,11 +113,6 @@ void DeskButtonContainer::Layout(PassKey) {
           gfx::Rect({x, y}, views_to_layout[i]->GetPreferredSize()));
       x += views_to_layout[i]->GetPreferredSize().width();
     }
-  } else {
-    desk_button_->SetBoundsRect(
-        gfx::Rect({kDeskButtonContainerInsetsVertical.left(),
-                   kDeskButtonContainerInsetsVertical.top()},
-                  desk_button_->GetPreferredSize()));
   }
 }
 
@@ -151,7 +149,10 @@ void DeskButtonContainer::PrepareForAlignmentChange() {
 int DeskButtonContainer::GetPreferredLength() const {
   int len = 0;
 
-  if (IsHorizontalShelf()) {
+  if (zero_state_) {
+    len += kDeskButtonContainerInsetsVertical.height() +
+           desk_button_->GetPreferredSize().height();
+  } else {
     len += kDeskButtonContainerInsetsHorizontal.left() +
            desk_button_->GetPreferredSize().width();
     if (prev_desk_button_->GetVisible() && next_desk_button_->GetVisible()) {
@@ -167,9 +168,6 @@ int DeskButtonContainer::GetPreferredLength() const {
              next_desk_button_->GetPreferredSize().width();
     }
     len += kDeskButtonContainerInsetsHorizontal.right();
-  } else {
-    len += kDeskButtonContainerInsetsVertical.height() +
-           desk_button_->GetPreferredSize().height();
   }
 
   return len;
@@ -200,14 +198,6 @@ std::u16string DeskButtonContainer::GetTitleForView(
   NOTREACHED_NORETURN();
 }
 
-bool DeskButtonContainer::IsHorizontalShelf() const {
-  return shelf_->IsHorizontalAlignment();
-}
-
-bool DeskButtonContainer::IsForcedZeroState() const {
-  return false;
-}
-
 void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {
   CHECK(desk_button_widget);
   desk_button_widget_ = desk_button_widget;
@@ -215,14 +205,11 @@ void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {
   shelf_ = desk_button_widget_->shelf();
   CHECK(shelf_);
 
+  zero_state_ = !shelf_->IsHorizontalAlignment();
+
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetFlipCanvasOnPaintForRTLUI(false);
-
-  SetBackground(IsHorizontalShelf() ? views::CreateThemedRoundedRectBackground(
-                                          cros_tokens::kCrosSysSystemOnBase,
-                                          kDeskButtonContainerCornerRadius)
-                                    : nullptr);
 
   AddChildView(views::Builder<DeskButton>()
                    .CopyAddressTo(&desk_button_)
@@ -232,13 +219,13 @@ void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {
       views::Builder<DeskSwitchButton>()
           .CopyAddressTo(&prev_desk_button_)
           .Init(/*desk_button_container=*/this, DeskSwitchButton::Type::kPrev)
-          .SetVisible(IsHorizontalShelf())
+          .SetVisible(!zero_state_)
           .Build());
   AddChildView(
       views::Builder<DeskSwitchButton>()
           .CopyAddressTo(&next_desk_button_)
           .Init(/*desk_button_container=*/this, DeskSwitchButton::Type::kNext)
-          .SetVisible(IsHorizontalShelf())
+          .SetVisible(!zero_state_)
           .Build());
 
   desks_observation_.Observe(DesksController::Get());
@@ -246,6 +233,10 @@ void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {
 }
 
 void DeskButtonContainer::UpdateUi(const Desk* active_desk) {
+  SetBackground(zero_state_ ? nullptr
+                            : views::CreateThemedRoundedRectBackground(
+                                  cros_tokens::kCrosSysSystemOnBase,
+                                  kDeskButtonContainerCornerRadius));
   desk_button_->set_zero_state(zero_state_);
   desk_button_->UpdateUi(active_desk);
   prev_desk_button_->UpdateUi(active_desk);

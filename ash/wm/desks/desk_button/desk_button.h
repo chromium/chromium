@@ -61,8 +61,14 @@ class ASH_EXPORT DeskButton : public views::Button {
 
   std::u16string GetTitle() const;
 
+  // Returns the button insets given current button state.
+  gfx::Insets GetButtonInsets() const;
+
   // Updates UI status without re-layout.
   void UpdateUi(const Desk* active_desk);
+
+  // Returns true if it is currently showing the desk profile avatar.
+  bool IsShowingAvatar() const;
 
   void UpdateAvatar(const Desk* active_desk);
 

@@ -41,7 +41,7 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
 
   static bool ShouldShowDeskProfilesUi();
 
-  static int GetMaxLength(bool horizontal_shelf, bool zero_state);
+  static int GetMaxLength(bool zero_state);
 
   bool zero_state() const { return zero_state_; }
   void set_zero_state(bool zero_state) { zero_state_ = zero_state; }
@@ -85,10 +85,6 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
   bool IntersectsWithDeskButtonUi(const gfx::Point& screen_location) const;
 
   std::u16string GetTitleForView(const views::View* view) const;
-
-  bool IsHorizontalShelf() const;
-
-  bool IsForcedZeroState() const;
 
   // Initializes the view. Must be called before any meaningful UIs can be laid
   // out.

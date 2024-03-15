@@ -108,7 +108,8 @@ void DeskButtonWidget::DelegateView::Layout(PassKey) {
   }
 
   // Update the desk button container.
-  desk_button_container_->set_zero_state(desk_button_widget_->zero_state());
+  desk_button_container_->set_zero_state(
+      !desk_button_widget_->IsHorizontalShelf());
   desk_button_container_->UpdateUi(DesksController::Get()->active_desk());
 
   // Calculate bounds of the desk button container.
@@ -150,9 +151,9 @@ DeskButtonWidget::DeskButtonWidget(Shelf* shelf) : shelf_(shelf) {
 DeskButtonWidget::~DeskButtonWidget() = default;
 
 // static
-int DeskButtonWidget::GetMaxLength(bool horizontal_shelf, bool zero_state) {
+int DeskButtonWidget::GetMaxLength(bool horizontal_shelf) {
   const int container_len =
-      DeskButtonContainer::GetMaxLength(horizontal_shelf, zero_state);
+      DeskButtonContainer::GetMaxLength(!horizontal_shelf);
   return container_len + (horizontal_shelf
                               ? kDeskButtonWidgetInsetsHorizontal.width()
                               : kDeskButtonWidgetInsetsVertical.height());
@@ -193,7 +194,7 @@ void DeskButtonWidget::CalculateTargetBounds() {
       shelf_->hotseat_widget()
           ->scrollable_shelf_view()
           ->CalculateMirroredEdgePadding(/*use_target_bounds=*/true);
-  const int max_length = GetMaxLength(IsHorizontalShelf(), zero_state_);
+  const int max_length = GetMaxLength(IsHorizontalShelf());
 
   if (IsHorizontalShelf()) {
     widget_origin = gfx::Point(
@@ -307,10 +308,6 @@ DeskButtonContainer* DeskButtonWidget::GetDeskButtonContainer() const {
 
 bool DeskButtonWidget::IsHorizontalShelf() const {
   return shelf_->IsHorizontalAlignment();
-}
-
-bool DeskButtonWidget::IsForcedZeroState() const {
-  return delegate_view_->desk_button_container()->IsForcedZeroState();
 }
 
 void DeskButtonWidget::SetDefaultChildToFocus(

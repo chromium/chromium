@@ -35,9 +35,9 @@ DeskSwitchButton::~DeskSwitchButton() = default;
 
 gfx::Size DeskSwitchButton::CalculatePreferredSize() const {
   return gfx::Size(kDeskButtonSwitchButtonWidth,
-                   desk_button_container_->IsHorizontalShelf()
-                       ? kDeskButtonSwitchButtonHeightHorizontal
-                       : kDeskButtonSwitchButtonHeightVertical);
+                   desk_button_container_->zero_state()
+                       ? kDeskButtonSwitchButtonHeightVertical
+                       : kDeskButtonSwitchButtonHeightHorizontal);
 }
 
 void DeskSwitchButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -125,11 +125,11 @@ void DeskSwitchButton::UpdateUi(const Desk* active_desk) {
   auto* desk_controller = DesksController::Get();
   int active_desk_index = desk_controller->GetDeskIndex(active_desk);
   if (type_ == Type::kPrev) {
-    SetVisible(desk_button_container_->IsHorizontalShelf() &&
+    SetVisible(!desk_button_container_->zero_state() &&
                active_desk_index - 1 >= 0);
   } else {
     const int desk_count = desk_controller->GetNumberOfDesks();
-    SetVisible(desk_count > 1 && desk_button_container_->IsHorizontalShelf());
+    SetVisible(desk_count > 1 && !desk_button_container_->zero_state());
     SetEnabled(active_desk_index + 1 < desk_count);
   }
 

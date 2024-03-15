@@ -11274,14 +11274,14 @@ TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
         GetParam().alignment == ShelfAlignment::kBottom && i < desk_count - 1;
 
     // Check the desk button and both desk switch buttons.
-    EXPECT_EQ(desk_button->bounds(),
-              GetParam().alignment == ShelfAlignment::kBottom
-                  ? gfx::Rect(4, 4, 128, 28)
-                  : gfx::Rect(0, 0, 36, 36));
-    EXPECT_EQ(desk_name_label->bounds(),
-              GetParam().alignment == ShelfAlignment::kBottom
-                  ? gfx::Rect(12, 0, 104, 28)
-                  : gfx::Rect(4, 4, 28, 28));
+    if (GetParam().alignment == ShelfAlignment::kBottom) {
+      EXPECT_TRUE(gfx::Rect(4, 4, 128, 28).Contains(desk_button->bounds()));
+      EXPECT_TRUE(
+          gfx::Rect(12, 0, 104, 28).Contains(desk_name_label->bounds()));
+    } else {
+      EXPECT_EQ(desk_button->bounds(), gfx::Rect(0, 0, 36, 36));
+      EXPECT_EQ(desk_name_label->bounds(), gfx::Rect(4, 4, 28, 28));
+    }
     EXPECT_EQ(prev_desk_button->GetVisible(), should_show_prev_desk_button);
     if (prev_desk_button->GetVisible()) {
       EXPECT_TRUE(prev_desk_button->GetEnabled());
@@ -11346,7 +11346,7 @@ TEST_P(DeskButtonTest, LayoutInRTL) {
   switch (GetParam().alignment) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      EXPECT_EQ(gfx::Rect(698, 682, 128, 28), desk_button_bounds);
+      EXPECT_TRUE(gfx::Rect(698, 682, 128, 28).Contains(desk_button_bounds));
       EXPECT_LT(app_icon_bounds.x(), desk_button_bounds.x());
       break;
     case ShelfAlignment::kLeft:

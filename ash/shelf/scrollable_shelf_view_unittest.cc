@@ -1578,48 +1578,62 @@ class ScrollableShelfViewDeskButtonTest : public ScrollableShelfViewTest {
 
 }  // namespace
 
-// Verify that adding an app to overflow the shelf will cause the desk button to
-// shrink.
+// Verify that desk button behavior before and after shelf is overflown.
 TEST_F(ScrollableShelfViewDeskButtonTest, ButtonRespondsToOverflowStateChange) {
-  // Desk button will be forced to be zero state for display that is narrower
-  // than 1280.
-  UpdateDisplay("1280x720");
-
   SetShelfAnimationDuration(base::Milliseconds(1));
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
 
-  auto* scrollable_shelf_view =
-      GetPrimaryShelf()->hotseat_widget()->scrollable_shelf_view();
+  auto* shelf = GetPrimaryShelf();
+  auto* hotseat_widget = shelf->hotseat_widget();
+  auto* scrollable_shelf_view = hotseat_widget->scrollable_shelf_view();
+  auto* desk_button_widget = shelf->desk_button_widget();
+  shelf->SetAlignment(ShelfAlignment::kBottom);
+  EXPECT_FALSE(hotseat_widget->CalculateShelfOverflow(true));
   EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
             scrollable_shelf_view->layout_strategy_for_test());
-  auto* desk_button_widget = GetPrimaryShelf()->desk_button_widget();
-  EXPECT_FALSE(desk_button_widget->zero_state());
-  EXPECT_EQ(218, desk_button_widget->GetTargetBounds().width());
 
-  // Keep adding apps until the desk button shrinks, and track the ID of the
-  // last added app so that we can remove it later.
-  // Set the upper limit on number of apps to avoid infinite loop if the desk
-  // button does not shrink.
+  // Keep adding apps until the shelf overflows. The desk button should remain
+  // expanded.
   ShelfID last_app_id;
-  size_t number_of_apps = 0u;
-  while (!desk_button_widget->zero_state()) {
+  gfx::Rect last_desk_button_bounds;
+  for (int i = 0; i < 50 && !hotseat_widget->CalculateShelfOverflow(true);
+       i++) {
+    last_desk_button_bounds = desk_button_widget->GetTargetBounds();
     last_app_id = AddAppShortcut();
     WaitForShelfAnimation();
-    ++number_of_apps;
-    ASSERT_LT(number_of_apps, 50u);
+    ASSERT_NE(last_desk_button_bounds, desk_button_widget->GetTargetBounds());
   }
-
-  EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
+  EXPECT_TRUE(hotseat_widget->CalculateShelfOverflow(true));
+  EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kShowRightArrowButton,
             scrollable_shelf_view->layout_strategy_for_test());
-  EXPECT_EQ(118, desk_button_widget->GetTargetBounds().width());
 
+  // Add one more app, desk button does not change its bounds. The desk button
+  // remains at the same bounds.
   auto* shelf_model = ShelfModel::Get();
+  last_desk_button_bounds = desk_button_widget->GetTargetBounds();
+  ShelfID new_app_id = AddAppShortcut();
+  WaitForShelfAnimation();
+  EXPECT_EQ(last_desk_button_bounds, desk_button_widget->GetTargetBounds());
+  EXPECT_TRUE(hotseat_widget->CalculateShelfOverflow(true));
+  EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kShowRightArrowButton,
+            scrollable_shelf_view->layout_strategy_for_test());
+
+  // Remove the new app, desk button does not change its bounds. The desk button
+  // remains at the same bounds.
+  shelf_model->RemoveItemAt(shelf_model->ItemIndexByID(new_app_id));
+  WaitForShelfAnimation();
+  EXPECT_EQ(last_desk_button_bounds, desk_button_widget->GetTargetBounds());
+  EXPECT_TRUE(hotseat_widget->CalculateShelfOverflow(true));
+  EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kShowRightArrowButton,
+            scrollable_shelf_view->layout_strategy_for_test());
+
+  // Remove the last app icon so that the shelf does not overflow. The desk
+  // button changes its bounds.
   shelf_model->RemoveItemAt(shelf_model->ItemIndexByID(last_app_id));
   WaitForShelfAnimation();
+  EXPECT_NE(last_desk_button_bounds, desk_button_widget->GetTargetBounds());
+  EXPECT_FALSE(hotseat_widget->CalculateShelfOverflow(true));
   EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
             scrollable_shelf_view->layout_strategy_for_test());
-  EXPECT_FALSE(desk_button_widget->zero_state());
-  EXPECT_EQ(218, desk_button_widget->GetTargetBounds().width());
 }
 
 }  // namespace ash
