@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -44,6 +45,11 @@ class ReadWriteCardsUiController {
   views::View* GetQuickAnswersViewForTest();
   views::View* GetMahiViewForTest();
 
+  // Updates widget bounds.
+  void UpdateWidgetBounds();
+
+  void SetContextMenuBounds(const gfx::Rect& context_menu_bounds);
+
   views::Widget* widget_for_test() { return widget_.get(); }
 
  private:
@@ -57,6 +63,9 @@ class ReadWriteCardsUiController {
   views::ViewTracker mahi_view_;
 
   views::UniqueWidgetPtr widget_;
+
+  // The bounds of the context menu, used to calculate the widget bounds.
+  gfx::Rect context_menu_bounds_;
 };
 
 }  // namespace chromeos

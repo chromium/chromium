@@ -13,5 +13,8 @@ component("cpp") {
     "read_write_cards_manager.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
 }

@@ -7,10 +7,25 @@
 #include <memory>
 
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 
 namespace chromeos::mahi {
+
+namespace {
+
+constexpr int kQuickAnswersAndMahiSpacing = 10;
+constexpr int kDefaultWidth = 100;
+
+std::unique_ptr<views::View> CreateViewWithHeight(int height) {
+  std::unique_ptr<views::View> view = std::make_unique<views::View>();
+  view->SetPreferredSize(gfx::Size(kDefaultWidth, height));
+  return view;
+}
+
+}  // namespace
 
 using ReadWriteCardsUiControllerTest = ChromeViewsTestBase;
 
@@ -89,6 +104,88 @@ TEST_F(ReadWriteCardsUiControllerTest, SetQuickAnswersAndMahiView) {
 
   EXPECT_FALSE(controller.widget_for_test());
   EXPECT_FALSE(controller.GetQuickAnswersViewForTest());
+}
+
+TEST_F(ReadWriteCardsUiControllerTest, WidgetBoundsDefault) {
+  ReadWriteCardsUiController controller;
+
+  gfx::Rect context_menu_bounds =
+      gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140));
+  controller.SetContextMenuBounds(context_menu_bounds);
+
+  int view_height = 80;
+  controller.SetMahiView(CreateViewWithHeight(view_height));
+  ASSERT_TRUE(controller.widget_for_test());
+  gfx::Rect widget_bounds = controller.widget_for_test()->GetRestoredBounds();
+
+  // Widget bounds should vertically aligned with context menu.
+  EXPECT_EQ(widget_bounds.x(), context_menu_bounds.x());
+  EXPECT_EQ(widget_bounds.right(), context_menu_bounds.right());
+
+  // Widget is positioned above context menu.
+  EXPECT_EQ(widget_bounds.bottom() + kQuickAnswersAndMahiSpacing,
+            context_menu_bounds.y());
+
+  EXPECT_EQ(view_height, widget_bounds.height());
+  EXPECT_EQ(kDefaultWidth, widget_bounds.width());
+}
+
+TEST_F(ReadWriteCardsUiControllerTest, WidgetBoundsBelowContextMenu) {
+  ReadWriteCardsUiController controller;
+
+  gfx::Rect context_menu_bounds =
+      gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140));
+  // Update context menu's position so that it does not leave enough vertical
+  // space above it to show the widget.
+  context_menu_bounds.set_y(10);
+  controller.SetContextMenuBounds(context_menu_bounds);
+
+  int view_height = 80;
+  controller.SetQuickAnswersView(CreateViewWithHeight(view_height));
+  ASSERT_TRUE(controller.widget_for_test());
+  gfx::Rect widget_bounds = controller.widget_for_test()->GetRestoredBounds();
+
+  // Widget bounds should vertically aligned with context menu.
+  EXPECT_EQ(widget_bounds.x(), context_menu_bounds.x());
+  EXPECT_EQ(widget_bounds.right(), context_menu_bounds.right());
+
+  // Context menu is positioned above the view.
+  EXPECT_EQ(context_menu_bounds.bottom() + kQuickAnswersAndMahiSpacing,
+            widget_bounds.y());
+
+  EXPECT_EQ(view_height, widget_bounds.height());
+  EXPECT_EQ(kDefaultWidth, widget_bounds.width());
+}
+
+TEST_F(ReadWriteCardsUiControllerTest, WidgetBoundsForBoth) {
+  ReadWriteCardsUiController controller;
+
+  gfx::Rect context_menu_bounds =
+      gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140));
+  controller.SetContextMenuBounds(context_menu_bounds);
+
+  int mahi_height = 80;
+  int qa_height = 90;
+  controller.SetMahiView(CreateViewWithHeight(mahi_height));
+  controller.SetQuickAnswersView(CreateViewWithHeight(qa_height));
+  ASSERT_TRUE(controller.widget_for_test());
+  gfx::Rect widget_bounds = controller.widget_for_test()->GetRestoredBounds();
+
+  // Widget is positioned above context menu.
+  EXPECT_EQ(widget_bounds.bottom() + kQuickAnswersAndMahiSpacing,
+            context_menu_bounds.y());
+
+  EXPECT_EQ(mahi_height + qa_height + kQuickAnswersAndMahiSpacing,
+            widget_bounds.height());
+
+  controller.RemoveQuickAnswersView();
+  widget_bounds = controller.widget_for_test()->GetRestoredBounds();
+
+  // Widget is still positioned above context menu.
+  EXPECT_EQ(widget_bounds.bottom() + kQuickAnswersAndMahiSpacing,
+            context_menu_bounds.y());
+
+  EXPECT_EQ(mahi_height, widget_bounds.height());
 }
 
 }  // namespace chromeos::mahi

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_cards_manager.h"
@@ -19,6 +20,19 @@
 namespace {
 
 constexpr int kMaxSurroundingTextLength = 300;
+
+void SetUiControllerContextMenuBounds(const gfx::Rect& bounds_in_screen) {
+  chromeos::ReadWriteCardsManager* cards_manager =
+      chromeos::ReadWriteCardsManager::Get();
+  if (cards_manager) {
+    cards_manager->SetContextMenuBounds(
+        /*context_menu_bounds=*/bounds_in_screen);
+  } else {
+    // `cards_manager` should only be null in a test environment (since in some
+    // tests the global `ReadWriteCardsManager` is not constructed).
+    CHECK_IS_TEST();
+  }
+}
 
 }  // namespace
 
@@ -49,6 +63,8 @@ void ReadWriteCardObserver::OnContextMenuViewBoundsChanged(
     }
 
     bounds_in_screen_ = bounds_in_screen;
+
+    SetUiControllerContextMenuBounds(bounds_in_screen);
 
     controller->OnAnchorBoundsChanged(bounds_in_screen);
   }
@@ -97,6 +113,8 @@ void ReadWriteCardObserver::OnFetchControllers(
   }
 
   bounds_in_screen_ = bounds_in_screen;
+
+  SetUiControllerContextMenuBounds(bounds_in_screen);
 
   content::RenderFrameHost* focused_frame =
       proxy_->GetWebContents()->GetFocusedFrame();

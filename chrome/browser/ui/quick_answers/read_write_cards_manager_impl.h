@@ -45,6 +45,7 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   void FetchController(const content::ContextMenuParams& params,
                        content::BrowserContext* context,
                        editor_menu::FetchControllersCallback callback) override;
+  void SetContextMenuBounds(const gfx::Rect& context_menu_bounds) override;
 
   chromeos::editor_menu::EditorMenuControllerImpl* editor_menu_for_testing() {
     return editor_menu_controller_.get();

@@ -15,6 +15,10 @@ class BrowserContext;
 struct ContextMenuParams;
 }  // namespace content
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace chromeos {
 
 class ReadWriteCardController;
@@ -37,6 +41,8 @@ class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) ReadWriteCardsManager {
       const content::ContextMenuParams& params,
       content::BrowserContext* context,
       editor_menu::FetchControllersCallback callback) = 0;
+
+  virtual void SetContextMenuBounds(const gfx::Rect& context_menu_bounds) = 0;
 };
 
 }  // namespace chromeos

@@ -14,5 +14,6 @@ source_set("read_write_cards") {
     "//ui/aura",
     "//ui/base",
     "//ui/views",
+    "//ui/wm",
   ]
 }

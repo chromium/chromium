@@ -69,6 +69,11 @@ void ReadWriteCardsManagerImpl::FetchController(
   std::move(callback).Run(GetMahiOrQuickAnswerControllersIfEligible(params));
 }
 
+void ReadWriteCardsManagerImpl::SetContextMenuBounds(
+    const gfx::Rect& context_menu_bounds) {
+  ui_controller_.SetContextMenuBounds(context_menu_bounds);
+}
+
 void ReadWriteCardsManagerImpl::OnGetEditorModeResult(
     const content::ContextMenuParams& params,
     editor_menu::FetchControllersCallback callback,

@@ -11,6 +11,9 @@
 #include "base/no_destructor.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -20,6 +23,7 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace chromeos {
 
@@ -71,6 +75,8 @@ views::View* ReadWriteCardsUiController::SetQuickAnswersView(
   views::View* contents_view = widget_->GetContentsView();
   quick_answers_view_.SetView(contents_view->AddChildView(std::move(view)));
 
+  UpdateWidgetBounds();
+
   return quick_answers_view_.view();
 }
 
@@ -81,6 +87,10 @@ void ReadWriteCardsUiController::RemoveQuickAnswersView() {
 
   widget_->GetContentsView()->RemoveChildViewT(quick_answers_view_.view());
   MaybeHideWidget();
+
+  if (widget_) {
+    UpdateWidgetBounds();
+  }
 }
 
 views::View* ReadWriteCardsUiController::SetMahiView(
@@ -92,6 +102,8 @@ views::View* ReadWriteCardsUiController::SetMahiView(
   views::View* contents_view = widget_->GetContentsView();
   mahi_view_.SetView(contents_view->AddChildView(std::move(view)));
 
+  UpdateWidgetBounds();
+
   return mahi_view_.view();
 }
 
@@ -102,6 +114,10 @@ void ReadWriteCardsUiController::RemoveMahiView() {
 
   widget_->GetContentsView()->RemoveChildViewT(mahi_view_.view());
   MaybeHideWidget();
+
+  if (widget_) {
+    UpdateWidgetBounds();
+  }
 }
 
 views::View* ReadWriteCardsUiController::GetQuickAnswersViewForTest() {
@@ -110,6 +126,42 @@ views::View* ReadWriteCardsUiController::GetQuickAnswersViewForTest() {
 
 views::View* ReadWriteCardsUiController::GetMahiViewForTest() {
   return mahi_view_.view();
+}
+
+void ReadWriteCardsUiController::UpdateWidgetBounds() {
+  CHECK(widget_);
+  int widget_width = context_menu_bounds_.width();
+  int widget_height =
+      widget_->GetContentsView()->GetHeightForWidth(widget_width);
+
+  int x = context_menu_bounds_.x();
+  int y =
+      context_menu_bounds_.y() - widget_height - kQuickAnswersAndMahiSpacing;
+  if (y < display::Screen::GetScreen()
+              ->GetDisplayMatching(context_menu_bounds_)
+              .work_area()
+              .y()) {
+    y = context_menu_bounds_.bottom() + kQuickAnswersAndMahiSpacing;
+  }
+
+  gfx::Rect bounds({x, y}, {widget_width, widget_height});
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // For Ash, convert the position relative to the screen.
+  // For Lacros, `bounds` is already relative to the toplevel window and the
+  // position will be calculated on server side.
+  wm::ConvertRectFromScreen(widget_->GetNativeWindow()->parent(), &bounds);
+#endif
+
+  widget_->SetBounds(bounds);
+}
+
+void ReadWriteCardsUiController::SetContextMenuBounds(
+    const gfx::Rect& context_menu_bounds) {
+  context_menu_bounds_ = context_menu_bounds;
+
+  if (widget_) {
+    UpdateWidgetBounds();
+  }
 }
 
 void ReadWriteCardsUiController::CreateWidgetIfNeeded() {
