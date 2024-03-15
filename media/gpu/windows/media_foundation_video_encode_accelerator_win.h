@@ -31,15 +31,12 @@
 #include "media/base/win/dxgi_device_manager.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
-#include "media/video/h264_parser.h"
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-#include "media/video/h265_nalu_parser.h"
-#endif
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
 
 class VideoRateControlWrapper;
+class TemporalScalabilityIdExtractor;
 
 // Media Foundation implementation of the VideoEncodeAccelerator interface for
 // Windows.
@@ -178,9 +175,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
   HRESULT CopyInputSampleBufferFromGpu(const VideoFrame& frame);
 
-  // Assign TemporalID by state machine(based on SVC Spec).
-  int AssignTemporalIdBySvcSpec(uint32_t frame_id);
-
   bool IsTemporalScalabilityCoding() const { return num_temporal_layers_ > 1; }
 
   // Checks for and copies encoded output.
@@ -242,8 +236,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // True if keyframe was requested for the last frame.
   bool last_frame_was_keyframe_request_ = false;
 
-  // This helper is used for parsing bitstream and assign metadata.
-  std::unique_ptr<BitstreamParserHelper> parser_;
+  // This helper is used for parsing bitstream and assign SVC metadata.
+  std::unique_ptr<TemporalScalabilityIdExtractor> svc_parser_;
 
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_ = 0u;

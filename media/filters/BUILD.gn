@@ -59,6 +59,8 @@ source_set("filters") {
     "source_buffer_stream.h",
     "stream_parser_factory.cc",
     "stream_parser_factory.h",
+    "temporal_scalability_id_extractor.cc",
+    "temporal_scalability_id_extractor.h",
     "video_cadence_estimator.cc",
     "video_cadence_estimator.h",
     "video_renderer_algorithm.cc",
