@@ -25,24 +25,18 @@
 
 namespace views {
 
-const int kComboboxArrowPaddingWidth = 8;
-const int kComboboxArrowPaddingWidthChromeRefresh2023 = 4;
+const int kComboboxArrowPaddingWidth = 4;
 
 int GetComboboxArrowContainerWidthAndMargins() {
-  // For ChromeRefresh2023, add extra margins between combobox arrow container
-  // and edge of the combobox.
-  return features::IsChromeRefresh2023()
-             ? GetComboboxArrowContainerWidth() +
-                   LayoutProvider::Get()->GetDistanceMetric(
-                       DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)
-             : GetComboboxArrowContainerWidth();
+  // add extra margins between combobox arrow container and edge of the
+  // combobox.
+  return GetComboboxArrowContainerWidth() +
+         LayoutProvider::Get()->GetDistanceMetric(
+             DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
 }
 
 int GetComboboxArrowContainerWidth() {
-  int padding = features::IsChromeRefresh2023()
-                    ? kComboboxArrowPaddingWidthChromeRefresh2023 * 2
-                    : kComboboxArrowPaddingWidth * 2;
-  return ComboboxArrowSize().width() + padding;
+  return ComboboxArrowSize().width() + kComboboxArrowPaddingWidth * 2;
 }
 
 void PaintComboboxArrow(SkColor color,
@@ -72,49 +66,33 @@ void PaintComboboxArrow(SkColor color,
 }
 
 void ConfigureComboboxButtonInkDrop(Button* host_view) {
+  // Colors already have opacity applied, so use opaque ink drops.
+  constexpr float kOpaque = 1;
+
   InkDrop::Get(host_view)->SetMode(views::InkDropHost::InkDropMode::ON);
   host_view->SetHasInkDropActionOnClick(true);
-  if (features::IsChromeRefresh2023()) {
-    // We must use UseInkDropForFloodFillRipple here because
-    // UseInkDropForSquareRipple hides the InkDrop when the ripple effect is
-    // active instead of layering underneath it causing flashing.
-    InkDrop::UseInkDropForFloodFillRipple(InkDrop::Get(host_view),
-                                          /*highlight_on_hover=*/true);
-    // Chrome Refresh colors already have opacity applied for hover and pressed
-    // states. Set the highlight opacity to 1 so the two values don't compound.
-    InkDrop::Get(host_view)->SetHighlightOpacity(1);
-  } else {
-    InkDrop::UseInkDropForSquareRipple(InkDrop::Get(host_view),
-                                       /*highlight_on_hover=*/false);
-  }
+  // We must use UseInkDropForFloodFillRipple here because
+  // UseInkDropForSquareRipple hides the InkDrop when the ripple effect is
+  // active instead of layering underneath it, causing flashing.
+  InkDrop::UseInkDropForFloodFillRipple(InkDrop::Get(host_view),
+                                        /*highlight_on_hover=*/true);
+  InkDrop::Get(host_view)->SetHighlightOpacity(kOpaque);
   views::InkDrop::Get(host_view)->SetBaseColorCallback(base::BindRepeating(
       [](Button* host) {
         return color_utils::DeriveDefaultIconColor(
             host->GetColorProvider()->GetColor(
-                features::IsChromeRefresh2023()
-                    ? ui::kColorComboboxInkDropHovered
-                    : views::TypographyProvider::Get().GetColorId(
-                          views::style::CONTEXT_BUTTON,
-                          views::style::STYLE_PRIMARY)));
+                ui::kColorComboboxInkDropHovered));
       },
       host_view));
-  // Chrome Refresh colors already have opacity applied for ripple state. Set
-  // the ripple opacity to 1 so the two values don't compound.
   InkDrop::Get(host_view)->SetCreateRippleCallback(base::BindRepeating(
-      [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
+      [](Button* host, float opacity) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             InkDrop::Get(host), host->size(),
             InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            host->GetColorProvider()->GetColor(
-                features::IsChromeRefresh2023()
-                    ? ui::kColorComboboxInkDropRipple
-                    : TypographyProvider::Get().GetColorId(
-                          style::CONTEXT_TEXTFIELD, style::STYLE_PRIMARY)),
-            features::IsChromeRefresh2023()
-                ? 1
-                : InkDrop::Get(host)->GetVisibleOpacity());
+            host->GetColorProvider()->GetColor(ui::kColorComboboxInkDropRipple),
+            opacity);
       },
-      host_view));
+      host_view, kOpaque));
 }
 
 }  // namespace views

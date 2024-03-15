@@ -12,6 +12,7 @@
 namespace views {
 
 class Combobox;
+class EditableCombobox;
 
 namespace examples {
 
@@ -27,8 +28,10 @@ class VIEWS_EXAMPLES_EXPORT ComboboxExample : public ExampleBase {
 
  private:
   void ValueChanged();
+  void EditableValueChanged();
 
   raw_ptr<Combobox> combobox_ = nullptr;
+  raw_ptr<EditableCombobox> editable_combobox_ = nullptr;
 };
 
 }  // namespace examples
