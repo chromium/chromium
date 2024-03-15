@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/com_init_util.h"
@@ -207,8 +208,14 @@ OnScreenKeyboardDisplayManagerInputPane::
     OnScreenKeyboardDisplayManagerInputPane(HWND hwnd)
     : hwnd_(hwnd),
       main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      background_task_runner_(
-          base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
+      background_task_runner_(base::ThreadPool::CreateCOMSTATaskRunner(
+          {base::MayBlock(),
+           // This TaskRunner runs tasks that wait for messages to be processed
+           // on the main thread. During shutdown, the main thread stops
+           // processing messages and as a result tasks on this TaskRunner may
+           // hang. Use `CONTINUE_ON_SHUTDOWN` to let shutdown complete when
+           // this happens (see crbug.com/40848571).
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       virtual_keyboard_input_pane_(
           base::MakeRefCounted<OnScreenKeyboardDisplayManagerInputPane::
                                    VirtualKeyboardInputPane>(
@@ -298,7 +305,8 @@ bool OnScreenKeyboardDisplayManagerInputPane::IsKeyboardVisible() {
 void OnScreenKeyboardDisplayManagerInputPane::SetInputPaneForTesting(
     Microsoft::WRL::ComPtr<ABI::Windows::UI::ViewManagement::IInputPane> pane) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      &OnScreenKeyboardDisplayManagerInputPane::
