@@ -45,9 +45,7 @@ public class TravelException extends RuntimeException {
                 "Did not complete transition from "
                         + (fromStation != null ? fromStation.toString() : "<entry point>")
                         + " to "
-                        + toStation
-                        + " due to:\n"
-                        + cause.getMessage(),
+                        + toStation,
                 cause);
     }
 
