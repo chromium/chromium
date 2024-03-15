@@ -5,8 +5,10 @@
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
 #include "components/global_media_controls/public/media_item_ui_observer.h"
+#include "components/global_media_controls/views/media_action_button.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -20,21 +22,32 @@
 
 namespace global_media_controls {
 
+using media_session::mojom::MediaSessionAction;
+
 namespace {
 
-constexpr gfx::Insets kBackgroundInsets = gfx::Insets::TLBR(16, 8, 8, 8);
-constexpr gfx::Insets kMainRowInsets = gfx::Insets::TLBR(0, 8, 8, 8);
-constexpr gfx::Insets kMediaInfoInsets = gfx::Insets::TLBR(0, 16, 0, 4);
-constexpr gfx::Insets kSourceRowInsets = gfx::Insets::TLBR(0, 0, 6, 0);
+constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 16);
+constexpr gfx::Insets kInfoColumnInsets = gfx::Insets::TLBR(4, 0, 0, 0);
 
-constexpr int kBackgroundCornerRadius = 16;
-constexpr int kArtworkCornerRadius = 12;
-constexpr int kMediaInfoSeparator = 4;
+constexpr int kBackgroundCornerRadius = 8;
+constexpr int kArtworkCornerRadius = 8;
+
+constexpr int kArtworkRowSeparator = 12;
+constexpr int kMediaInfoSeparator = 8;
+constexpr int kSourceRowSeparator = 16;
+constexpr int kSourceRowButtonContainerSeparator = 8;
+constexpr int kMetadataRowSeparator = 16;
+constexpr int kMetadataColumnSeparator = 4;
+
+constexpr int kPlayPauseButtonIconSize = 24;
+constexpr int kMediaActionButtonIconSize = 20;
 
 constexpr float kFocusRingHaloInset = -3.0f;
 
 constexpr gfx::Size kBackgroundSize = gfx::Size(400, 150);
-constexpr gfx::Size kArtworkSize = gfx::Size(74, 74);
+constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
+constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
+constexpr gfx::Size kMediaActionButtonSize = gfx::Size(24, 24);
 
 // If the image does not fit the square view, scale the image to fill the view
 // even if part of the image is cropped.
@@ -68,34 +81,89 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   focus_ring->SetHaloInset(kFocusRingHaloInset);
   focus_ring->SetColorId(media_color_theme_.focus_ring_color_id);
 
-  // |main_row| holds everything above the progress view, including the media
-  // artwork, media information column and the play/pause button column.
-  auto* main_row = AddChildView(std::make_unique<views::BoxLayoutView>());
-  main_row->SetInsideBorderInsets(kMainRowInsets);
+  // |artwork_row| holds everything above the |progress_row|, starting with the
+  // media artwork along with some media information and media buttons.
+  auto* artwork_row = AddChildView(std::make_unique<views::BoxLayoutView>());
+  artwork_row->SetBetweenChildSpacing(kArtworkRowSeparator);
 
-  artwork_view_ = main_row->AddChildView(std::make_unique<views::ImageView>());
+  artwork_view_ =
+      artwork_row->AddChildView(std::make_unique<views::ImageView>());
   artwork_view_->SetPreferredSize(kArtworkSize);
+  artwork_view_->SetVisible(false);
 
-  // |media_info_column| inside |main_row| holds the media source, title, and
-  // artist.
-  auto* media_info_column =
-      main_row->AddChildView(std::make_unique<views::BoxLayoutView>());
-  media_info_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  media_info_column->SetInsideBorderInsets(kMediaInfoInsets);
-  media_info_column->SetBetweenChildSpacing(kMediaInfoSeparator);
-  media_info_column->SetCrossAxisAlignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-  main_row->SetFlexForView(media_info_column, 1);
+  // |info_column| inside |artwork_row| right to the |artwork_view| holds the
+  // |source_row| and |metadata_row|.
+  auto* info_column =
+      artwork_row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  info_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  info_column->SetInsideBorderInsets(kInfoColumnInsets);
+  info_column->SetBetweenChildSpacing(kMediaInfoSeparator);
+  artwork_row->SetFlexForView(info_column, 1);
 
-  // Create the media source label.
+  // |source_row| inside |info_column| holds the |source_label_container| and
+  // |source_row_button_container|.
   auto* source_row =
-      media_info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
-  source_row->SetInsideBorderInsets(kSourceRowInsets);
+      info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
+  source_row->SetBetweenChildSpacing(kSourceRowSeparator);
+  auto* source_label_container =
+      source_row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  source_row->SetFlexForView(source_label_container, 1);
 
-  source_label_ = source_row->AddChildView(std::make_unique<views::Label>(
-      u"origin.com", views::style::CONTEXT_LABEL, views::style::STYLE_BODY_5));
+  // |source_label_container| inside |source_row| holds the media source label.
+  source_label_ =
+      source_label_container->AddChildView(std::make_unique<views::Label>(
+          std::u16string(), views::style::CONTEXT_LABEL,
+          views::style::STYLE_BODY_5));
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  source_row->SetFlexForView(source_label_, 1);
+  source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
+
+  // |source_row_button_container| inside |source_row| holds the start casting
+  // button and picture-in-picture button.
+  auto* source_row_button_container =
+      source_row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  source_row_button_container->SetBetweenChildSpacing(
+      kSourceRowButtonContainerSeparator);
+
+  // Create the picture-in-picture button.
+  picture_in_picture_button_ = CreateMediaActionButton(
+      source_row_button_container,
+      static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
+      vector_icons::kPictureInPictureAltIcon,
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
+
+  // |metadata_row| inside |info_column| holds the |metadata_column| and
+  // |play_pause_button_container|.
+  auto* metadata_row =
+      info_column->AddChildView(std::make_unique<views::BoxLayoutView>());
+  metadata_row->SetBetweenChildSpacing(kMetadataRowSeparator);
+  auto* metadata_column =
+      metadata_row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  metadata_column->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  metadata_column->SetBetweenChildSpacing(kMetadataColumnSeparator);
+  metadata_row->SetFlexForView(metadata_column, 1);
+
+  // |metadata_column| inside |metadata_row| holds the media title label and
+  // media artist label.
+  title_label_ = metadata_column->AddChildView(std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_LABEL,
+      views::style::STYLE_BODY_2_BOLD));
+  title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  artist_label_ = metadata_column->AddChildView(std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_LABEL,
+      views::style::STYLE_BODY_2));
+  artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  // |play_pause_button_container| inside |metadata_row| holds the play pause
+  // button.
+  auto* play_pause_button_container =
+      metadata_row->AddChildView(std::make_unique<views::BoxLayoutView>());
+  play_pause_button_ = CreateMediaActionButton(
+      play_pause_button_container, static_cast<int>(MediaSessionAction::kPlay),
+      vector_icons::kPlayArrowIcon,
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
+  play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+      media_color_theme_.play_button_container_color_id,
+      kPlayPauseButtonSize.height() / 2));
 
   item_->SetView(this);
 }
@@ -134,10 +202,57 @@ void MediaItemUIUpdatedView::RemoveObserver(MediaItemUIObserver* observer) {
 // media_message_center::MediaNotificationView implementations:
 
 void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
-    const media_session::mojom::MediaSessionInfoPtr& session_info) {}
+    const media_session::mojom::MediaSessionInfoPtr& session_info) {
+  bool playing =
+      session_info && session_info->playback_state ==
+                          media_session::mojom::MediaPlaybackState::kPlaying;
+  if (playing) {
+    play_pause_button_->Update(
+        static_cast<int>(MediaSessionAction::kPause), vector_icons::kPauseIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
+        media_color_theme_.pause_button_foreground_color_id);
+    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+        media_color_theme_.pause_button_container_color_id,
+        kPlayPauseButtonSize.height() / 2));
+  } else {
+    play_pause_button_->Update(
+        static_cast<int>(MediaSessionAction::kPlay),
+        vector_icons::kPlayArrowIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
+        media_color_theme_.play_button_foreground_color_id);
+    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+        media_color_theme_.play_button_container_color_id,
+        kPlayPauseButtonSize.height() / 2));
+  }
+
+  in_picture_in_picture_ =
+      session_info &&
+      session_info->picture_in_picture_state ==
+          media_session::mojom::MediaPictureInPictureState::kInPictureInPicture;
+  if (in_picture_in_picture_) {
+    picture_in_picture_button_->Update(
+        static_cast<int>(MediaSessionAction::kExitPictureInPicture),
+        vector_icons::kPictureInPictureAltIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP,
+        media_color_theme_.primary_foreground_color_id);
+  } else {
+    picture_in_picture_button_->Update(
+        static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
+        vector_icons::kPictureInPictureAltIcon,
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP,
+        media_color_theme_.primary_foreground_color_id);
+  }
+}
 
 void MediaItemUIUpdatedView::UpdateWithMediaMetadata(
-    const media_session::MediaMetadata& metadata) {}
+    const media_session::MediaMetadata& metadata) {
+  source_label_->SetText(metadata.source_title);
+  title_label_->SetText(metadata.title);
+  artist_label_->SetText(metadata.artist);
+  for (auto& observer : observers_) {
+    observer.OnMediaItemUIMetadataChanged();
+  }
+}
 
 void MediaItemUIUpdatedView::UpdateWithMediaActions(
     const base::flat_set<media_session::mojom::MediaSessionAction>& actions) {}
@@ -163,6 +278,61 @@ void MediaItemUIUpdatedView::UpdateWithMediaArtwork(
     artwork_view_->SetClipPath(path);
   }
   SchedulePaint();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// MediaItemUIUpdatedView implementations:
+
+MediaActionButton* MediaItemUIUpdatedView::CreateMediaActionButton(
+    views::View* parent,
+    int button_id,
+    const gfx::VectorIcon& vector_icon,
+    int tooltip_text_id) {
+  auto button = std::make_unique<MediaActionButton>(
+      views::Button::PressedCallback(), button_id, tooltip_text_id,
+      (button_id == static_cast<int>(MediaSessionAction::kPlay)
+           ? kPlayPauseButtonIconSize
+           : kMediaActionButtonIconSize),
+      vector_icon,
+      (button_id == static_cast<int>(MediaSessionAction::kPlay)
+           ? kPlayPauseButtonSize
+           : kMediaActionButtonSize),
+      media_color_theme_.primary_foreground_color_id,
+      media_color_theme_.secondary_foreground_color_id,
+      media_color_theme_.focus_ring_color_id);
+  auto* button_ptr = parent->AddChildView(std::move(button));
+
+  if (button_id != kEmptyMediaActionButtonId) {
+    button_ptr->SetCallback(
+        base::BindRepeating(&MediaItemUIUpdatedView::MediaActionButtonPressed,
+                            base::Unretained(this), button_ptr));
+    media_action_buttons_.push_back(button_ptr);
+  }
+  return button_ptr;
+}
+
+void MediaItemUIUpdatedView::MediaActionButtonPressed(views::Button* button) {
+  item_->OnMediaSessionActionButtonPressed(
+      static_cast<MediaSessionAction>(button->GetID()));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Helper functions for testing:
+
+views::ImageView* MediaItemUIUpdatedView::GetArtworkViewForTesting() {
+  return artwork_view_;
+}
+
+views::Label* MediaItemUIUpdatedView::GetSourceLabelForTesting() {
+  return source_label_;
+}
+
+views::Label* MediaItemUIUpdatedView::GetTitleLabelForTesting() {
+  return title_label_;
+}
+
+views::Label* MediaItemUIUpdatedView::GetArtistLabelForTesting() {
+  return artist_label_;
 }
 
 BEGIN_METADATA(MediaItemUIUpdatedView)

@@ -19,12 +19,14 @@ struct AXNodeData;
 }  // namespace ui
 
 namespace views {
+class Button;
 class ImageView;
 class Label;
 }  // namespace views
 
 namespace global_media_controls {
 
+class MediaActionButton;
 class MediaItemUIObserver;
 
 // MediaItemUIUpdatedView holds the media information and playback controls for
@@ -76,13 +78,34 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void UpdateDeviceSelectorVisibility(bool visible) override {}
   void UpdateDeviceSelectorAvailability(bool has_devices) override {}
 
+  // Helper functions for testing:
+  views::ImageView* GetArtworkViewForTesting();
+  views::Label* GetSourceLabelForTesting();
+  views::Label* GetTitleLabelForTesting();
+  views::Label* GetArtistLabelForTesting();
+
  private:
-  friend class MediaItemUIUpdatedViewTest;
+  MediaActionButton* CreateMediaActionButton(views::View* parent,
+                                             int button_id,
+                                             const gfx::VectorIcon& vector_icon,
+                                             int tooltip_text_id);
+
+  // Callback for a media action button being pressed.
+  void MediaActionButtonPressed(views::Button* button);
+
+  // Whether the media is currently in picture-in-picture.
+  bool in_picture_in_picture_ = false;
 
   base::ObserverList<MediaItemUIObserver> observers_;
 
   raw_ptr<views::ImageView> artwork_view_ = nullptr;
   raw_ptr<views::Label> source_label_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> artist_label_ = nullptr;
+
+  std::vector<MediaActionButton*> media_action_buttons_;
+  raw_ptr<MediaActionButton> picture_in_picture_button_ = nullptr;
+  raw_ptr<MediaActionButton> play_pause_button_ = nullptr;
 
   const std::string id_;
   base::WeakPtr<media_message_center::MediaNotificationItem> item_;
