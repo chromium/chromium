@@ -177,6 +177,12 @@ $ echo "wmaurer.change-case shd101wyy.markdown-preview-enhanced Gruntfuggly.todo
 *   [**Color Picker**](https://marketplace.visualstudio.com/items?itemName=anseki.vscode-color) -
     Visualizes color codes inline and provides color picker GUI to generates new
     color codes.
+*   [**Bazel**](https://marketplace.visualstudio.com/items?itemName=BazelBuild.vscode-bazel) -
+    This is very useful for editing `*.star` starlark files. If you want "Go
+    to definition" to work in our `infra/config` directory, see the
+    [//tools/vscode/bazel_lsp/README.md][lsp_patches_readme]
+
+[lsp_patches_readme]: ../tools/vscode/bazel_lsp/README.md
 
 
 Also be sure to take a look at the

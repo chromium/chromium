@@ -1,3 +1,5 @@
+# Configurations for Chrome Operation services
+
 **IMPORTANT:** This branch only has an effect for branches that have projects
 set up in
 https://chrome-internal.googlesource.com/infradata/config/+/HEAD/configs/luci-config/projects.cfg
@@ -9,6 +11,8 @@ builders.
 
 Currently active version can be checked at
 https://luci-config.appspot.com/#/projects/chromium .
+
+## Starlark configs
 
 The configuration is written using starlark, which is executed using lucicfg to
 generate the raw cfg files located in [generated](generated). See
@@ -43,3 +47,18 @@ The configuration rooted at [dev.star](dev.star) defines the LUCI services
 configuration for the chromium project on the dev instance of LUCI. This
 configuration consumes starlark files under the dev directory and is responsible
 for generating the raw configuration files ending in -dev.cfg.
+
+## VS Code
+
+In order to get syntax highlighting, the [Bazel][bazel-extension] can be installed.
+
+In order to get "go to definition" to work, an extra language server needs to be
+available for the [Bazel][bazel-extension] extension. This currently requires
+applying a custom patch on top of the [bazel-lsp][bazel-lsp] project and
+compiling the language server binary, then using it via settings.json in VS
+Code. See the [//tools/vscode/bazel_lsp/README.md][bazel-lsp-readme] for more
+details.
+
+[bazel-extension]: https://marketplace.visualstudio.com/items?itemName=BazelBuild.vscode-bazel
+[bazel-lsp]: https://github.com/cameron-martin/bazel-lsp
+[bazel-lsp-readme]: ../../tools/vscode/bazel_lsp/README.md
