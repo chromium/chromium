@@ -236,6 +236,29 @@ public class SigninManagerImplTest {
     }
 
     @Test
+    @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
+    public void testOnCoreAccountInfosChanged_PrimaryAccountRenamed_seedAccountsRevampEnabled() {
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                        NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
+                .thenReturn(ACCOUNT_INFO);
+
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
+        mFakeAccountManagerFacade.blockGetCoreAccountInfos(true);
+        mFakeAccountManagerFacade.removeAccount(ACCOUNT_INFO.getId());
+        AccountInfo renamedAccount =
+                new AccountInfo.Builder("renamed@gmail.com", ACCOUNT_INFO.getGaiaId()).build();
+        mFakeAccountManagerFacade.addAccount(renamedAccount);
+        mFakeAccountManagerFacade.unblockGetCoreAccountInfos();
+
+        List<CoreAccountInfo> coreAccountInfos =
+                mFakeAccountManagerFacade.getCoreAccountInfos().getResult();
+        verify(mIdentityMutator)
+                .seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+                        coreAccountInfos, ACCOUNT_INFO.getId());
+        verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt());
+    }
+
+    @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn() {
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
