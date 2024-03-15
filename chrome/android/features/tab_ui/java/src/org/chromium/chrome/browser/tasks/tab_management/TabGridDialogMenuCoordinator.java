@@ -16,6 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.LifetimeAssert;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
@@ -145,6 +146,14 @@ public class TabGridDialogMenuCoordinator {
                         R.id.edit_group_name,
                         0,
                         true));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            R.string.tab_grid_dialog_toolbar_edit_group_color,
+                            R.id.edit_group_color,
+                            0,
+                            true));
+        }
         return itemList;
     }
 }

@@ -70,6 +70,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private @Nullable SnackbarManager mSnackbarManager;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private @Nullable AnchoredPopupWindow mColorIconPopupWindow;
+    private @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
 
     TabGridDialogCoordinator(
             Activity activity,
@@ -96,6 +97,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
             mRegularTabModelSupplier = regularTabModelSupplier;
             mTabContentManager = tabContentManager;
+            mTabSwitcherResetHandler = resetHandler;
 
             mModel =
                     new PropertyModel.Builder(TabGridDialogProperties.ALL_KEYS)
@@ -104,7 +106,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                     mBrowserControlsStateProvider)
                             .with(
                                     TabGridDialogProperties.COLOR_ICON_CLICK_LISTENER,
-                                    getColorIconClickListener(resetHandler))
+                                    getColorIconClickListener())
                             .build();
             mRootView = rootView;
 
@@ -151,6 +153,11 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         bottomSheetController.requestShowContent(mShareBottomSheetContent, true);
                     };
 
+            Runnable showColorPickerPopupRunnable =
+                    () -> {
+                        showColorPickerPopup(mDialogView.findViewById(R.id.tab_group_color_icon));
+                    };
+
             mMediator =
                     new TabGridDialogMediator(
                             activity,
@@ -165,7 +172,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mSharedImageTilesCoordinator,
                             bottomSheetController,
                             showShareBottomSheetRunnable,
-                            mComponentName);
+                            mComponentName,
+                            showColorPickerPopupRunnable);
 
             // TODO(crbug.com/1031349) : Remove the inline mode logic here, make the constructor to
             // take in a mode parameter instead.
@@ -259,81 +267,82 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         return mTabListEditorCoordinator.getController();
     }
 
-    private View.OnClickListener getColorIconClickListener(
-            @Nullable TabSwitcherResetHandler resetHandler) {
+    private View.OnClickListener getColorIconClickListener() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
             return (view) -> {
-                PopupWindow.OnDismissListener onDismissListener =
-                        new PopupWindow.OnDismissListener() {
-                            @Override
-                            public void onDismiss() {
-                                mColorIconPopupWindow.dismiss();
-                                mColorIconPopupWindow = null;
-
-                                mMediator.setSelectedTabGroupColor(
-                                        mColorPickerCoordinator.getSelectedColorSupplier().get());
-
-                                // Only require a refresh of the tab list if accessed from the GTS,
-                                // skip if this is reached from the tab strip as the color will
-                                // refresh upon re-entering the tab switcher.
-                                if (resetHandler != null) {
-                                    // Refresh the TabSwitcher's tab list to reflect the last
-                                    // selected color in the color picker when it is dismissed. This
-                                    // call will be invoked for both Grid and List modes on the GTS.
-                                    resetHandler.resetWithTabList(
-                                            (TabGroupModelFilter)
-                                                    mCurrentTabModelFilterSupplier.get(),
-                                            false);
-                                }
-                            }
-                        };
-
-                List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
-                mColorPickerCoordinator =
-                        new ColorPickerCoordinator(
-                                mActivity,
-                                colors,
-                                R.layout.tab_group_color_picker_container,
-                                ColorPickerType.TAB_GROUP,
-                                mCurrentTabModelFilterSupplier.get().isIncognito(),
-                                ColorPickerLayoutType.DOUBLE_ROW,
-                                () -> onDismissListener.onDismiss());
-                mColorPickerCoordinator.setSelectedColorItem(
-                        mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID));
-
-                int popupMargin =
-                        mActivity
-                                .getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.tab_group_color_picker_popup_padding);
-
-                View contentView = mColorPickerCoordinator.getContainerView();
-                contentView.setPadding(popupMargin, popupMargin, popupMargin, popupMargin);
-                View decorView = ((Activity) contentView.getContext()).getWindow().getDecorView();
-
-                // If the filter is in incognito mode, apply the incognito background drawable.
-                @DrawableRes
-                int bgDrawableId =
-                        mModel.get(TabGridDialogProperties.IS_INCOGNITO)
-                                ? R.drawable.menu_bg_tinted_on_dark_bg
-                                : R.drawable.menu_bg_tinted;
-
-                mColorIconPopupWindow =
-                        new AnchoredPopupWindow(
-                                mActivity,
-                                decorView,
-                                AppCompatResources.getDrawable(mActivity, bgDrawableId),
-                                contentView,
-                                new ViewRectProvider(view));
-                mColorIconPopupWindow.addOnDismissListener(onDismissListener);
-                mColorIconPopupWindow.setFocusable(true);
-                mColorIconPopupWindow.setHorizontalOverlapAnchor(true);
-                mColorIconPopupWindow.setVerticalOverlapAnchor(true);
-                mColorIconPopupWindow.show();
+                showColorPickerPopup(view);
             };
         }
-
         return null;
+    }
+
+    private void showColorPickerPopup(View anchorView) {
+        PopupWindow.OnDismissListener onDismissListener =
+                new PopupWindow.OnDismissListener() {
+                    @Override
+                    public void onDismiss() {
+                        mMediator.setSelectedTabGroupColor(
+                                mColorPickerCoordinator.getSelectedColorSupplier().get());
+
+                        // Only require a refresh of the tab list if accessed from the GTS,
+                        // skip if this is reached from the tab strip as the color will
+                        // refresh upon re-entering the tab switcher.
+                        if (mTabSwitcherResetHandler != null) {
+                            // Refresh the TabSwitcher's tab list to reflect the last
+                            // selected color in the color picker when it is dismissed. This
+                            // call will be invoked for both Grid and List modes on the GTS.
+                            mTabSwitcherResetHandler.resetWithTabList(
+                                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                                    false);
+                        }
+                    }
+                };
+
+        List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
+        mColorPickerCoordinator =
+                new ColorPickerCoordinator(
+                        mActivity,
+                        colors,
+                        R.layout.tab_group_color_picker_container,
+                        ColorPickerType.TAB_GROUP,
+                        mModel.get(TabGridDialogProperties.IS_INCOGNITO),
+                        ColorPickerLayoutType.DOUBLE_ROW,
+                        () -> {
+                            mColorIconPopupWindow.dismiss();
+                            mColorIconPopupWindow = null;
+                            onDismissListener.onDismiss();
+                        });
+        mColorPickerCoordinator.setSelectedColorItem(
+                mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID));
+
+        int popupMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_group_color_picker_popup_padding);
+
+        View contentView = mColorPickerCoordinator.getContainerView();
+        contentView.setPadding(popupMargin, popupMargin, popupMargin, popupMargin);
+        View decorView = ((Activity) contentView.getContext()).getWindow().getDecorView();
+
+        // If the filter is in incognito mode, apply the incognito background drawable.
+        @DrawableRes
+        int bgDrawableId =
+                mModel.get(TabGridDialogProperties.IS_INCOGNITO)
+                        ? R.drawable.menu_bg_tinted_on_dark_bg
+                        : R.drawable.menu_bg_tinted;
+
+        mColorIconPopupWindow =
+                new AnchoredPopupWindow(
+                        mActivity,
+                        decorView,
+                        AppCompatResources.getDrawable(mActivity, bgDrawableId),
+                        contentView,
+                        new ViewRectProvider(anchorView));
+        mColorIconPopupWindow.addOnDismissListener(onDismissListener);
+        mColorIconPopupWindow.setFocusable(true);
+        mColorIconPopupWindow.setHorizontalOverlapAnchor(true);
+        mColorIconPopupWindow.setVerticalOverlapAnchor(true);
+        mColorIconPopupWindow.show();
     }
 
     /** Destroy any members that needs clean up. */

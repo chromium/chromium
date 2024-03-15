@@ -506,6 +506,47 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    public void testColorPickerOnToolbarMenuItemClick() throws ExecutionException {
+        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+
+        String blueColor =
+                cta.getString(R.string.accessibility_tab_group_color_picker_color_item_blue);
+        String notSelectedStringBlue =
+                cta.getString(
+                        R.string
+                                .accessibility_tab_group_color_picker_color_item_not_selected_description,
+                        blueColor);
+
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open dialog and click the toolbar menu item to show the color picker.
+        openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        openDialogToolbarMenuAndVerify(cta);
+        selectTabGridDialogToolbarMenuItem(cta, "Edit group color");
+        onView(
+                        allOf(
+                                instanceOf(TabGroupColorPickerContainer.class),
+                                withId(R.id.color_picker_container)))
+                .check(matches(isDisplayed()));
+
+        // Select a non default color and assert the pop up closes.
+        onView(withContentDescription(notSelectedStringBlue)).perform(click());
+        onView(
+                        allOf(
+                                instanceOf(TabGroupColorPickerContainer.class),
+                                withId(R.id.color_picker_container)))
+                .check(doesNotExist());
+        clickScrimToExitDialog(cta);
+    }
+
+    @Test
+    @MediumTest
     public void testSelectionEditorShowHide() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1919,7 +1960,12 @@ public class TabGridDialogTest {
                                     1,
                                     cta.getString(
                                             R.string.tab_grid_dialog_toolbar_edit_group_name));
-                            assertEquals(2, listView.getCount());
+                            verifyTabGridDialogToolbarMenuItem(
+                                    listView,
+                                    2,
+                                    cta.getString(
+                                            R.string.tab_grid_dialog_toolbar_edit_group_color));
+                            assertEquals(3, listView.getCount());
                         });
     }
 

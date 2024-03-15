@@ -122,6 +122,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     @Mock BottomSheetController mBottomSheetController;
     @Mock Runnable mShowShareBottomSheetRunnable;
+    @Mock Runnable mShowColorPickerPopupRunnable;
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
@@ -181,7 +182,8 @@ public class TabGridDialogMediatorUnitTest {
                         /*SharedImageTilesCoordinator*/ null,
                         mBottomSheetController,
                         mShowShareBottomSheetRunnable,
-                        "");
+                        "",
+                        mShowColorPickerPopupRunnable);
 
         mMediator.initWithNative(
                 () -> {
@@ -1155,7 +1157,8 @@ public class TabGridDialogMediatorUnitTest {
                         /*SharedImageTilesCoordinator*/ null,
                         mBottomSheetController,
                         mShowShareBottomSheetRunnable,
-                        "");
+                        "",
+                        mShowColorPickerPopupRunnable);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;
@@ -1215,7 +1218,8 @@ public class TabGridDialogMediatorUnitTest {
                         /*SharedImageTilesCoordinator*/ null,
                         mBottomSheetController,
                         mShowShareBottomSheetRunnable,
-                        "");
+                        "",
+                        mShowColorPickerPopupRunnable);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;
@@ -1266,7 +1270,8 @@ public class TabGridDialogMediatorUnitTest {
                         /*SharedImageTilesCoordinator*/ null,
                         mBottomSheetController,
                         mShowShareBottomSheetRunnable,
-                        "");
+                        "",
+                        mShowColorPickerPopupRunnable);
         mMediator.initWithNative(
                 () -> {
                     return mTabListEditorController;

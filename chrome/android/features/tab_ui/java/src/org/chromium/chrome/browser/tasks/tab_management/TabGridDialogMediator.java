@@ -134,6 +134,7 @@ public class TabGridDialogMediator
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final String mComponentName;
     private final @NonNull BottomSheetController mBottomSheetController;
+    private final Runnable mShowColorPickerPopupRunnable;
 
     private TabGroupTitleEditor mTabGroupTitleEditor;
     private Supplier<TabListEditorController> mTabListEditorControllerSupplier;
@@ -158,7 +159,8 @@ public class TabGridDialogMediator
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             @NonNull BottomSheetController bottomSheetController,
             Runnable showShareBottomSheetRunnable,
-            String componentName) {
+            String componentName,
+            Runnable showColorPickerPopupRunnable) {
         mContext = activity;
         mModel = model;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -174,6 +176,7 @@ public class TabGridDialogMediator
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
         mBottomSheetController = bottomSheetController;
         mShowShareBottomSheetRunnable = showShareBottomSheetRunnable;
+        mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
 
         // Register for tab model.
         mTabModelObserver =
@@ -351,6 +354,10 @@ public class TabGridDialogMediator
 
                     if (result == R.id.edit_group_name) {
                         mModel.set(TabGridDialogProperties.IS_TITLE_TEXT_FOCUSED, true);
+                    }
+
+                    if (result == R.id.edit_group_color) {
+                        mShowColorPickerPopupRunnable.run();
                     }
                 };
 
