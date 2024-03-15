@@ -1086,9 +1086,8 @@ TEST_F(AggregationServiceStorageSqlTest,
       0);
 }
 
-// This test corrupts the SQLite database on disk and verifies that
-// AdjustOfflineReportTimes() encounters SQLITE_CORRUPT errors. There's nothing
-// special about this function besides the fact that it attempts to run a query.
+// This test verifies that `AggregationServiceStorageSql::Open()` deletes the
+// database file when it encounters catastrophic errors.
 TEST_F(AggregationServiceStorageSqlTest,
        AdjustOfflineReportTimes_DiskCorruption) {
   constexpr auto kExampleTime =
@@ -1104,31 +1103,27 @@ TEST_F(AggregationServiceStorageSqlTest,
   ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path()));
   OpenDatabase();
 
-#if DCHECK_IS_ON()
-  // AggregationServiceStorageSql::DatabaseErrorCallback() intentionally crashes
-  // in debug builds. Note that death tests run in a forked process, so this
-  // call should have no visible effects on the following lines.
-  ASSERT_DEATH_IF_SUPPORTED(storage_->AdjustOfflineReportTimes(
-                                kExampleTime, base::Hours(1), base::Hours(2)),
-                            "database disk image is malformed");
-#endif
-
-  // Suppress the crash in with `ScopedErrorExpecter`.
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
     storage_->AdjustOfflineReportTimes(kExampleTime, base::Hours(1),
                                        base::Hours(2));
-    ASSERT_TRUE(expecter.SawExpectedErrors());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
   }
 
+  EXPECT_FALSE(base::PathExists(db_path()));
+
+  // Internally, `sql::Database::Open()` will attempt to open the database a
+  // second time when it detects that it was poisoned during the first attempt.
   histograms_.ExpectUniqueSample(
       "PrivacySandbox.AggregationService.Storage.Sql.Error",
       base::checked_cast<base::HistogramBase::Sample>(
           sql::SqliteLoggedResultCode::kCorrupt),
-      /*expected_bucket_count=*/1);
+      /*expected_bucket_count=*/2);
 
-  CloseDatabase();
+  histograms_.ExpectBucketCount(
+      "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
+      AggregationServiceStorageSql::InitStatus::kFailedToOpenDbFile, 1);
 }
 
 TEST_F(AggregationServiceStorageSqlTest, StoreRequest_RespectsLimit) {
