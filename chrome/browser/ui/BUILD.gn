@@ -1565,6 +1565,8 @@ static_library("ui") {
       "tabs/tab_types.h",
       "tabs/tab_utils.cc",
       "tabs/tab_utils.h",
+      "tabs/unpinned_tab_collection.cc",
+      "tabs/unpinned_tab_collection.h",
       "task_manager/task_manager_columns.cc",
       "task_manager/task_manager_columns.h",
       "task_manager/task_manager_table_model.cc",

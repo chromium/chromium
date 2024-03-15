@@ -43,6 +43,7 @@ class TabGroupTabCollection : public TabCollection {
   tab_groups::TabGroupId GetTabGroupId() { return group_id_; }
 
   // TabCollection:
+  bool ContainsTab(TabModel* tab_model) const override;
   // This is non-recursive for grouped tab collection as it does not contain
   // another collection.
   bool ContainsTabRecursive(TabModel* tab_model) const override;

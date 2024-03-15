@@ -32,6 +32,7 @@ class PinnedTabCollection : public TabCollection {
   void CloseTab(TabModel* tab_model);
 
   // TabCollection:
+  bool ContainsTab(TabModel* tab_model) const override;
   // This is non-recursive for pinned tab collection as it does not contain
   // another collection.
   bool ContainsTabRecursive(TabModel* tab_model) const override;
