@@ -16404,21 +16404,6 @@
             ]
         }
     ],
-    "ScreenCaptureKitPickerScreen": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScreenCaptureKitPickerScreen"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScreenCaptureKitStreamPickerSonoma": [
         {
             "platforms": [
@@ -16426,11 +16411,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_SCScreenshotManager_20231004",
+                    "name": "Enabled_SCScreenshotManager",
                     "params": {
                         "capture_mode": "sc_screenshot_manager"
                     },
                     "enable_features": [
+                        "ScreenCaptureKitPickerScreen",
                         "ScreenCaptureKitStreamPickerSonoma",
                         "ThumbnailCapturerMac"
                     ]
