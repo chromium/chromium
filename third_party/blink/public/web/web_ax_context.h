@@ -49,6 +49,11 @@ class BLINK_EXPORT WebAXContext {
   // be reserialized.
   void ResetSerializer();
 
+  // Get a new AXID that's not used by any accessibility node in this process,
+  // for when the client needs to insert additional nodes into the accessibility
+  // tree.
+  int GenerateAXID() const;
+
   // Retrieves a vector of all WebAXObjects in this document whose
   // bounding boxes may have changed since the last query. Sends that vector
   // via mojo to the browser process.
@@ -64,11 +69,13 @@ class BLINK_EXPORT WebAXContext {
   // the last serialization) into |updates|. (Heuristically) skips
   // serializing dirty nodes whose AX id is in |already_serialized_ids|, and
   // adds serialized dirty objects into |already_serialized_ids|.
-  void SerializeDirtyObjectsAndEvents(std::vector<ui::AXTreeUpdate>& updates,
+  void SerializeDirtyObjectsAndEvents(WebPluginContainer* plugin_container,
+                                      std::vector<ui::AXTreeUpdate>& updates,
                                       std::vector<ui::AXEvent>& events,
                                       bool& had_end_of_test_event,
                                       bool& had_load_complete_messages,
-                                      bool& need_to_send_location_changes);
+                                      bool& need_to_send_location_changes,
+                                      bool& mark_plugin_subtree_dirty);
 
   // Returns a vector of the images found in |updates|.
   void GetImagesToAnnotate(ui::AXTreeUpdate& updates,

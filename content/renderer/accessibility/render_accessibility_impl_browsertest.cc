@@ -12,7 +12,6 @@
 #include "base/containers/adapters.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/public/renderer/plugin_ax_tree_action_target_adapter.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/render_accessibility_impl_test.h"
 #include "content/renderer/render_frame_impl.h"
@@ -549,9 +548,7 @@ TEST_F(RenderAccessibilityImplTest, TestExpandCollapseTreeItem) {
   EXPECT_TRUE(found_collapsed_update);
 }
 
-class MockPluginAccessibilityTreeSource
-    : public ui::AXTreeSource<const ui::AXNode*>,
-      public content::PluginAXTreeActionTargetAdapter {
+class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
  public:
   MockPluginAccessibilityTreeSource(ui::AXNodeID root_node_id) {
     ax_tree_ = std::make_unique<ui::AXTree>();
@@ -605,6 +602,7 @@ class MockPluginAccessibilityTreeSource
   }
   bool GetActionTargetCalled() { return action_target_called_; }
   void ResetActionTargetCalled() { action_target_called_ = false; }
+  blink::WebPluginContainer* GetPluginContainer() override { return nullptr; }
 
  private:
   std::unique_ptr<ui::AXTree> ax_tree_;
@@ -631,9 +629,9 @@ TEST_F(RenderAccessibilityImplTest, TestAXActionTargetFromNodeId) {
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink, body_action_target->GetType());
 
   // An AxID for a Plugin node should produce a Plugin action target.
-  ui::AXNodeID root_node_id = 100;
+  ui::AXNodeID root_node_id = GetRenderAccessibilityImpl()->GenerateAXID();
   MockPluginAccessibilityTreeSource pdf_acc_tree(root_node_id);
-  //  GetRenderAccessibilityImpl()->SetPluginTreeSource(&pdf_acc_tree);
+  GetRenderAccessibilityImpl()->SetPluginTreeSource(&pdf_acc_tree);
 
   // An AxId from Pdf, should call PdfAccessibilityTree::CreateActionTarget.
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
