@@ -42,7 +42,6 @@
 
 namespace blink {
 
-class CSSTryRule;
 class CSSKeyframeRule;
 class CSSMediaRule;
 class CSSContainerRule;
@@ -225,7 +224,6 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
       const AtomicString& pseudo_argument = g_null_atom);
   std::unique_ptr<protocol::CSS::RuleUsage> BuildObjectForRuleUsage(CSSRule*,
                                                                     bool);
-  std::unique_ptr<protocol::CSS::CSSTryRule> BuildObjectForTryRule(CSSTryRule*);
   std::unique_ptr<protocol::CSS::CSSPositionTryRule>
   BuildObjectForPositionTryRule(CSSPositionTryRule*);
   std::unique_ptr<protocol::CSS::CSSFontPaletteValuesRule>

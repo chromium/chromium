@@ -31,7 +31,6 @@ class ImmutableCSSPropertyValueSet;
 class StyleRule;
 class StyleRuleBase;
 class StyleRuleKeyframe;
-class StyleRuleTry;
 class StyleSheetContents;
 class CSSValue;
 class CSSPrimitiveValue;
@@ -121,8 +120,6 @@ class CORE_EXPORT CSSParser {
   static StyleRuleKeyframe* ParseKeyframeRule(const CSSParserContext*,
                                               const String&);
   static String ParseCustomPropertyName(const String&);
-
-  static StyleRuleTry* ParseTryRule(const CSSParserContext*, const String&);
 
   static bool ParseSupportsCondition(const String&, const ExecutionContext*);
 

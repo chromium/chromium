@@ -70,18 +70,16 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     // [1] https://wiki.csswg.org/spec/cssom-constants
 
     // Values for internal use, not web-exposed:
-    kPropertyRule = 16,
-    kContainerRule = 17,
-    kLayerBlockRule = 18,
-    kLayerStatementRule = 19,
-    kFontPaletteValuesRule = 20,
-    kScopeRule = 21,
-    kPositionFallbackRule = 22,
-    kTryRule = 23,
-    kFontFeatureRule = 24,
-    kStartingStyleRule = 25,
-    kViewTransitionRule = 26,
-    kPositionTryRule = 27,
+    kPropertyRule,
+    kContainerRule,
+    kLayerBlockRule,
+    kLayerStatementRule,
+    kFontPaletteValuesRule,
+    kScopeRule,
+    kFontFeatureRule,
+    kStartingStyleRule,
+    kViewTransitionRule,
+    kPositionTryRule,
   };
 
   virtual Type GetType() const = 0;

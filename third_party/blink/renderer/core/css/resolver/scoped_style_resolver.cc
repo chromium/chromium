@@ -123,7 +123,6 @@ void ScopedStyleResolver::AppendActiveStyleSheets(
     AddKeyframeRules(rule_set);
     AddFontFaceRules(rule_set);
     AddCounterStyleRules(rule_set);
-    AddPositionFallbackRules(rule_set);
     AddPositionTryRules(rule_set);
     AddFunctionRules(rule_set);
     AddFontFeatureValuesRules(rule_set);
@@ -152,7 +151,6 @@ void ScopedStyleResolver::ResetStyle() {
   active_style_sheets_.clear();
   media_query_result_flags_.Clear();
   keyframes_rule_map_.clear();
-  position_fallback_rule_map_.clear();
   position_try_rule_map_.clear();
   font_feature_values_storage_map_.clear();
   function_rule_map_.clear();
@@ -326,23 +324,6 @@ void ScopedStyleResolver::RebuildCascadeLayerMap(
   cascade_layer_map_ = MakeGarbageCollected<CascadeLayerMap>(sheets);
 }
 
-void ScopedStyleResolver::AddPositionFallbackRules(const RuleSet& rule_set) {
-  for (StyleRulePositionFallback* rule : rule_set.PositionFallbackRules()) {
-    auto result = position_fallback_rule_map_.insert(rule->Name(), rule);
-    if (result.is_new_entry) {
-      continue;
-    }
-    Member<StyleRulePositionFallback>& stored_rule = result.stored_value->value;
-    const bool should_override =
-        !cascade_layer_map_ ||
-        cascade_layer_map_->CompareLayerOrder(stored_rule->GetCascadeLayer(),
-                                              rule->GetCascadeLayer()) <= 0;
-    if (should_override) {
-      stored_rule = rule;
-    }
-  }
-}
-
 void ScopedStyleResolver::AddPositionTryRules(const RuleSet& rule_set) {
   for (StyleRulePositionTry* rule : rule_set.PositionTryRules()) {
     auto result = position_try_rule_map_.insert(rule->Name(), rule);
@@ -396,16 +377,6 @@ void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
       }
     }
   }
-}
-
-StyleRulePositionFallback* ScopedStyleResolver::PositionFallbackForName(
-    const AtomicString& fallback_name) {
-  DCHECK(fallback_name);
-  auto iter = position_fallback_rule_map_.find(fallback_name);
-  if (iter != position_fallback_rule_map_.end()) {
-    return iter->value.Get();
-  }
-  return nullptr;
 }
 
 StyleRulePositionTry* ScopedStyleResolver::PositionTryForName(
@@ -523,7 +494,6 @@ void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
   visitor->Trace(active_style_sheets_);
   visitor->Trace(keyframes_rule_map_);
-  visitor->Trace(position_fallback_rule_map_);
   visitor->Trace(position_try_rule_map_);
   visitor->Trace(function_rule_map_);
   visitor->Trace(counter_style_map_);

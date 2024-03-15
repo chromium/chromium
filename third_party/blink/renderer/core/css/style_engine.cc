@@ -173,8 +173,7 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
     if (rule_set->HasCascadeLayers()) {
       flags |= kLayerRules;
     }
-    if (!rule_set->PositionFallbackRules().empty() ||
-        !rule_set->PositionTryRules().empty()) {
+    if (!rule_set->PositionTryRules().empty()) {
       flags |= kPositionTryRules;
     }
     if (!rule_set->ViewTransitionRules().empty()) {

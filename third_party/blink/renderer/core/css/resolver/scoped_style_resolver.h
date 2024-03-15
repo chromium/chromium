@@ -67,8 +67,6 @@ class CORE_EXPORT ScopedStyleResolver final
   CounterStyleMap* GetCounterStyleMap() { return counter_style_map_.Get(); }
   static void CounterStyleRulesChanged(TreeScope& scope);
 
-  StyleRulePositionFallback* PositionFallbackForName(
-      const AtomicString& fallback_name);
   StyleRulePositionTry* PositionTryForName(const AtomicString& try_name);
 
   StyleRuleFunction* FunctionForName(StringView name);
@@ -119,7 +117,6 @@ class CORE_EXPORT ScopedStyleResolver final
   bool KeyframeStyleShouldOverride(
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
-  void AddPositionFallbackRules(const RuleSet&);
   void AddPositionTryRules(const RuleSet&);
   void AddFunctionRules(const RuleSet&);
 
@@ -139,10 +136,6 @@ class CORE_EXPORT ScopedStyleResolver final
   using KeyframesRuleMap =
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
-
-  using PositionFallbackRuleMap =
-      HeapHashMap<AtomicString, Member<StyleRulePositionFallback>>;
-  PositionFallbackRuleMap position_fallback_rule_map_;
 
   using PositionTryRuleMap =
       HeapHashMap<AtomicString, Member<StyleRulePositionTry>>;

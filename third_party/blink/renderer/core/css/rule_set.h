@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
-#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
@@ -467,10 +466,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       const {
     return view_transition_rules_;
   }
-  const HeapVector<Member<StyleRulePositionFallback>>& PositionFallbackRules()
-      const {
-    return position_fallback_rules_;
-  }
   const HeapVector<Member<StyleRulePositionTry>>& PositionTryRules() const {
     return position_try_rules_;
   }
@@ -595,7 +590,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddCounterStyleRule(StyleRuleCounterStyle*);
   void AddFontPaletteValuesRule(StyleRuleFontPaletteValues*);
   void AddFontFeatureValuesRule(StyleRuleFontFeatureValues*);
-  void AddPositionFallbackRule(StyleRulePositionFallback*);
   void AddPositionTryRule(StyleRulePositionTry*);
   void AddFunctionRule(StyleRuleFunction*);
   void AddViewTransitionRule(StyleRuleViewTransition*);
@@ -710,7 +704,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleKeyframes>> keyframes_rules_;
   HeapVector<Member<StyleRuleProperty>> property_rules_;
   HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
-  HeapVector<Member<StyleRulePositionFallback>> position_fallback_rules_;
   HeapVector<Member<StyleRulePositionTry>> position_try_rules_;
   HeapVector<MediaQuerySetResult> media_query_set_results_;
   HeapVector<Member<StyleRuleFunction>> function_rules_;

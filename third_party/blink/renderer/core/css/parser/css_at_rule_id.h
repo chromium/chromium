@@ -23,7 +23,6 @@ enum class CSSAtRuleID {
   kCSSAtRuleMedia,
   kCSSAtRuleNamespace,
   kCSSAtRulePage,
-  kCSSAtRulePositionFallback,
   kCSSAtRulePositionTry,
   kCSSAtRuleProperty,
   kCSSAtRuleContainer,
@@ -31,7 +30,6 @@ enum class CSSAtRuleID {
   kCSSAtRuleScope,
   kCSSAtRuleStartingStyle,
   kCSSAtRuleSupports,
-  kCSSAtRuleTry,
   kCSSAtRuleWebkitKeyframes,
   // Font-feature-values related at-rule ids below:
   kCSSAtRuleAnnotation,

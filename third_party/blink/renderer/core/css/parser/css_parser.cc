@@ -8,7 +8,6 @@
 
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
-#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -283,13 +282,6 @@ String CSSParser::ParseCustomPropertyName(const String& name_text) {
   return CSSParserImpl::ParseCustomPropertyName(name_text);
 }
 
-StyleRuleTry* CSSParser::ParseTryRule(const CSSParserContext* context,
-                                      const String& rule) {
-  StyleRuleBase* try_rule = CSSParserImpl::ParseRule(
-      rule, context, CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      nullptr, CSSParserImpl::kTryRules);
-  return To<StyleRuleTry>(try_rule);
-}
 bool CSSParser::ParseSupportsCondition(
     const String& condition,
     const ExecutionContext* execution_context) {

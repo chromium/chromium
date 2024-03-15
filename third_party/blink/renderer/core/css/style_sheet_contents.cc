@@ -665,8 +665,6 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(const T& rules) {
       case StyleRuleBase::kFontPaletteValues:
       case StyleRuleBase::kFontFeatureValues:
       case StyleRuleBase::kFontFeature:
-      case StyleRuleBase::kPositionFallback:
-      case StyleRuleBase::kTry:
       case StyleRuleBase::kViewTransition:
       case StyleRuleBase::kFunction:
       case StyleRuleBase::kPositionTry:
