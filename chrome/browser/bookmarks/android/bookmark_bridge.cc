@@ -33,6 +33,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/image_service/image_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -158,17 +159,20 @@ ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
   if (!bookmark_bridge) {
     // BookmarkModel factory redirects to the original profile, so it might
     // happen that profile refers to the incognito profile, even though we're
-    // building the bridge for the regular profile. Thus, we need to get
-    // IdentityManager for the original profile as well.
-    auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
+    // building the bridge for the regular profile. Some factories don't do
+    // this by default, so we need to pass the original profile instead. This
+    // is safe to do because BookmarkModel/Bridge is always built for the
+    // regular profile.
+    auto* original_profile = profile->GetOriginalProfile();
     bookmark_bridge = new BookmarkBridge(
-        profile, model, ManagedBookmarkServiceFactory::GetForProfile(profile),
-        page_image_service::ImageServiceFactory::GetForBrowserContext(profile),
-        ReadingListModelFactory::GetAsDualReadingListForBrowserContext(profile),
-        PartnerBookmarksShim::BuildForBrowserContext(
-            chrome::GetBrowserContextRedirectedInIncognito(profile)),
-        identity_manager);
+        profile, model,
+        ManagedBookmarkServiceFactory::GetForProfile(original_profile),
+        page_image_service::ImageServiceFactory::GetForBrowserContext(
+            original_profile),
+        ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
+            original_profile),
+        PartnerBookmarksShim::BuildForBrowserContext(original_profile),
+        IdentityManagerFactory::GetForProfile(original_profile));
     model->SetUserData(kBookmarkBridgeUserDataKey,
                        base::WrapUnique(bookmark_bridge));
   }
