@@ -29,6 +29,7 @@ class ASH_EXPORT KeyboardBrightnessController
   void HandleKeyboardBrightnessDown() override;
   void HandleKeyboardBrightnessUp() override;
   void HandleToggleKeyboardBacklight() override;
+  void HandleSetKeyboardBrightness(double percent, bool gradual) override;
 };
 
 }  // namespace ash

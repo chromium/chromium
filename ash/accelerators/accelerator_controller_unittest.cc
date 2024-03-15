@@ -238,6 +238,8 @@ class DummyKeyboardBrightnessControlDelegate
         ui::Accelerator(ui::VKEY_KBD_BACKLIGHT_TOGGLE, ui::EF_NONE);
   }
 
+  void HandleSetKeyboardBrightness(double percent, bool gradual) override {}
+
   int handle_keyboard_brightness_down_count() const {
     return handle_keyboard_brightness_down_count_;
   }

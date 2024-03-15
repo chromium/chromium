@@ -12,11 +12,12 @@ class KeyboardBrightnessControlDelegate {
  public:
   virtual ~KeyboardBrightnessControlDelegate() {}
 
-  // Handles an accelerator-driven request to decrease or increase
-  // the keyboard brightness, or toggle the backlight itself on/off.
+  // Handles the request to decrease or increase the keyboard brightness, or
+  // toggle the backlight itself on/off, or set brightness to a specific level.
   virtual void HandleKeyboardBrightnessDown() = 0;
   virtual void HandleKeyboardBrightnessUp() = 0;
   virtual void HandleToggleKeyboardBacklight() = 0;
+  virtual void HandleSetKeyboardBrightness(double percent, bool gradual) = 0;
 };
 
 }  // namespace ash

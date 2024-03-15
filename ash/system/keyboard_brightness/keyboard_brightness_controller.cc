@@ -21,4 +21,17 @@ void KeyboardBrightnessController::HandleToggleKeyboardBacklight() {
   chromeos::PowerManagerClient::Get()->ToggleKeyboardBacklight();
 }
 
+void KeyboardBrightnessController::HandleSetKeyboardBrightness(double percent,
+                                                               bool gradual) {
+  power_manager::SetBacklightBrightnessRequest request;
+  request.set_percent(percent);
+  request.set_transition(
+      gradual
+          ? power_manager::SetBacklightBrightnessRequest_Transition_FAST
+          : power_manager::SetBacklightBrightnessRequest_Transition_INSTANT);
+  request.set_cause(
+      power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST);
+  chromeos::PowerManagerClient::Get()->SetKeyboardBrightness(request);
+}
+
 }  // namespace ash
