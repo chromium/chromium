@@ -519,23 +519,6 @@ config("ubsan_flags") {
       "-fsanitize=vla-bound",
       "-fsanitize-ignorelist=$ubsan_ignorelist_path",
     ]
-
-    # Chromecast ubsan builds fail to compile with these
-    # experimental flags, so only add them to non-chromecast ubsan builds.
-    if (!is_castos && !is_cast_android) {
-      cflags += [
-        # Employ the experimental PBQP register allocator to avoid slow
-        # compilation on files with too many basic blocks.
-        # See http://crbug.com/426271.
-        "-mllvm",
-        "-regalloc=pbqp",
-
-        # Speculatively use coalescing to slightly improve the code generated
-        # by PBQP regallocator. May increase compile time.
-        "-mllvm",
-        "-pbqp-coalescing",
-      ]
-    }
   }
 }
 
