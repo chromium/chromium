@@ -308,6 +308,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     }
     case PushNotificationClientId::kTips: {
+      self.tipsNotificationsItem.on = push_notification_settings::
+          GetMobileNotificationPermissionStatusForClient(
+              PushNotificationClientId::kTips, _gaiaID);
+      [self.consumer reconfigureCellsForItems:@[ self.tipsNotificationsItem ]];
       break;
     }
   }
