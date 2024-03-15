@@ -221,10 +221,22 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
    */
   private deviceIsEnabled_(deviceState: OncMojo.DeviceStateProperties|
                            undefined): boolean {
-    return !!deviceState &&
-        (deviceState.type === NetworkType.kVPN ||
-         deviceState.deviceState === DeviceStateType.kEnabled ||
-         OncMojo.deviceIsInhibited(deviceState));
+    if (!deviceState) {
+      return false;
+    }
+
+    if (this.isInstantHotspotRebrandEnabled_() &&
+        deviceState.type === NetworkType.kTether) {
+      return true;
+    }
+    if (deviceState.type === NetworkType.kVPN) {
+      return true;
+    }
+    if (deviceState.deviceState === DeviceStateType.kEnabled) {
+      return true;
+    }
+
+    return OncMojo.deviceIsInhibited(deviceState);
   }
 
   /**

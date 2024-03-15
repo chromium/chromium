@@ -875,6 +875,13 @@ export class SettingsInternetSubpageElement extends
         this.deviceState.type === NetworkType.kCellular;
   }
 
+  private shouldShowBluetoothDisabledTetherErrorMessage_(
+      deviceState: OncMojo.DeviceStateProperties|undefined): boolean {
+    return this.isInstantHotspotRebrandEnabled_ && !!deviceState &&
+        deviceState.type === NetworkType.kTether &&
+        deviceState.deviceState === DeviceStateType.kUninitialized;
+  }
+
   private hideNoNetworksMessage_(
       networkStateList: OncMojo.NetworkStateProperties[]): boolean {
     return this.shouldShowCellularNetworkList_() ||
@@ -905,6 +912,10 @@ export class SettingsInternetSubpageElement extends
     return this.hasCompletedScanSinceLastEnabled_ ?
         this.i18n('internetNoNetworks') :
         this.i18n('networkScanningLabel');
+  }
+
+  private getBluetoothDisabledErrorMessageForTether_(): string {
+    return this.i18n('tetherEnableBluetooth');
   }
 
   private showGmsCoreNotificationsSection_(notificationsDisabledDeviceNames:

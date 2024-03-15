@@ -433,5 +433,43 @@ suite('<network-summary-item>', () => {
           assertEquals(1, browserProxy.getCallCount('showPortalSignin'));
           assertEquals(testGuid, guid);
         });
+
+    test('Error message displayed when Bluetooth is disabled', () => {
+      netSummaryItem.setProperties({
+        deviceState: {
+          inhibitReason: InhibitReason.kNotInhibited,
+          deviceState: DeviceStateType.kUninitialized,
+          type: NetworkType.kTether,
+        },
+        activeNetworkState: {
+          connectionState: ConnectionStateType.kNotConnected,
+          guid: '',
+          type: NetworkType.kTether,
+        },
+      });
+
+      flush();
+      assertEquals(
+          netSummaryItem.i18n('tetherEnableBluetooth'),
+          netSummaryItem['getNetworkStateText_']());
+
+      netSummaryItem.setProperties({
+        deviceState: {
+          inhibitReason: InhibitReason.kNotInhibited,
+          deviceState: DeviceStateType.kEnabled,
+          type: NetworkType.kTether,
+        },
+        activeNetworkState: {
+          connectionState: ConnectionStateType.kNotConnected,
+          guid: '',
+          type: NetworkType.kTether,
+        },
+      });
+
+      flush();
+      assertEquals(
+          netSummaryItem.i18n('networkListItemNoNetwork'),
+          netSummaryItem['getNetworkStateText_']());
+    });
   });
 });

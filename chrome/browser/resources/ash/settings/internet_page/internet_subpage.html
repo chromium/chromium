@@ -70,6 +70,16 @@
     padding-inline-start: 0;
   }
 </style>
+
+<template is="dom-if" if="[[shouldShowBluetoothDisabledTetherErrorMessage_(deviceState)]]">
+  <div id="networkListDiv" class="layout vertical flex">
+    <localized-link
+      class="no-networks"
+      localized-string="[[getBluetoothDisabledErrorMessageForTether_()]]">
+    </localized-link>
+  </div>
+</template>
+
 <template is="dom-if" if="[[enableToggleIsVisible_(deviceState)]]">
   <div class="settings-box first">
     <div class="primary-toggle start" on$="[[deviceIsEnabled_(deviceState)]]"
