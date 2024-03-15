@@ -17,7 +17,52 @@
 namespace base::android {
 class MemoryPurgeManagerAndroid;
 
+class OneShotDelayedBackgroundTimer;
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kOnPreFreezeMemoryTrim);
+
+// Replace for |OneShotTimer|, that allows the tasks to be run by |OnPreFreeze|
+// (see |PreFreezeBackgroundMemoryTrimmer| below).
+class BASE_EXPORT OneShotDelayedBackgroundTimer final {
+ public:
+  OneShotDelayedBackgroundTimer();
+  ~OneShotDelayedBackgroundTimer();
+
+  void Stop();
+
+  void Start(const Location& posted_from, TimeDelta delay, OnceClosure task);
+
+  bool IsRunning() const;
+
+  template <class Receiver>
+  void Start(const Location& posted_from,
+             TimeDelta delay,
+             Receiver* receiver,
+             void (Receiver::*method)()) {
+    Start(posted_from, delay, BindOnce(method, Unretained(receiver)));
+  }
+
+  void SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner);
+
+  class OneShotDelayedBackgroundTimerImpl {
+   public:
+    virtual ~OneShotDelayedBackgroundTimerImpl() = default;
+    virtual void Stop() = 0;
+    virtual void Start(const Location& posted_from,
+                       TimeDelta delay,
+                       OnceClosure task) = 0;
+    virtual bool IsRunning() const = 0;
+    virtual void SetTaskRunner(
+        scoped_refptr<SequencedTaskRunner> task_runner) = 0;
+  };
+
+ private:
+  friend class PreFreezeBackgroundMemoryTrimmer;
+  class TimerImpl;
+  class TaskImpl;
+
+  std::unique_ptr<OneShotDelayedBackgroundTimerImpl> impl_;
+};
 
 // Starting from Android U, apps are frozen shortly after being backgrounded
 // (with some exceptions). This causes some background tasks for reclaiming
@@ -53,12 +98,14 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static void OnPreFreeze() LOCKS_EXCLUDED(lock_);
 
   static bool IsRespectingModernTrim();
+  static bool ShouldUseModernTrim();
 
  private:
   friend class base::NoDestructor<PreFreezeBackgroundMemoryTrimmer>;
   friend jboolean JNI_MemoryPurgeManager_IsOnPreFreezeMemoryTrimEnabled(
       JNIEnv* env);
   friend class base::android::MemoryPurgeManagerAndroid;
+  friend class OneShotDelayedBackgroundTimer::TaskImpl;
 
   // We use our own implementation here, based on |PostCancelableDelayedTask|,
   // rather than relying on something like |base::OneShotTimer|, since
@@ -78,6 +125,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     ~BackgroundTask();
 
     static void RunNow(std::unique_ptr<BackgroundTask>);
+
+    void CancelTask();
 
    private:
     void Start(const base::Location& from_here,
@@ -104,6 +153,11 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       const base::Location& from_here,
       base::OnceClosure task,
       base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
+  BackgroundTask* PostDelayedBackgroundTaskModernHelper(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      const base::Location& from_here,
+      base::OnceClosure task,
+      base::TimeDelta delay) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void OnPreFreezeInternal() LOCKS_EXCLUDED(lock_);
 
@@ -117,6 +171,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   bool did_register_task_ GUARDED_BY(lock_) = false;
   bool is_respecting_modern_trim_;
 };
+
 }  // namespace base::android
 
 #endif  // BASE_ANDROID_PRE_FREEZE_BACKGROUND_MEMORY_TRIMMER_H_

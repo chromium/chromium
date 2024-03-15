@@ -206,4 +206,122 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, AddDuringPreFreeze) {
   EXPECT_EQ(s_counter, 1);
 }
 
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerNeverStarted) {
+  OneShotDelayedBackgroundTimer timer;
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  EXPECT_EQ(s_counter, 0);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerFastForward) {
+  OneShotDelayedBackgroundTimer timer;
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
+
+  ASSERT_EQ(pending_task_count(), 1u);
+  ASSERT_TRUE(timer.IsRunning());
+
+  task_environment_.FastForwardBy(base::Seconds(30));
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  EXPECT_EQ(s_counter, 1);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerOnPreFreeze) {
+  OneShotDelayedBackgroundTimer timer;
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
+
+  ASSERT_EQ(pending_task_count(), 1u);
+  ASSERT_TRUE(timer.IsRunning());
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  EXPECT_EQ(s_counter, 1);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStopSingle) {
+  OneShotDelayedBackgroundTimer timer;
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
+
+  ASSERT_EQ(pending_task_count(), 1u);
+  ASSERT_TRUE(timer.IsRunning());
+
+  timer.Stop();
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  EXPECT_EQ(s_counter, 0);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerStopMultiple) {
+  OneShotDelayedBackgroundTimer timer;
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  timer.Start(FROM_HERE, base::Seconds(30), base::BindOnce(&IncGlobalCounter));
+
+  ASSERT_EQ(pending_task_count(), 1u);
+  ASSERT_TRUE(timer.IsRunning());
+
+  timer.Stop();
+  timer.Stop();
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
+  ASSERT_FALSE(timer.IsRunning());
+
+  EXPECT_EQ(s_counter, 0);
+}
+
+TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerDestroyed) {
+  // Add scope here to destroy timer.
+  {
+    OneShotDelayedBackgroundTimer timer;
+
+    ASSERT_EQ(pending_task_count(), 0u);
+    ASSERT_FALSE(timer.IsRunning());
+
+    timer.Start(FROM_HERE, base::Seconds(30),
+                base::BindOnce(&IncGlobalCounter));
+
+    ASSERT_EQ(pending_task_count(), 1u);
+    ASSERT_TRUE(timer.IsRunning());
+  }
+
+  ASSERT_EQ(pending_task_count(), 0u);
+
+  PreFreezeBackgroundMemoryTrimmer::OnPreFreezeForTesting();
+
+  ASSERT_EQ(pending_task_count(), 0u);
+
+  EXPECT_EQ(s_counter, 0);
+}
+
 }  // namespace base::android
