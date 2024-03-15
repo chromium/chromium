@@ -25,7 +25,7 @@
 
 namespace {
 
-const char kRecoveryHistogram[] = "Enterprise.EnrollementRecoveryOnBoot";
+const char kRecoveryHistogram[] = "EnterpriseCheck.EnrollementRecoveryOnBoot";
 
 // Do not reorder or delete entries because it is used in UMA.
 enum class EnrollmentRecoveryOnBootUma {
