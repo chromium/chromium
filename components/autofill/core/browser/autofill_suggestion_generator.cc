@@ -1563,8 +1563,7 @@ AutofillSuggestionGenerator::GetTouchToFillCardsToSuggest(
       AutofillSuggestionGenerator::GetOrderedCardsToSuggest(
           trigger_field, trigger_field_type,
           /*suppress_disused_cards=*/true, /*prefix_match=*/false,
-          base::FeatureList::IsEnabled(
-              features::kAutofillVirtualCardsOnTouchToFillAndroid));
+          /*include_virtual_cards=*/true);
   return base::ranges::any_of(cards_to_suggest,
                               &CreditCard::IsCompleteValidCard)
              ? cards_to_suggest

@@ -672,12 +672,6 @@ const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =
     "When enabled, Chrome Settings link directs to GPay Web rather than "
     "Payments Center for payment methods management.";
 
-const char kAutofillVirtualCardsOnTouchToFillAndroidName[] =
-    "Enable virtual cards on Touch To Fill bottomsheet for credit cards";
-const char kAutofillVirtualCardsOnTouchToFillAndroidDescription[] =
-    "When enabled, virtual credit card suggestions are shown on the Touch To "
-    "Fill bottomsheet for credit cards.";
-
 const char kAutofillVirtualViewStructureAndroidName[] =
     "Enable the setting to provide a virtual view structure for Autofill";
 const char kAutofillVirtualViewStructureAndroidDescription[] =

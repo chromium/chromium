@@ -5738,13 +5738,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(ui_devtools::switches::kEnableUiDevTools)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"enable-autofill-virtual-cards-on-touch-to-fill",
-     flag_descriptions::kAutofillVirtualCardsOnTouchToFillAndroidName,
-     flag_descriptions::kAutofillVirtualCardsOnTouchToFillAndroidDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillVirtualCardsOnTouchToFillAndroid)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enable-autofill-virtual-view-structure",
      flag_descriptions::kAutofillVirtualViewStructureAndroidName,

@@ -658,12 +658,6 @@ BASE_FEATURE(kAutofillUseUpdatedRequiredFieldsForAddressImport,
              "AutofillUseUpdatedRequiredFieldsForAddressImport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether virtual card suggestions are shown on the touch to fill
-// surface for credit cards on Android.
-BASE_FEATURE(kAutofillVirtualCardsOnTouchToFillAndroid,
-             "AutofillVirtualCardsOnTouchToFillAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether user tap on an element is needed to show autofill
 // suggestions. If enabled, this flag would disable android autofill suggestions
 // if the focus on an element is Javascript-originated.

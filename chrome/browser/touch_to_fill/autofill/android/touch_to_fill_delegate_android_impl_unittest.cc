@@ -4,7 +4,6 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -14,7 +13,6 @@
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -208,7 +206,6 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
   raw_ptr<TouchToFillDelegateAndroidImpl> touch_to_fill_delegate_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest, TryToShowTouchToFillSucceeds) {
@@ -554,11 +551,8 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
 }
 
-TEST_F(
-    TouchToFillDelegateAndroidImplUnitTest,
-    TryToShowTouchToFillShowsVirtualCardSuggestionsForEnrolledCardsWhenEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillVirtualCardsOnTouchToFillAndroid);
+TEST_F(TouchToFillDelegateAndroidImplUnitTest,
+       TryToShowTouchToFillShowsVirtualCardSuggestionsForEnrolledCards) {
   autofill_client_.GetPersonalDataManager()
       ->test_payments_data_manager()
       .ClearCreditCards();
@@ -571,9 +565,8 @@ TEST_F(
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(false));
 
-  // Since the card is enrolled into virtual card number, and showing virtual
-  // cards is enabled, a virtual card suggestion should be created and added
-  // before the real card.
+  // Since the card is enrolled into the virtual cards feature, a virtual card
+  // suggestion should be created and added before the real card.
   EXPECT_CALL(
       autofill_client_,
       ShowTouchToFillCreditCard(
@@ -588,8 +581,6 @@ TEST_F(
 TEST_F(
     TouchToFillDelegateAndroidImplUnitTest,
     TryToShowTouchToFillDoesNotShowVirtualCardSuggestionsForOptedOutMerchants) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillVirtualCardsOnTouchToFillAndroid);
   autofill_client_.GetPersonalDataManager()
       ->test_payments_data_manager()
       .ClearCreditCards();
@@ -603,27 +594,6 @@ TEST_F(
       .WillByDefault(testing::Return(true));
   EXPECT_CALL(autofill_client_,
               ShowTouchToFillCreditCard(_, ElementsAre(credit_card)));
-  TryToShowTouchToFill(/*expected_success=*/true);
-}
-
-TEST_F(
-    TouchToFillDelegateAndroidImplUnitTest,
-    TryToShowTouchToFillDoesNotShowVirtualCardSuggestionsForEnrolledCardsWhenDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillVirtualCardsOnTouchToFillAndroid);
-  autofill_client_.GetPersonalDataManager()
-      ->test_payments_data_manager()
-      .ClearCreditCards();
-  CreditCard credit_card =
-      autofill::test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
-  ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-
-  // Since showing virtual cards is disabled, no virtual card suggestion is
-  // shown for virtual card number enrolled card.
-  EXPECT_CALL(autofill_client_,
-              ShowTouchToFillCreditCard(_, ElementsAre(credit_card)));
-
   TryToShowTouchToFill(/*expected_success=*/true);
 }
 

@@ -382,9 +382,6 @@ extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
 extern const char kAutofillMoreProminentPopupName[];
 extern const char kAutofillMoreProminentPopupDescription[];
 
-extern const char kAutofillVirtualCardsOnTouchToFillAndroidName[];
-extern const char kAutofillVirtualCardsOnTouchToFillAndroidDescription[];
-
 extern const char kAutofillVirtualViewStructureAndroidName[];
 extern const char kAutofillVirtualViewStructureAndroidDescription[];
 

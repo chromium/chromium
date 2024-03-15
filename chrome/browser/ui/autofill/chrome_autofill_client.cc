@@ -980,15 +980,12 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillVirtualCardsOnTouchToFillAndroid)) {
-    // Create the manual filling controller which will be used to show the
-    // unmasked virtual card details in the manual fallback.
-    ManualFillingController::GetOrCreate(web_contents())
-        ->UpdateSourceAvailability(
-            ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
-            !cards_to_suggest.empty());
-  }
+  // Create the manual filling controller which will be used to show the
+  // unmasked virtual card details in the manual fallback.
+  ManualFillingController::GetOrCreate(web_contents())
+      ->UpdateSourceAvailability(
+          ManualFillingController::FillingSource::CREDIT_CARD_FALLBACKS,
+          !cards_to_suggest.empty());
 
   return touch_to_fill_credit_card_controller_.Show(
       std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()), delegate,
