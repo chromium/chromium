@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_HANDLERS_JAVA_SCRIPT_FEATURE_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_HANDLERS_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/no_destructor.h"
+#import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {
@@ -24,8 +24,12 @@ class FormHandlersJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static FormHandlersJavaScriptFeature* GetInstance();
 
-  // Toggles tracking form related changes in the frame.
-  void TrackFormMutations(web::WebFrame* frame, int mutation_tracking_delay);
+  // Toggles tracking form related changes in the frame. Will allow batching an
+  // added form activity and a removed form activity when `allowBatching` is
+  // true.
+  void TrackFormMutations(web::WebFrame* frame,
+                          int mutation_tracking_delay,
+                          bool allowBatching);
 
   // Toggles tracking the source of the input events in the frame.
   void ToggleTrackingUserEditedFields(web::WebFrame* frame,

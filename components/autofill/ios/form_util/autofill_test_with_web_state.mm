@@ -49,7 +49,7 @@ void AutofillTestWithWebState::TrackFormMutations(web::WebFrame* frame) {
       @"};");
 
   autofill::FormHandlersJavaScriptFeature::GetInstance()->TrackFormMutations(
-      frame, kTrackFormMutationsDelayInMs);
+      frame, kTrackFormMutationsDelayInMs, /*allowBatching=*/true);
 
   // Wait for |TrackFormMutations| to add form listeners.
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{

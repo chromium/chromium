@@ -332,7 +332,103 @@ function findFormlessPasswordFieldsIds(elements: Element[]): string[] {
  * form mutations are likely to come in batches. An undefined or zero value for
  * |delay| would stop the MutationObserver, if any.
  */
-function trackFormMutations(delay: number): void {
+function trackFormMutationsOld(delay: number): void {
+  if (formMutationObserver) {
+    formMutationObserver.disconnect();
+    formMutationObserver = null;
+  }
+
+  if (!delay) {
+    return;
+  }
+
+  formMutationObserver = new MutationObserver(function(mutations) {
+    for (const mutation of mutations) {
+      // Only process mutations to the tree of nodes.
+      if (mutation.type !== 'childList') {
+        continue;
+      }
+
+      // Handle added nodes.
+      if (findAllFormElementsInNodes(mutation.addedNodes).length > 0) {
+        const msg = {
+          'command': 'form.activity',
+          'frameID': gCrWeb.message.getFrameId(),
+          'formName': '',
+          'uniqueFormID': '',
+          'fieldIdentifier': '',
+          'uniqueFieldID': '',
+          'fieldType': '',
+          'type': 'form_changed',
+          'value': '',
+          'hasUserGesture': false,
+        };
+        return sendFormMutationMessagesAfterDelay([msg], delay);
+      }
+
+      // Handle removed nodes by starting from the specific removal cases down
+      // to the generic form modification case.
+
+      const removedFormElements =
+          findAllFormElementsInNodes(mutation.removedNodes);
+      const pwdFormGone = findPasswordForm(removedFormElements);
+      if (pwdFormGone) {
+        // Handle the removed password form case.
+        const uniqueFormId = gCrWeb.fill.getUniqueID(pwdFormGone);
+        const msg = {
+          'command': 'pwdform.removal',
+          'frameID': gCrWeb.message.getFrameId(),
+          'formName': gCrWeb.form.getFormIdentifier(pwdFormGone),
+          'uniqueFormID': uniqueFormId,
+          'uniqueFieldID': '',
+        };
+        return sendFormMutationMessagesAfterDelay([msg], delay);
+      }
+
+      const removedFormlessPasswordFieldsIds =
+          findFormlessPasswordFieldsIds(removedFormElements);
+      if (removedFormlessPasswordFieldsIds.length > 0) {
+        // Handle the removed formless password field case.
+        const msg = {
+          'command': 'pwdform.removal',
+          'frameID': gCrWeb.message.getFrameId(),
+          'formName': '',
+          'uniqueFormID': '',
+          'uniqueFieldID': gCrWeb.stringify(removedFormlessPasswordFieldsIds),
+        };
+        return sendFormMutationMessagesAfterDelay([msg], delay);
+      }
+
+      if (removedFormElements.length > 0) {
+        // Handle the removed form control element case as a form changed
+        // mutation that is treated the same way as adding a new form.
+        const msg = {
+          'command': 'form.activity',
+          'frameID': gCrWeb.message.getFrameId(),
+          'formName': '',
+          'uniqueFormID': '',
+          'fieldIdentifier': '',
+          'uniqueFieldID': '',
+          'fieldType': '',
+          'type': 'form_changed',
+          'value': '',
+          'hasUserGesture': false,
+        };
+        return sendFormMutationMessagesAfterDelay([msg], delay);
+      }
+    }
+  });
+  formMutationObserver.observe(document, {childList: true, subtree: true});
+}
+
+/**
+ * Installs a MutationObserver to track form related changes. Waits |delay|
+ * milliseconds before sending a message to browser. A delay is used because
+ * form mutations are likely to come in batches. An undefined or zero value for
+ * |delay| would stop the MutationObserver, if any, allows batching an added
+ * form message with a removed form message.
+ */
+function trackFormMutationsNew(delay: number): void {
   if (formMutationObserver) {
     formMutationObserver.disconnect();
     formMutationObserver = null;
@@ -438,6 +534,24 @@ function trackFormMutations(delay: number): void {
   });
   formMutationObserver.observe(document, {childList: true, subtree: true});
 }
+
+/**
+ * Installs a MutationObserver to track form related changes. Waits |delay|
+ * milliseconds before sending a message to browser. A delay is used because
+ * form mutations are likely to come in batches. An undefined or zero value for
+ * |delay| would stop the MutationObserver, if any. Will allow batching
+ * messages for removed and added forms together if `batchMessages` is true,
+ * which relaxes the messages throttling and allows correctly handling form
+ * replacements.
+ */
+function trackFormMutations(delay: number, batchMessages: boolean): void {
+  if (batchMessages) {
+    trackFormMutationsNew(delay);
+  } else {
+    trackFormMutationsOld(delay);
+  }
+}
+
 
 /**
  * Enables or disables the tracking of input event sources.

@@ -4,15 +4,15 @@
 
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 
-#include "base/no_destructor.h"
-#include "base/values.h"
+#import "base/no_destructor.h"
+#import "base/values.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
-#include "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
 namespace {
@@ -47,9 +47,12 @@ FormHandlersJavaScriptFeature::~FormHandlersJavaScriptFeature() = default;
 
 void FormHandlersJavaScriptFeature::TrackFormMutations(
     web::WebFrame* frame,
-    int mutation_tracking_delay) {
+    int mutation_tracking_delay,
+    bool allowBatching) {
   CallJavaScriptFunction(frame, "formHandlers.trackFormMutations",
-                         base::Value::List().Append(mutation_tracking_delay));
+                         base::Value::List()
+                             .Append(mutation_tracking_delay)
+                             .Append(allowBatching));
 }
 
 void FormHandlersJavaScriptFeature::ToggleTrackingUserEditedFields(

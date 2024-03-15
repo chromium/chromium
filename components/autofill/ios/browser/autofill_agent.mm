@@ -11,6 +11,7 @@
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/format_macros.h"
 #import "base/json/json_reader.h"
 #import "base/json/json_writer.h"
@@ -48,6 +49,7 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -901,8 +903,10 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   // Use a delay of 200ms when tracking form mutations to reduce the
   // communication overhead (as mutations are likely to come in batch).
   constexpr int kMutationTrackingEnabledDelayInMs = 200;
-  formHandlerFeature->TrackFormMutations(frame,
-                                         kMutationTrackingEnabledDelayInMs);
+  const bool allowMsgBatching =
+      base::FeatureList::IsEnabled(kAutofillFormActivityMsgBatchingIos);
+  formHandlerFeature->TrackFormMutations(
+      frame, kMutationTrackingEnabledDelayInMs, allowMsgBatching);
 
   formHandlerFeature->ToggleTrackingUserEditedFields(
       frame,

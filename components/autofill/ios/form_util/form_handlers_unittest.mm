@@ -40,15 +40,21 @@ namespace {
 
 constexpr int kPostMessageDelayMS = 50;
 
-class AutofillFormHandlersJavascriptTest : public web::JavascriptTest {
+NSString* TrackFormMutationsJS(int delay, bool allowMessagesBatch) {
+  return [NSString
+      stringWithFormat:@"__gCrWeb.formHandlers.trackFormMutations(%d, %@)",
+                       delay, allowMessagesBatch ? @"true" : @"false"];
+}
+
+class AutofillFormHandlersJavascriptTestBase : public web::JavascriptTest {
  protected:
-  AutofillFormHandlersJavascriptTest()
+  AutofillFormHandlersJavascriptTestBase()
       : handler_([[FakeScriptMessageHandlerForForms alloc] init]) {
     [web_view().configuration.userContentController
         addScriptMessageHandler:handler_
                            name:@"FormHandlersMessage"];
   }
-  ~AutofillFormHandlersJavascriptTest() override {}
+  ~AutofillFormHandlersJavascriptTestBase() override {}
 
   void SetUp() override {
     web::JavascriptTest::SetUp();
@@ -68,18 +74,20 @@ class AutofillFormHandlersJavascriptTest : public web::JavascriptTest {
   FakeScriptMessageHandlerForForms* handler_;
 };
 
+class AutofillFormHandlersJavascriptTest
+    : public AutofillFormHandlersJavascriptTestBase,
+      public testing::WithParamInterface<bool> {};
+
 // Tests that the deletion of a form with a password in it is notified.
-TEST_F(AutofillFormHandlersJavascriptTest, NotifyRemovedPasswordForm) {
+TEST_P(AutofillFormHandlersJavascriptTest, NotifyRemovedPasswordForm) {
   NSString* html = @"<html><body><form id=\"form1\">"
                     "<input type=\"password\"></form></body></html>";
   ASSERT_TRUE(LoadHtml(html));
 
   // Start tracking form mutations with a delay of 100 miliseconds to push the
   // mutation message.
-  NSString* const trackFormMutationsJS = [NSString
-      stringWithFormat:@"__gCrWeb.formHandlers.trackFormMutations(%d)",
-                       kPostMessageDelayMS];
-  web::test::ExecuteJavaScript(web_view(), trackFormMutationsJS);
+  web::test::ExecuteJavaScript(
+      web_view(), TrackFormMutationsJS(kPostMessageDelayMS, GetParam()));
   // Trigger a remove password form mutation event.
   web::test::ExecuteJavaScript(web_view(), @"document.forms[0].remove()");
 
@@ -108,7 +116,7 @@ TEST_F(AutofillFormHandlersJavascriptTest, NotifyRemovedPasswordForm) {
 }
 
 // Tests that the deletion of a formless password input element is notified.
-TEST_F(AutofillFormHandlersJavascriptTest,
+TEST_P(AutofillFormHandlersJavascriptTest,
        NotifyRemovedFormlessPasswordElement) {
   // Basic HTML page with the password input element to remove.
   NSString* html =
@@ -118,7 +126,7 @@ TEST_F(AutofillFormHandlersJavascriptTest,
   // Start tracking form mutations with a delay of 100 miliseconds to push the
   // mutation message.
   web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.formHandlers.trackFormMutations(100)");
+      web_view(), TrackFormMutationsJS(kPostMessageDelayMS, GetParam()));
 
   // Remove the password input element.
   NSString* js = @"document.getElementById('input1').remove();";
@@ -150,18 +158,21 @@ TEST_F(AutofillFormHandlersJavascriptTest,
 
 // Tests that removing a form control element and adding a new one in the same
 // mutations batch is notified with a message for each mutation, sent
-// back-to-back.
-TEST_F(AutofillFormHandlersJavascriptTest,
+// back-to-back, when batching is enabled.
+TEST_P(AutofillFormHandlersJavascriptTest,
        NotifyRemovedAndAddedFormControllerElements) {
   // Basic HTML page in which we add a HTML form.
   NSString* const html = @"<html><body><form id=\"form1\">"
                           "<input type=\"password\"></form></body></html>";
   ASSERT_TRUE(LoadHtml(html));
 
+  const bool allowMessagesBatch = GetParam();
+
   // Start tracking form mutations with a delay of 50 miliseconds to push the
   // mutation message.
-  web::test::ExecuteJavaScript(web_view(),
-                               @"__gCrWeb.formHandlers.trackFormMutations(50)");
+  web::test::ExecuteJavaScript(
+      web_view(),
+      TrackFormMutationsJS(kPostMessageDelayMS, allowMessagesBatch));
 
   // Make a script to create a new form and replace the old form with it.
   NSString* const replaceFormJS =
@@ -176,27 +187,30 @@ TEST_F(AutofillFormHandlersJavascriptTest,
 
   // Wait until the notification is pushed and received.
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-    return handler().lastReceivedMessage != nil;
+    return handler().numberOfReceivedMessage == 1;
   }));
 
-  // Verify the response has all required keys. The removed form message is
-  // always the first posted.
-  NSDictionary* body = handler().lastReceivedMessage.body;
-  ASSERT_TRUE(body);
-  ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
-  EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
-  EXPECT_TRUE(body[@"frameID"]);
-  EXPECT_TRUE(body[@"formName"]);
-  EXPECT_TRUE(body[@"uniqueFormID"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  NSDictionary* body = nil;
 
-  // Reset last received message to wait for the new one.
-  handler().lastReceivedMessage = nil;
+  if (allowMessagesBatch) {
+    // Verify the response has all required keys. The removed form message is
+    // always the first posted. Skip this when messages batching isn't enabled
+    // because the added form comes first in that case.
+    body = handler().lastReceivedMessage.body;
+    ASSERT_TRUE(body);
+    ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
+    EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
+    EXPECT_TRUE(body[@"frameID"]);
+    EXPECT_TRUE(body[@"formName"]);
+    EXPECT_TRUE(body[@"uniqueFormID"]);
+    EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
 
-  // Wait until the notification is pushed and received.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-    return handler().lastReceivedMessage != nil;
-  }));
+    // Wait until the notification is pushed and received.
+    EXPECT_TRUE(
+        WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+          return handler().numberOfReceivedMessage == 2;
+        }));
+  }
 
   // Verify the message for the added form has all required keys for.
   body = handler().lastReceivedMessage.body;
@@ -215,8 +229,9 @@ TEST_F(AutofillFormHandlersJavascriptTest,
 }
 
 // Tests that once the mutation messages slots are full for a given batch of
-// mutations, other mutations are dropped for throttling.
-TEST_F(AutofillFormHandlersJavascriptTest,
+// mutations, other mutations are dropped for throttling, when batching is
+// enabled.
+TEST_P(AutofillFormHandlersJavascriptTest,
        NotifyRemovedAndAddedFormControllerElements_Throttle) {
   // Basic HTML page with 2 forms.
   NSString* const html = @"<html><body><form id=\"form1\">"
@@ -225,13 +240,13 @@ TEST_F(AutofillFormHandlersJavascriptTest,
                           "</body></html>";
   ASSERT_TRUE(LoadHtml(html));
 
-  NSString* const trackFormMutationsJS = [NSString
-      stringWithFormat:@"__gCrWeb.formHandlers.trackFormMutations(%d)",
-                       kPostMessageDelayMS];
+  const bool allowMessagesBatch = GetParam();
 
   // Start tracking form mutations with a delay of `kPostMessageDelayMS`
   // miliseconds to push the mutation message.
-  web::test::ExecuteJavaScript(web_view(), trackFormMutationsJS);
+  web::test::ExecuteJavaScript(
+      web_view(),
+      TrackFormMutationsJS(kPostMessageDelayMS, allowMessagesBatch));
 
   // Make a script to add two forms and remove two, two of which will be
   // throttled.
@@ -252,21 +267,27 @@ TEST_F(AutofillFormHandlersJavascriptTest,
     return handler().numberOfReceivedMessage == 1;
   }));
 
-  // Verify the response has all required keys. The removed form message is
-  // always the first posted.
-  NSDictionary* body = handler().lastReceivedMessage.body;
-  ASSERT_TRUE(body);
-  ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
-  EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
-  EXPECT_TRUE(body[@"frameID"]);
-  EXPECT_TRUE(body[@"formName"]);
-  EXPECT_TRUE(body[@"uniqueFormID"]);
-  EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+  NSDictionary* body = nil;
 
-  // Wait until the new notification is pushed and received.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
-    return handler().numberOfReceivedMessage == 2;
-  }));
+  if (allowMessagesBatch) {
+    // Verify the response has all required keys. The removed form message is
+    // always the first posted. Skip this when messages batching isn't enabled
+    // because the added form comes first in that case.
+    body = handler().lastReceivedMessage.body;
+    ASSERT_TRUE(body);
+    ASSERT_TRUE([body isKindOfClass:[NSDictionary class]]);
+    EXPECT_NSEQ(@"pwdform.removal", body[@"command"]);
+    EXPECT_TRUE(body[@"frameID"]);
+    EXPECT_TRUE(body[@"formName"]);
+    EXPECT_TRUE(body[@"uniqueFormID"]);
+    EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+
+    // Wait until the notification is pushed and received.
+    EXPECT_TRUE(
+        WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool() {
+          return handler().numberOfReceivedMessage == 2;
+        }));
+  }
 
   // Verify the message for the added form has all required keys for.
   body = handler().lastReceivedMessage.body;
@@ -292,8 +313,13 @@ TEST_F(AutofillFormHandlersJavascriptTest,
       }));
 }
 
+// Test suite to test all form controls.
+INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
+                         AutofillFormHandlersJavascriptTest,
+                         ::testing::Values(true, false));
+
 class AutofillFormHandlersJavascriptTestAllHTMLControls
-    : public AutofillFormHandlersJavascriptTest,
+    : public AutofillFormHandlersJavascriptTestBase,
       public testing::WithParamInterface<std::string> {};
 
 // Tests that adding a form control element is notified as a form changed
@@ -389,7 +415,7 @@ TEST_P(AutofillFormHandlersJavascriptTestAllHTMLControls,
 
 // Test suite to test all form controls.
 INSTANTIATE_TEST_SUITE_P(
-    AutofillFormHandlersJavascriptTest,
+    /* No InstantiationName */,
     AutofillFormHandlersJavascriptTestAllHTMLControls,
     ::testing::Values("form", "input", "select", "option", "textarea"));
 
