@@ -63,14 +63,13 @@ MediaViewControllerBase::MediaViewControllerBase(
 
   live_feed_container_->SetVisible(false);
 
-  // TODO(b/329725210): Make font match spec.
   no_devices_found_label_->SetText(no_devices_found_label_text);
-  no_devices_found_label_->SetTextContext(
-      views::style::CONTEXT_DIALOG_BODY_TEXT);
+  no_devices_found_label_->SetTextStyle(
+      views::style::TextStyle::STYLE_BODY_3_MEDIUM);
   no_devices_found_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  // TODO(b/329725210): Make font match spec.
   device_name_label_->SetText(no_devices_found_combobox_text_);
+  device_name_label_->SetTextStyle(views::style::TextStyle::STYLE_BODY_4);
   device_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   device_name_label_->SetProperty(
       views::kMarginsKey, gfx::Insets().set_top(provider->GetDistanceMetric(
@@ -98,6 +97,8 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
     live_feed_container_->SetVisible(false);
     no_devices_found_label_->SetVisible(true);
     device_name_label_->SetText(no_devices_found_combobox_text_);
+    device_name_label_->SetEnabledColorId(
+        ui::ColorIds::kColorSysOnSurfaceSubtle);
     device_name_label_->SetVisible(true);
     device_selector_combobox_->SetVisible(false);
     base_view_->RefreshSize();
@@ -122,4 +123,5 @@ void MediaViewControllerBase::UpdateDeviceNameLabel() {
   CHECK(index);
   device_name_label_->SetText(
       device_selector_combobox_->GetModel()->GetItemAt(index.value()));
+  device_name_label_->SetEnabledColorId(ui::ColorIds::kColorSysOnSurface);
 }
