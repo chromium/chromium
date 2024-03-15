@@ -23,9 +23,9 @@ BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
 // Features that determine when a feature has graduated from experimental. These
 // should not be enabled at the same time as their respective settings
 // visibility features.
-BASE_DECLARE_FEATURE(kComposeGraduatedFromSettings);
-BASE_DECLARE_FEATURE(kTabOrganizationGraduatedFromSettings);
-BASE_DECLARE_FEATURE(kWallpaperSearchGraduatedFromSettings);
+BASE_DECLARE_FEATURE(kComposeGraduated);
+BASE_DECLARE_FEATURE(kTabOrganizationGraduated);
+BASE_DECLARE_FEATURE(kWallpaperSearchGraduated);
 
 // Feature for controlling the users who are eligible to see the IPH promo for
 // experimental AI.

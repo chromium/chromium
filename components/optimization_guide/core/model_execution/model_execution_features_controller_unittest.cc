@@ -271,7 +271,7 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {features::internal::kComposeGraduatedFromSettings,
+      {features::internal::kComposeGraduated,
        features::internal::kWallpaperSearchSettingsVisibility},
       /*disabled_features=*/
       {features::internal::kComposeSettingsVisibility});

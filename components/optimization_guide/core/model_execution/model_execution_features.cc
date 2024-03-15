@@ -25,13 +25,13 @@ BASE_FEATURE(kWallpaperSearchSettingsVisibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Graduation features.
-BASE_FEATURE(kComposeGraduatedFromSettings,
+BASE_FEATURE(kComposeGraduated,
              "ComposeGraduated",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTabOrganizationGraduatedFromSettings,
+BASE_FEATURE(kTabOrganizationGraduated,
              "TabOrganizationGraduated",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kWallpaperSearchGraduatedFromSettings,
+BASE_FEATURE(kWallpaperSearchGraduated,
              "WallpaperSearchGraduated",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -48,16 +48,13 @@ bool IsGraduatedFeature(proto::ModelExecutionFeature feature) {
   switch (feature) {
     // Actual features.
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
-      is_graduated =
-          base::FeatureList::IsEnabled(kComposeGraduatedFromSettings);
+      is_graduated = base::FeatureList::IsEnabled(kComposeGraduated);
       break;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
-      is_graduated =
-          base::FeatureList::IsEnabled(kTabOrganizationGraduatedFromSettings);
+      is_graduated = base::FeatureList::IsEnabled(kTabOrganizationGraduated);
       break;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
-      is_graduated =
-          base::FeatureList::IsEnabled(kWallpaperSearchGraduatedFromSettings);
+      is_graduated = base::FeatureList::IsEnabled(kWallpaperSearchGraduated);
       break;
     // Non-features.
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
