@@ -9,8 +9,6 @@ import("//components/optimization_guide/features.gni")
 
 static_library("browser") {
   sources = [
-    "page_content_annotations_web_contents_observer.cc",
-    "page_content_annotations_web_contents_observer.h",
     "page_text_dump_result.cc",
     "page_text_dump_result.h",
     "page_text_observer.cc",
@@ -19,24 +17,14 @@ static_library("browser") {
 
   public_deps = [
     "//base",
-    "//components/continuous_search/browser",
-    "//components/continuous_search/common",
-    "//components/google/core/common",
-    "//components/history/core/browser",
-    "//components/keyed_service/core",
-    "//components/no_state_prefetch/browser",
-    "//components/omnibox/browser",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/content/mojom:mojo_interfaces",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/page_content_annotations/core",
     "//content/public/browser",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
-    "//third_party/omnibox_proto",
   ]
   if (build_with_tflite_lib) {
     public_deps += [
@@ -53,18 +41,13 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "page_content_annotations_web_contents_observer_unittest.cc",
     "page_text_dump_result_unittest.cc",
     "page_text_observer_unittest.cc",
   ]
 
   deps = [
     ":browser",
-    "//components/history/core/test",
-    "//components/omnibox/browser:test_support",
     "//components/optimization_guide/core:test_support",
-    "//components/prefs:test_support",
-    "//components/ukm:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

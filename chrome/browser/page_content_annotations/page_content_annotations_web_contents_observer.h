@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
-#define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#ifndef CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#define CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -38,11 +38,8 @@ class PageContentAnnotationsWebContentsObserver
       const PageContentAnnotationsWebContentsObserver&) = delete;
 
  protected:
-  PageContentAnnotationsWebContentsObserver(
-      content::WebContents* web_contents,
-      PageContentAnnotationsService* page_content_annotations_service,
-      TemplateURLService* template_url_service,
-      prerender::NoStatePrefetchManager* no_state_prefetch_manager);
+  explicit PageContentAnnotationsWebContentsObserver(
+      content::WebContents* web_contents);
 
  private:
   friend class content::WebContentsUserData<
@@ -81,4 +78,4 @@ class PageContentAnnotationsWebContentsObserver
 
 }  // namespace page_content_annotations
 
-#endif  // COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
+#endif  // CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_

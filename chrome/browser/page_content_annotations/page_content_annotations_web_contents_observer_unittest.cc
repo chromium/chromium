@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 
 #include <string>
 #include <utility>
@@ -18,6 +18,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
@@ -32,10 +37,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/test/fake_local_frame.h"
 #include "content/public/test/navigation_simulator.h"
-#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -84,10 +86,11 @@ const TemplateURLService::Initializer kTemplateURLData[] = {
 };
 const char16_t kDefaultTemplateURLKeyword[] = u"default-engine.com";
 
+
 class FakePageContentAnnotationsService : public PageContentAnnotationsService {
  public:
   explicit FakePageContentAnnotationsService(
-      optimization_guide::OptimizationGuideModelProvider*
+      optimization_guide::TestOptimizationGuideModelProvider*
           optimization_guide_model_provider,
       history::HistoryService* history_service,
       ZeroSuggestCacheService* zero_suggest_cache_service,
@@ -140,8 +143,37 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
       last_related_searches_extraction_results_;
 };
 
+std::unique_ptr<KeyedService> BuildTestTemplateURLService(
+    content::BrowserContext* context) {
+  // Set up a simple template URL service with a default search engine.
+  auto template_url_service = std::make_unique<TemplateURLService>(
+      kTemplateURLData, std::size(kTemplateURLData));
+  auto* template_url = template_url_service->GetTemplateURLForKeyword(
+      kDefaultTemplateURLKeyword);
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+  return std::move(template_url_service);
+}
+
+
+std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(optimization_guide::TestOptimizationGuideModelProvider * optimization_guide_model_provider,
+    content::BrowserContext* context) {
+  auto* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<FakePageContentAnnotationsService>(
+optimization_guide_model_provider,      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
+      ZeroSuggestCacheServiceFactory::GetForProfile(profile),
+      TemplateURLServiceFactory::GetForProfile(profile));
+}
+
+
+std::unique_ptr<KeyedService> BuildTestHistoryService(
+    content::BrowserContext* context) {
+  auto history = std::make_unique<history::HistoryService>();
+  return std::move(history);
+}
+
 class PageContentAnnotationsWebContentsObserverTest
-    : public content::RenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness {
  public:
   PageContentAnnotationsWebContentsObserverTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -155,32 +187,20 @@ class PageContentAnnotationsWebContentsObserverTest
     content::RenderViewHostTestHarness::SetUp();
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    history_service_ = std::make_unique<history::HistoryService>();
-    ASSERT_TRUE(history_service_->Init(
+
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildTestHistoryService));
+    TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating(&BuildTestTemplateURLService));
+    PageContentAnnotationsServiceFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindRepeating(&BuildTestPageContentAnnotationsService, &optimization_guide_model_provider_));
+
+    ASSERT_TRUE(history_service()->Init(
         history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath())));
 
-    optimization_guide_model_provider_ = std::make_unique<
-        optimization_guide::TestOptimizationGuideModelProvider>();
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    ZeroSuggestProvider::RegisterProfilePrefs(pref_service_->registry());
-    zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
-        pref_service_.get(), /*cache_size=*/1);
-
-    // Set up a simple template URL service with a default search engine.
-    template_url_service_ = std::make_unique<TemplateURLService>(
-        kTemplateURLData, std::size(kTemplateURLData));
-    template_url_ = template_url_service_->GetTemplateURLForKeyword(
-        kDefaultTemplateURLKeyword);
-    template_url_service_->SetUserSelectedDefaultSearchProvider(template_url_);
-
-    page_content_annotations_service_ =
-        std::make_unique<FakePageContentAnnotationsService>(
-            optimization_guide_model_provider_.get(), history_service_.get(),
-            zero_suggest_cache_service_.get(), template_url_service_.get());
-
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
-        web_contents(), page_content_annotations_service_.get(),
-        template_url_service_.get(), /*no_state_prefetch_manager=*/nullptr);
+        web_contents());
 
     // Overwrite Google base URL.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -188,12 +208,10 @@ class PageContentAnnotationsWebContentsObserverTest
   }
 
   void TearDown() override {
-    history_service_->Shutdown();
+    history_service()->Shutdown();
     task_environment()->RunUntilIdle();
 
     DeleteContents();
-
-    page_content_annotations_service_.reset();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -207,13 +225,17 @@ class PageContentAnnotationsWebContentsObserverTest
   }
 
   FakePageContentAnnotationsService* service() {
-    return page_content_annotations_service_.get();
+    return static_cast<FakePageContentAnnotationsService*>(
+        PageContentAnnotationsServiceFactory::GetForProfile(profile()));
   }
 
-  history::HistoryService* history_service() { return history_service_.get(); }
+  history::HistoryService* history_service() {
+    return HistoryServiceFactory::GetForProfile(
+        profile(), ServiceAccessType::EXPLICIT_ACCESS);
+  }
 
   ZeroSuggestCacheService* zero_suggest_cache_service() {
-    return zero_suggest_cache_service_.get();
+    return ZeroSuggestCacheServiceFactory::GetForProfile(profile());
   }
 
   PageContentAnnotationsWebContentsObserver* helper() {
@@ -226,16 +248,9 @@ class PageContentAnnotationsWebContentsObserverTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
-      optimization_guide_model_provider_;
-  std::unique_ptr<history::HistoryService> history_service_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
-  std::unique_ptr<TemplateURLService> template_url_service_;
-  raw_ptr<TemplateURL> template_url_;
-  std::unique_ptr<FakePageContentAnnotationsService>
-      page_content_annotations_service_;
   base::HistogramTester histogram_tester_;
+  optimization_guide::TestOptimizationGuideModelProvider
+      optimization_guide_model_provider_;
 };
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,

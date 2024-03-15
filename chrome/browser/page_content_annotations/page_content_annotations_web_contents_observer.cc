@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_web_contents_observer.h"
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -20,6 +20,10 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_user_data.h"
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace page_content_annotations {
 
@@ -38,17 +42,18 @@ HistoryVisit CreateHistoryVisitFromWebContents(
 
 PageContentAnnotationsWebContentsObserver::
     PageContentAnnotationsWebContentsObserver(
-        content::WebContents* web_contents,
-        PageContentAnnotationsService* page_content_annotations_service,
-        TemplateURLService* template_url_service,
-        prerender::NoStatePrefetchManager* no_state_prefetch_manager)
+        content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
-          *web_contents),
-      template_url_service_(template_url_service),
-      page_content_annotations_service_(page_content_annotations_service),
-      no_state_prefetch_manager_(no_state_prefetch_manager) {
-  DCHECK(page_content_annotations_service_);
+          *web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  page_content_annotations_service_ =
+      PageContentAnnotationsServiceFactory::GetForProfile(profile);
+  CHECK(page_content_annotations_service_);
+  no_state_prefetch_manager_ =
+      prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile);
+  template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile);
 }
 
 PageContentAnnotationsWebContentsObserver::
