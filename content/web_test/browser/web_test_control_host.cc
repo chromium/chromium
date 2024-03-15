@@ -730,10 +730,12 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   SetBluetoothManualChooser(false);
   SetDatabaseQuota(content::kDefaultDatabaseQuota);
 
+  ShellBrowserContext* browser_context =
+      ShellContentBrowserClient::Get()->browser_context();
+  browser_context->ResetFederatedPermissionContext();
+
   // Delete all cookies, Attribution Reporting data and Aggregation service data
   {
-    BrowserContext* browser_context =
-        ShellContentBrowserClient::Get()->browser_context();
     StoragePartition* storage_partition =
         browser_context->GetDefaultStoragePartition();
     storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(

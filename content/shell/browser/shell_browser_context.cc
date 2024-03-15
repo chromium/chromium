@@ -217,6 +217,10 @@ ShellBrowserContext::GetShellFederatedPermissionContext() {
   return federated_permission_context_.get();
 }
 
+void ShellBrowserContext::ResetFederatedPermissionContext() {
+  federated_permission_context_.reset();
+}
+
 ReduceAcceptLanguageControllerDelegate*
 ShellBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
   if (!reduce_accept_lang_controller_delegate_) {

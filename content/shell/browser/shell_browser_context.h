@@ -72,6 +72,7 @@ class ShellBrowserContext : public BrowserContext {
   OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;
 
   ShellFederatedPermissionContext* GetShellFederatedPermissionContext();
+  void ResetFederatedPermissionContext();
 
  protected:
   bool ignore_certificate_errors() const { return ignore_certificate_errors_; }
