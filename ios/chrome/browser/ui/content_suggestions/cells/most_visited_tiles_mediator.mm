@@ -49,10 +49,7 @@ namespace {
 // Maximum number of most visited tiles fetched.
 const NSInteger kMaxNumMostVisitedTiles = 4;
 
-// Size of the favicon returned by the provider for the most visited items.
-const CGFloat kMostVisitedFaviconSize = 48;
 // Size below which the provider returns a colored tile instead of an image.
-const CGFloat kMostVisitedFaviconMinimalSize = 32;
 const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 }  // namespace
@@ -89,11 +86,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
     _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
-        initWithFaviconSize:IsMagicStackEnabled() ? kMagicStackFaviconWidth
-                                                  : kMostVisitedFaviconSize
-             minFaviconSize:IsMagicStackEnabled()
-                                ? kMagicStackMostVisitedFaviconMinimalSize
-                                : kMostVisitedFaviconMinimalSize
+        initWithFaviconSize:kMagicStackFaviconWidth
+             minFaviconSize:kMagicStackMostVisitedFaviconMinimalSize
            largeIconService:largeIconService];
     // Set a cache only for the Most Visited provider, as the cache is
     // overwritten for every new results and the size of the favicon fetched for
@@ -326,7 +320,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-  if (IsMagicStackEnabled()) {
     const base::Value::List& oldMostVisitedSites =
         _prefService->GetList(prefs::kIosLatestMostVisitedSites);
     base::Value::List freshMostVisitedSites;
@@ -343,7 +336,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     }
     _prefService->SetList(prefs::kIosLatestMostVisitedSites,
                           std::move(freshMostVisitedSites));
-  }
 
   _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
   _mostVisitedConfig.imageDataSource = self;

@@ -126,10 +126,8 @@
     return;
   }
   [self.NTPMetricsDelegate shortcutTileOpened];
-  if (IsMagicStackEnabled()) {
     [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                       kShortcuts];
-  }
   [self.contentSuggestionsMetricsRecorder
       recordShortcutTileTapped:shortcutsItem.collectionShortcutType];
   switch (shortcutsItem.collectionShortcutType) {

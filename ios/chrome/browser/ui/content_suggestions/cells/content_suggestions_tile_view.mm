@@ -16,7 +16,6 @@ namespace {
 
 const NSInteger kLabelNumLines = 2;
 const CGFloat kSpaceIconTitle = 10;
-const CGFloat kIconSize = 56;
 const CGFloat kMagicStackIconSize = 52;
 // Standard width of tiles.
 const CGFloat kPreferredMaxWidth = 74;
@@ -58,10 +57,8 @@ const CGFloat kCornerRadius = 8.0;
       }
     }
 
-    // Use original rounded-square background image for Shorcuts regardless of
-    // if it is in the Magic Stack.
-    if (!IsMagicStackEnabled() ||
-        type == ContentSuggestionsTileType::kShortcuts) {
+    // Use original rounded-square background image for Shorcuts
+    if (type == ContentSuggestionsTileType::kShortcuts) {
       [self addSubview:_titleLabel];
 
       // The squircle background view.
@@ -75,10 +72,9 @@ const CGFloat kCornerRadius = 8.0;
       [self addSubview:backgroundView];
       [self addSubview:_imageContainerView];
 
-      // Use smaller icon size when Shorcuts are put in Magic Stack.`
-      CGFloat width = IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
       [NSLayoutConstraint activateConstraints:@[
-        [backgroundView.widthAnchor constraintEqualToConstant:width],
+        [backgroundView.widthAnchor
+            constraintEqualToConstant:kMagicStackIconSize],
         [backgroundView.heightAnchor
             constraintEqualToAnchor:backgroundView.widthAnchor],
         [backgroundView.centerXAnchor
@@ -154,9 +150,8 @@ const CGFloat kCornerRadius = 8.0;
 // size if it is in the Magic Stack since the Magic Stack has a fixed height,
 // limiting the space available for multiple lines of text.
 - (void)updateTitleLabelNumberOfLines {
-  if (!IsMagicStackEnabled() ||
-      (_type == ContentSuggestionsTileType::kMostVisited &&
-       !ShouldPutMostVisitedSitesInMagicStack())) {
+  if (_type == ContentSuggestionsTileType::kMostVisited &&
+      !ShouldPutMostVisitedSitesInMagicStack()) {
     return;
   }
 

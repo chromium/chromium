@@ -94,25 +94,15 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
 @property(nonatomic, strong)
     NSMutableArray<UITapGestureRecognizer*>* mostVisitedTapRecognizers;
 
-// StackView holding all of `mostVisitedViews`.
-@property(nonatomic, strong) UIStackView* mostVisitedStackView;
-// Module Container for the `mostVisitedViews` when being shown in Magic Stack.
+// Module Container for the Most Visited Tiles when being shown in Magic Stack.
 @property(nonatomic, strong)
     MagicStackModuleContainer* mostVisitedModuleContainer;
 // Module Container for the tab resumption tile.
 @property(nonatomic, strong)
     MagicStackModuleContainer* tabResumptionModuleContainer;
-// List of all of the Most Visited views.
-@property(nonatomic, strong)
-    NSMutableArray<ContentSuggestionsMostVisitedTileView*>* mostVisitedViews;
 // Module Container for the Shortcuts when being shown in Magic Stack.
 @property(nonatomic, strong)
     MagicStackModuleContainer* shortcutsModuleContainer;
-// StackView holding all of `shortcutsViews`.
-@property(nonatomic, strong) UIStackView* shortcutsStackView;
-// List of all of the Shortcut views.
-@property(nonatomic, strong)
-    NSMutableArray<ContentSuggestionsShortcutTileView*>* shortcutsViews;
 // The current state of the Safety Check.
 @property(nonatomic, strong) SafetyCheckState* safetyCheckState;
 // Module Container for the `safetyCheckView` when being shown in Magic Stack.
@@ -138,8 +128,6 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
   MagicStackModuleContainer* _setUpListCompactedModule;
   MagicStackModuleContainer* _setUpListAllSetModule;
   MagicStackModuleContainer* _parcelTrackingModuleContainer;
-  NSLayoutConstraint* _mostVisitedTilesStackviewHeightAnchor;
-  NSLayoutConstraint* _shortcutsStackviewHeightAnchor;
   // The most recently selected MagicStack module's page index.
   NSUInteger _magicStackPage;
   MostVisitedTilesConfig* _mostVisitedTileConfig;
@@ -197,30 +185,8 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
                        constant:-bottomSpacing]
   ]];
 
-  if (_mostVisitedTileConfig) {
-    if (!IsMagicStackEnabled()) {
-      [self createAndInsertMostVisitedModule];
-      [self addMostVisitedTilesToStackView];
-    } else if (!ShouldPutMostVisitedSitesInMagicStack()) {
-      [self createAndInsertMostVisitedModule];
-    }
-  }
-  if (self.shortcutsViews) {
-    if (!IsMagicStackEnabled()) {
-      [self addUIElement:self.shortcutsStackView
-          withCustomBottomSpacing:kMostVisitedBottomMargin];
-      CGFloat width =
-          MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-      CGFloat height =
-          MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
-              .height;
-      _shortcutsStackviewHeightAnchor = [self.shortcutsStackView.heightAnchor
-          constraintGreaterThanOrEqualToConstant:height];
-      [NSLayoutConstraint activateConstraints:@[
-        [self.shortcutsStackView.widthAnchor constraintEqualToConstant:width],
-        _shortcutsStackviewHeightAnchor
-      ]];
-    }
+  if (_mostVisitedTileConfig && !ShouldPutMostVisitedSitesInMagicStack()) {
+    [self createAndInsertMostVisitedModule];
   }
 
   // Only Create Magic Stack if the ranking has been received. It can be delayed
@@ -284,7 +250,6 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
 
 - (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config {
   _mostVisitedTileConfig = config;
-  if (IsMagicStackEnabled()) {
     if (self.mostVisitedModuleContainer) {
       [self.mostVisitedModuleContainer removeFromSuperview];
     }
@@ -308,81 +273,11 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
       [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
                                               kMostVisited];
     }
-  } else {
-    if ([self.mostVisitedViews count]) {
-      for (ContentSuggestionsMostVisitedTileView* view in self
-               .mostVisitedViews) {
-        [view removeFromSuperview];
-      }
-      [self.mostVisitedViews removeAllObjects];
-      [self.mostVisitedTapRecognizers removeAllObjects];
-    } else {
-      self.mostVisitedViews = [NSMutableArray array];
-    }
-
-    if ([_mostVisitedTileConfig.mostVisitedItems count] == 0) {
-      // No Most Visited Tiles to show. Remove module.
-      [self.mostVisitedStackView removeFromSuperview];
-      return;
-    }
-    NSInteger index = 0;
-    for (ContentSuggestionsMostVisitedItem* item in _mostVisitedTileConfig
-             .mostVisitedItems) {
-      ContentSuggestionsMostVisitedTileView* view =
-          [[ContentSuggestionsMostVisitedTileView alloc]
-              initWithConfiguration:item];
-      view.menuProvider = item.menuProvider;
-      view.accessibilityIdentifier = [NSString
-          stringWithFormat:
-              @"%@%li",
-              kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
-              index];
-
-      __weak ContentSuggestionsMostVisitedItem* weakItem = item;
-      __weak ContentSuggestionsMostVisitedTileView* weakView = view;
-      void (^completion)(FaviconAttributes*) =
-          ^(FaviconAttributes* attributes) {
-            ContentSuggestionsMostVisitedTileView* strongView = weakView;
-            ContentSuggestionsMostVisitedItem* strongItem = weakItem;
-            if (!strongView || !weakItem) {
-              return;
-            }
-
-            strongItem.attributes = attributes;
-            [strongView.faviconView configureWithAttributes:attributes];
-          };
-      [config.imageDataSource fetchFaviconForURL:item.URL
-                                      completion:completion];
-      [self.contentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
-                                                                 atIndex:index];
-      [self.mostVisitedViews addObject:view];
-      index++;
-    }
-    // If viewDidLoad has been called before the first valid Most Visited Tiles
-    // are available, construct `mostVisitedStackView`.
-    if (self.verticalStackView && !self.mostVisitedStackView) {
-      [self createAndInsertMostVisitedModule];
-    }
-    [self addMostVisitedTilesToStackView];
-  }
 
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
-  // Trigger a relayout so that the MVTs will be counted in the Content
-  // Suggestions height. Upon app startup when this is often added
-  // asynchronously as the NTP is constructing the entire surface, so accurate
-  // height info is very important to simulate pushing content below the MVT
-  // down as opposed to pushing the content above the MVT up if the MVTs are not
-  // counted in the height.
-  // This only has to happen after `-viewDidLoad` has completed since it is
-  // adding views after the initial layout construction in `-viewDidLoad`.
-  if (self.viewLoaded) {
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
-  }
 }
 
 - (void)setShortcutTilesConfig:(ShortcutsConfig*)config {
-  if (IsMagicStackEnabled()) {
     if (self.shortcutsModuleContainer) {
       [self.shortcutsModuleContainer removeFromSuperview];
     }
@@ -394,40 +289,6 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
       [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
                                               kShortcuts];
     }
-  } else {
-    if ([self.shortcutsViews count]) {
-      for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
-        [view removeFromSuperview];
-      }
-      [self.shortcutsViews removeAllObjects];
-    } else {
-      self.shortcutsViews = [NSMutableArray array];
-      self.shortcutsStackView = [self createShortcutsStackView];
-    }
-
-    NSUInteger index = 0;
-    // Assumes this only called before viewDidLoad, so there is no need to add
-    // the views into the view hierarchy here.
-    for (ContentSuggestionsMostVisitedActionItem* item in config
-             .shortcutItems) {
-      ContentSuggestionsShortcutTileView* view =
-          [[ContentSuggestionsShortcutTileView alloc]
-              initWithConfiguration:item];
-      [self.shortcutsViews addObject:view];
-
-      view.accessibilityIdentifier = [NSString
-          stringWithFormat:
-              @"%@%li",
-              kContentSuggestionsShortcutsAccessibilityIdentifierPrefix, index];
-      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:config.commandHandler
-                  action:@selector(shortcutsTapped:)];
-      [view addGestureRecognizer:tapRecognizer];
-      [self.mostVisitedTapRecognizers addObject:tapRecognizer];
-      [self.shortcutsStackView addArrangedSubview:view];
-      index++;
-    }
-  }
 }
 
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order {
@@ -642,29 +503,11 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
   }
 }
 
-#pragma mark - UITraitEnvironment
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (previousTraitCollection.preferredContentSizeCategory !=
-          self.traitCollection.preferredContentSizeCategory &&
-      !IsMagicStackEnabled()) {
-    CGFloat height =
-        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
-            .height;
-    _mostVisitedTilesStackviewHeightAnchor.constant = height;
-    _shortcutsStackviewHeightAnchor.constant = height;
-  }
-
-}
-
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView
                      withVelocity:(CGPoint)velocity
               targetContentOffset:(inout CGPoint*)targetContentOffset {
-  DCHECK(IsMagicStackEnabled());
   targetContentOffset->x =
       [self getNextPageOffsetForOffset:scrollView.contentOffset.x
                               velocity:velocity.x];
@@ -718,15 +561,6 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
 }
 
 - (void)createAndInsertMostVisitedModule {
-  CGFloat horizontalSpacing =
-      ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
-  self.mostVisitedStackView = [[UIStackView alloc] init];
-  self.mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
-  self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
-  self.mostVisitedStackView.spacing = horizontalSpacing;
-  self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-
-  if (IsMagicStackEnabled()) {
     if (ShouldPutMostVisitedSitesInMagicStack()) {
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
@@ -746,46 +580,6 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
             constraintEqualToAnchor:self.view.centerXAnchor],
       ]];
     }
-  } else {
-    [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
-                                          atIndex:0];
-    [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
-                                   afterView:self.mostVisitedStackView];
-    CGFloat width =
-        MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-    CGSize size =
-        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory);
-    _mostVisitedTilesStackviewHeightAnchor =
-        [self.mostVisitedStackView.heightAnchor
-            constraintEqualToConstant:size.height];
-    [NSLayoutConstraint activateConstraints:@[
-      [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
-      _mostVisitedTilesStackviewHeightAnchor
-    ]];
-  }
-}
-
-// Add the elements in `mostVisitedViews` into `verticalStackView`.
-- (void)addMostVisitedTilesToStackView {
-  for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
-    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:_mostVisitedTileConfig.commandHandler
-                action:@selector(mostVisitedTileTapped:)];
-    [view addGestureRecognizer:tapRecognizer];
-    tapRecognizer.enabled = YES;
-    [self.mostVisitedTapRecognizers addObject:tapRecognizer];
-    [self.mostVisitedStackView addArrangedSubview:view];
-  }
-}
-
-- (UIStackView*)createShortcutsStackView {
-  UIStackView* shortcutsStackView = [[UIStackView alloc] init];
-  shortcutsStackView.axis = UILayoutConstraintAxisHorizontal;
-  shortcutsStackView.distribution = UIStackViewDistributionFillEqually;
-  shortcutsStackView.spacing =
-      ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
-  shortcutsStackView.alignment = UIStackViewAlignmentTop;
-  return shortcutsStackView;
 }
 
 // Logs `type` as the top module shown if it is first in
