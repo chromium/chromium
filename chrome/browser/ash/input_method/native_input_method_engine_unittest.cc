@@ -356,65 +356,6 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
   InputMethodManager::Shutdown();
 }
 
-TEST_F(NativeInputMethodEngineTest, CheckThatJapaneseStartupRecordedWhen) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectUniqueSample(
-      "InputMethod.PhysicalKeyboard.Japanese.StartupAction",
-      JapaneseStartupAction::kPerformMigration, 0);
-  TestingProfile testing_profile;
-  EnableDefaultFeatureListWithJapaneseSystemPk();
-  SetInputMethodOptionsJapaneseMigrationCompleted(testing_profile, false);
-
-  testing::StrictMock<MockInputMethod> mock_input_method;
-  InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_method));
-  NativeInputMethodEngine engine;
-  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
-                    /*extension_id=*/"", &testing_profile);
-
-  engine.Enable(kEngineIdUs);
-  EXPECT_FALSE(engine.IsConnectedForTesting());
-  engine.Enable("nacl_mozc_jp");
-  engine.FlushForTesting();  // ensure input_method is connected.
-  EXPECT_TRUE(engine.IsConnectedForTesting());
-
-  histogram_tester.ExpectUniqueSample(
-      "InputMethod.PhysicalKeyboard.Japanese.StartupAction",
-      JapaneseStartupAction::kPerformMigration, 1);
-
-  InputMethodManager::Shutdown();
-}
-
-TEST_F(NativeInputMethodEngineTest,
-       CheckThatJapaneseStartupEnumMarkedAsAlreadyMigrated) {
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectUniqueSample(
-      "InputMethod.PhysicalKeyboard.Japanese.StartupAction",
-      JapaneseStartupAction::kAlreadyMigrated, 0);
-  TestingProfile testing_profile;
-  EnableDefaultFeatureListWithJapaneseSystemPk();
-  SetInputMethodOptionsJapaneseMigrationCompleted(testing_profile, true);
-
-  testing::StrictMock<MockInputMethod> mock_input_method;
-  InputMethodManager::Initialize(
-      new TestInputMethodManager(&mock_input_method));
-  NativeInputMethodEngine engine;
-  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
-                    /*extension_id=*/"", &testing_profile);
-
-  engine.Enable(kEngineIdUs);
-  EXPECT_FALSE(engine.IsConnectedForTesting());
-  engine.Enable("nacl_mozc_jp");
-  engine.FlushForTesting();  // ensure input_method is connected.
-  EXPECT_TRUE(engine.IsConnectedForTesting());
-
-  histogram_tester.ExpectUniqueSample(
-      "InputMethod.PhysicalKeyboard.Japanese.StartupAction",
-      JapaneseStartupAction::kAlreadyMigrated, 1);
-
-  InputMethodManager::Shutdown();
-}
-
 TEST_F(NativeInputMethodEngineTest,
        CheckThatJapaneseStartupEnumIsMarkedAsStillLegacyInLegacyCode) {
   base::HistogramTester histogram_tester;

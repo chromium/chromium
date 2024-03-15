@@ -165,8 +165,6 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
 
   void OnConnectionFactoryBound(bool bound);
 
-  void OnJapaneseSettingsReceived(ime::mojom::JapaneseConfigPtr config);
-  void OnJapaneseDecoderConnected(bool bound);
   void ConnectToImeService(const std::string& engine_id);
 
   void HandleOnFocusAsyncForNativeMojoEngine(
@@ -190,9 +188,6 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   mojo::Remote<ime::mojom::InputEngineManager> remote_manager_;
   mojo::Remote<ime::mojom::ConnectionFactory> connection_factory_;
   mojo::AssociatedRemote<ime::mojom::InputMethod> input_method_;
-  // TODO(b/232341104): Delete this connection once Japanese settings have been
-  // migrated completely
-  mojo::AssociatedRemote<ime::mojom::JapaneseDecoder> japanese_decoder_;
   mojo::AssociatedReceiver<ime::mojom::InputMethodHost> host_receiver_{this};
 
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;

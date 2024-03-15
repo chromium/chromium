@@ -734,28 +734,6 @@ void NativeInputMethodEngineObserver::OnConnectionFactoryBound(bool bound) {
   connection_factory_.reset();
 }
 
-void NativeInputMethodEngineObserver::OnJapaneseSettingsReceived(
-    ime::mojom::JapaneseConfigPtr config) {
-  MigrateJapaneseSettingsToPrefs(*prefs_, *config);
-}
-
-void NativeInputMethodEngineObserver::OnJapaneseDecoderConnected(bool bound) {
-  if (!bound) {
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping)) {
-    return;
-  }
-  if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
-    LogJapaneseStartupAction(JapaneseStartupAction::kAlreadyMigrated);
-    return;
-  }
-  LogJapaneseStartupAction(JapaneseStartupAction::kPerformMigration);
-  japanese_decoder_->FetchJapaneseConfig(base::BindOnce(
-      &NativeInputMethodEngineObserver::OnJapaneseSettingsReceived,
-      weak_ptr_factory_.GetWeakPtr()));
-}
-
 void NativeInputMethodEngineObserver::ConnectToImeService(
     const std::string& engine_id) {
   if (!remote_manager_.is_bound()) {
@@ -768,32 +746,12 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
   // Deactivate any existing engine.
   connection_factory_.reset();
   input_method_.reset();
-  // Always reconnect the Japanese decoder.
-  japanese_decoder_.reset();
   host_receiver_.reset();
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&NativeInputMethodEngineObserver::OnConnectionFactoryBound,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  // TODO(b/232341104): Add metrics to track how long this takes to init the
-  // connection.
-  if (base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping)) {
-    connection_factory_->ConnectToJapaneseDecoder(
-        japanese_decoder_.BindNewEndpointAndPassReceiver(),
-        base::BindOnce(
-            &NativeInputMethodEngineObserver::OnJapaneseDecoderConnected,
-            weak_ptr_factory_.GetWeakPtr()));
-  }
-  // If this is fast enough, maybe this code can block the ConnectToInputMethod
-  // function on waiting for the migration if and only if the input_method
-  // engine is JP.
-  // TODO(b/232341104): Once sending Japanese settings in ConnectToInputMethod
-  // is supported, add the functionality to send it over using the
-  // JapaneseSettings mojom object. Ideally this should only be done after we
-  // have waited for the connection to the Japanese decoder and have finished
-  // the migration.
 
   mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost> input_method_host;
   host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
