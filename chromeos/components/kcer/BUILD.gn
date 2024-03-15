@@ -24,6 +24,8 @@ component("kcer") {
     "helpers/pkcs12_validator.h",
     "kcer.cc",
     "kcer.h",
+    "kcer_histograms.cc",
+    "kcer_histograms.h",
     "kcer_impl.cc",
     "kcer_impl.h",
     "kcer_notifier_net.cc",

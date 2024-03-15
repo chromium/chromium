@@ -49,6 +49,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/components/kcer/kcer.h"
+#include "chromeos/components/kcer/kcer_histograms.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -499,7 +500,15 @@ void RecordImportFromPKCS12KcerResult(
     base::OnceCallback<void(int nss_import_result)> callback,
     base::expected<void, kcer::Error> kcer_import_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(b/264387231): Record UMA events about PKCS#12 import using Kcer.
+
+  if (kcer_import_result.has_value()) {
+    kcer::RecordPkcs12MigrationUmaEvent(
+        kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportKcerSuccess);
+  } else {
+    kcer::RecordPkcs12MigrationUmaEvent(
+        kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportKcerFailed);
+    kcer::RecordKcerError(kcer_import_result.error());
+  }
 
   // Just return the nss_import_result. Kcer will attempt to import only if NSS
   // succeeds and even if Kcer fails, the cert should be usable.
@@ -690,6 +699,14 @@ void CertificateManagerModel::ImportFromPKCS12(
                                                      is_extractable, nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (nss_import_result == net::OK) {
+    kcer::RecordPkcs12MigrationUmaEvent(
+        kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportNssSuccess);
+  } else {
+    kcer::RecordPkcs12MigrationUmaEvent(
+        kcer::Pkcs12MigrationUmaEvent::kPkcs12ImportNssFailed);
+  }
+
   // `is_extractable` == true indicates that the cert came from the "Import"
   // button. By default it's imported into the software NSS database (aka public
   // slot). With the experiment enabled it should also be imported into Chaps.

@@ -95,7 +95,7 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kInvalidPkcs12 = 44,
   kPkcs12WrongPassword = 45,
   kPkcs12InvalidMac = 46,
-
+  kMaxValue = kPkcs12InvalidMac,
 };
 
 // Handles for tokens on ChromeOS.
