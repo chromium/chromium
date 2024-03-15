@@ -53,12 +53,19 @@
 #ifndef BASE_MEMORY_PROTECTED_MEMORY_H_
 #define BASE_MEMORY_PROTECTED_MEMORY_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
+#include <memory>
+
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/logging.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/protected_memory_buildflags.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
@@ -98,6 +105,8 @@ namespace base {
 template <typename T>
 class AutoWritableMemory;
 
+FORWARD_DECLARE_TEST(ProtectedMemoryDeathTest, VerifyTerminationOnAccess);
+
 template <typename T>
 class ProtectedMemory {
  public:
@@ -106,8 +115,8 @@ class ProtectedMemory {
   ProtectedMemory& operator=(const ProtectedMemory&) = delete;
 
   // Expose direct access to the encapsulated variable
-  const T& operator*() const { return data; }
-  const T* operator->() const { return &data; }
+  const T& operator*() const { return data_; }
+  const T* operator->() const { return &data_; }
 
   // Helper class for creating simple ProtectedMemory static initializers.
   class Initializer {
@@ -123,87 +132,157 @@ class ProtectedMemory {
 
  private:
   friend class AutoWritableMemory<T>;
-  T data;
+  FRIEND_TEST_ALL_PREFIXES(ProtectedMemoryDeathTest, VerifyTerminationOnAccess);
+
+  T data_;
 };
 
-namespace internal {
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
-// CHECK that the byte at |ptr| is read-only.
-BASE_EXPORT void AssertMemoryIsReadOnly(const void* ptr);
-
-// Abstract out platform-specific memory APIs. |end| points to the byte past
-// the end of the region of memory having its memory protections changed.
-BASE_EXPORT bool SetMemoryReadWrite(void* start, void* end);
-BASE_EXPORT bool SetMemoryReadOnly(void* start, void* end);
+namespace internal {
+// Checks that the byte at `ptr` is read-only.
+BASE_EXPORT bool IsMemoryReadOnly(const void* ptr);
 
 // Abstract out platform-specific methods to get the beginning and end of the
 // PROTECTED_MEMORY_SECTION. ProtectedMemoryEnd returns a pointer to the byte
 // past the end of the PROTECTED_MEMORY_SECTION.
-inline constexpr void* ProtectedMemoryStart = &__start_protected_memory;
-inline constexpr void* ProtectedMemoryEnd = &__stop_protected_memory;
+inline constexpr void* kProtectedMemoryStart = &__start_protected_memory;
+inline constexpr void* kProtectedMemoryEnd = &__stop_protected_memory;
+}  // namespace internal
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 
-#if defined(COMPONENT_BUILD)
-// For component builds we want to define a separate global writers variable
-// (explained below) in every dynamic shared object (DSO) that includes this
-// header. To do that we use this template to define a global without duplicate
-// symbol errors.
-template <typename T>
-struct DsoSpecific {
-  static T value;
+// Provide some common functionality for `AutoWritableMemory<T>`.
+class BASE_EXPORT AutoWritableMemoryBase {
+ protected:
+#if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
+  // Checks that `object` is located within the interval
+  // (internal::kProtectedMemoryStart, internal::kProtectedMemoryEnd).
+  template <typename T>
+  static bool IsObjectInProtectedSection(const T& object) {
+    const T* const ptr = std::addressof(object);
+    const T* const ptr_end = ptr + 1;
+    return (ptr > internal::kProtectedMemoryStart) &&
+           (ptr_end <= internal::kProtectedMemoryEnd);
+  }
+
+  template <typename T>
+  static bool IsObjectReadOnly(const T& object) {
+    return internal::IsMemoryReadOnly(std::addressof(object));
+  }
+
+  template <typename T>
+  static bool SetObjectReadWrite(T& object) {
+    T* const ptr = std::addressof(object);
+    T* const ptr_end = ptr + 1;
+    return SetMemoryReadWrite(ptr, ptr_end);
+  }
+
+  static bool SetProtectedSectionReadOnly() {
+    return SetMemoryReadOnly(internal::kProtectedMemoryStart,
+                             internal::kProtectedMemoryEnd);
+  }
+
+  // When linking, each DSO will have its own protected section. We can't keep
+  // track of each section, yet we have to ensure to always unlock and re-lock
+  // the correct section.
+  //
+  // We solve this by defining a separate global writers variable (explained
+  // below) in every dynamic shared object (DSO) that includes this header. To
+  // do that we use this structure to define global writer data without
+  // duplicate symbol errors.
+  //
+  // Storing the data in a substructure is required to store `writers` within
+  // the protected subsection. If `writers` and `writers_lock()` are located
+  // directly in `AutoWritableMemoryBase`, for unknown reasons `writers` is not
+  // placed into the protected section.
+  struct WriterData {
+    // `writers` is a global holding the number of ProtectedMemory instances set
+    // writable, used to avoid races setting protected memory readable/writable.
+    // When this reaches zero the protected memory region is set read only.
+    // Access is controlled by writers_lock.
+    //
+    // Declare writers in the protected memory section to avoid the scenario
+    // where an attacker could overwrite it with a large value and invoke code
+    // that constructs and destructs an AutoWritableMemory. After such a call
+    // protected memory would still be set writable because writers > 0.
+    PROTECTED_MEMORY_SECTION
+    static inline size_t writers GUARDED_BY(writers_lock()) = 0;
+
+    // Synchronizes access to the writers variable and the simultaneous actions
+    // that need to happen alongside writers changes, e.g. setting the protected
+    // memory region readable when writers is decremented to 0.
+    static Lock& writers_lock() {
+      static NoDestructor<Lock> writers_lock;
+      return *writers_lock;
+    }
+  };
+
+ private:
+  // Abstract out platform-specific memory APIs. |end| points to the byte
+  // past the end of the region of memory having its memory protections
+  // changed.
+  static bool SetMemoryReadWrite(void* start, void* end);
+  static bool SetMemoryReadOnly(void* start, void* end);
+#endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 };
-template <typename T>
-T DsoSpecific<T>::value = 0;
-#endif  // defined(COMPONENT_BUILD)
-}  // namespace internal
 
 // A class that sets a given ProtectedMemory variable writable while the
 // AutoWritableMemory is in scope. This class implements the logic for setting
 // the protected memory region read-only/read-write in a thread-safe manner.
+//
+// |AutoWritableMemory| affects the write-permissions of _all_ protected data
+// for a DSO, not just of the instance that it's being passed! All protected
+// data is stored within the same binary section. At the same time, the OS-level
+// support enforcing write protection can only be changed at page level. To
+// allow a more fine grained control a dedicated page per instance of protected
+// data would be required.
 template <typename T>
-class AutoWritableMemory {
+class AutoWritableMemory : public AutoWritableMemoryBase {
  public:
-  // If this is the first writer (e.g. writers == 0) set the writers variable
-  // read-write. Next, increment writers and set the requested memory writable.
   explicit AutoWritableMemory(ProtectedMemory<T>& protected_memory)
+#if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
+      LOCKS_EXCLUDED(WriterData::writers_lock())
+#endif
       : protected_memory_(protected_memory) {
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
-    T* ptr = &(protected_memory.data);
-    T* ptr_end = ptr + 1;
-    CHECK(ptr >= internal::ProtectedMemoryStart &&
-          ptr_end <= internal::ProtectedMemoryEnd);
+
+    // Check that the data is located in the protected section to
+    // ensure consistency of data.
+    CHECK(IsObjectInProtectedSection(protected_memory_->data_));
+    CHECK(IsObjectInProtectedSection(WriterData::writers));
 
     {
-      base::AutoLock auto_lock(writers_lock());
-      if (writers == 0) {
-        internal::AssertMemoryIsReadOnly(ptr);
-#if !defined(COMPONENT_BUILD)
-        internal::AssertMemoryIsReadOnly(&writers);
-        CHECK(internal::SetMemoryReadWrite(&writers, &writers + 1));
-#endif  // !defined(COMPONENT_BUILD)
+      base::AutoLock auto_lock(WriterData::writers_lock());
+
+      if (WriterData::writers == 0) {
+        CHECK(IsObjectReadOnly(protected_memory_->data_));
+        CHECK(IsObjectReadOnly(WriterData::writers));
+        CHECK(SetObjectReadWrite(WriterData::writers));
       }
 
-      writers++;
+      ++WriterData::writers;
     }
 
-    CHECK(internal::SetMemoryReadWrite(ptr, ptr_end));
+    CHECK(SetObjectReadWrite(protected_memory_->data_));
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
   }
 
-  // On destruction decrement writers, and if no other writers exist, set the
-  // entire protected memory region read-only.
-  ~AutoWritableMemory() {
+  ~AutoWritableMemory()
 #if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
-    base::AutoLock auto_lock(writers_lock());
-    CHECK_GT(writers, 0);
-    writers--;
+      LOCKS_EXCLUDED(WriterData::writers_lock())
+#endif
+  {
+#if BUILDFLAG(PROTECTED_MEMORY_ENABLED)
+    base::AutoLock auto_lock(WriterData::writers_lock());
+    CHECK_GT(WriterData::writers, 0u);
+    --WriterData::writers;
 
-    if (writers == 0) {
-      CHECK(internal::SetMemoryReadOnly(internal::ProtectedMemoryStart,
-                                        internal::ProtectedMemoryEnd));
-#if !defined(COMPONENT_BUILD)
-      internal::AssertMemoryIsReadOnly(&writers);
-#endif  // !defined(COMPONENT_BUILD)
+    if (WriterData::writers == 0) {
+      // Lock the whole section of protected memory and set _all_ instances of
+      // base::ProtectedMemory to non-writeable.
+      CHECK(SetProtectedSectionReadOnly());
+      CHECK(IsObjectReadOnly(
+          *static_cast<const char*>(internal::kProtectedMemoryStart)));
+      CHECK(IsObjectReadOnly(WriterData::writers));
     }
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED)
   }
@@ -213,41 +292,13 @@ class AutoWritableMemory {
   AutoWritableMemory(AutoWritableMemory&& original) = delete;
   AutoWritableMemory& operator=(AutoWritableMemory&& original) = delete;
 
-  T& GetProtectedData() { return protected_memory_->data; }
-  T* GetProtectedDataPtr() { return &(protected_memory_->data); }
+  T& GetProtectedData() { return protected_memory_->data_; }
+  T* GetProtectedDataPtr() { return &(protected_memory_->data_); }
 
  private:
-  // 'writers' is a global holding the number of ProtectedMemory instances set
-  // writable, used to avoid races setting protected memory readable/writable.
-  // When this reaches zero the protected memory region is set read only.
-  // Access is controlled by writers_lock.
-#if defined(COMPONENT_BUILD)
-  // For component builds writers is a reference to an int defined separately in
-  // every DSO.
-  static constexpr int& writers = internal::DsoSpecific<int>::value;
-#else
-  // Otherwise, we declare writers in the protected memory section to avoid the
-  // scenario where an attacker could overwrite it with a large value and invoke
-  // code that constructs and destructs an AutoWritableMemory. After such a call
-  // protected memory would still be set writable because writers > 0.
-  static int writers;
-#endif  // defined(COMPONENT_BUILD)
-
-  // Synchronizes access to the writers variable and the simultaneous actions
-  // that need to happen alongside writers changes, e.g. setting the protected
-  // memory region readable when writers is decremented to 0.
-  static Lock& writers_lock() {
-    static NoDestructor<Lock> writers_lock;
-    return *writers_lock;
-  }
 
   const raw_ref<ProtectedMemory<T>> protected_memory_;
 };
-
-#if !defined(COMPONENT_BUILD)
-template <typename T>
-PROTECTED_MEMORY_SECTION int AutoWritableMemory<T>::writers = 0;
-#endif  // !defined(COMPONENT_BUILD)
 
 template <typename T>
 ProtectedMemory<T>::Initializer::Initializer(

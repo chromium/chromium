@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 
 namespace base {
-namespace internal {
 
 namespace {
 
@@ -30,23 +29,25 @@ bool SetMemory(void* start, void* end, DWORD prot) {
 
 }  // namespace
 
-bool SetMemoryReadWrite(void* start, void* end) {
-  return SetMemory(start, end, PAGE_READWRITE);
-}
-
-bool SetMemoryReadOnly(void* start, void* end) {
-  return SetMemory(start, end, PAGE_READONLY);
-}
-
-void AssertMemoryIsReadOnly(const void* ptr) {
+namespace internal {
+bool IsMemoryReadOnly(const void* ptr) {
   const uintptr_t page_mask = ~(base::GetPageSize() - 1);
   const uintptr_t page_start = reinterpret_cast<uintptr_t>(ptr) & page_mask;
 
   MEMORY_BASIC_INFORMATION info;
   SIZE_T result =
       VirtualQuery(reinterpret_cast<LPCVOID>(page_start), &info, sizeof(info));
-  CHECK_GT(result, 0U);
-  CHECK(info.Protect == PAGE_READONLY);
+
+  return (result > 0U) && (info.Protect == PAGE_READONLY);
 }
 }  // namespace internal
+
+bool AutoWritableMemoryBase::SetMemoryReadWrite(void* start, void* end) {
+  return SetMemory(start, end, PAGE_READWRITE);
+}
+
+bool AutoWritableMemoryBase::SetMemoryReadOnly(void* start, void* end) {
+  return SetMemory(start, end, PAGE_READONLY);
+}
+
 }  // namespace base
