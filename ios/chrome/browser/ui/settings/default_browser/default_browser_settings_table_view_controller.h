@@ -20,7 +20,7 @@
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // The feature that triggered this view controller.
-@property(nonatomic, assign) DefaultBrowserPromoSource source;
+@property(nonatomic, assign) DefaultBrowserSettingsPageSource source;
 
 @end
 

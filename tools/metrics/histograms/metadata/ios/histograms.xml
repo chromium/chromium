@@ -811,6 +811,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.DefaultBrowserSettingsPageUsage{Source}"
+    enum="IOSDefaultBrowserSettingsPageUsage" expires_after="2024-12-05">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>gayane@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the action taken by the user on Default Browser Settings page that
+    was displayed from one of the possible {Source}. Each action can be recorded
+    only once per settings page display. This is true even for the iOS settings
+    opening action which users can do multiple times during the same settings
+    page display.
+  </summary>
+  <token key="Source">
+    <variant name="" summary="Opened from any source"/>
+    <variant name=".ExternalAction"
+        summary="Opened from external action (URL passed to Chrome with
+                 &quot;ChromeExternalAction&quot; as host)"/>
+    <variant name=".ExternalIntent" summary="Opened from external intent"/>
+    <variant name=".Omnibox" summary="Opened from Omnibox"/>
+    <variant name=".Settings" summary="Opened from Chrome settings"/>
+    <variant name=".SetUpList" summary="Opened from setup list"/>
+    <variant name=".TipsNotification" summary="Opened from tips notification"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultBrowserVideoPromo.Fullscreen"
     enum="IOSDefaultBrowserVideoPromoAction" expires_after="2024-09-01">
   <owner>cheickcisse@google.com</owner>
@@ -1005,17 +1030,6 @@ chromium-metrics-reviews@google.com.
   <owner>bling-get-set-up@google.com</owner>
   <summary>
     Records the action passed to Chrome for iOS using an external action URL.
-  </summary>
-</histogram>
-
-<histogram name="IOS.ExternalAction.DefaultBrowserPromo"
-    enum="IOSExternalActionDefaultBrowserPromoUsage" expires_after="2024-12-05">
-  <owner>nicolasmacbeth@google.com</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    Records the action taken by the user after they landed on the Default
-    Browser Promo from an External Action (URL passed to Chrome with
-    &quot;ChromeExternalAction&quot; as host).
   </summary>
 </histogram>
 

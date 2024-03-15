@@ -209,8 +209,9 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
   id mock_handler = OCMProtocolMock(@protocol(SettingsCommands));
   OCMExpect([mock_handler
       showDefaultBrowserSettingsFromViewController:nil
-                                      sourceForUMA:DefaultBrowserPromoSource::
-                                                       kTipsNotification]);
+                                      sourceForUMA:
+                                          DefaultBrowserSettingsPageSource::
+                                              kTipsNotification]);
   [browser_->GetCommandDispatcher()
       startDispatchingToTarget:mock_handler
                    forProtocol:@protocol(SettingsCommands)];

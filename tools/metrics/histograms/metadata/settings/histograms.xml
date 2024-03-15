@@ -94,9 +94,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.DefaultBrowserFromSource"
-    enum="IOSDefaultBrowserPromoSource" expires_after="2024-09-01">
-  <owner>djean@google.com</owner>
-  <owner>olivierrobin@google.com</owner>
+    enum="IOSDefaultBrowserSettingsPageSource" expires_after="2024-09-01">
+  <owner>gayane@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     The source surface that requested displaying the default browser system
     settings. Logged when the user actually opens the iOS system settings (IOS

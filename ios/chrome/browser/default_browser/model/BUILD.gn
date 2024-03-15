@@ -3,7 +3,11 @@
 # found in the LICENSE file.
 
 source_set("model") {
-  sources = [ "promo_source.h" ]
+  sources = [
+    "promo_source.h",
+    "promo_source.mm",
+  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("utils") {

@@ -314,8 +314,9 @@ void TipsNotificationClient::ShowDefaultBrowserPromo() {
         HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
     [settings_handler
         showDefaultBrowserSettingsFromViewController:nil
-                                        sourceForUMA:DefaultBrowserPromoSource::
-                                                         kTipsNotification];
+                                        sourceForUMA:
+                                            DefaultBrowserSettingsPageSource::
+                                                kTipsNotification];
   }];
 }
 

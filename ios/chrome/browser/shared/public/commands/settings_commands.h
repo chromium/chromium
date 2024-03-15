@@ -8,7 +8,7 @@
 namespace autofill {
 class CreditCard;
 }  // namespace autofill
-enum class DefaultBrowserPromoSource;
+enum class DefaultBrowserSettingsPageSource;
 namespace password_manager {
 struct CredentialUIEntry;
 enum class PasswordCheckReferrer;
@@ -72,7 +72,8 @@ enum class PasswordCheckReferrer;
 - (void)showDefaultBrowserSettingsFromViewController:
             (UIViewController*)baseViewController
                                         sourceForUMA:
-                                            (DefaultBrowserPromoSource)source;
+                                            (DefaultBrowserSettingsPageSource)
+                                                source;
 
 // Shows the settings page allowing the user to clear their browsing data.
 - (void)showClearBrowsingDataSettings;

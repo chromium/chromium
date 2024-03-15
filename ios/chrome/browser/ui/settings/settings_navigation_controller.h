@@ -15,7 +15,7 @@
 class Browser;
 @protocol BrowserCommands;
 @protocol BrowsingDataCommands;
-enum class DefaultBrowserPromoSource;
+enum class DefaultBrowserSettingsPageSource;
 @protocol ImportDataControllerDelegate;
 @protocol SettingsRootViewControlling;
 @protocol SnackbarCommands;
@@ -192,7 +192,7 @@ extern NSString* const kSettingsDoneButtonId;
                               delegate:
                                   (id<SettingsNavigationControllerDelegate>)
                                       delegate
-                          sourceForUMA:(DefaultBrowserPromoSource)source;
+                          sourceForUMA:(DefaultBrowserSettingsPageSource)source;
 
 // Creates a new ClearBrowsingDataTableViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and

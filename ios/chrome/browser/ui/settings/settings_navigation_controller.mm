@@ -503,7 +503,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                               delegate:
                                   (id<SettingsNavigationControllerDelegate>)
                                       delegate
-                          sourceForUMA:(DefaultBrowserPromoSource)source {
+                          sourceForUMA:
+                              (DefaultBrowserSettingsPageSource)source {
   DefaultBrowserSettingsTableViewController* controller =
       [[DefaultBrowserSettingsTableViewController alloc] init];
   SettingsNavigationController* navigationController =
@@ -1174,7 +1175,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showDefaultBrowserSettingsFromViewController:
             (UIViewController*)baseViewController
                                         sourceForUMA:
-                                            (DefaultBrowserPromoSource)source {
+                                            (DefaultBrowserSettingsPageSource)
+                                                source {
   DefaultBrowserSettingsTableViewController* controller =
       [[DefaultBrowserSettingsTableViewController alloc] init];
   ConfigureHandlers(controller, _browser->GetCommandDispatcher());

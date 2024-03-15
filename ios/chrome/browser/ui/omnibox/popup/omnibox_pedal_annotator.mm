@@ -108,13 +108,12 @@ const CGFloat kSymbolSize = 18;
       UIImage* image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                                           kSymbolSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+      DefaultBrowserSettingsPageSource source =
+          DefaultBrowserSettingsPageSource::kOmnibox;
       ProceduralBlock action = ^{
         [omniboxHandler cancelOmniboxEdit];
-        [settingsHandler
-            showDefaultBrowserSettingsFromViewController:nil
-                                            sourceForUMA:
-                                                DefaultBrowserPromoSource::
-                                                    kOmnibox];
+        [settingsHandler showDefaultBrowserSettingsFromViewController:nil
+                                                         sourceForUMA:source];
       };
       return [[OmniboxPedalData alloc]
               initWithTitle:hint

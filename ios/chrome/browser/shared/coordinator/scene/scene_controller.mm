@@ -2313,7 +2313,8 @@ using UserFeedbackDataCallback =
 - (void)showDefaultBrowserSettingsFromViewController:
             (UIViewController*)baseViewController
                                         sourceForUMA:
-                                            (DefaultBrowserPromoSource)source {
+                                            (DefaultBrowserSettingsPageSource)
+                                                source {
   if (!baseViewController) {
     baseViewController = self.currentInterface.viewController;
   }
@@ -2570,7 +2571,7 @@ using UserFeedbackDataCallback =
     case SHOW_DEFAULT_BROWSER_SETTINGS:
       return ^{
         [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
-                      DefaultBrowserPromoSource::kExternalIntent];
+                      DefaultBrowserSettingsPageSource::kExternalIntent];
       };
     case SEARCH_PASSWORDS:
       return ^{
@@ -2595,7 +2596,7 @@ using UserFeedbackDataCallback =
     case SET_CHROME_DEFAULT_BROWSER:
       return ^{
         [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
-                      DefaultBrowserPromoSource::kExternalIntent];
+                      DefaultBrowserSettingsPageSource::kExternalIntent];
       };
     case VIEW_HISTORY:
       return ^{
@@ -2641,7 +2642,7 @@ using UserFeedbackDataCallback =
     case EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS:
       return ^{
         [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
-                      DefaultBrowserPromoSource::kExternalAction];
+                      DefaultBrowserSettingsPageSource::kExternalAction];
       };
     default:
       return nil;
@@ -2695,7 +2696,7 @@ using UserFeedbackDataCallback =
 }
 
 - (void)showDefaultBrowserSettingsWithSourceForUMA:
-    (DefaultBrowserPromoSource)sourceForUMA {
+    (DefaultBrowserSettingsPageSource)sourceForUMA {
   if (!self.currentInterface.browser) {
     return;
   }

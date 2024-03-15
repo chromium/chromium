@@ -177,6 +177,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="All Tabs"/>
 </enum>
 
+<enum name="IOSDefaultBrowserSettingsPageUsage">
+  <summary>
+    The action taken by the user after they landed on the Default Browser
+    Settings page.
+  </summary>
+  <int value="0" label="Open iOS Settings"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Displayed"/>
+</enum>
+
 <enum name="IOSDefaultBrowserVideoPromoAction">
   <int value="0" label="Primary Action Button"/>
   <int value="1" label="Secondary Action Button"/>
@@ -288,16 +298,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Open NTP"/>
   <int value="2" label="Default Browser Settings"/>
   <int value="3" label="Skipped Default Browser Settings For NTP"/>
-</enum>
-
-<enum name="IOSExternalActionDefaultBrowserPromoUsage">
-  <summary>
-    The action taken by the user after they landed on the Default Browser Promo
-    from an External Action (URL passed to Chrome with
-    &quot;ChromeExternalAction&quot; as host).
-  </summary>
-  <int value="0" label="Open iOS Settings"/>
-  <int value="1" label="Dismissed"/>
 </enum>
 
 <enum name="IOSHomeActionType">

@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="DEFAULT_NTP"/>
 </enum>
 
-<enum name="IOSDefaultBrowserPromoSource">
+<enum name="IOSDefaultBrowserSettingsPageSource">
   <int value="0" label="Settings"/>
   <int value="1" label="Omnibox"/>
   <int value="2" label="External Intent"/>

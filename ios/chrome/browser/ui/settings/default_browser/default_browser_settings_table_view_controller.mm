@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/strcat.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -23,6 +24,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+const char kDefaultBrowserSettingsPageUsageHistogram[] =
+    "IOS.DefaultBrowserSettingsPageUsage";
 
 // Icon image names.
 NSString* const kSettingsImageName = @"settings";
@@ -42,17 +45,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeHeaderItem,
 };
 
-// Values of the UMA IOS.ExternalAction.DefaultBrowserPromo histogram.
+// Values of the UMA IOS.DefaultBrowserSettingsPageUsage.{Source} histogram.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
 // LINT.IfChange
-enum class ExternalActionDefaultBrowserPromoUsage {
-  kOpenSettings = 0,
+enum class DefaultBrowserSettingsPageUsage {
+  kOpenIOSSettings = 0,
   kDismiss,
-  kMaxValue = kDismiss,
+  kDisplay,
+  kMaxValue = kDisplay,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml)
-
 }  // namespace
 
 @interface DefaultBrowserSettingsTableViewController () {
@@ -82,6 +86,8 @@ enum class ExternalActionDefaultBrowserPromoUsage {
   } else {
     [self loadModel];
   }
+
+  [self recordMetrics:DefaultBrowserSettingsPageUsage::kDisplay];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -167,11 +173,12 @@ enum class ExternalActionDefaultBrowserPromoUsage {
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
-  if (!_defaultBrowserSettingsVisited &&
-      self.source == DefaultBrowserPromoSource::kExternalAction) {
-    base::UmaHistogramEnumeration(
-        "IOS.ExternalAction.DefaultBrowserPromo",
-        ExternalActionDefaultBrowserPromoUsage::kDismiss);
+  // Record app settings has been dismissed without opening iOS settings. As
+  // opening iOS settings doesn't dismiss the view users can open settings and
+  // then return to the app and dismiss the view manually. Don't record dismiss
+  // action that that case.
+  if (!_defaultBrowserSettingsVisited) {
+    [self recordMetrics:DefaultBrowserSettingsPageUsage::kDismiss];
   }
 
   // No-op as there are no C++ objects or observers.
@@ -210,14 +217,15 @@ enum class ExternalActionDefaultBrowserPromoUsage {
 
 #pragma mark Private
 
-// Responds to user action to go to default browser settings.
+// Responds to user action to go to default browser iOS settings.
 - (void)openSettingsButtonPressed {
-  if (!_defaultBrowserSettingsVisited &&
-      self.source == DefaultBrowserPromoSource::kExternalAction) {
-    base::UmaHistogramEnumeration(
-        "IOS.ExternalAction.DefaultBrowserPromo",
-        ExternalActionDefaultBrowserPromoUsage::kOpenSettings);
+  // Record iOS settings opened only once per app settings display. As
+  // opening iOS settings doesn't dismiss the view users can open iOS settings
+  // multiple times. Check that it is the first instance before recording.
+  if (!_defaultBrowserSettingsVisited) {
+    [self recordMetrics:DefaultBrowserSettingsPageUsage::kOpenIOSSettings];
   }
+
   base::RecordAction(base::UserMetricsAction("Settings.DefaultBrowser"));
   base::UmaHistogramEnumeration("Settings.DefaultBrowserFromSource",
                                 self.source);
@@ -245,6 +253,16 @@ enum class ExternalActionDefaultBrowserPromoUsage {
   instructionsView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(instructionsView, self.tableView);
   AddSameConstraints(self.tableView.backgroundView, self.tableView);
+}
+
+- (void)recordMetrics:(DefaultBrowserSettingsPageUsage)usage {
+  base::UmaHistogramEnumeration(kDefaultBrowserSettingsPageUsageHistogram,
+                                usage);
+
+  std::string perSourceHistogram =
+      base::StrCat({kDefaultBrowserSettingsPageUsageHistogram, ".",
+                    DefaultBrowserSettingsPageSourceToString(self.source)});
+  base::UmaHistogramEnumeration(perSourceHistogram, usage);
 }
 
 #pragma mark - ConfirmationAlertActionHandler
