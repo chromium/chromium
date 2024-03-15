@@ -19,16 +19,36 @@ namespace enterprise_watermark {
 
 namespace {
 
-constexpr float kTextSize = 30.0f;
+// UX Requirements:
+constexpr float kTextSize = 24.0f;
 constexpr int kWatermarkBlockSpacing = 80;
 constexpr double kRotationAngle = 45;
-
-constexpr SkColor kFillColor = SkColorSetARGB(0x20, 0x00, 0x00, 0x00);
-constexpr SkColor kOutlineColor = SkColorSetARGB(0x25, 0xff, 0xff, 0xff);
+constexpr SkColor kFillColor = SkColorSetARGB(0x12, 0x00, 0x00, 0x00);
+constexpr SkColor kOutlineColor = SkColorSetARGB(0x27, 0xff, 0xff, 0xff);
 
 const gfx::Font& WatermarkFont() {
-  static gfx::Font font("Arial", kTextSize);
+  static gfx::Font font(
+#if BUILDFLAG(IS_WIN)
+      "Segoe UI",
+#elif BUILDFLAG(IS_MAC)
+      "SF Pro Text",
+#elif BUILDFLAG(IS_LINUX)
+      "Ubuntu",
+#elif BUILDFLAG(IS_CHROMEOS)
+      "Google Sans",
+#else
+      "sans-serif",
+#endif
+      kTextSize);
   return font;
+}
+
+gfx::Font::Weight WatermarkFontWeight() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  return gfx::Font::Weight::SEMIBOLD;
+#else
+  return gfx::Font::Weight::MEDIUM;
+#endif
 }
 
 const gfx::FontList& WatermarkFontList() {
@@ -41,6 +61,7 @@ std::unique_ptr<gfx::RenderText> CreateRenderText(const gfx::Rect& display_rect,
   auto render_text = gfx::RenderText::CreateRenderText();
   render_text->set_clip_to_display_rect(false);
   render_text->SetFontList(WatermarkFontList());
+  render_text->SetWeight(WatermarkFontWeight());
   render_text->SetDisplayOffset(gfx::Vector2d(0, 0));
   render_text->SetDisplayRect(display_rect);
   render_text->SetText(text);
