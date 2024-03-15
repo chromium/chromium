@@ -92,13 +92,9 @@ void SigninErrorUI::Initialize(Browser* browser, bool from_profile_picker) {
     // string is ever passed and possibly add a DCHECK.
     source->AddLocalizedString("signinErrorTitle", IDS_SIGNIN_ERROR_TITLE);
   } else {
-    int title_string_id =
-        AccountConsistencyModeManager::IsDiceEnabledForProfile(webui_profile)
-            ? IDS_SIGNIN_ERROR_DICE_EMAIL_TITLE
-            : IDS_SIGNIN_ERROR_EMAIL_TITLE;
-    source->AddString(
-        "signinErrorTitle",
-        l10n_util::GetStringFUTF16(title_string_id, last_login_error.email()));
+    source->AddString("signinErrorTitle",
+                      l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE,
+                                                 last_login_error.email()));
   }
 
   source->AddString("signinErrorMessage", std::u16string());
