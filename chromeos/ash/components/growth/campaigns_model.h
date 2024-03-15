@@ -23,8 +23,8 @@ namespace growth {
 enum class Slot {
   kDemoModeApp = 0,
   kDemoModeFreePlayApps = 1,
-
-  kMaxValue = kDemoModeFreePlayApps
+  kNudge = 2,
+  kMaxValue = kNudge
 };
 
 // Dictionary of supported targetings. For example:
