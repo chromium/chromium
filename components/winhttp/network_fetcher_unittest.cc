@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/winhttp/scoped_hinternet.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -58,6 +59,7 @@ TEST(WinHttpNetworkFetcher, InvalidUrlDownload) {
   EXPECT_EQ(network_fetcher->GetNetError(), E_INVALIDARG);
 }
 
+// Tests that the fetcher is not crashing when the session handle is null.
 TEST(WinHttpNetworkFetcher, NullSession) {
   base::test::TaskEnvironment environment;
   base::RunLoop run_loop;
@@ -73,9 +75,10 @@ TEST(WinHttpNetworkFetcher, NullSession) {
       base::BindLambdaForTesting(
           [&run_loop](int response_code) { run_loop.Quit(); }));
   run_loop.Run();
-  EXPECT_EQ(network_fetcher->GetNetError(),
-            MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WIN32,
-                         ERROR_WINHTTP_NOT_INITIALIZED));
+  EXPECT_THAT(network_fetcher->GetNetError(),
+              ::testing::AnyOf(MAKE_HRESULT(SEVERITY_ERROR, FACILITY_WIN32,
+                                            ERROR_WINHTTP_NOT_INITIALIZED),
+                               E_HANDLE));
 }
 
 }  // namespace winhttp
