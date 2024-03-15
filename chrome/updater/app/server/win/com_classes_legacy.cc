@@ -1189,7 +1189,9 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
              .result = SUCCEEDED(error_params.error_code),
              .error_code = error_params.error_code,
              .extra_code1 = error_params.extra_code1},
-            base::DoNothing());
+            base::BindOnce([](update_client::Error error) {
+              VLOG(1) << "App command ping completed: " << error;
+            }));
       },
       scope, app_id, command_id, error_params));
 }
