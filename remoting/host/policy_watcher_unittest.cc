@@ -4,7 +4,7 @@
 
 #include "remoting/host/policy_watcher.h"
 
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -718,9 +718,8 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
 #if BUILDFLAG(IS_CHROMEOS)
   base::flat_set<std::string> policies_with_no_default_values;
 #else
-  auto policies_with_no_default_values = base::MakeFixedFlatSet<std::string>(
-      base::sorted_unique,
-      {policy::key::kRemoteAccessHostAllowPinAuthentication});
+  base::flat_set<std::string> policies_with_no_default_values = {
+      policy::key::kRemoteAccessHostAllowPinAuthentication};
 #endif
   for (auto i : GetDefaultValues()) {
     if (policies_with_no_default_values.contains(i.first)) {
