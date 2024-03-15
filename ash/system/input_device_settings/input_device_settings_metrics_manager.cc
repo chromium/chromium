@@ -492,6 +492,11 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
 void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
     const mojom::Keyboard& keyboard,
     const mojom::KeyboardSettings& old_settings) {
+  // TODO(dpad, b/329330990): Fix to work with flag enabled.
+  if (features::IsModifierSplitEnabled()) {
+    return;
+  }
+
   const std::string keyboard_metrics_prefix =
       GetKeyboardMetricsPrefix(keyboard);
 
