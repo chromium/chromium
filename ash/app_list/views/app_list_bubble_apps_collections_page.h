@@ -96,6 +96,9 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
   // reordering the apps.
   void DismissPageAndReorder(AppListSortOrder order);
 
+  // Invoked when the `scroll_view_` received an scrolling event.
+  void OnPageScrolled();
+
   const raw_ptr<AppListViewDelegate> view_delegate_;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<RoundedScrollBar> scroll_bar_ = nullptr;
@@ -111,6 +114,9 @@ class ASH_EXPORT AppListBubbleAppsCollectionsPage
 
   // A callback invoked when the nudge on this page is removed/dismissed.
   base::OnceClosure exit_page_callback_;
+
+  // Subscription to notify of scrolling events.
+  base::CallbackListSubscription on_contents_scrolled_subscription_;
 
   base::WeakPtrFactory<AppListBubbleAppsCollectionsPage> weak_factory_{this};
 };

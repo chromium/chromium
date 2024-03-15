@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
@@ -271,6 +272,10 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
   UpdateSuggestions();
   UpdateContinueSectionVisibility();
+
+  on_contents_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
+          &AppListBubbleAppsPage::OnPageScrolled, base::Unretained(this)));
 }
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() {
@@ -736,6 +741,21 @@ void AppListBubbleAppsPage::UpdateContinueSectionVisibility() {
   recent_apps_->UpdateVisibility();
   UpdateContinueLabelContainer();
   UpdateSeparatorVisibility();
+}
+
+void AppListBubbleAppsPage::OnPageScrolled() {
+  // Do not log anything if the contents are not scrollable.
+  if (scroll_view_->GetVisibleRect().height() >=
+      scroll_view_->contents()->height()) {
+    return;
+  }
+
+  if (scroll_view_->GetVisibleRect().bottom() ==
+      scroll_view_->contents()->bounds().bottom()) {
+    RecordLauncherWorkflowMetrics(
+        AppListUserAction::kNavigatedToBottomOfAppList,
+        /*is_tablet_mode = */ false, std::nullopt);
+  }
 }
 
 void AppListBubbleAppsPage::UpdateContinueLabelContainer() {

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test/test_focus_change_listener.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
@@ -700,6 +701,88 @@ TEST_F(AppListBubbleAppsPageTest, SortingAppListWithNoApp) {
   auto* toast_container =
       helper->GetBubbleAppsPage()->toast_container_for_test();
   EXPECT_TRUE(toast_container->IsToastVisible());
+}
+
+// Verifies that a UserAction is recorded for scrolling to the bottom of the
+// Apps Grid.
+TEST_F(AppListBubbleAppsPageTest, ScrollToBottomLogsAction) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show an app list with enough apps to allow scrolling.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(50);
+  helper->ShowAppList();
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  base::HistogramTester histograms;
+
+  // Scroll the apps page but do not hit the end.
+  views::ScrollView* scroll_view = apps_page->scroll_view();
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), 10);
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                0);
+
+  // Scroll the apps page to the end.
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), INT_MAX);
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Scroll upwards and check that the bucket count keeps the same.
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), 10);
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Scroll the apps page to the end one more time.
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), INT_MAX);
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                2);
+}
+
+// Verifies that a UserAction is recorded for keyboard navigating to the bottom
+// of the Apps Grid.
+TEST_F(AppListBubbleAppsPageTest, KeyboardSelectToBottomLogsAction) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show an app list with enough apps to allow scrolling.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(50);
+  helper->ShowAppList();
+  base::HistogramTester histograms;
+
+  // Verify histogram initial state
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                0);
+
+  // Select the last app on the grid with the up arrow.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_UP);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Move down twice to return to the top of the grid.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_DOWN);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_DOWN);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Move to the bottom again and verify that the metric is recorded again.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_UP);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_UP);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                2);
 }
 
 }  // namespace

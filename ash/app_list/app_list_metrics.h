@@ -160,7 +160,10 @@ enum class AppListUserAction {
   // User opened a suggestion chip shown in the app list UI.
   DEPRECATED_kOpenSuggestionChip = 5,
 
-  kMaxValue = DEPRECATED_kOpenSuggestionChip,
+  // User navigated to the bottom of the app list UI.
+  kNavigatedToBottomOfAppList = 6,
+
+  kMaxValue = kNavigatedToBottomOfAppList,
 };
 
 // The possible states for a search control category. The values should match

@@ -210,6 +210,22 @@ void AppListTestHelper::AddRecentApps(int num_apps) {
   }
 }
 
+void AppListTestHelper::AddAppListItemsWithCollection(
+    AppCollection collection_id,
+    int num_apps) {
+  AppListModel* model = AppListModelProvider::Get()->model();
+  for (int i = 0; i < num_apps; i++) {
+    const std::string id(test::AppListTestModel::GetItemName(i));
+    auto item = std::make_unique<AppListItem>(id);
+    item->SetAppCollectionId(collection_id);
+    AppListItem* item_ptr = model->AddItem(std::move(item));
+
+    // Give each item a name so that the accessibility paint checks pass.
+    // (Focusable items should have accessible names.)
+    model->SetItemName(item_ptr, item_ptr->id());
+  }
+}
+
 bool AppListTestHelper::IsInFolderView() {
   if (ShouldUseBubbleAppList())
     return GetBubbleView()->showing_folder_for_test();

@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -385,6 +386,50 @@ TEST_F(AppsContainerViewTest,
 
   EXPECT_EQ(initial_bounds,
             helper->GetAppsContainerView()->page_switcher()->bounds());
+}
+
+// Verify that metrics are recorded when the grid changes page into the last
+// page of the app list.
+TEST_F(AppsContainerViewTest, NavigateToBottomPageLogsAction) {
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(35);
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  auto* apps_grid_view = helper->GetRootPagedAppsGridView();
+  base::HistogramTester histograms;
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.TabletMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                0);
+
+  PaginationModel* pagination_model = apps_grid_view->pagination_model();
+  int last_page = pagination_model->total_pages() - 1;
+
+  // Select the second to last page. The metric should not be recorded.
+  pagination_model->SelectPage(last_page - 1, /*animate=*/false);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.TabletMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                0);
+
+  // Select the last page. The metric should be recorded.
+  pagination_model->SelectPage(last_page, /*animate=*/false);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.TabletMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Select the second to last page again. The metric should not be recorded.
+  pagination_model->SelectPage(last_page - 1, /*animate=*/false);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.TabletMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Select the last page again. The metric should be recorded one more time.
+  pagination_model->SelectPage(last_page, /*animate=*/false);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.TabletMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                2);
 }
 
 }  // namespace ash

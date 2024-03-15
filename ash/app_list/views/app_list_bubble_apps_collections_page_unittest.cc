@@ -12,7 +12,9 @@
 #include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -251,6 +253,87 @@ TEST_F(AppListBubbleAppsCollectionsPageTest, ShowAppsPageAfterSorting) {
   EXPECT_FALSE(apps_collections_page->GetVisible());
   EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
             helper->model()->requested_sort_order());
+}
+
+// Verifies that a UserAction is recorded for scrolling to the bottom of the
+// Apps Grid.
+TEST_F(AppListBubbleAppsCollectionsPageTest, ScrollToBottomLogsAction) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 50);
+  helper->ShowAppList();
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  base::HistogramTester histograms;
+
+  // Scroll the apps page but do not hit the end.
+  views::ScrollView* scroll_view = apps_collections_page->scroll_view();
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), 10);
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                0);
+
+  // Scroll the apps page to the end.
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), INT_MAX);
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Scroll upwards and check that the bucket count keeps the same.
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), 10);
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Scroll the apps page to the end one more time.
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), INT_MAX);
+
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                2);
+}
+
+// Verifies that a UserAction is recorded for keyboard navigating to the bottom
+// of the Apps Grid.
+TEST_F(AppListBubbleAppsCollectionsPageTest, KeyboardSelectToBottomLogsAction) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show an app list with enough apps to allow scrolling.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppListItemsWithCollection(AppCollection::kEntertainment, 50);
+  helper->ShowAppList();
+  base::HistogramTester histograms;
+
+  // Verify histogram initial state
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                0);
+
+  // Select the last app on the grid with the up arrow.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_UP);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Move down twice to return to the top of the grid.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_DOWN);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_DOWN);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                1);
+
+  // Move to the bottom again and verify that the metric is recorded again.
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_UP);
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_UP);
+  histograms.ExpectUniqueSample("Apps.AppList.UserAction.ClamshellMode",
+                                AppListUserAction::kNavigatedToBottomOfAppList,
+                                2);
 }
 
 }  // namespace

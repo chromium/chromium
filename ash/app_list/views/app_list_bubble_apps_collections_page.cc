@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/app_list/app_collections_constants.h"
+#include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/views/app_list_keyboard_controller.h"
@@ -180,6 +181,11 @@ AppListBubbleAppsCollectionsPage::AppListBubbleAppsCollectionsPage(
       base::BindRepeating(&AppListBubbleAppsCollectionsPage::RequestAppReorder,
                           weak_factory_.GetWeakPtr()));
   set_context_menu_controller(context_menu_.get());
+
+  on_contents_scrolled_subscription_ =
+      scroll_view_->AddContentsScrolledCallback(
+          base::BindRepeating(&AppListBubbleAppsCollectionsPage::OnPageScrolled,
+                              base::Unretained(this)));
 }
 
 AppListBubbleAppsCollectionsPage::~AppListBubbleAppsCollectionsPage() {
@@ -352,6 +358,21 @@ void AppListBubbleAppsCollectionsPage::DismissPageAndReorder(
   CHECK(exit_page_callback_);
 
   std::move(exit_page_callback_).Run();
+}
+
+void AppListBubbleAppsCollectionsPage::OnPageScrolled() {
+  // Do not log anything if the contents are not scrollable.
+  if (scroll_view_->GetVisibleRect().height() >=
+      scroll_view_->contents()->height()) {
+    return;
+  }
+
+  if (scroll_view_->GetVisibleRect().bottom() ==
+      scroll_view_->contents()->bounds().bottom()) {
+    RecordLauncherWorkflowMetrics(
+        AppListUserAction::kNavigatedToBottomOfAppList,
+        /*is_tablet_mode = */ false, std::nullopt);
+  }
 }
 
 BEGIN_METADATA(AppListBubbleAppsCollectionsPage)

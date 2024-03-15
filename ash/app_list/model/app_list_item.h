@@ -22,6 +22,7 @@
 namespace ash {
 enum class AppListConfigType;
 class AppListFolderItem;
+class AppListTestHelper;
 class AppListItemList;
 class AppListItemListTest;
 class AppListItemObserver;
@@ -160,6 +161,7 @@ class APP_LIST_MODEL_EXPORT AppListItem {
 
   friend class AppsCollectionSectionViewTest;
   friend class AppListBadgeController;
+  friend class AppListTestHelper;
   friend class AppListItemList;
   friend class AppListItemListTest;
   friend class AppListItemViewPixelTestBase;

@@ -547,6 +547,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="App search result opened"/>
   <int value="4" label="Continue section task opened"/>
   <int value="5" label="Suggestion chip opened"/>
+  <int value="6" label="Scrolled to apps grid bottom"/>
 </enum>
 
 <enum name="NoteTakingAppLaunchResult">
