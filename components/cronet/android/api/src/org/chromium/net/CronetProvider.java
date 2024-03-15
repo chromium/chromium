@@ -7,6 +7,8 @@ package org.chromium.net;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.net.impl.CronetLogger;
 
 import java.lang.reflect.Constructor;
@@ -146,6 +148,20 @@ public abstract class CronetProvider {
     static final class ProviderInfo {
         public CronetProvider provider;
         public CronetLogger.CronetSource logSource;
+
+        // Delegate ProviderInfo comparisons to `provider`. This actually matters in some cases such
+        // as PLAY_SERVICES vs GMS_CORE, see b/329440572.
+
+        @Override
+        public int hashCode() {
+            return provider.hashCode();
+        }
+
+        @Override
+        public boolean equals(@Nullable Object other) {
+            return other instanceof ProviderInfo
+                    && provider.equals(((ProviderInfo) other).provider);
+        }
     }
 
     /**
