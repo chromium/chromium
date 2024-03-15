@@ -26,8 +26,13 @@ class CodePointIterator;
 class String;
 
 enum UTF8ConversionMode {
+  // Unpaired surrogates are encoded using the standard UTF-8 encoding scheme,
+  // even though surrogate characters should not be present in a valid UTF-8
+  // string.
   kLenientUTF8Conversion,
+  // Conversion terminates at the first unpaired surrogate, if any.
   kStrictUTF8Conversion,
+  // Unpaired surrogates are replaced with U+FFFD (REPLACEMENT CHARACTER).
   kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD
 };
 

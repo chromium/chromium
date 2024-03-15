@@ -40,9 +40,9 @@ typedef enum {
 } ConversionResult;
 
 // These conversion functions take a "strict" argument. When this flag is set to
-// strict, both irregular sequences and isolated surrogates will cause an error.
-// When the flag is set to lenient, both irregular sequences and isolated
-// surrogates are converted.
+// true (i.e. strict), both irregular sequences and isolated surrogates will
+// cause an error.  When the flag is set to false (i.e. lenient), both irregular
+// sequences and isolated surrogates are converted.
 //
 // Whether the flag is strict or lenient, all illegal sequences will cause an
 // error return. This includes sequences such as: <F4 90 80 80>, <C0 80>, or
@@ -52,6 +52,11 @@ typedef enum {
 // When the flag is set to lenient, characters over 0x10FFFF are converted to
 // the replacement character; otherwise (when the flag is set to strict) they
 // constitute an error.
+// TODO(crbug.com/329702346): It is not clear how characters over 0x10FFFF can
+// be represented in the encodings that these functions claim to handle. In
+// UTF-16, surrogate pairs should not be able to encode codepoints higher than
+// 0x10FFFF; in UTF-8, the 4-byte form is similarly unable to encode codepoints
+// higher than 0x10FFFF.
 
 WTF_EXPORT ConversionResult
 ConvertUTF8ToUTF16(const char** source_start,
