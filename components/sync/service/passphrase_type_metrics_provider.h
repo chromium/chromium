@@ -14,21 +14,24 @@ namespace syncer {
 
 class SyncService;
 
-// Used for UMA. Exposed in the header file for testing.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with SyncPassphraseType2
+// in tools/metrics/histograms/metadata/sync/enums.xml.
+// Exposed in the header file for testing.
 enum class PassphraseTypeForMetrics {
   // Used if there are no syncing profiles or all syncing profiles are not in
   // ACTIVE sync transport state.
-  kNoActiveSyncingProfiles,
+  kNoActiveSyncingProfiles = 0,
   // Used if there are multiple syncing profiles with different passphrase
   // types or with different sync transport state is ACTIVE values.
-  kInconsistentStateAcrossProfiles,
+  kInconsistentStateAcrossProfiles = 1,
   // Further values correspond to regular PassphraseType. Used if there is only
   // one syncing profile or all profiles have the same PassphraseType.
-  kImplicitPassphrase,
-  kKeystorePassphrase,
-  kFrozenImplicitPassphrase,
-  kCustomPassphrase,
-  kTrustedVaultPassphrase,
+  kImplicitPassphrase = 2,
+  kKeystorePassphrase = 3,
+  kFrozenImplicitPassphrase = 4,
+  kCustomPassphrase = 5,
+  kTrustedVaultPassphrase = 6,
   kMaxValue = kTrustedVaultPassphrase
 };
 

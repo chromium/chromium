@@ -22,10 +22,13 @@ namespace syncer {
 
 namespace {
 
-// Used for UMA.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with
+// TrustedVaultFetchKeysAttempt in
+// tools/metrics/histograms/metadata/sync/enums.xml.
 enum class TrustedVaultFetchKeysAttemptForUMA {
-  kFirstAttempt,
-  kSecondAttempt,
+  kFirstAttempt = 0,
+  kSecondAttempt = 1,
   kMaxValue = kSecondAttempt
 };
 

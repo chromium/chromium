@@ -35,23 +35,25 @@ enum class UploadState {
   kMaxValue = ACTIVE
 };
 
-// Used for UMA histogram, do not reorder. Represents the UI elements which
-// contain trusted vault error button.
+// Represents the UI elements which contain trusted vault error button. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused. Keep in sync w/ TrustedVaultUserActionTrigger
+// in tools/metrics/histograms/metadata/sync/enums.xml.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync
 enum class TrustedVaultUserActionTriggerForUMA {
   // Settings pages, used on all platforms except ChromeOS.
-  kSettings,
+  kSettings = 0,
   // Used on desktop platform only.
-  kProfileMenu,
+  kProfileMenu = 1,
   // Used on Android and ChromeOS, represents OS-level notification.
-  kNotification,
+  kNotification = 2,
   // Used on iOS only. Represents Infobar on the New Tab Page.
   // TODO(crbug.com/1083973): record this bucket bucket on Android once
   // corresponding UI added.
-  kNewTabPageInfobar,
+  kNewTabPageInfobar = 3,
   // Used on Android only. This dialog is shown when GMSCore returned
   // kKeyRetrievalRequired error when obtaining passwords.
-  kPasswordManagerErrorMessage,
+  kPasswordManagerErrorMessage = 4,
   kMaxValue = kPasswordManagerErrorMessage
 };
 

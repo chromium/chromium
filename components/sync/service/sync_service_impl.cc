@@ -1559,7 +1559,9 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
   data_type_manager_->Configure(GetPreferredDataTypes(), configure_context);
 
   // Record in UMA whether we're configuring the full Sync feature or only the
-  // transport.
+  // transport. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused. Keep in sync with
+  // SyncFeatureOrTransport in tools/metrics/histograms/metadata/sync/enums.xml.
   enum class ConfigureDataTypeManagerOption {
     kFeature = 0,
     kTransport = 1,

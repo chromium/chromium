@@ -8,7 +8,9 @@
 namespace syncer {
 
 // Enumerate the main sources that can turn off sync. This enum is used to
-// back a UMA histogram and should be treated as append-only.
+// back a UMA histogram. These values are persisted to logs. Entries should not
+// be renumbered and numeric values should never be reused. Keep in sync with
+// SyncStopSource in tools/metrics/histograms/metadata/sync/enums.xml.
 enum StopSource {
   // Deprecated: PROFILE_DESTRUCTION = 0,
   SIGN_OUT = 1,              // The user signed out of Chrome.
