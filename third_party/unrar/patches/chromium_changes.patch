@@ -735,3 +735,16 @@ index 7430a643e402f..4353071577f3f 100644
    }
  }
  
+diff --git a/third_party/unrar/src/isnt.cpp b/third_party/unrar/src/isnt.cpp
+index c914449e240d0..c2a4bb35525dc 100644
+--- a/third_party/unrar/src/isnt.cpp
++++ b/third_party/unrar/src/isnt.cpp
+@@ -27,7 +27,7 @@ DWORD WinNT()
+ }
+
+ // Replace it with documented Windows 11 check when available.
+-#include <Wbemidl.h>
++#include <WbemIdl.h>
+ #include <comdef.h>
+ #pragma comment(lib, "wbemuuid.lib")
+

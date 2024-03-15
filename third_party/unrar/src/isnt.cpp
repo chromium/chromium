@@ -27,7 +27,7 @@ DWORD WinNT()
 }
 
 // Replace it with documented Windows 11 check when available.
-#include <Wbemidl.h>
+#include <WbemIdl.h>
 #include <comdef.h>
 #pragma comment(lib, "wbemuuid.lib")
 
