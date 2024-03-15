@@ -335,13 +335,7 @@ void FocusFakebox() {
 
 // Tests that the XClientData header is sent when navigating to
 // https://google.com through the omnibox.
-// TODO(b/325112257): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testXClientData DISABLED_testXClientData
-#else
-#define MAYBE_testXClientData testXClientData
-#endif
-- (void)MAYBE_testXClientData {
+- (void)testXClientData {
   // TODO(crbug.com/1120723) This test is flakily because of a DCHECK in
   // ios/web.  Clearing browser history first works around the problem, but
   // shouldn't be necessary otherwise.  Remove once the bug is fixed.
@@ -381,14 +375,7 @@ void FocusFakebox() {
 
 // Tests that Visit Copied Link, Search Copied Text, Search Copied Image and
 // Paste menu buttons are not shown with an empty Clipboard.
-// TODO(b/325112257): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testOmniboxMenuEmptyPasteboard \
-  DISABLED_testOmniboxMenuEmptyPasteboard
-#else
-#define MAYBE_testOmniboxMenuEmptyPasteboard testOmniboxMenuEmptyPasteboard
-#endif
-- (void)MAYBE_testOmniboxMenuEmptyPasteboard {
+- (void)testOmniboxMenuEmptyPasteboard {
   FocusFakebox();
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -408,14 +395,7 @@ void FocusFakebox() {
 
 // Tests that Search Copied Text menu button is shown with text in the clipboard
 // and is starting a search.
-// TODO(b/325112257): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testOmniboxMenuPasteTextToSearch \
-  DISABLED_testOmniboxMenuPasteTextToSearch
-#else
-#define MAYBE_testOmniboxMenuPasteTextToSearch testOmniboxMenuPasteTextToSearch
-#endif
-- (void)MAYBE_testOmniboxMenuPasteTextToSearch {
+- (void)testOmniboxMenuPasteTextToSearch {
   FocusFakebox();
   NSString* textToSearch = @"TextToCopy";
   // Copy text in clipboard.
@@ -448,14 +428,7 @@ void FocusFakebox() {
 
 // Tests that Visit Copied Link menu button is shown with a link in the
 // clipboard and is visiting the URL.
-// TODO(b/325112257): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testOmniboxMenuPasteURLToSearch \
-  DISABLED_testOmniboxMenuPasteURLToSearch
-#else
-#define MAYBE_testOmniboxMenuPasteURLToSearch testOmniboxMenuPasteURLToSearch
-#endif
-- (void)MAYBE_testOmniboxMenuPasteURLToSearch {
+- (void)testOmniboxMenuPasteURLToSearch {
   FocusFakebox();
   // Copy URL into clipboard.
   [ChromeEarlGrey copyTextToPasteboard:base::SysUTF8ToNSString(_URL1.spec())];
@@ -546,15 +519,7 @@ void FocusFakebox() {
 
 // Tests that the keyboard accessory's paste to search button is shown with a
 // link in the clipboard and is visiting the link.
-// TODO(b/325112257): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testOmniboxKeyboardAccessoryPasteURLToSearch \
-  DISABLED_testOmniboxKeyboardAccessoryPasteURLToSearch
-#else
-#define MAYBE_testOmniboxKeyboardAccessoryPasteURLToSearch \
-  testOmniboxKeyboardAccessoryPasteURLToSearch
-#endif
-- (void)MAYBE_testOmniboxKeyboardAccessoryPasteURLToSearch {
+- (void)testOmniboxKeyboardAccessoryPasteURLToSearch {
   if (@available(iOS 16, *)) {
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithFeaturesEnabled:{kOmniboxKeyboardPasteButton}
