@@ -358,7 +358,7 @@ public class TabDragSource implements View.OnDragListener {
 
     private boolean onDrop(float xPx, DragEvent dropEvent) {
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
-        int groupRootId = helper.getTabDropGroupId();
+        int destinationTabId = helper.getTabDropId();
         helper.onUpOrCancel(LayoutManagerImpl.time());
 
         if (isDragSource()) {
@@ -392,7 +392,8 @@ public class TabDragSource implements View.OnDragListener {
         } else {
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
             mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
-            helper.mergeToGroupForTabDropIfNeeded(groupRootId, tabBeingDragged.getId(), tabIndex);
+            helper.mergeToGroupForTabDropIfNeeded(
+                    destinationTabId, tabBeingDragged.getId(), tabIndex);
         }
         DragDropMetricUtils.recordTabDragDropType(DragDropType.TAB_STRIP_TO_TAB_STRIP);
         mUmaState.mTabLeavingDestStripSystemElapsedTime = SystemClock.elapsedRealtime();

@@ -2666,11 +2666,11 @@ public class StripLayoutHelper
         return mStripTabs.length;
     }
 
-    int getTabDropGroupId() {
+    int getTabDropId() {
         if (!mReorderingForTabDrop || mInteractingTab == null) return Tab.INVALID_TAB_ID;
 
         Tab tab = getTabById(mInteractingTab.getId());
-        return mTabGroupModelFilter.isTabInTabGroup(tab) ? tab.getRootId() : Tab.INVALID_TAB_ID;
+        return mTabGroupModelFilter.isTabInTabGroup(tab) ? tab.getId() : Tab.INVALID_TAB_ID;
     }
 
     void mergeToGroupForTabDropIfNeeded(int rootId, int draggedTabId, int index) {
