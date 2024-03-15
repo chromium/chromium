@@ -10,8 +10,7 @@
 #include "base/one_shot_event.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -45,7 +44,7 @@ void AshRequiresLacrosBrowserTestBase::SetUpOnMainThread() {
       .Post(FROM_HERE, waiter.GetCallback());
   EXPECT_TRUE(waiter.Wait());
 
-  ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
+  ASSERT_TRUE(browser_util::IsLacrosEnabled());
 }
 
 void AshRequiresLacrosBrowserTestBase::EnableFeaturesInLacros(

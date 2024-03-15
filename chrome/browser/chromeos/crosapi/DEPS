@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "test_util\.cc": [
+    # Guarded by !BUILDFLAG(IS_CHROMEOS_LACROS).
+    "+chrome/browser/ash/crosapi",
+  ],
+}

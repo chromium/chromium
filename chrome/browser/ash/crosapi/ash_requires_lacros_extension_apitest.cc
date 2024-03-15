@@ -8,8 +8,7 @@
 #include "base/location.h"
 #include "base/one_shot_event.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {

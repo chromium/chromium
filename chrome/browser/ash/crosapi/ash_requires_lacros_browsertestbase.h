@@ -8,7 +8,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/crosapi/test_controller_ash.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 

@@ -22,6 +22,7 @@
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 using crosapi::AshRequiresLacrosExtensionApiTest;
 

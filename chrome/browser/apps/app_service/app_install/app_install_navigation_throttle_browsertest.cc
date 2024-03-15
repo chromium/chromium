@@ -7,6 +7,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
+#include "chrome/browser/chromeos/crosapi/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -16,6 +17,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
@@ -24,14 +26,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
-#else
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 namespace apps {
 
 class AppInstallNavigationThottleBrowserTest : public InProcessBrowserTest {
@@ -39,28 +33,18 @@ class AppInstallNavigationThottleBrowserTest : public InProcessBrowserTest {
   AppInstallNavigationThottleBrowserTest() = default;
 
   void SetUpOnMainThread() override {
+    if (!crosapi::AshSupportsCapabilities({"b/304680258"})) {
+      GTEST_SKIP() << "Unsupported Ash version.";
+    }
+
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         &AppInstallNavigationThottleBrowserTest::HandleRequest,
         base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    // Override Almanac server URL.
-    std::string test_endpoint = embedded_test_server()->GetURL("/").spec();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    apps::SetAlmanacEndpointUrlForTesting(std::move(test_endpoint));
-#else
-    const std::optional<std::vector<std::string>>& capabilities =
-        chromeos::BrowserParamsProxy::Get()->AshCapabilities();
-    if (!capabilities || !base::Contains(*capabilities, "b/304680258")) {
-      GTEST_SKIP() << "Unsupported Ash version.";
-    }
-    base::RunLoop run_loop;
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::TestController>()
-        ->SetAlmanacEndpointUrlForTesting(test_endpoint,
-                                          run_loop.QuitClosure());
-    run_loop.Run();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
+        .SetAlmanacEndpointUrlForTesting(
+            embedded_test_server()->GetURL("/").spec());
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(

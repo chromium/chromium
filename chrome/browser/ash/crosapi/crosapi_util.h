@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_CROSAPI_UTIL_H_
 #define CHROME_BROWSER_ASH_CROSAPI_CROSAPI_UTIL_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_file.h"
 #include "base/token.h"
@@ -89,6 +91,9 @@ policy::CloudPolicyCore* GetCloudPolicyCoreForUser(
 // Returns the ComponentCloudPolicyService for the given user.
 policy::ComponentCloudPolicyService* GetComponentCloudPolicyServiceForUser(
     const user_manager::User& user);
+
+// Returns the list of Ash capabilities to publish to Lacros.
+base::span<const std::string_view> GetAshCapabilities();
 
 }  // namespace browser_util
 }  // namespace crosapi

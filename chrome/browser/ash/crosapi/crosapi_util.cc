@@ -208,27 +208,39 @@ namespace browser_util {
 
 namespace {
 
-// Capability to support reloading the lacros browser on receiving a
-// notification that the browser component was successfully updated.
-constexpr char kBrowserManagerReloadBrowserCapability[] = "crbug/1237235";
-// Capability to support shared_storage in prefs.
-constexpr char kSharedStoragePrefsCapability[] = "b/231890240";
-// Capability to register observers for extension controlled prefs via the
-// prefs api.
-constexpr char kExtensionControlledPrefObserversCapability[] = "crbug/1334985";
-// Capability to pass testing ash extension keeplist data via ash
-// commandline switch.
-constexpr char kAshExtensionKeeplistCmdlineSwitchCapability[] = "crbug/1409199";
-// Capability to accept a package ID for installation without a parsing bug.
-// Once Ash and Lacros are both past M124, then we can remove this capability.
-constexpr char kAshAppInstallServicePackageIdFix[] = "b/304680258";
-// Bug fix to launch tabbed web app windows in new windows when requested.
-// We can remove this capability once Ash and Lacros are both past M122.
-constexpr char kAshShelfNewWindowFix[] = "crbug/1490336";
-// Support feedback dialog ai flow.
-// TODO(crbug/1501057): Remove this capability once Ash and Lacros are both past
-// M123.
-constexpr char kAshFeedbackFlowAi[] = "crbug/1501057";
+constexpr std::string_view kAshCapabilities[] = {
+    // Capability to support reloading the lacros browser on receiving a
+    // notification that the browser component was successfully updated.
+    "crbug/1237235",
+
+    // Capability to support shared_storage in prefs.
+    "b/231890240",
+
+    // Capability to register observers for extension controlled prefs via the
+    // prefs api.
+    "crbug/1334985",
+
+    // Capability to pass testing ash extension keeplist data via ash
+    // commandline switch.
+    "crbug/1409199",
+
+    // Capability to accept a package ID for installation without a parsing bug.
+    // Once Ash and Lacros are both past M124, then we can remove this
+    // capability.
+    "b/304680258",
+
+    // Bug fix to launch tabbed web app windows in new windows when requested.
+    // We can remove this capability once Ash and Lacros are both past M122.
+    "crbug/1490336",
+
+    // Support feedback dialog ai flow.
+    // TODO(crbug/1501057): Remove this capability once Ash and Lacros are both
+    // past M123.
+    "crbug/1501057",
+
+    // Entries added to this list must record the current milestone + 3 with a
+    // TODO for removal.
+};
 
 policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManager(
     const user_manager::User& user) {
@@ -721,16 +733,8 @@ void InjectBrowserInitParams(
   params->accepted_internal_ash_urls =
       ChromeWebUIControllerFactory::GetInstance()->GetListOfAcceptableURLs();
 
-  std::vector<std::string> ash_capabilities = {
-      kBrowserManagerReloadBrowserCapability,
-      kSharedStoragePrefsCapability,
-      kExtensionControlledPrefObserversCapability,
-      kAshExtensionKeeplistCmdlineSwitchCapability,
-      kAshAppInstallServicePackageIdFix,
-      kAshShelfNewWindowFix,
-      kAshFeedbackFlowAi,
-  };
-  params->ash_capabilities = {std::move(ash_capabilities)};
+  params->ash_capabilities = {
+      {std::begin(kAshCapabilities), std::end(kAshCapabilities)}};
 
   params->lacros_selection = GetLacrosSelection(lacros_selection);
 
@@ -1088,6 +1092,10 @@ policy::ComponentCloudPolicyService* GetComponentCloudPolicyServiceForUser(
     case user_manager::UserType::kArcKioskApp:
       return nullptr;
   }
+}
+
+base::span<const std::string_view> GetAshCapabilities() {
+  return kAshCapabilities;
 }
 
 }  // namespace browser_util
