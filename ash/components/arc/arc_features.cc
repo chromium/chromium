@@ -36,7 +36,7 @@ BASE_FEATURE(kCustomTabsExperimentFeature,
 // starting.
 BASE_FEATURE(kDeferArcActivationUntilUserSessionStartUpTaskCompletion,
              "DeferArcActivationUntilUserSessionStartUpTaskCompletion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // We decide whether to defer ARC activation by taking a look at recent
 // user activities. If the user activates ARC soon after user session start
