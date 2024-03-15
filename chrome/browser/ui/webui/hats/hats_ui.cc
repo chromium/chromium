@@ -40,13 +40,13 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src "
-      // The SHA256 hash of the initial inline JS.
-      // Must be replaced when the inline js of hats.html changes.
-      // The new hash can be viewed via terminal or via developer tools on
-      // chrome-untrusted://hats if the page throws an error.
-      "'sha256-gE2l7O/qvxOSNGhz8GPZzb9y0Ca6tLZWE1M0p/uvGt8=' "
-      // Scripts loaded transitively from the initial one are allowed:
-      "'strict-dynamic' "
+
+      // only allow loading script from these trusted sources
+      "chrome-untrusted://hats/ "
+      "chrome-untrusted://resources/mojo/mojo/public/js/bindings.js "
+      "https://apis.google.com "
+      "https://gstatic.com "
+      "https://www.gstatic.com "
       ";");
 
   source->OverrideContentSecurityPolicy(
@@ -73,7 +73,11 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,
-      "frame-src https://scone-pa.clients6.google.com/ ;");
+      "frame-src "
+
+      "https://scone-pa.clients6.google.com/ "
+      "https://feedback-pa.clients6.google.com/ "
+      ";");
 
   // TODO(crbug.com/1481674): Enable TrustedType.
   source->DisableTrustedTypesCSP();
