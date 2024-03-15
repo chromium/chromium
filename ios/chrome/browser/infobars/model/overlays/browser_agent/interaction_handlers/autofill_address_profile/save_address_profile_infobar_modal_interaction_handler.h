@@ -32,9 +32,6 @@ class SaveAddressProfileInfobarModalInteractionHandler
   virtual void SaveEditedProfile(InfoBarIOS* infobar,
                                  autofill::AutofillProfile* profile);
 
-  virtual void SaveEditedProfile(InfoBarIOS* infobar,
-                                 NSDictionary* profileData);
-
   // Instructs the handler that the user chose not to migrate the profile.
   virtual void NoThanksWasPressed(InfoBarIOS* infobar);
 

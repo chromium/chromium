@@ -21,8 +21,6 @@ class MockSaveAddressProfileInfobarModalInteractionHandler
   ~MockSaveAddressProfileInfobarModalInteractionHandler() override;
 
   MOCK_METHOD2(SaveEditedProfile,
-               void(InfoBarIOS* infobar, NSDictionary* profileData));
-  MOCK_METHOD2(SaveEditedProfile,
                void(InfoBarIOS* infobar, autofill::AutofillProfile* profile));
   MOCK_METHOD2(CancelModal, void(InfoBarIOS* infobar, BOOL fromEditView));
   MOCK_METHOD1(NoThanksWasPressed, void(InfoBarIOS* infobar));

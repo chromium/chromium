@@ -33,19 +33,6 @@ void SaveAddressProfileInfobarModalInteractionHandler::InfobarVisibilityChanged(
 
 void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
     InfoBarIOS* infobar,
-    NSDictionary* profileData) {
-  for (NSNumber* key in profileData) {
-    autofill::FieldType type =
-        AutofillTypeFromAutofillUIType((AutofillUIType)[key intValue]);
-    std::u16string data = base::SysNSStringToUTF16(profileData[key]);
-    GetInfoBarDelegate(infobar)->SetProfileInfo(type, data);
-  }
-  GetInfoBarDelegate(infobar)->EditAccepted();
-  infobar->set_accepted(true);
-}
-
-void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
-    InfoBarIOS* infobar,
     autofill::AutofillProfile* profile) {
   GetInfoBarDelegate(infobar)->SetProfile(profile);
   GetInfoBarDelegate(infobar)->EditAccepted();

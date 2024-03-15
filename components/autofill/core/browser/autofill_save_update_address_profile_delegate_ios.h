@@ -73,8 +73,6 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   void AutoDecline();
   virtual bool Never();
 
-  // Updates |profile_| |type| value to |value|.
-  void SetProfileInfo(const FieldType& type, const std::u16string& value);
   void SetProfile(AutofillProfile* profile);
 
   const AutofillProfile* GetProfile() const;

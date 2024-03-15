@@ -46,12 +46,6 @@ TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, MainAction) {
   handler_.PerformMainAction(infobar_.get());
 }
 
-TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest,
-       SaveEditedProfile) {
-  EXPECT_CALL(mock_delegate(), EditAccepted());
-  handler_.SaveEditedProfile(infobar_.get(), @{}.mutableCopy);
-}
-
 TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, EditDeclined) {
   handler_.CancelModal(infobar_.get(), /*fromEditModal=*/YES);
   EXPECT_EQ(mock_delegate().user_decision(),
