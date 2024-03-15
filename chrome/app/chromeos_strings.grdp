@@ -1750,7 +1750,10 @@
     Please re-enter your password to update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> profile.
   </message>
   <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_TITLE" desc="Title for the local password setup dialog.">
-    Set <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
+    Set a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password to make it easier to sign in
+  </message>
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_SUBTITLE" desc="Subtitle for the local password setup dialog.">
+    Instead of entering your Google Account password to sign in, you can create a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password for this device
   </message>
   <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_TITLE" desc="Title for the local password reset dialog.">
     Reset <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password

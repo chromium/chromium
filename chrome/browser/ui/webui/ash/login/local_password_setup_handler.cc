@@ -33,6 +33,8 @@ void LocalPasswordSetupHandler::DeclareLocalizedValues(
 
   builder->AddF("localPasswordSetupTitle", IDS_LOGIN_LOCAL_PASSWORD_SETUP_TITLE,
                 device_name);
+  builder->AddF("localPasswordSetupSubtitle",
+                IDS_LOGIN_LOCAL_PASSWORD_SETUP_SUBTITLE, device_name);
   builder->AddF("localPasswordResetTitle", IDS_LOGIN_LOCAL_PASSWORD_RESET_TITLE,
                 device_name);
   builder->Add("passwordInputPlaceholderText",

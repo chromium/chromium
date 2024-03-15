@@ -54,6 +54,7 @@ const LocalPasswordSetupBase = mixinBehaviors(
  */
 interface LocalPasswordSetupScreenData {
   showBackButton: boolean;
+  isRecoveryFlow: boolean;
 }
 
 export class LocalPasswordSetup extends LocalPasswordSetupBase {
@@ -73,6 +74,10 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
         type: Boolean,
       },
 
+      isRecoveryFlow: {
+        type: Boolean,
+      },
+
       passwordValue: {
         type: String,
         value: null,
@@ -81,6 +86,7 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
   }
 
   private backButtonVisible: boolean;
+  private isRecoveryFlow: boolean;
   private passwordValue: string;
 
   constructor() {
@@ -119,6 +125,7 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
   override onBeforeShow(data: LocalPasswordSetupScreenData): void {
     this.reset();
     this.backButtonVisible = data['showBackButton'];
+    this.isRecoveryFlow = data['isRecoveryFlow'];
   }
 
   showLocalPasswordSetupFailure(): void {

@@ -885,6 +885,17 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           trigger: (screen) => {
             screen.onBeforeShow({
               showBackButton: false,
+              isRecoveryFlow: false,
+            });
+          },
+        },
+        {
+          // Forced password setup
+          id: 'forced-recovery',
+          trigger: (screen) => {
+            screen.onBeforeShow({
+              showBackButton: false,
+              isRecoveryFlow: true,
             });
           },
         },
@@ -894,6 +905,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           trigger: (screen) => {
             screen.onBeforeShow({
               showBackButton: true,
+              isRecoveryFlow: false,
             });
           },
         },
