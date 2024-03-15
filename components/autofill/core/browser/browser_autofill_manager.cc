@@ -2323,7 +2323,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
   credit_card_form_event_logger_->OnDidFetchSuggestion(
       suggestions, with_offer, with_cvc, is_virtual_card_standalone_cvc_field,
-      context);
+      std::move(context));
   return suggestions;
 }
 

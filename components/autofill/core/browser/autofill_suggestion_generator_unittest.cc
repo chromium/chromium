@@ -3878,7 +3878,8 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
         /*should_show_cards_from_account=*/false, with_offer, with_cvc,
         metadata_logging_context);
 
-    EXPECT_FALSE(metadata_logging_context.card_metadata_available);
+    EXPECT_TRUE(
+        metadata_logging_context.instruments_with_metadata_available.empty());
     EXPECT_FALSE(metadata_logging_context.card_product_description_shown);
     EXPECT_FALSE(metadata_logging_context.card_art_image_shown);
 
@@ -3912,7 +3913,9 @@ TEST_P(AutofillSuggestionGeneratorTestForMetadata,
         /*should_show_cards_from_account=*/false, with_offer, with_cvc,
         metadata_logging_context);
 
-    EXPECT_TRUE(metadata_logging_context.card_metadata_available);
+    EXPECT_TRUE(
+        metadata_logging_context.instruments_with_metadata_available.contains(
+            server_card_with_metadata.instrument_id()));
     EXPECT_EQ(metadata_logging_context.card_product_description_shown,
               card_product_description_enabled());
     EXPECT_EQ(metadata_logging_context.card_art_image_shown,
