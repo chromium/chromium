@@ -339,6 +339,11 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     case mojom::Operation::Tag::kRelu:
       operator_offset = SerializeRelu(*op.get_relu());
       break;
+    case mojom::Operation::Tag::kResample2d: {
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeResample2d(*op.get_resample2d()));
+      break;
+    }
     case mojom::Operation::Tag::kReshape: {
       ASSIGN_OR_RETURN(operator_offset, SerializeReshape(*op.get_reshape()));
       break;
@@ -384,8 +389,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("prelu is not implemented");
     case mojom::Operation::Tag::kReduce:
       return base::unexpected("reduce is not implemented");
-    case mojom::Operation::Tag::kResample2d:
-      return base::unexpected("resample2d is not implemented");
     case mojom::Operation::Tag::kSoftplus:
       return base::unexpected("softplus is not implemented");
     case mojom::Operation::Tag::kSoftsign:
@@ -1074,6 +1077,70 @@ auto GraphBuilder::SerializeRelu(const mojom::Relu& relu) -> OperatorOffset {
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator::BuiltinOperator_RELU, relu.input_operand_id,
       relu.output_operand_id);
+}
+
+auto GraphBuilder::SerializeResample2d(const mojom::Resample2d& resample2d)
+    -> base::expected<OperatorOffset, std::string> {
+  // TODO: crbug.com/329543543 - `resample2d.scales` is dropped on the floor.
+
+  const std::array<uint32_t, 2> supported_axes = {1, 2};
+  if (!base::ranges::equal(resample2d.axes, supported_axes)) {
+    // TODO: crbug.com/329658123: Support axes of {0, 1} and {2, 3}.
+    return base::unexpected(
+        "Resample2d only supports axes = {1, 2} in tflite schema.");
+  }
+
+  // Create tflite builtin options for resize mode that is align_corner = false
+  // and half_pixel_center = true by default. WebNN will support coordinate
+  // transformation modes for Resample2d and it's tracked by the issue:
+  // https://github.com/webmachinelearning/webnn/issues/270.
+  ::tflite::BuiltinOperator operator_code;
+  ::tflite::BuiltinOptions builtin_options_type;
+  flatbuffers::Offset<void> builtin_options;
+  switch (resample2d.mode) {
+    case mojom::Resample2d::InterpolationMode::kNearestNeighbor:
+      operator_code = ::tflite::BuiltinOperator_RESIZE_NEAREST_NEIGHBOR;
+      builtin_options_type =
+          ::tflite::BuiltinOptions_ResizeNearestNeighborOptions;
+      builtin_options = ::tflite::CreateResizeNearestNeighborOptions(
+                            builder_, /*align_corners=*/false,
+                            /*half_pixel_centers=*/true)
+                            .Union();
+      break;
+    case mojom::Resample2d::InterpolationMode::kLinear:
+      operator_code = ::tflite::BuiltinOperator_RESIZE_BILINEAR;
+      builtin_options_type = ::tflite::BuiltinOptions_ResizeBilinearOptions;
+      builtin_options = ::tflite::CreateResizeBilinearOptions(
+                            builder_, /*align_corners=*/false,
+                            /*half_pixel_centers=*/true)
+                            .Union();
+      break;
+  }
+
+  // Serialize the target sizes for the dimensions [OutputHeight, OutputWidth].
+  ASSIGN_OR_RETURN(
+      std::vector<int32_t> signed_output_dimensions,
+      ToSignedDimensions(GetOperand(resample2d.output_operand_id).dimensions));
+  CHECK_EQ(signed_output_dimensions.size(), 4u);
+
+  int32_t output_height = signed_output_dimensions[resample2d.axes[0]];
+  int32_t output_width = signed_output_dimensions[resample2d.axes[1]];
+
+  const std::array<int32_t, 2> resize_data = {output_height, output_width};
+  const std::array<int32_t, 1> resize_shape = {resize_data.size()};
+  const int32_t resize_tensor_index =
+      SerializeTensorWithBuffer<int32_t>(resize_data, resize_shape);
+
+  const uint32_t operator_code_index = GetOperatorCodeIndex(operator_code);
+  const std::array<int32_t, 2> op_inputs = {
+      operand_to_index_map_.at(resample2d.input_operand_id),
+      resize_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(resample2d.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs),
+                                  builtin_options_type, builtin_options);
 }
 
 auto GraphBuilder::SerializeReshape(const mojom::Reshape& reshape)

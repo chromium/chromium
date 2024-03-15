@@ -157,6 +157,8 @@ class GraphBuilder final {
   base::expected<OperatorOffset, std::string> SerializePool2d(
       const mojom::Pool2d& pool2d);
   OperatorOffset SerializeRelu(const mojom::Relu& relu);
+  base::expected<OperatorOffset, std::string> SerializeResample2d(
+      const mojom::Resample2d& resample2d);
   base::expected<OperatorOffset, std::string> SerializeReshape(
       const mojom::Reshape& reshape);
   OperatorOffset SerializeSigmoid(const mojom::Sigmoid& sigmoid);
