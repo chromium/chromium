@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncUtils;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -216,7 +217,9 @@ public class SigninAndHistoryOptInCoordinator
     public void switchHistorySyncLayout() {
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
-            showDialogContentView();
+            Profile profile = mProfileSupplier.get();
+            assert profile != null;
+            showDialogContentView(profile);
         }
     }
 
@@ -314,12 +317,19 @@ public class SigninAndHistoryOptInCoordinator
             case HistoryOptInMode.OPTIONAL:
                 // TODO(crbug.com/40944119): Show history opt-in only if it's not suppressed.
             case HistoryOptInMode.REQUIRED:
-                showHistoryOptInDialog();
+                maybeShowHistoryOptInDialog();
                 break;
         }
     }
 
-    private void showHistoryOptInDialog() {
+    private void maybeShowHistoryOptInDialog() {
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
+        if (!shouldShowHistorySync(profile)) {
+            HistorySyncUtils.recordHistorySyncNotShown(profile, mSigninAccessPoint);
+            onFlowComplete();
+            return;
+        }
         ModalDialogManager manager = mModalDialogManagerSupplier.get();
         assert manager != null;
 
@@ -362,12 +372,10 @@ public class SigninAndHistoryOptInCoordinator
                                 })
                         .build();
 
-        showDialogContentView();
+        showDialogContentView(profile);
     }
 
-    private void showDialogContentView() {
-        Profile profile = mProfileSupplier.get();
-        assert profile != null;
+    private void showDialogContentView(Profile profile) {
         mHistorySyncCoordinator =
                 new HistorySyncCoordinator(mActivity, this, profile, mSigninAccessPoint);
         assert mDialogModel != null;
@@ -378,6 +386,16 @@ public class SigninAndHistoryOptInCoordinator
                 mDialogModel,
                 ModalDialogManager.ModalDialogType.APP,
                 ModalDialogManager.ModalDialogPriority.VERY_HIGH);
+    }
+
+    private boolean shouldShowHistorySync(Profile profile) {
+        if (HistorySyncUtils.didAlreadyOptIn(profile)) {
+            return false;
+        }
+        if (HistorySyncUtils.isHistorySyncDisabledByPolicy(profile)) {
+            return false;
+        }
+        return !HistorySyncUtils.isHistorySyncDisabledByCustodian(profile);
     }
 
     private void onFlowComplete() {
