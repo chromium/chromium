@@ -392,10 +392,15 @@ void RealTimeUrlLookupServiceBase::MaybeSendRequest(
 
   GURL sanitized_url = SanitizeURL(url);
 
+  bool request_is_already_pending = pending_requests_.count(sanitized_url) > 0;
+  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.Request.Concurrent",
+                                    GetMetricSuffix(),
+                                    request_is_already_pending);
+
   // If a request for this URL is already pending, queue up the callback.
   // This is done to prevent duplicating network requests to the backend
   // service and prevent unneeded QPS increase.
-  if (pending_requests_.count(sanitized_url) > 0) {
+  if (request_is_already_pending) {
     pending_requests_.at(sanitized_url)
         .AddCallback(std::move(response_callback));
     return;

@@ -492,6 +492,7 @@ TEST_F(RealTimeUrlLookupServiceTest, TestCacheInCacheManager) {
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_PendingRequestForSameUrl) {
+  base::HistogramTester histograms;
   EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
@@ -522,6 +523,14 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_PendingRequestForSameUrl) {
                                        /* is_cached_response */ false, _));
 
   task_environment_.RunUntilIdle();
+
+  // The first request is considered not concurrent, the second one is.
+  histograms.ExpectBucketCount("SafeBrowsing.RT.Request.Concurrent",
+                               /* sample */ false,
+                               /* expected_count */ 1);
+  histograms.ExpectBucketCount("SafeBrowsing.RT.Request.Concurrent",
+                               /* sample */ true,
+                               /* expected_count */ 1);
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
@@ -553,10 +562,14 @@ TEST_F(RealTimeUrlLookupServiceTest, TestStartLookup_ResponseIsAlreadyCached) {
   histograms.ExpectUniqueSample("SafeBrowsing.RT.ThreatInfoSize",
                                 /* sample */ 0,
                                 /* expected_count */ 0);
+
+  // No requests were sent.
+  histograms.ExpectTotalCount("SafeBrowsing.RT.Request.Concurrent", 0);
 }
 
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_PingWithTokenUpdatesEsbProtegoPingWithTokenLastLogTime) {
+  base::HistogramTester histograms;
   EnableRealTimeUrlLookup({kSafeBrowsingRemoveCookiesInAuthRequests}, {});
   EnableTokenFetchesInClient();
   SetSafeBrowsingState(&test_pref_service_,
@@ -577,6 +590,11 @@ TEST_F(RealTimeUrlLookupServiceTest,
   EXPECT_EQ(test_pref_service_.GetTime(
                 prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime),
             base::Time::Now());
+
+  // Only one not-concurent request is sent.
+  histograms.ExpectUniqueSample("SafeBrowsing.RT.Request.Concurrent",
+                                /* sample */ false,
+                                /* expected_count */ 1);
 }
 
 TEST_F(

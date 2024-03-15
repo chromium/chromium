@@ -2297,6 +2297,22 @@ chromium-metrics-reviews@google.com.
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
+<histogram name="SafeBrowsing.RT.Request.Concurrent{UserCategory}"
+    enum="Boolean" expires_after="2024-09-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether a real-time lookup service request is concurrent with an
+    existing request for the same sanitized URL. Concurrent requests are batched
+    together so that only one network request is made to the backend lookup
+    service.
+
+    {UserCategory}
+  </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
+</histogram>
+
 <histogram name="SafeBrowsing.RT.Request.HadCookie.{RequestType}{UserType}"
     enum="BooleanPresent" expires_after="2024-09-01">
   <owner>chlily@chromium.org</owner>
