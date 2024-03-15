@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
+#include <map>
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
@@ -27,14 +28,7 @@ class DefaultBrowserPromptTest : public testing::Test {
   }
 
   void EnableDefaultBrowserPromptRefreshFeatureWithParams(
-      std::string reprompt_duration,
-      std::string max_prompt_count,
-      std::string reprompt_duration_multiplier) {
-    base::FieldTrialParams params;
-    params[features::kRepromptDuration.name] = reprompt_duration;
-    params[features::kMaxPromptCount.name] = max_prompt_count;
-    params[features::kRepromptDurationMultiplier.name] =
-        reprompt_duration_multiplier;
+      std::map<std::string, std::string> params) {
     scoped_feature_list.Reset();
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         features::kDefaultBrowserPromptRefresh, params);
@@ -124,9 +118,9 @@ TEST_F(DefaultBrowserPromptTest, MaxPromptCount) {
   // If max prompt count is negative, do not limit the number of times the
   // prompt is shown.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
-      /*reprompt_duration=*/"1d",
-      /*max_prompt_count=*/"-1",
-      /*reprompt_duration_multiplier=*/"1");
+      {{features::kRepromptDuration.name, "1d"},
+       {features::kMaxPromptCount.name, "-1"},
+       {features::kRepromptDurationMultiplier.name, "1"}});
   TestShouldShowDefaultBrowserPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/12345,
@@ -134,9 +128,9 @@ TEST_F(DefaultBrowserPromptTest, MaxPromptCount) {
 
   // Never show the prompt if max prompt count is zero.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
-      /*reprompt_duration=*/"1d",
-      /*max_prompt_count=*/"0",
-      /*reprompt_duration_multiplier=*/"2");
+      {{features::kRepromptDuration.name, "1d"},
+       {features::kMaxPromptCount.name, "0"},
+       {features::kRepromptDurationMultiplier.name, "2"}});
   TestShouldShowDefaultBrowserPrompt(
       /*last_declined_time_delta=*/std::nullopt,
       /*declined_count=*/std::nullopt,
@@ -144,9 +138,9 @@ TEST_F(DefaultBrowserPromptTest, MaxPromptCount) {
 
   // If max prompt count is 1, only show the prompt if declined count is unset.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
-      /*reprompt_duration=*/"1d",
-      /*max_prompt_count=*/"1",
-      /*reprompt_duration_multiplier=*/"1");
+      {{features::kRepromptDuration.name, "1d"},
+       {features::kMaxPromptCount.name, "1"},
+       {features::kRepromptDurationMultiplier.name, "1"}});
   TestShouldShowDefaultBrowserPrompt(
       /*last_declined_time_delta=*/std::nullopt,
       /*declined_count=*/std::nullopt,
@@ -158,9 +152,9 @@ TEST_F(DefaultBrowserPromptTest, MaxPromptCount) {
 
   // Show if the declined count is less than the max prompt count.
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
-      /*reprompt_duration=*/"1d",
-      /*max_prompt_count=*/"5",
-      /*reprompt_duration_multiplier=*/"1");
+      {{features::kRepromptDuration.name, "1d"},
+       {features::kMaxPromptCount.name, "5"},
+       {features::kRepromptDurationMultiplier.name, "1"}});
   TestShouldShowDefaultBrowserPrompt(
       /*last_declined_time_delta=*/base::Days(1) + base::Microseconds(1),
       /*declined_count=*/4,
@@ -173,9 +167,9 @@ TEST_F(DefaultBrowserPromptTest, MaxPromptCount) {
 
 TEST_F(DefaultBrowserPromptTest, RepromptDuration) {
   EnableDefaultBrowserPromptRefreshFeatureWithParams(
-      /*reprompt_duration=*/"1d",
-      /*max_prompt_count=*/"-1",
-      /*reprompt_duration_multiplier=*/"2");
+      {{features::kRepromptDuration.name, "1d"},
+       {features::kMaxPromptCount.name, "-1"},
+       {features::kRepromptDurationMultiplier.name, "2"}});
 
   // After the prompt is declined once, show the prompt again if the time since
   // the last time the prompt was declined is strictly longer than the base
@@ -217,4 +211,17 @@ TEST_F(DefaultBrowserPromptTest, RepromptDuration) {
       /*last_declined_time_delta=*/base::Days(4) + base::Microseconds(1),
       /*declined_count=*/3,
       /*expected=*/true);
+}
+
+TEST_F(DefaultBrowserPromptTest, PromptHiddenWhenFeatureParamDisabled) {
+  EnableDefaultBrowserPromptRefreshFeatureWithParams(
+      {{features::kRepromptDuration.name, "1d"},
+       {features::kMaxPromptCount.name, "-1"},
+       {features::kRepromptDurationMultiplier.name, "1"},
+       {features::kShowDefaultBrowserInfoBar.name, "false"}});
+
+  TestShouldShowDefaultBrowserPrompt(
+      /*last_declined_time_delta=*/std::nullopt,
+      /*declined_count=*/std::nullopt,
+      /*expected=*/false);
 }

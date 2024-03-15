@@ -63,6 +63,12 @@ BASE_FEATURE(kDefaultBrowserPromptRefresh,
              "DefaultBrowserPromptRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kShowDefaultBrowserInfoBar{
+    &kDefaultBrowserPromptRefresh, "show_info_bar", true};
+
+const base::FeatureParam<bool> kShowDefaultBrowserAppMenuChip{
+    &kDefaultBrowserPromptRefresh, "show_app_menu_chip", false};
+
 const base::FeatureParam<bool> kUpdatedInfoBarCopy{
     &kDefaultBrowserPromptRefresh, "updated_info_bar_copy", true};
 

@@ -94,6 +94,10 @@ bool ShouldShowDefaultBrowserPrompt(Profile* profile) {
   }
 
   if (base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh)) {
+    if (!features::kShowDefaultBrowserInfoBar.Get()) {
+      return false;
+    }
+
     const int declined_count =
         local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
     const base::Time last_declined_time =
