@@ -287,7 +287,8 @@ void ImportCertOnWorkerThread(
         /*did_modify=*/false, base::unexpected(Error::kKeyNotFound));
   }
 
-  if (int res = net::x509_util::ImportUserCert(cert); res != net::OK) {
+  if (int res = net::x509_util::ImportUserCert(cert, std::move(key_slot));
+      res != net::OK) {
     LOG(ERROR) << "Failed to import certificate, error: " << res;
     return std::move(callback).Run(
         /*did_modify=*/false,

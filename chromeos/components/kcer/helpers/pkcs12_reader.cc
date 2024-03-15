@@ -264,6 +264,7 @@ Pkcs12ReaderStatusCode Pkcs12Reader::DoesKeyForCertExist(
   }
 
   if (private_key) {
+    SECKEY_DestroyPrivateKey(private_key);
     return Pkcs12ReaderStatusCode::kSuccess;
   }
   return Pkcs12ReaderStatusCode::kKeyDataMissed;

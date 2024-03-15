@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "crypto/scoped_nss_types.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_type.h"
 #include "net/cert/scoped_nss_types.h"
@@ -161,9 +162,11 @@ NET_EXPORT SHA256HashValue CalculateFingerprint256(CERTCertificate* cert);
 
 // Prefer using NSSCertDatabase::ImportUserCert. Temporary public for Kcer.
 // Import a user certificate. The private key for the user certificate must
-// already be installed, otherwise returns ERR_NO_PRIVATE_KEY_FOR_CERT.
-// Returns OK or a network error code.
-NET_EXPORT int ImportUserCert(CERTCertificate* cert);
+// already be installed, the cert will be installed on the same slot, otherwise
+// returns ERR_NO_PRIVATE_KEY_FOR_CERT. If the key exists on multiple slots,
+// prioritizes the `preferred_slot`. Returns OK or a network error code.
+NET_EXPORT int ImportUserCert(CERTCertificate* cert,
+                              crypto::ScopedPK11Slot preferred_slot);
 
 }  // namespace net::x509_util
 

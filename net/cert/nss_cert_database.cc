@@ -277,7 +277,7 @@ int NSSCertDatabase::ImportUserCert(const std::string& data) {
   if (certificates.empty())
     return ERR_CERT_INVALID;
 
-  int result = psm::ImportUserCert(certificates[0].get());
+  int result = psm::ImportUserCert(certificates[0].get(), GetPublicSlot());
 
   if (result == OK) {
     NotifyObserversClientCertStoreChanged();
@@ -287,7 +287,7 @@ int NSSCertDatabase::ImportUserCert(const std::string& data) {
 }
 
 int NSSCertDatabase::ImportUserCert(CERTCertificate* cert) {
-  int result = psm::ImportUserCert(cert);
+  int result = psm::ImportUserCert(cert, GetPublicSlot());
 
   if (result == OK) {
     NotifyObserversClientCertStoreChanged();

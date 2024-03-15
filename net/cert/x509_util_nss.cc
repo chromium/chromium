@@ -439,8 +439,10 @@ SHA256HashValue CalculateFingerprint256(CERTCertificate* cert) {
   return sha256;
 }
 
-int ImportUserCert(CERTCertificate* cert) {
-  return mozilla_security_manager::ImportUserCert(cert);
+int ImportUserCert(CERTCertificate* cert,
+                   crypto::ScopedPK11Slot preferred_slot) {
+  return mozilla_security_manager::ImportUserCert(cert,
+                                                  std::move(preferred_slot));
 }
 
 }  // namespace net::x509_util

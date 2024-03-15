@@ -205,12 +205,23 @@ bool ImportServerCert(
 }
 
 // Based on nsNSSCertificateDB::ImportUserCertificate.
-int ImportUserCert(CERTCertificate* cert) {
+int ImportUserCert(CERTCertificate* cert,
+                   crypto::ScopedPK11Slot preferred_slot) {
   if (!cert)
     return net::ERR_CERT_INVALID;
 
   CK_OBJECT_HANDLE key;
-  crypto::ScopedPK11Slot slot(PK11_KeyForCertExists(cert, &key, NULL));
+  crypto::ScopedPK11Slot slot;
+
+  SECKEYPrivateKey* private_key =
+      PK11_FindKeyByDERCert(preferred_slot.get(), cert, nullptr);
+  if (private_key) {
+    slot = std::move(preferred_slot);
+    key = private_key->pkcs11ID;
+    SECKEY_DestroyPrivateKey(private_key);
+  } else {
+    slot = crypto::ScopedPK11Slot(PK11_KeyForCertExists(cert, &key, nullptr));
+  }
 
   if (!slot.get())
     return net::ERR_NO_PRIVATE_KEY_FOR_CERT;
