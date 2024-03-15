@@ -5733,6 +5733,61 @@
             ]
         }
     ],
+    "DesktopOmniboxMLScoringWithLinearMapping": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Moderate",
+                    "params": {
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold": "1400",
+                        "MlUrlSearchBlending_MappedSearchBlendingMax": "2800",
+                        "MlUrlSearchBlending_MappedSearchBlendingMin": "600",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Conservative",
+                    "params": {
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold": "1000",
+                        "MlUrlSearchBlending_MappedSearchBlendingMax": "2000",
+                        "MlUrlSearchBlending_MappedSearchBlendingMin": "0",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                },
+                {
+                    "name": "Enabled_Aggressive",
+                    "params": {
+                        "MlUrlScoringShortcutDocumentSignals": "true",
+                        "MlUrlSearchBlending_MappedSearchBlendingGroupingThreshold": "1500",
+                        "MlUrlSearchBlending_MappedSearchBlendingMax": "4000",
+                        "MlUrlSearchBlending_MappedSearchBlendingMin": "1000",
+                        "enable_scoring_signals_annotators_for_ml_scoring": "true"
+                    },
+                    "enable_features": [
+                        "MlUrlScoring",
+                        "UrlScoringModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxShortcutBoost": [
         {
             "platforms": [
