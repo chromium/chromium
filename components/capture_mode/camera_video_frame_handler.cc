@@ -734,15 +734,8 @@ CameraVideoFrameHandler::CameraVideoFrameHandler(
       // if any.
       /*force_reopen_with_new_settings=*/false,
       camera_video_stream_subsciption_remote_.BindNewPipeAndPassReceiver(),
-      base::BindOnce(
-          [](video_capture::mojom::CreatePushSubscriptionResultCodePtr
-                 result_code,
-             const media::VideoCaptureParams& actual_params) {
-            if (result_code->is_error_code()) {
-              LOG(ERROR) << "Error in creating push subscription: "
-                         << static_cast<int>(result_code->get_error_code());
-            }
-          }));
+      base::BindOnce(&CameraVideoFrameHandler::OnSubscriptionCreationResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 CameraVideoFrameHandler::~CameraVideoFrameHandler() = default;
@@ -852,6 +845,17 @@ void CameraVideoFrameHandler::OnStopped() {}
 // static
 void CameraVideoFrameHandler::SetForceUseGpuMemoryBufferForTest(bool value) {
   g_force_use_gpu_memory_buffer_for_test = value;
+}
+
+void CameraVideoFrameHandler::OnSubscriptionCreationResult(
+    video_capture::mojom::CreatePushSubscriptionResultCodePtr result_code,
+    const media::VideoCaptureParams& actual_params) {
+  if (result_code->is_error_code()) {
+    LOG(ERROR) << "Error in creating push subscription: "
+               << static_cast<int>(result_code->get_error_code());
+  } else {
+    actual_params_.emplace(actual_params);
+  }
 }
 
 void CameraVideoFrameHandler::OnVideoFrameGone(int buffer_id) {

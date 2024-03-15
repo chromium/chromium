@@ -82,6 +82,9 @@ void VideoStreamCoordinator::StopInternal(
     mojo::Remote<video_capture::mojom::VideoSourceProvider>
         video_source_provider) {
   if (video_frame_handler_) {
+    // TODO(b/329312235): Collect actual Frame Per Seconds value using
+    // `video_frame_handler_->GetActualParams()`.
+
     // Close frame handling and move the object to another thread to allow it
     // to finish processing frames that are in progress. If this isn't done,
     // then allocated buffers can be left dangling until the video stream is
