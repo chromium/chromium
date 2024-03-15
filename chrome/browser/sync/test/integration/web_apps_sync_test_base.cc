@@ -38,7 +38,6 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Disable Lacros, so that Web Apps get synced in the Ash browser.
-  // TODO(crbug.com/1462253): Also test with Lacros flags enabled.
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
 #endif
 
