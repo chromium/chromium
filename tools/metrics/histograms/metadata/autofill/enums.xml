@@ -1360,6 +1360,62 @@ Called by update_autofill_enums.py.-->
              (once)"/>
   <int value="87" label="Masked server card suggestion selected"/>
   <int value="88" label="Masked server card suggestion selected (once)"/>
+  <int value="89"
+      label="Suggestions containing cards with a benefit available were shown"/>
+  <int value="90"
+      label="Suggestions were shown, and no card had a benefit available"/>
+  <int value="91"
+      label="Suggestions containing cards with a benefit available were shown
+             (once)"/>
+  <int value="92"
+      label="Suggestions were shown, and no card had a benefit available
+             (once)"/>
+  <int value="93"
+      label="Suggestion for a masked server card with a benefit available was
+             selected"/>
+  <int value="94"
+      label="Suggestion for a masked server card with no benefit available
+             was selected"/>
+  <int value="95"
+      label="Suggestion for a masked server card with a benefit available was
+             selected (once)"/>
+  <int value="96"
+      label="Suggestion for a masked server card with no benefit available
+             was selected (once)"/>
+  <int value="97"
+      label="Suggestion for a masked server card with a benefit available was
+             filled"/>
+  <int value="98"
+      label="Suggestion for a masked server card with no benefit available
+             was filled"/>
+  <int value="99"
+      label="Suggestion for a masked server card with a benefit available was
+             filled (once)"/>
+  <int value="100"
+      label="Suggestion for a masked server card with no benefit available
+             was filled (once)"/>
+  <int value="101"
+      label="Form was about to be submitted after a suggestion for a masked
+             server card with a benefit available was filled (once)"/>
+  <int value="102"
+      label="Form was about to be submitted after a suggestion for masked
+             server card with no benefit available was filled (once)"/>
+  <int value="103"
+      label="Form was submitted after a suggestion for a masked server card
+             with a benefit available was filled (once)"/>
+  <int value="104"
+      label="Form was submitted after a suggestion for a masked server card
+             with no benefit available was filled (once)"/>
+  <int value="105"
+      label="Suggestion for a masked server card was selected after
+             suggestions containing cards with a benefit available were shown
+             (once)"/>
+  <int value="106"
+      label="Suggestion for a masked server card was filled after suggestions
+             containing cards with a benefit available were shown (once)"/>
+  <int value="107"
+      label="Form was submitted after suggestions containing cards with a
+             benefit available were shown (once)"/>
 </enum>
 
 <enum name="AutofillFormSubmittedState">

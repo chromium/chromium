@@ -235,6 +235,76 @@ enum FormEvent {
   // Same as above but only triggered once per page load.
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE = 88,
 
+  // Suggestions containing cards with a benefit available were shown.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN = 89,
+  // Suggestions were shown, and no card had a benefit available.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN = 90,
+  // Suggestions containing cards with a benefit available were shown. Logged
+  // once per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE = 91,
+  // Suggestions were shown, and no card had a benefit available. Logged once
+  // per page load.
+  FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN_ONCE = 92,
+  // A suggestion of a masked server card with a benefit available was
+  // selected.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED = 93,
+  // A suggestion of a masked server card with no benefit available was
+  // selected.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED = 94,
+  // A suggestion of a masked server card with a benefit available was
+  // selected. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SELECTED_ONCE =
+      95,
+  // A suggestion of a masked server card with no benefit available was
+  // selected. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SELECTED_ONCE =
+      96,
+  // A suggestion of a masked server card with a benefit available was filled.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED = 97,
+  // A suggestion of a masked server card with no benefit available was filled.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED = 98,
+  // A suggestion of a masked server card with a benefit available was filled.
+  // Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_FILLED_ONCE = 99,
+  // A suggestion of a masked server card with no benefit available was filled.
+  // Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_FILLED_ONCE =
+      100,
+  // A form was about to be submitted after a suggestion of a masked server
+  // card with a benefit available was filled. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_WILL_SUBMIT_ONCE =
+      101,
+  // A form was about to be submitted after a suggestion of a masked server
+  // card with no benefit available was filled. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_WILL_SUBMIT_ONCE =
+      102,
+  // A form was submitted after a suggestion of a masked server card with
+  // benefit available was filled. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITH_BENEFIT_AVAILABLE_SUBMITTED_ONCE =
+      103,
+  // A form was submitted after a suggestion of a masked server card with no
+  // benefit available was filled. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_WITHOUT_BENEFIT_AVAILABLE_SUBMITTED_ONCE =
+      104,
+  // A masked server card suggestion is selected after suggestions containing
+  // cards with a benefit available were shown. The selected card can be any
+  // masked server card, even it has no available benefit. Logged once per
+  // page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
+      105,
+  // A masked server card suggestion is filled after suggestions containing
+  // cards with a benefit available were shown. The filled card can be any
+  // masked server card, even it has no available benefit. Logged once per
+  // page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
+      106,
+  // A form is submitted after suggestions containing cards with a benefit
+  // available were shown and a masked server card suggestion was filled.
+  // The filled card can be any masked server card, even it has no available
+  // benefit. Logged once per page load.
+  FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
+      107,
+
   NUM_FORM_EVENTS,
 };
 
