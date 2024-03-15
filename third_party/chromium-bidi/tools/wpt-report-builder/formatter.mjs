@@ -237,6 +237,7 @@ function generateTestReport(map, parent) {
 function generateSubtestReport(subtest) {
   const name =
     subtest.name ?? removeWebDriverBiDiPrefix(subtest.path).split('/').at(-1);
+
   return `<div class="divider"></div>
       <div class="test-card test-card-subtest ${
         subtest.status === 'PASS' ? 'pass' : 'fail'
@@ -244,7 +245,7 @@ function generateSubtestReport(subtest) {
         <div class="test-name">
           <p class="non-collapsible-item path">
           <span class="short-name">${escapeHtml(name).replaceAll('&#47;', '/').replaceAll('&#39;', "'")}</span>
-          <span class="long-name hidden">${escapeHtml(subtest.path).replaceAll('&#47;', '/').replaceAll('&#39;', "'")}</span>
+          <span class="long-name hidden">${escapeHtml(subtest.path.replaceAll('&#47;', '/').replaceAll('&#39;', "'")).replaceAll('&#47;', '/').replaceAll('&#39;', "'")}</span>
           ${
             subtest.message
               ? `<br /><small>${escapeHtml(subtest.message)}</small>`
