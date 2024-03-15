@@ -58,7 +58,6 @@ public class AuxiliarySearchBridge {
 
     /**
      * This method will return non sensitive url tabs, and the scheme is http or https.
-     * This method is called when the AndroidAppIntegrationSafeSearch not enabled.
      *
      * @param tabs A list of {@link Tab}s to check if they are sensitive.
      * @param callback {@link Callback} to pass back the list of non sensitive {@link Tab}s.
