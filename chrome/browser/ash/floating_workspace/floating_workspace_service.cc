@@ -692,6 +692,22 @@ void FloatingWorkspaceService::HandleTemplateCaptureErrors(
   }
 }
 
+bool FloatingWorkspaceService::ShouldUploadFloatingWorkspaceTemplate() {
+  bool initial_capture = !previously_captured_desk_template_;
+  bool first_download_is_completed =
+      first_uptodate_download_timeticks_.has_value();
+  // Initialize this to false. This should only be switched if the download is
+  // completed and there has been user activity since then.
+  bool has_user_activity_since_last_download = false;
+  if (first_download_is_completed) {
+    has_user_activity_since_last_download =
+        first_uptodate_download_timeticks_.value() <=
+        ui::UserActivityDetector::Get()->last_activity_time();
+  }
+  return (first_download_is_completed &&
+          (initial_capture || has_user_activity_since_last_download));
+}
+
 void FloatingWorkspaceService::OnTemplateCaptured(
     std::optional<DesksClient::DeskActionError> error,
     std::unique_ptr<DeskTemplate> desk_template) {
@@ -725,10 +741,12 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   }
   // If it successfully captured desk, remove old entry and record new uuid only
   // if the user was active from when the sync cycle is finished to now.
+  // Upload the captured floating workspace template on two conditions:
+  // 1) If this is the first capture after a template launch or
+  // 2) If the current desk is different and the user has been active since last
+  // capture.
   if (!IsCurrentDeskSameAsPrevious(desk_template.get()) &&
-      (first_uptodate_download_timeticks_.has_value() &&
-       first_uptodate_download_timeticks_.value() <=
-           ui::UserActivityDetector::Get()->last_activity_time())) {
+      ShouldUploadFloatingWorkspaceTemplate()) {
     UploadFloatingWorkspaceTemplateToDeskModel(std::move(desk_template));
   }
 }
