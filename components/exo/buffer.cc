@@ -698,8 +698,14 @@ bool Buffer::ProduceTransferableResource(
         gpu::MailboxHolder(contents_texture->mailbox(),
                            resource->mailbox_holder.sync_token, texture_target);
     resource->is_overlay_candidate = is_overlay_candidate_;
+
+    // Note that when MultiPlanarSI is enabled, we need to use
+    // GetSharedImageFormat() instead of GetSinglePlaneSharedImageFormat().
+    auto buffer_format = gpu_memory_buffer_->GetFormat();
     resource->format =
-        viz::GetSinglePlaneSharedImageFormat(gpu_memory_buffer_->GetFormat());
+        media::IsMultiPlaneFormatForHardwareVideoEnabled()
+            ? GetSharedImageFormat(buffer_format)
+            : viz::GetSinglePlaneSharedImageFormat(buffer_format);
     if (context_provider->ContextCapabilities().chromium_gpu_fence &&
         request_release_fence) {
       resource->synchronization_type =
