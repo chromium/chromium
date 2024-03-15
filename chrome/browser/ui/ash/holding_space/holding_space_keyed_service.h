@@ -126,6 +126,9 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
       HoldingSpaceImage::PlaceholderImageSkiaResolver
           placeholder_image_skia_resolver = base::NullCallback());
 
+  // Returns whether a holding space item exists for the specified `id`.
+  bool ContainsItem(const std::string& id) const;
+
   // Returns an object which, upon its destruction, performs an atomic update to
   // the holding space item associated with the specified `id`. Returns
   // `nullptr` if the service has not been initialized.

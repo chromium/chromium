@@ -2982,6 +2982,10 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Verify a holding space item has been added to the model.
   ASSERT_EQ(model->items().size(), 1u);
 
+  HoldingSpaceKeyedService* const service = GetService(profile);
+  ASSERT_TRUE(service);
+  EXPECT_TRUE(service->ContainsItem(id));
+
   // Verify holding space `item` metadata.
   HoldingSpaceItem* const item = model->items()[0].get();
   EXPECT_EQ(item->id(), id);
@@ -3018,16 +3022,22 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
     // For suggestion items, the new suggestions should always replace old ones.
     EXPECT_NE(model->items()[0].get(), item);
     EXPECT_NE(id, id2);
+    EXPECT_FALSE(service->ContainsItem(id));
+    EXPECT_TRUE(service->ContainsItem(id2));
   } else {
     // For non-suggestion items, attempts to add already represented items
     // should be ignored.
     EXPECT_EQ(model->items()[0].get(), item);
     EXPECT_EQ(id, id2);
+    EXPECT_TRUE(service->ContainsItem(id));
+    EXPECT_TRUE(service->ContainsItem(id2));
   }
 
   // Remove the holding space item.
-  GetService(profile)->RemoveItem(is_suggestion ? id2 : id);
+  service->RemoveItem(is_suggestion ? id2 : id);
   EXPECT_TRUE(model->items().empty());
+  EXPECT_FALSE(service->ContainsItem(id));
+  EXPECT_FALSE(service->ContainsItem(id2));
 
   // Verify `expected_histograms` after "waiting" for metrics debounce.
   // NOTE: Histograms are cumulative so we need to merge `expected_histograms`

@@ -319,6 +319,10 @@ const std::string& HoldingSpaceKeyedService::AddItemOfType(
   return AddItem(std::move(item));
 }
 
+bool HoldingSpaceKeyedService::ContainsItem(const std::string& id) const {
+  return holding_space_model_.GetItem(id) != nullptr;
+}
+
 std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate>
 HoldingSpaceKeyedService::UpdateItem(const std::string& id) {
   return IsInitialized() ? holding_space_model_.UpdateItem(id) : nullptr;
