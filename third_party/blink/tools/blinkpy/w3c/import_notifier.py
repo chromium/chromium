@@ -27,6 +27,7 @@ from blinkpy.web_tests.models.test_expectations import (
 from blinkpy.web_tests.models.testharness_results import (
     LineType,
     Status,
+    TestharnessLine,
     parse_testharness_baseline,
 )
 from blinkpy.w3c.buganizer import (
@@ -70,7 +71,6 @@ class ImportNotifier:
              import_range: CommitRange,
              wpt_revision_start,
              wpt_revision_end,
-             rebaselined_tests,
              issue,
              patchset,
              dry_run=True):
@@ -83,7 +83,6 @@ class ImportNotifier:
                 (exclusive), i.e. the last imported revision.
             wpt_revision_end: The end of the imported WPT revision range
                 (inclusive), i.e. the current imported revision.
-            rebaselined_tests: A list of test names that have been rebaselined.
             issue: The issue number of the import CL (a string).
             patchset: The patchset number of the import CL (a string).
             dry_run: If True, no bugs will be actually filed to crbug.com.
@@ -93,84 +92,55 @@ class ImportNotifier:
         gerrit_url = str(Changelist(issue))
         gerrit_url_with_ps = str(Changelist(issue, patchset)) + '/'
 
-        changed_test_baselines = self.find_changed_baselines_of_tests(
-            rebaselined_tests)
-        self.examine_baseline_changes(changed_test_baselines,
-                                      gerrit_url_with_ps)
+        self.examine_baseline_changes(import_range, gerrit_url_with_ps)
         self.examine_new_test_expectations(import_range)
 
         bugs = self.create_bugs_from_new_failures(wpt_revision_start,
                                                   wpt_revision_end, issue)
         self.file_bugs(bugs, dry_run)
 
-    def find_changed_baselines_of_tests(self, rebaselined_tests):
-        """Finds the corresponding changed baselines of each test.
-
-        Args:
-            rebaselined_tests: A list of test names that have been rebaselined.
-
-        Returns:
-            A dictionary mapping test names to paths of their baselines changed
-            in this import CL (paths relative to the root of Chromium repo).
-        """
-        test_baselines = {}
-        changed_files = self.git.changed_files()
-        for test_name in rebaselined_tests:
-            test_without_ext, _ = self.host.filesystem.splitext(test_name)
-            changed_baselines = []
-            # TODO(robertma): Refactor this into web_tests.port.base.
-            baseline_name = test_without_ext + '-expected.txt'
-            for changed_file in changed_files:
-                if changed_file.endswith(baseline_name):
-                    changed_baselines.append(changed_file)
-            if changed_baselines:
-                test_baselines[test_name] = changed_baselines
-        return test_baselines
-
-    def examine_baseline_changes(self, changed_test_baselines,
-                                 gerrit_url_with_ps):
+    def examine_baseline_changes(self, import_range: CommitRange,
+                                 gerrit_url_with_ps: str):
         """Examines all changed baselines to find new failures.
 
-        Args:
-            changed_test_baselines: A dictionary mapping test names to paths of
-                changed baselines.
+        Arguments:
+            import_range: The commits before (exclusive) and after (inclusive)
+                the imported CL.
             gerrit_url_with_ps: Gerrit URL of this CL with the patchset number.
         """
-        for test_name, changed_baselines in changed_test_baselines.items():
-            directory = self.find_directory_for_bug(test_name)
+        sep = re.escape(self.host.filesystem.sep)
+        platform_pattern = f'(platform|flag-specific){sep}([^{sep}]+){sep}'
+        baseline_pattern = re.compile(f'web_tests{sep}({platform_pattern})?')
+        for changed_file in self.git.changed_files(import_range):
+            parts = baseline_pattern.split(changed_file, maxsplit=1)[1:]
+            if not parts:
+                continue
+            test = self.default_port.test_from_output_filename(parts[-1])
+            if not test:
+                continue
+            directory = self.find_directory_for_bug(test)
             if not directory:
                 continue
+            lines_before = self._read_baseline(changed_file,
+                                               import_range.start)
+            lines_after = self._read_baseline(changed_file, import_range.end)
+            if self.more_failures_in_baseline(lines_before, lines_after):
+                self.new_failures_by_directory[directory].append(
+                    TestFailure.from_file(test, changed_file,
+                                          gerrit_url_with_ps))
 
-            for baseline in changed_baselines:
-                if self.more_failures_in_baseline(baseline):
-                    self.new_failures_by_directory[directory].append(
-                        TestFailure.from_file(test_name, baseline,
-                                              gerrit_url_with_ps))
-
-    def more_failures_in_baseline(self, baseline: str) -> bool:
+    def more_failures_in_baseline(
+        self,
+        old_lines: List[TestharnessLine],
+        new_lines: List[TestharnessLine],
+    ) -> bool:
         """Determines if a testharness.js baseline file has new failures.
-
-        The file is assumed to have been modified in the current git checkout,
-        and so has a diff we can parse.
 
         We recognize two types of failures: FAIL lines, which are output for a
         specific subtest failing, and harness errors, which indicate an uncaught
         error in the test. Increasing numbers of either are considered new
         failures - this includes going from FAIL to error or vice-versa.
         """
-        try:
-            old_contents = self.git.show_blob(baseline).decode(
-                errors='replace')
-            old_lines = parse_testharness_baseline(old_contents)
-        except ScriptError:
-            old_lines = []
-        try:
-            new_contents = self.host.filesystem.read_text_file(
-                self.finder.path_from_chromium_base(baseline))
-            new_lines = parse_testharness_baseline(new_contents)
-        except FileNotFoundError:
-            new_lines = []
-
         failure_statuses = set(Status) - {Status.PASS, Status.NOTRUN}
         old_failures = [
             line for line in old_lines if line.statuses & failure_statuses
@@ -179,12 +149,24 @@ class ImportNotifier:
             line for line in new_lines if line.statuses & failure_statuses
         ]
 
+        # TODO(crbug.com/329869593): Consider notifying about any new failure
+        # (as determined by subtest name), not just baselines with increasing
+        # total failures.
         is_error = lambda line: line.line_type is LineType.HARNESS_ERROR
         if sum(map(is_error, new_failures)) > sum(map(is_error, old_failures)):
             return True
         is_subtest = lambda line: line.line_type is LineType.SUBTEST
         return sum(map(is_subtest, new_failures)) > sum(
             map(is_subtest, old_failures))
+
+    def _read_baseline(self, baseline_path: str,
+                       ref: str) -> List[TestharnessLine]:
+        try:
+            contents = self.git.show_blob(baseline_path, ref)
+            return parse_testharness_baseline(
+                contents.decode(errors='replace'))
+        except ScriptError:
+            return []
 
     def examine_new_test_expectations(self, import_range: CommitRange):
         """Examines new test expectations to find new failures.
@@ -203,8 +185,9 @@ class ImportNotifier:
                 changed_file)
             if abs_changed_file not in exp_files:
                 continue
-            lines_before = self._read_lines(changed_file, import_range.start)
-            lines_after = self._read_lines(changed_file, import_range.end)
+            lines_before = self._read_exp_lines(changed_file,
+                                                import_range.start)
+            lines_after = self._read_exp_lines(changed_file, import_range.end)
             change = ExpectationsChange(lines_added=lines_after)
             change += ExpectationsChange(lines_removed=lines_before)
 
@@ -215,7 +198,8 @@ class ImportNotifier:
                         line.test, line.to_string())
                     self.new_failures_by_directory[directory].append(failure)
 
-    def _read_lines(self, path: str, ref: str) -> List[typ_types.Expectation]:
+    def _read_exp_lines(self, path: str,
+                        ref: str) -> List[typ_types.Expectation]:
         abs_path = self.finder.path_from_chromium_base(path)
         expectations = TestExpectations(
             self.default_port,

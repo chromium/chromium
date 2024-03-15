@@ -11,10 +11,8 @@ from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import (
     RELATIVE_WEB_TESTS,
-    RELATIVE_WPT_TESTS,
     PathFinder,
 )
-from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.w3c.buganizer import BuganizerError
@@ -23,6 +21,7 @@ from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.import_notifier import (ImportNotifier, TestFailure,
                                          CHECKS_URL_TEMPLATE)
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
+from blinkpy.web_tests.models.testharness_results import parse_testharness_baseline
 
 UMBRELLA_BUG = WPTExpectationsUpdater.UMBRELLA_BUG
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
@@ -65,191 +64,167 @@ class ImportNotifierTest(unittest.TestCase):
         self.buganizer_client = mock.Mock()
         self.notifier = ImportNotifier(self.host, self.git, self.local_wpt,
                                        self.buganizer_client)
-
-    def test_find_changed_baselines_of_tests(self):
-        changed_files = [
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html',
-            RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
-            RELATIVE_WEB_TESTS +
-            'platform/linux/external/wpt/foo/bar-expected.txt',
-            RELATIVE_WEB_TESTS + 'external/wpt/random_stuff.html',
-        ]
-        self.git.changed_files = lambda: changed_files
-        self.assertEqual(
-            self.notifier.find_changed_baselines_of_tests(
-                ['external/wpt/foo/bar.html']),
-            {
-                'external/wpt/foo/bar.html': [
-                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
-                    RELATIVE_WEB_TESTS +
-                    'platform/linux/external/wpt/foo/bar-expected.txt',
-                ]
-            })
-
-        self.assertEqual(
-            self.notifier.find_changed_baselines_of_tests(set()), {})
+        self.notifier.default_port.set_option_default('manifest_update', False)
 
     def test_more_failures_in_baseline_more_fails(self):
         old_contents = textwrap.dedent("""\
             [FAIL] an old failure
-            """).encode()
+            """)
         new_contents = textwrap.dedent("""\
             [FAIL] new failure 1
             [FAIL] new failure 2
             """)
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
-        with mock.patch.object(self.git,
-                               'show_blob',
-                               return_value=old_contents) as show_blob:
-            self.assertTrue(
-                self.notifier.more_failures_in_baseline(
-                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
-        show_blob.assert_called_once_with(
-            f'{RELATIVE_WPT_TESTS}foo-expected.txt')
+        self.assertTrue(
+            self.notifier.more_failures_in_baseline(
+                parse_testharness_baseline(old_contents),
+                parse_testharness_baseline(new_contents)))
 
     def test_more_failures_in_baseline_fewer_fails(self):
         old_contents = textwrap.dedent("""\
             [FAIL] an old failure
             [FAIL] new failure 1
-            """).encode()
+            """)
         new_contents = textwrap.dedent("""\
             [FAIL] new failure 2
             """)
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
-        with mock.patch.object(self.git,
-                               'show_blob',
-                               return_value=old_contents):
-            self.assertFalse(
-                self.notifier.more_failures_in_baseline(
-                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
+        self.assertFalse(
+            self.notifier.more_failures_in_baseline(
+                parse_testharness_baseline(old_contents),
+                parse_testharness_baseline(new_contents)))
 
     def test_more_failures_in_baseline_same_fails(self):
         old_contents = textwrap.dedent("""\
             [FAIL] an old failure
-            """).encode()
+            """)
         new_contents = textwrap.dedent("""\
             [FAIL] a new failure
             """)
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
-        with mock.patch.object(self.git,
-                               'show_blob',
-                               return_value=old_contents):
-            self.assertFalse(
-                self.notifier.more_failures_in_baseline(
-                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
+        self.assertFalse(
+            self.notifier.more_failures_in_baseline(
+                parse_testharness_baseline(old_contents),
+                parse_testharness_baseline(new_contents)))
 
     def test_more_failures_in_baseline_new_error(self):
         new_contents = textwrap.dedent("""\
             Harness Error. harness_status.status = 1 , harness_status.message = bad
             """)
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
-        with mock.patch.object(self.git, 'show_blob', side_effect=ScriptError):
-            self.assertTrue(
-                self.notifier.more_failures_in_baseline(
-                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
+        self.assertTrue(
+            self.notifier.more_failures_in_baseline(
+                [], parse_testharness_baseline(new_contents)))
 
     def test_more_failures_in_baseline_remove_error(self):
         old_contents = textwrap.dedent("""\
             Harness Error. harness_status.status = 1 , harness_status.message = bad
-            """).encode()
-        with mock.patch.object(self.git,
-                               'show_blob',
-                               return_value=old_contents):
-            self.assertFalse(
-                self.notifier.more_failures_in_baseline(
-                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
+            """)
+        self.assertFalse(
+            self.notifier.more_failures_in_baseline(
+                parse_testharness_baseline(old_contents), []))
 
     def test_more_failures_in_baseline_changing_error(self):
         old_contents = textwrap.dedent("""\
             Harness Error. harness_status.status = 1 , harness_status.message = bad
-            """).encode()
+            """)
         new_contents = textwrap.dedent("""\
             Harness Error. harness_status.status = 2, harness_status.message = still an error
             """)
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
-        with mock.patch.object(self.git,
-                               'show_blob',
-                               return_value=old_contents):
-            self.assertFalse(
-                self.notifier.more_failures_in_baseline(
-                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
+        self.assertFalse(
+            self.notifier.more_failures_in_baseline(
+                parse_testharness_baseline(old_contents),
+                parse_testharness_baseline(new_contents)))
 
     def test_more_failures_in_baseline_fail_to_error(self):
         old_contents = textwrap.dedent("""\
             [FAIL] a previous failure
-            """).encode()
+            """)
         new_contents = textwrap.dedent("""\
             Harness Error. harness_status.status = 1 , harness_status.message = bad
             """)
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
-        with mock.patch.object(self.git,
-                               'show_blob',
-                               return_value=old_contents):
-            self.assertTrue(
-                self.notifier.more_failures_in_baseline(
-                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
+        self.assertTrue(
+            self.notifier.more_failures_in_baseline(
+                parse_testharness_baseline(old_contents),
+                parse_testharness_baseline(new_contents)))
 
     def test_more_failures_in_baseline_error_to_fail(self):
         old_contents = textwrap.dedent("""\
             Harness Error. harness_status.status = 1 , harness_status.message = bad
-            """).encode()
+            """)
         new_contents = textwrap.dedent("""\
             [PASS FAIL] a new (flaky) failure
             """)
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_wpt_tests('foo-expected.txt'), new_contents)
-        with mock.patch.object(self.git,
-                               'show_blob',
-                               return_value=old_contents):
-            self.assertTrue(
-                self.notifier.more_failures_in_baseline(
-                    f'{RELATIVE_WPT_TESTS}foo-expected.txt'))
+        self.assertTrue(
+            self.notifier.more_failures_in_baseline(
+                parse_testharness_baseline(old_contents),
+                parse_testharness_baseline(new_contents)))
+
+    def _write_and_commit(self, file_contents):
+        for path, contents in file_contents.items():
+            self.host.filesystem.write_text_file(path, contents)
+            self.git.add(path)
+        self.git.commit_locally_with_message('commit')
 
     def test_examine_baseline_changes(self):
-        self.host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA', '')
-        changed_test_baselines = {
-            'external/wpt/foo/bar.html': [
-                RELATIVE_WEB_TESTS + 'external/wpt/foo/bar-expected.txt',
-                RELATIVE_WEB_TESTS +
-                'platform/linux/external/wpt/foo/bar-expected.txt',
-            ]
-        }
+        contents_before = textwrap.dedent("""\
+            [PASS] subtest
+            """)
+        self._write_and_commit({
+            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA':
+            '',
+            MOCK_WEB_TESTS + 'external/wpt/foo/bar_a-expected.txt':
+            contents_before,
+        })
+        contents_after = textwrap.dedent("""\
+            [FAIL] subtest
+            """)
+        self._write_and_commit({
+            MOCK_WEB_TESTS + 'external/wpt/foo/bar.html':
+            '',
+            MOCK_WEB_TESTS + 'external/wpt/foo/bar_a-expected.txt':
+            contents_after,
+            MOCK_WEB_TESTS + 'platform/linux/external/wpt/foo/bar_a-expected.txt':
+            contents_after,
+            MOCK_WEB_TESTS + 'flag-specific/fake-flag/external/wpt/foo/bar_b-expected.txt':
+            contents_after,
+            '/mock-checkout/unrelated.cc':
+            '',
+        })
+
         gerrit_url_with_ps = 'https://crrev.com/c/12345/3/'
-        self.notifier.more_failures_in_baseline = lambda _: True
-        self.notifier.examine_baseline_changes(changed_test_baselines,
+        self.notifier.examine_baseline_changes(CommitRange('HEAD~1', 'HEAD'),
                                                gerrit_url_with_ps)
 
         self.assertEqual(
             self.notifier.new_failures_by_directory, {
                 'external/wpt/foo': [
                     TestFailure.from_file(
-                        'external/wpt/foo/bar.html',
+                        'external/wpt/foo/bar.html?a',
                         baseline_path=RELATIVE_WEB_TESTS +
-                        'external/wpt/foo/bar-expected.txt',
+                        'external/wpt/foo/bar_a-expected.txt',
                         gerrit_url_with_ps=gerrit_url_with_ps),
                     TestFailure.from_file(
-                        'external/wpt/foo/bar.html',
+                        'external/wpt/foo/bar.html?b',
                         baseline_path=RELATIVE_WEB_TESTS +
-                        'platform/linux/external/wpt/foo/bar-expected.txt',
+                        'flag-specific/fake-flag/external/wpt/foo/bar_b-expected.txt',
+                        gerrit_url_with_ps=gerrit_url_with_ps),
+                    TestFailure.from_file(
+                        'external/wpt/foo/bar.html?a',
+                        baseline_path=RELATIVE_WEB_TESTS +
+                        'platform/linux/external/wpt/foo/bar_a-expected.txt',
                         gerrit_url_with_ps=gerrit_url_with_ps),
                 ]
             })
 
     def test_examine_new_test_expectations(self):
-        self.host.filesystem.write_text_file(
-            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA', '')
         contents_before = textwrap.dedent("""\
             # tags: [ Linux Mac Win ]
             # results: [ Failure Pass Timeout ]
             external/wpt/foo/existing.html [ Failure ]
             """)
+        self._write_and_commit({
+            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA':
+            '',
+            MOCK_WEB_TESTS + 'TestExpectations':
+            contents_before,
+        })
         contents_after = textwrap.dedent("""\
             # tags: [ Linux Mac Win ]
             # results: [ Failure Pass Timeout ]
@@ -259,25 +234,15 @@ class ImportNotifierTest(unittest.TestCase):
             crbug.com/12345 [ Linux ] external/wpt/foo/bar.html [ Failure ]
             crbug.com/12345 [ Win ] external/wpt/foo/bar.html [ Timeout ]
             """)
-        self.host.filesystem.write_text_file(
-            self.finder.path_from_web_tests('TestExpectations'),
-            contents_after)
-        blobs = {
-            ('third_party/blink/web_tests/TestExpectations', '012345'):
-            contents_before.encode(),
-            ('third_party/blink/web_tests/TestExpectations', 'abcdef'):
-            contents_after.encode(),
-        }
+        self._write_and_commit({
+            MOCK_WEB_TESTS + 'TestExpectations':
+            contents_after,
+            MOCK_WEB_TESTS + 'external/wpt/unrelated.html':
+            '',
+        })
 
-        with mock.patch.object(self.notifier, 'git') as git:
-            git.show_blob = lambda path, ref=None: blobs[path, ref]
-            git.changed_files.return_value = [
-                'third_party/blink/web_tests/TestExpectations',
-                'third_party/blink/web_tests/external/wpt/unrelated.html',
-            ]
-            self.notifier.examine_new_test_expectations(
-                CommitRange('012345', 'abcdef'))
-
+        self.notifier.examine_new_test_expectations(
+            CommitRange('HEAD~1', 'HEAD'))
         self.assertEqual(
             self.notifier.new_failures_by_directory, {
                 'external/wpt/foo': [

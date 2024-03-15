@@ -688,7 +688,6 @@ class TestImporter:
         notifier.main(CommitRange('origin/main', 'HEAD'),
                       self.last_wpt_revision,
                       self.wpt_revision,
-                      self.rebaselined_tests,
                       issue,
                       patchset,
                       dry_run=not auto_file_bugs)

@@ -2,10 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from typing import Optional
+import re
+from typing import Mapping, NamedTuple, Optional, Union
 
-from blinkpy.common.system.filesystem_mock import MockFileSystem
+from blinkpy.common.checkout.git import CommitRange
+from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
+from blinkpy.common.system.filesystem_mock import MockFileSystem
+
+
+class MockCommit(NamedTuple):
+    message: str
+    tree: Mapping[str, bytes]
 
 
 class MockGit:
@@ -22,6 +30,7 @@ class MockGit:
         self.cwd = cwd or self.checkout_root
         self.added_paths = set()
         self._filesystem = filesystem or MockFileSystem()
+        self._staging = dict(self._filesystem.files)
         self._executive = executive or MockExecutive()
         self._executable_name = 'git'
         self._local_commits = []
@@ -45,6 +54,8 @@ class MockGit:
         self.add_list([destination_path], return_exit_code)
 
     def add_list(self, destination_paths, return_exit_code=False):
+        for path in destination_paths:
+            self._staging[path] = self._filesystem.read_binary_file(path)
         self.added_paths.update(set(destination_paths))
         if return_exit_code:
             return 0
@@ -59,7 +70,11 @@ class MockGit:
         return True
 
     def show_blob(self, path: str, ref: Optional[str] = None) -> bytes:
-        return b''
+        commit = self._get_commit(ref)
+        try:
+            return commit.tree[self.absolute_path(path)]
+        except KeyError:
+            raise ScriptError
 
     def absolute_path(self, *comps):
         return self._filesystem.join(self.checkout_root, *comps)
@@ -77,7 +92,7 @@ class MockGit:
         return None
 
     def commit_locally_with_message(self, message):
-        self._local_commits.append([message])
+        self._local_commits.append(MockCommit(message, dict(self._staging)))
 
     def local_commits(self):
         """Returns the internal recording of commits made via |commit_locally_with_message|.
@@ -85,7 +100,7 @@ class MockGit:
         This is a testing convenience method; commits are formatted as:
           [ message, commit_all_working_directory_changes, author ].
         """
-        return self._local_commits
+        return [[commit.message] for commit in self._local_commits]
 
     def delete(self, path):
         return self.delete_list([path])
@@ -94,6 +109,7 @@ class MockGit:
         if not self._filesystem:
             return
         for path in paths:
+            self._staging.pop(path, None)
             if self._filesystem.exists(path):
                 self._filesystem.remove(path)
 
@@ -103,10 +119,38 @@ class MockGit:
                 self.absolute_path(origin), self.absolute_path(destination))
 
     def changed_files(self,
-                      git_commit: Optional[str] = None,
+                      commits: Union[None, str, CommitRange] = None,
                       diff_filter: str = 'ADM',
                       path: Optional[str] = None):
-        return []
+        if not self._local_commits:
+            return []
+        if isinstance(commits, CommitRange):
+            files_before = self._get_commit(commits.start).tree
+            files_after = self._get_commit(commits.end).tree
+        else:
+            # Pretend this branch is tracking the first commit.
+            files_before = self._local_commits[0].tree
+            files_after = self._filesystem.files
+
+        changed_files = []
+        for path in sorted(set(files_before) | set(files_after)):
+            before, after = files_before.get(path), files_after.get(path)
+            added = 'A' in diff_filter and before is None and after is not None
+            deleted = ('D' in diff_filter and before is not None
+                       and after is None)
+            modified = 'M' in diff_filter and before != after
+            if added or deleted or modified:
+                changed_files.append(
+                    self._filesystem.relpath(path, self.checkout_root))
+        return changed_files
+
+    def _get_commit(self, ref: str) -> MockCommit:
+        match = re.fullmatch(r'HEAD(~(?P<back>\d+))?', ref)
+        if not match:
+            raise NotImplementedError(
+                'only the HEAD~<n> syntax is supported for now')
+        back = int(match.group('back') or 0)
+        return self._local_commits[-1 - back]
 
     def unstaged_changes(self):
         return {}
