@@ -408,6 +408,7 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
 void SharesheetBubbleView::ShowActionView() {
   close_on_deactivate_ = false;
   constexpr float kShareActionScaleUpFactor = 0.9f;
+  constexpr auto kShareActionScaleUpTime = base::Milliseconds(50);
 
   main_view_->SetPaintToLayer();
   ui::Layer* main_view_layer = main_view_->layer();
@@ -440,7 +441,7 @@ void SharesheetBubbleView::ShowActionView() {
       ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
 
   // |share_action_view_| scale fade in.
-  share_action_scoped_settings->SetTransitionDuration(kSlowAnimateTime);
+  share_action_scoped_settings->SetTransitionDuration(kShareActionScaleUpTime);
   share_action_scoped_settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN_2);
   // Set##name kicks off the animation with the TransitionDuration and
   // TweenType currently set. See ui/compositor/layer_animator.cc Set##name.
