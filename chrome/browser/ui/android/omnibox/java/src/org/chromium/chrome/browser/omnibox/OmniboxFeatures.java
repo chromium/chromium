@@ -40,12 +40,6 @@ public class OmniboxFeatures {
                             "modernize_visual_update_active_color_on_omnibox",
                             true);
 
-    public static final BooleanCachedFieldTrialParameter MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
-                    "modernize_visual_update_smallest_margins",
-                    true);
-
     public static final BooleanCachedFieldTrialParameter QUERY_TILES_SHOW_AS_CAROUSEL =
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.QUERY_TILES_IN_ZPS_ON_NTP, "QueryTilesShowAsCarousel", false);
@@ -67,15 +61,6 @@ public class OmniboxFeatures {
      */
     public static boolean shouldShowActiveColorOnOmnibox() {
         return MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.getValue();
-    }
-
-    /**
-     * Returns whether even smaller vertical and horizontal margins should be used in the visual
-     * update.
-     */
-    public static boolean shouldShowSmallestMargins(Context context) {
-        return shouldShowModernizeVisualUpdate(context)
-                && MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.getValue();
     }
 
     /**

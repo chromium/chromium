@@ -343,7 +343,6 @@ public class LocationBarLayoutTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
     public void testTabletUrlBarTranslation_revampEnabled() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -387,43 +386,6 @@ public class LocationBarLayoutTest {
                             /* urlFocusChangeFraction= */ 1.0f,
                             /* isUrlFocusChangeInProgress= */ false);
                     Assert.assertEquals(0f, urlBar.getTranslationX(), MathUtils.EPSILON);
-                });
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    public void testTabletUrlBarTranslation_revampDisabled() {
-        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(false);
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(false);
-
-        Assert.assertEquals(0, getLocationBar().getEndPaddingPixelSizeOnFocusDelta());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    LocationBarLayout locationBar = getLocationBar();
-                    View urlBar = getUrlBar();
-
-                    urlBar.requestFocus();
-                    int marginStart =
-                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart();
-                    locationBar.setUrlFocusChangePercent(
-                            /* ntpSearchBoxScrollFraction= */ 0,
-                            /* startSurfaceScrollFraction= */ 0,
-                            /* urlFocusChangeFraction= */ 0.5f,
-                            /* isUrlFocusChangeInProgress= */ true);
-                    Assert.assertEquals(
-                            marginStart,
-                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart());
-                    Assert.assertEquals(0f, urlBar.getTranslationX(), MathUtils.EPSILON);
-
-                    locationBar.updateLayoutParams(
-                            MeasureSpec.makeMeasureSpec(
-                                    locationBar.getMeasuredWidth(), MeasureSpec.EXACTLY));
-                    Assert.assertEquals(
-                            marginStart,
-                            ((MarginLayoutParams) urlBar.getLayoutParams()).getMarginStart());
                 });
     }
 

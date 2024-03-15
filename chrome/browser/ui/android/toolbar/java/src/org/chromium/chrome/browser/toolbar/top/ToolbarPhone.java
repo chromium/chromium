@@ -1249,7 +1249,6 @@ public class ToolbarPhone extends ToolbarLayout
                                 mUrlFocusChangeFraction));
 
                 updateModernLocationBarCorners();
-                updateToolbarLayoutForUrlFocusChangeAnimation();
             }
         }
 
@@ -1258,27 +1257,6 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar.getPhoneCoordinator().invalidate();
         invalidate();
         TraceEvent.end("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
-    }
-
-    /** Updates the toolbar height and bottom padding during URL focus changing. */
-    private void updateToolbarLayoutForUrlFocusChangeAnimation() {
-        // With the smallest margins variant enabled, we still increase the height of the location
-        // bar bg but don't increase the height of the toolbar.
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())
-                || OmniboxFeatures.shouldShowSmallestMargins(getContext())) {
-            return;
-        }
-
-        int heightIncrease = calculateOnFocusHeightIncrease();
-
-        var layoutParams = getLayoutParams();
-        layoutParams.height =
-                getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                        + heightIncrease;
-        setLayoutParams(layoutParams);
-
-        // Apply extra bottom padding.
-        setPaddingRelative(getPaddingStart(), getPaddingTop(), getPaddingEnd(), heightIncrease);
     }
 
     /**

@@ -39,7 +39,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -424,7 +423,6 @@ public class BaseSuggestionViewBinderUnitTest {
     @Config(qualifiers = "ldltr")
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void iconStartPadding_smallestMarginsRevamp_ltr() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
         runDecorationIconPaddingTest();
     }
 
@@ -432,7 +430,6 @@ public class BaseSuggestionViewBinderUnitTest {
     @Config(qualifiers = "ldrtl")
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
     public void iconStartPadding_smallestMarginsRevamp_rtl() {
-        OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
         runDecorationIconPaddingTest();
     }
 
