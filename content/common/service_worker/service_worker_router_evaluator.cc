@@ -26,6 +26,7 @@
 namespace {
 
 class BaseCondition;
+class NotCondition;
 class OrCondition;
 class ConditionObject;
 
@@ -193,6 +194,12 @@ base::Value OrConditionToValue(
   return base::Value(std::move(ret));
 }
 
+base::Value NotConditionToValue(
+    const blink::ServiceWorkerRouterNotCondition& not_condition) {
+  CHECK(not_condition.condition);
+  return ConditionToValue(*not_condition.condition);
+}
+
 base::Value ConditionToValue(
     const blink::ServiceWorkerRouterCondition& condition) {
   base::Value::Dict out_c;
@@ -225,6 +232,9 @@ base::Value ConditionToValue(
   }
   if (or_condition) {
     out_c.Set("or", OrConditionToValue(*or_condition));
+  }
+  if (not_condition) {
+    out_c.Set("not", NotConditionToValue(*not_condition));
   }
   return base::Value(std::move(out_c));
 }
@@ -476,6 +486,31 @@ class OrCondition {
   bool need_running_status_ = false;
 };
 
+class NotCondition {
+ public:
+  NotCondition() = default;
+  // Not copyable
+  NotCondition(const NotCondition&) = delete;
+  // Movable
+  NotCondition(NotCondition&&) = default;
+  NotCondition& operator=(NotCondition&&) = default;
+  // Returns true on success. Otherwise, false.
+  bool Set(
+      const std::unique_ptr<blink::ServiceWorkerRouterCondition>& condition);
+  bool Match(const network::ResourceRequest& request,
+             std::optional<blink::EmbeddedWorkerStatus> running_status) const;
+  bool need_running_status() const { return need_running_status_; }
+
+ private:
+  bool MatchUrlPatternConditions(const network::ResourceRequest& request) const;
+  bool MatchNonUrlPatternConditions(
+      const network::ResourceRequest& request,
+      std::optional<blink::EmbeddedWorkerStatus> running_status) const;
+
+  std::unique_ptr<ConditionObject> condition_;
+  bool need_running_status_ = false;
+};
+
 class ConditionObject {
  public:
   // Returns true on success. Otherwise, false.
@@ -485,6 +520,7 @@ class ConditionObject {
           ServiceWorkerRouterEvaluatorErrorEnums::kInvalidCondition);
       return false;
     }
+
     const auto& or_condition =
         std::get<const std::optional<blink::ServiceWorkerRouterOrCondition>&>(
             condition.get());
@@ -493,7 +529,20 @@ class ConditionObject {
       bool success = v.Set(or_condition->conditions);
       value_ = std::move(v);
       return success;
-    } else {
+    }
+
+    const auto& not_condition =
+        std::get<const std::optional<blink::ServiceWorkerRouterNotCondition>&>(
+            condition.get());
+    if (not_condition) {
+      NotCondition v;
+      bool success = v.Set(not_condition->condition);
+      value_ = std::move(v);
+      return success;
+    }
+
+    // Neither the not condition nor the or condition.
+    {
       BaseCondition v;
       bool success = v.Set(condition);
       value_ = std::move(v);
@@ -515,7 +564,7 @@ class ConditionObject {
   }
 
  private:
-  absl::variant<BaseCondition, OrCondition> value_;
+  absl::variant<BaseCondition, OrCondition, NotCondition> value_;
 };
 
 bool OrCondition::Set(
@@ -543,6 +592,27 @@ bool OrCondition::Match(
     }
   }
   return false;
+}
+
+bool NotCondition::Set(
+    const std::unique_ptr<blink::ServiceWorkerRouterCondition>& condition) {
+  if (!condition) {
+    return false;
+  }
+
+  condition_ = std::make_unique<ConditionObject>();
+  if (!condition_->Set(*condition)) {
+    condition_.reset();
+    return false;
+  }
+  need_running_status_ = condition_->need_running_status();
+  return true;
+}
+
+bool NotCondition::Match(
+    const network::ResourceRequest& request,
+    std::optional<blink::EmbeddedWorkerStatus> running_status) const {
+  return !condition_->Match(request, running_status);
 }
 
 }  // namespace
