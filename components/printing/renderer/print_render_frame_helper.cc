@@ -152,15 +152,17 @@ int GetDPI(const mojom::PrintParams& print_params) {
 #endif  // BUILDFLAG(IS_APPLE)
 }
 
-// Helper function to check for fit to page
-bool IsPrintScalingOptionFitToPage(const mojom::PrintParams& params) {
+// Helper function to check for center on page (and shrink the contents to fit,
+// if needed). This is what's done when printing HTML to a printer (not when
+// generating a PDF).
+bool IsPrintScalingOptionCenterOnPaper(const mojom::PrintParams& params) {
   return params.print_scaling_option ==
-         mojom::PrintScalingOption::kFitToPrintableArea;
+         mojom::PrintScalingOption::kCenterShrinkToFitPaper;
 }
 
 bool ShouldIgnoreCssPageSize(bool ignore_css_margins,
                              const mojom::PrintParams& params) {
-  return ignore_css_margins && IsPrintScalingOptionFitToPage(params);
+  return ignore_css_margins && IsPrintScalingOptionCenterOnPaper(params);
 }
 
 mojom::PageOrientation FromBlinkPageOrientation(
@@ -537,7 +539,7 @@ mojom::PrintScalingOption GetPrintScalingOption(
     if (scaling_type == FIT_TO_PAPER)
       return mojom::PrintScalingOption::kFitToPaper;
   }
-  return mojom::PrintScalingOption::kFitToPrintableArea;
+  return mojom::PrintScalingOption::kCenterShrinkToFitPaper;
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
@@ -551,7 +553,7 @@ ParamWithFitToPageScale<mojom::PageSizeMarginsPtr> ComputePageLayoutForCss(
       GetCssPrintParams(frame, page_index, page_params);
 
   double fit_to_page_scale_factor = 1.0f;
-  if (!ignore_css_margins && IsPrintScalingOptionFitToPage(page_params)) {
+  if (!ignore_css_margins && IsPrintScalingOptionCenterOnPaper(page_params)) {
     auto fitted = FitPrintParamsToPage(page_params, *css_params);
     css_params = std::move(fitted.param);
     fit_to_page_scale_factor = fitted.fit_to_page_scale_factor;
@@ -1325,10 +1327,10 @@ void PrintRenderFrameHelper::PrintWithParams(
   auto plugin_node = delegate_->GetPdfElement(frame);
 
   // TODO(caseq): have this logic on the caller side?
-  const bool fit_to_paper = !IsPrintingPdfFrame(frame, plugin_node);
+  const bool center_on_paper = !IsPrintingPdfFrame(frame, plugin_node);
   settings->params->print_scaling_option =
-      fit_to_paper && !settings->params->prefer_css_page_size
-          ? mojom::PrintScalingOption::kFitToPrintableArea
+      center_on_paper && !settings->params->prefer_css_page_size
+          ? mojom::PrintScalingOption::kCenterShrinkToFitPaper
           : mojom::PrintScalingOption::kSourceSize;
   SetPrintPagesParams(*settings);
   prep_frame_view_ =
@@ -2331,10 +2333,10 @@ bool PrintRenderFrameHelper::InitPrintSettings(blink::WebLocalFrame* frame,
     return false;
   }
 
-  bool fit_to_paper_size = !IsPrintingPdfFrame(frame, node);
+  bool center_on_paper = !IsPrintingPdfFrame(frame, node);
   settings.params->print_scaling_option =
-      fit_to_paper_size ? mojom::PrintScalingOption::kFitToPrintableArea
-                        : mojom::PrintScalingOption::kSourceSize;
+      center_on_paper ? mojom::PrintScalingOption::kCenterShrinkToFitPaper
+                      : mojom::PrintScalingOption::kSourceSize;
   SetPrintPagesParams(settings);
   return true;
 }
