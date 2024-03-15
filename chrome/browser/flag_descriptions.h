@@ -173,6 +173,14 @@ extern const char kDeprecateUnloadDescription[];
 extern const char kDefaultBrowserPromptRefreshName[];
 extern const char kDefaultBrowserPromptRefreshDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kDesynchronizedCanvas2DName[];
+extern const char kDesynchronizedCanvas2DDescription[];
+
+extern const char kDesynchronizedWebglName[];
+extern const char kDesynchronizedWebglDescription[];
+#endif
+
 extern const char kDIPSName[];
 extern const char kDIPSDescription[];
 

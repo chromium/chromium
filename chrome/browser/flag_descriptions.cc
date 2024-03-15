@@ -252,6 +252,16 @@ const char kDefaultBrowserPromptRefreshDescription[] =
     "after it has been declined, depending on the time that the info bar was "
     "last declined, and how many times it has been declined.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kDesynchronizedCanvas2DName[] = "Optimize desynchronized canvas 2D.";
+const char kDesynchronizedCanvas2DDescription[] =
+    "Enable low latency optimization for desynchronized canvas 2D";
+
+const char kDesynchronizedWebglName[] = "Optimize desynchronized WebGL canvas.";
+const char kDesynchronizedWebglDescription[] =
+    "Enable low latency optimization for desynchronized WebGL canvas";
+#endif
+
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "

@@ -11195,6 +11195,15 @@ const FeatureEntry kFeatureEntries[] = {
                                     kDefaultBrowserPromptRefreshVariations,
                                     "DefaultBrowserPromptRefresh")},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"desynchronized-canvas-2d", flag_descriptions::kDesynchronizedCanvas2DName,
+     flag_descriptions::kDesynchronizedCanvas2DDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kLowLatencyCanvas2dImageChromium)},
+    {"desynchronized-webgl", flag_descriptions::kDesynchronizedWebglName,
+     flag_descriptions::kDesynchronizedWebglDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kLowLatencyWebGLImageChromium)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
