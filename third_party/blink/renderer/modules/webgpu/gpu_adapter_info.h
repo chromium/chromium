@@ -23,7 +23,8 @@ class GPUAdapterInfo : public ScriptWrappable {
                  const String& description = String(),
                  const String& driver = String(),
                  const String& backend = String(),
-                 const String& type = String());
+                 const String& type = String(),
+                 const std::optional<uint32_t> d3d_shader_model = std::nullopt);
 
   GPUAdapterInfo(const GPUAdapterInfo&) = delete;
   GPUAdapterInfo& operator=(const GPUAdapterInfo&) = delete;
@@ -39,6 +40,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   const String& backend() const;
   const String& type() const;
   const HeapVector<Member<GPUMemoryHeapInfo>>& memoryHeaps() const;
+  const std::optional<uint32_t>& d3dShaderModel() const;
 
   void Trace(Visitor*) const override;
 
@@ -51,6 +53,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   String backend_;
   String type_;
   HeapVector<Member<GPUMemoryHeapInfo>> memory_heaps_;
+  std::optional<uint32_t> d3d_shader_model_;
 };
 
 }  // namespace blink

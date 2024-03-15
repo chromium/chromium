@@ -14,14 +14,16 @@ GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
                                const String& description,
                                const String& driver,
                                const String& backend,
-                               const String& type)
+                               const String& type,
+                               const std::optional<uint32_t> d3d_shader_model)
     : vendor_(vendor),
       architecture_(architecture),
       device_(device),
       description_(description),
       driver_(driver),
       backend_(backend),
-      type_(type) {}
+      type_(type),
+      d3d_shader_model_(d3d_shader_model) {}
 
 void GPUAdapterInfo::AppendMemoryHeapInfo(GPUMemoryHeapInfo* info) {
   memory_heaps_.push_back(info);
@@ -58,6 +60,10 @@ const String& GPUAdapterInfo::type() const {
 const HeapVector<Member<GPUMemoryHeapInfo>>& GPUAdapterInfo::memoryHeaps()
     const {
   return memory_heaps_;
+}
+
+const std::optional<uint32_t>& GPUAdapterInfo::d3dShaderModel() const {
+  return d3d_shader_model_;
 }
 
 void GPUAdapterInfo::Trace(Visitor* visitor) const {

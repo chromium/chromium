@@ -97,11 +97,21 @@ GPUAdapter::GPUAdapter(
     scoped_refptr<DawnControlClientHolder> dawn_control_client)
     : DawnObject(dawn_control_client, handle, String()), gpu_(gpu) {
   WGPUAdapterProperties properties = {};
+  WGPUChainedStructOut** propertiesChain = &properties.nextInChain;
   WGPUAdapterPropertiesMemoryHeaps memoryHeapProperties = {};
   memoryHeapProperties.chain.sType = WGPUSType_AdapterPropertiesMemoryHeaps;
   if (GetProcs().adapterHasFeature(
           GetHandle(), WGPUFeatureName_AdapterPropertiesMemoryHeaps)) {
-    properties.nextInChain = &memoryHeapProperties.chain;
+    *propertiesChain = &memoryHeapProperties.chain;
+    propertiesChain = &(*propertiesChain)->next;
+  }
+  WGPUAdapterPropertiesD3D d3dProperties = {};
+  d3dProperties.chain.sType = WGPUSType_AdapterPropertiesD3D;
+  bool supportsPropertiesD3D = GetProcs().adapterHasFeature(
+      GetHandle(), WGPUFeatureName_AdapterPropertiesD3D);
+  if (supportsPropertiesD3D) {
+    *propertiesChain = &d3dProperties.chain;
+    propertiesChain = &(*propertiesChain)->next;
   }
   GetProcs().adapterGetProperties(GetHandle(), &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
@@ -121,6 +131,9 @@ GPUAdapter::GPUAdapter(
   for (size_t i = 0; i < memoryHeapProperties.heapCount; ++i) {
     memory_heaps_.push_back(MakeGarbageCollected<GPUMemoryHeapInfo>(
         memoryHeapProperties.heapInfo[i]));
+  }
+  if (supportsPropertiesD3D) {
+    d3d_shader_model_ = d3dProperties.shaderModel;
   }
 
   features_ = MakeFeatureNameSet(GetProcs(), GetHandle());
@@ -324,7 +337,8 @@ ScriptPromiseTyped<GPUAdapterInfo> GPUAdapter::requestAdapterInfo(
     // adapter info values.
     adapter_info = MakeGarbageCollected<GPUAdapterInfo>(
         vendor_, architecture_, device_, description_, driver_,
-        FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_));
+        FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_),
+        d3d_shader_model_);
     for (GPUMemoryHeapInfo* memory_heap : memory_heaps_) {
       adapter_info->AppendMemoryHeapInfo(memory_heap);
     }
