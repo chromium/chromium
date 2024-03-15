@@ -745,11 +745,6 @@ void BrowserLauncher::ResumeLaunch(
   WaitForPrimaryProfileAddedAndThen(barrier_closure);
 }
 
-void BrowserLauncher::SetLastPolicyFetchAttemptTimestamp(
-    base::Time last_refresh) {
-  environment_provider_.SetLastPolicyFetchAttemptTimestamp(last_refresh);
-}
-
 bool BrowserLauncher::IsProcessValid() const {
   return process_.IsValid();
 }

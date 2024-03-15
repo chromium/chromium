@@ -1072,8 +1072,6 @@ void BrowserManager::OnComponentPolicyServiceDestruction(
 
 void BrowserManager::OnFetchAttempt(
     policy::CloudPolicyRefreshScheduler* scheduler) {
-  browser_launcher_.SetLastPolicyFetchAttemptTimestamp(
-      scheduler->last_refresh());
   if (browser_service_.has_value()) {
     browser_service_->service->NotifyPolicyFetchAttempt();
   }

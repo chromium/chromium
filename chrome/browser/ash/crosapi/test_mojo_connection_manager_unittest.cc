@@ -247,7 +247,6 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
                     })));
   std::unique_ptr<EnvironmentProvider> environment_provider =
       std::make_unique<EnvironmentProvider>();
-  environment_provider->SetLastPolicyFetchAttemptTimestamp(base::Time::Now());
   TestMojoConnectionManager test_mojo_connection_manager{
       base::FilePath(socket_path), environment_provider.get()};
   run_loop1.Run();

@@ -156,8 +156,6 @@ class BrowserLauncher {
       base::OnceCallback<
           void(base::expected<base::TimeTicks, LaunchFailureReason>)> callback);
 
-  void SetLastPolicyFetchAttemptTimestamp(base::Time last_refresh);
-
   EnvironmentProvider& environment_provider() { return environment_provider_; }
 
   // Returns true if process is valid.

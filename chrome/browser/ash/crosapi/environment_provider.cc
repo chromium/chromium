@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -23,6 +24,8 @@
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -148,8 +151,9 @@ EnvironmentProvider::GetDeviceAccount() {
   // Lacros doesn't support Multi-Login. Get the Primary User.
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user)
+  if (!user) {
     return std::nullopt;
+  }
 
   const AccountId& account_id = user->GetAccountId();
   switch (account_id.GetAccountType()) {
@@ -170,12 +174,20 @@ EnvironmentProvider::GetDeviceAccount() {
 }
 
 base::Time EnvironmentProvider::GetLastPolicyFetchAttemptTimestamp() {
-  return last_policy_fetch_attempt_;
-}
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!user) {
+    return base::Time();
+  }
 
-void EnvironmentProvider::SetLastPolicyFetchAttemptTimestamp(
-    const base::Time& timestamp) {
-  last_policy_fetch_attempt_ = timestamp;
+  policy::CloudPolicyCore* core =
+      browser_util::GetCloudPolicyCoreForUser(*user);
+  if (!core) {
+    return base::Time();
+  }
+
+  return core->refresh_scheduler() ? core->refresh_scheduler()->last_refresh()
+                                   : base::Time();
 }
 
 }  // namespace crosapi

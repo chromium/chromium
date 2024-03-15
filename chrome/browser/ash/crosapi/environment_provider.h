@@ -6,13 +6,10 @@
 #define CHROME_BROWSER_ASH_CROSAPI_ENVIRONMENT_PROVIDER_H_
 
 #include <optional>
-#include <string>
 
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-forward.h"
 #include "components/account_manager_core/account.h"
-#include "components/policy/core/common/policy_namespace.h"
-#include "components/policy/core/common/values_util.h"
 
 namespace crosapi {
 
@@ -39,21 +36,8 @@ class EnvironmentProvider {
   // Demo Mode, and Kiosks.
   virtual std::optional<account_manager::Account> GetDeviceAccount();
 
-  // Getter and setter for last device policy fetch attempt timestamp.
+  // Getter for last device policy fetch attempt timestamp.
   virtual base::Time GetLastPolicyFetchAttemptTimestamp();
-  virtual void SetLastPolicyFetchAttemptTimestamp(const base::Time& timestamp);
-
- private:
-  // The serialized PolicyFetchResponse object corresponding to the policy of
-  // device account. Used to pass the data from Ash to Lacros.
-  std::string device_account_policy_blob_;
-
-  // The component policy to be passed to Lacros. The map value is the
-  // JSON corresponding to the policy for namespace.
-  policy::ComponentPolicyMap component_policy_;
-
-  // The last timestamp at which device account policy fetch was attempted.
-  base::Time last_policy_fetch_attempt_;
 };
 
 }  // namespace crosapi
