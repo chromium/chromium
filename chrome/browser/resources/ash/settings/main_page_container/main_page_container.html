@@ -1,10 +1,15 @@
 <style include="cr-hidden-style settings-shared">
+  :host {
+    box-sizing: border-box;
+    display: block;
+    position: relative;
+  }
+
   :host-context(body.revamp-wayfinding-enabled):host {
     --page-backdrop-bg-color: var(--cros-sys-surface1);
 
     background-color: var(--page-backdrop-bg-color);
     border-radius: 20px;
-    box-sizing: border-box;
     padding-bottom: 16px;
     padding-inline-end: 16px;
     padding-inline-start: 16px;

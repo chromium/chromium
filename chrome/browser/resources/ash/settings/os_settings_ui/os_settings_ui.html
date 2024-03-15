@@ -58,6 +58,10 @@
     z-index: 100;
   }
 
+  :host-context(body.revamp-wayfinding-enabled) #left {
+    flex-grow: 0;
+  }
+
   #left os-settings-menu {
     height: 100%;
     overflow: auto;
@@ -87,6 +91,10 @@
   /* Take up all remaining vertical space. */
   :host-context(body.revamp-wayfinding-enabled) #center > os-settings-main {
     min-height: 100%;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #right {
+    display: none;
   }
 
   /* The breakpoint of 980px was decided on by the rounded sum of

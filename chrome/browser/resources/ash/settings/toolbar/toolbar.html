@@ -103,6 +103,11 @@
     flex: 1 1 0;
   }
 
+  :host-context(body.revamp-wayfinding-enabled):host(:not([narrow]))
+      #leftContent {
+    flex-grow: 0;
+  }
+
   :host(:not([narrow])) #centeredContent {
     flex-basis: var(--settings-main-basis);
   }
@@ -114,6 +119,10 @@
   :host(:not([narrow])) #rightContent {
     flex: 1 1 0;
     text-align: end;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #rightContent {
+    display: none;
   }
 </style>
 <iron-media-query query="(max-width: 780px)"

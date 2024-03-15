@@ -1,13 +1,28 @@
 <style include="cr-hidden-style settings-shared">
   :host-context(body.revamp-wayfinding-enabled):host {
+    align-items: center;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    padding-bottom: 16px;
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+  }
+
+  /* Mirror styles from .cr-centered-card-container */
+  :host-context(body:not(.revamp-wayfinding-enabled)) #mainPageContainer {
+    margin: 0 auto;
+    max-width: var(--cr-centered-card-max-width);
+    min-width: 550px;
+    width: calc(100% * var(--cr-centered-card-width-percentage));
   }
 
   :host-context(body.revamp-wayfinding-enabled) #mainPageContainer {
     /* Main page container should take up all available vertical space. */
     flex: 1;
-    margin-bottom: 16px;
+    max-width: 958px;
+    min-width: 640px;
+    width: 100%;
   }
 
   #overscroll {
@@ -62,9 +77,7 @@
     if="[[showManagedHeader_(isShowingSubpage_, isShowingAboutPage_)]]" restamp>
   <managed-footnote id="managedHeader" show-device-info></managed-footnote>
 </template>
-<main-page-container
-    id="mainPageContainer"
-    class="cr-centered-card-container"
+<main-page-container id="mainPageContainer"
     prefs="{{prefs}}"
     page-availability="[[pageAvailability]]"
     advanced-toggle-expanded="{{advancedToggleExpanded}}">
