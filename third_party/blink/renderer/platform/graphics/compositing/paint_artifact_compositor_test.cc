@@ -5003,6 +5003,8 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
       scroll_state.Transform().ScrollNode()->GetCompositorElementId());
   EXPECT_TRUE(scroll_node);
   EXPECT_FALSE(scroll_node->is_composited);
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node));
+  EXPECT_TRUE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
 }
 
 TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
@@ -5026,6 +5028,8 @@ TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
   EXPECT_EQ(scroll_node->transform_id, cc::kInvalidPropertyNodeId);
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node->element_id));
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node));
+  EXPECT_FALSE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
 }
 
 TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {

@@ -232,21 +232,15 @@ void LayerTreeImpl::DidUpdateScrollOffset(ElementId id) {
     return;
   }
 
-  // This bit controls whether we'll update the transform node based on a
-  // changed scroll offset. We can mutate scroll nodes which have main thread
-  // scrolling reasons, or aren't backed by a layer at all, but in those cases
-  // we don't want to produce any immediate changes in the compositor. Instead
-  // we want the scroll to propagate through Blink in a commit and have Blink
-  // update properties, paint, compositing, etc. Thus, we avoid mutating the
-  // transform tree in this case.
-  bool should_realize_scroll_on_compositor =
-      scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node);
-
-  // A ScrollNode may have an invalid transform_id if its scroller is
-  // unpainted. Since an unpainted scroller would not be visible to the
-  // user, realizing this scroll is a nop.
-  if (should_realize_scroll_on_compositor &&
-      scroll_node->transform_id != kInvalidPropertyNodeId) {
+  // This condition controls whether we'll update the transform node based on a
+  // changed scroll offset. If it's false (e.g. if the scroll node has any main
+  // thread repaint reasons), we can mutate scroll nodes but don't want to
+  // produce any immediate changes in the compositor. Instead we want the scroll
+  // to propagate through Blink in a commit and have Blink update properties,
+  // paint, compositing, etc. Thus, we avoid mutating the transform tree in
+  // this case.
+  if (scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
+    CHECK_NE(scroll_node->transform_id, kInvalidPropertyNodeId);
     TransformTree& transform_tree = property_trees()->transform_tree_mutable();
     auto* transform_node = transform_tree.Node(scroll_node->transform_id);
     if (transform_node->scroll_offset !=

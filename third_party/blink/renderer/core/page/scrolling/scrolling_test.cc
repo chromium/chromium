@@ -2468,7 +2468,8 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
 }
 
 // Tests that the compositor gets a scroll node for a non-composited (due to
-// non-opaque background) scrollable input box.
+// PaintLayerScrollableArea::PrefersNonCompositedScrolling()) scrollable input
+// box.
 TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

@@ -381,7 +381,7 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   float scale_factor = ActiveTree().page_scale_factor_for_scroll();
   scroll_result.current_visual_offset.Scale(scale_factor);
 
-  if (!GetScrollTree().CanRealizeScrollsOnCompositor(scroll_node)) {
+  if (GetScrollTree().ShouldRealizeScrollsOnMain(scroll_node)) {
     scroll_result.needs_main_thread_repaint = true;
   }
 

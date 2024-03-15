@@ -2142,8 +2142,52 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
 
   // Simulate the scroll update with scroll delta from impl-side.
   cc::CompositorCommitData commit_data;
-  commit_data.scrolls.emplace_back(cc::CompositorCommitData::ScrollUpdateInfo(
-      element_id, gfx::Vector2dF(0, 10), std::nullopt));
+  commit_data.scrolls.emplace_back(element_id, gfx::Vector2dF(0, 10),
+                                   std::nullopt);
+  Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
+  EXPECT_EQ(gfx::PointF(0, 10), scrollable_area->ScrollPosition());
+  EXPECT_EQ(
+      gfx::PointF(0, 10),
+      GetPropertyTrees()->scroll_tree().current_scroll_offset(element_id));
+
+  // Update just the blink lifecycle because a full frame would clear the bit
+  // for whether a commit was requested.
+  UpdateAllLifecyclePhases();
+
+  // A main frame is needed to call UpdateLayers which updates property trees,
+  // re-calculating cached to/from-screen transforms.
+  EXPECT_TRUE(Compositor().LayerTreeHost()->RequestedMainFramePending());
+
+  // A full commit is not needed.
+  EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+}
+
+TEST_P(CompositingSimTest, ImplSideScrollUnpaintedSkipsCommit) {
+  InitializeWithHTML(R"HTML(
+    <div style='height: 10000px'></div>
+    <div id='scroller' style='overflow: scroll; width: 100px; height: 100px'>
+      <div style='height: 1000px'></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scrollable_area = scroller->GetLayoutBox()->GetScrollableArea();
+  auto element_id = scrollable_area->GetScrollElementId();
+
+  // The scroller is far away from the viewport so is not painted.
+  // The scroll node always exists.
+  auto* scroll_node =
+      GetPropertyTrees()->scroll_tree().FindNodeFromElementId(element_id);
+  ASSERT_TRUE(scroll_node);
+  EXPECT_EQ(cc::kInvalidPropertyNodeId, scroll_node->transform_id);
+
+  EXPECT_FALSE(Compositor().LayerTreeHost()->CommitRequested());
+
+  // Simulate the scroll update with scroll delta from impl-side.
+  cc::CompositorCommitData commit_data;
+  commit_data.scrolls.emplace_back(element_id, gfx::Vector2dF(0, 10),
+                                   std::nullopt);
   Compositor().LayerTreeHost()->ApplyCompositorChanges(&commit_data);
   EXPECT_EQ(gfx::PointF(0, 10), scrollable_area->ScrollPosition());
   EXPECT_EQ(

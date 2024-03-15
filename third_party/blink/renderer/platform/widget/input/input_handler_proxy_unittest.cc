@@ -3344,7 +3344,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
 
   cc::InputHandler::ScrollStatus scroll_status = kImplThreadScrollState;
   scroll_status.main_thread_repaint_reasons =
-      cc::MainThreadScrollingReason::kNoScrollingLayer;
+      cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
 
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
       .WillOnce(testing::Return(scroll_status));
@@ -3360,7 +3360,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
   VERIFY_AND_RESET_MOCKS();
 
   EXPECT_MAIN_THREAD_WHEEL_SCROLL_SAMPLE(
-      cc::MainThreadScrollingReason::kNoScrollingLayer);
+      cc::MainThreadScrollingReason::kPreferNonCompositedScrolling);
 }
 
 TEST_P(InputHandlerProxyMainThreadScrollingReasonTest, WheelScrollHistogram) {

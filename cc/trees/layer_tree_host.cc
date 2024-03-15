@@ -1079,9 +1079,9 @@ void LayerTreeHost::UpdateScrollOffsetFromImpl(
         // is already updated (see LayerTreeImpl::DidUpdateScrollOffset) and we
         // are now "catching up" to it on main, so we don't need a commit.
         //
-        // But if the scroll was NOT realized on the compositor, we need a
+        // But if the scroll should be realized on the main thread, we need a
         // commit to push the transform change.
-        if (!scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
+        if (scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node)) {
           SetNeedsCommit();
         }
       }

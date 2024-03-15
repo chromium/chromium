@@ -129,11 +129,8 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
   auto* cc_scroll_node = property_trees->scroll_tree_mutable().Node(
       scroll_node->CcNodeId(property_trees->sequence_number()));
   if (!cc_scroll_node ||
-      // TODO(wangxianzhu): For now non-composited scroll offset change needs
-      // full update to issue raster invalidations and repaint scrollbars.
-      // We can directly update non-composited scroll offset once we implement
-      // raster-inducing scroll for both scrolling contents and scrollbars.
-      !cc_scroll_node->is_composited) {
+      property_trees->scroll_tree().ShouldRealizeScrollsOnMain(
+          *cc_scroll_node)) {
     return false;
   }
 
@@ -243,6 +240,8 @@ uint32_t PropertyTreeManager::GetMainThreadScrollingReasons(
 bool PropertyTreeManager::UsesCompositedScrolling(
     const cc::LayerTreeHost& host,
     const ScrollPaintPropertyNode& scroll) {
+  CHECK(!RuntimeEnabledFeatures::RasterInducingScrollEnabled() ||
+        !RuntimeEnabledFeatures::ScrollTimelineAlwaysOnCompositorEnabled());
   const auto* property_trees = host.property_trees();
   const auto* cc_scroll = property_trees->scroll_tree().Node(
       scroll.CcNodeId(property_trees->sequence_number()));
@@ -614,13 +613,10 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
     scroll_tree_.SetElementIdForNodeId(id, compositor_element_id);
   }
 
-  // These two fields are either permanent for unpainted scrolls, or will be
+  // These three fields are either permanent for unpainted scrolls, or will be
   // overridden when we handle the painted scroll.
   compositor_node.transform_id = cc::kInvalidPropertyNodeId;
-  // TODO(wangxianzhu): We should probably set is_composited=true here because
-  // unpainted scrollers paint nothing thus don't need repaint on scroll.
   compositor_node.is_composited = false;
-
   compositor_node.main_thread_scrolling_reasons =
       scroll_node.GetMainThreadScrollingReasons();
 

@@ -42,7 +42,6 @@ void MainThreadScrollingReason::AddToTracedValue(
   ADD_REASON(kHasBackgroundAttachmentFixedObjects,
              "Has background-attachment:fixed");
   ADD_REASON(kNotOpaqueForTextAndLCDText, "Not opaque for text and LCD text");
-  ADD_REASON(kNoScrollingLayer, "No scrolling layer");
   ADD_REASON(kPreferNonCompositedScrolling, "Prefer non-composited scrolling");
   ADD_REASON(kBackgroundNeedsRepaintOnScroll,
              "Background needs repaint on scroll");

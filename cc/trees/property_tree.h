@@ -609,9 +609,15 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
                                        bool hidden) const;
 
-  // Returns true iff the node is composited and does not have any non-transient
-  // main-thread scrolling reasons (see main_thread_scrolling_reason.h).
+  // These functions determines how the rendered result of a compositor-
+  // initiated scroll should be realized by updating the scroll offset in
+  // the associated transform node.
+  // All of them return false if `node.transform_id` is invalid which means
+  // Blink didn't paint the transform node because the scrolling contents
+  // were far from the viewport and we don't need to realize the scrolls.
   bool CanRealizeScrollsOnCompositor(const ScrollNode& node) const;
+  // TODO(crbug.com/40517276): Add realization mode for RasterInducingScroll.
+  bool ShouldRealizeScrollsOnMain(const ScrollNode& node) const;
 
   // Reports reasons for blocking scroll updates on main-thread repaint. For use
   // only with scroll unification enabled. Returns bitfield of values from

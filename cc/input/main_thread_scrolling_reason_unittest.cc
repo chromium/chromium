@@ -15,7 +15,6 @@ TEST_F(MainThreadScrollingReasonTest, AsText) {
   EXPECT_EQ(
       "Has background-attachment:fixed, "
       "Not opaque for text and LCD text, "
-      "No scrolling layer, "
       "Prefer non-composited scrolling, "
       "Background needs repaint on scroll",
       MainThreadScrollingReason::AsText(

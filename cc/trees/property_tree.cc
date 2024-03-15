@@ -1493,19 +1493,22 @@ void ScrollTree::CopyCompleteTreeState(const ScrollTree& other) {
 #endif  // DCHECK_IS_ON()
 
 bool ScrollTree::CanRealizeScrollsOnCompositor(const ScrollNode& node) const {
-  return GetMainThreadRepaintReasons(node) ==
-         MainThreadScrollingReason::kNotScrollingOnMain;
+  return node.transform_id != kInvalidPropertyNodeId && node.is_composited &&
+         GetMainThreadRepaintReasons(node) ==
+             MainThreadScrollingReason::kNotScrollingOnMain;
+}
+
+bool ScrollTree::ShouldRealizeScrollsOnMain(const ScrollNode& node) const {
+  return node.transform_id != kInvalidPropertyNodeId &&
+         GetMainThreadRepaintReasons(node) !=
+             MainThreadScrollingReason::kNotScrollingOnMain;
 }
 
 uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
-  uint32_t reasons = node.main_thread_scrolling_reasons;
-  if (!reasons && !node.is_composited) {
-    // `reasons` can contain kPopupNoThreadedInput which is not a repaint
-    // reason, but the flag should be set only when there is no threaded input
-    // handler and this function should not be called.
-    CHECK(MainThreadScrollingReason::AreRepaintReasons(reasons));
-    return MainThreadScrollingReason::kNoScrollingLayer;
-  }
+  // kPopupNoThreadedInput is not a repaint reason so should be excluded.
+  uint32_t reasons = node.main_thread_scrolling_reasons &
+                     ~MainThreadScrollingReason::kPopupNoThreadedInput;
+  CHECK(MainThreadScrollingReason::AreRepaintReasons(reasons));
   return reasons;
 }
 
@@ -1676,8 +1679,8 @@ gfx::PointF ScrollTree::GetScrollOffsetForScrollTimeline(
   gfx::PointF offset = current_scroll_offset(scroll_node.element_id);
   if (!property_trees()->is_main_thread() &&
       !CanRealizeScrollsOnCompositor(scroll_node)) {
-    // Ignore impl-thread scroll delta if the scroll can't be realized on
-    // compositor because the main thread is the source of truth in the case.
+    // Ignore compositor scroll delta if the scroll can't be realized on
+    // compositor because the delta has not been realized yet.
     if (const SyncedScrollOffset* synced_offset =
             GetSyncedScrollOffset(scroll_node.element_id)) {
       offset = property_trees()->is_active() ? synced_offset->ActiveBase()

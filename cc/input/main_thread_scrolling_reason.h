@@ -46,7 +46,6 @@ struct CC_EXPORT MainThreadScrollingReason {
     // Subpixel (LCD) text rendering requires blending glyphs with an opaque
     // background.
     kNotOpaqueForTextAndLCDText = 1 << 5,
-    kNoScrollingLayer = 1 << 10,
     kPreferNonCompositedScrolling = 1 << 15,
     kBackgroundNeedsRepaintOnScroll = 1 << 16,
 
@@ -82,8 +81,7 @@ struct CC_EXPORT MainThreadScrollingReason {
 
   static constexpr uint32_t kRepaintReasons =
       kHasBackgroundAttachmentFixedObjects | kNotOpaqueForTextAndLCDText |
-      kNoScrollingLayer | kPreferNonCompositedScrolling |
-      kBackgroundNeedsRepaintOnScroll;
+      kPreferNonCompositedScrolling | kBackgroundNeedsRepaintOnScroll;
   static constexpr uint32_t kHitTestReasons =
       kScrollbarScrolling | kNonFastScrollableRegion | kFailedHitTest;
 
