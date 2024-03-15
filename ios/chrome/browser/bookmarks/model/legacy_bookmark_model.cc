@@ -64,15 +64,6 @@ void LegacyBookmarkModel::Copy(const bookmarks::BookmarkNode* node,
   underlying_model()->Copy(node, new_parent, index);
 }
 
-const bookmarks::BookmarkNode*
-LegacyBookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
-    const bookmarks::BookmarkNode* node,
-    LegacyBookmarkModel* dest_model,
-    const bookmarks::BookmarkNode* dest_parent) {
-  return underlying_model()->MoveToOtherModelWithNewNodeIdsAndUuids(
-      node, dest_model->underlying_model(), dest_parent);
-}
-
 void LegacyBookmarkModel::SetTitle(
     const bookmarks::BookmarkNode* node,
     const std::u16string& title,

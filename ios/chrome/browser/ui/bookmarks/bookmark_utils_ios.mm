@@ -237,8 +237,8 @@ bool UpdateBookmark(const BookmarkNode* node,
       node_model->Move(node, folder, folder->children().size());
     } else {
       // Cross-model move.
-      node_model->MoveToOtherModelWithNewNodeIdsAndUuids(node, folder_model,
-                                                         folder);
+      node_model->MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
+          node, folder_model, folder);
       // Warning: calling `MoveToOtherModelWithNewNodeIdsAndUuids` invalidates
       // `node`, so it shouldn't be used after this line.
     }
@@ -522,7 +522,7 @@ bool MoveToOtherModelRecursive(
     return did_perform_move;
   }
   const BookmarkNode* moved_node =
-      source_model->MoveToOtherModelWithNewNodeIdsAndUuids(
+      source_model->MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
           node_cursor, dest_model, destination_folder);
   **it = moved_node;
   return true;

@@ -67,13 +67,6 @@ class LegacyBookmarkModel : public KeyedService {
   void Copy(const bookmarks::BookmarkNode* node,
             const bookmarks::BookmarkNode* new_parent,
             size_t index);
-  // TODO(crbug.com/326185948): Make virtual and add tailored implementation in
-  // each subclass, as otherwise DCHECKs will be hit if the underlying model is
-  // shared.
-  const bookmarks::BookmarkNode* MoveToOtherModelWithNewNodeIdsAndUuids(
-      const bookmarks::BookmarkNode* node,
-      LegacyBookmarkModel* dest_model,
-      const bookmarks::BookmarkNode* dest_parent);
   void SetTitle(const bookmarks::BookmarkNode* node,
                 const std::u16string& title,
                 bookmarks::metrics::BookmarkEditSource source);
@@ -127,6 +120,11 @@ class LegacyBookmarkModel : public KeyedService {
   virtual const bookmarks::BookmarkNode* GetNodeById(int64_t id) = 0;
   // Returns whether `node` is part of, or relevant, in the scope of `this`.
   virtual bool IsNodePartOfModel(const bookmarks::BookmarkNode* node) const = 0;
+  virtual const bookmarks::BookmarkNode*
+  MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
+      const bookmarks::BookmarkNode* node,
+      LegacyBookmarkModel* dest_model,
+      const bookmarks::BookmarkNode* dest_parent) = 0;
 
   virtual base::WeakPtr<LegacyBookmarkModel> AsWeakPtr() = 0;
 

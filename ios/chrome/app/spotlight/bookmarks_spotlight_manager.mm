@@ -165,20 +165,23 @@ class SpotlightBookmarkModelBridge;
                                                     completionHandler:nil];
 }
 
-- (NSMutableArray*)parentFolderNamesForNode:
-    (const bookmarks::BookmarkNode*)node {
-  if (!node) {
-    return [[NSMutableArray alloc] init];
+- (NSArray*)parentFolderNamesForNode:(const bookmarks::BookmarkNode*)node {
+  CHECK(node);
+
+  NSMutableArray* parentNames = [[NSMutableArray alloc] init];
+
+  if (!node->is_folder()) {
+    node = node->parent();
   }
 
-  NSMutableArray* parentNames = [self parentFolderNamesForNode:node->parent()];
-  LegacyBookmarkModel* parentModel = [self bookmarkModelForNode:node];
-
-  if (node->is_folder() && !parentModel->is_permanent_node(node)) {
+  while (!node->is_permanent_node()) {
+    CHECK(node->is_folder());
     [parentNames addObject:base::SysUTF16ToNSString(node->GetTitle())];
+    node = node->parent();
+    CHECK(node);
   }
 
-  return parentNames;
+  return [[parentNames reverseObjectEnumerator] allObjects];
 }
 
 // Removes the node from the Spotlight index.

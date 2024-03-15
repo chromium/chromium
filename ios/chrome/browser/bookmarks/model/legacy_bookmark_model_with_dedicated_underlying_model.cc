@@ -115,6 +115,18 @@ bool LegacyBookmarkModelWithDedicatedUnderlyingModel::IsNodePartOfModel(
   return node && node->HasAncestor(underlying_model_->root_node());
 }
 
+const bookmarks::BookmarkNode* LegacyBookmarkModelWithDedicatedUnderlyingModel::
+    MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
+        const bookmarks::BookmarkNode* node,
+        LegacyBookmarkModel* dest_model,
+        const bookmarks::BookmarkNode* dest_parent) {
+  return underlying_model()->MoveToOtherModelWithNewNodeIdsAndUuids(
+      node,
+      static_cast<LegacyBookmarkModelWithDedicatedUnderlyingModel*>(dest_model)
+          ->underlying_model(),
+      dest_parent);
+}
+
 base::WeakPtr<LegacyBookmarkModel>
 LegacyBookmarkModelWithDedicatedUnderlyingModel::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();

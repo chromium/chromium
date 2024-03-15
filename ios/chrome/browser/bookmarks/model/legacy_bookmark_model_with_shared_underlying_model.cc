@@ -26,6 +26,7 @@ bool MoreRecentlyAdded(const bookmarks::BookmarkNode* n1,
 const bookmarks::BookmarkNode* GetAncestorPermanentFolder(
     const bookmarks::BookmarkNode* node) {
   CHECK(node);
+  CHECK(!node->is_root());
 
   const bookmarks::BookmarkNode* self_or_ancestor = node;
 
@@ -70,6 +71,12 @@ bool LegacyBookmarkModelWithSharedUnderlyingModel::
     NodeExcludedFromViewPredicate::operator()(
         const bookmarks::BookmarkNode* node) {
   CHECK(node);
+  if (node->is_root()) {
+    // Special-case the root and allow the exposure, as it is also exposed as
+    // parent of permanent folders.
+    return false;
+  }
+
   const bookmarks::BookmarkNode* ancestor_permanent_folder =
       GetAncestorPermanentFolder(node);
   CHECK(ancestor_permanent_folder);
@@ -439,6 +446,15 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::
 bool LegacyBookmarkModelWithSharedUnderlyingModel::IsNodePartOfModel(
     const bookmarks::BookmarkNode* node) const {
   return node && !IsNodeExcludedFromView(node);
+}
+
+const bookmarks::BookmarkNode* LegacyBookmarkModelWithSharedUnderlyingModel::
+    MoveToOtherModelPossiblyWithNewNodeIdsAndUuids(
+        const bookmarks::BookmarkNode* node,
+        LegacyBookmarkModel* dest_model,
+        const bookmarks::BookmarkNode* dest_parent) {
+  underlying_model()->Move(node, dest_parent, dest_parent->children().size());
+  return node;
 }
 
 base::WeakPtr<LegacyBookmarkModel>
