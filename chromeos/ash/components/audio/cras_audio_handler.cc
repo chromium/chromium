@@ -1235,7 +1235,8 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
     // Record chrome restarts related metrics.
     audio_device_metrics_handler_
         .RecordAudioSelectionMetricsSeparatedByChromeRestarts(
-            /*is_input=*/true, is_switched, is_chrome_restarts_);
+            /*is_input=*/true, is_switched, is_chrome_restarts_,
+            /*current_device_list=*/input_devices);
 
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // since only one decision can be made either switching or not switching.
@@ -1278,7 +1279,8 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
     // Record chrome restarts related metrics.
     audio_device_metrics_handler_
         .RecordAudioSelectionMetricsSeparatedByChromeRestarts(
-            /*is_input=*/false, is_switched, is_chrome_restarts_);
+            /*is_input=*/false, is_switched, is_chrome_restarts_,
+            /*current_device_list=*/output_devices);
 
     // Set up timestamp. Make sure setting one timestamp will reset the other,
     // same as above.

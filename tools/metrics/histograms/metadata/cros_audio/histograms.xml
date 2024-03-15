@@ -77,6 +77,30 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.AudioDeviceCount.{IsChromeRestarts}"
+    units="counts" expires_after="2025-02-25">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Similar to
+    ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.AudioDeviceCount
+    but only recorded in cases of {IsChromeRestarts}.
+  </summary>
+  <token key="AudioType">
+    <variant name="Input" summary="input"/>
+    <variant name="Output" summary="output"/>
+  </token>
+  <token key="SwitchDecision">
+    <variant name="NotSwitch" summary="not switching"/>
+    <variant name="Switch" summary="switching"/>
+  </token>
+  <token key="IsChromeRestarts">
+    <variant name="ChromeRestarts" summary="chrome restarts"/>
+    <variant name="NonChromeRestarts" summary="non chrome restarts"/>
+  </token>
+</histogram>
+
+<histogram
     name="ChromeOS.AudioSelection.{AudioType}.System{SwitchDecision}Audio.AudioDeviceSet"
     units="counts" expires_after="2025-02-25">
   <owner>zhangwenyu@google.com</owner>

@@ -292,6 +292,15 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       num_of_output_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchInputAudioDeviceCountNonChromeRestarts,
+      num_of_input_devices, /*bucket_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchOutputAudioDeviceCountNonChromeRestarts,
+      num_of_output_devices, /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemSwitchInputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_USB)}),
@@ -373,6 +382,11 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       num_of_input_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemNotSwitchInputAudioDeviceCountNonChromeRestarts,
+      num_of_input_devices, /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemNotSwitchInputAudioDeviceSet,
       EncodeAudioDeviceSet({AudioDevice(input_internal), AudioDevice(input_USB),
                             AudioDevice(input_bluetooth_nb)}),
@@ -419,6 +433,11 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       num_of_input_devices, /*bucket_count=*/2);
 
   histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchInputAudioDeviceCountNonChromeRestarts,
+      num_of_input_devices, /*bucket_count=*/2);
+
+  histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemSwitchInputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_bluetooth_nb)}),
@@ -451,7 +470,6 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
   // User unplugs active device input_bluetooth_nb.
   // Do not record if there is no alternative device available.
   Unplug(input_bluetooth_nb);
-  num_of_input_devices--;
 
   ExpectSystemDecisionHistogramCount(
       histogram_tester(), expected_system_switch_input_count,
@@ -491,6 +509,15 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
       num_of_input_devices, /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemSwitchOutputAudioDeviceCount,
+      num_of_output_devices, /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchInputAudioDeviceCountChromeRestarts,
+      num_of_input_devices, /*bucket_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchOutputAudioDeviceCountChromeRestarts,
       num_of_output_devices, /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(

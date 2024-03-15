@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_METRICS_HANDLER_H_
 
 #include "base/component_export.h"
+#include "chromeos/ash/components/audio/audio_device.h"
 
 namespace ash {
 
@@ -31,13 +32,44 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   static constexpr char kSystemSwitchOutputAudioNonChromeRestarts[] =
       "ChromeOS.AudioSelection.Output.SystemSwitchAudio.NonChromeRestarts";
 
+  // A series of histogram metrics to record the audio device count when the
+  // system selection decision is made after audio device has changed, separated
+  // by chrome restarts or not.
+  static constexpr char kSystemSwitchInputAudioDeviceCountChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio.AudioDeviceCount."
+      "ChromeRestarts";
+  static constexpr char kSystemNotSwitchInputAudioDeviceCountChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio.AudioDeviceCount."
+      "ChromeRestarts";
+  static constexpr char kSystemSwitchOutputAudioDeviceCountChromeRestarts[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio.AudioDeviceCount."
+      "ChromeRestarts";
+  static constexpr char kSystemNotSwitchOutputAudioDeviceCountChromeRestarts[] =
+      "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceCount."
+      "ChromeRestarts";
+  static constexpr char kSystemSwitchInputAudioDeviceCountNonChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio.AudioDeviceCount."
+      "NonChromeRestarts";
+  static constexpr char
+      kSystemNotSwitchInputAudioDeviceCountNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio.AudioDeviceCount."
+          "NonChromeRestarts";
+  static constexpr char kSystemSwitchOutputAudioDeviceCountNonChromeRestarts[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio.AudioDeviceCount."
+      "NonChromeRestarts";
+  static constexpr char
+      kSystemNotSwitchOutputAudioDeviceCountNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio."
+          "AudioDeviceCount.NonChromeRestarts";
+
   // Record system selection related metrics in the case of chrome restarts,
   // including system boots and users sign out, as well as the case of normal
   // user hotplug or unplug.
   void RecordAudioSelectionMetricsSeparatedByChromeRestarts(
       bool is_input,
       bool is_switched,
-      bool is_chrome_restarts) const;
+      bool is_chrome_restarts,
+      const AudioDeviceList& current_device_list) const;
 };
 
 }  // namespace ash
