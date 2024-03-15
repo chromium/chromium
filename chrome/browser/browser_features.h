@@ -39,6 +39,7 @@ extern const base::FeatureParam<std::string>
     kDevToolsConsoleInsightsAidaEndpoint;
 extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
+BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsDogfood);
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);

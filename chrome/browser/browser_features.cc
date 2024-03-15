@@ -102,6 +102,12 @@ const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
     &kDevToolsConsoleInsights, "aida_temperature", /*default*/ 0.2};
 
+// Separate dogfood feature for DevTools console insights,
+// not restricted by enterprise policy or location.
+BASE_FEATURE(kDevToolsConsoleInsightsDogfood,
+             "DevToolsConsoleInsightsDogfood",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether an infobar is shown when the process is shared.
 BASE_FEATURE(kDevToolsSharedProcessInfobar,
              "DevToolsSharedProcessInfobar",

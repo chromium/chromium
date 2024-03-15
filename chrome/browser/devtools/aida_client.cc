@@ -28,6 +28,10 @@ bool AidaClient::CanUseAida(Profile* profile) {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
 #else
+  if (base::FeatureList::IsEnabled(
+          ::features::kDevToolsConsoleInsightsDogfood)) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
          profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
              static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
