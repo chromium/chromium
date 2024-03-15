@@ -4,11 +4,22 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
+
+NSArray<GridItemIdentifier*>* CreateTabItems(WebStateList* web_state_list,
+                                             WebStateList::Range range) {
+  NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];
+  for (int index : range) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    TabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:web_state];
+    [items addObject:[GridItemIdentifier tabIdentifier:item]];
+  }
+  return items;
+}
 
 NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
   NSMutableArray<GridItemIdentifier*>* items = [[NSMutableArray alloc] init];

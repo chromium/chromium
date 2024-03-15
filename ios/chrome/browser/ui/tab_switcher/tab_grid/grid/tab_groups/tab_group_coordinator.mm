@@ -59,6 +59,7 @@
 
   _mediator = [[TabGroupMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
+                  tabGroup:_tabGroup
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController];
   _mediator.browser = self.browser;

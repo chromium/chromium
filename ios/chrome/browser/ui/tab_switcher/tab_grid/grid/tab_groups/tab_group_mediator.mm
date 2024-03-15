@@ -6,8 +6,11 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
@@ -21,6 +24,7 @@
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                            tabGroup:(const TabGroup*)tabGroup
                             consumer:(id<TabGroupConsumer>)groupConsumer
                         gridConsumer:(id<TabCollectionConsumer>)gridConsumer {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
@@ -32,11 +36,13 @@
     self.webStateList = webStateList;
     _groupConsumer = groupConsumer;
     self.consumer = gridConsumer;
-    // TODO(crbug.com/1501837): Replace temporary values by calling model layer
-    // to get the following informations.
-    [_groupConsumer setGroupTitle:@"Temporary title"];
-    [_groupConsumer setGroupColor:[UIColor colorNamed:kYellow500Color]];
-    [_groupConsumer setGroupDateCreation:base::Time::Now()];
+
+    const tab_groups::TabGroupVisualData& groupInformations =
+        tabGroup->visual_data();
+    [_groupConsumer
+        setGroupTitle:base::SysUTF16ToNSString(groupInformations.title())];
+    [_groupConsumer
+        setGroupColor:ColorForTabGroupColorId(groupInformations.color())];
 
     web::WebStateID activeWebStateID;
     int webStateIndex = self.webStateList->active_index();
@@ -47,7 +53,9 @@
       activeWebStateID = webState->GetUniqueIdentifier();
     }
 
-    [self.consumer populateItems:CreateItems(self.webStateList)
+    [self.consumer populateItems:CreateTabItems(
+                                     self.webStateList,
+                                     self.webStateList->GetGroupRange(tabGroup))
                   selectedItemID:activeWebStateID];
   }
   return self;

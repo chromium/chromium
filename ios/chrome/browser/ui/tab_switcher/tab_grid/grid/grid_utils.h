@@ -7,8 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+
 @class GridItemIdentifier;
-class WebStateList;
+
+// Returns a list of GridItemIdentifier from a given range. All the
+// GridItemIdentifier are Tab whether or not the web states belong to a group.
+NSArray<GridItemIdentifier*>* CreateTabItems(WebStateList* web_state_list,
+                                             WebStateList::Range range);
 
 // Constructs an array of TabSwitcherItems from a `web_state_list`.
 NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list);
