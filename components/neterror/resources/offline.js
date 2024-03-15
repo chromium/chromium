@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {HIDDEN_CLASS} from './constants.js';
-import {CollisionBox, spriteDefinitionByType} from './offline-sprite-definitions.js';
+import {CollisionBox, GAME_TYPE, spriteDefinitionByType} from './offline-sprite-definitions.js';
 
 /**
  * T-Rex runner.
