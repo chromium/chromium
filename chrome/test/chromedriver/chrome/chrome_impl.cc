@@ -363,7 +363,7 @@ Status ChromeImpl::SetWindowBounds(
 
     Timeout timeout(base::Milliseconds(300));
     int waiting_time_ms = 10;
-    while (window.state != normal && !timeout.IsExpired()) {
+    while (window.state != normal) {
       // Waiting until the window state change animation is over.
       // This can take up to 5 iterations because 10 + 20 + 40 + 80 + 160 > 300
       base::PlatformThread::Sleep(base::Milliseconds(waiting_time_ms));
@@ -371,6 +371,12 @@ Status ChromeImpl::SetWindowBounds(
       status = GetWindowBounds(window.id, window);
       if (status.IsError()) {
         return status;
+      }
+      // It can happen that under high load the timeout expires before the first
+      // iteration. Therefore it is better to check its expiration in the loop
+      // body instead of the loop condition.
+      if (timeout.IsExpired()) {
+        break;
       }
     }
 
@@ -439,7 +445,7 @@ Status ChromeImpl::SetWindowBounds(
 
   Timeout timeout(base::Milliseconds(300));
   int waiting_time_ms = 10;
-  while (!window_bounds.Matches(window) && !timeout.IsExpired()) {
+  while (!window_bounds.Matches(window)) {
     // Waiting until the window state change animation is over.
     // This can take up to 5 iterations because 10 + 20 + 40 + 80 + 160 > 300
     base::PlatformThread::Sleep(base::Milliseconds(waiting_time_ms));
@@ -447,6 +453,12 @@ Status ChromeImpl::SetWindowBounds(
     status = GetWindowBounds(window.id, window);
     if (status.IsError()) {
       return status;
+    }
+    // It can happen that under high load the timeout expires before the first
+    // iteration. Therefore it is better to check its expiration in the loop
+    // body instead of the loop condition.
+    if (timeout.IsExpired()) {
+      break;
     }
   }
 
