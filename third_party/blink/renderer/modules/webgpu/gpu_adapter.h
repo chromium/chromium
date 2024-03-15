@@ -86,6 +86,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<WGPUAdapter> {
   String driver_;
   HeapVector<Member<GPUMemoryHeapInfo>> memory_heaps_;
   std::optional<uint32_t> d3d_shader_model_;
+  std::optional<uint32_t> vk_driver_version_;
 
   static constexpr int kMaxAllowedConsoleWarnings = 50;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;

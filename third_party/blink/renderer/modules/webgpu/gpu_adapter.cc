@@ -113,6 +113,14 @@ GPUAdapter::GPUAdapter(
     *propertiesChain = &d3dProperties.chain;
     propertiesChain = &(*propertiesChain)->next;
   }
+  WGPUAdapterPropertiesVk vkProperties = {};
+  vkProperties.chain.sType = WGPUSType_AdapterPropertiesVk;
+  bool supportsPropertiesVk = GetProcs().adapterHasFeature(
+      GetHandle(), WGPUFeatureName_AdapterPropertiesVk);
+  if (supportsPropertiesVk) {
+    *propertiesChain = &vkProperties.chain;
+    propertiesChain = &(*propertiesChain)->next;
+  }
   GetProcs().adapterGetProperties(GetHandle(), &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
   adapter_type_ = properties.adapterType;
@@ -134,6 +142,9 @@ GPUAdapter::GPUAdapter(
   }
   if (supportsPropertiesD3D) {
     d3d_shader_model_ = d3dProperties.shaderModel;
+  }
+  if (supportsPropertiesVk) {
+    vk_driver_version_ = vkProperties.driverVersion;
   }
 
   features_ = MakeFeatureNameSet(GetProcs(), GetHandle());
