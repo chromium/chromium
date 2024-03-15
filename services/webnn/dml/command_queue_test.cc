@@ -27,7 +27,6 @@ class WebNNCommandQueueTest : public TestBase {
 
 void WebNNCommandQueueTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
-  ASSERT_TRUE(InitializeGLDisplay());
   Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = Adapter::GetInstanceForTesting();
   ASSERT_TRUE(adapter_creation_result.has_value());

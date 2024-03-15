@@ -901,8 +901,15 @@ void GpuServiceImpl::BindClientGmbInterface(
 void GpuServiceImpl::BindWebNNContextProvider(
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> pending_receiver,
     int client_id) {
+  if (!main_runner_->BelongsToCurrentThread()) {
+    main_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GpuServiceImpl::BindWebNNContextProvider, weak_ptr_,
+                       std::move(pending_receiver), client_id));
+    return;
+  }
   webnn::WebNNContextProviderImpl::Create(
-      std::move(pending_receiver),
+      std::move(pending_receiver), GetContextState(),
       gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] ==
           gpu::kGpuFeatureStatusEnabled);
 }

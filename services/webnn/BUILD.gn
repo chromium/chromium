@@ -59,6 +59,7 @@ component("webnn_service") {
     ":buildflags",
     "//base",
     "//components/ml/webnn",
+    "//gpu/command_buffer/service:gles2",
     "//mojo/public/cpp/bindings",
     "//services/webnn/public/mojom",
   ]
@@ -92,6 +93,7 @@ component("webnn_service") {
       "//ui/gl",
       "//ui/gl/init",
     ]
+    libs = [ "dxgi.lib" ]
   }
 
   if (is_mac) {

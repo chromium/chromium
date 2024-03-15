@@ -4,7 +4,7 @@
 
 #include "services/webnn/dml/adapter.h"
 
-#include <d3d11.h>
+#include <dxgi.h>
 #include <string.h>
 
 #include "base/check_is_test.h"
@@ -14,13 +14,13 @@
 #include "services/webnn/dml/platform_functions.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
-#include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
 
 // static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetInstance(
-    DML_FEATURE_LEVEL min_feature_level_required) {
+    DML_FEATURE_LEVEL min_feature_level_required,
+    ComPtr<IDXGIAdapter> dxgi_adapter) {
   // If the `Adapter` instance is created, add a reference and return it.
   if (instance_) {
     if (!instance_->IsDMLFeatureLevelSupported(min_feature_level_required)) {
@@ -32,27 +32,30 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::GetInstance(
     return base::WrapRefCounted(instance_);
   }
 
-  // Otherwise, create a new one with the adapter queried from ANGLE.
-  ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  if (!d3d11_device) {
-    return base::unexpected(
-        CreateError(mojom::Error::Code::kUnknownError,
-                    "Failed to query D3D11 device from ANGLE."));
-  }
-  // A ID3D11Device is always QueryInteface-able to a IDXGIDevice.
-  ComPtr<IDXGIDevice> dxgi_device;
-  CHECK_EQ(d3d11_device.As(&dxgi_device), S_OK);
-  // All DXGI devices should have adapters.
-  ComPtr<IDXGIAdapter> dxgi_adapter;
-  CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
   return Adapter::Create(std::move(dxgi_adapter), min_feature_level_required);
 }
 
 // static
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-Adapter::GetInstanceForTesting() {
+Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL min_feature_level_required) {
   CHECK_IS_TEST();
-  return Adapter::GetInstance(/*min_feature_level=*/DML_FEATURE_LEVEL_1_0);
+
+  ComPtr<IDXGIFactory1> factory;
+  if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)))) {
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kNotSupportedError,
+                    "Failed to create an IDXGIFactory1 for testing."));
+  }
+  ComPtr<IDXGIAdapter> dxgi_adapter;
+  if (FAILED(factory->EnumAdapters(0, &dxgi_adapter))) {
+    return base::unexpected(CreateError(
+        mojom::Error::Code::kNotSupportedError,
+        "Failed to get an IDXGIAdapter from EnumAdapters for testing."));
+  }
+
+  return Adapter::GetInstance(
+      /*min_feature_level_required=*/min_feature_level_required,
+      std::move(dxgi_adapter));
 }
 
 // static

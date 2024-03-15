@@ -32,7 +32,6 @@
 #include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/fp16/src/include/fp16.h"
-#include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
 namespace {

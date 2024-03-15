@@ -82,7 +82,7 @@ class WebNNContextDMLImplTest : public TestBase {
 
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -123,7 +123,7 @@ TEST_F(WebNNContextDMLImplTest, CreateBufferImplTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -150,7 +150,7 @@ TEST_F(WebNNContextDMLImplTest, CreateBufferImplOversizedTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -179,7 +179,7 @@ TEST_F(WebNNContextDMLImplTest, CreateBufferImplManyTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -211,7 +211,7 @@ TEST_F(WebNNContextDMLImplTest, CreateBufferImplManySameTokenTest) {
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
@@ -244,7 +244,7 @@ TEST_F(WebNNContextDMLImplTest,
   BadMessageTestHelper bad_message_helper;
 
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;

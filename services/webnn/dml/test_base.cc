@@ -5,7 +5,7 @@
 #include "services/webnn/dml/test_base.h"
 
 #include "base/command_line.h"
-#include "ui/gl/init/gl_factory.h"
+#include "ui/gl/gl_switches.h"
 
 namespace webnn::dml {
 
@@ -14,22 +14,8 @@ bool UseGPUInTests() {
       switches::kUseGpuInTests);
 }
 
-bool TestBase::InitializeGLDisplay() {
-  display_ = gl::init::InitializeGLNoExtensionsOneOff(
-      /*init_bindings=*/true,
-      /*gpu_preference=*/gl::GpuPreference::kDefault);
-  return display_ != nullptr;
-}
-
 void TestBase::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
-  ASSERT_TRUE(InitializeGLDisplay());
-}
-
-void TestBase::TearDown() {
-  if (display_) {
-    gl::init::ShutdownGL(display_, /*due_to_fallback=*/false);
-  }
 }
 
 }  // namespace webnn::dml

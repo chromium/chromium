@@ -32,23 +32,24 @@ class CommandQueue;
 class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
     : public base::RefCounted<Adapter> {
  public:
-  // Get the shared `Adapter` instance for the default adapter. At the current
-  // stage, the default adapter is queried from ANGLE. This method is not
-  // thread-safe and should only be called on the GPU main thread.
+  // Get the shared `Adapter` instance. If `Adapter` instance already exists,
+  // the that one is returned regardless of whether the `dxgi_adapter` matches.
+  // TODO(crbug.com/1469755): Support `Adapter` instance for other adapters.
+  //
+  // This method is not thread-safe and should only be called on the GPU main
+  // thread.
   //
   // The returned `Adapter` is guarenteed to support a feature level equal to
   // or greater than the `min_feature_level_required`. This allows tests to
   // specify a lower feature level than what WebNN requires.
-  //
-  // TODO(crbug.com/1273291): Support `Adapter` instance for other adapters.
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> GetInstance(
-      DML_FEATURE_LEVEL min_feature_level_required);
+      DML_FEATURE_LEVEL min_feature_level_required,
+      ComPtr<IDXGIAdapter> dxgi_adapter);
 
-  // Same as GetInstance() but always uses DML_FEATURE_LEVEL_1_0 for testing
-  // purposes. Allows tests to run on a per feature level basis using
-  // IsDMLFeatureLevelSupported().
+  // Same as GetInstance() but use the first enumerated DXGI adapter.
   static base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr>
-  GetInstanceForTesting();
+  GetInstanceForTesting(
+      DML_FEATURE_LEVEL min_feature_level_required = DML_FEATURE_LEVEL_1_0);
 
   Adapter(const Adapter&) = delete;
   Adapter& operator=(const Adapter&) = delete;

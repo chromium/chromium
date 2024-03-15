@@ -61,7 +61,7 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
@@ -83,8 +83,9 @@ TEST_F(WebNNContextProviderImplTest, NotSupported) {
 TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
 
-  WebNNContextProviderImpl::Create(provider_remote.BindNewPipeAndPassReceiver(),
-                                   /*is_gpu_supported=*/false);
+  WebNNContextProviderImpl::CreateForTesting(
+      provider_remote.BindNewPipeAndPassReceiver(),
+      /*is_gpu_supported=*/false);
 
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),

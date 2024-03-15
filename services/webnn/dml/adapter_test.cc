@@ -10,32 +10,10 @@
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
 
 class WebNNAdapterTest : public TestBase {};
-
-TEST_F(WebNNAdapterTest, GetDXGIAdapterFromAngle) {
-  ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  ASSERT_NE(d3d11_device.Get(), nullptr);
-  ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
-  ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-  EXPECT_NE(dxgi_adapter.Get(), nullptr);
-}
-
-TEST_F(WebNNAdapterTest, CreateAdapterFromAngle) {
-  ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
-  ASSERT_NE(d3d11_device.Get(), nullptr);
-  ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
-  ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-  ASSERT_NE(dxgi_adapter.Get(), nullptr);
-  EXPECT_TRUE(Adapter::Create(dxgi_adapter, DML_FEATURE_LEVEL_1_0).has_value());
-}
 
 TEST_F(WebNNAdapterTest, GetInstance) {
   // Test creating Adapter instance upon `GetInstance()` and release it if there
@@ -66,17 +44,21 @@ TEST_F(WebNNAdapterTest, CheckAdapterAccessors) {
 }
 
 TEST_F(WebNNAdapterTest, CreateAdapterMinRequiredFeatureLevel) {
-  SKIP_TEST_IF(!Adapter::GetInstance(DML_FEATURE_LEVEL_4_0).has_value());
-  ASSERT_TRUE(Adapter::GetInstance(DML_FEATURE_LEVEL_4_0).has_value());
-  ASSERT_TRUE(Adapter::GetInstance(DML_FEATURE_LEVEL_2_0).has_value());
-  EXPECT_EQ(Adapter::GetInstance(DML_FEATURE_LEVEL_4_0).value(),
-            Adapter::GetInstance(DML_FEATURE_LEVEL_2_0).value());
+  SKIP_TEST_IF(
+      !Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0).has_value());
+  ASSERT_TRUE(
+      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0).has_value());
+  ASSERT_TRUE(
+      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_2_0).has_value());
+  EXPECT_EQ(Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0).value(),
+            Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_2_0).value());
 }
 
 TEST_F(WebNNAdapterTest, CheckAdapterMinFeatureLevel) {
   // Check adapter feature level requested is supported.
   // All DML adapters must support DML_FEATURE_LEVEL_1_0.
-  auto adapter_creation_result = Adapter::GetInstance(DML_FEATURE_LEVEL_1_0);
+  auto adapter_creation_result =
+      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_1_0);
   ASSERT_TRUE(adapter_creation_result.has_value());
   EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
       DML_FEATURE_LEVEL_1_0));
@@ -84,8 +66,10 @@ TEST_F(WebNNAdapterTest, CheckAdapterMinFeatureLevel) {
 
 TEST_F(WebNNAdapterTest, CheckAdapterMinRequiredFeatureLevel) {
   // Check adapter feature level, if DML_FEATURE_LEVEL_4_0 is supported.
-  SKIP_TEST_IF(!Adapter::GetInstance(DML_FEATURE_LEVEL_4_0).has_value());
-  auto adapter_creation_result = Adapter::GetInstance(DML_FEATURE_LEVEL_4_0);
+  SKIP_TEST_IF(
+      !Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0).has_value());
+  auto adapter_creation_result =
+      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_4_0);
   ASSERT_TRUE(adapter_creation_result.has_value());
   EXPECT_TRUE(adapter_creation_result.value()->IsDMLFeatureLevelSupported(
       DML_FEATURE_LEVEL_4_0));
@@ -96,7 +80,8 @@ TEST_F(WebNNAdapterTest, CheckAdapterMinRequiredFeatureLevel) {
 TEST_F(WebNNAdapterTest,
        CheckAdapterWithPlatformFeatureLevelLowerThanRequired) {
   // Currently, DML_FEATURE_LEVEL_5_0 is not supported.
-  auto adapter_creation_result = Adapter::GetInstance(DML_FEATURE_LEVEL_5_0);
+  auto adapter_creation_result =
+      Adapter::GetInstanceForTesting(DML_FEATURE_LEVEL_5_0);
   EXPECT_FALSE(adapter_creation_result.has_value());
   EXPECT_EQ(adapter_creation_result.error()->code,
             mojom::Error::Code::kNotSupportedError);

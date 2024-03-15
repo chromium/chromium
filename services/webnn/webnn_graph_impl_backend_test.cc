@@ -62,7 +62,7 @@ void BuildAndCompute(
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
   mojo::Remote<mojom::WebNNGraph> webnn_graph_remote;
 
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   // Create the ContextImpl through context provider.
@@ -230,7 +230,6 @@ class WebNNGraphImplBackendTest : public dml::TestBase {
 void WebNNGraphImplBackendTest::SetUp() {
   SKIP_TEST_IF(!dml::UseGPUInTests());
 
-  ASSERT_TRUE(InitializeGLDisplay());
   dml::Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = dml::Adapter::GetInstanceForTesting();
   ASSERT_TRUE(adapter_creation_result.has_value());
@@ -4867,7 +4866,7 @@ TEST_F(WebNNGraphImplBackendTest, BuildOneGraphToComputeMultipleTimes) {
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
   mojo::Remote<mojom::WebNNGraph> webnn_graph_remote;
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       webnn_provider_remote.BindNewPipeAndPassReceiver());
 
   // Create the ContextImpl through context provider.

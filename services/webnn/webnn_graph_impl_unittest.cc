@@ -113,7 +113,7 @@ bool ValidateInputsForComputing(
     base::flat_map<std::string, mojo_base::BigBuffer> inputs) {
   // Creates WebNN Context mojo interface with the provider.
   mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  WebNNContextProviderImpl::Create(
+  WebNNContextProviderImpl::CreateForTesting(
       provider_remote.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;

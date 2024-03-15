@@ -13,7 +13,6 @@
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/dml/utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gl/gl_angle_util_win.h"
 
 namespace webnn::dml {
 
@@ -27,7 +26,6 @@ class WebNNGraphBuilderTest : public TestBase {
 
 void WebNNGraphBuilderTest::SetUp() {
   SKIP_TEST_IF(!UseGPUInTests());
-  ASSERT_TRUE(InitializeGLDisplay());
   Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = Adapter::GetInstanceForTesting();
   ASSERT_TRUE(adapter_creation_result.has_value());

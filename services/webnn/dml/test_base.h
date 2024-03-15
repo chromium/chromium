@@ -15,10 +15,6 @@
       GTEST_SKIP() << #condition; \
   } while (0)
 
-namespace gl {
-class GLDisplay;
-}
-
 namespace webnn::dml {
 
 bool UseGPUInTests();
@@ -26,14 +22,6 @@ bool UseGPUInTests();
 class TestBase : public testing::Test {
  public:
   void SetUp() override;
-  void TearDown() override;
-
-  // Initializing the GL display is required for querying D3D11 device by
-  // gl::QueryD3D11DeviceObjectFromANGLE().
-  bool InitializeGLDisplay();
-
- private:
-  raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
 }  // namespace webnn::dml
