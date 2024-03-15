@@ -26,6 +26,7 @@ class AccountCapabilitiesTestMutator {
   void set_is_opted_in_to_parental_supervision(bool value);
   void set_can_toggle_auto_updates(bool value);
   void set_can_use_chrome_ip_protection(bool value);
+  void set_can_use_devtools_generative_ai_features(bool value);
   void set_can_use_edu_features(bool value);
   void set_can_use_manta_service(bool value);
   void set_can_use_model_execution_features(bool value);

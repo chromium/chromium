@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -122,6 +123,23 @@ TEST_F(AidaClientTest, NotAvailableIfFeatureDisabled) {
 #endif
   feature_list.Reset();
   feature_list.InitAndDisableFeature(::features::kDevToolsConsoleInsights);
+  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
+}
+
+TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(::features::kDevToolsConsoleInsights);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(AidaClient::CanUseAida(profile_.get()));
+#else
+  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
+#endif
+  auto account_info = identity_test_env_->identity_manager()
+                          ->FindExtendedAccountInfoByEmailAddress(kEmail);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_devtools_generative_ai_features(false);
+  signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),
+                                      account_info);
   EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
 }
 

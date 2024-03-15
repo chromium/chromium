@@ -55,6 +55,9 @@ public final class AccountCapabilitiesTest {
                 return capabilities.canToggleAutoUpdates();
             case AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME:
                 return capabilities.canUseChromeIpProtection();
+            case AccountCapabilitiesConstants
+                    .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME:
+                return capabilities.canUseDevToolsGenerativeAiFeatures();
             case AccountCapabilitiesConstants.CAN_USE_EDU_FEATURES_CAPABILITY_NAME:
                 return capabilities.canUseEduFeatures();
             case AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME:
@@ -118,6 +121,11 @@ public final class AccountCapabilitiesTest {
                                 .value(
                                         AccountCapabilitiesConstants
                                                 .CAN_USE_CHROME_IP_PROTECTION_NAME),
+                        new ParameterSet()
+                                .name("CanUseDevToolsGenerativeAiFeatures")
+                                .value(
+                                        AccountCapabilitiesConstants
+                                                .CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME),
                         new ParameterSet()
                                 .name("CanUseMantaService")
                                 .value(AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME),
