@@ -31,7 +31,7 @@ namespace media {
 
 namespace {
 
-BASE_FEATURE(kAddSharedImageRasterUsageWithNonOOPR,
+BASE_FEATURE(kVideoFrameYUVAddSharedImageRasterUsageWithNonOOPR,
              "VideoFrameYUVAddSharedImageRasterUsageWithNonOOPR",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -181,7 +181,8 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     // NOTE: It is critical to specify that this raster usage is *only* over
     // GLES2 to the service side to ensure that the correct SharedImage backing
     // is created (see crbug.com/328472684).
-    if (base::FeatureList::IsEnabled(kAddSharedImageRasterUsageWithNonOOPR)) {
+    if (base::FeatureList::IsEnabled(
+            kVideoFrameYUVAddSharedImageRasterUsageWithNonOOPR)) {
       mailbox_usage = mailbox_usage | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                       gpu::SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY;
