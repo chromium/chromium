@@ -506,6 +506,7 @@ class GameDashboardMainMenuView::GameControlsDetailsRow : public views::Button {
         game_dashboard_utils::UpdateFlag(*flags, ArcGameControlsFlag::kEdit,
                                          /*enable_flag=*/true));
     RecordGameDashboardEditControlsWithEmptyState(
+        main_menu_->context_->app_id(),
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEmpty));
   }
 
@@ -621,10 +622,11 @@ void GameDashboardMainMenuView::OnRecordGameTilePressed() {
 void GameDashboardMainMenuView::OnScreenshotTilePressed() {
   context_->CloseMainMenu(
       GameDashboardMainMenuToggleMethod::kActivateNewFeature);
-  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
-      context_->game_window());
+  auto* game_window = context_->game_window();
+  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window);
 
-  RecordGameDashboardScreenshotTakeSource(GameDashboardMenu::kMainMenu);
+  RecordGameDashboardScreenshotTakeSource(context_->app_id(),
+                                          GameDashboardMenu::kMainMenu);
 }
 
 void GameDashboardMainMenuView::OnSettingsBackButtonPressed() {

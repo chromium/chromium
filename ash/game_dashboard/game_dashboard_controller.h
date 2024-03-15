@@ -84,6 +84,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Shows the compat mode resize toggle menu for the given `window`.
   void ShowResizeToggleMenu(aura::Window* window);
 
+  // Gets the UKM source id by `app_id`.
+  ukm::SourceId GetUkmSourceId(const std::string& app_id) const;
+
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* new_window) override;
 

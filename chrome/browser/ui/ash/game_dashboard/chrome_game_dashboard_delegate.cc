@@ -8,6 +8,7 @@
 #include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
@@ -98,6 +99,14 @@ void ChromeGameDashboardDelegate::ShowResizeToggleMenu(aura::Window* window) {
   GetCompatModeButtonController()->ShowResizeToggleMenu(
       window,
       /*callback=*/base::DoNothing());
+}
+
+ukm::SourceId ChromeGameDashboardDelegate::GetUkmSourceId(
+    const std::string& app_id) {
+  // Get the ukm source id from apps::AppPlatformMetrics.
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  CHECK(profile);
+  return apps::AppPlatformMetrics::GetSourceId(profile, app_id);
 }
 
 arc::CompatModeButtonController*

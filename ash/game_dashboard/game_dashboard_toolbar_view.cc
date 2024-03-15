@@ -361,7 +361,8 @@ void GameDashboardToolbarView::OnScreenshotButtonPressed() {
   CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(
       context_->game_window());
 
-  RecordGameDashboardScreenshotTakeSource(GameDashboardMenu::kToolbar);
+  RecordGameDashboardScreenshotTakeSource(context_->app_id(),
+                                          GameDashboardMenu::kToolbar);
 }
 
 void GameDashboardToolbarView::AddShortcutTiles() {

@@ -12075,6 +12075,21 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Overflow"/>
 </enum>
 
+<enum name="GameDashboardMainMenuToggleMethod">
+  <int value="0" label="Game dashboard button"/>
+  <int value="1" label="Search plus G"/>
+  <int value="2" label="Esc"/>
+  <int value="3" label="Activate a new feature"/>
+  <int value="4" label="Enter overview mode"/>
+  <int value="5" label="Others"/>
+  <int value="6" label="Enter tablet mode"/>
+</enum>
+
+<enum name="GameDashboardMenu">
+  <int value="0" label="Main menu"/>
+  <int value="1" label="Toolbar"/>
+</enum>
+
 <enum name="GameModeResult">
   <int value="0" label="Attempted"/>
   <int value="1" label="Failed"/>

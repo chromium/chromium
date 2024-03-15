@@ -9983,6 +9983,82 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="GameDashboard.EditControlsWithEmptyState">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged whether Game Controls is empty when entering Game Controls edit mode.
+  </summary>
+  <metric name="Empty" enum="Boolean">
+    <summary>
+      Whether Game Controls is empty.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameDashboard.RecordingStartSource">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged where the recording starts from.
+  </summary>
+  <metric name="Source" enum="GameDashboardMenu">
+    <summary>
+      Where is the recording started from, main menu or toolbar.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameDashboard.ScreenshotTakeSource">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged where the screenshot is taken from.
+  </summary>
+  <metric name="Source" enum="GameDashboardMenu">
+    <summary>
+      Where is the screenshot taken from, main menu or toolbar.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameDashboard.ToggleMainMenu">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when the game dashboard main menu is toggled on or off and how it is
+    toggled.
+  </summary>
+  <metric name="ToggleMethod" enum="GameDashboardMainMenuToggleMethod">
+    <summary>
+      How the main menu is toggled.
+    </summary>
+  </metric>
+  <metric name="ToggleOn" enum="Boolean">
+    <summary>
+      Whether the main menu is toggled on or off.
+    </summary>
+  </metric>
+</event>
+
+<event name="GameDashboard.ToolbarToggleState">
+  <owner>cuicuiruan@google.com</owner>
+  <owner>phshah@chromium.org</owner>
+  <owner>arc-gaming@google.com</owner>
+  <summary>
+    Logged when the game dashboard toolbar is toggled on or off.
+  </summary>
+  <metric name="ToggleOn" enum="Boolean">
+    <summary>
+      Whether the toolbar is toggled on or off.
+    </summary>
+  </metric>
+</event>
+
 <event name="GamingInputOverlay.ActionRepositionOperationType">
   <owner>pjlee@google.com</owner>
   <owner>cuicuiruan@google.com</owner>

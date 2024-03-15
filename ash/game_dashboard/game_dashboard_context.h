@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_CONTEXT_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
@@ -49,6 +50,8 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   ~GameDashboardContext() override;
 
   aura::Window* game_window() { return game_window_.get(); }
+
+  const std::string& app_id() const { return app_id_; }
 
   GameDashboardMainMenuView* main_menu_view() { return main_menu_view_; }
 
@@ -185,6 +188,8 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   void UpdateOnMainMenuClosed();
 
   const raw_ptr<aura::Window> game_window_;
+
+  const std::string app_id_;
 
   // Game Dashboard button widget for the Game Dashboard.
   std::unique_ptr<views::Widget> game_dashboard_button_widget_;

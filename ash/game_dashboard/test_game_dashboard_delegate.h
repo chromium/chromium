@@ -25,6 +25,7 @@ class TestGameDashboardDelegate : public GameDashboardDelegate {
   std::string GetArcAppName(const std::string& app_id) const override;
   void RecordGameWindowOpenedEvent(aura::Window* window) override;
   void ShowResizeToggleMenu(aura::Window* window) override;
+  ukm::SourceId GetUkmSourceId(const std::string& app_id) override;
 };
 
 }  // namespace ash

@@ -102,6 +102,7 @@ void MaybeUpdateCameraPreview() {
 
 GameDashboardContext::GameDashboardContext(aura::Window* game_window)
     : game_window_(game_window),
+      app_id_(*game_window->GetProperty(kAppIDKey)),
       toolbar_snap_location_(ToolbarSnapLocation::kTopRight) {
   DCHECK(game_window_);
   show_welcome_dialog_ = game_dashboard_utils::ShouldShowWelcomeDialog();
@@ -216,7 +217,8 @@ void GameDashboardContext::ToggleMainMenu(
     main_menu_widget_->Show();
     game_dashboard_button_->SetToggled(true);
     AddCursorHandler();
-    RecordGameDashboardToggleMainMenu(toggle_method, /*toggled_on=*/true);
+    RecordGameDashboardToggleMainMenu(app_id_, toggle_method,
+                                      /*toggled_on=*/true);
   } else {
     DCHECK(main_menu_view_);
     DCHECK(main_menu_widget_);
@@ -234,7 +236,8 @@ void GameDashboardContext::CloseMainMenu(
   // `game_dashboard_button_` UI.
   UpdateOnMainMenuClosed();
   main_menu_widget_.reset();
-  RecordGameDashboardToggleMainMenu(toggle_method, /*toggled_on=*/false);
+  RecordGameDashboardToggleMainMenu(app_id_, toggle_method,
+                                    /*toggled_on=*/false);
 }
 
 bool GameDashboardContext::ToggleToolbar() {
@@ -259,7 +262,7 @@ bool GameDashboardContext::ToggleToolbar() {
     } else {
       toolbar_widget_->Show();
     }
-    RecordGameDashboardToolbarToggleState(/*toggled_on=*/true);
+    RecordGameDashboardToolbarToggleState(app_id_, /*toggled_on=*/true);
     return true;
   }
 
@@ -272,7 +275,7 @@ void GameDashboardContext::CloseToolbar() {
   DCHECK(toolbar_widget_);
   toolbar_view_ = nullptr;
   toolbar_widget_.reset();
-  RecordGameDashboardToolbarToggleState(/*toggled_on=*/false);
+  RecordGameDashboardToolbarToggleState(app_id_, /*toggled_on=*/false);
 }
 
 void GameDashboardContext::MaybeUpdateToolbarWidgetBounds() {
@@ -302,9 +305,9 @@ void GameDashboardContext::OnRecordingStarted(bool is_recording_game_window) {
     recording_timer_.Start(FROM_HERE, kCountUpTimerRefreshInterval, this,
                            &GameDashboardContext::OnUpdateRecordingTimer);
     CHECK(recording_from_main_menu_);
-    RecordGameDashboardRecordingStartSource(*recording_from_main_menu_
-                                                ? GameDashboardMenu::kMainMenu
-                                                : GameDashboardMenu::kToolbar);
+    RecordGameDashboardRecordingStartSource(
+        app_id_, *recording_from_main_menu_ ? GameDashboardMenu::kMainMenu
+                                            : GameDashboardMenu::kToolbar);
     // `recording_from_main_menu_` is used to record the histogram for starting
     // recording only. Reset it after the histogram is recorded.
     recording_from_main_menu_ = std::nullopt;
@@ -357,18 +360,19 @@ void GameDashboardContext::OnWidgetDestroyed(views::Widget* widget) {
       // Close reason for clicking outside or closing game window by clicking
       // close button on the caption.
       RecordGameDashboardToggleMainMenu(
-          GameDashboardMainMenuToggleMethod::kOthers,
+          app_id_, GameDashboardMainMenuToggleMethod::kOthers,
           /*toggled_on=*/false);
       break;
     case views::Widget::ClosedReason::kCancelButtonClicked:
       // Close reason for key Esc pressed.
-      RecordGameDashboardToggleMainMenu(GameDashboardMainMenuToggleMethod::kEsc,
+      RecordGameDashboardToggleMainMenu(app_id_,
+                                        GameDashboardMainMenuToggleMethod::kEsc,
                                         /*toggled_on=*/false);
       break;
     case views::Widget::ClosedReason::kUnspecified:
       // Close reason when the game window is closed unspecified.
       RecordGameDashboardToggleMainMenu(
-          GameDashboardMainMenuToggleMethod::kOthers,
+          app_id_, GameDashboardMainMenuToggleMethod::kOthers,
           /*toggled_on=*/false);
       break;
     default:

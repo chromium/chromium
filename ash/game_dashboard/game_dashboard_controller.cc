@@ -118,6 +118,11 @@ void GameDashboardController::ShowResizeToggleMenu(aura::Window* window) {
   delegate_->ShowResizeToggleMenu(window);
 }
 
+ukm::SourceId GameDashboardController::GetUkmSourceId(
+    const std::string& app_id) const {
+  return delegate_->GetUkmSourceId(app_id);
+}
+
 void GameDashboardController::OnWindowInitialized(aura::Window* new_window) {
   if (const auto* top_level_window = new_window->GetToplevelWindow();
       !top_level_window ||

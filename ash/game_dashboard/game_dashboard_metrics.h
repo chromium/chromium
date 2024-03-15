@@ -30,7 +30,7 @@ inline constexpr char kGameDashboardHistogramOff[] = "Off";
 inline constexpr char kGameDashboardHistogramSeparator[] = ".";
 
 // This enum should be kept in sync with the `GameDashboardMainMenuToggleMethod`
-// in tools/metrics/histograms/metadata/ash/enums.xml.
+// in tools/metrics/histograms/enums.xml.
 enum class GameDashboardMainMenuToggleMethod {
   kGameDashboardButton,
   kSearchPlusG,
@@ -45,7 +45,7 @@ enum class GameDashboardMainMenuToggleMethod {
 };
 
 // This enum should be kept in sync with the `GameDashboardMenu` in
-// tools/metrics/histograms/metadata/ash/enums.xml.
+// tools/metrics/histograms/enums.xml.
 enum class GameDashboardMenu {
   kMainMenu,
   kToolbar,
@@ -55,16 +55,21 @@ enum class GameDashboardMenu {
 ASH_EXPORT std::string BuildGameDashboardHistogramName(const std::string& name);
 
 void RecordGameDashboardToggleMainMenu(
+    const std::string& app_id,
     GameDashboardMainMenuToggleMethod toggle_method,
     bool toggled_on);
 
-void RecordGameDashboardToolbarToggleState(bool toggled_on);
+void RecordGameDashboardToolbarToggleState(const std::string& app_id,
+                                           bool toggled_on);
 
-void RecordGameDashboardRecordingStartSource(GameDashboardMenu menu);
+void RecordGameDashboardRecordingStartSource(const std::string& app_id,
+                                             GameDashboardMenu menu);
 
-void RecordGameDashboardScreenshotTakeSource(GameDashboardMenu menu);
+void RecordGameDashboardScreenshotTakeSource(const std::string& app_id,
+                                             GameDashboardMenu menu);
 
-void RecordGameDashboardEditControlsWithEmptyState(bool is_setup);
+void RecordGameDashboardEditControlsWithEmptyState(const std::string& app_id,
+                                                   bool is_setup);
 
 }  // namespace ash
 
