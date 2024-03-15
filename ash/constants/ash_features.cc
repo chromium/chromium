@@ -46,7 +46,7 @@ BASE_FEATURE(kAdaptiveChargingForTesting,
 // are available.
 BASE_FEATURE(kAdvancedDocumentScanAPI,
              "AdvancedDocumentScanAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the UI to support Ambient EQ if the device supports it.
 // See https://crbug.com/1021193 for more details.
@@ -181,7 +181,7 @@ BASE_FEATURE(kAssistantNativeIcons,
 // ListScanners API or the new asynchronous StartScannerDiscovery API.
 BASE_FEATURE(kAsynchronousScannerDiscovery,
              "AsynchronousScannerDiscovery",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the ui to show the toggle for controlling hfp-mic-sr.
 BASE_FEATURE(kAudioHFPMicSRToggle,
