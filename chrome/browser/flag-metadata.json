@@ -562,11 +562,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "autofill-account-profiles-storage",
-    "owners": [ "vidhanj@chromium.org", "koerber@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-address-verification-in-save-prompt",
     "owners": [ "mamir@chromium.org", "koerber@chromium.org" ],
     "expiry_milestone": 120
