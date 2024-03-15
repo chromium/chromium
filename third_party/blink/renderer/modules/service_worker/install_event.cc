@@ -95,7 +95,7 @@ ScriptPromise InstallEvent::registerRouter(
   global_scope->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kWarning,
-      "registerRouter() has been deprecated. "
+      "registerRouter() has been deprecated and will be removed from M125."
       "Please use addRoutes() instead."));
 
   blink::ServiceWorkerRouterRules rules;
