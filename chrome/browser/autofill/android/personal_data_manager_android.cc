@@ -393,24 +393,6 @@ void PersonalDataManagerAndroid::UpdateServerCardBillingAddress(
   personal_data_manager_->UpdateServerCardsMetadata({card});
 }
 
-ScopedJavaLocalRef<jstring>
-PersonalDataManagerAndroid::GetBasicCardIssuerNetwork(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
-    const JavaParamRef<jstring>& jcard_number,
-    const jboolean jempty_if_invalid) {
-  std::u16string card_number = ConvertJavaStringToUTF16(env, jcard_number);
-
-  if (static_cast<bool>(jempty_if_invalid) &&
-      !IsValidCreditCardNumber(card_number)) {
-    return ConvertUTF8ToJavaString(env, "");
-  }
-  return ConvertUTF8ToJavaString(
-      env,
-      data_util::GetPaymentRequestData(CreditCard::GetCardNetwork(card_number))
-          .basic_card_issuer_network);
-}
-
 void PersonalDataManagerAndroid::AddServerCreditCardForTest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj,
@@ -746,6 +728,26 @@ jboolean PersonalDataManagerAndroid::IsAutofillProfileManaged(JNIEnv* env) {
 
 jboolean PersonalDataManagerAndroid::IsAutofillCreditCardManaged(JNIEnv* env) {
   return prefs::IsAutofillCreditCardManaged(prefs_);
+}
+
+// Returns the issuer network string according to PaymentRequest spec, or an
+// empty string if the given card number is not valid and |jempty_if_invalid|
+// is true.
+static ScopedJavaLocalRef<jstring>
+JNI_PersonalDataManager_GetBasicCardIssuerNetwork(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& jcard_number,
+    const jboolean jempty_if_invalid) {
+  std::u16string card_number = ConvertJavaStringToUTF16(env, jcard_number);
+
+  if (static_cast<bool>(jempty_if_invalid) &&
+      !IsValidCreditCardNumber(card_number)) {
+    return ConvertUTF8ToJavaString(env, "");
+  }
+  return ConvertUTF8ToJavaString(
+      env,
+      data_util::GetPaymentRequestData(CreditCard::GetCardNetwork(card_number))
+          .basic_card_issuer_network);
 }
 
 // Returns an ISO 3166-1-alpha-2 country code for a |jcountry_name| using

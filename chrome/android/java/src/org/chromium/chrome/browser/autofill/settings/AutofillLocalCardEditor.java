@@ -275,7 +275,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         PersonalDataManager personalDataManager = PersonalDataManager.getInstance();
         // Issuer network will be empty if credit card number is not valid.
         if (TextUtils.isEmpty(
-                personalDataManager.getBasicCardIssuerNetwork(
+                PersonalDataManager.getBasicCardIssuerNetwork(
                         cardNumber, /* emptyIfInvalid= */ true))) {
             mNumberLabel.setError(
                     mContext.getString(R.string.payments_card_number_invalid_validation_message));
@@ -507,8 +507,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     }
 
     public static boolean isAmExCard(String cardNumber) {
-        return PersonalDataManager.getInstance()
-                .getBasicCardIssuerNetwork(cardNumber, /* emptyIfInvalid= */ false)
+        return PersonalDataManager.getBasicCardIssuerNetwork(
+                        cardNumber, /* emptyIfInvalid= */ false)
                 .equals(AMEX_NETWORK_NAME);
     }
 }

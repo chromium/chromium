@@ -805,12 +805,10 @@ public class PersonalDataManager implements Destroyable {
                         mPersonalDataManagerAndroid, PersonalDataManager.this, card);
     }
 
-    public String getBasicCardIssuerNetwork(String cardNumber, boolean emptyIfInvalid) {
+    public static String getBasicCardIssuerNetwork(String cardNumber, boolean emptyIfInvalid) {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get()
                 .getBasicCardIssuerNetwork(
-                        mPersonalDataManagerAndroid,
-                        PersonalDataManager.this,
                         cardNumber,
                         emptyIfInvalid);
     }
@@ -1266,8 +1264,6 @@ public class PersonalDataManager implements Destroyable {
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, CreditCard card);
 
         String getBasicCardIssuerNetwork(
-                long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller,
                 String cardNumber,
                 boolean emptyIfInvalid);
 

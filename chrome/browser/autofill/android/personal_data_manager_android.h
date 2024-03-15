@@ -180,15 +180,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& unused_obj,
       const base::android::JavaParamRef<jobject>& jcard);
 
-  // Returns the issuer network string according to PaymentRequest spec, or an
-  // empty string if the given card number is not valid and |jempty_if_invalid|
-  // is true.
-  base::android::ScopedJavaLocalRef<jstring> GetBasicCardIssuerNetwork(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj,
-      const base::android::JavaParamRef<jstring>& jcard_number,
-      const jboolean jempty_if_invalid);
-
   // Adds a server credit card. Used only in tests.
   void AddServerCreditCardForTest(
       JNIEnv* env,
