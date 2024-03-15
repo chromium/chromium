@@ -77,7 +77,7 @@ public class SigninCheckerTest {
                 .thenReturn(newAccountEmail);
         final CoreAccountInfo expectedPrimaryAccount = mSigninTestRule.addAccount(newAccountEmail);
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getId());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -97,7 +97,7 @@ public class SigninCheckerTest {
         when(mAccountRenameCheckerDelegateMock.getNewNameOfRenamedAccount(oldAccount.getEmail()))
                 .thenReturn(newAccountEmail);
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getId());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -116,7 +116,7 @@ public class SigninCheckerTest {
         mSigninTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
         final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getId());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -135,7 +135,7 @@ public class SigninCheckerTest {
         mSigninTestRule.addAccountAndWaitForSeeding("the.second.account@gmail.com");
         final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSignin();
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getId());
 
         CriteriaHelper.pollUiThread(
                 () -> {

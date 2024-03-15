@@ -259,12 +259,16 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenRemovingChildAccountDynamically() {
-        mSigninTestRule.addAccount(
-                CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        CHILD_ACCOUNT_EMAIL,
+                        CHILD_FULL_NAME,
+                        /* givenName= */ null,
+                        /* avatar= */ null);
         launchActivityWithFragment();
         checkFragmentWithChildAccount(true, true);
 
-        mSigninTestRule.removeAccount(CHILD_ACCOUNT_EMAIL);
+        mSigninTestRule.removeAccount(accountInfo.getId());
 
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -282,12 +286,14 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testFragmentWhenDefaultAccountIsRemoved() {
-        mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /* avatar= */ null);
+        CoreAccountInfo accountInfo1 =
+                mSigninTestRule.addAccount(
+                        TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /* avatar= */ null);
         mSigninTestRule.addAccount(
                 TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null, /* avatar= */ null);
         launchActivityWithFragment();
 
-        mSigninTestRule.removeAccount(TEST_EMAIL1);
+        mSigninTestRule.removeAccount(accountInfo1.getId());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
     }
@@ -296,7 +302,9 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testRemovingAllAccountsDismissesAccountPickerDialog() {
-        mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /* avatar= */ null);
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /* avatar= */ null);
         launchActivityWithFragment();
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
         onView(withText(TEST_EMAIL1)).perform(click());
@@ -304,7 +312,7 @@ public class SigninFirstRunFragmentTest {
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
 
-        mSigninTestRule.removeAccount(TEST_EMAIL1);
+        mSigninTestRule.removeAccount(accountInfo.getId());
 
         onView(withText(R.string.signin_account_picker_dialog_title)).check(doesNotExist());
         onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));

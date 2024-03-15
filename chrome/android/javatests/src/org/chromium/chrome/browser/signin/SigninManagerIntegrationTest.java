@@ -213,7 +213,7 @@ public class SigninManagerIntegrationTest {
                                             mIdentityManager.getAccountsWithRefreshTokens())));
                 });
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount2.getId());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -243,8 +243,8 @@ public class SigninManagerIntegrationTest {
                 });
 
         // Remove all.
-        mSigninTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT1);
-        mSigninTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount1.getId());
+        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount2.getId());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -280,8 +280,8 @@ public class SigninManagerIntegrationTest {
                 });
 
         mSigninTestRule.signOut();
-        mSigninTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT1);
-        mSigninTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT2);
+        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount1.getId());
+        mSigninTestRule.removeAccountAndWaitForSeeding(mTestAccount2.getId());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

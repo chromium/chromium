@@ -733,7 +733,7 @@ public class HistoryUITest {
     private void signOut() {
         // Clear supervised user id.
         doReturn("").when(mPrefService).getString(Pref.SUPERVISED_USER_ID);
-        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.removeAccount(AccountManagerTestRule.TEST_ACCOUNT_1.getId());
     }
 
     private void performMenuAction(int menuItemId) {

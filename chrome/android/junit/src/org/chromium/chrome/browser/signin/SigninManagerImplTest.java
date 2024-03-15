@@ -19,7 +19,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.os.UserManager;
 
@@ -105,10 +104,6 @@ public class SigninManagerImplTest {
                     .fullName("full name")
                     .givenName("given name")
                     .build();
-    // TODO(crbug/1491005): Add an addAccount overload to FakeAccountManagerFacade that takes a
-    // CoreAccountInfo as parameter and remove this field.
-    private static final Account ACCOUNT_FROM_INFO =
-            AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail());
 
     @Rule public final TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
@@ -219,7 +214,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void testOnCoreAccountInfosChanged_seedAccountsRevampEnabled() {
-        mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
 
         List<CoreAccountInfo> coreAccountInfos =
                 mFakeAccountManagerFacade.getCoreAccountInfos().getResult();
@@ -301,7 +296,7 @@ public class SigninManagerImplTest {
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
-        mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
@@ -396,7 +391,7 @@ public class SigninManagerImplTest {
     @Test
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinNoTurnSyncOn_seedAccountsRevampEnabled() {
-        mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
 
@@ -950,7 +945,7 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void
             clearingAccountCookieDoesNotTriggerSignoutWhenUserIsSignedOut_seedAccountsRevampEnabled() {
-        mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
 
         mIdentityManager.onAccountsCookieDeletedByUserAction();
 
@@ -1142,7 +1137,7 @@ public class SigninManagerImplTest {
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
-        mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
         final Answer<Integer> setPrimaryAccountAnswer =
                 invocation -> {
                     // From now on getPrimaryAccountInfo should return account.
@@ -1240,7 +1235,7 @@ public class SigninManagerImplTest {
         if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
             when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
         }
-        mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
+        mFakeAccountManagerFacade.addAccount(ACCOUNT_INFO);
         List<CoreAccountInfo> coreAccountInfos =
                 mFakeAccountManagerFacade.getCoreAccountInfos().getResult();
         CoreAccountInfo primaryAccountInfo =

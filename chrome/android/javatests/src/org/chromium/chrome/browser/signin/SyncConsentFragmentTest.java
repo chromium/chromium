@@ -587,7 +587,7 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
         launchActivityWithFragment(fragment);
 
-        mSigninTestRule.removeAccountAndWaitForSeeding(primaryAccount.getEmail());
+        mSigninTestRule.removeAccountAndWaitForSeeding(primaryAccount.getId());
 
         CriteriaHelper.pollUiThread(() -> fragment.mIsUpdateAccountCalled);
         verify(mFirstRunPageDelegateMock).abortFirstRunExperience();

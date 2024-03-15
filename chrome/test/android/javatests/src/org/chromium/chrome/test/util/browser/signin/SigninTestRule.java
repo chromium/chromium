@@ -17,6 +17,7 @@ import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.SyncService;
@@ -76,7 +77,8 @@ public class SigninTestRule extends AccountManagerTestRule {
         SigninTestUtil.seedAccounts();
     }
 
-    /** Adds an account and seed it in native code. */
+    /** Adds an account and seeds it in native code. */
+    // TODO(crbug.com/40234741): Replace this with a method that takes AccountInfo instead.
     public CoreAccountInfo addAccountAndWaitForSeeding(String accountName) {
         final CoreAccountInfo coreAccountInfo = addAccount(accountName);
         waitForSeeding();
@@ -84,8 +86,8 @@ public class SigninTestRule extends AccountManagerTestRule {
     }
 
     /** Removes an account and seed it in native code. */
-    public void removeAccountAndWaitForSeeding(String accountEmail) {
-        removeAccount(accountEmail);
+    public void removeAccountAndWaitForSeeding(CoreAccountId accountId) {
+        removeAccount(accountId);
         waitForSeeding();
     }
 
