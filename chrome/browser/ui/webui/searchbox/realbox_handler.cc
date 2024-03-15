@@ -460,9 +460,7 @@ std::string GetBase64UrlVariations(Profile* profile) {
 //  to avoid reimplementation of methods like `OnBookmarkLaunched`.
 class RealboxOmniboxClient final : public OmniboxClient {
  public:
-  RealboxOmniboxClient(LocationBarModel* location_bar_model,
-                       Profile* profile,
-                       content::WebContents* web_contents);
+  RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
   ~RealboxOmniboxClient() override;
 
   // OmniboxClient:
@@ -481,6 +479,15 @@ class RealboxOmniboxClient final : public OmniboxClient {
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
+  std::u16string GetFormattedFullURL() const override;
+  std::u16string GetURLForDisplay() const override;
+  GURL GetNavigationEntryURL() const override;
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      OmniboxFocusSource focus_source,
+      bool is_prefetch) override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
+  const gfx::VectorIcon& GetVectorIcon() const override;
   gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
       FaviconFetchedCallback on_favicon_fetched) override;
@@ -499,22 +506,20 @@ class RealboxOmniboxClient final : public OmniboxClient {
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
-  LocationBarModel* GetLocationBarModel() override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
  private:
-  raw_ptr<LocationBarModel> location_bar_model_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   ChromeAutocompleteSchemeClassifier scheme_classifier_;
+  // This is unused, but needed for `GetVectorIcon()`.
+  gfx::VectorIcon vector_icon_{nullptr, 0u, ""};
   base::WeakPtrFactory<RealboxOmniboxClient> weak_factory_{this};
 };
 
-RealboxOmniboxClient::RealboxOmniboxClient(LocationBarModel* location_bar_model,
-                                           Profile* profile,
+RealboxOmniboxClient::RealboxOmniboxClient(Profile* profile,
                                            content::WebContents* web_contents)
-    : location_bar_model_(location_bar_model),
-      profile_(profile),
+    : profile_(profile),
       web_contents_(web_contents),
       scheme_classifier_(ChromeAutocompleteSchemeClassifier(profile)) {}
 
@@ -577,6 +582,36 @@ gfx::Image RealboxOmniboxClient::GetSizedIcon(
   return gfx::Image();
 }
 
+std::u16string RealboxOmniboxClient::GetFormattedFullURL() const {
+  return u"";
+}
+
+std::u16string RealboxOmniboxClient::GetURLForDisplay() const {
+  return u"";
+}
+
+GURL RealboxOmniboxClient::GetNavigationEntryURL() const {
+  return GURL();
+}
+
+metrics::OmniboxEventProto::PageClassification
+RealboxOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
+                                            bool is_prefetch) {
+  return metrics::OmniboxEventProto::NTP_REALBOX;
+}
+
+security_state::SecurityLevel RealboxOmniboxClient::GetSecurityLevel() const {
+  return security_state::SecurityLevel::NONE;
+}
+
+net::CertStatus RealboxOmniboxClient::GetCertStatus() const {
+  return 0;
+}
+
+const gfx::VectorIcon& RealboxOmniboxClient::GetVectorIcon() const {
+  return vector_icon_;
+}
+
 gfx::Image RealboxOmniboxClient::GetFaviconForPageUrl(
     const GURL& page_url,
     FaviconFetchedCallback on_favicon_fetched) {
@@ -612,10 +647,6 @@ void RealboxOmniboxClient::OnAutocompleteAccept(
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
   web_contents_->OpenURL(content::OpenURLParams(
       destination_url, content::Referrer(), disposition, transition, false));
-}
-
-LocationBarModel* RealboxOmniboxClient::GetLocationBarModel() {
-  return location_bar_model_;
 }
 
 base::WeakPtr<OmniboxClient> RealboxOmniboxClient::AsWeakPtr() {
@@ -871,8 +902,7 @@ RealboxHandler::RealboxHandler(
   } else {
     owned_controller_ = std::make_unique<OmniboxController>(
         /*view=*/nullptr,
-        std::make_unique<RealboxOmniboxClient>(/*location_bar_model=*/this,
-                                               profile_, web_contents_));
+        std::make_unique<RealboxOmniboxClient>(profile_, web_contents_));
     controller_ = owned_controller_.get();
   }
 
@@ -1103,63 +1133,6 @@ void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
       omnibox::mojom::OmniboxPopupSelection::New(
           selection.line, ConvertLineState(selection.state),
           selection.action_index));
-}
-
-// LocationBarModel:
-// Note, the implementation here is mostly not needed but the `OmniboxEditModel`
-// currently needs a full working instance and some parts are used.
-std::u16string RealboxHandler::GetFormattedFullURL() const {
-  return u"";
-}
-
-std::u16string RealboxHandler::GetURLForDisplay() const {
-  return u"";
-}
-
-GURL RealboxHandler::GetURL() const {
-  return GURL();
-}
-
-security_state::SecurityLevel RealboxHandler::GetSecurityLevel() const {
-  return security_state::SecurityLevel::NONE;
-}
-
-net::CertStatus RealboxHandler::GetCertStatus() const {
-  return 0;
-}
-
-metrics::OmniboxEventProto::PageClassification
-RealboxHandler::GetPageClassification(OmniboxFocusSource focus_source,
-                                      bool is_prefetch) {
-  return metrics::OmniboxEventProto::NTP_REALBOX;
-}
-
-const gfx::VectorIcon& RealboxHandler::GetVectorIcon() const {
-  return vector_icon_;
-}
-
-std::u16string RealboxHandler::GetSecureDisplayText() const {
-  return u"";
-}
-
-std::u16string RealboxHandler::GetSecureAccessibilityText() const {
-  return u"";
-}
-
-bool RealboxHandler::ShouldDisplayURL() const {
-  return false;
-}
-
-bool RealboxHandler::IsOfflinePage() const {
-  return false;
-}
-
-bool RealboxHandler::ShouldPreventElision() const {
-  return false;
-}
-
-bool RealboxHandler::ShouldUseUpdatedConnectionSecurityIndicators() const {
-  return false;
 }
 
 OmniboxEditModel* RealboxHandler::edit_model() const {

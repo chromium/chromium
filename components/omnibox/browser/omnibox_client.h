@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
+#include "components/security_state/core/security_state.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -23,7 +24,6 @@
 
 class AutocompleteResult;
 class GURL;
-class LocationBarModel;
 class SessionID;
 class SkBitmap;
 class TemplateURL;
@@ -65,7 +65,9 @@ class OmniboxClient {
   // startup or shutdown, the omnibox may exist but have no attached page.
   virtual bool CurrentPageExists() const;
 
-  // Returns the URL of the current page.
+  // Returns the virtual URL currently being displayed in the URL bar, if there
+  // is one. This URL might be a pending navigation that hasn't committed yet,
+  // so it is not guaranteed to match the current page in this WebContents.
   virtual const GURL& GetURL() const;
 
   // Returns the title of the current page.
@@ -129,6 +131,41 @@ class OmniboxClient {
 
   // Returns the given |icon| with the correct size.
   virtual gfx::Image GetSizedIcon(const gfx::Image& icon) const;
+
+  // Returns the formatted full URL for the toolbar. The formatting includes:
+  //   - Some characters may be unescaped.
+  //   - The scheme and/or trailing slash may be dropped.
+  // This method specifically keeps the URL suitable for editing by not
+  // applying any elisions that change the meaning of the URL.
+  virtual std::u16string GetFormattedFullURL() const = 0;
+
+  // Returns a simplified URL for display (but not editing) on the toolbar.
+  // This formatting is generally a superset of GetFormattedFullURL, and may
+  // include some destructive elisions that change the meaning of the URL.
+  // The returned string is not suitable for editing, and is for display only.
+  virtual std::u16string GetURLForDisplay() const = 0;
+
+  // Returns the URL of the current navigation entry.
+  virtual GURL GetNavigationEntryURL() const = 0;
+
+  // Classify the current page being viewed as, for example, the new tab
+  // page or a normal web page.  Used for logging omnibox events for
+  // UMA opted-in users.  Examines the user's profile to determine if the
+  // current page is the user's home page.
+  virtual metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      OmniboxFocusSource focus_source,
+      bool is_prefetch) = 0;
+
+  // Returns the security level that the toolbar should display.
+  virtual security_state::SecurityLevel GetSecurityLevel() const = 0;
+
+  // Returns the cert status of the current navigation entry.
+  virtual net::CertStatus GetCertStatus() const = 0;
+
+  // Returns the id of the icon to show to the left of the address, based on the
+  // current URL.  When search term replacement is active, this returns a search
+  // icon.
+  virtual const gfx::VectorIcon& GetVectorIcon() const = 0;
 
   // Checks whether |template_url| is an extension keyword; if so, asks the
   // ExtensionOmniboxEventRouter to process |match| for it and returns true.
@@ -221,8 +258,6 @@ class OmniboxClient {
 
   // Called when the omnibox popup is shown or hidden.
   virtual void OnPopupVisibilityChanged() {}
-
-  virtual LocationBarModel* GetLocationBarModel() = 0;
 
   virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };

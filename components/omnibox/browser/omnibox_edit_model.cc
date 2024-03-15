@@ -39,7 +39,6 @@
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
-#include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
@@ -289,8 +288,8 @@ void OmniboxEditModel::set_popup_view(OmniboxPopupView* popup_view) {
 
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModel::GetPageClassification() const {
-  return controller_->client()->GetLocationBarModel()->GetPageClassification(
-      focus_source_);
+  return controller_->client()->GetPageClassification(focus_source_,
+                                                      /*is_prefetch=*/false);
 }
 
 OmniboxEditModel::State OmniboxEditModel::GetStateForTabSwitch() const {
@@ -391,20 +390,15 @@ AutocompleteMatch OmniboxEditModel::CurrentMatch(
 
 bool OmniboxEditModel::ResetDisplayTexts() {
   const std::u16string old_display_text = GetPermanentDisplayText();
-
-  LocationBarModel* location_bar_model =
-      controller_->client()->GetLocationBarModel();
-  url_for_editing_ = location_bar_model->GetFormattedFullURL();
-
+  url_for_editing_ = controller_->client()->GetFormattedFullURL();
 #if BUILDFLAG(IS_IOS)
   // iOS is unusual in that it uses a separate LocationView to show the
   // LocationBarModel's display-only URL. The actual OmniboxViewIOS widget is
   // hidden in the defocused state, and always contains the URL for editing.
   display_text_ = url_for_editing_;
 #else
-  display_text_ = location_bar_model->GetURLForDisplay();
+  display_text_ = controller_->client()->GetURLForDisplay();
 #endif
-
   // When there's new permanent text, and the user isn't interacting with the
   // omnibox, we want to revert the edit to show the new text.  We could simply
   // define "interacting" as "the omnibox has focus", but we still allow updates
@@ -440,8 +434,7 @@ bool OmniboxEditModel::Unelide() {
     return false;
 
   // No need to unelide if we are already displaying the full URL.
-  if (GetText() ==
-      controller_->client()->GetLocationBarModel()->GetFormattedFullURL()) {
+  if (GetText() == controller_->client()->GetFormattedFullURL()) {
     return false;
   }
 
@@ -507,7 +500,7 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
   // contents as a hyperlink to the current page.
   if (!user_input_in_progress_ &&
       (*text == display_text_ || *text == url_for_editing_)) {
-    *url_from_text = controller_->client()->GetLocationBarModel()->GetURL();
+    *url_from_text = controller_->client()->GetNavigationEntryURL();
     *write_url = true;
 
     // Don't let users copy Reader Mode page URLs.
@@ -540,8 +533,7 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
   *url_from_text = match_from_text.destination_url;
 
   // Get the current page GURL (or the GURL of the currently selected match).
-  GURL current_page_url =
-      controller_->client()->GetLocationBarModel()->GetURL();
+  GURL current_page_url = controller_->client()->GetNavigationEntryURL();
   if (PopupIsOpen()) {
     AutocompleteMatch current_match = CurrentMatch(nullptr);
     if (!AutocompleteMatch::IsSearchType(current_match.type) &&
@@ -1673,10 +1665,6 @@ void OmniboxEditModel::RevertTemporaryTextAndPopup() {
   }
 }
 
-bool OmniboxEditModel::ShouldPreventElision() const {
-  return controller_->client()->GetLocationBarModel()->ShouldPreventElision();
-}
-
 bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
   auto* bookmark_model = controller_->client()->GetBookmarkModel();
   return bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
@@ -2251,7 +2239,7 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
   if (ui::PageTransitionCoreTypeIs(match.transition,
                                    ui::PAGE_TRANSITION_TYPED) &&
       (match.destination_url ==
-       controller_->client()->GetLocationBarModel()->GetURL())) {
+       controller_->client()->GetNavigationEntryURL())) {
     // When the user hit enter on the existing permanent URL, treat it like a
     // reload for scoring purposes.  We could detect this by just checking
     // user_input_in_progress_, but it seems better to treat "edits" that end

@@ -15,6 +15,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "components/omnibox/browser/location_bar_model.h"
 #import "components/omnibox/browser/omnibox_log.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -133,6 +134,37 @@ gfx::Image ChromeOmniboxClientIOS::GetIconIfExtensionMatch(
     const AutocompleteMatch& match) const {
   // Extensions are not supported on iOS.
   return gfx::Image();
+}
+
+std::u16string ChromeOmniboxClientIOS::GetFormattedFullURL() const {
+  return location_bar_->GetLocationBarModel()->GetFormattedFullURL();
+}
+
+std::u16string ChromeOmniboxClientIOS::GetURLForDisplay() const {
+  return location_bar_->GetLocationBarModel()->GetURLForDisplay();
+}
+
+GURL ChromeOmniboxClientIOS::GetNavigationEntryURL() const {
+  return location_bar_->GetLocationBarModel()->GetURL();
+}
+
+metrics::OmniboxEventProto::PageClassification
+ChromeOmniboxClientIOS::GetPageClassification(OmniboxFocusSource focus_source,
+                                              bool is_prefetch) {
+  return location_bar_->GetLocationBarModel()->GetPageClassification(
+      focus_source, is_prefetch);
+}
+
+security_state::SecurityLevel ChromeOmniboxClientIOS::GetSecurityLevel() const {
+  return location_bar_->GetLocationBarModel()->GetSecurityLevel();
+}
+
+net::CertStatus ChromeOmniboxClientIOS::GetCertStatus() const {
+  return location_bar_->GetLocationBarModel()->GetCertStatus();
+}
+
+const gfx::VectorIcon& ChromeOmniboxClientIOS::GetVectorIcon() const {
+  return location_bar_->GetLocationBarModel()->GetVectorIcon();
 }
 
 bool ChromeOmniboxClientIOS::ProcessExtensionKeyword(
@@ -263,10 +295,6 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
   location_bar_->OnNavigate(destination_url, post_content, disposition,
                             transition, destination_url_entered_without_scheme,
                             match);
-}
-
-LocationBarModel* ChromeOmniboxClientIOS::GetLocationBarModel() {
-  return location_bar_->GetLocationBarModel();
 }
 
 base::WeakPtr<OmniboxClient> ChromeOmniboxClientIOS::AsWeakPtr() {

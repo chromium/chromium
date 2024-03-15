@@ -9,7 +9,6 @@
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_controller.h"
-#import "components/omnibox/browser/test_location_bar_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
@@ -75,8 +74,6 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    EXPECT_CALL(*omnibox_client, GetLocationBarModel())
-        .WillRepeatedly(Return(&location_bar_model_));
 
     controller_ = std::make_unique<TestOmniboxController>(
         /*view=*/nullptr, std::move(omnibox_client));
@@ -95,7 +92,6 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
 
-  TestLocationBarModel location_bar_model_;
   std::unique_ptr<TestOmniboxController> controller_;
 
   ZeroSuggestPrefetchHelper* helper_;

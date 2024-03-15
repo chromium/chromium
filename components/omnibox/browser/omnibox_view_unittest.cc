@@ -20,7 +20,6 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
@@ -51,8 +50,6 @@ class OmniboxViewTest : public testing::Test {
       : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
-    EXPECT_CALL(*client(), GetLocationBarModel())
-        .WillRepeatedly(Return(&location_bar_model_));
     EXPECT_CALL(*client(), GetBookmarkModel())
         .WillRepeatedly(Return(bookmark_model_.get()));
 
@@ -74,7 +71,6 @@ class OmniboxViewTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  TestLocationBarModel location_bar_model_;
   raw_ptr<TestOmniboxClient, DanglingUntriaged> omnibox_client_;
   std::unique_ptr<TestOmniboxView> view_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;

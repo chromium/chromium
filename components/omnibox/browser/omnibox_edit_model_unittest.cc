@@ -94,8 +94,6 @@ class OmniboxEditModelTest : public testing::Test {
   OmniboxEditModelTest() {
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
     omnibox_client_ = omnibox_client.get();
-    EXPECT_CALL(*omnibox_client, GetLocationBarModel())
-        .WillRepeatedly(Return(&location_bar_model_));
 
     view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
     view_->controller()->SetEditModelForTesting(
@@ -104,7 +102,9 @@ class OmniboxEditModelTest : public testing::Test {
   }
 
   TestOmniboxView* view() { return view_.get(); }
-  TestLocationBarModel* location_bar_model() { return &location_bar_model_; }
+  TestLocationBarModel* location_bar_model() {
+    return omnibox_client_->location_bar_model();
+  }
   TestOmniboxEditModel* model() {
     return static_cast<TestOmniboxEditModel*>(view_->model());
   }
@@ -112,7 +112,6 @@ class OmniboxEditModelTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  TestLocationBarModel location_bar_model_;
   raw_ptr<TestOmniboxClient, DanglingUntriaged> omnibox_client_;
   std::unique_ptr<TestOmniboxView> view_;
 };
@@ -654,8 +653,6 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
  public:
   OmniboxEditModelPopupTest() {
     auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    EXPECT_CALL(*omnibox_client, GetLocationBarModel())
-        .WillRepeatedly(Return(&location_bar_model_));
     EXPECT_CALL(*omnibox_client, GetPrefs())
         .WillRepeatedly(Return(pref_service()));
 
@@ -686,7 +683,6 @@ class OmniboxEditModelPopupTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  TestLocationBarModel location_bar_model_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestOmniboxView> view_;
   TestOmniboxPopupView popup_view_;

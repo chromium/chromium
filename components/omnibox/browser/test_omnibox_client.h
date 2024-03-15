@@ -14,6 +14,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_log.h"
+#include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/sessions/core/session_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,6 +45,15 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
+  std::u16string GetFormattedFullURL() const override;
+  std::u16string GetURLForDisplay() const override;
+  GURL GetNavigationEntryURL() const override;
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      OmniboxFocusSource focus_source,
+      bool is_prefetch) override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
+  const gfx::VectorIcon& GetVectorIcon() const override;
   void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
 
   MOCK_METHOD(gfx::Image,
@@ -64,7 +74,6 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
                const AutocompleteMatch& match,
                const AutocompleteMatch& alternative_nav_match,
                IDNA2008DeviationCharacter deviation_char_in_hostname));
-  MOCK_METHOD(LocationBarModel*, GetLocationBarModel, ());
   MOCK_METHOD(bookmarks::CoreBookmarkModel*, GetBookmarkModel, ());
   MOCK_METHOD(PrefService*, GetPrefs, ());
 
@@ -74,8 +83,11 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
     return last_log_disposition_;
   }
 
+  TestLocationBarModel* location_bar_model() { return &location_bar_model_; }
+
  private:
   SessionID session_id_;
+  TestLocationBarModel location_bar_model_;
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   TestSchemeClassifier scheme_classifier_;
   AutocompleteClassifier autocomplete_classifier_;

@@ -112,6 +112,36 @@ gfx::Image TestOmniboxClient::GetSizedIcon(
   return gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
 }
 
+std::u16string TestOmniboxClient::GetFormattedFullURL() const {
+  return location_bar_model_.GetFormattedFullURL();
+}
+
+std::u16string TestOmniboxClient::GetURLForDisplay() const {
+  return location_bar_model_.GetURLForDisplay();
+}
+
+GURL TestOmniboxClient::GetNavigationEntryURL() const {
+  return location_bar_model_.GetURL();
+}
+
+metrics::OmniboxEventProto::PageClassification
+TestOmniboxClient::GetPageClassification(OmniboxFocusSource focus_source,
+                                         bool is_prefetch) {
+  return location_bar_model_.GetPageClassification(focus_source, is_prefetch);
+}
+
+security_state::SecurityLevel TestOmniboxClient::GetSecurityLevel() const {
+  return location_bar_model_.GetSecurityLevel();
+}
+
+net::CertStatus TestOmniboxClient::GetCertStatus() const {
+  return location_bar_model_.GetCertStatus();
+}
+
+const gfx::VectorIcon& TestOmniboxClient::GetVectorIcon() const {
+  return location_bar_model_.GetVectorIcon();
+}
+
 void TestOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   last_log_disposition_ = log->disposition;
 }

@@ -58,6 +58,15 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
   gfx::Image GetIconIfExtensionMatch(
       const AutocompleteMatch& match) const override;
+  std::u16string GetFormattedFullURL() const override;
+  std::u16string GetURLForDisplay() const override;
+  GURL GetNavigationEntryURL() const override;
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      OmniboxFocusSource focus_source,
+      bool is_prefetch) override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
+  const gfx::VectorIcon& GetVectorIcon() const override;
   bool ProcessExtensionKeyword(const std::u16string& text,
                                const TemplateURL* template_url,
                                const AutocompleteMatch& match,
@@ -86,7 +95,6 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname) override;
-  LocationBarModel* GetLocationBarModel() override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
   // web::WebStateObserver.

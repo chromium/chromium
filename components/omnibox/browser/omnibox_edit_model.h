@@ -368,9 +368,6 @@ class OmniboxEditModel {
   // Also resets the popup to the initial state.
   void RevertTemporaryTextAndPopup();
 
-  // Returns whether to prevent elision of the display URL.
-  bool ShouldPreventElision() const;
-
   // Returns true if the destination URL of the match is bookmarked.
   bool IsStarredMatch(const AutocompleteMatch& match) const;
 

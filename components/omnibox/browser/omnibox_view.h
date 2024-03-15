@@ -29,7 +29,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
 
-class LocationBarModel;
 class OmniboxController;
 class OmniboxEditModel;
 class OmniboxViewMacTest;
@@ -274,8 +273,6 @@ class OmniboxView {
   };
 
   explicit OmniboxView(std::unique_ptr<OmniboxClient> client);
-
-  const LocationBarModel* GetLocationBarModel() const;
 
   // Fills |state| with the current text state.
   void GetState(State* state);

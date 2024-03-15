@@ -48,7 +48,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
@@ -596,14 +595,14 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
   // in about:blank URLs. Or in blob: or filesystem: URLs, which have an inner
   // origin, the URL is likely too syntax-y to be able to meaningfully draw
   // attention to any part of it.
-  auto* const location_bar_model = GetLocationBarModel();
-  if (!location_bar_model->GetURL().SchemeIsHTTPOrHTTPS())
+  if (!controller()->client()->GetNavigationEntryURL().SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
-  if (net::IsCertStatusError(location_bar_model->GetCertStatus())) {
+  if (net::IsCertStatusError(controller()->client()->GetCertStatus())) {
     if (location_bar_view_) {
       ApplyColor(location_bar_view_->GetSecurityChipColor(
-                     GetLocationBarModel()->GetSecurityLevel()),
+                     controller()->client()->GetSecurityLevel()),
                  range);
     }
     ApplyStyle(gfx::TEXT_STYLE_STRIKE, true, range);
@@ -1129,7 +1128,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
       if (IsSelectAll()) {
         SelectWordAt(event.location());
         std::u16string shown_url = GetText();
-        std::u16string full_url = GetLocationBarModel()->GetFormattedFullURL();
+        std::u16string full_url = controller()->client()->GetFormattedFullURL();
         size_t offset = full_url.find(shown_url);
         if (offset != std::u16string::npos) {
           next_double_click_selection_len_ = GetSelectedText().length();

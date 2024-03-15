@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
@@ -45,8 +44,7 @@ class OmniboxWebUIPopupChangeObserver : public base::CheckedObserver {
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
 class RealboxHandler : public SearchboxHandler,
-                       public AutocompleteController::Observer,
-                       public LocationBarModel {
+                       public AutocompleteController::Observer {
  public:
   enum class FocusState {
     // kNormal means the row is focused, and Enter key navigates to the match.
@@ -124,23 +122,6 @@ class RealboxHandler : public SearchboxHandler,
   void UpdateSelection(OmniboxPopupSelection old_selection,
                        OmniboxPopupSelection selection);
 
-  // LocationBarModel:
-  std::u16string GetFormattedFullURL() const override;
-  std::u16string GetURLForDisplay() const override;
-  GURL GetURL() const override;
-  security_state::SecurityLevel GetSecurityLevel() const override;
-  net::CertStatus GetCertStatus() const override;
-  metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source,
-      bool is_prefetch = false) override;
-  const gfx::VectorIcon& GetVectorIcon() const override;
-  std::u16string GetSecureDisplayText() const override;
-  std::u16string GetSecureAccessibilityText() const override;
-  bool ShouldDisplayURL() const override;
-  bool IsOfflinePage() const override;
-  bool ShouldPreventElision() const override;
-  bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
-
  private:
   OmniboxEditModel* edit_model() const;
   AutocompleteController* autocomplete_controller() const;
@@ -163,9 +144,6 @@ class RealboxHandler : public SearchboxHandler,
 
   // Size of the WebUI popup element, as reported by ResizeObserver.
   gfx::Size webui_size_;
-
-  // This is unused, it's just needed for LocationBarModel implementation.
-  gfx::VectorIcon vector_icon_{nullptr, 0u, ""};
 
   base::WeakPtrFactory<RealboxHandler> weak_ptr_factory_{this};
 };

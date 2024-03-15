@@ -58,6 +58,15 @@ class ChromeOmniboxClient final : public OmniboxClient {
   gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
                           SkColor vector_icon_color) const override;
   gfx::Image GetSizedIcon(const gfx::Image& icon) const override;
+  std::u16string GetFormattedFullURL() const override;
+  std::u16string GetURLForDisplay() const override;
+  GURL GetNavigationEntryURL() const override;
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      OmniboxFocusSource focus_source,
+      bool is_prefetch) override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
+  net::CertStatus GetCertStatus() const override;
+  const gfx::VectorIcon& GetVectorIcon() const override;
   bool ProcessExtensionKeyword(const std::u16string& text,
                                const TemplateURL* template_url,
                                const AutocompleteMatch& match,
@@ -108,7 +117,6 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void OnInputInProgress(bool in_progress) override;
   void OnPopupVisibilityChanged() override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
-  LocationBarModel* GetLocationBarModel() override;
 
   // Update shortcuts when a navigation succeeds.
   static void OnSuccessfulNavigation(Profile* profile,

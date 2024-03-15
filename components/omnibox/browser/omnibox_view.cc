@@ -201,7 +201,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
 
   if (model()->ShouldShowCurrentPageIcon()) {
     return ui::ImageModel::FromVectorIcon(
-        GetLocationBarModel()->GetVectorIcon(), color_current_page_icon,
+        controller_->client()->GetVectorIcon(), color_current_page_icon,
         dip_size);
   }
 
@@ -369,10 +369,6 @@ OmniboxView::OmniboxView(std::unique_ptr<OmniboxClient> client)
     : controller_(std::make_unique<OmniboxController>(
           /*view=*/this,
           std::move(client))) {}
-
-const LocationBarModel* OmniboxView::GetLocationBarModel() const {
-  return controller_->client()->GetLocationBarModel();
-}
 
 OmniboxEditModel* OmniboxView::model() {
   return const_cast<OmniboxEditModel*>(
