@@ -11,6 +11,16 @@
 #include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
 
 namespace kcer {
+
+void AddAttribute(chaps::AttributeList& attr_list,
+                  chromeos::PKCS11_CK_ATTRIBUTE_TYPE type,
+                  base::span<const uint8_t> data) {
+  chaps::Attribute* new_attr = attr_list.add_attributes();
+  new_attr->set_type(type);
+  new_attr->set_value(std::string(data.begin(), data.end()));
+  new_attr->set_length(data.size());
+}
+
 namespace {
 
 using AttributeId = HighLevelChapsClient::AttributeId;

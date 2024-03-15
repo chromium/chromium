@@ -7,13 +7,16 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
 #include "base/check_is_test.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/kcer/nssdb_migration/kcer_rollback_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -63,6 +66,9 @@ const user_manager::User* GetUserByContext(content::BrowserContext* context) {
   return ash::ProfileHelper::Get()->GetUserByProfile(profile);
 }
 
+KcerFactoryAsh::KcerFactoryAsh() = default;
+KcerFactoryAsh::~KcerFactoryAsh() = default;
+
 // static
 void KcerFactoryAsh::EnsureFactoryBuilt() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -81,6 +87,11 @@ void KcerFactoryAsh::EnsureFactoryBuilt() {
 
 void KcerFactoryAsh::Initialize() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (ash::Shell::HasInstance() && ash::Shell::Get()->session_controller()) {
+    ash::Shell::Get()->session_controller()->AddObserver(this);
+  } else {
+    CHECK_IS_TEST();
+  }
   if (UseKcerWithoutNss()) {
     StartInitializingDeviceKcerWithoutNss();
   } else {
@@ -328,6 +339,22 @@ bool KcerFactoryAsh::EnsureHighLevelChapsClientInitialized() {
       std::make_unique<HighLevelChapsClientImpl>(session_chaps_client_.get());
 
   return IsHighLevelChapsClientInitialized();
+}
+
+void KcerFactoryAsh::OnActiveUserPrefServiceChanged(PrefService* pref_service) {
+  if (rollback_helper_) {
+    rollback_helper_.reset();
+  }
+  if (!pref_service) {
+    return;
+  }
+  EnsureHighLevelChapsClientInitialized();
+  if (internal::KcerRollbackHelper::IsChapsRollbackRequired(pref_service)) {
+    rollback_helper_ = std::make_unique<internal::KcerRollbackHelper>(
+        high_level_chaps_client_.get(), pref_service);
+
+    return rollback_helper_->PerformRollback();
+  }
 }
 
 }  // namespace kcer

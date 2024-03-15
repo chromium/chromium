@@ -13,21 +13,6 @@
 
 namespace kcer::internal {
 
-// Adds an attribute with the given `type` to `attr_list` and sets the value to
-// `data`.
-void AddAttribute(chaps::AttributeList& attr_list,
-                  chromeos::PKCS11_CK_ATTRIBUTE_TYPE type,
-                  base::span<const uint8_t> data);
-
-// Reinterprets the `value` as a sequence of bytes and returns it as a span.
-// `T` must be a simple type, i.e. no internal pointers, etc.
-// `value` must outlive the returned span.
-template <typename T>
-base::span<const uint8_t> MakeSpan(T* value) {
-  static_assert(std::is_integral_v<T>);
-  return base::as_bytes(base::span<T>(value, /*count=*/1u));
-}
-
 // Calculate PKCS#11 id (see CKA_ID) from the bytes of the public key. Designed
 // to be backwards compatible with ids produced by NSS.
 Pkcs11Id MakePkcs11Id(base::span<const uint8_t> public_key_data);

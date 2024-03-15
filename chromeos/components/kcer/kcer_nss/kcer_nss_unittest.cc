@@ -39,7 +39,7 @@ using ObjectHandle = kcer::SessionChapsClient::ObjectHandle;
 using SlotId = kcer::SessionChapsClient::SlotId;
 using base::test::RunOnceCallback;
 using base::test::RunOnceCallbackRepeatedly;
-using kcer::internal::MakeSpan;
+using kcer::MakeSpan;
 using pkcs11_custom_attributes::kCkaChromeOsMigratedFromNss;
 using testing::_;
 

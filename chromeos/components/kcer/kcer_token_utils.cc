@@ -29,15 +29,6 @@ base::OnceCallback<void(uint32_t)> Bind(
 
 //==============================================================================
 
-void AddAttribute(chaps::AttributeList& attr_list,
-                  chromeos::PKCS11_CK_ATTRIBUTE_TYPE type,
-                  base::span<const uint8_t> data) {
-  chaps::Attribute* new_attr = attr_list.add_attributes();
-  new_attr->set_type(type);
-  new_attr->set_value(std::string(data.begin(), data.end()));
-  new_attr->set_length(data.size());
-}
-
 PublicKeySpki MakeRsaSpki(const base::span<const uint8_t>& modulus,
                           const base::span<const uint8_t>& exponent) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);

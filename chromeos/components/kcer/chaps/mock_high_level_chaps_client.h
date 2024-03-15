@@ -11,7 +11,7 @@
 
 namespace kcer {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS_CHAPS) MockHighLevelChapsClient
+class COMPONENT_EXPORT(KCER) MockHighLevelChapsClient
     : public HighLevelChapsClient {
  public:
   MockHighLevelChapsClient();

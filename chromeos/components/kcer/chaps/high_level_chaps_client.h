@@ -20,6 +20,23 @@
 
 namespace kcer {
 
+// Adds an attribute with the given `type` to `attr_list` and sets the value to
+// `data`.
+COMPONENT_EXPORT(KCER)
+void AddAttribute(chaps::AttributeList& attr_list,
+                  chromeos::PKCS11_CK_ATTRIBUTE_TYPE type,
+                  base::span<const uint8_t> data);
+
+// Reinterprets the `value` as a sequence of bytes and returns it as a span.
+// `T` must be a simple type, i.e. no internal pointers, etc.
+// `value` must outlive the returned span.
+template <typename T>
+COMPONENT_EXPORT(KCER)
+base::span<const uint8_t> MakeSpan(T* value) {
+  static_assert(std::is_integral_v<T>);
+  return base::as_bytes(base::span<T>(value, /*count=*/1u));
+}
+
 // The main class to communicate with Chaps. Further simplifies the D-Bus
 // protocol (on top of SessionChapsClient):
 // * Uses more friendly types for arguments.

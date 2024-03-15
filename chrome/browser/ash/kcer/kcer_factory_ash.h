@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_KCER_KCER_FACTORY_ASH_H_
 #define CHROME_BROWSER_ASH_KCER_KCER_FACTORY_ASH_H_
 
+#include "ash/public/cpp/session/session_observer.h"
+#include "chrome/browser/ash/kcer/nssdb_migration/kcer_rollback_helper.h"
 #include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
 #include "components/account_id/account_id.h"
@@ -15,12 +17,12 @@ class PrefRegistrySyncable;
 
 namespace kcer {
 
-class KcerFactoryAsh final : public KcerFactory {
+class KcerFactoryAsh final : public KcerFactory, ash::SessionObserver {
  public:
   static void EnsureFactoryBuilt();
 
-  KcerFactoryAsh() = default;
-  ~KcerFactoryAsh() override = default;
+  KcerFactoryAsh();
+  ~KcerFactoryAsh() override;
 
  private:
   void Initialize();
@@ -60,6 +62,10 @@ class KcerFactoryAsh final : public KcerFactory {
   void InitializeDeviceKcerWithoutNss(
       std::unique_ptr<ash::TPMTokenInfoGetter> scoped_device_token_info_getter,
       std::optional<user_data_auth::TpmTokenInfo> device_token_info);
+  // Implements users preference service observer.
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
+
+  std::unique_ptr<internal::KcerRollbackHelper> rollback_helper_;
 };
 
 }  // namespace kcer
