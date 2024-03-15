@@ -627,7 +627,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kMakeCredential,
       req_state_->make_credential_options->resident_key,
-      req_state_->ctap_make_credential_request->user_verification,
+      req_state_->make_credential_options->user_verification,
       base::span<const device::CableDiscoveryData>(),
       GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
           GetBrowserContext()),
