@@ -56,7 +56,7 @@ namespace blink {
 
 namespace {
 
-// This FIFO size of 16,384 was chosend based on the UMA data. It's the nearest
+// This FIFO size of 16,384 was chosen based on the UMA data. It's the nearest
 // multiple of 128 to 16,354 sample-frames, which represents 100% of the
 // histogram from "WebAudio.AudioDestination.HardwareBufferSize".
 // Although a buffer this big is atypical, some Android phones with a Bluetooth
@@ -210,7 +210,8 @@ int AudioDestination::Render(base::TimeDelta delay,
 }
 
 void AudioDestination::OnRenderError() {
-  // TODO(crbug.com/1406088)
+  DCHECK(IsMainThread());
+  callback_->OnRenderError();
 }
 
 void AudioDestination::Start() {

@@ -255,6 +255,17 @@ void RealtimeAudioDestinationHandler::Render(
       context->GetDeferredTaskHandler().HasAutomaticPullNodes());
 }
 
+void RealtimeAudioDestinationHandler::OnRenderError() {
+  if (task_runner_->BelongsToCurrentThread()) {
+    RealtimeAudioDestinationHandler::NotifyAudioContext();
+  } else {
+    PostCrossThreadTask(
+        *task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &RealtimeAudioDestinationHandler::NotifyAudioContext, AsWeakPtr()));
+  }
+}
+
 // A flag for using FakeAudioWorker when an AudioContext with "playback"
 // latency outputs silence.
 BASE_FEATURE(kUseFakeAudioWorkerForPlaybackLatency,
@@ -296,6 +307,11 @@ void RealtimeAudioDestinationHandler::SetDetectSilence(bool detect_silence) {
   DCHECK(IsMainThread());
 
   platform_destination_->SetDetectSilence(detect_silence);
+}
+
+void RealtimeAudioDestinationHandler::NotifyAudioContext() {
+  DCHECK(IsMainThread());
+  Context()->OnRenderError();
 }
 
 uint32_t RealtimeAudioDestinationHandler::GetCallbackBufferSize() const {

@@ -134,6 +134,8 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // webaudio.github.io/web-audio-api/#validating-sink-identifier
   bool IsValidSinkDescriptor(const WebAudioSinkDescriptor&);
 
+  void OnRenderError();
+
  protected:
   void Uninitialize() final;
 

@@ -64,6 +64,10 @@ class RealtimeAudioDestinationHandler final
               const AudioIOPosition& output_position,
               const AudioCallbackMetric& metric) final;
 
+  // For `AudioIOCallback`. This is invoked by the `AudioDestination` to notify
+  // when an error has occurred in the lower layer in the stack.
+  void OnRenderError() final;
+
   // Returns a hardware callback buffer size from audio infra.
   uint32_t GetCallbackBufferSize() const;
 
@@ -107,6 +111,8 @@ class RealtimeAudioDestinationHandler final
   void DisablePullingAudioGraph() {
     allow_pulling_audio_graph_.store(false, std::memory_order_release);
   }
+
+  void NotifyAudioContext();
 
   // Stores a sink descriptor for sink transition.
   WebAudioSinkDescriptor sink_descriptor_;

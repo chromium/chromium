@@ -55,6 +55,10 @@ class AudioIOCallback {
                       const AudioIOPosition& output_position,
                       const AudioCallbackMetric& metric) = 0;
 
+  // Called when an error occurs in the underlying audio stack.
+  // (e.g. bad hardware parameters, or an error while rendering)
+  virtual void OnRenderError() = 0;
+
   virtual ~AudioIOCallback() = default;
 };
 

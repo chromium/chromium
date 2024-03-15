@@ -258,7 +258,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
   SendLogMessage(GetAudioContextLogString(latency_hint, sample_rate));
 
   // TODO(http://crbug.com/1410553) update the echo cancellation reference
-  // if the client explicitly specified the sink and there are no issuess
+  // if the client explicitly specified the sink and there are no issues
   // accessing it.
   destination_node_ = RealtimeAudioDestinationNode::Create(
       this, sink_descriptor_, latency_hint, sample_rate);
@@ -1186,6 +1186,17 @@ bool AudioContext::IsValidSinkDescriptor(
   return sink_descriptor.Type() ==
              WebAudioSinkDescriptor::AudioSinkType::kSilent ||
          output_device_ids_.Contains(sink_descriptor.SinkId());
+}
+
+void AudioContext::OnRenderError() {
+  DCHECK(IsMainThread());
+  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
+  if (window && window->GetFrame()) {
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "The AudioContext encountered a render error."));
+  }
 }
 
 void AudioContext::ResumeOnPrerenderActivation() {

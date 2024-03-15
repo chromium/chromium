@@ -191,10 +191,11 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
   // On systems without audio hardware the returned parameters may be invalid.
   // In which case just choose whatever we want for the fake device.
   if (!device_params.IsValid()) {
-    // TODO(https://crbug.com/1522759): Bubble up this sink failure to the JS
-    // API surface.
     device_params.Reset(media::AudioParameters::AUDIO_FAKE,
                         media::ChannelLayoutConfig::Stereo(), 48000, 480);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&RendererWebAudioDeviceImpl::OnRenderError,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
   SendLogMessage(
       base::StringPrintf("%s => (hardware_params=[%s])", __func__,

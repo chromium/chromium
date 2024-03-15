@@ -154,6 +154,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   std::unique_ptr<media::SpeechRecognitionClient> speech_recognition_client_;
 
+  base::WeakPtrFactory<RendererWebAudioDeviceImpl> weak_ptr_factory_{this};
+
   FRIEND_TEST_ALL_PREFIXES(RendererWebAudioDeviceImplTest,
                            CreateSinkAndGetDeviceStatus_HealthyDevice);
   FRIEND_TEST_ALL_PREFIXES(RendererWebAudioDeviceImplTest,
