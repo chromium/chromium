@@ -81,7 +81,7 @@ TranslatePolicyValidationResultSeverity(
 std::string GetRegisterBrowserRequestData() {
   enterprise_management::DeviceManagementRequest dm_request;
 
-  ::enterprise_management::RegisterBrowserRequest* request =
+  enterprise_management::RegisterBrowserRequest* request =
       dm_request.mutable_register_browser_request();
   request->set_machine_name(policy::GetMachineName());
   request->set_os_platform(policy::GetOSPlatform());
@@ -95,9 +95,13 @@ std::string GetRegisterBrowserRequestData() {
 std::string GetPolicyFetchRequestData(const std::string& policy_type,
                                       const CachedPolicyInfo& policy_info) {
   enterprise_management::DeviceManagementRequest dm_request;
+  enterprise_management::DevicePolicyRequest* device_policy_request =
+      dm_request.mutable_policy_request();
+  device_policy_request->set_reason(
+      enterprise_management::DevicePolicyRequest::SCHEDULED);
 
   enterprise_management::PolicyFetchRequest* policy_fetch_request =
-      dm_request.mutable_policy_request()->add_requests();
+      device_policy_request->add_requests();
   policy_fetch_request->set_policy_type(policy_type);
   policy_fetch_request->set_signature_type(
       enterprise_management::PolicyFetchRequest::SHA256_RSA);

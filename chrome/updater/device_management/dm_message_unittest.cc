@@ -41,8 +41,18 @@ TEST(DMMessage, GetPolicyFetchRequestData) {
 
   CachedPolicyInfo policy_info;
   ASSERT_TRUE(policy_info.Populate(policy_response_string));
-  std::string request_data(GetPolicyFetchRequestData(policy_type, policy_info));
+  const std::string request_data =
+      GetPolicyFetchRequestData(policy_type, policy_info);
   EXPECT_FALSE(request_data.empty());
+
+  enterprise_management::DeviceManagementRequest dm_request;
+  ASSERT_TRUE(dm_request.ParseFromString(request_data));
+  ASSERT_TRUE(dm_request.has_policy_request());
+  const enterprise_management::DevicePolicyRequest& device_policy_request =
+      dm_request.policy_request();
+  ASSERT_TRUE(device_policy_request.has_reason());
+  EXPECT_EQ(device_policy_request.reason(),
+            enterprise_management::DevicePolicyRequest::SCHEDULED);
 }
 
 TEST(DMMessage, ParseDeviceRegistrationResponse) {
