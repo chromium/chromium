@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/default_promo/default_browser_instructions_view.h"
 
+#import "base/i18n/rtl.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -17,8 +18,12 @@
 
 namespace {
 // Video animation asset names.
-NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kDefaultBrowserAnimation = @"default_browser_animation";
+NSString* const kDefaultBrowserAnimationRtl = @"default_browser_animation_rtl";
+NSString* const kDefaultBrowserAnimationDarkmode =
+    @"default_browser_animation_darkmode";
+NSString* const kDefaultBrowserAnimationRtlDarkmode =
+    @"default_browser_animation_rtl_darkmode";
 
 // Keys in the lottie assets.
 NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
@@ -50,13 +55,16 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
 @implementation DefaultBrowserInstructionsView
 
-- (instancetype)init:(BOOL)hasDissmissButton
-            hasSteps:(BOOL)hasSteps
-       actionHandler:(id<ConfirmationAlertActionHandler>)actionHandler {
+- (instancetype)initWithDismissButton:(BOOL)hasDissmissButton
+                     hasRemindMeLater:(BOOL)hasRemindMeLater
+                             hasSteps:(BOOL)hasSteps
+                        actionHandler:
+                            (id<ConfirmationAlertActionHandler>)actionHandler {
   self = [super init];
   if (self) {
     [self addVideoSection];
     [self addInformationSection:hasDissmissButton
+               hasRemindMeLater:hasRemindMeLater
                        hasSteps:hasSteps
                   actionHandler:actionHandler];
     [self setBackgroundColor:[UIColor colorNamed:kGrey100Color]];
@@ -74,12 +82,24 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
 // Adds the top part of the view which contains the video animation.
 - (void)addVideoSection {
-  self.animationViewWrapper = [self createAnimation:kDefaultBrowserAnimation];
+  NSString* animationAssetName;
+  NSString* animationAssetNameDarkMode;
+
+  // TODO(crbug.com/1508131): Handle the case when the promo is displayed and
+  // the user switches between LTR and RLT.
+  if (base::i18n::IsRTL()) {
+    animationAssetName = kDefaultBrowserAnimationRtl;
+    animationAssetNameDarkMode = kDefaultBrowserAnimationRtlDarkmode;
+  } else {
+    animationAssetName = kDefaultBrowserAnimation;
+    animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
+  }
+
+  self.animationViewWrapper = [self createAnimation:animationAssetName];
   self.animationViewWrapper.animationView.accessibilityIdentifier =
       kDefaultBrowserInstructionsViewAnimationViewId;
-  self.animationViewWrapperDarkMode = [self
-      createAnimation:[kDefaultBrowserAnimation
-                          stringByAppendingString:kDarkModeAnimationSuffix]];
+  self.animationViewWrapperDarkMode =
+      [self createAnimation:animationAssetNameDarkMode];
   self.animationViewWrapperDarkMode.animationView.accessibilityIdentifier =
       kDefaultBrowserInstructionsViewDarkAnimationViewId;
 
@@ -156,6 +176,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
 // Adds the bottom section of the view which contains instructions and buttons.
 - (void)addInformationSection:(BOOL)hasDissmissButton
+             hasRemindMeLater:(BOOL)hasRemindMeLater
                      hasSteps:(BOOL)hasSteps
                 actionHandler:
                     (id<ConfirmationAlertActionHandler>)actionHandler {
@@ -205,6 +226,11 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
         IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SECONDARY_BUTTON_TEXT);
   }
 
+  if (hasRemindMeLater) {
+    alertScreen.tertiaryActionString = l10n_util::GetNSString(
+        IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TERTIARY_BUTTON_TEXT);
+  }
+
   [self addSubview:alertScreen.view];
 
   // Layout the alert view to take up bottom half of the view.
@@ -219,7 +245,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   self.alertScreen = alertScreen;
 }
 
-// Returns the center offset for video instructions and information sectionto
+// Returns the center offset for video instructions and information section to
 // align with.
 - (CGFloat)centerOffset {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {

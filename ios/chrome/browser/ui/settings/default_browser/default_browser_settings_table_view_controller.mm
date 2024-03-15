@@ -233,9 +233,10 @@ enum class ExternalActionDefaultBrowserPromoUsage {
 // Adds default browser video instructions view as a background view.
 - (void)addDefaultBrowserVideoInstructionsView {
   DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] init:NO
-                                          hasSteps:YES
-                                     actionHandler:self];
+      [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
+                                                   hasRemindMeLater:NO
+                                                           hasSteps:YES
+                                                      actionHandler:self];
 
   self.tableView.backgroundView = [[UIView alloc] init];
   [self.tableView.backgroundView

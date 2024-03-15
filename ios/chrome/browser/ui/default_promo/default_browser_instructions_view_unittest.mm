@@ -62,56 +62,84 @@ bool HasSecondaryActionButton(UIView* view) {
          nil;
 }
 
+bool HasTertiaryActionButton(UIView* view) {
+  return FindByID(view,
+                  kConfirmationAlertTertiaryActionAccessibilityIdentifier) !=
+         nil;
+}
 }  // namespace
 
 // Test view creation with subtitle.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSubtitleTest) {
   DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] init:NO
-                                          hasSteps:NO
-                                     actionHandler:nil];
+      [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
+                                                   hasRemindMeLater:NO
+                                                           hasSteps:NO
+                                                      actionHandler:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_TRUE(HasSubTitle(instructionsView));
   EXPECT_FALSE(HasInstructionSteps(instructionsView));
   EXPECT_TRUE(HasPrimaryActionButton(instructionsView));
   EXPECT_FALSE(HasSecondaryActionButton(instructionsView));
+  EXPECT_FALSE(HasTertiaryActionButton(instructionsView));
 }
 
 // Test view creation with instruction steps.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithStepsTest) {
   DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] init:NO
-                                          hasSteps:YES
-                                     actionHandler:nil];
+      [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
+                                                   hasRemindMeLater:NO
+                                                           hasSteps:YES
+                                                      actionHandler:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_FALSE(HasSubTitle(instructionsView));
   EXPECT_TRUE(HasInstructionSteps(instructionsView));
   EXPECT_TRUE(HasPrimaryActionButton(instructionsView));
   EXPECT_FALSE(HasSecondaryActionButton(instructionsView));
+  EXPECT_FALSE(HasTertiaryActionButton(instructionsView));
 }
 
 // Test view creation with secondary button.
 TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithSecondaryButtonTest) {
   DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] init:YES
-                                          hasSteps:NO
-                                     actionHandler:nil];
+      [[DefaultBrowserInstructionsView alloc] initWithDismissButton:YES
+                                                   hasRemindMeLater:NO
+                                                           hasSteps:NO
+                                                      actionHandler:nil];
   ASSERT_NE(instructionsView, nil);
   EXPECT_TRUE(HasTitle(instructionsView));
   EXPECT_TRUE(HasSubTitle(instructionsView));
   EXPECT_FALSE(HasInstructionSteps(instructionsView));
   EXPECT_TRUE(HasPrimaryActionButton(instructionsView));
   EXPECT_TRUE(HasSecondaryActionButton(instructionsView));
+  EXPECT_FALSE(HasTertiaryActionButton(instructionsView));
+}
+
+// Test view creation with tertiary button.
+TEST_F(DefaultBrowserInstructionsViewTest, CreateViewWithTertiaryButtonTest) {
+  DefaultBrowserInstructionsView* instructionsView =
+      [[DefaultBrowserInstructionsView alloc] initWithDismissButton:NO
+                                                   hasRemindMeLater:YES
+                                                           hasSteps:NO
+                                                      actionHandler:nil];
+  ASSERT_NE(instructionsView, nil);
+  EXPECT_TRUE(HasTitle(instructionsView));
+  EXPECT_TRUE(HasSubTitle(instructionsView));
+  EXPECT_FALSE(HasInstructionSteps(instructionsView));
+  EXPECT_TRUE(HasPrimaryActionButton(instructionsView));
+  EXPECT_FALSE(HasSecondaryActionButton(instructionsView));
+  EXPECT_TRUE(HasTertiaryActionButton(instructionsView));
 }
 
 // Test the animation view.
 TEST_F(DefaultBrowserInstructionsViewTest, AnimationViewTest) {
   DefaultBrowserInstructionsView* instructionsView =
-      [[DefaultBrowserInstructionsView alloc] init:YES
-                                          hasSteps:NO
-                                     actionHandler:nil];
+      [[DefaultBrowserInstructionsView alloc] initWithDismissButton:YES
+                                                   hasRemindMeLater:NO
+                                                           hasSteps:NO
+                                                      actionHandler:nil];
   ASSERT_NE(instructionsView, nil);
 
   UIView* animationView = GetAnimationSubview(instructionsView);

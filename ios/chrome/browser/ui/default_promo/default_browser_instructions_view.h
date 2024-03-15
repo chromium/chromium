@@ -21,9 +21,11 @@ extern NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId;
 @interface DefaultBrowserInstructionsView : UIView
 
 // Creates the view based on provided parameters.
-- (instancetype)init:(BOOL)hasDismissButton
-            hasSteps:(BOOL)hasSteps
-       actionHandler:(id<ConfirmationAlertActionHandler>)actionHandler;
+- (instancetype)initWithDismissButton:(BOOL)hasDismissButton
+                     hasRemindMeLater:(BOOL)hasRemindMeLater
+                             hasSteps:(BOOL)hasSteps
+                        actionHandler:
+                            (id<ConfirmationAlertActionHandler>)actionHandler;
 
 @end
 
