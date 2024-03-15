@@ -498,7 +498,8 @@ void GlanceablesTaskViewV2::UpdateContentsMargins(TaskTitleViewState state) {
 void GlanceablesTaskViewV2::CheckButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
-        GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork);
+        GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork,
+        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
     return;
   }
 
@@ -519,7 +520,8 @@ void GlanceablesTaskViewV2::CheckButtonPressed() {
 void GlanceablesTaskViewV2::TaskTitleButtonPressed() {
   if (!glanceables_util::IsNetworkConnected()) {
     show_error_message_callback_.Run(
-        GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork);
+        GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork,
+        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
     return;
   }
   RecordUserModifyingTask();

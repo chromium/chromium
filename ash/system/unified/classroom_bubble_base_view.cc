@@ -209,7 +209,11 @@ void ClassroomBubbleBaseView::OnGetAssignments(
       MaybeDismissErrorMessage();
     } else {
       ShowErrorMessage(
-          l10n_util::GetStringUTF16(IDS_GLANCEABLES_CLASSROOM_FETCH_ERROR));
+          l10n_util::GetStringUTF16(IDS_GLANCEABLES_CLASSROOM_FETCH_ERROR),
+          base::BindRepeating(
+              &ClassroomBubbleBaseView::MaybeDismissErrorMessage,
+              base::Unretained(this)),
+          GlanceablesErrorMessageView::ButtonActionType::kDismiss);
       error_message()->SetProperty(views::kViewIgnoredByLayoutKey, true);
     }
   }

@@ -533,6 +533,7 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterAdding) {
   EXPECT_EQ(task_items_container_view->children().size(), 2u);
   EXPECT_TRUE(GetErrorMessage());
   EXPECT_EQ(GetErrorMessage()->GetMessageForTest(), u"Couldn't edit task.");
+  EXPECT_EQ(GetErrorMessage()->GetButtonForTest()->GetText(), u"Dismiss");
 }
 
 TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
@@ -564,6 +565,7 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterEditing) {
   EXPECT_EQ(task_items_container_view->children().size(), 2u);
   EXPECT_TRUE(GetErrorMessage());
   EXPECT_EQ(GetErrorMessage()->GetMessageForTest(), u"Couldn't edit task.");
+  EXPECT_EQ(GetErrorMessage()->GetButtonForTest()->GetText(), u"Dismiss");
 
   // Revert the task title to the one before editing.
   title_label = views::AsViewClass<views::Label>(
@@ -586,6 +588,7 @@ TEST_F(GlanceablesTasksViewTest, HandlesErrorAfterChangingTaskList) {
   EXPECT_TRUE(GetErrorMessage());
   EXPECT_EQ(GetErrorMessage()->GetMessageForTest(),
             u"Couldn't load items. Try again when online.");
+  EXPECT_EQ(GetErrorMessage()->GetButtonForTest()->GetText(), u"Dismiss");
 
   // The task list should be reset to the one before switch.
   const std::optional<size_t> selected_index =

@@ -871,6 +871,23 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
           GlanceablesViewId::kGlanceablesErrorMessageView)));
   ASSERT_TRUE(error_view);
   EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
+  EXPECT_EQ(error_view->GetButtonForTest()->GetText(), u"Reload");
+
+  // Reset the error flag so that the next tasks fetch will succeed.
+  fake_glanceables_tasks_client()->set_get_tasks_error(false);
+
+  GetEventGenerator()->MoveMouseTo(
+      error_view->GetButtonForTest()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_FALSE(GetTasksView()->GetViewByID(
+      base::to_underlying(GlanceablesViewId::kGlanceablesErrorMessageView)));
+  auto* combobox = GetTasksComboBoxView();
+  EXPECT_EQ(combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
+            u"Task List 1 Title");
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
 }
 
 IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
@@ -919,6 +936,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest,
           GlanceablesViewId::kGlanceablesErrorMessageView)));
   ASSERT_TRUE(error_view);
   EXPECT_EQ(error_view->GetMessageForTest(), u"Couldn't load items.");
+  EXPECT_EQ(error_view->GetButtonForTest()->GetText(), u"Dismiss");
 }
 
 }  // namespace ash

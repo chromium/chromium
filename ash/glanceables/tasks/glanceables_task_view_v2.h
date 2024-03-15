@@ -9,6 +9,7 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/ash_export.h"
+#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ash/glanceables/tasks/glanceables_tasks_error_type.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -58,8 +59,9 @@ class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView,
       const std::string& task_id,
       const std::string& title,
       api::TasksClient::OnTaskSavedCallback callback)>;
-  using ShowErrorMessageCallback =
-      base::RepeatingCallback<void(GlanceablesTasksErrorType)>;
+  using ShowErrorMessageCallback = base::RepeatingCallback<void(
+      GlanceablesTasksErrorType,
+      GlanceablesErrorMessageView::ButtonActionType)>;
 
   // Modes of `tasks_title_view_` (simple label or text field).
   enum class TaskTitleViewState { kNotInitialized, kView, kEdit };

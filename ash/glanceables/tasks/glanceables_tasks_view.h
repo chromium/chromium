@@ -100,6 +100,7 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Handles switching between tasks lists.
   void SelectedTasksListChanged();
   void ScheduleUpdateTasks(ListShownContext context);
+  void RetryUpdateTasks(ListShownContext context);
   void UpdateTasksInTaskList(const std::string& task_list_id,
                              const std::string& task_list_title,
                              ListShownContext context,
@@ -141,8 +142,11 @@ class ASH_EXPORT GlanceablesTasksView : public GlanceablesTasksViewBase,
   // Returns the current showing task list.
   const api::TaskList* GetActiveTaskList() const;
 
-  // Creates and shows `error_message_` that depends on the `error_type`.
-  void ShowErrorMessageWithType(GlanceablesTasksErrorType error_type);
+  // Creates and shows `error_message_` that depends on the `error_type` and
+  // `button_action_type`.
+  void ShowErrorMessageWithType(
+      GlanceablesTasksErrorType error_type,
+      GlanceablesErrorMessageView::ButtonActionType button_action_type);
 
   // Returns the string to show on `error_message_` according to the
   // `error_type`.

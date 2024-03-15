@@ -149,7 +149,9 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
 
   const auto widget = CreateFramelessTestWidget();
   widget->SetFullscreen(true);
-  base::test::TestFuture<GlanceablesTasksErrorType> error_future;
+  base::test::TestFuture<GlanceablesTasksErrorType,
+                         GlanceablesErrorMessageView::ButtonActionType>
+      error_future;
 
   const auto* const view =
       widget->SetContentsView(std::make_unique<GlanceablesTaskViewV2>(
@@ -166,26 +168,36 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
           base::to_underlying(GlanceablesViewId::kTaskItemTitleLabel)));
   ASSERT_TRUE(title_label);
 
-  // Tap on the checkbox. The action shouldn't be complete because there is no
-  // network connection.
-  GestureTapOn(checkbox);
-  EXPECT_EQ(error_future.Take(),
-            GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork);
+  {
+    // Tap on the checkbox. The action shouldn't be complete because there is no
+    // network connection.
+    GestureTapOn(checkbox);
+    const auto [task_error_type, button_action_type] = error_future.Take();
+    EXPECT_EQ(task_error_type,
+              GlanceablesTasksErrorType::kCantMarkCompleteNoNetwork);
+    EXPECT_EQ(button_action_type,
+              GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+  }
 
   // No `STRIKE_THROUGH` style should be applied to the label.
   EXPECT_FALSE(view->GetCompletedForTest());
   EXPECT_FALSE(title_label->font_list().GetFontStyle() &
                gfx::Font::FontStyle::STRIKE_THROUGH);
 
-  // Clicking on the title label when no network connected will not show the
-  // textfield.
-  GestureTapOn(title_label);
-  EXPECT_EQ(title_label, view->GetViewByID(base::to_underlying(
-                             GlanceablesViewId::kTaskItemTitleLabel)));
-  EXPECT_FALSE(view->GetViewByID(
-      base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
-  EXPECT_EQ(error_future.Take(),
-            GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork);
+  {
+    // Clicking on the title label when no network connected will not show the
+    // textfield.
+    GestureTapOn(title_label);
+    EXPECT_EQ(title_label, view->GetViewByID(base::to_underlying(
+                               GlanceablesViewId::kTaskItemTitleLabel)));
+    EXPECT_FALSE(view->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField)));
+    const auto [task_error_type, button_action_type] = error_future.Take();
+    EXPECT_EQ(task_error_type,
+              GlanceablesTasksErrorType::kCantUpdateTitleNoNetwork);
+    EXPECT_EQ(button_action_type,
+              GlanceablesErrorMessageView::ButtonActionType::kDismiss);
+  }
 }
 
 TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesMarkAsCompletedCallback) {

@@ -59,13 +59,13 @@ void GlanceableTrayChildBubble::Layout(PassKey) {
 }
 
 void GlanceableTrayChildBubble::ShowErrorMessage(
-    const std::u16string& error_message) {
+    const std::u16string& error_message,
+    views::Button::PressedCallback callback,
+    GlanceablesErrorMessageView::ButtonActionType type) {
   MaybeDismissErrorMessage();
 
   error_message_ = AddChildView(std::make_unique<GlanceablesErrorMessageView>(
-      base::BindRepeating(&GlanceableTrayChildBubble::MaybeDismissErrorMessage,
-                          base::Unretained(this)),
-      error_message));
+      std::move(callback), error_message, type));
   error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 

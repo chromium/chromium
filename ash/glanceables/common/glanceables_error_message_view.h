@@ -26,8 +26,12 @@ class ASH_EXPORT GlanceablesErrorMessageView : public views::FlexLayoutView {
   METADATA_HEADER(GlanceablesErrorMessageView, views::FlexLayoutView)
 
  public:
+  // Used for `action_button_` that indicates what to expect on click.
+  enum class ButtonActionType { kDismiss, kReload };
+
   GlanceablesErrorMessageView(views::Button::PressedCallback callback,
-                              const std::u16string& error_message);
+                              const std::u16string& error_message,
+                              ButtonActionType type);
   GlanceablesErrorMessageView(const GlanceablesErrorMessageView&) = delete;
   GlanceablesErrorMessageView& operator=(const GlanceablesErrorMessageView&) =
       delete;
@@ -38,10 +42,11 @@ class ASH_EXPORT GlanceablesErrorMessageView : public views::FlexLayoutView {
   void UpdateBoundsToContainer(const gfx::Rect& container_bounds);
 
   std::u16string GetMessageForTest() const;
+  views::LabelButton* GetButtonForTest() const { return action_button_; }
 
  private:
   raw_ptr<views::Label> error_message_label_ = nullptr;
-  raw_ptr<views::LabelButton> dismiss_button_ = nullptr;
+  raw_ptr<views::LabelButton> action_button_ = nullptr;
 };
 
 }  // namespace ash

@@ -358,7 +358,8 @@ void GlanceablesTasksView::SelectedTasksListChanged() {
     // If the network is disconnected, cancel the list change and show the error
     // message.
     ShowErrorMessageWithType(
-        GlanceablesTasksErrorType::kCantLoadTasksNoNetwork);
+        GlanceablesTasksErrorType::kCantLoadTasksNoNetwork,
+        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
     task_list_combo_box_view_->SetSelectedIndex(cached_selected_list_index_);
     return;
   }
@@ -386,6 +387,11 @@ void GlanceablesTasksView::ScheduleUpdateTasks(ListShownContext context) {
                      active_task_list->title, context));
 }
 
+void GlanceablesTasksView::RetryUpdateTasks(ListShownContext context) {
+  MaybeDismissErrorMessage();
+  ScheduleUpdateTasks(context);
+}
+
 void GlanceablesTasksView::UpdateTasksInTaskList(
     const std::string& task_list_id,
     const std::string& task_list_title,
@@ -408,16 +414,22 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
         if (GetTasksClient()->GetCachedTasksInTaskList(task_list_id)) {
           // Notify users the last updated time of the tasks with the cached
           // data.
-          ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantUpdateTasks);
+          ShowErrorMessageWithType(
+              GlanceablesTasksErrorType::kCantUpdateTasks,
+              GlanceablesErrorMessageView::ButtonActionType::kReload);
         } else {
           // Notify users that the target list of tasks wasn't loaded and guide
           // them to retry.
-          ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantLoadTasks);
+          ShowErrorMessageWithType(
+              GlanceablesTasksErrorType::kCantLoadTasks,
+              GlanceablesErrorMessageView::ButtonActionType::kReload);
         }
         return;
       }
       case ListShownContext::kUserSelectedList:
-        ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantLoadTasks);
+        ShowErrorMessageWithType(
+            GlanceablesTasksErrorType::kCantLoadTasks,
+            GlanceablesErrorMessageView::ButtonActionType::kDismiss);
         task_list_combo_box_view_->SetSelectedIndex(
             cached_selected_list_index_);
         return;
@@ -575,7 +587,9 @@ void GlanceablesTasksView::OnTaskSaved(
     api::TasksClient::OnTaskSavedCallback callback,
     const api::Task* task) {
   if (!task) {
-    ShowErrorMessageWithType(GlanceablesTasksErrorType::kCantUpdateTitle);
+    ShowErrorMessageWithType(
+        GlanceablesTasksErrorType::kCantUpdateTitle,
+        GlanceablesErrorMessageView::ButtonActionType::kDismiss);
     if (task_id.empty() && view) {
       // Empty `task_id` means that the task has not yet been created. Delete
       // the corresponding `view` from the scrollable container in case of
@@ -597,8 +611,24 @@ const api::TaskList* GlanceablesTasksView::GetActiveTaskList() const {
 }
 
 void GlanceablesTasksView::ShowErrorMessageWithType(
-    GlanceablesTasksErrorType error_type) {
-  ShowErrorMessage(GetErrorString(error_type));
+    GlanceablesTasksErrorType error_type,
+    GlanceablesErrorMessageView::ButtonActionType button_type) {
+  views::Button::PressedCallback callback;
+  switch (button_type) {
+    case GlanceablesErrorMessageView::ButtonActionType::kDismiss:
+      callback =
+          base::BindRepeating(&GlanceablesTasksView::MaybeDismissErrorMessage,
+                              base::Unretained(this));
+      break;
+    case GlanceablesErrorMessageView::ButtonActionType::kReload:
+      // This only used to reload the current shown list.
+      callback = base::BindRepeating(&GlanceablesTasksView::RetryUpdateTasks,
+                                     base::Unretained(this),
+                                     ListShownContext::kInitialList);
+      break;
+  }
+  ShowErrorMessage(GetErrorString(error_type), std::move(callback),
+                   button_type);
 }
 
 std::u16string GlanceablesTasksView::GetErrorString(
