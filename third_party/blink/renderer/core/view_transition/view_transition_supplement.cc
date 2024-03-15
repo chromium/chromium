@@ -162,6 +162,11 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
     return nullptr;
   }
 
+  if (document.hidden()) {
+    return ViewTransition::CreateSkipped(&document, callback)
+        ->GetScriptDelegate();
+  }
+
   transition_ =
       ViewTransition::CreateFromScript(&document, callback, types, this);
 
@@ -183,6 +188,13 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
   return transition_->GetScriptDelegate();
 }
 
+void ViewTransitionSupplement::DidChangeVisibilityState() {
+  if (GetSupplementable()->hidden() && transition_) {
+    transition_->SkipTransition();
+  }
+  SendOptInStatusToHost();
+}
+
 void ViewTransitionSupplement::SendOptInStatusToHost() {
   // If we have a frame, notify the frame host that the opt-in has changed.
   Document* document = GetSupplementable();
@@ -191,7 +203,7 @@ void ViewTransitionSupplement::SendOptInStatusToHost() {
   }
 
   document->GetFrame()->GetLocalFrameHostRemote().OnViewTransitionOptInChanged(
-      document->domWindow()->HasBeenRevealed()
+      (document->domWindow()->HasBeenRevealed() && !document->hidden())
           ? cross_document_opt_in_
           : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled);
 }

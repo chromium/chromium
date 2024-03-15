@@ -2054,6 +2054,8 @@ void Document::DidChangeVisibilityState() {
     IdentifiabilitySampleCollector::Get()->FlushSource(UkmRecorder(),
                                                        UkmSourceID());
   }
+
+  ViewTransitionSupplement::From(*this)->DidChangeVisibilityState();
 }
 
 String Document::nodeName() const {

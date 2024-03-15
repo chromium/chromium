@@ -95,6 +95,7 @@ class CORE_EXPORT ViewTransitionSupplement
   // Since outbound transitions are only enabled once the document has been
   // revealed, we recompute the opt-in status here.
   void DidChangeRevealState() { SendOptInStatusToHost(); }
+  void DidChangeVisibilityState();
 
   // In the new page of a cross-document transition, this resolves the
   // @view-transition rule to use, sets types, and returns the ViewTransition.
