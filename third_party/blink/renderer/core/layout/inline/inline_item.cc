@@ -173,6 +173,10 @@ const char* InlineItem::InlineItemTypeToString(InlineItemType val) const {
       return "ListMarker";
     case kBidiControl:
       return "BidiControl";
+    case kOpenRubyColumn:
+      return "OpenRubyColumn";
+    case kCloseRubyColumn:
+      return "CloseRubyColumn";
   }
   NOTREACHED_NORETURN();
 }
@@ -238,7 +242,7 @@ String InlineItem::ToString() const {
   String object_info;
   if (const auto* layout_text = DynamicTo<LayoutText>(GetLayoutObject())) {
     object_info = layout_text->TransformedText().EncodeForDebugging();
-  } else {
+  } else if (GetLayoutObject()) {
     object_info = GetLayoutObject()->ToString();
   }
   return String::Format("InlineItem %s. %s", InlineItemTypeToString(Type()),

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -573,6 +574,70 @@ TEST_F(InlineItemsBuilderTest, HasRuby) {
   AppendAtomicInline(&builder);
   EXPECT_TRUE(HasRuby(builder))
       << "Adding non-ruby AtomicInline should not clear it.";
+}
+
+TEST_F(InlineItemsBuilderTest, OpenCloseRubyColumns) {
+  ScopedRubyLineBreakableForTest enable_ruby_line_breakable(true);
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+  LayoutInline* ruby =
+      CreateLayoutInline(&GetDocument(), [](ComputedStyleBuilder& builder) {
+        builder.SetDisplay(EDisplay::kRuby);
+      });
+  LayoutInline* rt =
+      CreateLayoutInline(&GetDocument(), [](ComputedStyleBuilder& builder) {
+        builder.SetDisplay(EDisplay::kRubyText);
+      });
+  ruby->AddChild(rt);
+  GetLayoutBlockFlow()->AddChild(ruby);
+  LayoutInline* orphan_rt =
+      CreateLayoutInline(&GetDocument(), [](ComputedStyleBuilder& builder) {
+        builder.SetDisplay(EDisplay::kRubyText);
+      });
+  GetLayoutBlockFlow()->AddChild(orphan_rt);
+  HeapVector<InlineItem> items;
+  InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
+
+  // Input: <ruby>base1<rt>anno1</rt>base2<rt>anno2</ruby><rt>anno3</rt>.
+  builder.EnterInline(ruby);
+  AppendText("base1", &builder);
+  builder.EnterInline(rt);
+  AppendText("anno1", &builder);
+  builder.ExitInline(rt);
+  AppendText("base2", &builder);
+  builder.EnterInline(rt);
+  AppendText("anno2", &builder);
+  builder.ExitInline(rt);
+  builder.ExitInline(ruby);
+  builder.EnterInline(orphan_rt);
+  AppendText("anno3", &builder);
+  builder.ExitInline(orphan_rt);
+
+  EXPECT_ITEM_OFFSET(items[0], InlineItem::kOpenTag, 0u, 0u);  // <ruby>
+  EXPECT_ITEM_OFFSET(items[1], InlineItem::kOpenRubyColumn, 0u, 1u);
+  EXPECT_ITEM_OFFSET(items[2], InlineItem::kText, 1u, 6u);        // "base1"
+  EXPECT_ITEM_OFFSET(items[3], InlineItem::kOpenTag, 6u, 6u);     // <rt>
+  EXPECT_ITEM_OFFSET(items[4], InlineItem::kText, 6u, 11u);       // "anno1"
+  EXPECT_ITEM_OFFSET(items[5], InlineItem::kCloseTag, 11u, 11u);  // </rt>
+  EXPECT_ITEM_OFFSET(items[6], InlineItem::kCloseRubyColumn, 11u, 12u);
+  EXPECT_ITEM_OFFSET(items[7], InlineItem::kOpenRubyColumn, 12u, 13u);
+  EXPECT_ITEM_OFFSET(items[8], InlineItem::kText, 13u, 18u);       // "base2"
+  EXPECT_ITEM_OFFSET(items[9], InlineItem::kOpenTag, 18u, 18u);    // <rt>
+  EXPECT_ITEM_OFFSET(items[10], InlineItem::kText, 18u, 23u);      // "anno2"
+  EXPECT_ITEM_OFFSET(items[11], InlineItem::kCloseTag, 23u, 23u);  // </rt>
+  EXPECT_ITEM_OFFSET(items[12], InlineItem::kCloseRubyColumn, 23u, 24u);
+  EXPECT_ITEM_OFFSET(items[13], InlineItem::kOpenRubyColumn, 24u, 25u);
+  EXPECT_ITEM_OFFSET(items[14], InlineItem::kCloseRubyColumn, 25u, 26u);
+  EXPECT_ITEM_OFFSET(items[15], InlineItem::kCloseTag, 26u, 26u);  // </ruby>
+
+  EXPECT_ITEM_OFFSET(items[16], InlineItem::kOpenRubyColumn, 26u, 27u);
+  EXPECT_ITEM_OFFSET(items[17], InlineItem::kOpenTag, 27u, 27u);   // <rt>
+  EXPECT_ITEM_OFFSET(items[18], InlineItem::kText, 27u, 32u);      // "anno3"
+  EXPECT_ITEM_OFFSET(items[19], InlineItem::kCloseTag, 32u, 32u);  // </rt>
+  EXPECT_ITEM_OFFSET(items[20], InlineItem::kCloseRubyColumn, 32u, 33u);
+
+  orphan_rt->Destroy();
+  rt->Destroy();
+  ruby->Destroy();
 }
 
 }  // namespace blink

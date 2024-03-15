@@ -1410,20 +1410,34 @@ void InlineItemsBuilderTemplate<MappingBuilder>::EnterInline(
     }
   }
 
+  has_ruby_ = has_ruby_ || node->IsInlineRubyText();
+  if (node->IsInlineRubyText() && !node->Parent()->IsInlineRuby()) {
+    // This creates a ruby column with no ruby-base items.
+    AppendOpaque(InlineItem::kOpenRubyColumn,
+                 IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
+                                           : kRightToLeftIsolateCharacter,
+                 nullptr);
+  }
   AppendOpaque(InlineItem::kOpenTag, node);
 
-  if (!NeedsBoxInfo())
-    return;
-
-  // Set |ShouldCreateBoxFragment| of the parent box if needed.
-  BoxInfo* current_box =
-      &boxes_.emplace_back(items_->size() - 1, items_->back());
-  if (boxes_.size() > 1) {
-    BoxInfo* parent_box = std::prev(current_box);
-    if (!parent_box->should_create_box_fragment &&
-        parent_box->ShouldCreateBoxFragmentForChild(*current_box)) {
-      parent_box->SetShouldCreateBoxFragment(items_);
+  if (NeedsBoxInfo()) {
+    // Set |ShouldCreateBoxFragment| of the parent box if needed.
+    BoxInfo* current_box =
+        &boxes_.emplace_back(items_->size() - 1, items_->back());
+    if (boxes_.size() > 1) {
+      BoxInfo* parent_box = std::prev(current_box);
+      if (!parent_box->should_create_box_fragment &&
+          parent_box->ShouldCreateBoxFragmentForChild(*current_box)) {
+        parent_box->SetShouldCreateBoxFragment(items_);
+      }
     }
+  }
+
+  if (node->IsInlineRuby()) {
+    AppendOpaque(InlineItem::kOpenRubyColumn,
+                 IsLtr(style->Direction()) ? kLeftToRightIsolateCharacter
+                                           : kRightToLeftIsolateCharacter,
+                 node);
   }
 }
 
@@ -1441,6 +1455,11 @@ template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
     LayoutObject* node) {
   DCHECK(node);
+
+  if (node->IsInlineRuby()) {
+    AppendOpaque(InlineItem::kCloseRubyColumn, kPopDirectionalIsolateCharacter,
+                 node);
+  }
 
   if (NeedsBoxInfo()) {
     BoxInfo* current_box = &boxes_.back();
@@ -1482,6 +1501,24 @@ void InlineItemsBuilderTemplate<MappingBuilder>::ExitInline(
   }
 
   AppendOpaque(InlineItem::kCloseTag, node);
+
+  if (node->IsInlineRubyText()) {
+    if (node->Parent()->IsInlineRuby()) {
+      LayoutObject* ruby_container = node->Parent();
+      AppendOpaque(InlineItem::kCloseRubyColumn,
+                   kPopDirectionalIsolateCharacter, ruby_container);
+      // This produces empty ruby-columns if </ruby> follows.  LineBreaker
+      // should ignore such ruby-columns.
+      AppendOpaque(InlineItem::kOpenRubyColumn,
+                   IsLtr(node->Parent()->Style()->Direction())
+                       ? kLeftToRightIsolateCharacter
+                       : kRightToLeftIsolateCharacter,
+                   ruby_container);
+    } else {
+      AppendOpaque(InlineItem::kCloseRubyColumn,
+                   kPopDirectionalIsolateCharacter, nullptr);
+    }
+  }
 
   Exit(node);
 }
