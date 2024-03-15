@@ -6488,6 +6488,10 @@ static_library("ui") {
     }
 
     if (structured_metrics_enabled) {
+      sources += [
+        "webui/metrics_internals/structured_metrics_internals_handler.cc",
+        "webui/metrics_internals/structured_metrics_internals_handler.h",
+      ]
       deps += [ "//components/metrics/debug/structured:debug" ]
     }
 

@@ -20,7 +20,14 @@ build_webui("build") {
   preprocessor_defines =
       [ "structured_metrics_enabled=$structured_metrics_debug_enabled" ]
   if (structured_metrics_debug_enabled) {
-    non_web_component_files += [ "structured/structured_utils.ts" ]
+    static_files += [ "structured/structured_internals.html" ]
+
+    web_component_files += [ "structured/app.ts" ]
+
+    non_web_component_files += [
+      "structured/structured_metrics_browser_proxy.ts",
+      "structured/structured_utils.ts",
+    ]
   }
 
   html_to_wrapper_template = "native"
