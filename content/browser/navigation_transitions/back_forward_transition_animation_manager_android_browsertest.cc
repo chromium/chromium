@@ -49,6 +49,9 @@ namespace {
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
 using NavType = BackForwardTransitionAnimationManager::NavigationDirection;
 
+// The tolerance for two float to be considered equal.
+static constexpr float kFloatTolerance = 0.001f;
+
 // TODO(liuwilliam): 99 seconds seems aribturary. Pick a meaningful constant
 // instead.
 // If the duration is long enough, the spring will return the final (rest /
@@ -89,6 +92,7 @@ constexpr GestureNavType kGestureNavTypes[] = {
 
 enum class GestureType {
   kStart,
+  // 30/60/90 are the gesture progresses.
   k30ViewportWidth,
   k60ViewportWidth,
   k90ViewportWidth,
@@ -116,6 +120,36 @@ static constexpr LayerTransforms kActivePageAtOrigin{
     .active_page = gfx::Transform::MakeTranslation(0.f, 0.f),
     .screenshot = std::nullopt};
 
+bool TwoSkColorApproximatelyEqual(const SkColor4f& a, const SkColor4f& b) {
+  return base::IsApproximatelyEqual(a.fA, b.fA, kFloatTolerance) &&
+         base::IsApproximatelyEqual(a.fB, b.fB, kFloatTolerance) &&
+         base::IsApproximatelyEqual(a.fG, b.fG, kFloatTolerance) &&
+         base::IsApproximatelyEqual(a.fR, b.fR, kFloatTolerance);
+}
+
+SkColor4f GetScrimForGestureProgress(GestureType gesture) {
+  auto scrim = SkColors::kBlack;
+  switch (gesture) {
+    case GestureType::kStart:
+      scrim.fA = 0.8f;
+      break;
+    case GestureType::k30ViewportWidth:
+      scrim.fA = 0.6725f;
+      break;
+    case GestureType::k60ViewportWidth:
+      scrim.fA = 0.545f;
+      break;
+    case GestureType::k90ViewportWidth:
+      scrim.fA = 0.4175f;
+      break;
+    case GestureType::kCancel:
+    case GestureType::kInvoke:
+      NOTREACHED();
+      break;
+  }
+  return scrim;
+}
+
 BackForwardTransitionAnimationManagerAndroid* GetAnimationManager(
     WebContents* tab) {
   auto* manager = tab->GetBackForwardTransitionAnimationManager();
@@ -129,16 +163,16 @@ float GetProgress(GestureType gesture, SwipeEdge edge) {
   }
 
   switch (gesture) {
+    case GestureType::kStart:
+      return 0.f;
     case GestureType::k30ViewportWidth:
       return 0.3f;
     case GestureType::k60ViewportWidth:
       return 0.6f;
     case GestureType::k90ViewportWidth:
       return 0.9f;
-    case GestureType::kStart:
     case GestureType::kCancel:
     case GestureType::kInvoke:
-      // Start/Cancel don't care about the progress.
       return -1.0f;
   }
 }
@@ -499,16 +533,18 @@ class BackForwardTransitionAnimationManagerBrowserTest
 
   GURL BlueURL() const { return embedded_test_server()->GetURL("/blue.html"); }
 
-  LayerTransforms GetLayerTransformsForProgress(float progress) {
+  LayerTransforms GetLayerTransformsForProgress(GestureType gesture) {
+    float gesture_progress = GetProgress(gesture, SwipeEdge::LEFT);
+
     // TODO(https://crbug.com/325541315): The initial position of the screenshot
-    // is incorrect.
+    // is incorrect. And set hard-coded transform instead of calculating them.
     float commit_pending =
         GetViewportSize().width() * PhysicsModel::kTargetCommitPending;
-    return {.active_page =
-                gfx::Transform::MakeTranslation(commit_pending * progress, 0.f),
+    return {.active_page = gfx::Transform::MakeTranslation(
+                commit_pending * gesture_progress, 0.f),
             .screenshot = gfx::Transform::MakeTranslation(
                 -commit_pending * PhysicsModel::kScreenshotInitialPosition *
-                    (1 - progress),
+                    (1 - gesture_progress),
                 0.f)};
   }
 
@@ -518,23 +554,11 @@ class BackForwardTransitionAnimationManagerBrowserTest
       const std::vector<GestureAndScreenChanged>& gestures) {
     auto* animation_manager = GetAnimationManager(web_contents());
 
-    // The touch location doesn't matter.
-    const gfx::PointF touch_pt(1, 1);
-
     for (const auto& [gesture, screen_changed] : gestures) {
-      const float progress = GetProgress(gesture, GetParam().edge);
       switch (gesture) {
         case GestureType::kStart: {
           SCOPED_TRACE("kStart");
-          animation_manager->OnGestureStarted(
-              ui::BackGestureEvent(touch_pt, 0.f), GetParam().edge,
-              GetParam().nav_type);
-          if (screen_changed) {
-            ExpectedLayerTransforms(web_contents(),
-                                    GetLayerTransformsForProgress(0.f));
-          } else {
-            ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
-          }
+          ProgressGestureAndExpectTransformAndScrim(gesture, screen_changed);
           ASSERT_FALSE(
               web_contents()->GetController().GetActiveEntry()->GetUserData(
                   NavigationEntryScreenshot::kUserDataKey));
@@ -542,38 +566,17 @@ class BackForwardTransitionAnimationManagerBrowserTest
         }
         case GestureType::k30ViewportWidth: {
           SCOPED_TRACE("k30ViewportWidth");
-          animation_manager->OnGestureProgressed(
-              ui::BackGestureEvent(touch_pt, progress));
-          if (screen_changed) {
-            ExpectedLayerTransforms(web_contents(),
-                                    GetLayerTransformsForProgress(0.3f));
-          } else {
-            ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
-          }
+          ProgressGestureAndExpectTransformAndScrim(gesture, screen_changed);
           break;
         }
         case GestureType::k60ViewportWidth: {
           SCOPED_TRACE("k60ViewportWidth");
-          animation_manager->OnGestureProgressed(
-              ui::BackGestureEvent(touch_pt, progress));
-          if (screen_changed) {
-            ExpectedLayerTransforms(web_contents(),
-                                    GetLayerTransformsForProgress(0.6f));
-          } else {
-            ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
-          }
+          ProgressGestureAndExpectTransformAndScrim(gesture, screen_changed);
           break;
         }
         case GestureType::k90ViewportWidth: {
           SCOPED_TRACE("k90ViewportWidth");
-          animation_manager->OnGestureProgressed(
-              ui::BackGestureEvent(touch_pt, progress));
-          if (screen_changed) {
-            ExpectedLayerTransforms(web_contents(),
-                                    GetLayerTransformsForProgress(0.9f));
-          } else {
-            ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
-          }
+          ProgressGestureAndExpectTransformAndScrim(gesture, screen_changed);
           break;
         }
         case GestureType::kCancel: {
@@ -608,6 +611,45 @@ class BackForwardTransitionAnimationManagerBrowserTest
         }
       }
     }
+  }
+
+  void ProgressGestureAndExpectTransformAndScrim(GestureType gesture,
+                                                 bool screen_changed) {
+    // The touch location doesn't matter.
+    const gfx::PointF touch_pt(1, 1);
+    const float progress = GetProgress(gesture, GetParam().edge);
+
+    if (gesture == GestureType::kStart) {
+      GetAnimationManager(web_contents())
+          ->OnGestureStarted(ui::BackGestureEvent(touch_pt, progress),
+                             GetParam().edge, GetParam().nav_type);
+    } else {
+      GetAnimationManager(web_contents())
+          ->OnGestureProgressed(ui::BackGestureEvent(touch_pt, progress));
+    }
+    if (screen_changed) {
+      ExpectLayerTransformsAndScrimForGestureProgress(gesture);
+    } else {
+      ExpectedLayerTransforms(web_contents(), kActivePageAtOrigin);
+    }
+  }
+
+  void ExpectLayerTransformsAndScrimForGestureProgress(GestureType gesture) {
+    ExpectedLayerTransforms(web_contents(),
+                            GetLayerTransformsForProgress(gesture));
+    const auto& layers =
+        static_cast<WebContentsViewAndroid*>(web_contents()->GetView())
+            ->GetNativeView()
+            ->GetLayer()
+            ->children();
+    // Screenshot + active page.
+    ASSERT_EQ(layers.size(), 2U);
+    // The screenshot must have the scrim layer as a child.
+    ASSERT_EQ(layers[0]->children().size(), 1U);
+    SkColor4f actual = layers[0]->children().at(0).get()->background_color();
+    SkColor4f expected = GetScrimForGestureProgress(gesture);
+    EXPECT_TRUE(TwoSkColorApproximatelyEqual(actual, expected))
+        << "actual " << actual.fA << " expected " << expected.fA;
   }
 
   AnimatorForTesting* GetAnimatorForTesting() {

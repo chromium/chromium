@@ -17,6 +17,7 @@
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
 
 namespace cc::slim {
+class SolidColorLayer;
 class UIResourceLayer;
 }
 
@@ -36,7 +37,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     : public RenderFrameMetadataProvider::Observer,
       public ui::WindowAndroidObserver,
       public WebContentsObserver,
-      public RenderWidgetHostObserver {
+      public RenderWidgetHostObserver,
+      public gfx::FloatAnimationCurve::Target {
  public:
   // To create the `BackForwardTransitionAnimator`. Tests can override this
   // factory to supply a customized version of `BackForwardTransitionAnimator`.
@@ -104,6 +106,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
 
   // `RenderWidgetHostObserver`:
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override;
+
+  // `gfx::FloatAnimationCurve::Target`:
+  void OnFloatAnimated(const float& value,
+                       int target_property_id,
+                       gfx::KeyframeModel* keyframe_model) override;
 
   // Called when each animation finishes. Advances `this` into the next state.
   // Being virtual for testing.
@@ -278,6 +285,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   // The unique id assigned to `screenshot_`.
   cc::UIResourceId ui_resource_id_ =
       cc::UIResourceClient::kUninitializedUIResourceId;
+
+  // New layer for the scrim. Always on top of the `ui_resource_layer_`.
+  scoped_refptr<cc::slim::SolidColorLayer> screenshot_scrim_;
 
   // New layer for `screenshot_`.
   scoped_refptr<cc::slim::UIResourceLayer> ui_resource_layer_;

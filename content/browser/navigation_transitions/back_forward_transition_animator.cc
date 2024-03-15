@@ -5,6 +5,7 @@
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 
 #include "cc/slim/layer.h"
+#include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
@@ -62,6 +63,48 @@ base::TimeTicks GetFittedTimeTicksForForegroundProgress(float progress) {
   return kFittedStart + kFittedTimelineDuration * progress;
 }
 
+//============================= Crossfade animation ============================
+constexpr base::TimeDelta kCrossfadeDuration = base::Milliseconds(100);
+
+//=============================== Scrim animation ==============================
+
+// The scim animations have two timelines:
+// - The fist timeline for while the screenshot layer is moving across the
+//   screen. The scrim goes from `kScrimStart` to
+//   `kScrimEndForLayerTransform`.
+// - The second timeline while the screenshot layer is cross-fading into the
+//   new content page. The scrim goes from `kScrimEndForLayerTransform` to
+//   `kScrimEnd`.
+static constexpr float kScrimStart = 0.8;
+static constexpr float kScrimEndForLayerTransform = 0.3;
+static constexpr float kScrimEnd = 0.f;
+
+// 0-indexed as the value will be stored in a bitset.
+enum class TargetProperty {
+  kScreenshotScrim = 0,
+};
+
+// Add a scrim model to `effect_`.
+void AddScrimModelToEffect(float start,
+                           float end,
+                           base::TimeDelta duration,
+                           gfx::FloatAnimationCurve::Target* target,
+                           gfx::KeyframeEffect& effect) {
+  auto curve(gfx::KeyframedFloatAnimationCurve::Create());
+  curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::TimeDelta(), start, nullptr));
+  curve->AddKeyframe(gfx::FloatKeyframe::Create(duration, end, nullptr));
+  curve->set_target(target);
+
+  auto model = gfx::KeyframeModel::Create(
+      /*curve=*/std::move(curve),
+      /*keyframe_model_id=*/effect.GetNextKeyframeModelId(),
+      /*target_property_id=*/
+      static_cast<int>(TargetProperty::kScreenshotScrim));
+
+  effect.AddKeyframeModel(std::move(model));
+}
+
 }  // namespace
 
 std::unique_ptr<BackForwardTransitionAnimator>
@@ -86,6 +129,9 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   // above the RWHV layer, we need to remove that as well.
 
   if (ui_resource_layer_) {
+    screenshot_scrim_->RemoveFromParent();
+    screenshot_scrim_.reset();
+
     ui_resource_layer_->RemoveFromParent();
     ui_resource_layer_.reset();
   }
@@ -515,6 +561,22 @@ void BackForwardTransitionAnimator::RenderWidgetHostDestroyed(
   animation_manager_->SynchronouslyDestroyAnimator();
 }
 
+void BackForwardTransitionAnimator::OnFloatAnimated(
+    const float& value,
+    int target_property_id,
+    gfx::KeyframeModel* keyframe_model) {
+  TargetProperty property = static_cast<TargetProperty>(target_property_id);
+  switch (property) {
+    case TargetProperty::kScreenshotScrim: {
+      auto scrim = SkColors::kBlack;
+      scrim.fA = value;
+      screenshot_scrim_->SetBackgroundColor(scrim);
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 void BackForwardTransitionAnimator::OnCancelAnimationDisplayed() {
   if (navigation_state_ == NavigationState::kBeforeUnloadDispatched) {
     AdvanceAndProcessState(State::kWaitingForBeforeUnloadResponse);
@@ -537,15 +599,6 @@ void BackForwardTransitionAnimator::OnInvokeAnimationDisplayed() {
 void BackForwardTransitionAnimator::OnCrossFadeAnimationDisplayed() {
   effect_.RemoveAllKeyframeModels();
   AdvanceAndProcessState(State::kAnimationFinished);
-}
-
-void BackForwardTransitionAnimator::
-    InitializeEffectForGestureProgressAnimation() {
-  // The KeyFrameModel for scrim is added when we set up the screenshot layer,
-  // at which we must have no models yet.
-  CHECK(effect_.keyframe_models().empty());
-
-  // TODO(https://crbug.com/1499915): Add a model for the scrim animation.
 }
 
 // static.
@@ -622,22 +675,27 @@ std::string BackForwardTransitionAnimator::ToString(NavigationState state) {
   NOTREACHED_NORETURN();
 }
 
+void BackForwardTransitionAnimator::
+    InitializeEffectForGestureProgressAnimation() {
+  // The KeyFrameModel for scrim is added when we set up the screenshot layer,
+  // at which we must have no models yet.
+  CHECK(effect_.keyframe_models().empty());
+
+  // First scrim timeline for the screenshot layer's transform.
+  AddScrimModelToEffect(kScrimStart, kScrimEndForLayerTransform,
+                        kFittedTimelineDuration, this, effect_);
+}
+
 void BackForwardTransitionAnimator::InitializeEffectForCrossfadeAnimation() {
-  // The scim animations will have two timelines:
-  // - From the beginning of the gesture animation to the end of the invoke
-  //   animation where the live page is completely out of the viewport.
-  // - From the beginning of the cross-fade to the end of it.
-  //
-  // For example, for the first timeline we can have the alpha channel go from
-  // 0.8 to 0.3, and for cross-fade it goes from 0.3 to 0.
-  //
   // At the the end if the invoke animation and before the cross-fade, the model
   // for the first timeline is finished (and removed).
   CHECK(effect_.keyframe_models().empty());
 
-  // TODO(https://crbug.com/1426457): Add two models for cross-fade.
+  // Second scrim timeline for the cross-fade animation.
+  AddScrimModelToEffect(kScrimEndForLayerTransform, kScrimEnd,
+                        kCrossfadeDuration, this, effect_);
 
-  // TODO(https://crbug.com/1499915): Re-add the model for scrim.
+  // TODO(https://crbug.com/1426457): Add two models for cross-fade.
 }
 
 void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
@@ -781,8 +839,14 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
   ui_resource_layer_->SetIsDrawable(true);
   ui_resource_layer_->SetUIResourceId(ui_resource_id_);
 
-  // TODO(https://crbug.com/1499915): Add the scrim layer on top of the
-  // screenshot.
+  screenshot_scrim_ = cc::slim::SolidColorLayer::Create();
+  screenshot_scrim_->SetBounds(screenshot_->GetDimensions());
+  screenshot_scrim_->SetIsDrawable(true);
+  screenshot_scrim_->SetBackgroundColor(SkColors::kTransparent);
+  // This makes sure `screenshot_scrim_` is drawn on top of
+  // `ui_resource_layer_`.
+  ui_resource_layer_->AddChild(screenshot_scrim_);
+  screenshot_scrim_->SetContentsOpaque(false);
 
   // Insert a new `cc::slim::UIResourceLayer` into the existing layer tree.
   //
@@ -791,9 +855,6 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
   //            |- `parent_for_web_page_widgets_` (RWHVAndroid, Overscroll etc).
   //            |
   //            |- `NavigationEntryScreenshot`
-  //
-  // The new layer has a default position (0,0), an empty bounds and an identity
-  // transform. With empty bounds, the new layer won't be drawn.
 
   bool screenshot_on_top_of_web_page =
       nav_direction_ == NavigationDirection::kForward;
@@ -905,14 +966,16 @@ void BackForwardTransitionAnimator::SetLayerTransformationAndTickEffect(
       ->parent_for_web_page_widgets()
       ->SetTransform(gfx::Transform::MakeTranslation(
           result.foreground_offset_physical, 0.f));
-  float gesture_progress = result.foreground_offset_physical /
-                           animation_manager_->web_contents_view_android()
-                               ->GetNativeView()
-                               ->GetPhysicalBackingSize()
-                               .width();
-  CHECK_GE(gesture_progress, 0.f);
-  CHECK_LE(gesture_progress, 1.f);
-  effect_.Tick(GetFittedTimeTicksForForegroundProgress(gesture_progress));
+  float screenshot_layer_progress =
+      result.foreground_offset_physical /
+      animation_manager_->web_contents_view_android()
+          ->GetNativeView()
+          ->GetPhysicalBackingSize()
+          .width();
+  CHECK_GE(screenshot_layer_progress, 0.f);
+  CHECK_LE(screenshot_layer_progress, 1.f);
+  effect_.Tick(
+      GetFittedTimeTicksForForegroundProgress(screenshot_layer_progress));
 }
 
 void BackForwardTransitionAnimator::
