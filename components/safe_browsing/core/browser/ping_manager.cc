@@ -46,6 +46,23 @@ std::string GetSanitizedUrl(const std::string& url_spec) {
   return GetSanitizedUrl(url).spec();
 }
 
+bool IsDownloadReport(
+    safe_browsing::ClientSafeBrowsingReportRequest::ReportType type) {
+  switch (type) {
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_RECOVERY:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_WARNING:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_BY_API:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_OPENED:
+      return true;
+    default:
+      return false;
+  }
+}
+
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_extended_reporting",
                                         R"(
@@ -230,6 +247,11 @@ PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
   base::UmaHistogramExactLinear(
       "SafeBrowsing.ClientSafeBrowsingReport.ReportType", report->type(),
       ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
+  if (IsDownloadReport(report->type())) {
+    base::UmaHistogramCounts1M(
+        "SafeBrowsing.ClientSafeBrowsingReport.DownloadReportSize",
+        serialized_report.size());
+  }
   // The following is to log this ClientSafeBrowsingReportRequest on any open
   // chrome://safe-browsing pages.
   ui_task_runner_->PostTask(
