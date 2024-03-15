@@ -43,6 +43,8 @@ double PlatformSensorWin::GetMaximumSupportedFrequency() {
 }
 
 void PlatformSensorWin::OnReadingUpdated(const SensorReading& reading) {
+  // This function is normally called from |sensor_thread_runner_|, except on
+  // PlatformSensorAndProviderTestWin.
   UpdateSharedBufferAndNotifyClients(reading);
 }
 
@@ -75,6 +77,7 @@ bool PlatformSensorWin::CheckSensorConfiguration(
 }
 
 PlatformSensorWin::~PlatformSensorWin() {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
   sensor_reader_->SetClient(nullptr);
   sensor_thread_runner_->DeleteSoon(FROM_HERE, sensor_reader_.get());
 }
