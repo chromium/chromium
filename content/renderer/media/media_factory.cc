@@ -419,7 +419,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     return nullptr;
 
   scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink =
-      blink::AudioDeviceFactory::GetInstance()->NewSwitchableAudioRendererSink(
+      blink::AudioDeviceFactory::GetInstance()->NewMixableSink(
           blink::WebAudioDeviceSourceType::kMediaElement,
           render_frame_->GetWebFrame()->GetLocalFrameToken(),
           media::AudioSinkParameters(/*session_id=*/base::UnguessableToken(),

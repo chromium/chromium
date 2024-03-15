@@ -53,6 +53,9 @@ base::TimeDelta GetDefaultAuthTimeout() {
                   kMaxAuthorizationTimeout);
 }
 
+// Creates an output device in the rendering pipeline, `auth_timeout` is the
+// authorization timeout allowed for the underlying AudioOutputDevice instance;
+// a timeout of zero means no timeout.
 scoped_refptr<media::AudioOutputDevice> NewOutputDevice(
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params,
@@ -125,27 +128,31 @@ AudioDeviceFactory::NewAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
-  if (IsMixable(source_type)) {
-    return NewMixableSink(source_type, frame_token, params);
-  }
-
-  return NewFinalAudioRendererSink(frame_token, params,
-                                   GetDefaultAuthTimeout());
+  DCHECK(!IsMixable(source_type));
+  return NewOutputDevice(frame_token, params, GetDefaultAuthTimeout());
 }
 
 scoped_refptr<media::SwitchableAudioRendererSink>
-AudioDeviceFactory::NewSwitchableAudioRendererSink(
-    blink::WebAudioDeviceSourceType source_type,
-    const blink::LocalFrameToken& frame_token,
-    const media::AudioSinkParameters& params) {
-  if (IsMixable(source_type)) {
-    return NewMixableSink(source_type, frame_token, params);
+AudioDeviceFactory::NewMixableSink(blink::WebAudioDeviceSourceType source_type,
+                                   const blink::LocalFrameToken& frame_token,
+                                   const media::AudioSinkParameters& params) {
+  DCHECK(IsMixable(source_type));
+  DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
+  if (!mixer_manager_) {
+    auto create_sink_cb =
+        base::BindRepeating([](const LocalFrameToken& frame_token,
+                               const media::AudioSinkParameters& params)
+                                -> scoped_refptr<media::AudioRendererSink> {
+          // AudioRendererMixer sinks are always used asynchronously and thus
+          // can operate without an authorization timeout value.
+          return NewOutputDevice(frame_token, params, base::TimeDelta());
+        });
+    mixer_manager_ =
+        std::make_unique<AudioRendererMixerManager>(std::move(create_sink_cb));
   }
-
-  // AudioOutputDevice is not RestartableAudioRendererSink, so we can't return
-  // anything for those who wants to create an unmixable sink.
-  NOTIMPLEMENTED();
-  return nullptr;
+  return mixer_manager_->CreateInput(
+      frame_token, params.session_id, params.device_id,
+      AudioDeviceFactory::GetSourceLatencyType(source_type));
 }
 
 scoped_refptr<media::AudioCapturerSource>
@@ -164,60 +171,30 @@ media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
     const blink::LocalFrameToken& frame_token,
     const std::string& device_id) {
   DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
-  constexpr base::TimeDelta kDeleteTimeout = base::Milliseconds(5000);
 
   if (!sink_cache_) {
-    auto create_sink_cb = [](AudioDeviceFactory* factory,
-                             const LocalFrameToken& frame_token,
-                             const std::string& device_id) {
-      return factory->NewAudioRendererSink(
-          blink::WebAudioDeviceSourceType::kNone, frame_token,
-          media::AudioSinkParameters(base::UnguessableToken(), device_id));
-    };
+    auto create_sink_cb = base::BindRepeating(
+        [](AudioDeviceFactory* factory, const LocalFrameToken& frame_token,
+           const std::string& device_id)
+            -> scoped_refptr<media::AudioRendererSink> {
+          // Note: This shouldn't use NewOutputDevice directly since tests
+          // override NewAudioRendererSink().
+          return factory->NewAudioRendererSink(
+              blink::WebAudioDeviceSourceType::kNone, frame_token,
+              media::AudioSinkParameters(base::UnguessableToken(), device_id));
+        },
+        base::Unretained(this));
 
-    // Do we actually need a separate thread pool just for deleting audio sinks?
+    constexpr base::TimeDelta kDeleteTimeout = base::Milliseconds(5000);
     sink_cache_ = std::make_unique<AudioRendererSinkCache>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
              base::MayBlock()}),
-        base::BindRepeating(std::move(create_sink_cb), base::Unretained(this)),
-        kDeleteTimeout);
+        std::move(create_sink_cb), kDeleteTimeout);
   }
 
   return sink_cache_->GetSinkInfo(frame_token, device_id);
-}
-
-scoped_refptr<media::AudioRendererSink>
-AudioDeviceFactory::NewAudioRendererMixerSink(
-    const blink::LocalFrameToken& frame_token,
-    const media::AudioSinkParameters& params) {
-  // AudioRendererMixer sinks are always used asynchronously and thus can
-  // operate without a timeout value.
-  return NewFinalAudioRendererSink(frame_token, params, base::TimeDelta());
-}
-
-scoped_refptr<media::SwitchableAudioRendererSink>
-AudioDeviceFactory::NewMixableSink(blink::WebAudioDeviceSourceType source_type,
-                                   const blink::LocalFrameToken& frame_token,
-                                   const media::AudioSinkParameters& params) {
-  DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
-  if (!mixer_manager_) {
-    mixer_manager_ = std::make_unique<AudioRendererMixerManager>(
-        base::BindRepeating(&AudioDeviceFactory::NewAudioRendererMixerSink,
-                            base::Unretained(this)));
-  }
-  return mixer_manager_->CreateInput(
-      frame_token, params.session_id, params.device_id,
-      AudioDeviceFactory::GetSourceLatencyType(source_type));
-}
-
-scoped_refptr<media::AudioRendererSink>
-AudioDeviceFactory::NewFinalAudioRendererSink(
-    const blink::LocalFrameToken& frame_token,
-    const media::AudioSinkParameters& params,
-    base::TimeDelta auth_timeout) {
-  return NewOutputDevice(frame_token, params, auth_timeout);
 }
 
 }  // namespace blink

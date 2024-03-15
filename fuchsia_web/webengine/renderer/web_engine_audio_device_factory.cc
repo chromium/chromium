@@ -40,7 +40,7 @@ WebEngineAudioDeviceFactory::NewAudioRendererSink(
   bool allow_audio_consumer = true;
   switch (source_type) {
     case blink::WebAudioDeviceSourceType::kMediaElement:
-      // MediaElement uses NewSwitchableAudioRendererSink().
+      // MediaElement uses NewMixableSink().
       NOTREACHED();
       return nullptr;
 
