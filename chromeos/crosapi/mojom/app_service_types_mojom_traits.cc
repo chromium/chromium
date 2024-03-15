@@ -10,6 +10,8 @@
 
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
@@ -306,6 +308,18 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
     return false;
   }
 
+  std::optional<apps::PackageId> installer_package_id;
+  if (!data.ReadInstallerPackageId(&installer_package_id)) {
+    return false;
+  }
+  // If a PackageID is set but has an unknown type, it most likely means that
+  // version skew caused the type to be dropped. Reset the value to nullopt, as
+  // if it was not set in the first place.
+  if (installer_package_id.has_value() &&
+      installer_package_id->app_type() == apps::AppType::kUnknown) {
+    installer_package_id = std::nullopt;
+  }
+
   auto app = std::make_unique<apps::App>(app_type, app_id);
   app->readiness = readiness;
   app->name = name;
@@ -350,6 +364,7 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::AppPtr>::Read(
   app->allow_close = ConvertMojomOptionalBoolToOptionalBool(allow_close);
   app->allow_window_mode_selection =
       ConvertMojomOptionalBoolToOptionalBool(allow_window_mode_selection);
+  app->installer_package_id = installer_package_id;
   *out = std::move(app);
   return true;
 }
@@ -1350,6 +1365,58 @@ bool StructTraits<crosapi::mojom::AppShortcutDataView, apps::ShortcutPtr>::Read(
   shortcut->allow_removal = data.allow_removal();
 
   *out = std::move(shortcut);
+  return true;
+}
+
+// static
+crosapi::mojom::PackageIdType
+StructTraits<crosapi::mojom::PackageIdDataView, apps::PackageId>::package_type(
+    const apps::PackageId& r) {
+  switch (r.app_type()) {
+    case apps::AppType::kArc:
+      return crosapi::mojom::PackageIdType::kArc;
+    case apps::AppType::kWeb:
+      return crosapi::mojom::PackageIdType::kWeb;
+    case apps::AppType::kUnknown:
+    case apps::AppType::kBorealis:
+    case apps::AppType::kBruschetta:
+    case apps::AppType::kBuiltIn:
+    case apps::AppType::kChromeApp:
+    case apps::AppType::kCrostini:
+    case apps::AppType::kExtension:
+    case apps::AppType::kPluginVm:
+    case apps::AppType::kRemote:
+    case apps::AppType::kStandaloneBrowser:
+    case apps::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kStandaloneBrowserExtension:
+    case apps::AppType::kSystemWeb:
+      return crosapi::mojom::PackageIdType::kUnknown;
+  }
+}
+
+bool StructTraits<crosapi::mojom::PackageIdDataView, apps::PackageId>::Read(
+    crosapi::mojom::PackageIdDataView data,
+    apps::PackageId* out) {
+  crosapi::mojom::PackageIdType package_type = data.package_type();
+
+  std::string identifier;
+  if (!data.ReadIdentifier(&identifier) || identifier.empty()) {
+    return false;
+  }
+
+  apps::AppType app_type = ([&package_type]() {
+    switch (package_type) {
+      case crosapi::mojom::PackageIdType::kUnknown:
+        return apps::AppType::kUnknown;
+      case crosapi::mojom::PackageIdType::kArc:
+        return apps::AppType::kArc;
+      case crosapi::mojom::PackageIdType::kWeb:
+        return apps::AppType::kWeb;
+    }
+  })();
+
+  *out = apps::PackageId(app_type, identifier);
+
   return true;
 }
 

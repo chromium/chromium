@@ -678,6 +678,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
   // Web App's publisher_id the start url.
   app->publisher_id = web_app->start_url().spec();
+  app->installer_package_id =
+      apps::PackageId(apps::AppType::kWeb, web_app->manifest_id().spec());
 
   app->icon_key = apps::IconKey(GetIconEffects(web_app));
 

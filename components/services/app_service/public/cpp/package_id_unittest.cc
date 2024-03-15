@@ -42,6 +42,12 @@ TEST_F(PackageIdTest, FromStringInvalidType) {
   ASSERT_FALSE(id.has_value());
 }
 
+TEST_F(PackageIdTest, FromStringUnknownType) {
+  std::optional<PackageId> id = PackageId::FromString("unknown:foo");
+
+  ASSERT_FALSE(id.has_value());
+}
+
 TEST_F(PackageIdTest, ToStringWeb) {
   PackageId id(AppType::kWeb, "https://www.app.com/");
 
@@ -52,6 +58,12 @@ TEST_F(PackageIdTest, ToStringAndroid) {
   PackageId id(AppType::kArc, "com.google.android.apps.photos");
 
   ASSERT_EQ(id.ToString(), "android:com.google.android.apps.photos");
+}
+
+TEST_F(PackageIdTest, ToStringUnknown) {
+  PackageId id(AppType::kUnknown, "someapp");
+
+  ASSERT_EQ(id.ToString(), "unknown:someapp");
 }
 
 }  // namespace apps

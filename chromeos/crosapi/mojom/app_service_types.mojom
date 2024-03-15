@@ -120,6 +120,10 @@ struct App {
   [MinVersion=23]
   // Whether the app publisher allows the user to select app open mode.
   OptionalBool allow_window_mode_selection@33;
+
+  [MinVersion=24]
+  // An optional ID for the package that installed this app.
+  PackageId? installer_package_id@34;
 };
 
 // The types of apps available in the registry.
@@ -568,6 +572,25 @@ struct PreferredAppChanges {
 struct PreferredApp {
   IntentFilter intent_filter;
   string app_id;
+};
+
+[Stable, Extensible]
+enum PackageIdType {
+  [Default] kUnknown = 0,
+  kWeb = 1,
+  kArc = 2,
+};
+
+// A globally unique stable identifier for an installable app package.
+[Stable]
+struct PackageId {
+  // The app type of the package.
+  PackageIdType package_type;
+
+  // A platform-specific unique ID for the package. For example, for
+  // PackageIdType::kArc, the identifier will be the package name. Must be
+  // non-empty.
+  string identifier;
 };
 
 // Information about an app shortcut.

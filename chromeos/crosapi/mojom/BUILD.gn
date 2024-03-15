@@ -293,6 +293,10 @@ mojom("mojom") {
           move_only = true
           nullable_is_same_type = true
         },
+        {
+          mojom = "crosapi.mojom.PackageId"
+          cpp = "::apps::PackageId"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
@@ -310,6 +314,7 @@ mojom("mojom") {
         "//components/services/app_service/public/cpp/shortcut/shortcut.h",
         "//components/services/app_service/public/cpp/capability_access.h",
         "//components/services/app_service/public/cpp/icon_types.h",
+        "//components/services/app_service/public/cpp/package_id.h",
         "//components/services/app_service/public/cpp/permission.h",
         "//components/services/app_service/public/cpp/preferred_app.h",
       ]

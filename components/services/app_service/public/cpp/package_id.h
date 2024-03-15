@@ -36,6 +36,8 @@ class COMPONENT_EXPORT(APP_TYPES) PackageId {
   // `app_type` must be a supported type (Web or ARC), and `identifier` must be
   // a non-empty string.
   PackageId(AppType app_type, std::string_view identifier);
+  // Creates a PackageId for an unknown app.
+  PackageId();
 
   PackageId(const PackageId&);
   PackageId& operator=(const PackageId&);
@@ -44,20 +46,23 @@ class COMPONENT_EXPORT(APP_TYPES) PackageId {
   bool operator!=(const PackageId&) const;
 
   // Parses a package ID from the canonical string format. Returns
-  // std::nullopt if parsing failed.
+  // std::nullopt if parsing failed. This method will never parse an "unknown"
+  // PackageId. That is, `PackageId::FromString(PackageId().ToString())` returns
+  // std::nullopt.
   static std::optional<PackageId> FromString(
       std::string_view package_id_string);
 
   // Returns the package ID formatted in canonical string form.
   std::string ToString() const;
 
-  // Returns the app type for the package.
+  // Returns the app type for the package. The type can be AppType::kUnknown if
+  // the PackageId is for an unknown app.
   AppType app_type() const { return app_type_; }
 
   // Returns the platform-specific identifier for the package (i.e. manifest ID
   // for web apps, package name for ARC apps). The identifier is guaranteed to
   // be non-empty, but no other verification is performed.
-  std::string identifier() const { return identifier_; }
+  const std::string& identifier() const { return identifier_; }
 
  private:
   AppType app_type_;

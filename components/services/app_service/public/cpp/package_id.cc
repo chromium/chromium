@@ -15,6 +15,7 @@
 namespace apps {
 
 namespace {
+constexpr char kUnknownName[] = "unknown";
 constexpr char kArcPlatformName[] = "android";
 constexpr char kWebPlatformName[] = "web";
 
@@ -31,6 +32,8 @@ AppType PlatformNameToAppType(std::string_view platform_name) {
 
 std::string_view AppTypeToPlatformName(AppType app_type) {
   switch (app_type) {
+    case AppType::kUnknown:
+      return kUnknownName;
     case AppType::kArc:
       return kArcPlatformName;
     case AppType::kWeb:
@@ -45,9 +48,12 @@ std::string_view AppTypeToPlatformName(AppType app_type) {
 
 PackageId::PackageId(AppType app_type, std::string_view identifier)
     : app_type_(app_type), identifier_(identifier) {
-  DCHECK(app_type_ == AppType::kArc || app_type_ == AppType::kWeb);
+  DCHECK(app_type_ == AppType::kUnknown || app_type_ == AppType::kArc ||
+         app_type_ == AppType::kWeb);
   DCHECK(!identifier_.empty());
 }
+
+PackageId::PackageId() : PackageId(AppType::kUnknown, kUnknownName) {}
 
 PackageId::PackageId(const PackageId&) = default;
 PackageId& PackageId::operator=(const PackageId&) = default;
