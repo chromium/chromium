@@ -389,9 +389,9 @@ void FilterAccountsWithDomainHint(
 }
 
 std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
-    const GURL& provider_config_url,
+    const GURL& provider,
     const ukm::SourceId& source_id) {
-  return std::make_unique<FedCmMetrics>(provider_config_url, source_id,
+  return std::make_unique<FedCmMetrics>(provider, source_id,
                                         base::RandInt(1, 1 << 30));
 }
 
@@ -1583,6 +1583,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
     ready_to_display_accounts_dialog_time_ = base::TimeTicks::Now();
     fedcm_metrics_->RecordShowAccountsDialogTime(
+        idp_data_for_display_,
         ready_to_display_accounts_dialog_time_ - start_time_);
   }
 
@@ -3010,8 +3011,7 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
   }
 }
 
-void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics(
-    const GURL& provider_config_url) {
+void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics(const GURL& provider) {
   if (!fedcm_metrics_) {
     // Ensure the lifecycle state as GetPageUkmSourceId doesn't support the
     // prerendering page. As FederatedAithRequest runs behind the
@@ -3020,9 +3020,8 @@ void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics(
     CHECK(!render_frame_host().IsInLifecycleState(
         RenderFrameHost::LifecycleState::kPrerendering));
 
-    // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
-    fedcm_metrics_ = CreateFedCmMetrics(
-        provider_config_url, render_frame_host().GetPageUkmSourceId());
+    fedcm_metrics_ =
+        CreateFedCmMetrics(provider, render_frame_host().GetPageUkmSourceId());
   }
 }
 

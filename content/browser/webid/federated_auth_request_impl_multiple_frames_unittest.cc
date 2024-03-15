@@ -104,6 +104,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.idp_login_url = GURL(kLoginUrl);
+    idp_metadata.config_url = provider;
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,

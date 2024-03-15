@@ -1286,6 +1286,19 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     SUCCEED();
   }
 
+  void ExpectUKMCount(const std::string& metric_name,
+                      const char* entry_name,
+                      int expected_count) {
+    int count = 0;
+    auto entries = ukm_recorder()->GetEntriesByName(entry_name);
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
+      if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
+        ++count;
+      }
+    }
+    EXPECT_EQ(count, expected_count);
+  }
+
   void ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus status) {
     ExpectSignInStateMatchStatusUKMInternal(status, FedCmEntry::kEntryName);
     ExpectSignInStateMatchStatusUKMInternal(status, FedCmIdpEntry::kEntryName);
@@ -4085,6 +4098,10 @@ TEST_F(FederatedAuthRequestImplTest,
   ukm_loop.Run();
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.NumRequestsPerDocument", 1,
                                        1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  ExpectUKMCount("Timing.ShowAccountsDialog", FedCmEntry::kEntryName, 1);
+  ExpectUKMCount("Timing.ShowAccountsDialog", FedCmIdpEntry::kEntryName, 2);
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
 }
 
@@ -4102,6 +4119,11 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultMultiIdpRequestParameters, expectations,
               kConfigurationMultiIdpValid);
   EXPECT_EQ(2u, NumFetched(FetchedEndpoint::ACCOUNTS));
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  ExpectUKMCount("Timing.ShowAccountsDialog", FedCmEntry::kEntryName, 1);
+  ExpectUKMCount("Timing.ShowAccountsDialog", FedCmIdpEntry::kEntryName, 2);
 }
 
 // Test fetching information for the 1st IdP failing, and succeeding for the

@@ -188,7 +188,7 @@ class CONTENT_EXPORT FedCmMetrics {
                const ukm::SourceId page_source_id,
                int session_id);
 
-  ~FedCmMetrics() = default;
+  ~FedCmMetrics();
 
   // Records the number of times navigator.credentials.get() is called in a
   // document. Requests made when FedCM is disabled or when there is a pending
@@ -198,7 +198,9 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // Records the time from when a call to the API was made to when the accounts
   // dialog is shown.
-  void RecordShowAccountsDialogTime(base::TimeDelta duration);
+  void RecordShowAccountsDialogTime(
+      const std::vector<IdentityProviderData>& providers,
+      base::TimeDelta duration);
 
   // Records the time from when the accounts dialog is shown to when the user
   // presses the Continue button.
@@ -321,12 +323,19 @@ class CONTENT_EXPORT FedCmMetrics {
       IdpNetworkRequestManager::FedCmErrorUrlType type);
 
  private:
+  ukm::SourceId GetOrCreateProviderSourceId(const GURL& provider);
+
   // The page's SourceId. Used to log the UKM event Blink.FedCm.
   ukm::SourceId page_source_id_;
 
-  // The SourceId to be used to log the UKM event Blink.FedCmIdp. Uses
-  // |provider_| as the URL.
-  ukm::SourceId provider_source_id_;
+  // The SourceId to be used to log the UKM event Blink.FedCmIdp.
+  // TODO(crbug.com/326397737): remove this in favor of provider_source_ids_.
+  // In case of multiple IDPs, this will be set to the first IDP's source id.
+  ukm::SourceId provider_source_id_ = ukm::kInvalidSourceId;
+
+  // The SourceId to be used to log the UKM event Blink.FedCmIdp. Maps a
+  // provider's config URL to its UKM SourceId.
+  std::map<GURL, ukm::SourceId> provider_source_ids_;
 
   // Whether a RequestTokenStatus has been recorded.
   bool request_token_status_recorded_{false};

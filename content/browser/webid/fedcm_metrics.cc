@@ -12,6 +12,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -41,13 +42,21 @@ FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
 FedCmMetrics::FedCmMetrics(const GURL& provider,
                            ukm::SourceId page_source_id,
                            int session_id)
-    : page_source_id_(page_source_id),
-      provider_source_id_(ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
-          base::PassKey<FedCmMetrics>(),
-          provider)),
-      session_id_(session_id) {}
+    : page_source_id_(page_source_id), session_id_(session_id) {
+  // TODO(crbug.com/326397737): Remove the |provider| parameter from the
+  // constructor.
+  ukm::SourceId source_id =
+      ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
+          base::PassKey<FedCmMetrics>(), provider);
+  provider_source_ids_[provider] = source_id;
+  provider_source_id_ = source_id;
+}
 
-void FedCmMetrics::RecordShowAccountsDialogTime(base::TimeDelta duration) {
+FedCmMetrics::~FedCmMetrics() = default;
+
+void FedCmMetrics::RecordShowAccountsDialogTime(
+    const std::vector<IdentityProviderData>& providers,
+    base::TimeDelta duration) {
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_ShowAccountsDialog(
         ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
@@ -56,8 +65,15 @@ void FedCmMetrics::RecordShowAccountsDialogTime(base::TimeDelta duration) {
   };
   ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
   RecordUkm(fedcm_builder);
-  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
-  RecordUkm(fedcm_idp_builder);
+  for (const auto& provider : providers) {
+    // A provider may have no accounts, for instance if present due to IDP
+    // mismatch.
+    if (!provider.accounts.empty()) {
+      ukm::builders::Blink_FedCmIdp fedcm_idp_builder(
+          GetOrCreateProviderSourceId(provider.idp_metadata.config_url));
+      RecordUkm(fedcm_idp_builder);
+    }
+  }
 
   base::UmaHistogramMediumTimes("Blink.FedCm.Timing.ShowAccountsDialog",
                                 duration);
@@ -484,6 +500,18 @@ void FedCmMetrics::RecordErrorUrlTypeMetrics(
   RecordUkm(fedcm_idp_builder);
 
   base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorUrlType", type);
+}
+
+ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
+  auto it = provider_source_ids_.find(provider);
+  if (it != provider_source_ids_.end()) {
+    return it->second;
+  }
+  ukm::SourceId source_id =
+      ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
+          base::PassKey<FedCmMetrics>(), provider);
+  provider_source_ids_[provider] = source_id;
+  return source_id;
 }
 
 void RecordPreventSilentAccess(RenderFrameHost& rfh,
