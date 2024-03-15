@@ -171,7 +171,8 @@ def check_distro(options):
 def check_architecture():
   architecture = subprocess.check_output(["uname", "-m"]).decode().strip()
   if architecture not in ["i686", "x86_64", 'aarch64']:
-    print("Only x86 and ARM64 architectures are currently supported", file=sys.stderr)
+    print("Only x86 and ARM64 architectures are currently supported",
+          file=sys.stderr)
     sys.exit(1)
 
 
@@ -637,6 +638,12 @@ def arm_list(options):
         "gcc-arm-linux-gnueabihf",
         "g++-11-arm-linux-gnueabihf",
         "gcc-11-arm-linux-gnueabihf",
+    ])
+  elif distro_codename() == "noble":
+    packages.extend([
+        "gcc-arm-linux-gnueabihf",
+        "g++-13-arm-linux-gnueabihf",
+        "gcc-13-arm-linux-gnueabihf",
     ])
 
   return packages
