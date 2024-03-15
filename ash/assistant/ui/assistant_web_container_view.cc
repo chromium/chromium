@@ -14,6 +14,7 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition.h"
@@ -138,8 +139,9 @@ void AssistantWebContainerView::DidSuppressNavigation(
     const GURL& url,
     WindowOpenDisposition disposition,
     bool from_user_gesture) {
-  if (!from_user_gesture)
+  if (!from_user_gesture) {
     return;
+  }
 
   // Deep links are always handled by the AssistantViewDelegate. If the
   // |disposition| indicates a desire to open a new foreground tab, we also
@@ -229,8 +231,9 @@ void AssistantWebContainerView::RemoveContents() {
 void AssistantWebContainerView::UpdateBackground() {
   // Paint a theme aware background to be displayed while the web content is
   // still loading.
-  const SkColor color =
-      GetColorProvider()->GetColor(ui::kColorEndpointBackground);
+  const SkColor color = DarkLightModeController::Get()->IsDarkModeEnabled()
+                            ? SkColorSetARGB(255, 27, 27, 27)
+                            : SK_ColorWHITE;
   SetBackground(views::CreateRoundedRectBackground(color, background_radii_));
 }
 
