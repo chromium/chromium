@@ -372,9 +372,6 @@
     "Linux FYI GPU TSAN Release": "ci/Linux FYI GPU TSAN Release/gn-args.json"
   },
   "chromium.linux": {
-    "Cast Linux": "ci/Cast Linux/gn-args.json",
-    "Cast Linux ARM64": "ci/Cast Linux ARM64/gn-args.json",
-    "Cast Linux Debug": "ci/Cast Linux Debug/gn-args.json",
     "Deterministic Linux": "ci/Deterministic Linux/gn-args.json",
     "Deterministic Linux (dbg)": "ci/Deterministic Linux (dbg)/gn-args.json",
     "Leak Detection Linux": "ci/Leak Detection Linux/gn-args.json",
@@ -768,7 +765,6 @@
     "leak_detection_linux": "try/leak_detection_linux/gn-args.json",
     "linux-afl-asan-rel": "try/linux-afl-asan-rel/gn-args.json",
     "linux-annotator-rel": "try/linux-annotator-rel/gn-args.json",
-    "linux-arm64-castos": "try/linux-arm64-castos/gn-args.json",
     "linux-bfcache-rel": "try/linux-bfcache-rel/gn-args.json",
     "linux-blink-heap-verification-try": "try/linux-blink-heap-verification-try/gn-args.json",
     "linux-centipede-asan-rel": "try/linux-centipede-asan-rel/gn-args.json",
@@ -801,8 +797,6 @@
     "linux-webkit-msan-rel": "try/linux-webkit-msan-rel/gn-args.json",
     "linux-wpt-content-shell-fyi-rel": "try/linux-wpt-content-shell-fyi-rel/gn-args.json",
     "linux-wpt-content-shell-leak-detection": "try/linux-wpt-content-shell-leak-detection/gn-args.json",
-    "linux-x64-castos": "try/linux-x64-castos/gn-args.json",
-    "linux-x64-castos-dbg": "try/linux-x64-castos-dbg/gn-args.json",
     "linux_chromium_archive_rel_ng": "try/linux_chromium_archive_rel_ng/gn-args.json",
     "linux_chromium_asan_rel_ng": "try/linux_chromium_asan_rel_ng/gn-args.json",
     "linux_chromium_asan_siso_rel_ng": "try/linux_chromium_asan_siso_rel_ng/gn-args.json",

@@ -290,26 +290,6 @@
       },
     },
 
-    'cast_audio_specific_chromium_gtests': {
-      'cast_audio_backend_unittests': {},
-      'cast_base_unittests': {},
-      'cast_cast_core_unittests': {},
-      'cast_crash_unittests': {},
-      'cast_media_unittests': {},
-      'cast_shell_browsertests': {
-        'args': [
-          '--enable-local-file-accesses',
-          '--ozone-platform=headless',
-          '--no-sandbox',
-          '--test-launcher-jobs=1',
-        ],
-        'swarming': {
-          'can_use_on_swarming_builders': False,
-        },
-      },
-      'cast_shell_unittests': {},
-    },
-
     'cast_junit_tests': {
       'cast_base_junit_tests': {
         'mixins': [
@@ -324,16 +304,6 @@
           'linux-jammy',
           'junit-swarming-emulator',
         ],
-      },
-    },
-
-    'cast_video_specific_chromium_gtests': {
-      'cast_display_settings_unittests': {
-        'experiment_percentage': 100,
-      },
-      'cast_graphics_unittests': {},
-      'views_unittests': {
-        'experiment_percentage': 100,
       },
     },
 
@@ -5917,13 +5887,6 @@
       'chromium_webkit_isolated_scripts',
       'linux_specific_chromium_isolated_scripts',
       'vulkan_swiftshader_isolated_scripts',
-    ],
-
-    'chromium_linux_cast_video_gtests': [
-      'cast_audio_specific_chromium_gtests',
-      'cast_video_specific_chromium_gtests',
-      'chromium_gtests',
-      'linux_flavor_specific_chromium_gtests',
     ],
 
     'chromium_linux_dbg_isolated_scripts': [

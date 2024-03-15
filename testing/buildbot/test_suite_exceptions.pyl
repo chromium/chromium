@@ -1864,15 +1864,6 @@
       'ToTFuchsiaOfficial arm64',
     ],
     'modifications': {
-      'Cast Linux': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter',
-        ],
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
-      },
       'Linux ASan LSan Tests (1)': {
         'swarming': {
           'shards': 24,

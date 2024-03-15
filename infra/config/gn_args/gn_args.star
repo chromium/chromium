@@ -215,13 +215,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "cast_os",
-    args = {
-        "is_castos": True,
-    },
-)
-
-gn_args.config(
     name = "cast_receiver",
     args = {
         "enable_cast_receiver": True,

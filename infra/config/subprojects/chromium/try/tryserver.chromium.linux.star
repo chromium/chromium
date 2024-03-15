@@ -93,19 +93,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-arm64-castos",
-    mirrors = [
-        "ci/Cast Linux ARM64",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Cast Linux ARM64",
-        ],
-    ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-bfcache-rel",
     mirrors = [
         "ci/linux-bfcache-rel",
@@ -491,40 +478,6 @@ try_.builder(
         "ci/linux-wpt-content-shell-leak-detection",
     ],
     gn_args = "ci/linux-wpt-content-shell-leak-detection",
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-x64-castos",
-    branch_selector = branches.selector.LINUX_BRANCHES,
-    mirrors = [
-        "ci/Cast Linux",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Cast Linux",
-            "release_try_builder",
-        ],
-    ),
-    builderless = not settings.is_main,
-    experiments = {
-        # crbug/940930
-        "chromium.enable_cleandead": 100,
-    },
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "linux-x64-castos-dbg",
-    branch_selector = branches.selector.LINUX_BRANCHES,
-    mirrors = [
-        "ci/Cast Linux Debug",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Cast Linux Debug",
-        ],
-    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

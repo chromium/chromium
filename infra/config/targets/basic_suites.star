@@ -281,28 +281,30 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "cast_audio_specific_chromium_gtests",
-    tests = {
-        "cast_audio_backend_unittests": targets.legacy_test_config(),
-        "cast_base_unittests": targets.legacy_test_config(),
-        "cast_cast_core_unittests": targets.legacy_test_config(),
-        "cast_crash_unittests": targets.legacy_test_config(),
-        "cast_media_unittests": targets.legacy_test_config(),
-        "cast_shell_browsertests": targets.legacy_test_config(
-            args = [
-                "--enable-local-file-accesses",
-                "--ozone-platform=headless",
-                "--no-sandbox",
-                "--test-launcher-jobs=1",
-            ],
-            swarming = targets.swarming(
-                enable = False,  # https://crbug.com/861753
-            ),
-        ),
-        "cast_shell_unittests": targets.legacy_test_config(),
-    },
-)
+# TODO(issues.chromium.org/1516671): Create a combined test suite target for
+# Cast Receiver builders.
+# targets.legacy_basic_suite(
+#     name = "cast_audio_specific_chromium_gtests",
+#     tests = {
+#         "cast_audio_backend_unittests": targets.legacy_test_config(),
+#         "cast_base_unittests": targets.legacy_test_config(),
+#         "cast_cast_core_unittests": targets.legacy_test_config(),
+#         "cast_crash_unittests": targets.legacy_test_config(),
+#         "cast_media_unittests": targets.legacy_test_config(),
+#         "cast_shell_browsertests": targets.legacy_test_config(
+#             args = [
+#                 "--enable-local-file-accesses",
+#                 "--ozone-platform=headless",
+#                 "--no-sandbox",
+#                 "--test-launcher-jobs=1",
+#             ],
+#             swarming = targets.swarming(
+#                 enable = False,  # https://crbug.com/861753
+#             ),
+#         ),
+#         "cast_shell_unittests": targets.legacy_test_config(),
+#     },
+# )
 
 targets.legacy_basic_suite(
     name = "cast_junit_tests",
@@ -324,18 +326,20 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "cast_video_specific_chromium_gtests",
-    tests = {
-        "cast_display_settings_unittests": targets.legacy_test_config(
-            experiment_percentage = 100,
-        ),
-        "cast_graphics_unittests": targets.legacy_test_config(),
-        "views_unittests": targets.legacy_test_config(
-            experiment_percentage = 100,
-        ),
-    },
-)
+# TODO(issues.chromium.org/1516671): Create a combined test suite target for
+# Cast Receiver builders.
+# targets.legacy_basic_suite(
+#     name = "cast_video_specific_chromium_gtests",
+#     tests = {
+#         "cast_display_settings_unittests": targets.legacy_test_config(
+#             experiment_percentage = 100,
+#         ),
+#         "cast_graphics_unittests": targets.legacy_test_config(),
+#         "views_unittests": targets.legacy_test_config(
+#             experiment_percentage = 100,
+#         ),
+#     },
+# )
 
 targets.legacy_basic_suite(
     name = "chrome_android_finch_smoke_tests",

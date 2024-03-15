@@ -285,15 +285,17 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "chromium_linux_cast_video_gtests",
-    basic_suites = [
-        "cast_audio_specific_chromium_gtests",
-        "cast_video_specific_chromium_gtests",
-        "chromium_gtests",
-        "linux_flavor_specific_chromium_gtests",
-    ],
-)
+# TODO(issues.chromium.org/1516671): Create a combined test suite target for
+# Cast Receiver builders.
+# targets.legacy_compound_suite(
+#     name = "chromium_linux_cast_video_gtests",
+#     basic_suites = [
+#         "cast_audio_specific_chromium_gtests",
+#         "cast_video_specific_chromium_gtests",
+#         "chromium_gtests",
+#         "linux_flavor_specific_chromium_gtests",
+#     ],
+# )
 
 targets.legacy_compound_suite(
     name = "chromium_linux_dbg_isolated_scripts",
