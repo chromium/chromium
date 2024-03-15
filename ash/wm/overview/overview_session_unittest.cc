@@ -10851,7 +10851,8 @@ TEST_F(OakTest, WallpaperClipRectAndRoundedCorners) {
 
   EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
 
-  // Exit overview. Check that the wallpaper has been fully restored.
+  // Exit overview. Check that the wallpaper has been fully restored and the
+  // wallpaper underlay layer becomes invisible.
   ToggleOverview();
   EXPECT_EQ(display_bounds, wallpaper_view_layer->bounds());
   EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
@@ -10940,6 +10941,55 @@ TEST_F(OakTest, PartialOverviewVisualsAndResize) {
   EXPECT_EQ(kWallpaperClipRoundedCornerRadii,
             wallpaper_view_layer->rounded_corner_radii());
   event_generator->ReleaseLeftButton();
+}
+
+// Tests that the wallpaper view layer clips correctly with animation upon
+// entering Overview mode and that both the wallpaper view layer and underlay
+// layer restore properly upon exiting.
+TEST_F(OakTest, WallpaperClipAnimation) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  const gfx::Rect display_bounds(
+      GetDisplayBoundsForRootWindow(Shell::GetPrimaryRootWindow()));
+
+  auto* wallpaper_widget_controller =
+      Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
+  auto* wallpaper_view_layer =
+      wallpaper_widget_controller->wallpaper_view()->layer();
+  auto* wallpaper_underlay_layer =
+      wallpaper_widget_controller->wallpaper_underlay_layer();
+  EXPECT_FALSE(wallpaper_underlay_layer->IsVisible());
+
+  ui::LayerAnimator* wallpaper_view_layer_animator =
+      wallpaper_view_layer->GetAnimator();
+  ASSERT_FALSE(wallpaper_view_layer_animator->is_animating());
+  ASSERT_EQ(display_bounds, wallpaper_view_layer->bounds());
+
+  ToggleOverview();
+  OverviewGrid* overview_grid = GetOverviewSession()->grid_list()[0].get();
+  const auto& grid_effective_bounds = overview_grid->GetGridEffectiveBounds();
+  EXPECT_TRUE(wallpaper_view_layer_animator->is_animating());
+  EXPECT_TRUE(
+      wallpaper_view_layer->clip_rect().Contains(grid_effective_bounds));
+  EXPECT_TRUE(display_bounds.Contains(wallpaper_view_layer->clip_rect()));
+
+  ui::LayerAnimationStoppedWaiter layer_animation_stopped_waiter;
+  layer_animation_stopped_waiter.Wait(wallpaper_view_layer);
+  EXPECT_TRUE(wallpaper_underlay_layer->IsVisible());
+  EXPECT_FALSE(wallpaper_view_layer_animator->is_animating());
+  EXPECT_EQ(wallpaper_view_layer->clip_rect(), grid_effective_bounds);
+
+  ToggleOverview();
+  EXPECT_TRUE(wallpaper_view_layer_animator->is_animating());
+  EXPECT_TRUE(
+      wallpaper_view_layer->clip_rect().Contains(grid_effective_bounds));
+  EXPECT_TRUE(display_bounds.Contains(wallpaper_view_layer->clip_rect()));
+
+  layer_animation_stopped_waiter.Wait(wallpaper_view_layer);
+  EXPECT_FALSE(wallpaper_view_layer_animator->is_animating());
+  ASSERT_EQ(display_bounds, wallpaper_view_layer->bounds());
+  EXPECT_FALSE(wallpaper_underlay_layer->IsVisible());
+  EXPECT_TRUE(wallpaper_view_layer->clip_rect().IsEmpty());
 }
 
 TEST_F(OakTest, CenterOverviewItems) {
