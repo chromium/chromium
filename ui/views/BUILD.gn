@@ -1100,6 +1100,8 @@ source_set("test_support") {
     "test/widget_activation_waiter.h",
     "test/widget_animation_waiter.cc",
     "test/widget_animation_waiter.h",
+    "test/widget_show_state_waiter.cc",
+    "test/widget_show_state_waiter.h",
     "test/widget_test.cc",
     "test/widget_test.h",
     "test/widget_test_api.cc",
