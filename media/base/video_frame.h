@@ -502,6 +502,11 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     color_space_ = color_space;
   }
 
+  // Return the full-range RGB component of the color space of this frame's
+  // content. This will replace several color spaces (Rec601, Rec709, and
+  // Apple's Rec709) with sRGB, for compatibility with existing behavior.
+  gfx::ColorSpace CompatRGBColorSpace() const;
+
   const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
     return hdr_metadata_;
   }

@@ -136,6 +136,11 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     media::PaintCanvasVideoRenderer* video_renderer,
     const gfx::Rect& dest_rect,
     bool prefer_tagged_orientation) {
+  auto frame_sk_color_space = frame->CompatRGBColorSpace().ToSkColorSpace();
+  if (!frame_sk_color_space) {
+    frame_sk_color_space = SkColorSpace::MakeSRGB();
+  }
+
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
@@ -143,14 +148,9 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
       transform == media::kNoTransformation && CanUseZeroCopyImages(*frame)) {
     // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
     // may never happen, and SkColorSpace doesn't know about it.
-    auto sk_color_space =
-        frame->ColorSpace().GetAsFullRangeRGB().ToSkColorSpace();
-    if (!sk_color_space)
-      sk_color_space = SkColorSpace::MakeSRGB();
-
     const SkImageInfo sk_image_info = SkImageInfo::Make(
         frame->coded_size().width(), frame->coded_size().height(),
-        kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
+        kN32_SkColorType, kUnpremul_SkAlphaType, frame_sk_color_space);
 
     // Hold a ref by storing it in the release callback.
     auto release_callback = WTF::BindOnce(
@@ -210,11 +210,11 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   }
 
   auto raster_context_provider = GetRasterContextProvider();
-  // TODO(https://crbug.com/1341235): The choice of color type, alpha type,
-  // and color space is inappropriate in many circumstances.
-  const auto resource_provider_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(final_dest_rect.size()),
-                        kN32_SkColorType, kPremul_SkAlphaType, nullptr);
+  // TODO(https://crbug.com/1341235): The choice of color type and alpha type
+  // inappropriate in many circumstances.
+  const auto resource_provider_info = SkImageInfo::Make(
+      gfx::SizeToSkISize(final_dest_rect.size()), kN32_SkColorType,
+      kPremul_SkAlphaType, frame_sk_color_space);
   std::unique_ptr<CanvasResourceProvider> local_resource_provider;
   if (!resource_provider) {
     local_resource_provider = CreateResourceProviderForVideoFrame(

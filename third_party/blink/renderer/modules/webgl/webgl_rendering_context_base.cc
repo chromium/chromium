@@ -5260,7 +5260,9 @@ GLenum WebGLRenderingContextBase::ConvertTexInternalFormat(
 void WebGLRenderingContextBase::GetCurrentUnpackState(TexImageParams& params) {
   params.unpack_premultiply_alpha = unpack_premultiply_alpha_;
   params.unpack_flip_y = unpack_flip_y_;
-  if (params.source_type == kSourceHTMLImageElement) {
+  if (params.source_type == kSourceHTMLImageElement ||
+      params.source_type == kSourceHTMLVideoElement ||
+      params.source_type == kSourceVideoFrame) {
     params.unpack_colorspace_conversion =
         unpack_colorspace_conversion_ != GL_NONE;
   }
@@ -6390,13 +6392,12 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   }
 
   // TODO(https://crbug.com/1341235): The choice of color type will clamp
-  // higher precision sources to 8 bit per color. The choice of color space
-  // should match the unpack color space.
+  // higher precision sources to 8 bit per color.
   const auto resource_provider_info = SkImageInfo::Make(
       gfx::SizeToSkISize(dest_rect.size()), kN32_SkColorType,
       media::IsOpaque(media_video_frame->format()) ? kOpaque_SkAlphaType
                                                    : kPremul_SkAlphaType,
-      nullptr);
+      media_video_frame->CompatRGBColorSpace().ToSkColorSpace());
 
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
