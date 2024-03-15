@@ -347,8 +347,6 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<protocol::CSS::StyleDeclarationEdit>>,
       HeapVector<Member<StyleSheetAction>>* actions);
 
-  std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionFallbackRule>>
-  PositionFallbackRulesForNode(Element* element);
   std::unique_ptr<protocol::Array<protocol::CSS::CSSPositionTryRule>>
   PositionTryRulesForElement(Element* element);
 
