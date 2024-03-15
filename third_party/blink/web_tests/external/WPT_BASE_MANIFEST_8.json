@@ -19348,7 +19348,7 @@
      ],
      "grid": {
       "monolithic-overflow-print.html": [
-       "5a9e55973d252aa92a5988fa1cd61303a7afa154",
+       "9b174caf96cb69c201115910fe746bd74153017b",
        [
         null,
         [
@@ -19673,6 +19673,21 @@
        [
         [
          "/css/css-fonts/downloadable-font-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
+    "css-grid": {
+     "grid-fragmentation-between-rows-001-print.tentative.html": [
+      "01fd97528fc5f470400b569f6169799d143d8259",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/grid-fragmentation-between-rows-001-print-ref.tentative.html",
          "=="
         ]
        ],
@@ -287090,10 +287105,6 @@
       "be955258530b6634f6233f8c5b6670f6c83f54e5",
       []
      ],
-     "comp_embedded_control-expected.txt": [
-      "495de6dde7f9abab9348af261de51a152ceb1192",
-      []
-     ],
      "comp_label-expected.txt": [
       "fc9b415888640fd89dcd363e9c37b81debe6ce74",
       []
@@ -302822,7 +302833,7 @@
      ],
      "grid": {
       "monolithic-overflow-print-ref.html": [
-       "ba0372df0698cb3025002d2c183ac7666bfd6170",
+       "58cc0828d2cd31182dac2b5e8ee555721d0ed39e",
        []
       ]
      },
@@ -317178,6 +317189,10 @@
        ]
       }
      },
+     "grid-fragmentation-between-rows-001-print-ref.tentative.html": [
+      "78464712c5cb698fd26a7a12b6c522d4bda946d6",
+      []
+     ],
      "grid-item-non-auto-height-stretch-ref.html": [
       "1249dbaa8c88cd1436741b6bcf526efb183a35a6",
       []
@@ -325504,7 +325519,7 @@
      ],
      "resources": {
       "common.js": [
-       "a641553bea8e82f6bfb091a8d17204eafa8cdaa9",
+       "e29f9bc5b3e1af0e74301577c1c5a6164ce30fc3",
        []
       ],
       "user-scroll-common.js": [
@@ -456424,7 +456439,7 @@
         ]
        ],
        "prefer-common-to-both-axes.html": [
-        "09b81e7c0dad69746012a6738b2f21689b699806",
+        "a44c8d7c48a593f03b6f18100d5524065a919951",
         [
          null,
          {
@@ -456908,14 +456923,7 @@
      },
      "snapchanged": {
       "snapchanged-after-layout-change.tentative.html": [
-       "4272412073f4645e1b7cb451955a4e1ef8a7195c",
-       [
-        null,
-        {}
-       ]
-      ],
-      "snapchanged-ensures-dom-order.html": [
-       "f87b6137f1618e947f24c07ab64cb63b6f1fa87d",
+       "a3ba05fdf5e9ffa42ab5689349e33b3c9a0aee15",
        [
         null,
         {}
@@ -456929,21 +456937,21 @@
        ]
       ],
       "snapchanged-on-programmatic-root-scroll.tentative.html": [
-       "7c7b48152e2acda756cf799a3d72b688ecee567a",
+       "98ec2e5d75c5258207281be1839d669bb0e242f5",
        [
         null,
         {}
        ]
       ],
       "snapchanged-on-programmatic-scroll.tentative.html": [
-       "1fb56212a3582cc3916220864d9322bd6f676411",
+       "9dff856f344b4bc4430afe5544bcaedb8f1a5554",
        [
         null,
         {}
        ]
       ],
       "snapchanged-on-user-root-scroll.tentative.html": [
-       "5405d778bf0f5ad500087343fff834c666669f45",
+       "127376caa2f3e0f98c032e7f4debfdd2ac582aaa",
        [
         null,
         {
@@ -456952,7 +456960,7 @@
        ]
       ],
       "snapchanged-on-user-scroll.tentative.html": [
-       "4f362007225f92b5a99414f1117cc78f3272afd3",
+       "91194642b5589b61b419c6091f4a082adb555ed5",
        [
         null,
         {
@@ -456968,7 +456976,7 @@
        ]
       ],
       "snapchanged-with-proximity-strictness.tentative.html": [
-       "6a874e82f22dd8fe4239517bec561d559543d3bd",
+       "96cab337398654fd778eb42b6a84167b72c9363d",
        [
         null,
         {}
@@ -456977,7 +456985,7 @@
      },
      "snapchanging": {
       "snapchanging-after-layout-change.tentative.html": [
-       "ff307981e8617aeb4f7a5d52a6a2093e0c02ad4b",
+       "0c0bfb623e106800597c0f0caafcd4afb2f27b75",
        [
         null,
         {
@@ -456986,7 +456994,7 @@
        ]
       ],
       "snapchanging-on-programmatic-root-scroll.tentative.html": [
-       "7044cfac9626dc78922b434a32b9a1e426abee37",
+       "5d75715edb7be4a5eae7d55f1a28ec031d080f13",
        [
         null,
         {
@@ -456995,7 +457003,7 @@
        ]
       ],
       "snapchanging-on-programmatic-scroll.tentative.html": [
-       "86946b84e9dcd9bad6f42a36212fdc2f82023430",
+       "25cdc44c662c90ba03db38e3ddb36c33dc9c7d2c",
        [
         null,
         {
@@ -457004,7 +457012,7 @@
        ]
       ],
       "snapchanging-on-user-root-scroll.tentative.html": [
-       "a9b003e6c5794b374167aeae5b5f5c38d268c0c6",
+       "e1a1e8aff6cc616eebb00d260b5b48b90e1b6d69",
        [
         null,
         {
@@ -457013,7 +457021,7 @@
        ]
       ],
       "snapchanging-on-user-scroll.tentative.html": [
-       "28ca96ec93c3e3886803f096bfbdba4b06fd31be",
+       "35ee8a51965483fcd0627ebdb5950a1ef4901d8a",
        [
         null,
         {
@@ -603852,7 +603860,7 @@
      ]
     ],
     "pointerevent_mouse_capture_change_hover.html": [
-     "ef824dafd963bc97f59283d833d0e0cb4fe97fc8",
+     "eb4600093872368185ac8f7133a6c1c8dcd9430c",
      [
       null,
       {
