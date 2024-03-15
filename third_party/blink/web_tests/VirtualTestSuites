@@ -2227,7 +2227,17 @@
              "--enable-features=FencedFramesDefaultMode",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["cbiesinger@chromium.org", "npm@chromium.org"],
-    "expires": "Mar 1, 2024"
+    "expires": "Mar 1, 2025"
+  },
+  {
+    "prefix": "fedcm-same-site-none",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/credential-management/fedcm-same-site-none/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmSameSiteNone",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["cbiesinger@chromium.org", "npm@chromium.org"],
+    "expires": "Mar 1, 2025"
   },
   {
     "prefix": "fedcm-button-and-other-account",
