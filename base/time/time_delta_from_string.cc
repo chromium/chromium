@@ -5,6 +5,7 @@
 #include "base/time/time_delta_from_string.h"
 
 #include <limits>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_util.h"
@@ -19,13 +20,13 @@ namespace {
 //
 // Example:
 //
-//   StringPiece input("abc");
+//   std::string_view input("abc");
 //   EXPECT_TRUE(ConsumePrefix(input, "a"));
 //   EXPECT_EQ(input, "bc");
 //
 // Adapted from absl::ConsumePrefix():
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/strings/strip.h?l=45&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
-bool ConsumePrefix(StringPiece& str, StringPiece expected) {
+bool ConsumePrefix(std::string_view& str, std::string_view expected) {
   if (!StartsWith(str, expected))
     return false;
   str.remove_prefix(expected.size());
@@ -48,13 +49,13 @@ struct ParsedDecimal {
 };
 
 // A helper for FromString() that tries to parse a leading number from the given
-// StringPiece. |number_string| is modified to start from the first unconsumed
-// char.
+// std::string_view. |number_string| is modified to start from the first
+// unconsumed char.
 //
 // Adapted from absl:
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/time/duration.cc?l=807&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
 constexpr std::optional<ParsedDecimal> ConsumeDurationNumber(
-    StringPiece& number_string) {
+    std::string_view& number_string) {
   ParsedDecimal res;
   StringPiece::const_iterator orig_start = number_string.begin();
   // Parse contiguous digits.
@@ -94,12 +95,12 @@ constexpr std::optional<ParsedDecimal> ConsumeDurationNumber(
 }
 
 // A helper for FromString() that tries to parse a leading unit designator
-// (e.g., ns, us, ms, s, m, h, d) from the given StringPiece. |unit_string| is
-// modified to start from the first unconsumed char.
+// (e.g., ns, us, ms, s, m, h, d) from the given std::string_view. |unit_string|
+// is modified to start from the first unconsumed char.
 //
 // Adapted from absl:
 // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/time/duration.cc?l=841&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
-std::optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
+std::optional<TimeDelta> ConsumeDurationUnit(std::string_view& unit_string) {
   for (const auto& str_delta : {
            std::make_pair("ns", Nanoseconds(1)),
            std::make_pair("us", Microseconds(1)),
@@ -120,7 +121,7 @@ std::optional<TimeDelta> ConsumeDurationUnit(StringPiece& unit_string) {
 
 }  // namespace
 
-std::optional<TimeDelta> TimeDeltaFromString(StringPiece duration_string) {
+std::optional<TimeDelta> TimeDeltaFromString(std::string_view duration_string) {
   int sign = 1;
   if (ConsumePrefix(duration_string, "-"))
     sign = -1;

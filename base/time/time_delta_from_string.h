@@ -6,9 +6,9 @@
 #define BASE_TIME_TIME_DELTA_FROM_STRING_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -32,7 +32,7 @@ class TimeDelta;
 // will fail parsing. Overflowing `number * unit` will return +/-inf, as
 // appropriate.
 BASE_EXPORT std::optional<TimeDelta> TimeDeltaFromString(
-    StringPiece duration_string);
+    std::string_view duration_string);
 
 }  // namespace base
 

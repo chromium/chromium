@@ -5,12 +5,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "base/time/time_delta_from_string.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::StringPiece input(reinterpret_cast<const char*>(data), size);
+  std::string_view input(reinterpret_cast<const char*>(data), size);
   base::TimeDeltaFromString(input);
   return 0;
 }
