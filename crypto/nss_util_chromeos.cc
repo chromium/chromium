@@ -291,6 +291,20 @@ class ChromeOSTokenManager {
     std::string db_name = base::StringPrintf("%s %s", kUserNSSDatabaseName,
                                              username_hash.c_str());
     ScopedPK11Slot public_slot(OpenPersistentNSSDBForPath(db_name, path));
+
+    return InitializeNSSForChromeOSUserWithSlot(username_hash,
+                                                std::move(public_slot));
+  }
+
+  bool InitializeNSSForChromeOSUserWithSlot(const std::string& username_hash,
+                                            ScopedPK11Slot public_slot) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    if (base::Contains(chromeos_user_map_, username_hash)) {
+      // This user already exists in our mapping.
+      DVLOG(2) << username_hash << " already initialized.";
+      return false;
+    }
+
     chromeos_user_map_[username_hash] =
         std::make_unique<ChromeOSUserData>(std::move(public_slot));
     return true;
@@ -551,6 +565,12 @@ bool InitializeNSSForChromeOSUser(const std::string& username_hash,
                                   const base::FilePath& path) {
   return g_token_manager.Get().InitializeNSSForChromeOSUser(username_hash,
                                                             path);
+}
+
+bool InitializeNSSForChromeOSUserWithSlot(const std::string& username_hash,
+                                          ScopedPK11Slot public_slot) {
+  return g_token_manager.Get().InitializeNSSForChromeOSUserWithSlot(
+      username_hash, std::move(public_slot));
 }
 
 bool ShouldInitializeTPMForChromeOSUser(const std::string& username_hash) {

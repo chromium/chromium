@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/tpm/tpm_token_info_getter.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -127,13 +128,25 @@ void StartTPMSlotInitializationOnIOThread(const AccountId& account_id,
 
 void StartNSSInitOnIOThread(const AccountId& account_id,
                             const std::string& username_hash,
-                            const base::FilePath& path) {
+                            const base::FilePath& path,
+                            bool is_kiosk) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DVLOG(1) << "Starting NSS init for " << account_id.Serialize()
            << "  hash:" << username_hash;
 
   // Make sure NSS is initialized for the user.
-  crypto::InitializeNSSForChromeOSUser(username_hash, path);
+  if (is_kiosk) {
+    // Kiosk sessions don't have the UI that could result in interactions with
+    // the public slot. Kiosk users are also not owner users and can't have
+    // the owner key in the public slot. So the public slot is not used in
+    // Kiosk sessions and can be replaced by the internal slot. This is done
+    // mainly because Chrome sometimes fails to load the public slot and has
+    // to crash because of that.
+    crypto::InitializeNSSForChromeOSUserWithSlot(
+        username_hash, crypto::ScopedPK11Slot(PK11_GetInternalKeySlot()));
+  } else {
+    crypto::InitializeNSSForChromeOSUser(username_hash, path);
+  }
 
   // Check if it's OK to initialize TPM for the user before continuing. This
   // may not be the case if the TPM slot initialization was previously
@@ -309,7 +322,8 @@ NssService::NssService(content::BrowserContext* context) {
     DCHECK(!username_hash.empty());
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&StartNSSInitOnIOThread, user->GetAccountId(),
-                                  username_hash, profile->GetPath()));
+                                  username_hash, profile->GetPath(),
+                                  chromeos::IsKioskSession()));
 
     enable_system_slot = user->IsAffiliated();
   }
