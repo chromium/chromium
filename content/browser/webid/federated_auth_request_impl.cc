@@ -1318,6 +1318,25 @@ bool FederatedAuthRequestImpl::ShouldMediateAuthz(
   return false;
 }
 
+bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
+  if (mediation_requirement_ == MediationRequirement::kSilent) {
+    return false;
+  }
+
+  if (mediation_requirement_ == MediationRequirement::kRequired) {
+    // In this case, we always have a user gesture (the user had to choose
+    // an account), so we can show a popup.
+    return true;
+  }
+
+  if (identity_selection_type_ == kExplicit ||
+      identity_selection_type_ == kAutoButton) {
+    return true;
+  }
+  DCHECK_EQ(identity_selection_type_, kAutoWidget);
+  return had_transient_user_activation_;
+}
+
 void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     const IdpNetworkRequestManager::AccountList& accounts,
@@ -2178,7 +2197,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
       url::Origin::Create(continue_on)
           .IsSameOriginWith(url::Origin::Create(idp->config->config_url));
 
-  if (!IsFedCmAuthzEnabled() || !is_same_origin) {
+  if (!IsFedCmAuthzEnabled() || !is_same_origin || !CanShowContinueOnPopup()) {
     CompleteRequestWithError(
         FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
         TokenStatus::kIdTokenInvalidResponse,

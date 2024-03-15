@@ -183,6 +183,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // or delegate (to the IdP) the authorization.
   static bool ShouldMediateAuthz(const std::vector<std::string>& scope);
 
+  // Whether we can show the continue_on popup (not using mediation: silent,
+  // etc.)
+  bool CanShowContinueOnPopup() const;
+
  private:
   friend class FederatedAuthRequestImplTest;
 
