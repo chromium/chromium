@@ -80,7 +80,6 @@ constexpr char kRemoveDefaultAcceleratorHistogramName[] =
 // times in the frontend. GetHiddenAcceleratorMap() is used to collect such
 // accelerators and hide them from display.
 const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
-  // TODO(jimmyxgong): nice to remove entries for positional modifiers.
   static const auto kHiddenAcceleratorMap =
       base::NoDestructor<HiddenAcceleratorMap>({
           {AcceleratorAction::kToggleAppList,
@@ -296,7 +295,6 @@ mojom::AcceleratorLayoutInfoPtr LayoutInfoToMojom(
 }
 
 mojom::AcceleratorType GetAcceleratorType(ui::Accelerator accelerator) {
-  // TODO(longbowei): Add and handle more Accelerator types in the future.
   if (Shell::Get()->ash_accelerator_configuration()->IsDeprecated(
           accelerator)) {
     return mojom::AcceleratorType::kDeprecated;
@@ -347,9 +345,6 @@ std::optional<AcceleratorConfigResult> ValidateSourceAndAction(
 // accelerator.
 std::optional<AcceleratorConfigResult> ValidateAccelerator(
     const ui::Accelerator& accelerator) {
-  // TODO(jimmyxgong): The following cases are not finalized, we still need to
-  // validate if the key is present in connected keyboards.
-
   // Sanitize the modifiers with only the relevant modifiers for customization.
   const int modifiers = accelerator.modifiers() & kCustomizationModifierMask;
 
@@ -1588,8 +1583,6 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
       if (IsAcceleratorHidden(layout->action_id, accelerator)) {
         continue;
       }
-      // TODO(jimmyxgong): Check pref storage to determine whether the
-      // AcceleratorType was user-added or default.
       CreateAndAppendAliasedAccelerators(
           accelerator, layout->locked, mojom::AcceleratorType::kDefault,
           mojom::AcceleratorState::kEnabled,

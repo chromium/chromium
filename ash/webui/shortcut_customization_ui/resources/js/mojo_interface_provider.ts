@@ -36,7 +36,6 @@ export function setUseFakeProviderForTesting(useFake: boolean): void {
 
 /**
  * Sets up a FakeShortcutProvider to be used at runtime.
- * TODO(zentaro): Remove once mojo bindings are implemented.
  */
 export function setupFakeShortcutProvider(): ShortcutProviderInterface {
   // Create provider.
@@ -57,7 +56,6 @@ export function setupFakeShortcutProvider(): ShortcutProviderInterface {
 /**
  * This wrapper is used to bridge the gap from the fake provider to the
  * real provider until all methods are implemented.
- * TODO(cambickel): Remove once all mojo bindings are implemented.
  */
 export class ShortcutProviderWrapper implements ShortcutProviderInterface {
   private remote: AcceleratorConfigurationProviderRemote;

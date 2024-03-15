@@ -58,11 +58,6 @@ export class AcceleratorSubsectionElement extends
         observer: AcceleratorSubsectionElement.prototype.onCategoryUpdated,
       },
 
-      /**
-       * TODO(jimmyxgong): Fetch the shortcuts and it accelerators with the
-       * mojom::source_id and mojom::subsection_id. This serves as a
-       * temporary way to populate a subsection.
-       */
       acceleratorContainer: {
         type: Array,
         value: [],

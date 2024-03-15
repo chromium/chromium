@@ -47,7 +47,6 @@ const MAX_NUM_ACCELERATORS = 5;
  * @fileoverview
  * 'accelerator-edit-dialog' is a dialog that displays the accelerators for
  * a given shortcut. Allows users to edit the accelerators.
- * TODO(jimmyxgong): Implement editing accelerators.
  */
 const AcceleratorEditDialogElementBase = I18nMixin(PolymerElement);
 

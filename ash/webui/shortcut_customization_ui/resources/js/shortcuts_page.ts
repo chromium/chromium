@@ -22,8 +22,6 @@ import {getTemplate} from './shortcuts_page.html.js';
  * @fileoverview
  * 'shortcuts-page' is a generic page that is capable of rendering the
  * shortcuts for a specific category.
- *
- * TODO(jimmyxgong): Implement this skeleton element.
  */
 
 // 150ms is enough of delay to wait for the virtual keyboard to disappear and

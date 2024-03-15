@@ -37,7 +37,6 @@ declare global {
  * @fileoverview
  * 'accelerator-row' is a wrapper component for one shortcut. It features a
  * description of the shortcut along with a list of accelerators.
- * TODO(jimmyxgong): Implement opening a dialog when clicked.
  */
 const AcceleratorRowElementBase = I18nMixin(PolymerElement);
 export class AcceleratorRowElement extends AcceleratorRowElementBase {
