@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
@@ -41,7 +40,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -467,35 +465,8 @@ public class SelectActionMenuHelper {
 
     private static SelectionMenuItem.Builder share(@Nullable Context context, boolean isEnabled) {
         if (context == null) {
-            // TODO(crbug.com/41486995): Remove this log statement.
-            Log.w(TAG, "Being passed a null context.");
             context = ContextUtils.getApplicationContext();
         }
-
-        // TODO(crbug.com/41486995): Remove the following debugging code. ==========================
-        // Using warning logs so that they're not stripped in release builds.
-        if (context.getResources() != null) {
-            Log.w(
-                    TAG,
-                    "The context's language is set to: "
-                            + context.getResources()
-                                    .getConfiguration()
-                                    .getLocales()
-                                    .get(0)
-                                    .getDisplayName());
-            // Create a duplicate context and access the string resources to check whether the
-            // translation strings are available/correct.
-            Configuration configuration =
-                    new Configuration(context.getResources().getConfiguration());
-            configuration.setLocale(new Locale("de"));
-            Context duplicateContext = context.createConfigurationContext(configuration);
-            Log.w(
-                    TAG,
-                    "The German translation string is: "
-                            + duplicateContext.getString(R.string.actionbar_share));
-        }
-        // =========================================================================================
-
         return new SelectionMenuItem.Builder(context.getString(R.string.actionbar_share))
                 .setId(R.id.select_action_menu_share)
                 .setIconAttr(android.R.attr.actionModeShareDrawable)
