@@ -176,22 +176,6 @@ public abstract class PlatformServiceBridge {
     }
 
     /**
-     * Asynchronously obtain a MediaIntegrityProvider implementation.
-     *
-     * @param cloudProjectNumber Integer representing the cloud project number passed by caller
-     * @param apiStatus Enablement status of the api for given origin
-     * @param callback Callback to call with the result containing either a non-null
-     *     MediaIntegrityProvider implementation or an appropriate exception.
-     */
-    @Deprecated
-    public void getMediaIntegrityProvider(
-            int cloudProjectNumber,
-            @MediaIntegrityApiStatus int apiStatus,
-            ValueOrErrorCallback<MediaIntegrityProvider, Integer> callback) {
-        callback.onError(MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR);
-    }
-
-    /**
      * Wrapper interface to allow us to pass an {@link org.chromium.android_webview.AwContents}
      * instance through the {@link PlatformServiceBridge} without adding a dependency on the {@code
      * org.chromium.android_webview package}.
