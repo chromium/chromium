@@ -110,7 +110,8 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                 new PageStation(
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ false,
-                        /* isOpeningTab= */ false);
+                        /* isOpeningTab= */ false,
+                        /* isSelectingTab= */ true);
         return Trip.travelSync(
                 this,
                 destination,
@@ -165,7 +166,12 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
     public PageStation openNewTab() {
         recheckActiveConditions();
 
-        PageStation page = new PageStation(mChromeTabbedActivityTestRule, mIsIncognito, true);
+        PageStation page =
+                new PageStation(
+                        mChromeTabbedActivityTestRule,
+                        mIsIncognito,
+                        /* isOpeningTab= */ true,
+                        /* isSelectingTab= */ true);
         return Trip.travelSync(this, page, t -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
 }

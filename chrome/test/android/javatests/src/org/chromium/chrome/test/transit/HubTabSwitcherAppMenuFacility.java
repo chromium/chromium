@@ -41,7 +41,8 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
                 new NewTabPageStation(
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ false,
-                        /* isOpeningTab= */ true);
+                        /* isOpeningTab= */ true,
+                        /* isSelectingTab= */ true);
 
         // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
         // return Trip.travelSync(
@@ -69,7 +70,8 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
                 new NewTabPageStation(
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ true,
-                        /* isOpeningTab= */ true);
+                        /* isOpeningTab= */ true,
+                        /* isSelectingTab= */ true);
 
         // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
         // return Trip.travelSync(

@@ -88,7 +88,8 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                                     new PageStation(
                                             mChromeTabbedActivityTestRule,
                                             /* incognito= */ false,
-                                            /* isOpeningTab= */ false));
+                                            /* isOpeningTab= */ false,
+                                            /* isSelectingTab= */ true));
                 }
             } else {
                 // No tabs left, so closing the last will take us to the tab switcher.
@@ -109,7 +110,8 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                             new PageStation(
                                     mChromeTabbedActivityTestRule,
                                     tabModelSelector.isIncognitoSelected(),
-                                    /* isOpeningTab= */ false));
+                                    /* isOpeningTab= */ false,
+                                    /* isSelectingTab= */ true));
         }
 
         return Trip.travelSync(mStation, destination, (t) -> CLOSE_TAB_MENU_ITEM.perform(click()));
@@ -121,7 +123,8 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                 new PageStation(
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ false,
-                        /* isOpeningTab= */ true);
+                        /* isOpeningTab= */ true,
+                        /* isSelectingTab= */ true);
         return Trip.travelSync(mStation, destination, (t) -> NEW_TAB_MENU_ITEM.perform(click()));
     }
 
@@ -131,7 +134,8 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                 new PageStation(
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ true,
-                        /* isOpeningTab= */ true);
+                        /* isOpeningTab= */ true,
+                        /* isSelectingTab= */ true);
         return Trip.travelSync(
                 mStation, destination, (t) -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
     }

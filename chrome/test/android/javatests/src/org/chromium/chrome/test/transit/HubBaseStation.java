@@ -121,7 +121,8 @@ public abstract class HubBaseStation extends TransitStation {
                 new PageStation(
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ false,
-                        /* isOpeningTab= */ false);
+                        /* isOpeningTab= */ false,
+                        /* isSelectingTab= */ true);
         return Trip.travelSync(this, destination, (t) -> Espresso.pressBack());
     }
 

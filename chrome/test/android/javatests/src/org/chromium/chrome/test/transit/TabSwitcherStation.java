@@ -122,7 +122,12 @@ public abstract class TabSwitcherStation extends TransitStation {
     public PageStation openNewTab() {
         recheckActiveConditions();
 
-        PageStation page = new PageStation(mChromeTabbedActivityTestRule, false, true);
+        PageStation page =
+                new PageStation(
+                        mChromeTabbedActivityTestRule,
+                        /* incognito= */ false,
+                        /* isOpeningTab= */ true,
+                        /* isSelectingTab= */ true);
         return Trip.travelSync(
                 this,
                 page,
@@ -169,7 +174,10 @@ public abstract class TabSwitcherStation extends TransitStation {
     public BasePageStation selectTabAtIndex(int index) {
         BasePageStation page =
                 new PageStation(
-                        mChromeTabbedActivityTestRule, mIsIncognito, /* isOpeningTab= */ false);
+                        mChromeTabbedActivityTestRule,
+                        mIsIncognito,
+                        /* isOpeningTab= */ false,
+                        /* isSelectingTab= */ true);
 
         return Trip.travelSync(
                 this,

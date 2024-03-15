@@ -169,7 +169,10 @@ public class HubLayoutPublicTransitTest {
     private NewTabPageStation pauseAndResumeActivity(TransitStation currentStation) {
         NewTabPageStation destination =
                 new NewTabPageStation(
-                        sActivityTestRule, /* incognito= */ false, /* isOpeningTab= */ false);
+                        sActivityTestRule,
+                        /* incognito= */ false,
+                        /* isOpeningTab= */ false,
+                        /* isSelectingTab= */ true);
         Trip.travelSync(
                 currentStation,
                 destination,

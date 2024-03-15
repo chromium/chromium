@@ -15,8 +15,9 @@ public class NewTabPageStation extends PageStation {
     public NewTabPageStation(
             ChromeTabbedActivityTestRule chromeTabbedActivityTestRule,
             boolean incognito,
-            boolean isOpeningTab) {
-        super(chromeTabbedActivityTestRule, incognito, isOpeningTab);
+            boolean isOpeningTab,
+            boolean isSelectingTab) {
+        super(chromeTabbedActivityTestRule, incognito, isOpeningTab, isSelectingTab);
     }
 
     @Override

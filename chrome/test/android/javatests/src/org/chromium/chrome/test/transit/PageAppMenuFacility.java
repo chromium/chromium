@@ -45,7 +45,8 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
                 new NewTabPageStation(
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ false,
-                        /* isOpeningTab= */ true);
+                        /* isOpeningTab= */ true,
+                        /* isSelectingTab= */ true);
 
         return Trip.travelSync(mStation, destination, t -> NEW_TAB_MENU_ITEM.perform(click()));
     }
@@ -58,7 +59,8 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
                 new NewTabPageStation(
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ true,
-                        /* isOpeningTab= */ true);
+                        /* isOpeningTab= */ true,
+                        /* isSelectingTab= */ true);
 
         return Trip.travelSync(
                 mStation, destination, t -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));

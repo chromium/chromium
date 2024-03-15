@@ -14,22 +14,31 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * The screen that shows a webpage with the omnibox and the toolbar.
+ * The screen that shows a loaded webpage with the omnibox and the toolbar.
  *
  * <p>Contains extra Conditions compared ot the BasePageStation that can be checked when not at an
  * entry point: ensure the TabModel adds and selects the new Tab.
  */
 public class PageStation extends BasePageStation {
     private final boolean mIsOpeningTab;
+    private final boolean mIsSelectingTab;
     protected PageStationTabModelObserver mTabModelObserver;
     protected PageLoadedCondition mPageLoadedEnterCondition;
 
+    /**
+     * @param chromeTabbedActivityTestRule driver to interact with the app
+     * @param incognito whether the page is open in an incognito tab
+     * @param isOpeningTab whether to wait for a tab added callback
+     * @param isSelectingTab whether to wait for a tab selected callback
+     */
     public PageStation(
             ChromeTabbedActivityTestRule chromeTabbedActivityTestRule,
             boolean incognito,
-            boolean isOpeningTab) {
+            boolean isOpeningTab,
+            boolean isSelectingTab) {
         super(chromeTabbedActivityTestRule, incognito);
         mIsOpeningTab = isOpeningTab;
+        mIsSelectingTab = isSelectingTab;
     }
 
     @Override
@@ -53,9 +62,12 @@ public class PageStation extends BasePageStation {
                     CallbackCondition.instrumentationThread(
                             mTabModelObserver.mTabAddedCallback, "Receive tab opened callback"));
         }
-        elements.declareEnterCondition(
-                CallbackCondition.instrumentationThread(
-                        mTabModelObserver.mTabSelectedCallback, "Receive tab selected callback"));
+        if (mIsSelectingTab) {
+            elements.declareEnterCondition(
+                    CallbackCondition.instrumentationThread(
+                            mTabModelObserver.mTabSelectedCallback,
+                            "Receive tab selected callback"));
+        }
 
         mPageLoadedEnterCondition =
                 new PageLoadedCondition(mChromeTabbedActivityTestRule, mIncognito);
