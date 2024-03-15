@@ -16,6 +16,7 @@ namespace crypto {
 // UnexportableSigningKey provides a hardware-backed signing oracle on platforms
 // that support it. Current support is:
 //   Windows: RSA_PKCS1_SHA256 via TPM 1.2+ and ECDSA_SHA256 via TPM 2.0.
+//   macOS: ECDSA_SHA256 via the Secure Enclave.
 //   Tests: ECDSA_SHA256 via ScopedMockUnexportableSigningKeyForTesting.
 //
 // See also //components/unexportable_keys for a higher-level key management

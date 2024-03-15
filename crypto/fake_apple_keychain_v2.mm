@@ -133,10 +133,9 @@ FakeAppleKeychainV2::KeyCopyAttributes(SecKeyRef key) {
   if (it == items_.end()) {
     return base::apple::ScopedCFTypeRef<CFDictionaryRef>();
   }
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> result =
-      base::apple::ScopedCFTypeRef<CFMutableDictionaryRef>(
-          CFDictionaryCreateMutableCopy(kCFAllocatorDefault, /*capacity=*/0,
-                                        it->get()));
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> result(
+      CFDictionaryCreateMutableCopy(kCFAllocatorDefault, /*capacity=*/0,
+                                    it->get()));
   // The real implementation does not return the actual key.
   CFDictionaryRemoveValue(result.get(), kSecValueRef);
   return result;
