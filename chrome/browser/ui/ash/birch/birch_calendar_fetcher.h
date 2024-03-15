@@ -9,9 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/calendar/calendar_api_requests.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/calendar/calendar_api_url_generator.h"
@@ -26,13 +24,15 @@ class RequestSender;
 
 namespace ash {
 
+class RefreshTokenWaiter;
+
 // Fetches calendar events using the Google Calendar public API.
-class BirchCalendarFetcher : public signin::IdentityManager::Observer {
+class BirchCalendarFetcher {
  public:
   explicit BirchCalendarFetcher(Profile* profile);
   BirchCalendarFetcher(const BirchCalendarFetcher&) = delete;
   BirchCalendarFetcher& operator=(const BirchCalendarFetcher&) = delete;
-  ~BirchCalendarFetcher() override;
+  virtual ~BirchCalendarFetcher();
 
   void Shutdown();
 
@@ -44,10 +44,6 @@ class BirchCalendarFetcher : public signin::IdentityManager::Observer {
       base::Time end_time,
       google_apis::calendar::CalendarEventListCallback callback);
 
-  // signin::IdentityManager::Observer:
-  void OnRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info) override;
-
   void SetSenderForTest(std::unique_ptr<google_apis::RequestSender> sender);
   void SetBaseUrlForTest(const std::string& base_url);
 
@@ -56,14 +52,13 @@ class BirchCalendarFetcher : public signin::IdentityManager::Observer {
   void StartRequest();
 
   const raw_ptr<Profile> profile_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<google_apis::RequestSender> sender_;
   google_apis::calendar::CalendarApiUrlGenerator url_generator_;
 
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
+  // Waits for refresh tokens to be loaded. Tokens may not be loaded early in
+  // startup.
+  std::unique_ptr<RefreshTokenWaiter> refresh_token_waiter_;
 
   // The time range for the current fetch.
   base::Time start_time_;

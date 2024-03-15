@@ -7,12 +7,14 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/birch/refresh_token_waiter.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -62,14 +64,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 BirchCalendarFetcher::BirchCalendarFetcher(Profile* profile)
     : profile_(profile),
-      identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
+      refresh_token_waiter_(std::make_unique<RefreshTokenWaiter>(profile_)) {
   std::vector<std::string> scopes;
   scopes.push_back(GaiaConstants::kCalendarReadOnlyOAuth2Scope);
   url_loader_factory_ = profile_->GetURLLoaderFactory();
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   sender_ = std::make_unique<google_apis::RequestSender>(
       std::make_unique<google_apis::AuthService>(
-          identity_manager_,
-          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          identity_manager,
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
           url_loader_factory_, scopes),
       url_loader_factory_,
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -83,7 +86,7 @@ BirchCalendarFetcher::~BirchCalendarFetcher() {}
 
 void BirchCalendarFetcher::Shutdown() {
   sender_.reset();
-  identity_manager_observation_.Reset();
+  refresh_token_waiter_.reset();
 }
 
 void BirchCalendarFetcher::GetCalendarEvents(
@@ -92,7 +95,7 @@ void BirchCalendarFetcher::GetCalendarEvents(
     google_apis::calendar::CalendarEventListCallback callback) {
   CHECK_LT(start_time, end_time);
 
-  if (!sender_) {
+  if (!sender_ || !refresh_token_waiter_) {
     // This class is in shutdown, don't fetch.
     return;
   }
@@ -101,26 +104,10 @@ void BirchCalendarFetcher::GetCalendarEvents(
   end_time_ = end_time;
   callback_ = std::move(callback);
 
-  // If a refresh token is available, make the request. Otherwise observe for
-  // the token being updated.
-  // TODO(jamescook): Convert this to use RefreshTokenWaiter.
-  if (identity_manager_->HasPrimaryAccountWithRefreshToken(
-          signin::ConsentLevel::kSignin)) {
-    StartRequest();
-  } else {
-    identity_manager_observation_.Observe(identity_manager_);
-  }
-}
-
-void BirchCalendarFetcher::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
-  const CoreAccountInfo& primary_account_info =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (account_info != primary_account_info) {
-    return;
-  }
-  identity_manager_observation_.Reset();
-  StartRequest();
+  // Ensure refresh tokens are loaded before starting the request. Unretained is
+  // safe because of the shutdown check for `refresh_token_waiter_` above.
+  refresh_token_waiter_->Wait(base::BindOnce(
+      &BirchCalendarFetcher::StartRequest, base::Unretained(this)));
 }
 
 void BirchCalendarFetcher::StartRequest() {
