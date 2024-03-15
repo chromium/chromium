@@ -117,24 +117,18 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
           }));
 
   EXPECT_CALL(mock_history_service(),
-              QueryURLs(testing::_, true, testing::_, testing::_))
-      .WillOnce(
-          (testing::Invoke([&](const std::vector<GURL>& urls, bool want_visits,
-                               MockHistoryService::QueryURLsCallback callback,
-                               base::CancelableTaskTracker* tracker) {
-            std::vector<history::QueryURLResult> results;
+              GetMostRecentVisitForEachURL(testing::_, testing::_, testing::_))
+      .WillOnce((testing::Invoke(
+          [&](const std::vector<GURL>& urls,
+              base::OnceCallback<void(std::map<GURL, history::VisitRow>)>
+                  callback,
+              base::CancelableTaskTracker* tracker) {
+            std::map<GURL, history::VisitRow> visits;
             for (auto url : urls) {
-              history::QueryURLResult result;
-              result.success = true;
-              result.row.set_url(url);
-              result.row.set_last_visit(base::Time::Now());
-              history::VisitVector visits;
               history::VisitRow visit;
-              visits.push_back(visit);
-              result.visits = visits;
-              results.push_back(result);
+              visits[url] = visit;
             }
-            std::move(callback).Run(results);
+            std::move(callback).Run(visits);
             return base::CancelableTaskTracker::TaskId();
           })));
 
@@ -146,9 +140,12 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
               MockHistoryService::ToAnnotatedVisitsCallback callback,
               base::CancelableTaskTracker* tracker) {
             std::vector<history::AnnotatedVisit> annotated_visits;
-            for (auto visit : visit_rows) {
+            for (size_t i = 0; i < visit_rows.size(); i++) {
               history::URLRow url_row;
-              url_row.set_url(GURL(kSampleUrl));
+              size_t url_suffix = visit_rows.size() - i - 1;
+              url_row.set_url(GURL(
+                  kSampleUrl +
+                  (url_suffix != 0 ? base::NumberToString(url_suffix) : "")));
               history::AnnotatedVisit annotated_visit;
               annotated_visit.url_row = url_row;
               history::VisitContentModelAnnotations model_annotations;
@@ -182,7 +179,8 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
     if (i == 0) {
       ASSERT_EQ("Recently opened", tab_mojom->relative_time_text);
     }
-    ASSERT_EQ(GURL(kSampleUrl), tab_mojom->url);
+    ASSERT_EQ(GURL(kSampleUrl + (i != 0 ? base::NumberToString(i) : "")),
+              tab_mojom->url);
   }
 }
 
@@ -191,8 +189,7 @@ TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
   std::vector<base::Time> timestamps = {base::Time::Now(),
                                         base::Time::Now() - base::Minutes(1),
-                                        base::Time::Now() - base::Minutes(2),
-                                        base::Time::Now() - base::Minutes(3)};
+                                        base::Time::Now() - base::Minutes(2)};
   for (size_t i = 0; i < kSampleSessionsCount; i++) {
     sample_sessions.push_back(SampleSession(
         ("Test Name " + base::NumberToString(i)).c_str(), 1, 1, timestamps));
@@ -220,24 +217,18 @@ TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
           }));
 
   EXPECT_CALL(mock_history_service(),
-              QueryURLs(testing::_, true, testing::_, testing::_))
-      .WillOnce(
-          (testing::Invoke([&](const std::vector<GURL>& urls, bool want_visits,
-                               MockHistoryService::QueryURLsCallback callback,
-                               base::CancelableTaskTracker* tracker) {
-            std::vector<history::QueryURLResult> results;
+              GetMostRecentVisitForEachURL(testing::_, testing::_, testing::_))
+      .WillOnce((testing::Invoke(
+          [&](const std::vector<GURL>& urls,
+              base::OnceCallback<void(std::map<GURL, history::VisitRow>)>
+                  callback,
+              base::CancelableTaskTracker* tracker) {
+            std::map<GURL, history::VisitRow> visits;
             for (auto url : urls) {
-              history::QueryURLResult result;
-              result.success = true;
-              result.row.set_url(url);
-              result.row.set_last_visit(base::Time::Now());
-              history::VisitVector visits;
               history::VisitRow visit;
-              visits.push_back(visit);
-              result.visits = visits;
-              results.push_back(result);
+              visits[url] = visit;
             }
-            std::move(callback).Run(results);
+            std::move(callback).Run(visits);
             return base::CancelableTaskTracker::TaskId();
           })));
 
@@ -249,9 +240,10 @@ TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
               MockHistoryService::ToAnnotatedVisitsCallback callback,
               base::CancelableTaskTracker* tracker) {
             std::vector<history::AnnotatedVisit> annotated_visits;
-            for (auto visit : visit_rows) {
+            for (size_t i = 0; i < visit_rows.size(); i++) {
               history::URLRow url_row;
-              url_row.set_url(GURL(kSampleUrl));
+              url_row.set_url(
+                  GURL(kSampleUrl + (i != 0 ? base::NumberToString(i) : "")));
               history::AnnotatedVisit annotated_visit;
               annotated_visit.url_row = url_row;
               history::VisitContentModelAnnotations model_annotations;
@@ -280,10 +272,12 @@ TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
     ASSERT_TRUE(tab_mojom);
     // Ranking reverses the order due to setting timestamp as
     // reverse order of timestamps array above.
-    // Third entry is gone from blocklist so this starts at "Test Name 1".
-    ASSERT_EQ("Test Name " + base::NumberToString(kSampleSessionsCount - i - 2),
+    // Third entry is gone from blocklist so this ends at "Test Name 1"
+    // and starts at Test Name 2.
+    ASSERT_EQ("Test Name " + base::NumberToString(kSampleSessionsCount - i - 1),
               tab_mojom->session_name);
-    ASSERT_EQ(GURL(kSampleUrl), tab_mojom->url);
+    ASSERT_EQ(GURL(kSampleUrl + (i != 0 ? base::NumberToString(i) : "")),
+              tab_mojom->url);
   }
 }
 }  // namespace

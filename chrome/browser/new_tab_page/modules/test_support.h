@@ -48,12 +48,12 @@ class MockHistoryService : public history::HistoryService {
           base::OnceClosure callback,
           base::CancelableTaskTracker* tracker));
 
-  MOCK_METHOD4(QueryURLs,
-               base::CancelableTaskTracker::TaskId(
-                   const std::vector<GURL>& urls,
-                   bool want_visits,
-                   QueryURLsCallback callback,
-                   base::CancelableTaskTracker* tracker));
+  MOCK_METHOD3(
+      GetMostRecentVisitForEachURL,
+      base::CancelableTaskTracker::TaskId(
+          const std::vector<GURL>& urls,
+          base::OnceCallback<void(std::map<GURL, history::VisitRow>)> callback,
+          base::CancelableTaskTracker* tracker));
 
   MOCK_CONST_METHOD4(ToAnnotatedVisits,
                      base::CancelableTaskTracker::TaskId(
