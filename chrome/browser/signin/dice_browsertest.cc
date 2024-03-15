@@ -68,6 +68,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -167,6 +168,24 @@ class BlockedHttpResponse : public net::test_server::BasicHttpResponse {
 
   base::WeakPtrFactory<BlockedHttpResponse> weak_factory_{this};
 };
+
+void AddCanShowHistorySyncOptInsWithoutMinorModeCapability(
+    signin::IdentityManager* identity_manager) {
+  CoreAccountInfo core_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfo(core_account_info);
+
+  // Triggers immediate drawing of sync-consent button. Without that, screens
+  // would be delayed to give chances for capabilities to load and then
+  // present minor-safe screen; but the sync button is present on the screen
+  // for the duration of that load (just invisible and not clickable), which
+  // is difficult to be expressed in those tests without examining CSS.
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+}
 
 }  // namespace
 
@@ -617,6 +636,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
             .empty()) {
       WaitForClosure(&on_primary_account_set_quit_closure_);
     }
+    AddCanShowHistorySyncOptInsWithoutMinorModeCapability(GetIdentityManager());
   }
 
   // Waits for the ENABLE_SYNC request to hit the server, and unblocks the
@@ -1070,6 +1090,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncBeforeToken) {
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
                                     signin::ConsentLevel::kSignin));
+
+  AddCanShowHistorySyncOptInsWithoutMinorModeCapability(GetIdentityManager());
 
   // Check that the Dice request header was sent, with signout confirmation.
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();

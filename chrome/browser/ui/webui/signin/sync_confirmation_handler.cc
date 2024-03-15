@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_handler.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -29,6 +30,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -76,6 +78,40 @@ base::TimeDelta GetMinorModeRestrictionsDeadline() {
 inline bool ScreenModeIsPending(const AccountInfo& primary_account_info) {
   return GetScreenMode(primary_account_info.capabilities) ==
          SyncConfirmationScreenMode::kPending;
+}
+
+SyncConfirmationScreenMode GetScreenModeFromValue(const base::Value& value) {
+  if (!value.is_int()) {
+    return SyncConfirmationScreenMode::kUnsupported;
+  }
+  return static_cast<SyncConfirmationScreenMode>(value.GetInt());
+}
+
+// Records the button click in the `mode` context. `equal` denotes button to
+// record in kRestricted `mode`, and `notEqual` denotes button to record in
+// kUnrestricted `mode`.
+void RecordButtonClicked(SyncConfirmationScreenMode mode,
+                         signin_metrics::SyncButtonClicked equal,
+                         signin_metrics::SyncButtonClicked not_equal) {
+  if (mode == SyncConfirmationScreenMode::kUnsupported) {
+    // Do not record metrics from SyncConfirmation screens that don't support
+    // minor modes.
+    return;
+  }
+
+  std::optional<signin_metrics::SyncButtonClicked> button_clicked;
+  switch (mode) {
+    case SyncConfirmationScreenMode::kRestricted:
+      button_clicked = equal;
+      break;
+    case SyncConfirmationScreenMode::kUnrestricted:
+      button_clicked = not_equal;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *button_clicked);
 }
 
 }  // namespace
@@ -150,20 +186,38 @@ void SyncConfirmationHandler::RegisterMessages() {
 }
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
+  CHECK_EQ(3U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[2]),
+      signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted);
+
   did_user_explicitly_interact_ = true;
-  RecordConsent(args);
+  RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 }
 
 void SyncConfirmationHandler::HandleGoToSettings(
     const base::Value::List& args) {
+  CHECK_EQ(3U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[2]),
+      signin_metrics::SyncButtonClicked::kSyncSettingsEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted);
+
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   did_user_explicitly_interact_ = true;
-  RecordConsent(args);
+  RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::CONFIGURE_SYNC_FIRST);
 }
 
 void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  RecordButtonClicked(
+      GetScreenModeFromValue(args[0]),
+      signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted,
+      signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted);
+
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
@@ -190,11 +244,9 @@ void SyncConfirmationHandler::HandleOpenDeviceSyncSettings(
 }
 #endif
 
-void SyncConfirmationHandler::RecordConsent(const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
-  const base::Value::List& consent_description = args[0].GetList();
-  const std::string& consent_confirmation = args[1].GetString();
-
+void SyncConfirmationHandler::RecordConsent(
+    const base::Value::List& consent_description,
+    const std::string& consent_confirmation) {
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in |string_to_grd_id_map_|). As
   // this has privacy and legal implications, CHECK the integrity of the strings
@@ -243,7 +295,8 @@ void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
 
 void SyncConfirmationHandler::OnScreenModeChanged(
     SyncConfirmationScreenMode mode) {
-  DCHECK(mode != SyncConfirmationScreenMode::kPending);
+  DCHECK_NE(mode, SyncConfirmationScreenMode::kPending);
+  DCHECK_NE(mode, SyncConfirmationScreenMode::kUnsupported);
   DCHECK(!screen_mode_notified_) << "Must be called only once";
   screen_mode_notified_ = true;
   screen_mode_deadline_.Stop();
@@ -270,6 +323,21 @@ void SyncConfirmationHandler::OnScreenModeChanged(
   }
 
   FireWebUIListener("screen-mode-changed", static_cast<int>(mode));
+
+  std::optional<signin_metrics::SyncButtonsType> buttons_type;
+  switch (mode) {
+    case SyncConfirmationScreenMode::kRestricted:
+      buttons_type = signin_metrics::SyncButtonsType::kSyncEqualWeighted;
+      break;
+    case SyncConfirmationScreenMode::kUnrestricted:
+      buttons_type = signin_metrics::SyncButtonsType::kSyncNotEqualWeighted;
+      break;
+    default:
+      // kPending and kUnsupported are ruled out in this method.
+      NOTREACHED();
+  }
+
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Shown", *buttons_type);
 }
 
 void SyncConfirmationHandler::OnDeadline() {

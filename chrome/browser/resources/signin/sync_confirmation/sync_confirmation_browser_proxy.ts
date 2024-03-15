@@ -7,6 +7,22 @@ export interface SyncBenefit {
   iconName: string;
 }
 
+// LINT.IfChange(screen_mode)
+/**
+ * In PENDING mode, the screen should not show consent buttons and indicate that
+ * some loading is pending. In RESTRICTED mode, the button must not be weighted,
+ * and in UNRESTRICTED mode they can be.
+ *
+ * In UNSUPPORTED mode, the client take any behavior.
+ */
+export enum ScreenMode {
+  UNSUPPORTED = 0,
+  PENDING = 1,
+  RESTRICTED = 2,
+  UNRESTRICTED = 3,
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/signin/sync_confirmation_handler.h:screen_mode)
+
 /**
  * @fileoverview A helper object used by the sync confirmation dialog to
  * interact with the browser.
@@ -17,21 +33,27 @@ export interface SyncConfirmationBrowserProxy {
    * Called when the user confirms the Sync Confirmation dialog.
    * @param description Strings that the user was presented with in the UI.
    * @param confirmation Text of the element that the user clicked on.
+   * @param screenMode serialized identifier of the screen mode.
    */
-  confirm(description: string[], confirmation: string): void;
+  confirm(description: string[], confirmation: string, screenMode: ScreenMode):
+      void;
 
   /**
    * Called when the user undoes the Sync confirmation.
+   * @param screenMode serialized identifier of the screen mode.
    */
-  undo(): void;
+  undo(screenMode: ScreenMode): void;
 
   /**
    * Called when the user clicks on the Settings link in
    *     the Sync Confirmation dialog.
    * @param description Strings that the user was presented with in the UI.
    * @param confirmation Text of the element that the user clicked on.
+   * @param screenMode serialized identifier of the screen mode.
    */
-  goToSettings(description: string[], confirmation: string): void;
+  goToSettings(
+      description: string[], confirmation: string,
+      screenMode: ScreenMode): void;
 
   /**
    * Called when the user clicks on the device settings link.
@@ -48,16 +70,17 @@ export interface SyncConfirmationBrowserProxy {
 
 export class SyncConfirmationBrowserProxyImpl implements
     SyncConfirmationBrowserProxy {
-  confirm(description: string[], confirmation: string) {
-    chrome.send('confirm', [description, confirmation]);
+  confirm(description: string[], confirmation: string, screenMode: ScreenMode) {
+    chrome.send('confirm', [description, confirmation, screenMode]);
   }
 
-  undo() {
-    chrome.send('undo');
+  undo(screenMode: ScreenMode) {
+    chrome.send('undo', [screenMode]);
   }
 
-  goToSettings(description: string[], confirmation: string) {
-    chrome.send('goToSettings', [description, confirmation]);
+  goToSettings(
+      description: string[], confirmation: string, screenMode: ScreenMode) {
+    chrome.send('goToSettings', [description, confirmation, screenMode]);
   }
 
   initializedWithSize(height: number[]) {

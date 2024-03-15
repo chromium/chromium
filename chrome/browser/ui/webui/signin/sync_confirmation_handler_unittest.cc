@@ -453,7 +453,10 @@ TEST_P(SyncConfirmationHandlerTest,
 }
 
 TEST_P(SyncConfirmationHandlerTest, TestHandleUndo) {
-  handler()->HandleUndo(base::Value::List());
+  base::Value::List args;
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
+
+  handler()->HandleUndo(args);
   did_user_explicitly_interact_ = true;
 
   EXPECT_TRUE(on_sync_confirmation_ui_closed_called_);
@@ -479,6 +482,7 @@ TEST_P(SyncConfirmationHandlerTest, TestHandleConfirm) {
   base::Value::List args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
 
   handler()->HandleConfirm(args);
   did_user_explicitly_interact_ = true;
@@ -517,6 +521,7 @@ TEST_P(SyncConfirmationHandlerTest, TestHandleConfirmWithAdvancedSyncSettings) {
   base::Value::List args;
   args.Append(std::move(consent_description));
   args.Append(std::move(consent_confirmation));
+  args.Append(static_cast<int>(SyncConfirmationScreenMode::kRestricted));
 
   handler()->HandleGoToSettings(args);
   did_user_explicitly_interact_ = true;

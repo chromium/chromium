@@ -36,7 +36,9 @@
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -149,6 +151,15 @@ class FirstRunInteractiveUiTestBase
     if (account_email == kTestEnterpriseEmail) {
       account_info.hosted_domain = "chromium.org";
     }
+
+    // Triggers immediate drawing of sync-consent button. Without that, screens
+    // would be delayed to give chances for capabilities to load and then
+    // present minor-safe screen; but the sync button is present on the screen
+    // for the duration of that load (just invisible and not clickable), which
+    // is difficult to be expressed in those tests without examining CSS.
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+        true);
     ASSERT_TRUE(account_info.IsValid());
 
     // Kombucha note: This function waits on a `base::RunLoop`.
@@ -578,6 +589,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      signin_metrics::SyncButtonsType::kSyncNotEqualWeighted, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Clicked",
+      signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted, 1);
+  histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
@@ -639,6 +656,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, DeclineSync) {
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
   histogram_tester().ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      signin_metrics::SyncButtonsType::kSyncNotEqualWeighted, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Clicked",
+      signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted, 1);
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);
@@ -705,6 +728,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
   histogram_tester().ExpectUniqueSample(
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Shown",
+      signin_metrics::SyncButtonsType::kSyncNotEqualWeighted, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.SyncButtons.Clicked",
+      signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted, 1);
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kCompleted, 1);

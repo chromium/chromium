@@ -1899,13 +1899,13 @@ kept as long as profile signout is possible -->
   <owner>tju@chromium.org</owner>
   <owner>chrome-kids-team@google.com</owner>
   <summary>
-    Records the flavour of the button clicked on sync or history sync opt in
+    Records the flavor of the button clicked on sync or history sync opt in
     screens, including buttons function (accept or decline) and appearance
     (equal or not-equal weighted).
 
     Recorded when the user clicks on the button.
 
-    Recorded in Android only.
+    Recorded in Android and Desktop.
   </summary>
 </histogram>
 
@@ -1917,7 +1917,7 @@ kept as long as profile signout is possible -->
     Records the appearance of the button set on sync or history sync opt in
     screens. Recorded when the buttons are displayed to the user.
 
-    Recorded in Android only.
+    Recorded in Android and Desktop.
   </summary>
 </histogram>
 

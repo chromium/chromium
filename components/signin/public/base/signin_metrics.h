@@ -477,6 +477,34 @@ enum class FetchAccountCapabilitiesFromSystemLibraryResult {
   kMaxValue = kErrorUnexpectedValue
 };
 
+// Tracks type of the button that was presented to the user.
+enum class SyncButtonsType : int {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  kSyncEqualWeighted = 0,
+  kSyncNotEqualWeighted = 1,
+  kHistorySyncEqualWeighted = 2,
+  kHistorySyncNotEqualWeighted = 3,
+  kMaxValue = kHistorySyncNotEqualWeighted,
+};
+
+// Tracks type of the button that was clicked by the user.
+enum class SyncButtonClicked : int {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  kSyncOptInEqualWeighted = 0,
+  kSyncCancelEqualWeighted = 1,
+  kSyncSettingsEqualWeighted = 2,
+  kSyncOptInNotEqualWeighted = 3,
+  kSyncCancelNotEqualWeighted = 4,
+  kSyncSettingsNotEqualWeighted = 5,
+  kHistorySyncOptInEqualWeighted = 6,
+  kHistorySyncCancelEqualWeighted = 7,
+  kHistorySyncOptInNotEqualWeighted = 8,
+  kHistorySyncCancelNotEqualWeighted = 9,
+  kMaxValue = kHistorySyncCancelNotEqualWeighted,
+};
+
 // -----------------------------------------------------------------------------
 // Histograms
 // -----------------------------------------------------------------------------
