@@ -37,7 +37,7 @@ CameraCoordinator::CameraCoordinator(
   camera_view_tracker_.SetIsDeletingCallback(base::BindOnce(
       &CameraCoordinator::ResetViewController, base::Unretained(this)));
 
-  metrics_context.preview_type = media_preview_metrics::PreviewType::kCamera;
+  metrics_context_.preview_type = media_preview_metrics::PreviewType::kCamera;
 
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_controller_`.
@@ -45,13 +45,17 @@ CameraCoordinator::CameraCoordinator(
       *camera_view, needs_borders, combobox_model_, allow_device_selection_,
       base::BindRepeating(&CameraCoordinator::OnVideoSourceChanged,
                           base::Unretained(this)),
-      metrics_context);
+      metrics_context_);
 
   video_stream_coordinator_.emplace(
-      camera_view_controller_->GetLiveFeedContainer(), metrics_context);
+      camera_view_controller_->GetLiveFeedContainer(), metrics_context_);
 }
 
 CameraCoordinator::~CameraCoordinator() {
+  if (allow_device_selection_) {
+    RecordDeviceSelectionTotalDevices(metrics_context_,
+                                      eligible_device_infos_.size());
+  }
   // As to guarantee that VideoSourceProvider outlive its VideoSource
   // connection, it is passed in here to protect from destruction.
   video_stream_coordinator_->StopAndCleanup(

@@ -40,7 +40,7 @@ MicCoordinator::MicCoordinator(views::View& parent_view,
   mic_view_tracker_.SetIsDeletingCallback(base::BindOnce(
       &MicCoordinator::ResetViewController, base::Unretained(this)));
 
-  metrics_context.preview_type = media_preview_metrics::PreviewType::kMic;
+  metrics_context_.preview_type = media_preview_metrics::PreviewType::kMic;
 
   // Safe to use base::Unretained() because `this` owns / outlives
   // `mic_view_controller_`.
@@ -48,13 +48,18 @@ MicCoordinator::MicCoordinator(views::View& parent_view,
       *mic_view, needs_borders, combobox_model_, allow_device_selection_,
       base::BindRepeating(&MicCoordinator::OnAudioSourceChanged,
                           base::Unretained(this)),
-      metrics_context);
+      metrics_context_);
 
   audio_stream_coordinator_.emplace(
       mic_view_controller_->GetLiveFeedContainer());
 }
 
-MicCoordinator::~MicCoordinator() = default;
+MicCoordinator::~MicCoordinator() {
+  if (allow_device_selection_) {
+    RecordDeviceSelectionTotalDevices(metrics_context_,
+                                      eligible_device_infos_.size());
+  }
+}
 
 void MicCoordinator::OnAudioSourceInfosReceived(
     const std::vector<media::AudioDeviceDescription>& device_infos) {

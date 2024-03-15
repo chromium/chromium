@@ -59,7 +59,7 @@ class CameraCoordinator {
   std::vector<media::VideoCaptureDeviceInfo> eligible_device_infos_;
   raw_ptr<PrefService> prefs_;
   const bool allow_device_selection_;
-  const media_preview_metrics::Context metrics_context_;
+  media_preview_metrics::Context metrics_context_;
   std::optional<CameraViewController> camera_view_controller_;
   std::optional<VideoStreamCoordinator> video_stream_coordinator_;
 };

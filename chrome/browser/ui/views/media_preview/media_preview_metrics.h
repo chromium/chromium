@@ -20,6 +20,7 @@ struct Context {
 
 void RecordPageInfoCameraNumInUseDevices(int devices);
 void RecordPageInfoMicNumInUseDevices(int devices);
+void RecordDeviceSelectionTotalDevices(Context context, int devices);
 
 }  // namespace media_preview_metrics
 

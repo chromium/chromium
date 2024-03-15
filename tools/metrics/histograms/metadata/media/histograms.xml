@@ -6617,6 +6617,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaPreviews.UI.DeviceSelection.PageInfo.Camera.NumDevices"
+    units="devices" expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the number of camera devices available in the PageInfo combobox.
+  </summary>
+</histogram>
+
+<histogram name="MediaPreviews.UI.DeviceSelection.PageInfo.Mic.NumDevices"
+    units="devices" expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the number of microphones (audio input) devices available in the
+    PageInfo combobox.
+  </summary>
+</histogram>
+
+<histogram
+    name="MediaPreviews.UI.DeviceSelection.Permissions.Camera.NumDevices"
+    units="devices" expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the number of camera devices available in the Permissions combobox.
+  </summary>
+</histogram>
+
+<histogram name="MediaPreviews.UI.DeviceSelection.Permissions.Mic.NumDevices"
+    units="devices" expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the number of microphones (audio input) devices available in the
+    Permissions combobox.
+  </summary>
+</histogram>
+
 <histogram name="MediaPreviews.UI.PageInfo.Camera.NumInUseDevices"
     units="devices" expires_after="2025-04-01">
   <owner>atadres@chromium.org</owner>
