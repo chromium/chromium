@@ -263,12 +263,16 @@ class AppShimManager
 
   class AppShimObserver {
    public:
-    virtual void OnShimProcessConnected(base::ProcessId pid) = 0;
+    virtual void OnShimProcessConnected(base::ProcessId pid) {}
     virtual void OnShimProcessConnectedAndAllLaunchesDone(
         base::ProcessId pid,
-        chrome::mojom::AppShimLaunchResult result) = 0;
-    virtual void OnShimReopen(base::ProcessId pid) = 0;
-    virtual void OnShimOpenedURLs(base::ProcessId pid) = 0;
+        chrome::mojom::AppShimLaunchResult result) {}
+    virtual void OnShimReopen(base::ProcessId pid) {}
+    virtual void OnShimOpenedURLs(base::ProcessId pid) {}
+    // If this is overridden to return false, the regular notification action
+    // code path is bypassed.
+    virtual bool OnNotificationAction(
+        mac_notifications::mojom::NotificationActionInfoPtr& info);
   };
   void SetAppShimObserverForTesting(AppShimObserver* observer) {
     app_shim_observer_ = observer;
@@ -495,6 +499,13 @@ class AppShimManager
   mojo::ReceiverSet<mac_notifications::mojom::MacNotificationActionHandler,
                     webapps::AppId>
       notification_action_handler_receivers_;
+
+  // This contains `AppShimHostBootstrap` instances, keyed by the `ReceiverId`
+  // for the corresponding `MacNotificationActionHandler` receiver in
+  // `notification_action_handler_receivers_`, for app shims that were launched
+  // by the OS to handle notification actions.
+  std::map<mojo::ReceiverId, std::unique_ptr<AppShimHostBootstrap>>
+      bootstraps_pending_notification_actions_;
 
   // Set in some tests to short-circuit ShowNotificationPermissionRequest.
   std::optional<mac_notifications::mojom::RequestPermissionResult>

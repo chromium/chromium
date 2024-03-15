@@ -17,6 +17,8 @@ enum AppShimLaunchType {
   kRegisterOnly,
   // Do the above and launch the app.
   kNormal,
+  // Like `kRegisterOnly`, but also process notification actions.
+  kNotificationAction,
 };
 
 enum AppShimLaunchResult {

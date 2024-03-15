@@ -269,6 +269,11 @@ base::OnceClosure TakeShimStartupDoneCallbackOrDoNothing() {
 
 namespace apps {
 
+bool AppShimManager::AppShimObserver::OnNotificationAction(
+    mac_notifications::mojom::NotificationActionInfoPtr& info) {
+  return true;
+}
+
 void SetMacShimStartupDoneCallbackForTesting(base::OnceClosure callback) {
   DCHECK(!GetShimStartupDoneCallback());
   GetShimStartupDoneCallback() = std::move(callback);
@@ -635,9 +640,24 @@ void AppShimManager::BindNotificationService(
 
 void AppShimManager::OnNotificationAction(
     mac_notifications::mojom::NotificationActionInfoPtr info) {
-  ProcessMacNotificationResponse(
-      mac_notifications::NotificationStyle::kAppShim, std::move(info),
-      notification_action_handler_receivers_.current_context());
+  if (!app_shim_observer_ || app_shim_observer_->OnNotificationAction(info)) {
+    ProcessMacNotificationResponse(
+        mac_notifications::NotificationStyle::kAppShim, std::move(info),
+        notification_action_handler_receivers_.current_context());
+  }
+
+  auto it = bootstraps_pending_notification_actions_.find(
+      notification_action_handler_receivers_.current_receiver());
+  if (it != bootstraps_pending_notification_actions_.end()) {
+    // ProcessMacNotificationResponse posts a task to the UI thread to handle
+    // the response. OnShimProcessConnectedForRegisterOnly needs to run after
+    // that task, so post a task here as well.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AppShimManager::OnShimProcessConnectedForRegisterOnly,
+                       base::Unretained(this), std::move(it->second)));
+    bootstraps_pending_notification_actions_.erase(it);
+  }
 }
 
 void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
@@ -737,10 +757,13 @@ void AppShimManager::OnShimProcessConnected(
   }
 
   auto notification_action_handler = bootstrap->TakeNotificationActionHandler();
+  std::optional<mojo::ReceiverId> notification_action_receiver_id;
   if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
       notification_action_handler) {
-    notification_action_handler_receivers_.Add(
-        this, std::move(notification_action_handler), bootstrap->GetAppId());
+    notification_action_receiver_id =
+        notification_action_handler_receivers_.Add(
+            this, std::move(notification_action_handler),
+            bootstrap->GetAppId());
   }
 
   switch (bootstrap->GetLaunchType()) {
@@ -757,6 +780,18 @@ void AppShimManager::OnShimProcessConnected(
       LoadAndLaunchApp(profile_path, params, std::move(launch_callback));
       break;
     }
+    case chrome::mojom::AppShimLaunchType::kNotificationAction:
+      if (base::FeatureList::IsEnabled(
+              features::kAppShimNotificationAttribution) &&
+          notification_action_receiver_id.has_value()) {
+        // Wait for the notification action to be handled before finishing up
+        // the connection process to ensure Chrome and the App Shim stay alive
+        // long enough.
+        bootstraps_pending_notification_actions_.emplace(
+            *notification_action_receiver_id, std::move(bootstrap));
+        break;
+      }
+      [[fallthrough]];
     case chrome::mojom::AppShimLaunchType::kRegisterOnly:
       OnShimProcessConnectedForRegisterOnly(std::move(bootstrap));
       break;
@@ -766,8 +801,11 @@ void AppShimManager::OnShimProcessConnected(
 void AppShimManager::OnShimProcessConnectedForRegisterOnly(
     std::unique_ptr<AppShimHostBootstrap> bootstrap) {
   const webapps::AppId& app_id = bootstrap->GetAppId();
-  DCHECK_EQ(bootstrap->GetLaunchType(),
-            chrome::mojom::AppShimLaunchType::kRegisterOnly);
+  DCHECK(bootstrap->GetLaunchType() ==
+             chrome::mojom::AppShimLaunchType::kRegisterOnly ||
+         bootstrap->GetLaunchType() ==
+             chrome::mojom::AppShimLaunchType::kNotificationAction)
+      << bootstrap->GetLaunchType();
 
   // Create a ProfileState the specified profile (if there is one). We should
   // not do this (if there exists no ProfileState, then the shim should just
