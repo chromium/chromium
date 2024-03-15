@@ -171,7 +171,6 @@ void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
   // Treat the request as canceled if web contents that the request originated
   // in was destroyed (the web contents was originally passed, but weak ptr is
   // not valid anymore).
-  content::WebContents* web_contents = nullptr;
   if (contents) {
     base::WeakPtr<content::WebContents> contents_weak_ptr = contents.value();
     if (!contents_weak_ptr) {
@@ -180,34 +179,31 @@ void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
                    ExtensionApprovalResult::kCanceled);
       return;
     }
-    web_contents = contents_weak_ptr.get();
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (ParentAccessExtensionApprovalsManager::ShouldShowExtensionApprovalsV2()) {
-    // Parent Access Dialog handles blocked use case in V2.
-    extension_approvals_manager_ =
-        std::make_unique<ParentAccessExtensionApprovalsManager>();
-    extension_approvals_manager_->ShowParentAccessDialog(
-        extension, context_, icon,
-        CanInstallExtensions()
-            ? ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
-                  kInstallationPermitted
-            : ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
-                  kInstallationDenied,
-        std::move(done_callback_));
-    return;
-  }
-#endif
-
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  CHECK(contents.value());
+  content::WebContents* web_contents = contents.value().get();
   if (CanInstallExtensions()) {
-    ShowParentPermissionDialogForExtension(extension, web_contents, icon);
+    ShowParentPermissionDialogForExtension(extension, contents.value().get(),
+                                           icon);
     return;
   }
-
   ShowInstallBlockedByParentDialogForExtension(
       extension, web_contents,
       ExtensionInstalledBlockedByParentDialogAction::kEnable);
+  return;
+#elif BUILDFLAG(IS_CHROMEOS)
+  // ParentAccessDialog handles the blocked use case for ChromeOS.
+  extension_approvals_manager_ =
+      std::make_unique<ParentAccessExtensionApprovalsManager>();
+  extension_approvals_manager_->ShowParentAccessDialog(
+      extension, context_, icon,
+      CanInstallExtensions() ? ParentAccessExtensionApprovalsManager::
+                                   ExtensionInstallMode::kInstallationPermitted
+                             : ParentAccessExtensionApprovalsManager::
+                                   ExtensionInstallMode::kInstallationDenied,
+      std::move(done_callback_));
+#endif
 }
 
 }  // namespace extensions

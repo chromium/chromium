@@ -76,10 +76,6 @@
 #include "extensions/browser/api/management/management_api.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
-#endif
-
 using safe_browsing::SafeBrowsingNavigationObserverManager;
 
 namespace extensions {
@@ -936,11 +932,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
       // Bypass the install prompt dialog if V2 is enabled. The
       // ParentAccessDialog handles both the blocked and install use case.
 #if BUILDFLAG(IS_CHROMEOS)
-      if (ParentAccessExtensionApprovalsManager::
-              ShouldShowExtensionApprovalsV2()) {
-        RequestExtensionApproval(contents);
-        return;
-      }
+      RequestExtensionApproval(contents);
+      return;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       // Shows a parental permission dialog directly bypassing the extension
       // install dialog view. The parental permission dialog contains a superset

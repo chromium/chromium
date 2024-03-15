@@ -60,10 +60,10 @@
 #include "extensions/common/extension_builder.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
-#include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -327,7 +327,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     : public ExtensionWebstorePrivateApiTest,
       public ::testing::WithParamInterface<
           SupervisedUserExtensionManagedBySwitch>,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       public TestExtensionApprovalsManagerObserver,
 #endif
       public TestParentPermissionDialogViewObserver {
@@ -340,7 +340,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
 
   SupervisedUserExtensionWebstorePrivateApiTest()
       :
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         TestExtensionApprovalsManagerObserver(this),
 #endif
         TestParentPermissionDialogViewObserver(this),
@@ -434,14 +434,16 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TestExtensionApprovalsManagerObserver override:
   void OnTestParentAccessDialogCreated() override {
     parent_permission_dialog_appeared_ = true;
     if (next_dialog_action_) {
       switch (next_dialog_action_.value()) {
         case NextDialogAction::kCancel:
-          ash::ParentAccessDialog::GetInstance()->SetCanceled();
+          SetParentAccessDialogResult(
+              crosapi::mojom::ParentAccessResult::NewCanceled(
+                  crosapi::mojom::ParentAccessCanceledResult::New()));
           break;
         case NextDialogAction::kAccept:
           bool can_request_permission =
@@ -452,16 +454,21 @@ class SupervisedUserExtensionWebstorePrivateApiTest
                   : true;
 
           if (!can_request_permission) {
-            ash::ParentAccessDialog::GetInstance()->SetDisabled();
+            SetParentAccessDialogResult(
+                crosapi::mojom::ParentAccessResult::NewDisabled(
+                    crosapi::mojom::ParentAccessDisabledResult::New()));
             break;
           }
-          ash::ParentAccessDialog::GetInstance()->SetApproved(
-              "test_token", base::Time::FromSecondsSinceUnixEpoch(123456L));
+          SetParentAccessDialogResult(
+              crosapi::mojom::ParentAccessResult::NewApproved(
+                  crosapi::mojom::ParentAccessApprovedResult::New(
+                      "test_token",
+                      base::Time::FromSecondsSinceUnixEpoch(123456L))));
           break;
       }
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void set_next_dialog_action(NextDialogAction action) {
     next_dialog_action_ = action;

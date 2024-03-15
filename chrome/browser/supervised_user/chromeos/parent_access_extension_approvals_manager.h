@@ -36,11 +36,6 @@ class ParentAccessExtensionApprovalsManager {
     kInstallationDenied = 1
   };
 
-  // For Ash, true if the feature flag is enabled. For Lacros, true if the
-  // minimum version required is met to trigger extension approval in the
-  // ParentAccessWidget.
-  static bool ShouldShowExtensionApprovalsV2();
-
   // Opens the ParentAccessDialog via crosapi. Before calling, the caller should
   // check that the Lacros version is at least the min version required for the
   // GetExtensionParentApproval API.
@@ -67,7 +62,15 @@ class TestExtensionApprovalsManagerObserver {
   explicit TestExtensionApprovalsManagerObserver(
       TestExtensionApprovalsManagerObserver* observer);
   ~TestExtensionApprovalsManagerObserver();
+
   virtual void OnTestParentAccessDialogCreated() = 0;
+
+  void SetParentAccessDialogResult(
+      crosapi::mojom::ParentAccessResultPtr result);
+  crosapi::mojom::ParentAccessResultPtr GetNextResult();
+
+ private:
+  crosapi::mojom::ParentAccessResultPtr next_result_;
 };
 }  // namespace extensions
 
