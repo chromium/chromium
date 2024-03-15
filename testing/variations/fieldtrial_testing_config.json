@@ -3059,44 +3059,6 @@
             ]
         }
     ],
-    "CastMirroringPlayoutDelayAndBitrate": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "both_enabled",
-                    "params": {
-                        "cast_mirroring_playout_delay_ms": "200"
-                    },
-                    "enable_features": [
-                        "CastMirroringPlayoutDelay",
-                        "CastStreamingExponentialVideoBitrateAlgorithm"
-                    ]
-                },
-                {
-                    "name": "playout_enabled",
-                    "params": {
-                        "cast_mirroring_playout_delay_ms": "200"
-                    },
-                    "enable_features": [
-                        "CastMirroringPlayoutDelay"
-                    ]
-                },
-                {
-                    "name": "bitrate_enabled",
-                    "enable_features": [
-                        "CastStreamingExponentialVideoBitrateAlgorithm"
-                    ]
-                }
-            ]
-        }
-    ],
     "CastStreamingVp9": [
         {
             "platforms": [
