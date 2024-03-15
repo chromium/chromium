@@ -9619,7 +9619,7 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kLeft,
        .has_saved_desks = true,
-       .desk_button_bar_widget_bounds = {56, 240, 202, 98},
+       .desk_button_bar_widget_bounds = {56, 247, 202, 98},
        .desk_button_bar_view_bounds = {0, 0, 202, 98},
        .overview_bar_widget_bounds = {48, 0, 752, 40},
        .overview_bar_view_bounds = {0, 0, 752, 40}},
@@ -9628,7 +9628,7 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kRight,
        .has_saved_desks = true,
-       .desk_button_bar_widget_bounds = {542, 240, 202, 98},
+       .desk_button_bar_widget_bounds = {542, 247, 202, 98},
        .desk_button_bar_view_bounds = {0, 0, 202, 98},
        .overview_bar_widget_bounds = {0, 0, 752, 40},
        .overview_bar_view_bounds = {0, 0, 752, 40}},
@@ -11346,15 +11346,15 @@ TEST_P(DeskButtonTest, LayoutInRTL) {
   switch (GetParam().alignment) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      EXPECT_TRUE(gfx::Rect(698, 682, 128, 28).Contains(desk_button_bounds));
+      EXPECT_TRUE(gfx::Rect(684, 682, 128, 28).Contains(desk_button_bounds));
       EXPECT_LT(app_icon_bounds.x(), desk_button_bounds.x());
       break;
     case ShelfAlignment::kLeft:
-      EXPECT_EQ(gfx::Rect(6, 282, 36, 36), desk_button_bounds);
+      EXPECT_EQ(gfx::Rect(6, 286, 36, 36), desk_button_bounds);
       EXPECT_LT(desk_button_bounds.y(), app_icon_bounds.y());
       break;
     case ShelfAlignment::kRight:
-      EXPECT_EQ(gfx::Rect(1238, 282, 36, 36), desk_button_bounds);
+      EXPECT_EQ(gfx::Rect(1238, 286, 36, 36), desk_button_bounds);
       EXPECT_LT(desk_button_bounds.y(), app_icon_bounds.y());
       break;
   }

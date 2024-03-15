@@ -119,12 +119,6 @@ inline constexpr int kDeskButtonSwitchButtonHeightHorizontal = 28;
 inline constexpr int kDeskButtonSwitchButtonSpacing = 2;
 inline constexpr int kDeskButtonSwitchButtonFocusRingHaloInset = 0;
 
-// Constant values used by the desk button overall insets.
-inline constexpr gfx::Insets kDeskButtonOverallInsetsVertical =
-    gfx::Insets::TLBR(6, 6, 8, 6);
-inline constexpr gfx::Insets kDeskButtonOverallInsetsHorizonal =
-    gfx::Insets::TLBR(10, 24, 10, 20);
-
 // Constant values used by the desk button container.
 inline constexpr int kDeskButtonContainerCornerRadius = 36;
 inline constexpr gfx::Insets kDeskButtonContainerInsetsVertical =
@@ -146,23 +140,9 @@ inline constexpr int kDeskButtonContainerWidthHorizontalExpandedWithAvatar =
 
 // Constant values used by the desk button widget.
 inline constexpr gfx::Insets kDeskButtonWidgetInsetsVertical =
-    gfx::Insets::TLBR(kDeskButtonOverallInsetsVertical.top() -
-                          kDeskButtonContainerInsetsVertical.top(),
-                      kDeskButtonOverallInsetsVertical.left() -
-                          kDeskButtonContainerInsetsVertical.left(),
-                      kDeskButtonOverallInsetsVertical.bottom() -
-                          kDeskButtonContainerInsetsVertical.bottom(),
-                      kDeskButtonOverallInsetsVertical.right() -
-                          kDeskButtonContainerInsetsVertical.right());
+    gfx::Insets::TLBR(3, 6, 14, 6);
 inline constexpr gfx::Insets kDeskButtonWidgetInsetsHorizontal =
-    gfx::Insets::TLBR(kDeskButtonOverallInsetsHorizonal.top() -
-                          kDeskButtonContainerInsetsHorizontal.top(),
-                      kDeskButtonOverallInsetsHorizonal.left() -
-                          kDeskButtonContainerInsetsHorizontal.left(),
-                      kDeskButtonOverallInsetsHorizonal.bottom() -
-                          kDeskButtonContainerInsetsHorizontal.bottom(),
-                      kDeskButtonOverallInsetsHorizonal.right() -
-                          kDeskButtonContainerInsetsHorizontal.right());
+    gfx::Insets::TLBR(6, 4, 6, 16);
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_CONSTANTS_H_

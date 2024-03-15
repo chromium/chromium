@@ -118,15 +118,10 @@ void DeskButtonWidget::DelegateView::Layout(PassKey) {
   const gfx::Size container_size = desk_button_container_->GetPreferredSize();
   gfx::Point container_origin;
   if (desk_button_widget_->IsHorizontalShelf()) {
-    if (base::i18n::IsRTL()) {
-      container_origin = gfx::Point(kDeskButtonWidgetInsetsHorizontal.right(),
-                                    kDeskButtonWidgetInsetsHorizontal.top());
-    } else {
-      container_origin = gfx::Point(
-          widget_size.width() - kDeskButtonWidgetInsetsHorizontal.right() -
-              container_size.width(),
-          kDeskButtonWidgetInsetsHorizontal.top());
-    }
+    container_origin = gfx::Point(
+        widget_size.width() - kDeskButtonWidgetInsetsHorizontal.right() -
+            container_size.width(),
+        kDeskButtonWidgetInsetsHorizontal.top());
   } else {
     container_origin = gfx::Point(kDeskButtonWidgetInsetsVertical.left(),
                                   widget_size.height() -
@@ -187,26 +182,29 @@ void DeskButtonWidget::CalculateTargetBounds() {
 
   gfx::Point widget_origin;
   gfx::Size widget_size;
-  const gfx::Rect navigation_bounds =
-      shelf_->navigation_widget()->GetTargetBounds();
+
+  // The position of this widget is always dependant on the hotseat widget.
   const gfx::Rect hotseat_bounds = shelf_->hotseat_widget()->GetTargetBounds();
   const gfx::Insets shelf_padding =
       shelf_->hotseat_widget()
           ->scrollable_shelf_view()
           ->CalculateMirroredEdgePadding(/*use_target_bounds=*/true);
+  const int app_icon_end_padding = ShelfConfig::Get()->GetAppIconEndPadding();
   const int max_length = GetMaxLength(IsHorizontalShelf());
 
   if (IsHorizontalShelf()) {
-    widget_origin = gfx::Point(
-        base::i18n::IsRTL()
-            ? navigation_bounds.x() - max_length - shelf_padding.right()
-            : navigation_bounds.right() + shelf_padding.left(),
-        hotseat_bounds.y());
     widget_size = gfx::Size(max_length, hotseat_bounds.height());
-  } else {
     widget_origin = gfx::Point(
-        hotseat_bounds.x(), navigation_bounds.bottom() + shelf_padding.top());
+        base::i18n::IsRTL() ? hotseat_bounds.right() - shelf_padding.right() -
+                                  app_icon_end_padding
+                            : hotseat_bounds.x() + shelf_padding.left() +
+                                  app_icon_end_padding - widget_size.width(),
+        hotseat_bounds.y());
+  } else {
     widget_size = gfx::Size(hotseat_bounds.width(), max_length);
+    widget_origin = gfx::Point(hotseat_bounds.x(),
+                               hotseat_bounds.y() + shelf_padding.top() +
+                                   app_icon_end_padding - widget_size.height());
   }
 
   target_bounds_ = gfx::Rect(widget_origin, widget_size);
