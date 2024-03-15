@@ -35,15 +35,18 @@ class MockExclusiveAccessController : public ExclusiveAccessControllerBase {
   explicit MockExclusiveAccessController(ExclusiveAccessManager* manager);
   ~MockExclusiveAccessController() override;
 
-  int escape_pressed_count() { return escape_pressed_count_; }
-
-  void reset_escape_pressed_count() { escape_pressed_count_ = 0; }
-
+  // ExclusiveAccessControllerBase:
   bool HandleUserPressedEscape() override;
 
+  MOCK_METHOD(void, HandleUserHeldEscape, (), (override));
+  MOCK_METHOD(void, HandleUserReleasedEscapeEarly, (), (override));
+  MOCK_METHOD(bool, RequiresPressAndHoldEscToExit, (), (const, override));
   MOCK_METHOD(void, ExitExclusiveAccessToPreviousState, (), (override));
   MOCK_METHOD(void, ExitExclusiveAccessIfNecessary, (), (override));
   MOCK_METHOD(void, NotifyTabExclusiveAccessLost, (), (override));
+
+  int escape_pressed_count() { return escape_pressed_count_; }
+  void reset_escape_pressed_count() { escape_pressed_count_ = 0; }
 
  private:
   int escape_pressed_count_ = 0;
@@ -70,7 +73,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void SetWebContentsGrantedSilentPointerLockPermission();
   void CancelKeyboardLock();
   void LostPointerLock();
-  bool SendEscapeToExclusiveAccessManager();
+  bool SendEscapeToExclusiveAccessManager(bool is_key_down = true);
   bool IsFullscreenForBrowser();
   bool IsWindowFullscreenForTabOrPending();
   ExclusiveAccessBubbleType GetExclusiveAccessBubbleType();
@@ -80,6 +83,7 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void EnterActiveTabFullscreen();
   void WaitForTabFullscreenExit();
   void EnterExtensionInitiatedFullscreen();
+  bool IsEscKeyHoldTimerRunning();
 
   static const char kFullscreenKeyboardLockHTML[];
   static const char kFullscreenPointerLockHTML[];

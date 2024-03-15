@@ -72,3 +72,48 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerTest,
   ASSERT_TRUE(IsWindowFullscreenForTabOrPending());
   ExpectMockControllerReceivedEscape(0);
 }
+
+class ExclusiveAccessManagerPressAndHoldEscTest : public ExclusiveAccessTest {
+ public:
+  ExclusiveAccessManagerPressAndHoldEscTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPressAndHoldEscToExitBrowserFullscreen);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerPressAndHoldEscTest,
+                       HandlePressAndHoldKeyEvent) {
+  // Start the timer on key down event.
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+  EXPECT_TRUE(IsEscKeyHoldTimerRunning());
+
+  // Multiple key down events won't affect the timer.
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+  EXPECT_TRUE(IsEscKeyHoldTimerRunning());
+
+  // Stop the timer on key up event.
+  EXPECT_CALL(*mock_controller(), HandleUserReleasedEscapeEarly());
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/false);
+  EXPECT_FALSE(IsEscKeyHoldTimerRunning());
+
+  // Restart the timer and fastforward the clock to trigger the timer.
+  {
+    auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(
+        task_runner.get());
+
+    SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+    EXPECT_TRUE(IsEscKeyHoldTimerRunning());
+
+    EXPECT_CALL(*mock_controller(), HandleUserHeldEscape());
+    task_runner->FastForwardBy(base::Seconds(2));
+    EXPECT_FALSE(IsEscKeyHoldTimerRunning());
+  }
+
+  // Timer won't start on key up event.
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/false);
+  EXPECT_FALSE(IsEscKeyHoldTimerRunning());
+}

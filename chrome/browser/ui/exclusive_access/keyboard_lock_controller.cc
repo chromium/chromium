@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -49,6 +49,22 @@ bool KeyboardLockController::HandleUserPressedEscape() {
   return true;
 }
 
+void KeyboardLockController::HandleUserHeldEscape() {
+  UnlockKeyboard();
+}
+
+void KeyboardLockController::HandleUserReleasedEscapeEarly() {
+  if (RequiresPressAndHoldEscToExit()) {
+    ReShowExitBubbleIfNeeded();
+  }
+}
+
+bool KeyboardLockController::RequiresPressAndHoldEscToExit() const {
+  DCHECK_EQ(keyboard_lock_state_ == KeyboardLockState::kUnlocked,
+            exclusive_access_tab() == nullptr);
+  return keyboard_lock_state_ == KeyboardLockState::kLockedWithEsc;
+}
+
 void KeyboardLockController::ExitExclusiveAccessToPreviousState() {
   UnlockKeyboard();
 }
@@ -67,12 +83,6 @@ bool KeyboardLockController::IsKeyboardLockActive() const {
   return keyboard_lock_state_ != KeyboardLockState::kUnlocked;
 }
 
-bool KeyboardLockController::RequiresPressAndHoldEscToExit() const {
-  DCHECK_EQ(keyboard_lock_state_ == KeyboardLockState::kUnlocked,
-            exclusive_access_tab() == nullptr);
-  return keyboard_lock_state_ == KeyboardLockState::kLockedWithEsc;
-}
-
 void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
   if (!web_contents->IsFullscreen()) {
@@ -86,6 +96,11 @@ void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
 
 bool KeyboardLockController::HandleKeyEvent(
     const content::NativeWebKeyboardEvent& event) {
+  if (base::FeatureList::IsEnabled(
+          features::kPressAndHoldEscToExitBrowserFullscreen)) {
+    return false;
+  }
+
   DCHECK_EQ(ui::VKEY_ESCAPE, event.windows_key_code);
   // This method handles the press and hold gesture used for exiting fullscreen.
   // If we don't have a feature which requires press and hold, or there isn't an
@@ -112,7 +127,7 @@ bool KeyboardLockController::HandleKeyEvent(
     // fullscreen/pointerlock/keyboardlock.
     hold_timer_.Start(
         FROM_HERE, kHoldEscapeTime,
-        base::BindOnce(&KeyboardLockController::HandleUserHeldEscape,
+        base::BindOnce(&KeyboardLockController::HandleUserHeldEscapeDeprecated,
                        base::Unretained(this)));
   }
 
@@ -159,7 +174,12 @@ void KeyboardLockController::UnlockKeyboard() {
       ExclusiveAccessBubbleHideCallback());
 }
 
-void KeyboardLockController::HandleUserHeldEscape() {
+void KeyboardLockController::HandleUserHeldEscapeDeprecated() {
+  if (base::FeatureList::IsEnabled(
+          features::kPressAndHoldEscToExitBrowserFullscreen)) {
+    return;
+  }
+
   ExclusiveAccessManager* const manager = exclusive_access_manager();
   manager->fullscreen_controller()->HandleUserPressedEscape();
   manager->pointer_lock_controller()->HandleUserPressedEscape();

@@ -41,6 +41,9 @@ class PointerLockController : public ExclusiveAccessControllerBase {
 
   // Override from ExclusiveAccessControllerBase
   bool HandleUserPressedEscape() override;
+  void HandleUserHeldEscape() override;
+  void HandleUserReleasedEscapeEarly() override;
+  bool RequiresPressAndHoldEscToExit() const override;
   void ExitExclusiveAccessToPreviousState() override;
 
   void UnlockPointer();

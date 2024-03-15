@@ -157,9 +157,10 @@ void ExclusiveAccessTest::LostPointerLock() {
   browser()->LostPointerLock();
 }
 
-bool ExclusiveAccessTest::SendEscapeToExclusiveAccessManager() {
+bool ExclusiveAccessTest::SendEscapeToExclusiveAccessManager(bool is_key_down) {
   content::NativeWebKeyboardEvent event(
-      blink::WebInputEvent::Type::kRawKeyDown,
+      is_key_down ? blink::WebInputEvent::Type::kRawKeyDown
+                  : blink::WebInputEvent::Type::kKeyUp,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   event.windows_key_code = ui::VKEY_ESCAPE;
@@ -217,6 +218,10 @@ void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
   browser()->ToggleFullscreenModeWithExtension(
       extensions::Extension::GetBaseURLFromExtensionId(kExtensionId));
   waiter.Wait();
+}
+
+bool ExclusiveAccessTest::IsEscKeyHoldTimerRunning() {
+  return GetExclusiveAccessManager()->esc_key_hold_timer_for_test().IsRunning();
 }
 
 void ExclusiveAccessTest::SetEscRepeatWindowLength(

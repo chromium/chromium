@@ -419,6 +419,18 @@ bool FullscreenController::HandleUserPressedEscape() {
   return true;
 }
 
+void FullscreenController::HandleUserHeldEscape() {
+  // TODO(crbug.com/327668509): Implement.
+  HandleUserPressedEscape();
+}
+
+void FullscreenController::HandleUserReleasedEscapeEarly() {}
+
+bool FullscreenController::RequiresPressAndHoldEscToExit() const {
+  // TODO(crbug.com/327668509): Implement.
+  return false;
+}
+
 void FullscreenController::ExitExclusiveAccessToPreviousState() {
   if (IsWindowFullscreenForTabOrPending())
     ExitFullscreenModeForTab(exclusive_access_tab());

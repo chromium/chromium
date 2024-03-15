@@ -86,8 +86,18 @@ class ExclusiveAccessManager {
     return exclusive_access_controllers_;
   }
 
+  const base::OneShotTimer& esc_key_hold_timer_for_test() {
+    return esc_key_hold_timer_;
+  }
+
  private:
+  void HandleUserHeldEscape();
+
   void RecordLockStateOnEnteringFullscreen(const char histogram_name[]) const;
+
+  // The timer starts on Esc key down event and stops on Esc key up event. It
+  // invokes `HandleUserHeldEscape()` when the timer is fired.
+  base::OneShotTimer esc_key_hold_timer_;
 
   const raw_ptr<ExclusiveAccessContext, DanglingUntriaged>
       exclusive_access_context_;

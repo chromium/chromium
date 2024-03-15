@@ -44,15 +44,15 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
 
   // ExclusiveAccessControllerBase implementation.
   bool HandleUserPressedEscape() override;
+  void HandleUserHeldEscape() override;
+  void HandleUserReleasedEscapeEarly() override;
+  bool RequiresPressAndHoldEscToExit() const override;
   void ExitExclusiveAccessToPreviousState() override;
   void ExitExclusiveAccessIfNecessary() override;
   void NotifyTabExclusiveAccessLost() override;
 
   // Returns true if the keyboard is locked.
   bool IsKeyboardLockActive() const;
-
-  // Returns true if the user must press and hold esc to exit keyboard lock.
-  bool RequiresPressAndHoldEscToExit() const;
 
   // Allows for special handling for KeyDown/KeyUp events.  Returns true if the
   // event was handled by the KeyboardLockController.
@@ -75,7 +75,7 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   void UnlockKeyboard();
 
   // Called when the user has held down Escape.
-  void HandleUserHeldEscape();
+  void HandleUserHeldEscapeDeprecated();
 
   // Displays the exit instructions if the user presses escape rapidly.
   void ReShowExitBubbleIfNeeded();
