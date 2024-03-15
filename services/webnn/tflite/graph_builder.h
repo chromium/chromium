@@ -160,6 +160,8 @@ class GraphBuilder final {
   base::expected<OperatorOffset, std::string> SerializeReshape(
       const mojom::Reshape& reshape);
   OperatorOffset SerializeSigmoid(const mojom::Sigmoid& sigmoid);
+  base::expected<OperatorOffset, std::string> SerializeSlice(
+      const mojom::Slice& slice);
   OperatorOffset SerializeSoftmax(const mojom::Softmax& softmax);
   OperatorOffset SerializeTranspose(const mojom::Transpose& transpose);
 

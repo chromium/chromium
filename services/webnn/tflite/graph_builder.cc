@@ -346,6 +346,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     case mojom::Operation::Tag::kSigmoid:
       operator_offset = SerializeSigmoid(*op.get_sigmoid());
       break;
+    case mojom::Operation::Tag::kSlice: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeSlice(*op.get_slice()));
+      break;
+    }
     case mojom::Operation::Tag::kSoftmax:
       operator_offset = SerializeSoftmax(*op.get_softmax());
       break;
@@ -382,8 +386,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("reduce is not implemented");
     case mojom::Operation::Tag::kResample2d:
       return base::unexpected("resample2d is not implemented");
-    case mojom::Operation::Tag::kSlice:
-      return base::unexpected("slice is not implemented");
     case mojom::Operation::Tag::kSoftplus:
       return base::unexpected("softplus is not implemented");
     case mojom::Operation::Tag::kSoftsign:
@@ -1098,6 +1100,53 @@ auto GraphBuilder::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
   return SerializeUnaryOperation(::tflite::BuiltinOperator_LOGISTIC,
                                  sigmoid.input_operand_id,
                                  sigmoid.output_operand_id);
+}
+
+auto GraphBuilder::SerializeSlice(const mojom::Slice& slice)
+    -> base::expected<OperatorOffset, std::string> {
+  // The number of starts and sizes are the same as input rank that is verified
+  // in ValidateSliceAndInferOutput() function.
+  std::vector<int32_t> slice_starts;
+  slice_starts.reserve(slice.starts_and_sizes.size());
+  std::vector<int32_t> slice_sizes;
+  slice_sizes.reserve(slice.starts_and_sizes.size());
+  for (auto& start_and_size : slice.starts_and_sizes) {
+    auto checked_start = base::MakeCheckedNum<int32_t>(start_and_size->start);
+    auto checked_size = base::MakeCheckedNum<int32_t>(start_and_size->size);
+    if (!checked_start.IsValid() || !checked_size.IsValid()) {
+      return base::unexpected("The start or size of slice is too large.");
+    }
+    slice_starts.push_back(checked_start.ValueOrDie());
+    slice_sizes.push_back(checked_size.ValueOrDie());
+  }
+
+  // Serialize the starting index of each input dimension.
+  auto checked_number = base::MakeCheckedNum<int32_t>(slice_starts.size());
+  if (!checked_number.IsValid()) {
+    return base::unexpected("The number of starts and sizes is too large.");
+  }
+  const std::array<int32_t, 1> starts_and_sizes_shape = {
+      checked_number.ValueOrDie()};
+  const int32_t starts_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      std::move(slice_starts), starts_and_sizes_shape);
+
+  // Serialize the number of elements to slice each input dimension.
+  const int32_t sizes_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      std::move(slice_sizes), starts_and_sizes_shape);
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_SLICE);
+  const std::array<int32_t, 3> op_inputs = {
+      operand_to_index_map_.at(slice.input_operand_id), starts_tensor_index,
+      sizes_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(slice.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
 }
 
 auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
