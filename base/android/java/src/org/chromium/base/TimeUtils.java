@@ -83,6 +83,9 @@ public class TimeUtils {
     public static final long SECONDS_PER_HOUR = SECONDS_PER_MINUTE * 60;
     public static final long SECONDS_PER_DAY = SECONDS_PER_HOUR * 24;
     public static final long MILLISECONDS_PER_MINUTE = SECONDS_PER_MINUTE * 1000;
+    public static final long MILLISECONDS_PER_DAY = SECONDS_PER_DAY * 1000;
+    public static final long MILLISECONDS_PER_YEAR = MILLISECONDS_PER_DAY * 365;
+
     public static final long NANOSECONDS_PER_MICROSECOND = 1000;
     public static final long NANOSECONDS_PER_MILLISECOND = 1000000;
 

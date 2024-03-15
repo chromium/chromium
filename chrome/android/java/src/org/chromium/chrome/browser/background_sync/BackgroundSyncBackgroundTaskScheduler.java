@@ -15,6 +15,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TimeUtils;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
@@ -149,7 +150,7 @@ public class BackgroundSyncBackgroundTaskScheduler {
         TaskInfo.TimingInfo timingInfo =
                 TaskInfo.OneOffInfo.create()
                         .setWindowStartTimeMs(minDelayMs)
-                        .setWindowEndTimeMs(Long.MAX_VALUE)
+                        .setWindowEndTimeMs(TimeUtils.MILLISECONDS_PER_YEAR)
                         .setExpiresAfterWindowEndTime(true)
                         .build();
         TaskInfo taskInfo =
