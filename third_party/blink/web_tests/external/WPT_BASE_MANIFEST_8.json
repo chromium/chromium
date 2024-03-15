@@ -19387,6 +19387,19 @@
        {}
       ]
      ],
+     "overflowing-block-002-print.html": [
+      "3cba4b421fab252b1efbd28d19bbf3d470aafdce",
+      [
+       null,
+       [
+        [
+         "/css/css-break/overflowing-block-002-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflowing-block-print.html": [
       "daa9e24f33a49546f852fe387814ec9aa8b56e90",
       [
@@ -89471,6 +89484,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflowing-block-003.html": [
+      "786a61a4927f32dc853fc9964feab8cf652472e4",
+      [
+       null,
+       [
+        [
+         "/css/css-break/overflowing-block-003-ref.html",
          "=="
         ]
        ],
@@ -271846,6 +271872,21 @@
        }
       }
      },
+     "permission-element": {
+      "bounded-css-properties-reference.tentative.html": [
+       "85bf3071f83cddad502d1a2191de8fa9cdb20e1f",
+       [
+        null,
+        [
+         [
+          "/html/semantics/permission-element/bounded-css-properties-reference-expected.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "popovers": {
       "popover-anchor-change-display.tentative.html": [
        "435929a6c1b05adc811fe8df029f2a30e2e79cf3",
@@ -286952,15 +286993,15 @@
       []
      ],
      "eddsa.https.any-expected.txt": [
-      "06f92f8560c11a2a99e26849ba3eb7e4cefbc845",
+      "2705d0d9527da5e3963f6376469d36b51ad0d3ca",
       []
      ],
      "eddsa.https.any.worker-expected.txt": [
-      "06f92f8560c11a2a99e26849ba3eb7e4cefbc845",
+      "2705d0d9527da5e3963f6376469d36b51ad0d3ca",
       []
      ],
      "eddsa.js": [
-      "7817b78cff6293620aaf4bcc35807a0437a0c48b",
+      "4952df502d83ce3464af11a85b91d6a0c0d727eb",
       []
      ],
      "eddsa_vectors.js": [
@@ -302823,6 +302864,14 @@
      ],
      "overflowed-abs-pos-with-percentage-height-print-ref.html": [
       "ad74e1f53d4f27fde674dfb964366f8574cac9c1",
+      []
+     ],
+     "overflowing-block-002-print-ref.html": [
+      "0322ba04a07a7c0e36b2c4f2f9f25bc4f357ed3c",
+      []
+     ],
+     "overflowing-block-003-ref.html": [
+      "a8f86d1cfe4af41a575f22a9896bb8233a964858",
       []
      ],
      "overflowing-block-print-ref.html": [
@@ -363316,6 +363365,12 @@
         ]
        }
       },
+      "sections-and-headings": {
+       "headings-styles-no-h1-in-section.tentative-expected.txt": [
+        "e3679dfece450fc9c20be020181da561cf3c5993",
+        []
+       ]
+      },
       "tables": {
        "DIR_METADATA": [
         "c8909f2b9c86237b881f6f2465f13e4fb1ce162f",
@@ -366748,6 +366803,12 @@
         []
        ]
       }
+     },
+     "permission-element": {
+      "bounded-css-properties-reference-expected.html": [
+       "248f4969f448e80acb1cb7f406e507a2ff4c038b",
+       []
+      ]
      },
      "popovers": {
       "DIR_METADATA": [
@@ -373432,7 +373493,7 @@
     ]
    },
    "lint.ignore": [
-    "6809f616425cc4ddf3cac9de1abf6ee0a7ff770f",
+    "0258a1117aa473e3fba1c9c45fc89685cf9221ad",
     []
    ],
    "loading": {
@@ -394069,7 +394130,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "0ea397ea3dfb96471673bb02f2a03be52c0a3202",
+     "750618f1f3f69c6f550f3044526f481f4c1684a1",
      []
     ],
     "routines.js": [
@@ -437612,13 +437673,6 @@
        ]
       ]
      },
-     "position-fallback-basics.html": [
-      "bfeb921de1bab4b194f0bb07b46bc7208c5e2166",
-      [
-       null,
-       {}
-      ]
-     ],
      "position-fallback-bounds-001.html": [
       "ebd1e78fb9a86fd595a4607fa7285f5734ce5726",
       [
@@ -437726,6 +437780,13 @@
      ],
      "position-try-grid-001.html": [
       "87a30e26eca4a92edb796f6c22cbe6b2f8da54cd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-try-options-limit.html": [
+      "32a4f592fa05fcc4b4f058a60c92d2b37d0afb75",
       [
        null,
        {}
@@ -469888,6 +469949,13 @@
       "c12faf63a435903c908e8d0ecc6af5be94b8ab02",
       [
        null,
+       {}
+      ]
+     ],
+     "cssstyledeclaration-csstext-setter.window.js": [
+      "4474358ed0f74d3a48c34ba2753aa7fd18efafc7",
+      [
+       "css/cssom/cssstyledeclaration-csstext-setter.window.html",
        {}
       ]
      ],
@@ -564214,8 +564282,15 @@
        }
       },
       "sections-and-headings": {
+       "headings-styles-no-h1-in-section.tentative.html": [
+        "61610c2fd6c8ce6df5efdaf0f48fffd4662bd9b8",
+        [
+         null,
+         {}
+        ]
+       ],
        "headings-styles.html": [
-        "63e6a83e883d7dbbf600165746fc61b016ae6053",
+        "be531adfcf5b261de59b03cbf3a49cd526309530",
         [
          null,
          {}
@@ -573717,29 +573792,29 @@
       }
      },
      "permission-element": {
-      "bounded-css-properties.html": [
-       "98c3d70e98bbe4df28ca765f4e8db3016d8a2974",
+      "bounded-css-properties.tentative.html": [
+       "1cd3f735945afbd1627c19e2cbc27782c934f0ee",
        [
         null,
         {}
        ]
       ],
-      "invalid-css-properties.html": [
-       "c7186563f0ae6d8c2c2a8ab2b1d2dcd6c5c9283d",
+      "invalid-css-properties.tentative.html": [
+       "334280c83bdf9919626ddaf64adc522f2ca51f8d",
        [
         null,
         {}
        ]
       ],
-      "negative-offset-and-margin.html": [
-       "97290bb4df3c1ea7c310cd775d6cfec6635287a4",
+      "negative-offset-and-margin.tentative.html": [
+       "de622bbb3e87d15c66d260467ca5133d4a80526e",
        [
         null,
         {}
        ]
       ],
-      "no-end-tag-no-contents.html": [
-       "5fcce1421b6cd2abed01ab95c381aa7d29708e98",
+      "no-end-tag-no-contents.tentative.html": [
+       "bea3d7102caf7dc97122dee600373899e1ca414e",
        [
         null,
         {}
@@ -671217,6 +671292,15 @@
     "tentative": {
      "RTCEncodedAudioFrame-clone.https.html": [
       "9f07713d4439c676fd7a5cc2f7d32af92a350e19",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "RTCEncodedAudioFrame-metadata.https.html": [
+      "1e420e6f725230a540a669f1f17fd1ebeceb78f1",
       [
        null,
        {

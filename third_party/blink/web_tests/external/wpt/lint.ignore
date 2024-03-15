@@ -580,6 +580,7 @@ MISSING-LINK: css/cssom-view/scrollTop-display-change.html
 # TODO https://github.com/web-platform-tests/wpt/issues/5770
 MISSING-LINK: css/css-highlight-api/idlharness.window.js
 MISSING-LINK: css/css-highlight-api/historical.window.js
+MISSING-LINK: css/cssom/cssstyledeclaration-csstext-setter.window.js
 MISSING-LINK: css/geometry/*.worker.js
 MISSING-LINK: css/geometry/*.any.js
 MISSING-LINK: css/filter-effects/*.any.js
