@@ -125,8 +125,8 @@ class DoneButton : public views::LabelButton {
       : LabelButton(std::move(pressed_callback),
                     l10n_util::GetStringUTF16(
                         IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL)) {
-    // TODO(b/279117180): Replace with proper accessible name.
-    SetAccessibleName(u"done");
+    SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL));
 
     SetBackground(views::CreateThemedRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBase,
