@@ -699,21 +699,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                   .SetReportTime(now)
                   .SetPriority(13)
                   .Build()}));
-  manager()->NotifyTriggerHandled(
-      DefaultTrigger(),
-      CreateReportResult(
-          /*trigger_time=*/base::Time::Now(),
-          AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority,
-          AttributionTrigger::AggregatableResult::kNoHistograms,
-          /*replaced_event_level_report=*/
-          ReportBuilder(AttributionInfoBuilder().Build(),
-                        SourceBuilder(now).BuildStored())
-              .SetReportTime(now + base::Hours(1))
-              .SetPriority(11)
-              .Build(),
-          /*new_event_level_report=*/IrreleventEventLevelReport(),
-          /*new_aggregatable_report=*/std::nullopt,
-          /*source=*/SourceBuilder().BuildStored()));
+  manager()->NotifyTriggerHandled(CreateReportResult(
+      /*trigger_time=*/base::Time::Now(), DefaultTrigger(),
+      AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority,
+      AttributionTrigger::AggregatableResult::kNoHistograms,
+      /*replaced_event_level_report=*/
+      ReportBuilder(AttributionInfoBuilder().Build(),
+                    SourceBuilder(now).BuildStored())
+          .SetReportTime(now + base::Hours(1))
+          .SetPriority(11)
+          .Build(),
+      /*new_event_level_report=*/IrreleventEventLevelReport(),
+      /*new_aggregatable_report=*/std::nullopt,
+      /*source=*/SourceBuilder().BuildStored()));
 
   {
     static constexpr char kScript[] = R"(
@@ -1265,9 +1263,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           std::optional<uint64_t> cleared_debug_key = std::nullopt) {
         static int offset_hours = 0;
         manager()->NotifyTriggerHandled(
-            trigger,
             CreateReportResult(
-                /*trigger_time=*/now + base::Hours(++offset_hours),
+                /*trigger_time=*/now + base::Hours(++offset_hours), trigger,
                 event_status, aggregatable_status,
                 /*replaced_event_level_report=*/std::nullopt,
                 /*new_event_level_report=*/IrreleventEventLevelReport(),

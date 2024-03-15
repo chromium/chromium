@@ -80,8 +80,7 @@ class AttributionInternalsHandlerImpl
   void OnDebugReportSent(const AttributionDebugReport&,
                          int status,
                          base::Time) override;
-  void OnTriggerHandled(const AttributionTrigger& trigger,
-                        std::optional<uint64_t> cleared_debug_key,
+  void OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult& result) override;
   void OnOsRegistration(
       base::Time time,

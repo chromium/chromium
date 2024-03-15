@@ -434,9 +434,9 @@ void AttributionInternalsHandlerImpl::OnOsRegistration(
 }
 
 void AttributionInternalsHandlerImpl::OnTriggerHandled(
-    const AttributionTrigger& trigger,
     const std::optional<uint64_t> cleared_debug_key,
     const CreateReportResult& result) {
+  const AttributionTrigger& trigger = result.trigger();
   const attribution_reporting::TriggerRegistration& registration =
       trigger.registration();
 

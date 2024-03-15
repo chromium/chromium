@@ -203,8 +203,7 @@ class StorageHandler
       base::Time source_time,
       std::optional<uint64_t> cleared_debug_key,
       attribution_reporting::mojom::StoreSourceResult) override;
-  void OnTriggerHandled(const AttributionTrigger&,
-                        std::optional<uint64_t> cleared_debug_key,
+  void OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult&) override;
 
   void NotifySharedStorageAccessed(

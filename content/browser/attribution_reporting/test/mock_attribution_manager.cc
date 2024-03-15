@@ -71,11 +71,10 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
 }
 
 void MockAttributionManager::NotifyTriggerHandled(
-    const AttributionTrigger& trigger,
     const CreateReportResult& result,
     std::optional<uint64_t> cleared_debug_key) {
   for (auto& observer : observers_) {
-    observer.OnTriggerHandled(trigger, cleared_debug_key, result);
+    observer.OnTriggerHandled(cleared_debug_key, result);
   }
 }
 

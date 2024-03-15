@@ -675,10 +675,10 @@ void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
   }
 
   attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
-      .WithArgs(trigger)
+      .WithArgs(std::move(trigger))
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
-                           weak_factory_.GetWeakPtr(), std::move(trigger),
-                           cleared_debug_key, is_debug_cookie_set));
+                           weak_factory_.GetWeakPtr(), cleared_debug_key,
+                           is_debug_cookie_set));
 }
 
 void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
@@ -796,15 +796,15 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
             if (registration_allowed) {
               StoreTrigger(std::move(trigger), is_debug_cookie_set);
             } else {
-              OnReportStored(trigger,
-                             /*cleared_debug_key=*/std::nullopt,
-                             /*is_debug_cookie_set=*/false,
-                             CreateReportResult(
-                                 /*trigger_time=*/base::Time::Now(),
-                                 AttributionTrigger::EventLevelResult::
-                                     kProhibitedByBrowserPolicy,
-                                 AttributionTrigger::AggregatableResult::
-                                     kProhibitedByBrowserPolicy));
+              OnReportStored(
+                  /*cleared_debug_key=*/std::nullopt,
+                  /*is_debug_cookie_set=*/false,
+                  CreateReportResult(
+                      /*trigger_time=*/base::Time::Now(), std::move(trigger),
+                      AttributionTrigger::EventLevelResult::
+                          kProhibitedByBrowserPolicy,
+                      AttributionTrigger::AggregatableResult::
+                          kProhibitedByBrowserPolicy));
             }
           },
       },
@@ -849,7 +849,6 @@ void AttributionManagerImpl::AddPendingAggregatableReportTiming(
 }
 
 void AttributionManagerImpl::OnReportStored(
-    const AttributionTrigger& trigger,
     std::optional<uint64_t> cleared_debug_key,
     bool is_debug_cookie_set,
     CreateReportResult result) {
@@ -898,10 +897,10 @@ void AttributionManagerImpl::OnReportStored(
   }
 
   for (auto& observer : observers_) {
-    observer.OnTriggerHandled(trigger, cleared_debug_key, result);
+    observer.OnTriggerHandled(cleared_debug_key, result);
   }
 
-  MaybeSendVerboseDebugReport(trigger, is_debug_cookie_set, result);
+  MaybeSendVerboseDebugReport(is_debug_cookie_set, result);
 }
 
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
@@ -1367,7 +1366,6 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 }
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
-    const AttributionTrigger& trigger,
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
   if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
@@ -1380,12 +1378,12 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
         ContentBrowserClient::AttributionReportingOperation::
             kTriggerVerboseDebugReport,
         /*rfh=*/nullptr,
-        /*source_origin=*/nullptr, &*trigger.destination_origin(),
-        &*trigger.reporting_origin());
+        /*source_origin=*/nullptr, &*result.trigger().destination_origin(),
+        &*result.trigger().reporting_origin());
   };
 
   if (std::optional<AttributionDebugReport> debug_report =
-          AttributionDebugReport::Create(trigger, is_operation_allowed,
+          AttributionDebugReport::Create(is_operation_allowed,
                                          is_debug_cookie_set, result)) {
     report_sender_->SendReport(
         std::move(*debug_report),

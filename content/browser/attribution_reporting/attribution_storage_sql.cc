@@ -935,7 +935,7 @@ bool HasAggregatableData(
 }  // namespace
 
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
-    const AttributionTrigger& trigger) {
+    AttributionTrigger trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const attribution_reporting::TriggerRegistration& trigger_registration =
@@ -993,8 +993,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         }
 
         return CreateReportResult(
-            trigger_time, *event_level_status, *aggregatable_status,
-            std::move(replaced_event_level_report),
+            trigger_time, std::move(trigger), *event_level_status,
+            *aggregatable_status, std::move(replaced_event_level_report),
             std::move(new_event_level_report),
             std::move(new_aggregatable_report),
             source_to_attribute

@@ -2125,12 +2125,11 @@ void StorageHandler::OnSourceHandled(
       std::move(out_source), ToSourceRegistrationResult(result));
 }
 
-void StorageHandler::OnTriggerHandled(const AttributionTrigger& trigger,
-                                      std::optional<uint64_t> cleared_debug_key,
+void StorageHandler::OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
                                       const CreateReportResult& result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const auto& registration = trigger.registration();
+  const auto& registration = result.trigger().registration();
 
   auto out_trigger =
       Storage::AttributionReportingTriggerRegistration::Create()

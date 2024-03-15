@@ -111,6 +111,7 @@ using ::testing::Le;
 using ::testing::Matcher;
 using ::testing::Optional;
 using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -912,30 +913,28 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
   {
     InSequence seq;
 
-    EXPECT_CALL(
-        observer,
-        OnTriggerHandled(_, _,
-                         CreateReportEventLevelStatusIs(
-                             AttributionTrigger::EventLevelResult::kSuccess)))
+    EXPECT_CALL(observer,
+                OnTriggerHandled(
+                    _, CreateReportEventLevelStatusIs(
+                           AttributionTrigger::EventLevelResult::kSuccess)))
         .Times(3);
 
     EXPECT_CALL(checkpoint, Call(1));
 
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, _,
-                         AllOf(ReplacedEventLevelReportIs(Optional(
-                                   EventLevelDataIs(TriggerPriorityIs(1)))),
-                               CreateReportEventLevelStatusIs(
-                                   AttributionTrigger::EventLevelResult::
-                                       kSuccessDroppedLowerPriority))));
+        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
+                                      EventLevelDataIs(TriggerPriorityIs(1)))),
+                                  CreateReportEventLevelStatusIs(
+                                      AttributionTrigger::EventLevelResult::
+                                          kSuccessDroppedLowerPriority))));
 
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(
         observer,
         OnTriggerHandled(
-            _, _,
+            _,
             AllOf(ReplacedEventLevelReportIs(std::nullopt),
                   CreateReportEventLevelStatusIs(
                       AttributionTrigger::EventLevelResult::kPriorityTooLow))));
@@ -944,20 +943,18 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
 
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, _,
-                         AllOf(ReplacedEventLevelReportIs(Optional(
-                                   EventLevelDataIs(TriggerPriorityIs(2)))),
-                               CreateReportEventLevelStatusIs(
-                                   AttributionTrigger::EventLevelResult::
-                                       kSuccessDroppedLowerPriority))));
+        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
+                                      EventLevelDataIs(TriggerPriorityIs(2)))),
+                                  CreateReportEventLevelStatusIs(
+                                      AttributionTrigger::EventLevelResult::
+                                          kSuccessDroppedLowerPriority))));
     EXPECT_CALL(
         observer,
-        OnTriggerHandled(_, _,
-                         AllOf(ReplacedEventLevelReportIs(Optional(
-                                   EventLevelDataIs(TriggerPriorityIs(3)))),
-                               CreateReportEventLevelStatusIs(
-                                   AttributionTrigger::EventLevelResult::
-                                       kSuccessDroppedLowerPriority))));
+        OnTriggerHandled(_, AllOf(ReplacedEventLevelReportIs(Optional(
+                                      EventLevelDataIs(TriggerPriorityIs(3)))),
+                                  CreateReportEventLevelStatusIs(
+                                      AttributionTrigger::EventLevelResult::
+                                          kSuccessDroppedLowerPriority))));
   }
 
   attribution_manager_->HandleSource(SourceBuilder()
@@ -1866,15 +1863,15 @@ TEST_F(AttributionManagerImplTest,
 
   const auto trigger = DefaultTrigger();
 
-  EXPECT_CALL(observer, OnTriggerHandled(
-                            trigger, _,
-                            AllOf(_,
-                                  CreateReportEventLevelStatusIs(
-                                      AttributionTrigger::EventLevelResult::
-                                          kProhibitedByBrowserPolicy),
-                                  CreateReportAggregatableStatusIs(
-                                      AttributionTrigger::AggregatableResult::
-                                          kProhibitedByBrowserPolicy))));
+  EXPECT_CALL(
+      observer,
+      OnTriggerHandled(_, AllOf(Property(&CreateReportResult::trigger, trigger),
+                                CreateReportEventLevelStatusIs(
+                                    AttributionTrigger::EventLevelResult::
+                                        kProhibitedByBrowserPolicy),
+                                CreateReportAggregatableStatusIs(
+                                    AttributionTrigger::AggregatableResult::
+                                        kProhibitedByBrowserPolicy))));
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -2538,8 +2535,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                                        kFrameId);
 
     EXPECT_THAT(StoredSources(), SizeIs(1)) << test_case.name;
-    EXPECT_CALL(observer,
-                OnTriggerHandled(_, test_case.expected_cleared_key, _));
+    EXPECT_CALL(observer, OnTriggerHandled(test_case.expected_cleared_key, _));
     attribution_manager_->HandleTrigger(
         TriggerBuilder()
             .SetReportingOrigin(reporting_origin)

@@ -21,6 +21,7 @@ using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
 CreateReportResult::CreateReportResult(
     base::Time trigger_time,
+    AttributionTrigger trigger,
     EventLevelResult event_level_status,
     AggregatableResult aggregatable_status,
     std::optional<AttributionReport> replaced_event_level_report,
@@ -39,7 +40,8 @@ CreateReportResult::CreateReportResult(
       source_(std::move(source)),
       limits_(limits),
       dropped_event_level_report_(std::move(dropped_event_level_report)),
-      min_null_aggregatable_report_time_(min_null_aggregatable_report_time) {
+      min_null_aggregatable_report_time_(min_null_aggregatable_report_time),
+      trigger_(std::move(trigger)) {
   DCHECK_EQ(
       event_level_status_ == EventLevelResult::kSuccess ||
           event_level_status_ == EventLevelResult::kSuccessDroppedLowerPriority,

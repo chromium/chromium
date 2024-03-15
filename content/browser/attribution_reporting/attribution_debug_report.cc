@@ -344,12 +344,13 @@ void SetLimit(base::Value::Dict& data_body, std::optional<T> limit) {
 }
 
 base::Value::Dict GetReportDataBody(DebugDataType data_type,
-                                    const AttributionTrigger& trigger,
                                     const CreateReportResult& result) {
   base::Value::Dict data_body;
-  data_body.Set(kAttributionDestination,
-                net::SchemefulSite(trigger.destination_origin()).Serialize());
-  if (std::optional<uint64_t> debug_key = trigger.registration().debug_key) {
+  data_body.Set(
+      kAttributionDestination,
+      net::SchemefulSite(result.trigger().destination_origin()).Serialize());
+  if (std::optional<uint64_t> debug_key =
+          result.trigger().registration().debug_key) {
     data_body.Set("trigger_debug_key", base::NumberToString(*debug_key));
   }
 
@@ -492,12 +493,11 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
 // static
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
-    const AttributionTrigger& trigger,
     base::FunctionRef<bool()> is_operation_allowed,
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
-  if (!trigger.registration().debug_reporting ||
-      trigger.is_within_fenced_frame() || !is_operation_allowed()) {
+  if (!result.trigger().registration().debug_reporting ||
+      result.trigger().is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
 
@@ -510,9 +510,9 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   std::optional<DebugDataType> event_level_data_type =
       GetReportDataType(result.event_level_status(), is_debug_cookie_set);
   if (event_level_data_type) {
-    report_body.Append(GetReportData(
-        *event_level_data_type,
-        GetReportDataBody(*event_level_data_type, trigger, result)));
+    report_body.Append(
+        GetReportData(*event_level_data_type,
+                      GetReportDataBody(*event_level_data_type, result)));
     RecordVerboseDebugReportType(*event_level_data_type);
   }
 
@@ -520,9 +520,9 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
           GetReportDataType(result.aggregatable_status(), is_debug_cookie_set);
       aggregatable_data_type &&
       aggregatable_data_type != event_level_data_type) {
-    report_body.Append(GetReportData(
-        *aggregatable_data_type,
-        GetReportDataBody(*aggregatable_data_type, trigger, result)));
+    report_body.Append(
+        GetReportData(*aggregatable_data_type,
+                      GetReportDataBody(*aggregatable_data_type, result)));
     RecordVerboseDebugReportType(*aggregatable_data_type);
   }
 
@@ -531,7 +531,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   }
 
   return AttributionDebugReport(std::move(report_body),
-                                trigger.reporting_origin());
+                                result.trigger().reporting_origin());
 }
 
 // static

@@ -43,6 +43,7 @@ class CONTENT_EXPORT CreateReportResult {
 
   CreateReportResult(
       base::Time trigger_time,
+      AttributionTrigger,
       AttributionTrigger::EventLevelResult event_level_status,
       AttributionTrigger::AggregatableResult aggregatable_status,
       std::optional<AttributionReport> replaced_event_level_report =
@@ -105,6 +106,8 @@ class CONTENT_EXPORT CreateReportResult {
     return min_null_aggregatable_report_time_;
   }
 
+  const AttributionTrigger& trigger() const { return trigger_; }
+
  private:
   base::Time trigger_time_;
 
@@ -133,6 +136,8 @@ class CONTENT_EXPORT CreateReportResult {
   std::optional<AttributionReport> dropped_event_level_report_;
 
   std::optional<base::Time> min_null_aggregatable_report_time_;
+
+  AttributionTrigger trigger_;
 };
 
 }  // namespace content

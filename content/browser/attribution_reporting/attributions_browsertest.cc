@@ -1227,9 +1227,7 @@ ATTRIBUTION_PRERENDER_BROWSER_TEST(ConversionsRegisteredOnActivatedPrerender) {
         observation(&observer);
     observation.Observe(attribution_manager());
     base::RunLoop loop;
-    EXPECT_CALL(observer, OnTriggerHandled(_, _, _)).WillOnce([&]() {
-      loop.Quit();
-    });
+    EXPECT_CALL(observer, OnTriggerHandled).WillOnce([&]() { loop.Quit(); });
 
     // Navigate to pre-rendered page, bringing it to the fore.
     prerender_helper_.NavigatePrimaryPage(kConversionUrl);

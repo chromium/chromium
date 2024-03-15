@@ -53,8 +53,7 @@ class AttributionStorage {
   // Finds all stored sources matching a given `trigger`, and stores the
   // new associated report. Only active sources will receive new attributions.
   // Returns whether a new report has been scheduled/added to storage.
-  virtual CreateReportResult MaybeCreateAndStoreReport(
-      const AttributionTrigger& trigger) = 0;
+  virtual CreateReportResult MaybeCreateAndStoreReport(AttributionTrigger) = 0;
 
   // Returns all of the reports that should be sent before
   // |max_report_time|. This call is logically const, and does not modify the

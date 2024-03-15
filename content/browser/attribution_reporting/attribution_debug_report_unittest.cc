@@ -71,9 +71,10 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
       StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
-      TriggerBuilder().Build(), &OperationAllowed,
+      &OperationAllowed,
       /*is_debug_cookie_set=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
+                         TriggerBuilder().Build(),
                          EventLevelResult::kNoMatchingImpressions,
                          AggregatableResult::kNoMatchingImpressions)));
 }
@@ -85,9 +86,10 @@ TEST(AttributionDebugReportTest, OperationProhibited_NoReportReturned) {
       StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
-      TriggerBuilder().SetDebugReporting(true).Build(), &OperationProhibited,
+      &OperationProhibited,
       /*is_debug_cookie_set=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
+                         TriggerBuilder().SetDebugReporting(true).Build(),
                          EventLevelResult::kNoMatchingImpressions,
                          AggregatableResult::kNoMatchingImpressions)));
 }
@@ -129,13 +131,13 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
       StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
-      TriggerBuilder()
-          .SetDebugReporting(true)
-          .SetIsWithinFencedFrame(true)
-          .Build(),
       &OperationAllowed,
       /*is_debug_cookie_set=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
+                         TriggerBuilder()
+                             .SetDebugReporting(true)
+                             .SetIsWithinFencedFrame(true)
+                             .Build(),
                          EventLevelResult::kNoMatchingImpressions,
                          AggregatableResult::kNoMatchingImpressions)));
 }
@@ -428,10 +430,10 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
 
         std::optional<AttributionDebugReport> report =
             AttributionDebugReport::Create(
-                TriggerBuilder().SetDebugReporting(true).Build(),
                 &OperationAllowed, is_trigger_debug_cookie_set,
                 CreateReportResult(
                     /*trigger_time=*/base::Time::Now(),
+                    TriggerBuilder().SetDebugReporting(true).Build(),
                     test_case.event_level_result, test_case.aggregatable_result,
                     /*replaced_event_level_report=*/std::nullopt,
                     /*new_event_level_report=*/std::nullopt,
@@ -732,14 +734,14 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
 
         std::optional<AttributionDebugReport> report =
             AttributionDebugReport::Create(
-                TriggerBuilder()
-                    .SetDebugReporting(true)
-                    .SetDebugKey(test_case.trigger_debug_key)
-                    .Build(),
                 &OperationAllowed, is_trigger_debug_cookie_set,
                 CreateReportResult(
-                    /*trigger_time=*/base::Time::Now(), test_case.result,
-                    AggregatableResult::kNotRegistered,
+                    /*trigger_time=*/base::Time::Now(),
+                    TriggerBuilder()
+                        .SetDebugReporting(true)
+                        .SetDebugKey(test_case.trigger_debug_key)
+                        .Build(),
+                    test_case.result, AggregatableResult::kNotRegistered,
                     test_case.replaced_event_level_report,
                     test_case.new_event_level_report,
                     /*new_aggregatable_report=*/std::nullopt,
@@ -938,13 +940,13 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
 
         std::optional<AttributionDebugReport> report =
             AttributionDebugReport::Create(
-                TriggerBuilder()
-                    .SetDebugReporting(true)
-                    .SetDebugKey(test_case.trigger_debug_key)
-                    .Build(),
                 &OperationAllowed, is_trigger_debug_cookie_set,
                 CreateReportResult(
                     /*trigger_time=*/base::Time::Now(),
+                    TriggerBuilder()
+                        .SetDebugReporting(true)
+                        .SetDebugKey(test_case.trigger_debug_key)
+                        .Build(),
                     EventLevelResult::kSuccess, test_case.result,
                     /*replaced_event_level_report=*/std::nullopt,
                     /*new_event_level_report=*/DefaultEventLevelReport(),

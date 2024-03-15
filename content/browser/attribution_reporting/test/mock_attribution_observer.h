@@ -13,7 +13,6 @@
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -58,8 +57,7 @@ class MockAttributionObserver : public AttributionObserver {
 
   MOCK_METHOD(void,
               OnTriggerHandled,
-              (const AttributionTrigger&,
-               std::optional<uint64_t> cleared_debug_key,
+              (std::optional<uint64_t> cleared_debug_key,
                const CreateReportResult&),
               (override));
 };

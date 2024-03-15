@@ -26,7 +26,6 @@ namespace content {
 
 class AttributionDebugReport;
 class AttributionReport;
-class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
 
@@ -65,8 +64,7 @@ class AttributionObserver : public base::CheckedObserver {
                                  base::Time) {}
 
   // Called when a trigger is registered, regardless of success.
-  virtual void OnTriggerHandled(const AttributionTrigger& trigger,
-                                std::optional<uint64_t> cleared_debug_key,
+  virtual void OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
                                 const CreateReportResult& result) {}
 
   // Called when an OS source or trigger registration is handled, regardless of

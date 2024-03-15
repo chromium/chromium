@@ -225,8 +225,7 @@ class CONTENT_EXPORT AttributionManagerImpl
                       std::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
                       StoreSourceResult result);
-  void OnReportStored(const AttributionTrigger& trigger,
-                      std::optional<uint64_t> cleared_debug_key,
+  void OnReportStored(std::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
                       CreateReportResult result);
 
@@ -248,8 +247,7 @@ class CONTENT_EXPORT AttributionManagerImpl
                                    bool is_debug_cookie_set,
                                    const StoreSourceResult& result);
 
-  void MaybeSendVerboseDebugReport(const AttributionTrigger& trigger,
-                                   bool is_debug_cookie_set,
+  void MaybeSendVerboseDebugReport(bool is_debug_cookie_set,
                                    const CreateReportResult& result);
 
   void MaybeSendVerboseDebugReports(const OsRegistration&);

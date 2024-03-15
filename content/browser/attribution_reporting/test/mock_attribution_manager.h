@@ -119,7 +119,6 @@ class MockAttributionManager : public AttributionManager {
                         bool is_debug_report,
                         const SendResult&);
   void NotifyTriggerHandled(
-      const AttributionTrigger&,
       const CreateReportResult&,
       std::optional<uint64_t> cleared_debug_key = std::nullopt);
   void NotifyDebugReportSent(const AttributionDebugReport&,

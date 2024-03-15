@@ -26,7 +26,6 @@ class Origin;
 
 namespace content {
 
-class AttributionTrigger;
 class CreateReportResult;
 class StorableSource;
 class StoreSourceResult;
@@ -44,7 +43,6 @@ class CONTENT_EXPORT AttributionDebugReport {
       const StoreSourceResult& result);
 
   static std::optional<AttributionDebugReport> Create(
-      const AttributionTrigger& trigger,
       base::FunctionRef<bool()> is_operation_allowed,
       bool is_debug_cookie_set,
       const CreateReportResult& result);
