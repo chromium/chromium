@@ -75,11 +75,9 @@ base::expected<void, SourceRegistrationError> ParseTriggerData(
   trigger_data_indices.reserve(new_size);
 
   for (const base::Value& item : *list) {
-    ASSIGN_OR_RETURN(
-        uint32_t trigger_data,
-        ParseUint32(
-            item,
-            SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid));
+    ASSIGN_OR_RETURN(uint32_t trigger_data, ParseUint32(item), [](ParseError) {
+      return SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid;
+    });
 
     auto [_, inserted] =
         trigger_data_indices.try_emplace(trigger_data, spec_index);

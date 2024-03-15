@@ -88,10 +88,9 @@ base::expected<SummaryBuckets, SourceRegistrationError> SummaryBuckets::Parse(
   uint32_t prev = 0;
 
   for (const base::Value& item : *list) {
-    ASSIGN_OR_RETURN(
-        uint32_t start,
-        ParseUint32(item,
-                    SourceRegistrationError::kSummaryBucketsValueInvalid));
+    ASSIGN_OR_RETURN(uint32_t start, ParseUint32(item), [](ParseError) {
+      return SourceRegistrationError::kSummaryBucketsValueInvalid;
+    });
 
     if (start <= prev) {
       return base::unexpected(
