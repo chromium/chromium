@@ -27,7 +27,14 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CaptureScreenshot) {
+// TODO(https://crbug.com/329708692): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CaptureScreenshot DISABLED_CaptureScreenshot
+#else
+#define MAYBE_CaptureScreenshot CaptureScreenshot
+#endif
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MAYBE_CaptureScreenshot) {
   // State should start in off.
   auto* controller =
       browser()->tab_strip_model()->GetActiveTab()->lens_overlay_controller();
