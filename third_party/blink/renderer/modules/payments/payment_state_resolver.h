@@ -18,12 +18,12 @@ class MODULES_EXPORT PaymentStateResolver : public GarbageCollectedMixin {
  public:
   enum PaymentComplete { kFail, kSuccess, kUnknown };
 
-  virtual ScriptPromise Complete(ScriptState*,
-                                 PaymentComplete result,
-                                 ExceptionState&) = 0;
-  virtual ScriptPromise Retry(ScriptState*,
-                              const PaymentValidationErrors*,
-                              ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLUndefined> Complete(ScriptState*,
+                                                    PaymentComplete result,
+                                                    ExceptionState&) = 0;
+  virtual ScriptPromiseTyped<IDLUndefined> Retry(ScriptState*,
+                                                 const PaymentValidationErrors*,
+                                                 ExceptionState&) = 0;
 
  protected:
   virtual ~PaymentStateResolver() = default;

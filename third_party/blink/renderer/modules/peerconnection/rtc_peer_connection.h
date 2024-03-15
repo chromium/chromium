@@ -113,24 +113,27 @@ class MODULES_EXPORT RTCPeerConnection final
 
   ScriptPromiseTyped<RTCSessionDescriptionInit>
   createOffer(ScriptState*, const RTCOfferOptions*, ExceptionState&);
-  ScriptPromise createOffer(ScriptState*,
-                            V8RTCSessionDescriptionCallback*,
-                            V8RTCPeerConnectionErrorCallback*,
-                            const RTCOfferOptions*,
-                            ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> createOffer(
+      ScriptState*,
+      V8RTCSessionDescriptionCallback*,
+      V8RTCPeerConnectionErrorCallback*,
+      const RTCOfferOptions*,
+      ExceptionState&);
 
   ScriptPromiseTyped<RTCSessionDescriptionInit>
   createAnswer(ScriptState*, const RTCAnswerOptions*, ExceptionState&);
-  ScriptPromise createAnswer(ScriptState*,
-                             V8RTCSessionDescriptionCallback*,
-                             V8RTCPeerConnectionErrorCallback*,
-                             ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> createAnswer(
+      ScriptState*,
+      V8RTCSessionDescriptionCallback*,
+      V8RTCPeerConnectionErrorCallback*,
+      ExceptionState&);
 
-  ScriptPromise setLocalDescription(ScriptState*);
-  ScriptPromise setLocalDescription(ScriptState*,
-                                    const RTCSessionDescriptionInit*,
-                                    ExceptionState&);
-  ScriptPromise setLocalDescription(
+  ScriptPromiseTyped<IDLUndefined> setLocalDescription(ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> setLocalDescription(
+      ScriptState*,
+      const RTCSessionDescriptionInit*,
+      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> setLocalDescription(
       ScriptState*,
       const RTCSessionDescriptionInit*,
       V8VoidFunction*,
@@ -139,10 +142,11 @@ class MODULES_EXPORT RTCPeerConnection final
   RTCSessionDescription* currentLocalDescription() const;
   RTCSessionDescription* pendingLocalDescription() const;
 
-  ScriptPromise setRemoteDescription(ScriptState*,
-                                     const RTCSessionDescriptionInit*,
-                                     ExceptionState&);
-  ScriptPromise setRemoteDescription(
+  ScriptPromiseTyped<IDLUndefined> setRemoteDescription(
+      ScriptState*,
+      const RTCSessionDescriptionInit*,
+      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> setRemoteDescription(
       ScriptState*,
       const RTCSessionDescriptionInit*,
       V8VoidFunction*,
@@ -163,14 +167,15 @@ class MODULES_EXPORT RTCPeerConnection final
       const V8AlgorithmIdentifier* keygen_algorithm,
       ExceptionState& exception_state);
 
-  ScriptPromise addIceCandidate(ScriptState*,
-                                const RTCIceCandidateInit*,
-                                ExceptionState&);
-  ScriptPromise addIceCandidate(ScriptState*,
-                                const RTCIceCandidateInit*,
-                                V8VoidFunction*,
-                                V8RTCPeerConnectionErrorCallback*,
-                                ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> addIceCandidate(ScriptState*,
+                                                   const RTCIceCandidateInit*,
+                                                   ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> addIceCandidate(
+      ScriptState*,
+      const RTCIceCandidateInit*,
+      V8VoidFunction*,
+      V8RTCPeerConnectionErrorCallback*,
+      ExceptionState&);
 
   String iceGatheringState() const;
 

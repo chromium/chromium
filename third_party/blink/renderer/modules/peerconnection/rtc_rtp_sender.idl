@@ -10,9 +10,9 @@ interface RTCRtpSender {
     readonly attribute RTCDtlsTransport? rtcpTransport;
     [CallWith=ScriptState, HighEntropy, Measure] static RTCRtpCapabilities? getCapabilities(DOMString kind);
     // options argument is defined by https://w3c.github.io/webrtc-extensions/#rtcrtpsender-setparameters-keyframe
-    [CallWith=ScriptState] Promise<void> setParameters(RTCRtpSendParameters parameters, optional RTCSetParameterOptions options = {});
+    [CallWith=ScriptState] Promise<undefined> setParameters(RTCRtpSendParameters parameters, optional RTCSetParameterOptions options = {});
     RTCRtpSendParameters getParameters();
-    [Measure, CallWith=ScriptState] Promise<void> replaceTrack(MediaStreamTrack? withTrack);
+    [Measure, CallWith=ScriptState] Promise<undefined> replaceTrack(MediaStreamTrack? withTrack);
     [Measure] readonly attribute RTCDTMFSender? dtmf;
     [Measure, RaisesException] void setStreams(MediaStream... streams);
     [CallWith=ScriptState] Promise<RTCStatsReport> getStats();

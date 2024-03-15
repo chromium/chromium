@@ -52,7 +52,8 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -73,7 +74,8 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsFailureCalled) {
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -93,7 +95,8 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateWithoutDispatching) {
 
   event->updateWith(
       scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState())
           ->Promise(),
       scope.GetExceptionState());
 
@@ -111,14 +114,16 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateTwice) {
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   event->updateWith(
       scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState())
           ->Promise(),
       scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   event->updateWith(
       scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState())
           ->Promise(),
       scope.GetExceptionState());
 
@@ -134,7 +139,8 @@ TEST(PaymentRequestUpdateEventTest, UpdaterNotRequired) {
 
   event->updateWith(
       scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState())
           ->Promise(),
       scope.GetExceptionState());
 
@@ -172,7 +178,8 @@ TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
 
   event->updateWith(
       scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState())
           ->Promise(),
       scope.GetExceptionState());
 
@@ -212,7 +219,8 @@ TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
 
   event->updateWith(
       scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState())
           ->Promise(),
       scope.GetExceptionState());
 
@@ -243,7 +251,8 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -281,7 +290,8 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState());
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
@@ -306,7 +316,8 @@ TEST(PaymentRequestUpdateEventTest, NotAllowUntrustedEvent) {
 
   event->updateWith(
       scope.GetScriptState(),
-      MakeGarbageCollected<ScriptPromiseResolver>(scope.GetScriptState())
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          scope.GetScriptState())
           ->Promise(),
       scope.GetExceptionState());
 

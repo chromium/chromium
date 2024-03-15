@@ -41,20 +41,21 @@ class MockPaymentStateResolver final
   ~MockPaymentStateResolver() override = default;
 
   MOCK_METHOD3(Complete,
-               ScriptPromise(ScriptState*,
-                             PaymentComplete result,
-                             ExceptionState&));
+               ScriptPromiseTyped<IDLUndefined>(ScriptState*,
+                                                PaymentComplete result,
+                                                ExceptionState&));
   MOCK_METHOD3(Retry,
-               ScriptPromise(ScriptState*,
-                             const PaymentValidationErrors* errorFields,
-                             ExceptionState&));
+               ScriptPromiseTyped<IDLUndefined>(
+                   ScriptState*,
+                   const PaymentValidationErrors* errorFields,
+                   ExceptionState&));
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(dummy_promise_);
   }
 
  private:
-  ScriptPromise dummy_promise_;
+  ScriptPromiseTyped<IDLUndefined> dummy_promise_;
 };
 
 TEST(PaymentResponseTest, DataCopiedOver) {

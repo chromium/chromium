@@ -60,10 +60,12 @@ class MODULES_EXPORT PaymentResponse final
   const String& payerEmail() const { return payer_email_; }
   const String& payerPhone() const { return payer_phone_; }
 
-  ScriptPromise complete(ScriptState*, const String& result, ExceptionState&);
-  ScriptPromise retry(ScriptState*,
-                      const PaymentValidationErrors*,
-                      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> complete(ScriptState*,
+                                            const String& result,
+                                            ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> retry(ScriptState*,
+                                         const PaymentValidationErrors*,
+                                         ExceptionState&);
 
   bool HasPendingActivity() const override;
 

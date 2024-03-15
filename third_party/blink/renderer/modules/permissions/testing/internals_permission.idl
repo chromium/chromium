@@ -5,5 +5,5 @@
 [
     ImplementedAs=InternalsPermission
 ] partial interface Internals {
-    [CallWith=ScriptState, RaisesException] Promise<void> setPermission(object descriptor, PermissionState state);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> setPermission(object descriptor, PermissionState state);
 };

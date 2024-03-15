@@ -45,17 +45,17 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
   ScriptPromiseTyped<IDLBoolean> has(ScriptState*,
                                      const String& instrument_key,
                                      ExceptionState&);
-  ScriptPromise set(ScriptState*,
-                    const String& instrument_key,
-                    const PaymentInstrument* details,
-                    ExceptionState&);
-  ScriptPromise clear(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> set(ScriptState*,
+                                       const String& instrument_key,
+                                       const PaymentInstrument* details,
+                                       ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> clear(ScriptState*, ExceptionState&);
 
   void Trace(Visitor*) const override;
 
  private:
   mojom::blink::PermissionService* GetPermissionService(ScriptState*);
-  void OnRequestPermission(ScriptPromiseResolver*,
+  void OnRequestPermission(ScriptPromiseResolverTyped<IDLUndefined>*,
                            const String&,
                            const PaymentInstrument*,
                            mojom::blink::PermissionStatus);
@@ -71,9 +71,9 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
       payments::mojom::blink::PaymentHandlerStatus);
   void onHasPaymentInstrument(ScriptPromiseResolverTyped<IDLBoolean>*,
                               payments::mojom::blink::PaymentHandlerStatus);
-  void onSetPaymentInstrument(ScriptPromiseResolver*,
+  void onSetPaymentInstrument(ScriptPromiseResolverTyped<IDLUndefined>*,
                               payments::mojom::blink::PaymentHandlerStatus);
-  void onClearPaymentInstruments(ScriptPromiseResolver*,
+  void onClearPaymentInstruments(ScriptPromiseResolverTyped<IDLUndefined>*,
                                  payments::mojom::blink::PaymentHandlerStatus);
 
   const raw_ref<const HeapMojoRemote<payments::mojom::blink::PaymentManager>>

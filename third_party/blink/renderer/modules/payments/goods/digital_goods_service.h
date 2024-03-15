@@ -36,7 +36,8 @@ class DigitalGoodsService final : public ScriptWrappable {
   ScriptPromiseTyped<IDLSequence<PurchaseDetails>> listPurchases(ScriptState*);
   ScriptPromiseTyped<IDLSequence<PurchaseDetails>> listPurchaseHistory(
       ScriptState*);
-  ScriptPromise consume(ScriptState*, const String& purchase_token);
+  ScriptPromiseTyped<IDLUndefined> consume(ScriptState*,
+                                           const String& purchase_token);
 
   void Trace(Visitor* visitor) const override;
 

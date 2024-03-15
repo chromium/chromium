@@ -174,9 +174,10 @@ ScriptValue PaymentResponse::details(ScriptState* script_state) const {
                      details_.GetAcrossWorld(script_state));
 }
 
-ScriptPromise PaymentResponse::complete(ScriptState* script_state,
-                                        const String& result,
-                                        ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> PaymentResponse::complete(
+    ScriptState* script_state,
+    const String& result,
+    ExceptionState& exception_state) {
   VLOG(2) << "Renderer: PaymentRequest (" << requestId().Utf8()
           << "): complete(" << result << ")";
   PaymentStateResolver::PaymentComplete converted_result =
@@ -189,7 +190,7 @@ ScriptPromise PaymentResponse::complete(ScriptState* script_state,
                                            exception_state);
 }
 
-ScriptPromise PaymentResponse::retry(
+ScriptPromiseTyped<IDLUndefined> PaymentResponse::retry(
     ScriptState* script_state,
     const PaymentValidationErrors* error_fields,
     ExceptionState& exception_state) {

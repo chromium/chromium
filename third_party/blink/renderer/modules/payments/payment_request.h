@@ -77,7 +77,7 @@ class MODULES_EXPORT PaymentRequest final
   ScriptPromiseTyped<PaymentResponse> show(ScriptState*,
                                            ScriptPromise details_promise,
                                            ExceptionState&);
-  ScriptPromise abort(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> abort(ScriptState*, ExceptionState&);
 
   const String& id() const { return id_; }
   PaymentAddress* getShippingAddress() const { return shipping_address_.Get(); }
@@ -100,12 +100,12 @@ class MODULES_EXPORT PaymentRequest final
   ExecutionContext* GetExecutionContext() const override;
 
   // PaymentStateResolver:
-  ScriptPromise Complete(ScriptState*,
-                         PaymentComplete result,
-                         ExceptionState&) override;
-  ScriptPromise Retry(ScriptState*,
-                      const PaymentValidationErrors*,
-                      ExceptionState&) override;
+  ScriptPromiseTyped<IDLUndefined> Complete(ScriptState*,
+                                            PaymentComplete result,
+                                            ExceptionState&) override;
+  ScriptPromiseTyped<IDLUndefined> Retry(ScriptState*,
+                                         const PaymentValidationErrors*,
+                                         ExceptionState&) override;
 
   // PaymentRequestDelegate:
   void OnUpdatePaymentDetails(const ScriptValue& details_script_value) override;
@@ -180,9 +180,9 @@ class MODULES_EXPORT PaymentRequest final
   HashSet<String> method_names_;
   Member<ScriptPromiseResolverTyped<PaymentResponse>>
       accept_resolver_;  // the resolver for the show() promise.
-  Member<ScriptPromiseResolver> complete_resolver_;
-  Member<ScriptPromiseResolver> retry_resolver_;
-  Member<ScriptPromiseResolver> abort_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> complete_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> retry_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> abort_resolver_;
   Member<ScriptPromiseResolverTyped<IDLBoolean>> can_make_payment_resolver_;
   Member<ScriptPromiseResolverTyped<IDLBoolean>>
       has_enrolled_instrument_resolver_;

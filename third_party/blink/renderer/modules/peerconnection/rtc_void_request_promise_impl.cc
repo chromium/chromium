@@ -13,7 +13,7 @@ namespace blink {
 
 RTCVoidRequestPromiseImpl::RTCVoidRequestPromiseImpl(
     RTCPeerConnection* requester,
-    ScriptPromiseResolver* resolver,
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
     const char* interface_name,
     const char* property_name)
     : requester_(requester),

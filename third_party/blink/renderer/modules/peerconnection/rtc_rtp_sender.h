@@ -79,14 +79,15 @@ class RTCRtpSender final : public ScriptWrappable,
   MediaStreamTrack* track();
   RTCDtlsTransport* transport();
   RTCDtlsTransport* rtcpTransport();
-  ScriptPromise replaceTrack(ScriptState*, MediaStreamTrack*);
+  ScriptPromiseTyped<IDLUndefined> replaceTrack(ScriptState*,
+                                                MediaStreamTrack*);
   RTCDTMFSender* dtmf();
   static RTCRtpCapabilities* getCapabilities(ScriptState* state,
                                              const String& kind);
   RTCRtpSendParameters* getParameters();
-  ScriptPromise setParameters(ScriptState*,
-                              const RTCRtpSendParameters*,
-                              const RTCSetParameterOptions*);
+  ScriptPromiseTyped<IDLUndefined> setParameters(ScriptState*,
+                                                 const RTCRtpSendParameters*,
+                                                 const RTCSetParameterOptions*);
   ScriptPromiseTyped<RTCStatsReport> getStats(ScriptState*);
   void setStreams(HeapVector<Member<MediaStream>> streams, ExceptionState&);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);

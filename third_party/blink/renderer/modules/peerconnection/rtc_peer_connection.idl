@@ -70,15 +70,15 @@ enum RTCPeerConnectionState {
     [CallWith=ExecutionContext, RaisesException] constructor(optional RTCConfiguration configuration = {});
     [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createOffer(optional RTCOfferOptions options = {});
     [CallWith=ScriptState, RaisesException] Promise<RTCSessionDescriptionInit> createAnswer(optional RTCAnswerOptions options = {});
-    [CallWith=ScriptState, RaisesException] Promise<void> setLocalDescription(optional RTCSessionDescriptionInit description = {});
+    [CallWith=ScriptState, RaisesException] Promise<undefined> setLocalDescription(optional RTCSessionDescriptionInit description = {});
     readonly attribute RTCSessionDescription? localDescription;
     readonly attribute RTCSessionDescription? currentLocalDescription;
     readonly attribute RTCSessionDescription? pendingLocalDescription;
-    [CallWith=ScriptState, RaisesException] Promise<void> setRemoteDescription(RTCSessionDescriptionInit description);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> setRemoteDescription(RTCSessionDescriptionInit description);
     readonly attribute RTCSessionDescription? remoteDescription;
     readonly attribute RTCSessionDescription? currentRemoteDescription;
     readonly attribute RTCSessionDescription? pendingRemoteDescription;
-    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidatePromise] Promise<void> addIceCandidate(optional RTCIceCandidateInit candidate = {});
+    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidatePromise] Promise<undefined> addIceCandidate(optional RTCIceCandidateInit candidate = {});
     readonly attribute RTCSignalingState signalingState;
     readonly attribute RTCIceGatheringState iceGatheringState;
     readonly attribute RTCIceConnectionState iceConnectionState;
@@ -97,16 +97,16 @@ enum RTCPeerConnectionState {
     attribute EventHandler onicecandidateerror;
 
     // https://w3c.github.io/webrtc-pc/#legacy-interface-extensions
-    // These methods return Promise<void> because having Promise-based versions requires that all overloads return Promises.
-    [CallWith=ScriptState, RaisesException] Promise<void> createOffer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback, optional RTCOfferOptions options = {});
-    [CallWith=ScriptState, RaisesException] Promise<void> createAnswer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback);
+    // These methods return Promise<undefined> because having Promise-based versions requires that all overloads return Promises.
+    [CallWith=ScriptState, RaisesException] Promise<undefined> createOffer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback, optional RTCOfferOptions options = {});
+    [CallWith=ScriptState, RaisesException] Promise<undefined> createAnswer(RTCSessionDescriptionCallback successCallback, RTCPeerConnectionErrorCallback failureCallback);
     // TODO(guidou): The failureCallback argument should be non-optional.
     // TODO(crbug.com/841185): |failureCallback| is not nullable in the spec.
-    [CallWith=ScriptState] Promise<void> setLocalDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
+    [CallWith=ScriptState] Promise<undefined> setLocalDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
     // TODO(guidou): The failureCallback argument should be non-optional.
     // TODO(crbug.com/841185): |failureCallback| is not nullable in the spec.
-    [CallWith=ScriptState] Promise<void> setRemoteDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
-    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<void> addIceCandidate(RTCIceCandidateInit candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
+    [CallWith=ScriptState] Promise<undefined> setRemoteDescription(RTCSessionDescriptionInit description, VoidFunction successCallback, optional RTCPeerConnectionErrorCallback? failureCallback);
+    [CallWith=ScriptState, RaisesException, MeasureAs=RTCPeerConnectionAddIceCandidateLegacy] Promise<undefined> addIceCandidate(RTCIceCandidateInit candidate, VoidFunction successCallback, RTCPeerConnectionErrorCallback failureCallback);
 
     // https://w3c.github.io/webrtc-pc/#sec.stats-model
     [CallWith=ScriptState, RaisesException] Promise<RTCStatsReport> getStats(optional MediaStreamTrack? selector = null);

@@ -75,11 +75,11 @@ void ResolveWithPurchaseReferenceList(
   resolver->Resolve(std::move(blink_purchase_details_list));
 }
 
-void OnConsumeResponse(ScriptPromiseResolver* resolver,
+void OnConsumeResponse(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                        BillingResponseCode code) {
   if (code != BillingResponseCode::kOk) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, mojo::ConvertTo<String>(code)));
+    resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                     mojo::ConvertTo<String>(code));
     return;
   }
   resolver->Resolve();
@@ -139,14 +139,16 @@ DigitalGoodsService::listPurchaseHistory(ScriptState* script_state) {
   return promise;
 }
 
-ScriptPromise DigitalGoodsService::consume(ScriptState* script_state,
-                                           const String& purchase_token) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLUndefined> DigitalGoodsService::consume(
+    ScriptState* script_state,
+    const String& purchase_token) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   if (purchase_token.empty()) {
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "Must specify purchase token."));
+    resolver->RejectWithTypeError("Must specify purchase token.");
     return promise;
   }
 

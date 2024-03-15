@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_enums.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
@@ -14,7 +15,6 @@
 
 namespace blink {
 
-class ScriptPromiseResolver;
 class RTCPeerConnection;
 
 // TODO(https://crbug.com/908468): Split up the operation-specific codepaths
@@ -23,7 +23,7 @@ class RTCPeerConnection;
 class RTCVoidRequestPromiseImpl final : public RTCVoidRequest {
  public:
   RTCVoidRequestPromiseImpl(RTCPeerConnection*,
-                            ScriptPromiseResolver*,
+                            ScriptPromiseResolverTyped<IDLUndefined>*,
                             const char* interface_name,
                             const char* property_name);
   ~RTCVoidRequestPromiseImpl() override;
@@ -38,7 +38,7 @@ class RTCVoidRequestPromiseImpl final : public RTCVoidRequest {
   void Clear();
 
   Member<RTCPeerConnection> requester_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
   const char* interface_name_;
   const char* property_name_;
 };

@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_report.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_void_request_script_promise_resolver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/web_rtc_stats_report_callback_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -228,7 +227,7 @@ class ReplaceTrackRequest : public RTCVoidRequest {
  public:
   ReplaceTrackRequest(RTCRtpSender* sender,
                       MediaStreamTrack* with_track,
-                      ScriptPromiseResolver* resolver)
+                      ScriptPromiseResolverTyped<IDLUndefined>* resolver)
       : sender_(sender), with_track_(with_track), resolver_(resolver) {}
   ~ReplaceTrackRequest() override {}
 
@@ -256,33 +255,38 @@ class ReplaceTrackRequest : public RTCVoidRequest {
  private:
   Member<RTCRtpSender> sender_;
   Member<MediaStreamTrack> with_track_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
 };
 
-class SetParametersRequest : public RTCVoidRequestScriptPromiseResolverImpl {
+class SetParametersRequest : public RTCVoidRequest {
  public:
-  SetParametersRequest(ScriptPromiseResolver* resolver, RTCRtpSender* sender)
-      : RTCVoidRequestScriptPromiseResolverImpl(resolver,
-                                                "RTCRtpSender",
-                                                "setParameters"),
-        sender_(sender) {}
+  SetParametersRequest(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                       RTCRtpSender* sender)
+      : resolver_(resolver), sender_(sender) {}
 
   void RequestSucceeded() override {
     sender_->ClearLastReturnedParameters();
-    RTCVoidRequestScriptPromiseResolverImpl::RequestSucceeded();
+    resolver_->Resolve();
   }
 
   void RequestFailed(const webrtc::RTCError& error) override {
     sender_->ClearLastReturnedParameters();
-    RTCVoidRequestScriptPromiseResolverImpl::RequestFailed(error);
+    ScriptState::Scope scope(resolver_->GetScriptState());
+    ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
+                                   ExceptionContextType::kOperationInvoke,
+                                   "RTCRtpSender", "setParameters");
+    ThrowExceptionFromRTCError(error, exception_state);
+    resolver_->Reject(exception_state);
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(sender_);
-    RTCVoidRequestScriptPromiseResolverImpl::Trace(visitor);
+    visitor->Trace(resolver_);
+    RTCVoidRequest::Trace(visitor);
   }
 
  private:
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
   Member<RTCRtpSender> sender_;
 };
 
@@ -685,15 +689,17 @@ RTCDtlsTransport* RTCRtpSender::rtcpTransport() {
   return nullptr;
 }
 
-ScriptPromise RTCRtpSender::replaceTrack(ScriptState* script_state,
-                                         MediaStreamTrack* with_track) {
+ScriptPromiseTyped<IDLUndefined> RTCRtpSender::replaceTrack(
+    ScriptState* script_state,
+    MediaStreamTrack* with_track) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
   if (pc_->IsClosed()) {
-    resolver->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
-                                           "The peer connection is closed."));
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     "The peer connection is closed.");
     return promise;
   }
 
@@ -707,9 +713,9 @@ ScriptPromise RTCRtpSender::replaceTrack(ScriptState* script_state,
   }
 
   if (transceiver_ && transceiver_->stopped()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "replaceTrack cannot be called on a stopped sender"));
+        "replaceTrack cannot be called on a stopped sender");
     return promise;
   }
 
@@ -813,18 +819,20 @@ RTCRtpSendParameters* RTCRtpSender::getParameters() {
   return parameters;
 }
 
-ScriptPromise RTCRtpSender::setParameters(
+ScriptPromiseTyped<IDLUndefined> RTCRtpSender::setParameters(
     ScriptState* script_state,
     const RTCRtpSendParameters* parameters,
     const RTCSetParameterOptions* options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   if (!last_returned_parameters_) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "getParameters() needs to be called before setParameters()."));
+        "getParameters() needs to be called before setParameters().");
     return promise;
   }
   // The specification mentions that some fields in the dictionary should not
@@ -833,9 +841,9 @@ ScriptPromise RTCRtpSender::setParameters(
   // So we save the last returned dictionary and enforce the check at this
   // level instead.
   if (HasInvalidModification(last_returned_parameters_, parameters)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "Read-only field modified in setParameters()."));
+        "Read-only field modified in setParameters().");
     return promise;
   }
 

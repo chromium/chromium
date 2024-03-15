@@ -12,6 +12,6 @@
     [CallWith=ScriptState, RaisesException, Measure] Promise<any> get(DOMString instrumentKey);
     [CallWith=ScriptState, RaisesException, Measure] Promise<sequence<DOMString>> keys();
     [CallWith=ScriptState, RaisesException, Measure] Promise<boolean> has(DOMString instrumentKey);
-    [CallWith=ScriptState, RaisesException, Measure] Promise<void> set(DOMString instrumentKey, PaymentInstrument details);
-    [CallWith=ScriptState, RaisesException, Measure] Promise<void> clear();
+    [CallWith=ScriptState, RaisesException, Measure] Promise<undefined> set(DOMString instrumentKey, PaymentInstrument details);
+    [CallWith=ScriptState, RaisesException, Measure] Promise<undefined> clear();
 };
