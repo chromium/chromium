@@ -24,9 +24,7 @@ std::string ParentChainToStringHelper(const AXObject* obj);
 // nodes as the AXObjectCache thinks exists.
 void CheckTreeConsistency(
     AXObjectCacheImpl& cache,
-    ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>& serializer,
-    ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>*
-        plugin_serializer);
+    ui::AXTreeSerializer<AXObject*, HeapVector<Member<AXObject>>>& serializer);
 
 }  // namespace blink
 
