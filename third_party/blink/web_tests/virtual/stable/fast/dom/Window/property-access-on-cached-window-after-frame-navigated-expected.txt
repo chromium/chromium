@@ -164,6 +164,7 @@ PASS oldChildWindow.ononline is newChildWindow.ononline
 PASS oldChildWindow.onpagehide is newChildWindow.onpagehide
 PASS oldChildWindow.onpagereveal is newChildWindow.onpagereveal
 PASS oldChildWindow.onpageshow is newChildWindow.onpageshow
+PASS oldChildWindow.onpageswap is newChildWindow.onpageswap
 PASS oldChildWindow.onpause is newChildWindow.onpause
 PASS oldChildWindow.onplay is newChildWindow.onplay
 PASS oldChildWindow.onplaying is newChildWindow.onplaying

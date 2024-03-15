@@ -6067,6 +6067,10 @@ interface OverconstrainedError : DOMException
 interface PageRevealEvent : Event
     attribute @@toStringTag
     method constructor
+interface PageSwapEvent : Event
+    attribute @@toStringTag
+    getter activation
+    method constructor
 interface PageTransitionEvent : Event
     attribute @@toStringTag
     getter persisted
@@ -11444,6 +11448,7 @@ namespace console
     getter onpagehide
     getter onpagereveal
     getter onpageshow
+    getter onpageswap
     getter onpause
     getter onplay
     getter onplaying
@@ -11660,6 +11665,7 @@ namespace console
     setter onpagehide
     setter onpagereveal
     setter onpageshow
+    setter onpageswap
     setter onpause
     setter onplay
     setter onplaying
