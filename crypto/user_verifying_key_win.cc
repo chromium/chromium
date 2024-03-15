@@ -159,7 +159,7 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
     CHECK(!signing_callback_);
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
     signing_callback_ = std::move(callback);
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -399,7 +399,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
 
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
     key_creation_callback_ = std::move(callback);
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -429,7 +429,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
     auto key_name = base::win::ScopedHString::Create(key_label);
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+            {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
     key_creation_callback_ = std::move(callback);
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner =
         base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -583,7 +583,7 @@ std::unique_ptr<UserVerifyingKeyProvider> GetUserVerifyingKeyProviderWin() {
 void IsKeyCredentialManagerAvailable(base::OnceCallback<void(bool)> callback) {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&IsKeyCredentialManagerAvailableInternal,
