@@ -168,6 +168,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsFileSystemProviderCloudFileSystemEnabled() const;
 
+  bool IsOrcaEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

@@ -368,9 +368,13 @@ bool IsMahiEnabled() {
 }
 
 bool IsOrcaEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsOrcaEnabled();
+#else
   return base::FeatureList::IsEnabled(chromeos::features::kOrcaDogfood) ||
          (base::FeatureList::IsEnabled(chromeos::features::kOrca) &&
           base::FeatureList::IsEnabled(kFeatureManagementOrca));
+#endif
 }
 
 bool ShouldDisableChromeComposeOnChromeOS() {
