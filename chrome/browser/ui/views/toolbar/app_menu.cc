@@ -1201,7 +1201,8 @@ bool AppMenu::GetAccelerator(int command_id,
     return false;
   }
 
-  if (IsBookmarkCommand(command_id)) {
+  if (IsBookmarkCommand(command_id) ||
+      command_id == IDC_SHOW_BOOKMARK_SIDE_PANEL) {
     return false;
   }
 
