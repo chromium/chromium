@@ -29,7 +29,7 @@ namespace base {
 namespace {
 // True if HardwareModelName() has been called. Used to detect attempts to set
 // the name after this point, which are likely errors.
-bool g_was_hardware_model_name_called = true;
+bool g_was_hardware_model_name_called = false;
 
 // Accessor for storage of overridden HardwareModelName.
 std::string& GetHardwareModelNameStorage() {
