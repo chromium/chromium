@@ -285,6 +285,10 @@ public class PwaUniversalInstallBottomSheetCoordinator {
             return;
         }
 
+        // Beyond this point there are only two outcomes. We'll either show this dialog or redirect
+        // to the install dialog. Both outcomes mean that we can stop listening for this flag.
+        mWaitingToShow = false;
+
         // We haven't shown the dialog yet, so there's an opportunity to skip this dialog and
         // redirect straight to the Install App/Create Shortcut dialog.
         if (mAppType == AppType.SHORTCUT
