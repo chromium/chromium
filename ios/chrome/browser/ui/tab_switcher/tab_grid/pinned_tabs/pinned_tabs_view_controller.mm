@@ -59,7 +59,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Identifier of the selected item.
   web::WebStateID _selectedItemID;
 
-  // Lastest dragged item. This property is set when the item
+  // Latest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
   TabSwitcherItem* _draggedItem;
 
@@ -665,7 +665,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 #pragma mark - Private
 
-// Animates the lastest inserted item (if any) with a pop animation.
+// Animates the latest inserted item (if any) with a pop animation.
 // This method is called when :
 // - The pinned overlay is hidden.
 // - A scroll animation ends.

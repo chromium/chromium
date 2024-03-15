@@ -37,7 +37,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   private let leftStaticSeparator: TabStripDecorationView = TabStripDecorationView()
   private let rightStaticSeparator: TabStripDecorationView = TabStripDecorationView()
 
-  // Lastest dragged item. This property is set when the item
+  // Latest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
   private var draggedItem: TabSwitcherItem?
 
