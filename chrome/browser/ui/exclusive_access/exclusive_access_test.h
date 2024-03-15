@@ -82,6 +82,8 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void Reload();
   void EnterActiveTabFullscreen();
   void WaitForTabFullscreenExit();
+  void WaitAndVerifyFullscreenState(bool browser_fullscreen,
+                                    bool tab_fullscreen);
   void EnterExtensionInitiatedFullscreen();
   bool IsEscKeyHoldTimerRunning();
 

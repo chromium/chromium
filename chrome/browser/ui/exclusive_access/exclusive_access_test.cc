@@ -211,6 +211,14 @@ void ExclusiveAccessTest::WaitForTabFullscreenExit() {
   waiter.Wait();
 }
 
+void ExclusiveAccessTest::WaitAndVerifyFullscreenState(bool browser_fullscreen,
+                                                       bool tab_fullscreen) {
+  ui_test_utils::FullscreenWaiter waiter(
+      browser(), {.browser_fullscreen = browser_fullscreen,
+                  .tab_fullscreen = tab_fullscreen});
+  waiter.Wait();
+}
+
 void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
   ui_test_utils::FullscreenWaiter waiter(browser(),
                                          {.browser_fullscreen = true});

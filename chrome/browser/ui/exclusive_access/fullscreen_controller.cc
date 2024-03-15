@@ -420,15 +420,15 @@ bool FullscreenController::HandleUserPressedEscape() {
 }
 
 void FullscreenController::HandleUserHeldEscape() {
-  // TODO(crbug.com/327668509): Implement.
-  HandleUserPressedEscape();
+  if (RequiresPressAndHoldEscToExit()) {
+    ExitFullscreenModeInternal();
+  }
 }
 
 void FullscreenController::HandleUserReleasedEscapeEarly() {}
 
 bool FullscreenController::RequiresPressAndHoldEscToExit() const {
-  // TODO(crbug.com/327668509): Implement.
-  return false;
+  return IsFullscreenForBrowser();
 }
 
 void FullscreenController::ExitExclusiveAccessToPreviousState() {

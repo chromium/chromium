@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using ExclusiveAccessManagerTest = ExclusiveAccessTest;
