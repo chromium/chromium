@@ -932,6 +932,11 @@ extern const char kTabResumptionDescription[];
 extern const char kUndoMigrationOfSyncingUserToSignedInName[];
 extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 
+// Title and description for the flag to enable the use of a single
+// BookmarkModel instance per BrowserState (instead of having two).
+extern const char kUnifiedBookmarkModelName[];
+extern const char kUnifiedBookmarkModelDescription[];
+
 // Title and description for the flag to enable using the
 // loadSimulatedRequest:responseHTMLString: API for displaying error pages in
 // CRWWKNavigationHandler.

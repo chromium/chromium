@@ -1059,6 +1059,11 @@ const char kUndoMigrationOfSyncingUserToSignedInDescription[] =
     "Enables the reverse-migration of syncing users who were previously "
     "migrated to the signed-in, non-syncing state.";
 
+const char kUnifiedBookmarkModelName[] = "Use unified bookmark model";
+const char kUnifiedBookmarkModelDescription[] =
+    "When enabled, all bookmarks are represented in a single BookmarkModel "
+    "object per BrowserState, instead of using two instances.";
+
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
     "pages";

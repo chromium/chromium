@@ -8102,6 +8102,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "unified-bookmark-model",
+    "owners": [ "mastiz@chromium.org", "arthurmilchior@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "uno-desktop",
     "owners": [ "droger@chromium.org", "gabolvr@google.com", "uno-desktop@google.com" ],
     "expiry_milestone": 125
