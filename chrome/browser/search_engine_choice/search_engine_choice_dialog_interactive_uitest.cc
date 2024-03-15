@@ -172,4 +172,6 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogInteractiveUiTest,
                 search_engines::SearchEngineChoiceScreenConditions::
                     kAlreadyCompleted),
             1);
+  EXPECT_EQ(UserActionTester().GetActionCount("ExpandSearchEngineDescription"),
+            1);
 }

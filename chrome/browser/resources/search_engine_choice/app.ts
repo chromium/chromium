@@ -241,6 +241,7 @@ export class SearchEngineChoiceAppElement extends
       return;
     }
 
+    chrome.metricsPrivate.recordUserAction('ExpandSearchEngineDescription');
     this.resetSnippetState_(parseInt(oldPrepopulatedId));
     this.showSearchEngineSnippet_(parseInt(newPrepopulatedId));
   }
