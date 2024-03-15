@@ -26,7 +26,8 @@ enum class OverviewStartAction {
   // Partial overview shows automatically on one window snapped.
   kFasterSplitScreenSetup,
   kPine,
-  kMaxValue = kPine,
+  kWallpaper,
+  kMaxValue = kWallpaper,
 };
 void RecordOverviewStartAction(OverviewStartAction type);
 

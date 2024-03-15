@@ -16783,6 +16783,7 @@ from previous Chrome versions.
   <int value="-1838155843" label="PrivacyGuide3:enabled"/>
   <int value="-1837855388" label="ReduceUserAgentPlatformOsCpu:disabled"/>
   <int value="-1837401779" label="EnableFileManagerFormatDialog:enabled"/>
+  <int value="-1837359971" label="kEnterOverviewFromWallpaper:enabled"/>
   <int value="-1837329460" label="NewEncodeCpuLoadEstimator:enabled"/>
   <int value="-1836854634" label="CloseTabSuggestions:enabled"/>
   <int value="-1836511093"
@@ -17696,6 +17697,7 @@ from previous Chrome versions.
       label="AutofillRationalizeRepeatedServerPredictions:enabled"/>
   <int value="-1421676705" label="force-webxr-runtime"/>
   <int value="-1420949910" label="ChromeWideEchoCancellation:enabled"/>
+  <int value="-1420908477" label="EnterOverviewFromWallpaper:disabled"/>
   <int value="-1420848224" label="WebViewForceDarkModeMatchTheme:enabled"/>
   <int value="-1420676362"
       label="FillingAcrossAffiliatedWebsitesAndroid:enabled"/>
@@ -22035,6 +22037,7 @@ from previous Chrome versions.
   <int value="529665808"
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:disabled"/>
   <int value="530828403" label="AllowStartingServiceManagerOnly:disabled"/>
+  <int value="531157579" label="EnterOverviewFromWallpaper:enabled"/>
   <int value="533064367" label="WebRtcHideLocalIpsWithMdns:disabled"/>
   <int value="533115840"
       label="HoldingSpaceInProgressDownloadsIntegration:enabled"/>

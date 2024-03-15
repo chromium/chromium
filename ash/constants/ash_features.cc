@@ -895,6 +895,11 @@ BASE_FEATURE(kEnforceAshExtensionKeeplist,
              "EnforceAshExtensionKeeplist",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables entering overview mode by clicking the wallpaper with the mouse.
+BASE_FEATURE(kEnterOverviewFromWallpaper,
+             "EnterOverviewFromWallpaper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables access to the chrome://enterprise-reporting WebUI.
 BASE_FEATURE(kEnterpriseReportingUI,
              "EnterpriseReportingUI",
@@ -4571,6 +4576,10 @@ bool IsUseAuthPanelInPasswordManagerEnabled() {
 
 bool IsUseAuthPanelInSettingsEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthPanelInSettings);
+}
+
+bool ShouldEnterOverviewFromWallpaper() {
+  return base::FeatureList::IsEnabled(kEnterOverviewFromWallpaper);
 }
 
 bool UseMixedFileLauncherContinueSection() {

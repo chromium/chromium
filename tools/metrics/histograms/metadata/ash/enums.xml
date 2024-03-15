@@ -1461,6 +1461,7 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="12" label="Entering overview with the faster split screen setup"/>
   <int value="13"
       label="After user login, if full restore settings is ask everytime"/>
+  <int value="14" label="Entering overview by clicking on wallpaper."/>
 </enum>
 
 <enum name="PaletteModeCancelType">

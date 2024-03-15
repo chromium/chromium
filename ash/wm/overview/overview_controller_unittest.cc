@@ -19,6 +19,8 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/views/wallpaper_view.h"
+#include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_metrics.h"
@@ -32,6 +34,7 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
@@ -834,6 +837,42 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
   EXPECT_TRUE(frame_throttling_controller->GetFrameSinkIdsToThrottle().empty());
 
   frame_throttling_controller->RemoveArcObserver(&observer);
+}
+
+class OverviewEnterFromWallpaperTest : public OverviewControllerTest {
+ public:
+  OverviewEnterFromWallpaperTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kEnterOverviewFromWallpaper}, {});
+  }
+  ~OverviewEnterFromWallpaperTest() override = default;
+
+  WallpaperView* wallpaper_view() {
+    return Shell::Get()
+        ->GetPrimaryRootWindowController()
+        ->wallpaper_widget_controller()
+        ->wallpaper_view();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the user can enter/exit overview by clicking on the wallpaper.
+TEST_F(OverviewEnterFromWallpaperTest,
+       OverviewEnterExitClamshellFromWallpaper) {
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShellWithBounds(gfx::Rect(400, 400)));
+
+  ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  GetEventGenerator()->set_current_screen_location(
+      wallpaper_view()->GetBoundsInScreen().right_center());
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
 }  // namespace ash

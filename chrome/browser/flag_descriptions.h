@@ -3753,6 +3753,9 @@ extern const char kEnableVariableRefreshRateAlwaysOnDescription[];
 extern const char kEnforceAshExtensionKeeplistName[];
 extern const char kEnforceAshExtensionKeeplistDescription[];
 
+extern const char kEnterOverviewFromWallpaperName[];
+extern const char kEnterOverviewFromWallpaperDescription[];
+
 extern const char kEolIncentiveName[];
 extern const char kEolIncentiveDescription[];
 

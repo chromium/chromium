@@ -6511,6 +6511,12 @@ const char kEnforceAshExtensionKeeplistDescription[] =
     "Enforce the Ash extension keeplist. Only the extensions and Chrome apps on"
     " the keeplist are enabled in Ash.";
 
+const char kEnterOverviewFromWallpaperName[] =
+    "Enable entering overview from wallpaper";
+const char kEnterOverviewFromWallpaperDescription[] =
+    "Experimental feature. Enable entering overview by clicking wallpaper with "
+    "mouse click";
+
 const char kEolResetDismissedPrefsName[] =
     "Reset end of life notification prefs";
 const char kEolResetDismissedPrefsDescription[] =

@@ -1534,6 +1534,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "cros-labs-enable-overview-from-wallpaper",
+    "owners": ["yulunwu@chromium.org","chromeos-wm-corexp@google.com"],
+    "expiry_milestone": 131
+  },
+  {
     "name": "cros-labs-overview-desk-navigation",
     "owners": [ "richui@chromium.org", "janetmac@chromium.org" ],
     "expiry_milestone": 136

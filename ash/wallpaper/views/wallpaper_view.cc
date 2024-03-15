@@ -12,6 +12,7 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
@@ -116,6 +117,16 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
 
 bool WallpaperView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
+}
+
+void WallpaperView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (features::ShouldEnterOverviewFromWallpaper()) {
+    OverviewController* overview_controller =
+        Shell::Get()->overview_controller();
+    if (!overview_controller->InOverviewSession()) {
+      overview_controller->StartOverview(OverviewStartAction::kWallpaper);
+    }
+  }
 }
 
 void WallpaperView::OnBoundsChanged(const gfx::Rect& previous_bounds) {

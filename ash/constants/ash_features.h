@@ -279,6 +279,8 @@ BASE_DECLARE_FEATURE(kEnableTouchscreensInDiagnosticsApp);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableWifiQos);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnforceAshExtensionKeeplist);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kEnterOverviewFromWallpaper);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolWarningNotifications);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolIncentive);
 enum class EolIncentiveParam { kNoOffer, kOffer, kOfferWithWarning };
@@ -1314,6 +1316,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowBoundsTrackerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowSplittingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWmModeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldEnterOverviewFromWallpaper();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldOnlyShowNewShortcutApp();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseAndroidStagingSmds();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseStorkSmds();
