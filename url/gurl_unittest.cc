@@ -457,27 +457,33 @@ TEST_P(GURLTypedTest, Resolve) {
   // Existing tests in GURLTest::Resolve cover common cases.
   if (use_standard_compliant_non_special_scheme_url_parsing_) {
     ResolveCase cases[] = {
+        // Non-special base URLs whose paths are empty.
         {"git://host", "", "git://host"},
         {"git://host", ".", "git://host/"},
         {"git://host", "..", "git://host/"},
         {"git://host", "a", "git://host/a"},
         {"git://host", "/a", "git://host/a"},
 
+        // Non-special base URLs whose paths are "/".
         {"git://host/", "", "git://host/"},
         {"git://host/", ".", "git://host/"},
         {"git://host/", "..", "git://host/"},
         {"git://host/", "a", "git://host/a"},
         {"git://host/", "/a", "git://host/a"},
 
+        // Non-special base URLs whose hosts and paths are non-empty.
         {"git://host/b", "a", "git://host/a"},
         {"git://host/b/c", "a", "git://host/b/a"},
         {"git://host/b/c", "../a", "git://host/a"},
 
+        // An opaque path can be specified.
         {"git://host", "git:opaque", "git:opaque"},
         {"git://host/path#ref", "git:opaque", "git:opaque"},
         {"git:/path", "git:opaque", "git:opaque"},
         {"https://host/path", "git:opaque", "git:opaque"},
 
+        // Path-only base URLs should remain path-only URLs unless a host is
+        // specified.
         {"git:/", "", "git:/"},
         {"git:/", ".", "git:/"},
         {"git:/", "..", "git:/"},
@@ -486,12 +492,16 @@ TEST_P(GURLTypedTest, Resolve) {
         {"git:/#ref", "", "git:/"},
         {"git:/#ref", "a", "git:/a"},
 
+        // Non-special base URLs whose hosts and path are both empty. The
+        // result's host should remain empty unless a relative URL specify a
+        // host.
         {"git://", "", "git://"},
         {"git://", ".", "git:///"},
         {"git://", "..", "git:///"},
         {"git://", "a", "git:///a"},
         {"git://", "/a", "git:///a"},
 
+        // Non-special base URLs whose hosts are empty, but with non-empty path.
         {"git:///", "", "git:///"},
         {"git:///", ".", "git:///"},
         {"git:///", "..", "git:///"},
@@ -499,6 +509,16 @@ TEST_P(GURLTypedTest, Resolve) {
         {"git:///", "/a", "git:///a"},
         {"git:///#ref", "", "git:///"},
         {"git:///#ref", "a", "git:///a"},
+
+        // Relative URLs can specify empty hosts for non-special base URLs.
+        // e.g. "///path"
+        {"git://host/", "//", "git://"},
+        {"git://host/", "//a", "git://a"},
+        {"git://host/", "///", "git:///"},
+        {"git://host/", "////", "git:////"},
+        {"git://host/", "////..", "git:///"},
+        {"git://host/", "////../..", "git:///"},
+        {"git://host/", "////../../..", "git:///"},
     };
     for (const auto& i : cases) {
       TestResolve(i);

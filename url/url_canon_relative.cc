@@ -449,12 +449,22 @@ bool DoResolveRelativeHost(const char* base_url,
                            CharsetConverter* query_converter,
                            CanonOutput* output,
                            Parsed* out_parsed) {
+  SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
+  const bool is_standard_scheme =
+      GetStandardSchemeType(base_url, base_parsed.scheme, &scheme_type);
+
   // Parse the relative URL, just like we would for anything following a
   // scheme.
   Parsed relative_parsed;  // Everything but the scheme is valid.
-  // TODO(crbug.com/1416006): Support non-special URLs.
-  ParseAfterSpecialScheme(relative_url, relative_component.end(),
-                          relative_component.begin, &relative_parsed);
+
+  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+      !is_standard_scheme) {
+    ParseAfterNonSpecialScheme(relative_url, relative_component.end(),
+                               relative_component.begin, &relative_parsed);
+  } else {
+    ParseAfterSpecialScheme(relative_url, relative_component.end(),
+                            relative_component.begin, &relative_parsed);
+  }
 
   // Now we can just use the replacement function to replace all the necessary
   // parts of the old URL with the new one.
@@ -472,8 +482,11 @@ bool DoResolveRelativeHost(const char* base_url,
   output->ReserveSizeIfNeeded(
       replacements.components().Length() +
       base_parsed.CountCharactersBefore(Parsed::USERNAME, false));
-  SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
-  if (!GetStandardSchemeType(base_url, base_parsed.scheme, &scheme_type)) {
+  if (!is_standard_scheme) {
+    if (IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+      return ReplaceNonSpecialURL(base_url, base_parsed, replacements,
+                                  query_converter, *output, *out_parsed);
+    }
     // A path with an authority section gets canonicalized under standard URL
     // rules, even though the base was not known to be standard.
     scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;

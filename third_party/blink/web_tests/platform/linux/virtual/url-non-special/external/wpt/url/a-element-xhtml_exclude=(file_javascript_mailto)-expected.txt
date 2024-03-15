@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 43 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example.com/foo/%2e%2> against <about:blank>
   assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
 [FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> against <about:blank>
@@ -44,12 +44,6 @@ Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: href expected "http://!\\"$&'()*+,-.;=_`{}~/" but got "http://!\\"$&'()%2A+,-.;=_`{}~/"
-[FAIL] Parsing: <///> against <sc://x/>
-  assert_equals: href expected "sc:///" but got "///"
-[FAIL] Parsing: <////> against <sc://x/>
-  assert_equals: href expected "sc:////" but got "////"
-[FAIL] Parsing: <////x/> against <sc://x/>
-  assert_equals: href expected "sc:////x/" but got "sc://x/"
 [FAIL] Parsing: <non-spec:/.//> against <about:blank>
   assert_equals: href expected "non-spec:/.//" but got "non-spec://"
 [FAIL] Parsing: <non-spec:/..//> against <about:blank>

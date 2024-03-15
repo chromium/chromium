@@ -1174,4 +1174,18 @@ void ParseAfterSpecialScheme(const char16_t* spec,
   DoParseAfterSpecialScheme(spec, spec_len, after_scheme, parsed);
 }
 
+void ParseAfterNonSpecialScheme(const char* spec,
+                                int spec_len,
+                                int after_scheme,
+                                Parsed* parsed) {
+  DoParseAfterNonSpecialScheme(spec, spec_len, after_scheme, parsed);
+}
+
+void ParseAfterNonSpecialScheme(const char16_t* spec,
+                                int spec_len,
+                                int after_scheme,
+                                Parsed* parsed) {
+  DoParseAfterNonSpecialScheme(spec, spec_len, after_scheme, parsed);
+}
+
 }  // namespace url
