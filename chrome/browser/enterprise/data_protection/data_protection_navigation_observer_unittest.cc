@@ -155,7 +155,7 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   simulator->Commit();
 
   std::string watermark_text = future.Get();
-  ASSERT_EQ(watermark_text, "\n2024-02-29T04:36:04.000Z\ncustom_message");
+  ASSERT_EQ(watermark_text, "custom_message\n\n2024-02-29T04:36:04.000Z");
 }
 
 namespace {
@@ -189,12 +189,12 @@ INSTANTIATE_TEST_SUITE_P(
             "example@email.com",
             "custom_message",
             1709181364,
-            "example@email.com\n2024-02-29T04:36:04.000Z\ncustom_message"),
+            "custom_message\nexample@email.com\n2024-02-29T04:36:04.000Z"),
         WatermarkStringParams(
             "<device-id>",
             "custom_message",
             1709181364,
-            "<device-id>\n2024-02-29T04:36:04.000Z\ncustom_message"),
+            "custom_message\n<device-id>\n2024-02-29T04:36:04.000Z"),
         WatermarkStringParams("example@email.com",
                               "",
                               1709181364,

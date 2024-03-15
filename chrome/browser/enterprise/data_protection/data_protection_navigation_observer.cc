@@ -195,7 +195,7 @@ std::string GetWatermarkString(
 
   if (!watermark.watermark_message().empty()) {
     watermark_text =
-        base::StrCat({watermark_text, "\n", watermark.watermark_message()});
+        base::StrCat({watermark.watermark_message(), "\n", watermark_text});
   }
   return watermark_text;
 }
