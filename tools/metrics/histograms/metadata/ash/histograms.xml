@@ -189,6 +189,10 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AmbientVideoDlcInstallLabels">
+  <variant name="Background"
+      summary="Install happens in background shortly after login. This
+               installation increases the probability that the DLC package is
+               installed by the time ambient mode is actually launched."/>
   <variant name="Foreground"
       summary="Install that happens when it's time to launch ambient mode
                with one of the video themes. If this install fails, ambient

@@ -23,6 +23,7 @@
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/assistant/assistant_interaction_controller_impl.h"
+#include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/constants/ambient_video.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
@@ -82,6 +83,11 @@ constexpr char kUser1[] = "user1@gmail.com";
 constexpr char kUser2[] = "user2@gmail.com";
 constexpr base::FilePath::CharType kTestDlcRootPath[] =
     FILE_PATH_LITERAL("/test/time_of_day");
+
+// Expects argument of type `dlcservice::DlcsWithContent::DlcInfo`.
+MATCHER(HasVideoDlcPackageId, "") {
+  return arg.id() == kTimeOfDayDlcId;
+}
 
 std::vector<base::OnceClosure> GetEventGeneratorCallbacks(
     ui::test::EventGenerator* event_generator) {
@@ -1691,6 +1697,31 @@ TEST_F(AmbientControllerTest, ShouldDismissScreenSaverPreviewOnTouch) {
   GetEventGenerator()->PressTouch();
   GetEventGenerator()->ReleaseTouch();
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+}
+
+TEST_F(AmbientControllerTest, InstallsVideoDlcInBackground) {
+  task_environment()->FastForwardBy(kAmbientDlcBackgroundInstallMinDelay * 2);
+  ASSERT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  base::test::TestFuture<const std::string&, const dlcservice::DlcsWithContent&>
+      future;
+  dlcservice_client_.GetExistingDlcs(future.GetCallback());
+  ASSERT_EQ(future.Get<0>(), dlcservice::kErrorNone);
+  EXPECT_THAT(future.Get<1>().dlc_infos(),
+              testing::Contains(HasVideoDlcPackageId()));
+}
+
+TEST_F(AmbientControllerTest, DoesNotInstallVideoDlcInBackground) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{},
+                                       {features::kTimeOfDayDlc});
+  task_environment()->FastForwardBy(kAmbientDlcBackgroundInstallMinDelay * 2);
+  ASSERT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  base::test::TestFuture<const std::string&, const dlcservice::DlcsWithContent&>
+      future;
+  dlcservice_client_.GetExistingDlcs(future.GetCallback());
+  ASSERT_EQ(future.Get<0>(), dlcservice::kErrorNone);
+  EXPECT_THAT(future.Get<1>().dlc_infos(),
+              testing::Not(testing::Contains(HasVideoDlcPackageId())));
 }
 
 class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {

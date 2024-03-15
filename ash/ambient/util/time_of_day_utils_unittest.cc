@@ -104,7 +104,8 @@ INSTANTIATE_TEST_SUITE_P(
     AllDlcErrorsAndLabels,
     TimeOfDayUtilsMetricsTest,
     testing::Combine(
-        testing::Values(ambient::kAmbientVideoDlcForegroundLabel),
+        testing::Values(ambient::kAmbientVideoDlcForegroundLabel,
+                        ambient::kAmbientVideoDlcBackgroundLabel),
         testing::Values(
             std::make_pair(dlcservice::kErrorNone, DlcError::kNone),
             std::make_pair(dlcservice::kErrorInternal, DlcError::kInternal),

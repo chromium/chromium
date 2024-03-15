@@ -7,16 +7,20 @@
 #include <string>
 #include <utility>
 
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
@@ -107,6 +111,16 @@ void GetAmbientVideoHtmlPath(std::string dlc_metrics_label,
     BuildAmbientVideoHtmlPath(std::move(on_done),
                               base::FilePath(kTimeOfDayAssetsRootfsRootDir));
   }
+}
+
+void InstallAmbientVideoDlcInBackground() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&GetAmbientVideoHtmlPath,
+                     ambient::kAmbientVideoDlcBackgroundLabel,
+                     base::DoNothing()),
+      base::RandTimeDelta(kAmbientDlcBackgroundInstallMinDelay,
+                          kAmbientDlcBackgroundInstallMinDelay * 2));
 }
 
 const base::FilePath::CharType kTimeOfDayCloudsVideo[] =

@@ -34,6 +34,7 @@
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
+#include "ash/ambient/util/time_of_day_utils.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/lock_screen.h"
@@ -463,6 +464,7 @@ void AmbientController::OnActiveUserPrefServiceChanged(
         ambient::prefs::kAmbientModeEnabled,
         base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
                             weak_ptr_factory_.GetWeakPtr()));
+    InstallAmbientVideoDlcInBackground();
   }
 
   if (managed_screensaver_flag_enabled) {

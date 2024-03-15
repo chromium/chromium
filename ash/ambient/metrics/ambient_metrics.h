@@ -52,6 +52,12 @@ constexpr base::TimeDelta kMetricsStartupTimeMax = base::Seconds(15);
 // foreground installation will succeed and be a trivial operation.
 inline constexpr char kAmbientVideoDlcForegroundLabel[] = "Foreground";
 
+// Install that happens shortly after login. In most cases, this should occur
+// before the screen saver is first launched into the foreground. If the
+// background install fails, it's not user-facing and another attempt will be
+// made with the "Foreground".
+inline constexpr char kAmbientVideoDlcBackgroundLabel[] = "Background";
+
 ASH_EXPORT AmbientModePhotoSource
 AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 
