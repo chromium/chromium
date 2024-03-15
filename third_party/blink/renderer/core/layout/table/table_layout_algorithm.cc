@@ -774,9 +774,10 @@ void TableLayoutAlgorithm::ComputeRows(
     }
   }
 
+  const ConstraintSpace& space = GetConstraintSpace();
+
   LayoutUnit css_table_block_size;
-  if (GetConstraintSpace().IsInitialBlockSizeIndefinite() &&
-      !GetConstraintSpace().IsFixedBlockSize()) {
+  if (space.IsInitialBlockSizeIndefinite() && !space.IsFixedBlockSize()) {
     // We get here when a flexbox wants to use the table's intrinsic height as
     // an input to the flex algorithm.
     css_table_block_size = kIndefiniteSize;
@@ -784,24 +785,28 @@ void TableLayoutAlgorithm::ComputeRows(
     // If we can correctly resolve our min-block-size we want to distribute
     // sections/rows into this space. Pass a definite intrinsic block-size into
     // |ComputeBlockSizeForFragment| to force it to resolve.
-    LayoutUnit intrinsic_block_size =
-        BlockLengthUnresolvable(GetConstraintSpace(),
-                                Style().LogicalMinHeight())
+    //
+    // NOTE: We use `ResolveMainBlockLength` for resolving `min_length` so that
+    // it will resolve to `kIndefiniteSize` if unresolvable.
+    const Length& min_length = Style().LogicalMinHeight();
+    const LayoutUnit intrinsic_block_size =
+        min_length.IsAuto() ||
+                ResolveMainBlockLength(space, Style(), table_border_padding,
+                                       min_length, /* auto_length */ nullptr,
+                                       kIndefiniteSize) == kIndefiniteSize
             ? kIndefiniteSize
             : table_border_padding.BlockSum();
 
     LayoutUnit override_available_block_size = kIndefiniteSize;
-    if (GetConstraintSpace().AvailableSize().block_size != kIndefiniteSize) {
+    if (space.AvailableSize().block_size != kIndefiniteSize) {
       override_available_block_size =
-          (GetConstraintSpace().AvailableSize().block_size -
-           captions_block_size)
+          (space.AvailableSize().block_size - captions_block_size)
               .ClampNegativeToZero();
     }
 
     css_table_block_size = ComputeBlockSizeForFragment(
-        GetConstraintSpace(), Style(), table_border_padding,
-        intrinsic_block_size, table_grid_inline_size,
-        override_available_block_size);
+        space, Style(), table_border_padding, intrinsic_block_size,
+        table_grid_inline_size, override_available_block_size);
   }
   // In quirks mode, empty tables ignore any specified block-size.
   const bool is_empty_quirks_mode_table =
