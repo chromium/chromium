@@ -383,10 +383,23 @@ TEST_F(BookmarkBridgeTest, AccountFoldersNullWhileNotEnabled) {
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
 
-  // The 2 folders should be: mobile bookmarks, reading list.
+  // There should be 3 folders: Mobile bookmarks, reading list, and the local
+  // mobile bookmarks folder (which contains partner bookmarks).
   std::vector<const BookmarkNode*> folders =
       bookmark_bridge()->GetTopLevelFolderIdsImpl(
           /*ignore_visibility=*/false);
+  EXPECT_EQ(3u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
+  EXPECT_EQ(u"Mobile bookmarks", folders[2]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+
+  // When there are no partner bookmarks, the local mobile node will be hidden.
+  partner_bookmarks_shim_->SetPartnerBookmarksRoot(nullptr);
+  folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
+      /*ignore_visibility=*/false);
   EXPECT_EQ(2u, folders.size());
   EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
   EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));

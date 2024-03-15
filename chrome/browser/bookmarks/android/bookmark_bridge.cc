@@ -481,7 +481,9 @@ std::vector<const BookmarkNode*> BookmarkBridge::GetTopLevelFolderIdsImpl(
   }
 
   const BookmarkNode* mobile_node = bookmark_model_->mobile_node();
-  if (IsPermanentFolderVisible(ignore_visibility, mobile_node)) {
+  // Partner bookmarks are child of the local mobile_node.
+  if (IsPermanentFolderVisible(ignore_visibility, mobile_node) ||
+      partner_bookmarks_shim_->HasPartnerBookmarks()) {
     top_level_folders.push_back(mobile_node);
   }
 
