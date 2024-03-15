@@ -1112,7 +1112,7 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST(PeopleHandlerDiceUnifiedConsentTest, StoredAccountsList) {
+TEST(PeopleHandlerDiceTest, StoredAccountsList) {
   ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
   content::BrowserTaskEnvironment task_environment;
 
@@ -1436,11 +1436,6 @@ class PeopleHandlerSignoutTest : public BrowserWithTestWindowTest {
 
 #if DCHECK_IS_ON()
 TEST_F(PeopleHandlerSignoutTest, RevokeSyncNotAllowed) {
-  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
-  // 'ClearPrimaryAccount' which breaks the test.
-  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
-            signin::AccountConsistencyMethod::kDisabled);
-
   auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
       "a@gmail.com", ConsentLevel::kSync);
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
@@ -1454,11 +1449,6 @@ TEST_F(PeopleHandlerSignoutTest, RevokeSyncNotAllowed) {
 }
 
 TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff) {
-  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
-  // 'ClearPrimaryAccount' which breaks the test.
-  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
-            signin::AccountConsistencyMethod::kDisabled);
-
   auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
       "a@gmail.com", ConsentLevel::kSignin);
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -1474,11 +1464,6 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOff) {
 #endif  // DCHECK_IS_ON()
 
 TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn) {
-  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
-  // 'ClearPrimaryAccount' which breaks the test.
-  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
-            signin::AccountConsistencyMethod::kDisabled);
-
   auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
       "a@gmail.com", ConsentLevel::kSync);
   auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
@@ -1506,11 +1491,6 @@ TEST_F(PeopleHandlerSignoutTest, SignoutNotAllowedSyncOn) {
 }
 
 TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOff) {
-  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
-  // 'ClearPrimaryAccount' which breaks the test.
-  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
-            signin::AccountConsistencyMethod::kDisabled);
-
   auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
       "a@gmail.com", ConsentLevel::kSignin);
   auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
@@ -1532,11 +1512,6 @@ TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOff) {
 }
 
 TEST_F(PeopleHandlerSignoutTest, SignoutWithSyncOn) {
-  // Ensure |PrimaryAccountMutatorImpl::RevokeSyncConsent| would not call
-  // 'ClearPrimaryAccount' which breaks the test.
-  EXPECT_NE(AccountConsistencyModeManager::GetMethodForProfile(profile()),
-            signin::AccountConsistencyMethod::kDisabled);
-
   auto account_1 = identity_test_env()->MakePrimaryAccountAvailable(
       "a@gmail.com", ConsentLevel::kSync);
   auto account_2 = identity_test_env()->MakeAccountAvailable("b@gmail.com");
