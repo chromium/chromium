@@ -943,14 +943,17 @@ export function getTreeItemEntry(treeItem: DirectoryItem|XfTreeItem|TreeItem|
     return null;
   }
 
+  if ('entry' in treeItem && treeItem.entry) {
+    return treeItem.entry;
+  }
+
   if (isNewDirectoryTreeEnabled()) {
     const item = treeItem as XfTreeItem;
     const state = getStore().getState();
     return getEntry(state, item.dataset['navigationKey']!);
   }
 
-  const item = treeItem as DirectoryItem;
-  return item.entry;
+  return null;
 }
 
 /**

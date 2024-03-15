@@ -12,19 +12,17 @@ import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {State} from '../../state/state.js';
 import {getFileData} from '../../state/store.js';
-import {XfTree} from '../../widgets/xf_tree.js';
-import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
 import type {CommandHandlerDeps} from './command_handler.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {FileSelection} from './file_selection.js';
 import type {MetadataKey} from './metadata/metadata_item.js';
 import type {CanExecuteEvent, Command, CommandEvent} from './ui/command.js';
-import type {DirectoryItem} from './ui/directory_tree.js';
 import {List} from './ui/list.js';
 import type {Menu} from './ui/menu.js';
 import type {MenuItem} from './ui/menu_item.js';
-import {Tree, type TreeItem} from './ui/tree.js';
+import {TreeItem} from './ui/tree.js';
 
 /**
  * The IDs of elements that can trigger share action.
@@ -32,13 +30,6 @@ import {Tree, type TreeItem} from './ui/tree.js';
 enum SharingActionElementId {
   CONTEXT_MENU = 'file-list',
   SHARE_SHEET = 'sharesheet-button',
-}
-
-function isDirectoryItem(element: EventTarget|null): element is DirectoryItem {
-  if (element && 'entry' in element) {
-    return true;
-  }
-  return false;
 }
 
 function isList(element: EventTarget|null): element is List {
@@ -63,13 +54,12 @@ function isMenuItem(element: EventTarget|null): element is MenuItem {
   return false;
 }
 
-function isTreeItem(element: XfTree|Tree|XfTreeItem|DirectoryItem|TreeItem|
-                    undefined|null): element is XfTreeItem|DirectoryItem|
-    TreeItem|undefined|null {
-  if (element instanceof XfTree || element instanceof Tree) {
-    return false;
+function isTreeItem(element: EventTarget|HTMLElement|undefined|
+                    null): element is XfTreeItem|TreeItem {
+  if (element instanceof XfTreeItem || element instanceof TreeItem) {
+    return true;
   }
-  return true;
+  return false;
 }
 
 
@@ -108,9 +98,11 @@ export function getCommandEntry(
 export function getCommandEntries(
     fileManager: CommandHandlerDeps,
     element: EventTarget|null): Array<Entry|FilesAppEntry> {
-  // DirectoryItem has "entry" attribute.
-  if (isDirectoryItem(element)) {
-    return [element.entry!];
+  if (isTreeItem(element)) {
+    const entry = getTreeItemEntry(element as XfTreeItem | TreeItem);
+    if (entry) {
+      return [entry];
+    }
   }
 
   // DirectoryTree has the focused item.
@@ -125,14 +117,15 @@ export function getCommandEntries(
   }
 
   const htmlElement = element as HTMLElement;
-  // The event target could still be a descendant of a DirectoryItem element
+  // The event target could still be a descendant of a legacy TreeItem element
   // (e.g. the eject button).
   if (isNewDirectoryTreeEnabled()) {
     // Handle eject button in the new directory tree.
     if (htmlElement.classList.contains('root-eject')) {
       const treeItem = htmlElement.closest('xf-tree-item');
-      if (treeItem && 'entry' in treeItem) {
-        return [treeItem.entry as DirectoryEntry | FilesAppDirEntry];
+      const entry = treeItem && getTreeItemEntry(treeItem);
+      if (entry) {
+        return [entry];
       }
     }
   } else {
@@ -187,11 +180,11 @@ export function getParentEntry(
     return getTreeItemEntry(parentItem);
   }
 
-  const directoryTreeItem = element as DirectoryItem;
+  const directoryTreeItem = element as TreeItem;
   const directoryTreeParentItem = directoryTreeItem?.parentItem;
   if (isTreeItem(directoryTreeParentItem) &&
       getTreeItemEntry(directoryTreeParentItem)) {
-    // DirectoryItem has parentItem.
+    // Legacy TreeItem has parentItem.
     return getTreeItemEntry(directoryTreeParentItem);
   }
 
