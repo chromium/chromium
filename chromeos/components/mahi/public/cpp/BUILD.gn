@@ -12,6 +12,8 @@ component("cpp") {
   sources = [
     "mahi_manager.cc",
     "mahi_manager.h",
+    "mahi_switches.cc",
+    "mahi_switches.h",
     "views/experiment_badge.cc",
     "views/experiment_badge.h",
   ]

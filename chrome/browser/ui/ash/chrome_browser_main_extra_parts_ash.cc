@@ -88,6 +88,7 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
+#include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -208,7 +209,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   if (chromeos::features::IsMahiEnabled()) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            ash::switches::kUseFakeMahiManager)) {
+            chromeos::switches::kUseFakeMahiManager)) {
       mahi_manager_ = std::make_unique<ash::FakeMahiManager>(
           /*enable_callback_delays_for_animations=*/true);
     } else {
