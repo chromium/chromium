@@ -395,6 +395,7 @@ struct FormFieldData {
 struct FormFieldData_FillData {
   mojo_base.mojom.String16 value;
   FieldRendererId renderer_id;
+  FormRendererId host_form_id;
   bool is_autofilled;
   Section section;
   bool force_override;
@@ -420,13 +421,6 @@ struct FormData {
   array<FormFieldData> fields;
   array<FieldRendererId> username_predictions;
   bool is_gaia_with_skip_save_password_form;
-};
-
-// autofill::FormData::FillData
-// (components/autofill/core/common/form_filling_data.h)
-struct FormData_FillData {
-  FormRendererId renderer_id;
-  array<FormFieldData_FillData> fields;
 };
 
 // autofill::FormFieldDataPredictions

@@ -356,9 +356,15 @@ FormFieldData::FillData::~FillData() = default;
 FormFieldData::FillData::FillData(const FormFieldData& field)
     : value(field.value),
       renderer_id(field.renderer_id),
+      host_form_id(field.host_form_id),
       section(field.section),
       is_autofilled(field.is_autofilled),
       force_override(field.force_override) {}
+
+FormFieldData::FillData::FillData(const FillData&) = default;
+
+FormFieldData::FillData& FormFieldData::FillData::operator=(const FillData&) =
+    default;
 
 std::string_view FormControlTypeToString(FormControlType type) {
   switch (type) {

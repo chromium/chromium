@@ -292,23 +292,6 @@ struct FormData {
 #endif
 };
 
-// Structure containing necessary information to be sent from the browser to the
-// renderer in order to fill a form.
-// See documentation of FormData for more info.
-struct FormData::FillData {
-  FillData();
-  explicit FillData(const FormData& form);
-
-  ~FillData();
-
-  // Uniquely identifies the DOM element that this form represents among the
-  // form DOM elements in the same frame.
-  FormRendererId renderer_id;
-
-  // A vector of all the fields in the form that we want the renderer to fill.
-  std::vector<FormFieldData::FillData> fields;
-};
-
 // Whether any of the fields in |form| is a non-empty password field.
 bool FormHasNonEmptyPasswordField(const FormData& form);
 

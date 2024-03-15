@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data_predictions.h"
+#include "components/autofill/core/common/signatures.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -243,9 +244,9 @@ base::flat_set<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
       field_type_map,
       [](autofill::AutofillDriver* target, mojom::FormActionType action_type,
          mojom::ActionPersistence action_persistence,
-         const FormData::FillData& form) {
-        cast(target)->GetAutofillAgent()->ApplyFormAction(
-            action_type, action_persistence, form);
+         const std::vector<FormFieldData::FillData>& fields) {
+        cast(target)->GetAutofillAgent()->ApplyFieldsAction(
+            action_type, action_persistence, fields);
       });
 }
 

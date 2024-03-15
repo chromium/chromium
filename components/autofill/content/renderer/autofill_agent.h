@@ -156,9 +156,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   void TriggerFormExtraction() override;
   void TriggerFormExtractionWithResponse(
       base::OnceCallback<void(bool)> callback) override;
-  void ApplyFormAction(mojom::FormActionType action_type,
-                       mojom::ActionPersistence action_persistence,
-                       const FormData::FillData& form) override;
+  void ApplyFieldsAction(
+      mojom::FormActionType action_type,
+      mojom::ActionPersistence action_persistence,
+      const std::vector<FormFieldData::FillData>& fields) override;
   void ApplyFieldAction(mojom::FieldActionType action_type,
                         mojom::ActionPersistence action_persistence,
                         FieldRendererId field_id,

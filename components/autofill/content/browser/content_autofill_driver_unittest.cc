@@ -82,10 +82,11 @@ namespace {
 const char kAppLocale[] = "en-US";
 
 MATCHER(EqualsFillData, "") {
-  FormFieldData::FillData lhs_field = std::get<0>(arg);
+  FormFieldData lhs_field = std::get<0>(arg);
   FormFieldData::FillData rhs_field = std::get<1>(arg);
   return lhs_field.value == rhs_field.value &&
          lhs_field.renderer_id == rhs_field.renderer_id &&
+         lhs_field.host_form_id == rhs_field.host_form_id &&
          lhs_field.section == rhs_field.section &&
          lhs_field.is_autofilled == rhs_field.is_autofilled &&
          lhs_field.force_override == rhs_field.force_override;
@@ -199,15 +200,16 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override {}
 
-  void ApplyFormAction(mojom::FormActionType action_type,
-                       mojom::ActionPersistence action_persistence,
-                       const FormData::FillData& form) override {
+  void ApplyFieldsAction(
+      mojom::FormActionType action_type,
+      mojom::ActionPersistence action_persistence,
+      const std::vector<FormFieldData::FillData>& fields) override {
     switch (action_persistence) {
       case mojom::ActionPersistence::kPreview:
-        preview_form_fields_ = form.fields;
+        preview_form_fields_ = fields;
         break;
       case mojom::ActionPersistence::kFill:
-        fill_form_fields_ = form.fields;
+        fill_form_fields_ = fields;
         break;
     }
     CallDone();
@@ -726,9 +728,8 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   std::optional<std::vector<FormFieldData::FillData>> output_fields =
       agent().GetAutofillFillFormMessage();
   ASSERT_TRUE(output_fields.has_value());
-  EXPECT_THAT(
-      FormData::FillData(test::WithoutUnserializedData(address_form())).fields,
-      Pointwise(EqualsFillData(), *output_fields));
+  EXPECT_THAT(test::WithoutUnserializedData(address_form()).fields,
+              Pointwise(EqualsFillData(), *output_fields));
 }
 
 TEST_F(ContentAutofillDriverTestWithAddressForm,
@@ -753,9 +754,8 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
   std::optional<std::vector<FormFieldData::FillData>> output_fields =
       agent().GetAutofillPreviewFormMessage();
   ASSERT_TRUE(output_fields);
-  EXPECT_THAT(
-      FormData::FillData(test::WithoutUnserializedData(address_form())).fields,
-      Pointwise(EqualsFillData(), *output_fields));
+  EXPECT_THAT(test::WithoutUnserializedData(address_form()).fields,
+              Pointwise(EqualsFillData(), *output_fields));
 }
 
 TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {

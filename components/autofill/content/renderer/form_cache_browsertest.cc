@@ -451,7 +451,7 @@ void FillAndCheckState(
   for (const FormFieldData& field : values_to_fill.fields) {
     fields_to_fill.emplace_back(field);
   }
-  form_util::ApplyFormAction(
+  form_util::ApplyFieldsAction(
       document, fields_to_fill, mojom::FormActionType::kFill,
       mojom::ActionPersistence::kFill, field_data_manager);
 
@@ -540,10 +540,10 @@ TEST_F(FormCacheBrowserTest,
       GetFormControlElementById(GetMainFrame()->GetDocument(), "fname");
 
   // Simulate filling the form using Autofill.
-  form_util::ApplyFormAction(GetMainFrame()->GetDocument(), values_to_fill,
-                             mojom::FormActionType::kFill,
-                             mojom::ActionPersistence::kFill,
-                             GetFieldDataManager());
+  form_util::ApplyFieldsAction(GetMainFrame()->GetDocument(), values_to_fill,
+                               mojom::FormActionType::kFill,
+                               mojom::ActionPersistence::kFill,
+                               GetFieldDataManager());
 
   // Simulate clearing the form.
   form_cache.ClearSectionWithElement(fname, GetFieldDataManager());

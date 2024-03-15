@@ -23,9 +23,9 @@ interface AutofillAgent {
   // Fills or previews the form identified by `form` with the data of its
   // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
-  ApplyFormAction(FormActionType action_type,
+  ApplyFieldsAction(FormActionType action_type,
                   ActionPersistence action_persistence,
-                  FormData_FillData form);
+                  array<FormFieldData_FillData> fields);
 
   // Fills or previews the field identified by `field` with `value`.
   // `action_persistence` denotes if the operation is a Fill or Preview.

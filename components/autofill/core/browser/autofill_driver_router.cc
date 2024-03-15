@@ -419,7 +419,7 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     void (*callback)(AutofillDriver* target,
                      mojom::FormActionType action_type,
                      mojom::ActionPersistence action_persistence,
-                     const FormData::FillData& form)) {
+                     const std::vector<FormFieldData::FillData>& fields)) {
   // Since Undo only affects fields that were already filled, and only sets
   // values to fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
@@ -432,13 +432,16 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
                                                             &field_type_map));
   for (FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
-      // Remove unsafe fields from the list to be sent to the renderer.
-      std::erase_if(
-          renderer_form.fields, [&renderer_forms](const FormFieldData& field) {
-            return !renderer_forms.safe_fields.contains(field.global_id());
-          });
-      callback(target, action_type, action_persistence,
-               FormData::FillData(renderer_form));
+      std::vector<FormFieldData::FillData> fields;
+      for (const FormFieldData& field : renderer_form.fields) {
+        // Skip unsafe fields so that they do not get filled in the renderer.
+        if (renderer_forms.safe_fields.contains(field.global_id())) {
+          fields.emplace_back(field);
+        }
+      }
+      if (!fields.empty()) {
+        callback(target, action_type, action_persistence, fields);
+      }
     }
   }
   return renderer_forms.safe_fields;

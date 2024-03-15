@@ -27,10 +27,6 @@ mojom("mojo_types") {
           cpp = "::autofill::FormData"
         },
         {
-          mojom = "autofill.mojom.FormData_FillData"
-          cpp = "::autofill::FormData::FillData"
-        },
-        {
           mojom = "autofill.mojom.FormDataPredictions"
           cpp = "::autofill::FormDataPredictions"
         },

@@ -267,6 +267,9 @@ bool StructTraits<autofill::mojom::FormFieldData_FillDataDataView,
   if (!data.ReadRendererId(&out->renderer_id)) {
     return false;
   }
+  if (!data.ReadHostFormId(&out->host_form_id)) {
+    return false;
+  }
   out->is_autofilled = data.is_autofilled();
   out->force_override = data.force_override();
   return true;
@@ -322,20 +325,6 @@ bool StructTraits<autofill::mojom::FormDataDataView, autofill::FormData>::Read(
                base::checked_cast<size_t>(predecessor) < out->fields.size();
       },
       &autofill::FrameTokenWithPredecessor::predecessor);
-}
-
-// static
-bool StructTraits<autofill::mojom::FormData_FillDataDataView,
-                  autofill::FormData::FillData>::
-    Read(autofill::mojom::FormData_FillDataDataView data,
-         autofill::FormData::FillData* out) {
-  if (!data.ReadRendererId(&out->renderer_id)) {
-    return false;
-  }
-  if (!data.ReadFields(&out->fields)) {
-    return false;
-  }
-  return true;
 }
 
 // static

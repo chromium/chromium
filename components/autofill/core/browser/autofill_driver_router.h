@@ -264,7 +264,7 @@ class AutofillDriverRouter {
       void (*callback)(AutofillDriver* target,
                        mojom::FormActionType action_type,
                        mojom::ActionPersistence action_persistence,
-                       const FormData::FillData& form));
+                       const std::vector<FormFieldData::FillData>& fields));
   void ApplyFieldAction(
       AutofillDriver* source,
       mojom::FieldActionType action_type,

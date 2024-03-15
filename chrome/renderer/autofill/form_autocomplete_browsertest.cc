@@ -230,6 +230,17 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   return data;
 }
 
+std::vector<FormFieldData::FillData> GetFieldsForFilling(
+    const std::vector<FormData>& forms) {
+  std::vector<FormFieldData::FillData> fields;
+  for (const FormData& form : forms) {
+    for (const FormFieldData& field : form.fields) {
+      fields.emplace_back(field);
+    }
+  }
+  return fields;
+}
+
 void SimulateFillForm(const FormData& form_data,
                       autofill::AutofillAgent* autofill_agent,
                       blink::WebLocalFrame* main_frame) {
@@ -244,9 +255,9 @@ void SimulateFillForm(const FormData& form_data,
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->ApplyFormAction(mojom::FormActionType::kFill,
-                                  mojom::ActionPersistence::kFill,
-                                  FormData::FillData(form_data));
+  autofill_agent->ApplyFieldsAction(mojom::FormActionType::kFill,
+                                    mojom::ActionPersistence::kFill,
+                                    GetFieldsForFilling({form_data}));
 }
 
 // Simulates receiving a message from the browser to fill a form.
@@ -307,9 +318,9 @@ void SimulateFillFormWithNonFillableFields(
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->ApplyFormAction(mojom::FormActionType::kFill,
-                                  mojom::ActionPersistence::kFill,
-                                  FormData::FillData(form));
+  autofill_agent->ApplyFieldsAction(mojom::FormActionType::kFill,
+                                    mojom::ActionPersistence::kFill,
+                                    GetFieldsForFilling({form}));
 }
 
 class FormAutocompleteTest : public ChromeRenderViewTest {

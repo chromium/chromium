@@ -173,6 +173,17 @@ class AutofillAgentTest : public test::AutofillRendererTest {
     return static_cast<MockFormTracker&>(
         test_api(autofill_agent()).form_tracker());
   }
+
+  std::vector<FormFieldData::FillData> GetFieldsForFilling(
+      const std::vector<FormData>& forms) {
+    std::vector<FormFieldData::FillData> fields;
+    for (const FormData& form : forms) {
+      for (const FormFieldData& field : form.fields) {
+        fields.emplace_back(field);
+      }
+    }
+    return fields;
+  }
 };
 
 class AutofillAgentTestWithFeatures : public AutofillAgentTest {
@@ -612,9 +623,9 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
                                   {form_util::ExtractOption::kValue});
 
   ASSERT_TRUE(autofill_agent().focused_element().IsNull());
-  autofill_agent().ApplyFormAction(mojom::FormActionType::kUndo,
-                                   mojom::ActionPersistence::kFill,
-                                   FormData::FillData(form));
+  autofill_agent().ApplyFieldsAction(mojom::FormActionType::kUndo,
+                                     mojom::ActionPersistence::kFill,
+                                     GetFieldsForFilling({form}));
   EXPECT_FALSE(autofill_agent().focused_element().IsNull());
 }
 
@@ -645,9 +656,9 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
   form.fields[0].is_autofilled = true;
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
-  autofill_agent().ApplyFormAction(mojom::FormActionType::kFill,
-                                   mojom::ActionPersistence::kPreview,
-                                   FormData::FillData(form));
+  autofill_agent().ApplyFieldsAction(mojom::FormActionType::kFill,
+                                     mojom::ActionPersistence::kPreview,
+                                     GetFieldsForFilling({form}));
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kPreviewed);
   autofill_agent().ClearPreviewedForm();
   EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
@@ -744,9 +755,9 @@ TEST_P(AutofillAgentSubmissionTest,
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
   FormData form;
   form.fields = {form_field};
-  autofill_agent().ApplyFormAction(mojom::FormActionType::kFill,
-                                   mojom::ActionPersistence::kFill,
-                                   FormData::FillData(form));
+  autofill_agent().ApplyFieldsAction(mojom::FormActionType::kFill,
+                                     mojom::ActionPersistence::kFill,
+                                     GetFieldsForFilling({form}));
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
 
   std::optional<FormData> last_interacted_saved_state =
@@ -767,25 +778,26 @@ TEST_P(AutofillAgentSubmissionTest,
     </form>
   )");
 
-  blink::WebFormElement form =
+  blink::WebFormElement form_element =
       GetWebElementById("form_id").DynamicTo<blink::WebFormElement>();
-  ASSERT_EQ(1u, form.GetFormControlElements().size());
-  blink::WebFormControlElement field = form.GetFormControlElements()[0];
+  ASSERT_EQ(1u, form_element.GetFormControlElements().size());
+  blink::WebFormControlElement field = form_element.GetFormControlElements()[0];
   ASSERT_FALSE(field.IsNull());
   ASSERT_EQ("text_id", field.GetIdAttribute().Ascii());
 
-  FormData form_data = *form_util::ExtractFormData(
-      form.GetDocument(), form, *base::MakeRefCounted<FieldDataManager>(),
-      {form_util::ExtractOption::kValue});
+  FormData form =
+      *form_util::ExtractFormData(form_element.GetDocument(), form_element,
+                                  *base::MakeRefCounted<FieldDataManager>(),
+                                  {form_util::ExtractOption::kValue});
 
-  ASSERT_EQ(1u, form_data.fields.size());
-  form_data.fields[0].value = u"autofilled";
-  form_data.fields[0].is_autofilled = true;
+  ASSERT_EQ(1u, form.fields.size());
+  form.fields[0].value = u"autofilled";
+  form.fields[0].is_autofilled = true;
 
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
-  autofill_agent().ApplyFormAction(mojom::FormActionType::kFill,
-                                   mojom::ActionPersistence::kFill,
-                                   FormData::FillData(form_data));
+  autofill_agent().ApplyFieldsAction(mojom::FormActionType::kFill,
+                                     mojom::ActionPersistence::kFill,
+                                     GetFieldsForFilling({form}));
   ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kAutofilled);
 
   std::optional<FormData> last_interacted_saved_state =
@@ -997,11 +1009,11 @@ TEST_P(AutofillAgentSubmissionTest,
   blink::WebFormElement form_element =
       GetWebElementById("form").DynamicTo<blink::WebFormElement>();
   ASSERT_FALSE(form_element.IsNull());
-  std::optional<FormData> form_data =
+  std::optional<FormData> form =
       form_util::ExtractFormData(GetMainFrame()->GetDocument(), form_element,
                                  autofill_agent().field_data_manager(),
                                  {form_util::ExtractOption::kValue});
-  ASSERT_TRUE(form_data.has_value());
+  ASSERT_TRUE(form.has_value());
 
   blink::WebVector<blink::WebFormControlElement> field_elements =
       form_element.GetFormControlElements();
@@ -1011,7 +1023,7 @@ TEST_P(AutofillAgentSubmissionTest,
               blink::WebAutofillState::kNotFilled);
   }
 
-  for (FormFieldData& field : form_data->fields) {
+  for (FormFieldData& field : form->fields) {
     field.value = field.id_attribute + u" autofilled";
     field.is_autofilled = true;
   }
@@ -1020,9 +1032,9 @@ TEST_P(AutofillAgentSubmissionTest,
   static_cast<content::RenderFrameObserver*>(&autofill_agent())
       ->FocusedElementChanged(field_elements[0]);
 
-  autofill_agent().ApplyFormAction(mojom::FormActionType::kFill,
-                                   mojom::ActionPersistence::kFill,
-                                   FormData::FillData(*form_data));
+  autofill_agent().ApplyFieldsAction(mojom::FormActionType::kFill,
+                                     mojom::ActionPersistence::kFill,
+                                     GetFieldsForFilling({*form}));
 
   for (const blink::WebFormControlElement& field_element : field_elements) {
     ASSERT_EQ(field_element.GetAutofillState(),

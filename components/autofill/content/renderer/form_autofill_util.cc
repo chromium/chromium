@@ -2199,7 +2199,7 @@ std::optional<FormData> FindFormForContentEditable(
   return form;
 }
 
-std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
+std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
     const WebDocument& document,
     base::span<const FormFieldData::FillData> fields,
     mojom::FormActionType action_type,
