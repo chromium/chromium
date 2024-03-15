@@ -97,14 +97,17 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 .beginBuildingFrame(mNativePtr, TabStripSceneLayer.this, visible);
         // When strip tabs are completely off screen, we don't need to update it.
         if (visible) {
+            // Round the padding to avoid off-by-one issues similar to crbug/329722454.
+            float leftPaddingPx = Math.round(leftPaddingDp * mDpToPx);
+            float rightPaddingPx = Math.round(rightPaddingDp * mDpToPx);
             pushButtonsAndBackground(
                     layoutHelper,
                     resourceManager,
                     yOffset,
                     scrimColor,
                     scrimOpacity,
-                    leftPaddingDp,
-                    rightPaddingDp);
+                    leftPaddingPx,
+                    rightPaddingPx);
             pushStripTabs(
                     layoutHelper,
                     layerTitleCache,
@@ -123,8 +126,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             float yOffset,
             @ColorInt int scrimColor,
             float scrimOpacity,
-            float leftPaddingDp,
-            float rightPaddingDp) {
+            float leftPaddingPx,
+            float rightPaddingPx) {
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
         TabStripSceneLayerJni.get()
@@ -137,8 +140,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         layoutHelper.getBackgroundColor(),
                         scrimColor,
                         scrimOpacity,
-                        leftPaddingDp * mDpToPx,
-                        rightPaddingDp * mDpToPx);
+                        leftPaddingPx,
+                        rightPaddingPx);
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
@@ -186,7 +189,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         layoutHelper.getLeftFadeOpacity(),
                         resourceManager,
                         layoutHelper.getBackgroundColor(),
-                        leftPaddingDp * mDpToPx);
+                        leftPaddingPx);
 
         TabStripSceneLayerJni.get()
                 .updateTabStripRightFade(
@@ -196,7 +199,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         layoutHelper.getRightFadeOpacity(),
                         resourceManager,
                         layoutHelper.getBackgroundColor(),
-                        rightPaddingDp * mDpToPx);
+                        rightPaddingPx);
     }
 
     private void pushStripTabs(
