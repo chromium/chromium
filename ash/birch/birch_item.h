@@ -176,6 +176,8 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   const base::Time& timestamp() const { return timestamp_; }
 
  private:
+  static std::u16string GetTitle(const base::FilePath& file_path);
+
   base::FilePath file_path_;
   base::Time timestamp_;
 };

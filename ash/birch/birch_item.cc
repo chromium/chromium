@@ -219,7 +219,7 @@ std::u16string BirchAttachmentItem::GetSubtitle() {
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
                              const std::u16string& justification,
                              base::Time timestamp)
-    : BirchItem(base::UTF8ToUTF16(file_path.BaseName().value()), justification),
+    : BirchItem(GetTitle(file_path), justification),
       file_path_(file_path),
       timestamp_(timestamp) {}
 
@@ -257,6 +257,13 @@ void BirchFileItem::PerformSecondaryAction() {
 void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
   std::move(callback).Run(
       ui::ImageModel::FromVectorIcon(chromeos::GetIconForPath(file_path_)));
+}
+
+// static
+std::u16string BirchFileItem::GetTitle(const base::FilePath& file_path) {
+  // Convert "/path/to/foo.txt" into just "foo".
+  std::string filename = file_path.BaseName().RemoveExtension().value();
+  return base::UTF8ToUTF16(filename);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -112,6 +112,13 @@ TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
 
+TEST_F(BirchItemTest, File_TitleDoesNotShowFileExtension) {
+  BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
+                     base::Time());
+  // The title does not contain the ".gdoc" extension.
+  EXPECT_EQ(u"file", item.title());
+}
+
 TEST_F(BirchItemTest, File_PerformAction) {
   BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time());
   EXPECT_EQ(u"file_path", item.title());
