@@ -37,9 +37,6 @@ class SyncService;
 // Delegate.
 @property(nonatomic, weak) id<HistorySyncMediatorDelegate> delegate;
 
-@property(nonatomic, strong)
-    HistorySyncCapabilitiesFetcher* capabilitiesFetcher;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)

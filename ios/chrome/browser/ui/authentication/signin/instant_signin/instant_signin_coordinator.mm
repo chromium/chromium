@@ -267,6 +267,7 @@
                                  postSignInAction:postSigninAction
                          presentingViewController:self.baseViewController];
   authenticationFlow.delegate = self;
+  authenticationFlow.precedingHistorySync = YES;
   [_mediator startSignInOnlyFlowWithAuthenticationFlow:authenticationFlow];
 }
 

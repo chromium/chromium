@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/reading_list/features/reading_list_switches.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -28,10 +29,12 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
+#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -53,6 +56,7 @@ enum AuthenticationState {
   COMMIT_SYNC,
   REGISTER_FOR_USER_POLICY,
   FETCH_USER_POLICY,
+  FETCH_CAPABILITIES,
   COMPLETE_WITH_SUCCESS,
   COMPLETE_WITH_FAILURE,
   CLEANUP_BEFORE_DONE,
@@ -140,6 +144,9 @@ bool HasMachineLevelPolicies() {
   // is in progress to ensure it outlives any attempt to destroy it in
   // `_signInCompletion`.
   AuthenticationFlow* _selfRetainer;
+
+  // Capabilities fetcher for the subsequent History Sync Opt-In screen.
+  HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
 }
 
 @synthesize handlingError = _handlingError;
@@ -230,6 +237,8 @@ bool HasMachineLevelPolicies() {
     case REGISTER_FOR_USER_POLICY:
     case FETCH_USER_POLICY:
       return COMPLETE_WITH_FAILURE;
+    case FETCH_CAPABILITIES:
+      return COMPLETE_WITH_FAILURE;
     case COMPLETE_WITH_SUCCESS:
     case COMPLETE_WITH_FAILURE:
       return CLEANUP_BEFORE_DONE;
@@ -295,6 +304,8 @@ bool HasMachineLevelPolicies() {
         case PostSignInAction::kNone:
           if (_shouldFetchUserPolicy) {
             return REGISTER_FOR_USER_POLICY;
+          } else if ([self shouldFetchCapabilities]) {
+            return FETCH_CAPABILITIES;
           } else {
             return COMPLETE_WITH_SUCCESS;
           }
@@ -302,16 +313,29 @@ bool HasMachineLevelPolicies() {
     case COMMIT_SYNC:
       if (_shouldFetchUserPolicy) {
         return REGISTER_FOR_USER_POLICY;
+      } else if ([self shouldFetchCapabilities]) {
+        return FETCH_CAPABILITIES;
+      } else {
+        return COMPLETE_WITH_SUCCESS;
       }
-      return COMPLETE_WITH_SUCCESS;
     case REGISTER_FOR_USER_POLICY:
       if (!_dmToken.length || !_clientID.length) {
         // Skip fetching user policies when registration failed.
-        return COMPLETE_WITH_SUCCESS;
+        if ([self shouldFetchCapabilities]) {
+          return FETCH_CAPABILITIES;
+        } else {
+          return COMPLETE_WITH_SUCCESS;
+        }
       }
       // Fetch user policies when registration is successful.
       return FETCH_USER_POLICY;
     case FETCH_USER_POLICY:
+      if ([self shouldFetchCapabilities]) {
+        return FETCH_CAPABILITIES;
+      } else {
+        return COMPLETE_WITH_SUCCESS;
+      }
+    case FETCH_CAPABILITIES:
       return COMPLETE_WITH_SUCCESS;
     case COMPLETE_WITH_SUCCESS:
     case COMPLETE_WITH_FAILURE:
@@ -408,11 +432,12 @@ bool HasMachineLevelPolicies() {
                userAffiliationIDs:_userAffiliationIDs
                          identity:_identityToSignIn];
       return;
-
+    case FETCH_CAPABILITIES:
+      [self fetchCapabilities];
+      return;
     case COMPLETE_WITH_SUCCESS:
       [self completeSignInWithSuccess:YES];
       return;
-
     case COMPLETE_WITH_FAILURE:
       if (_didSignIn) {
         [_performer signOutImmediatelyFromBrowserState:browserState];
@@ -505,6 +530,34 @@ bool HasMachineLevelPolicies() {
     NSError* error = ios::provider::CreateMissingIdentitySigninError();
     [self handleAuthenticationError:error];
   }
+}
+
+// Fetches capabilities on successful authentication for the upcoming History
+// Sync Opt-In screen.
+- (void)fetchCapabilities {
+  CHECK([self shouldFetchCapabilities]);
+  ChromeBrowserState* browserState = [self originalBrowserState];
+
+  // Create the capability fetcher and start fetching capabilities.
+  __weak __typeof(self) weakSelf = self;
+  _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
+      initWithAuthenticationService:AuthenticationServiceFactory::
+                                        GetForBrowserState(browserState)
+                    identityManager:IdentityManagerFactory::GetForBrowserState(
+                                        browserState)];
+
+  [_capabilitiesFetcher
+      startFetchingRestrictionCapabilityWithCallback:base::BindOnce(^(
+                                                         bool capability) {
+        // The capability value is ignored.
+        [weakSelf clearCapabilitiesFetcher];
+        [weakSelf continueSignin];
+      })];
+}
+
+- (void)clearCapabilitiesFetcher {
+  [_capabilitiesFetcher shutdown];
+  _capabilitiesFetcher = nil;
 }
 
 - (void)completeSignInWithSuccess:(BOOL)success {
@@ -705,6 +758,28 @@ bool HasMachineLevelPolicies() {
   } else {
     return policy::IsAnyUserPolicyFeatureEnabled();
   }
+}
+
+// Return YES if capabilities should be fetched for the History Sync screen.
+- (BOOL)shouldFetchCapabilities {
+  if (!self.precedingHistorySync ||
+      !base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    return NO;
+  }
+
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState([self originalBrowserState]);
+  syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
+
+  if (userSettings->GetSelectedTypes().HasAll(
+          {syncer::UserSelectableType::kHistory,
+           syncer::UserSelectableType::kTabs})) {
+    // History Opt-In is already set and the screen won't be shown.
+    return NO;
+  }
+
+  return YES;
 }
 
 #pragma mark - Used for testing

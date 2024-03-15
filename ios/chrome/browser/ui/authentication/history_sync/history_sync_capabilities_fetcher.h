@@ -9,7 +9,7 @@
 
 #import "base/functional/callback.h"
 
-using CapabilityFetchCompletionCallback = base::RepeatingCallback<void(bool)>;
+using CapabilityFetchCompletionCallback = base::OnceCallback<void(bool)>;
 
 class AuthenticationService;
 
@@ -26,13 +26,20 @@ class IdentityManager;
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
-                         callback:(CapabilityFetchCompletionCallback)callback
     NS_DESIGNATED_INITIALIZER;
 
+// Stops processing callbacks and stops the async AccountInfo capability
+// fetcher.
 - (void)shutdown;
 
 // Starts fetching capabilities to determine minor mode restriction status.
-- (void)startFetchingRestrictionCapability;
+- (void)startFetchingRestrictionCapabilityWithCallback:
+    (CapabilityFetchCompletionCallback)callback;
+
+// Fetches available capabilities. If capabilities are not immediately ready,
+// use fallback value.
+- (void)fetchImmediatelyAvailableRestrictionCapabilityWithCallback:
+    (CapabilityFetchCompletionCallback)callback;
 
 @end
 

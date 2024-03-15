@@ -61,27 +61,34 @@ class HistorySyncCapabilitiesFetcherTest : public PlatformTest {
     return identity_test_env_.identity_manager();
   }
 
-  HistorySyncCapabilitiesFetcher* BuildHistorySyncCapabilitiesFetcher(
-      CapabilityFetchCompletionCallback callback) {
+  HistorySyncCapabilitiesFetcher* BuildHistorySyncCapabilitiesFetcher() {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     HistorySyncCapabilitiesFetcher* fetcher =
         [[HistorySyncCapabilitiesFetcher alloc]
             initWithAuthenticationService:auth_service
-                          identityManager:identity_manager()
-                                 callback:std::move(callback)];
+                          identityManager:identity_manager()];
     return fetcher;
   }
 
-  AccountInfo SignInPrimaryAccountWithCanShowUnrestrictedOptInsCapability(
-      bool value) {
+  AccountInfo SignInPrimaryAccount() {
+    // Sign in SystemIdentity with unknown capabilities.
+    const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+    GetSystemIdentityManager()->AddIdentityWithUnknownCapabilities(identity);
+    AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+        ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+    // Sign in AccountInfo.
     AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
         kTestEmail, signin::ConsentLevel::kSignin);
+    return account;
+  }
+
+  void SetAccountInfoCanShowUnrestrictedOptInsCapability(AccountInfo account,
+                                                         bool value) {
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
     mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
         value);
     identity_test_env_.UpdateAccountInfoForAccount(account);
-    return account;
   }
 
   void SystemSignInWithCanShowUnrestrictedOptInsCapability(bool value) {
@@ -91,7 +98,6 @@ class HistorySyncCapabilitiesFetcherTest : public PlatformTest {
         GetSystemIdentityManager()->GetCapabilitiesMutator(identity);
     mutator->set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
         value);
-
     AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
         ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
@@ -111,7 +117,8 @@ class HistorySyncCapabilitiesFetcherTest : public PlatformTest {
 TEST_F(HistorySyncCapabilitiesFetcherTest,
        TestStartFetchingCapabilitiesWithAccountCapabilityValueTrue) {
   // Make account capabilities available before the mediator is created.
-  SignInPrimaryAccountWithCanShowUnrestrictedOptInsCapability(true);
+  AccountInfo account = SignInPrimaryAccount();
+  SetAccountInfoCanShowUnrestrictedOptInsCapability(account, true);
 
   base::RunLoop run_loop;
   CapabilityFetchCompletionCallback callback =
@@ -121,8 +128,10 @@ TEST_F(HistorySyncCapabilitiesFetcherTest,
       });
 
   // Create the fetcher and attempt to fetch existing capabilities.
-  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
-  [fetcher_ startFetchingRestrictionCapability];
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher();
+  [fetcher_
+      fetchImmediatelyAvailableRestrictionCapabilityWithCallback:std::move(
+                                                                     callback)];
 
   run_loop.Run();
 }
@@ -132,7 +141,8 @@ TEST_F(HistorySyncCapabilitiesFetcherTest,
 TEST_F(HistorySyncCapabilitiesFetcherTest,
        TestStartFetchingCapabilitiesWithAccountCapabilityValueFalse) {
   // Make account capabilities available before the mediator is created.
-  SignInPrimaryAccountWithCanShowUnrestrictedOptInsCapability(false);
+  AccountInfo account = SignInPrimaryAccount();
+  SetAccountInfoCanShowUnrestrictedOptInsCapability(account, false);
 
   base::RunLoop run_loop;
   CapabilityFetchCompletionCallback callback =
@@ -142,8 +152,10 @@ TEST_F(HistorySyncCapabilitiesFetcherTest,
       });
 
   // Create the fetcher and attempt to fetch existing capabilities.
-  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
-  [fetcher_ startFetchingRestrictionCapability];
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher();
+  [fetcher_
+      fetchImmediatelyAvailableRestrictionCapabilityWithCallback:std::move(
+                                                                     callback)];
 
   run_loop.Run();
 }
@@ -151,18 +163,24 @@ TEST_F(HistorySyncCapabilitiesFetcherTest,
 // Tests that the account capability is processed on AccountInfo received.
 TEST_F(HistorySyncCapabilitiesFetcherTest,
        TestAccountInfoReceivedWithCapabilityValuedTrue) {
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher();
+
+  // Sign in AccountInfo without capabilities setup.
+  AccountInfo account = SignInPrimaryAccount();
+
+  // Set up the callback.
   base::RunLoop run_loop;
   CapabilityFetchCompletionCallback callback =
       base::BindLambdaForTesting([&run_loop](bool capability) {
         EXPECT_TRUE(capability);
         run_loop.Quit();
       });
+  [fetcher_ startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
 
-  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
+  // Set up AccountInfo capabilities.
+  SetAccountInfoCanShowUnrestrictedOptInsCapability(account, true);
 
-  // Create AccountInfo and trigger onExtendedAccountInfoUpdated.
-  AccountInfo account =
-      SignInPrimaryAccountWithCanShowUnrestrictedOptInsCapability(true);
+  // Trigger onExtendedAccountInfoUpdated
   identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
       account.account_id, account.email, account.gaia,
       /*hosted_domain=*/"", "full_name", "given_name", "locale",
@@ -174,18 +192,24 @@ TEST_F(HistorySyncCapabilitiesFetcherTest,
 // Tests that the account capability is processed on AccountInfo received.
 TEST_F(HistorySyncCapabilitiesFetcherTest,
        TestAccountInfoReceivedWithCapabilityValuedFalse) {
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher();
+
+  // Sign in AccountInfo without capabilities setup.
+  AccountInfo account = SignInPrimaryAccount();
+
+  // Set up the callback.
   base::RunLoop run_loop;
   CapabilityFetchCompletionCallback callback =
       base::BindLambdaForTesting([&run_loop](bool capability) {
         EXPECT_FALSE(capability);
         run_loop.Quit();
       });
+  [fetcher_ startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
 
-  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
+  // Set up AccountInfo capabilities.
+  SetAccountInfoCanShowUnrestrictedOptInsCapability(account, false);
 
-  // Create AccountInfo and trigger onExtendedAccountInfoUpdated.
-  AccountInfo account =
-      SignInPrimaryAccountWithCanShowUnrestrictedOptInsCapability(false);
+  // Trigger onExtendedAccountInfoUpdated
   identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
       account.account_id, account.email, account.gaia,
       /*hosted_domain=*/"", "full_name", "given_name", "locale",
@@ -206,8 +230,10 @@ TEST_F(HistorySyncCapabilitiesFetcherTest, TestSystemCapabilityValuedTrue) {
       });
 
   // Create the fetcher and attempt to fetch existing system capabilities.
-  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
-  [fetcher_ startFetchingRestrictionCapability];
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher();
+  [fetcher_
+      fetchImmediatelyAvailableRestrictionCapabilityWithCallback:std::move(
+                                                                     callback)];
 
   run_loop.Run();
 }
@@ -224,8 +250,10 @@ TEST_F(HistorySyncCapabilitiesFetcherTest, TestSystemCapabilityValuedFalse) {
       });
 
   // Create the fetcher and attempt to fetch existing system capabilities.
-  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
-  [fetcher_ startFetchingRestrictionCapability];
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher();
+  [fetcher_
+      fetchImmediatelyAvailableRestrictionCapabilityWithCallback:std::move(
+                                                                     callback)];
 
   run_loop.Run();
 }
@@ -241,15 +269,16 @@ TEST_F(HistorySyncCapabilitiesFetcherTest, TestCapabilityFetchDeadline) {
       ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   base::RunLoop run_loop;
+
+  // Create the fetcher and wait for capability fetch timeout.
   CapabilityFetchCompletionCallback callback =
       base::BindLambdaForTesting([&run_loop](bool capability) {
         EXPECT_FALSE(capability);
         run_loop.Quit();
       });
 
-  // Create the fetcher and wait for capability fetch timeout.
-  fetcher_ = BuildHistorySyncCapabilitiesFetcher(std::move(callback));
-  [fetcher_ startFetchingRestrictionCapability];
+  fetcher_ = BuildHistorySyncCapabilitiesFetcher();
+  [fetcher_ startFetchingRestrictionCapabilityWithCallback:std::move(callback)];
 
   scoped_clock.Advance(base::Milliseconds(
       switches::kMinorModeRestrictionsFetchDeadlineMs.Get()));

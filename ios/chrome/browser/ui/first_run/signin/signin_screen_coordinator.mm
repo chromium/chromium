@@ -207,6 +207,7 @@
                          presentingViewController:self.viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowsingDataCommands);
+  authenticationFlow.precedingHistorySync = YES;
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^() {
     [weakSelf finishPresentingWithSignIn:YES];

@@ -78,6 +78,10 @@ class Browser;
 // Sign-in access point
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
 
+// Whether the History Sync Opt-In screen follows after authentication flow
+// completes with success.
+@property(nonatomic, assign) BOOL precedingHistorySync;
+
 @end
 
 // Private methods in AuthenticationFlow to test.

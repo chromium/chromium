@@ -46,9 +46,9 @@
   // Records the latency of capabilities fetch for this view.
   std::unique_ptr<signin::AccountCapabilitiesLatencyTracker>
       _accountCapabilitiesLatencyTracker;
+  // Capabilities fetcher to determine minor mode restriction.
+  HistorySyncCapabilitiesFetcher* _capabilitiesFetcher;
 }
-
-@synthesize capabilitiesFetcher = _capabilitiesFetcher;
 
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
@@ -72,19 +72,9 @@
     _showUserEmail = showUserEmail;
 
     if ([self useMinorModeRestrictions]) {
-      __weak __typeof(self) weakSelf = self;
-      CapabilityFetchCompletionCallback callback =
-          base::BindRepeating(^(bool capability) {
-            bool isRestricted = !capability;
-            [weakSelf.consumer
-                displayButtonsWithRestrictionStatus:isRestricted];
-          });
-
       _capabilitiesFetcher = [[HistorySyncCapabilitiesFetcher alloc]
           initWithAuthenticationService:authenticationService
-                        identityManager:identityManager
-                               callback:std::move(callback)];
-
+                        identityManager:identityManager];
     } else {
       _accountCapabilitiesLatencyTracker =
           std::make_unique<signin::AccountCapabilitiesLatencyTracker>(
@@ -99,6 +89,8 @@
   _accountCapabilitiesLatencyTracker.reset();
   _accountManagerServiceObserver.reset();
   _identityManagerObserver.reset();
+  [_capabilitiesFetcher shutdown];
+  _capabilitiesFetcher = nil;
   _authenticationService = nullptr;
   _accountManagerService = nullptr;
   _identityManager = nullptr;
@@ -140,6 +132,17 @@
                 base::SysNSStringToUTF16(identity.userEmail))
           : l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_FOOTER_WITHOUT_EMAIL);
   [_consumer setFooterText:footerText];
+
+  // Fetch capabilities to update action buttons.
+  __weak __typeof(self) weakSelf = self;
+  CapabilityFetchCompletionCallback callback =
+      base::BindOnce(^(bool capability) {
+        bool isRestricted = !capability;
+        [weakSelf.consumer displayButtonsWithRestrictionStatus:isRestricted];
+      });
+  [_capabilitiesFetcher
+      fetchImmediatelyAvailableRestrictionCapabilityWithCallback:std::move(
+                                                                     callback)];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver

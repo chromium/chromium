@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
-#import "ios/chrome/browser/ui/authentication/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_mediator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
@@ -179,7 +178,6 @@
                       showUserEmail:_showUserEmail];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
-  [_mediator.capabilitiesFetcher startFetchingRestrictionCapability];
 
   if (_firstRun) {
     _viewController.modalInPresentation = YES;
