@@ -79,13 +79,13 @@ drivefs::mojom::QueryParametersPtr CreateSharedWithMeQuery() {
 
 FileSuggestData CreateFileSuggestionWithJustification(
     const base::FilePath& path,
-    app_list::JustificationType justification_type,
+    FileSuggestionJustificationType justification_type,
     const base::Time& timestamp,
     const drivefs::mojom::UserInfo* user_info) {
   // Use secondary timestamp for files suggested because they were shared with
   // the user, so they are ordered after suggestions for viewed/modified files.
   const bool shared_with_me_suggestion =
-      justification_type == app_list::JustificationType::kShared;
+      justification_type == FileSuggestionJustificationType::kShared;
   std::optional<base::Time> primary_timestamp;
   std::optional<base::Time> secondary_timestamp;
   if (shared_with_me_suggestion) {
@@ -95,7 +95,7 @@ FileSuggestData CreateFileSuggestionWithJustification(
   }
 
   return FileSuggestData(
-      FileSuggestionType::kDriveFile, path,
+      FileSuggestionType::kDriveFile, path, justification_type,
       app_list::GetJustificationString(
           justification_type, timestamp,
           user_info ? user_info->display_name : std::string()),
@@ -119,7 +119,7 @@ std::optional<FileSuggestData> CreateFileSuggestion(
     }
 
     return CreateFileSuggestionWithJustification(
-        path, app_list::JustificationType::kShared, *shared_time,
+        path, FileSuggestionJustificationType::kShared, *shared_time,
         features::IsShowSharingUserInLauncherContinueSectionEnabled()
             ? file_metadata.sharing_user.get()
             : nullptr);
@@ -131,7 +131,7 @@ std::optional<FileSuggestData> CreateFileSuggestion(
       return std::nullopt;
     }
     return CreateFileSuggestionWithJustification(
-        path, app_list::JustificationType::kViewed, viewed_time,
+        path, FileSuggestionJustificationType::kViewed, viewed_time,
         /*user_info=*/nullptr);
   }
 
@@ -149,14 +149,14 @@ std::optional<FileSuggestData> CreateFileSuggestion(
       !file_metadata.modified_by_me_time->is_null() &&
       file_metadata.modified_by_me_time >= modified_time) {
     return CreateFileSuggestionWithJustification(
-        path, app_list::JustificationType::kModifiedByCurrentUser,
+        path, FileSuggestionJustificationType::kModifiedByCurrentUser,
         *file_metadata.modified_by_me_time, /*user_info=*/nullptr);
   }
 
   // Last modification was by either by another user, or the last modifying user
   // information is not available.
   return CreateFileSuggestionWithJustification(
-      path, app_list::JustificationType::kModified, modified_time,
+      path, FileSuggestionJustificationType::kModified, modified_time,
       file_metadata.last_modifying_user.get());
 }
 

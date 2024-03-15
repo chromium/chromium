@@ -214,21 +214,25 @@ void LocalFileSuggestionProvider::OnValidationComplete(
   for (auto& result : results.first) {
     if (result.info.last_accessed > result.info.last_modified) {
       std::optional<std::u16string> justification_string =
-          app_list::GetJustificationString(app_list::JustificationType::kViewed,
-                                           result.info.last_accessed,
-                                           /*user_name=*/"");
+          app_list::GetJustificationString(
+              FileSuggestionJustificationType::kViewed,
+              result.info.last_accessed,
+              /*user_name=*/"");
       final_results.emplace_back(
-          FileSuggestionType::kLocalFile, result.path, justification_string,
+          FileSuggestionType::kLocalFile, result.path,
+          FileSuggestionJustificationType::kViewed, justification_string,
           /*timestamp=*/result.info.last_accessed,
           /*secondary_timestamp=*/std::nullopt, result.score);
     } else {
       std::optional<std::u16string> justification_string =
           app_list::GetJustificationString(
-              app_list::JustificationType::kModifiedByCurrentUser,
+              FileSuggestionJustificationType::kModifiedByCurrentUser,
               result.info.last_modified,
               /*user_name=*/"");
       final_results.emplace_back(
-          FileSuggestionType::kLocalFile, result.path, justification_string,
+          FileSuggestionType::kLocalFile, result.path,
+          FileSuggestionJustificationType::kModifiedByCurrentUser,
+          justification_string,
           /*timestamp=*/result.info.last_modified,
           /*secondary_timestamp=*/std::nullopt, result.score);
     }

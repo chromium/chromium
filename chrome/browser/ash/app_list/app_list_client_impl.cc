@@ -270,7 +270,8 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
 
   app_list_notifier_->NotifyLaunched(
       result->display_type(),
-      ash::AppListNotifier::Result(result_id, result->metrics_type()));
+      ash::AppListNotifier::Result(result_id, result->metrics_type(),
+                                   result->continue_file_suggestion_type()));
 
   RecordSearchResultOpenTypeHistogram(
       launched_from, result->metrics_type(),
@@ -333,8 +334,9 @@ void AppListClientImpl::ActivateItem(int profile_id,
     auto* result = FindAppResultByAppId(search_controller_.get(), id);
     if (result) {
       app_list_notifier_->NotifyLaunched(
-          result->display_type(),
-          ash::AppListNotifier::Result(result->id(), result->metrics_type()));
+          result->display_type(), ash::AppListNotifier::Result(
+                                      result->id(), result->metrics_type(),
+                                      result->continue_file_suggestion_type()));
     }
   }
 

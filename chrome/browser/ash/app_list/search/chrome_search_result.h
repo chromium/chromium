@@ -97,6 +97,10 @@ class ChromeSearchResult {
     return metadata_->result_type;
   }
   MetricsType metrics_type() const { return metadata_->metrics_type; }
+  const std::optional<ash::ContinueFileSuggestionType>&
+  continue_file_suggestion_type() const {
+    return metadata_->continue_file_suggestion_type;
+  }
   const Actions& actions() const { return metadata_->actions; }
   double display_score() const { return metadata_->display_score; }
   bool is_recommendation() const { return metadata_->is_recommendation; }
@@ -139,6 +143,8 @@ class ChromeSearchResult {
   void SetDisplayType(DisplayType display_type);
   void SetResultType(ResultType result_type);
   void SetMetricsType(MetricsType metrics_type);
+  void SetContinueFileSuggestionType(
+      ash::ContinueFileSuggestionType continue_file_suggestion_type);
   void SetDisplayScore(double display_score);
   void SetActions(const Actions& actions);
   void SetIsRecommendation(bool is_recommendation);

@@ -823,6 +823,10 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // A search result type used for metrics.
   ash::SearchResultType metrics_type = ash::SEARCH_RESULT_TYPE_BOUNDARY;
 
+  // For file suggestions in continue section, the suggestion type - i.e. the
+  // reason the file was suggested to the user.
+  std::optional<ContinueFileSuggestionType> continue_file_suggestion_type;
+
   // Which UI container(s) the result should be displayed in.
   SearchResultDisplayType display_type = SearchResultDisplayType::kList;
 
