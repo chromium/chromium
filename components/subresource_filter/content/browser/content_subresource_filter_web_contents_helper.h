@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
-#include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 

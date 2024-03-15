@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 
 namespace subresource_filter {
 

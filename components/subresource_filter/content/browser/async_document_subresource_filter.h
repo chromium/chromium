@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"

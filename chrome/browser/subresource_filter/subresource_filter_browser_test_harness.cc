@@ -31,7 +31,7 @@
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
-#include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"

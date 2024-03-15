@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
+#include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 
 #include <memory>
 #include <vector>
@@ -11,10 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace subresource_filter {
@@ -116,6 +116,11 @@ class SubresourceFilterVerifiedRulesetDealerTest : public ::testing::Test {
     ruleset_dealer_ = std::make_unique<VerifiedRulesetDealer>();
   }
 
+  void TearDown() override {
+    // Ensure ruleset file deletion tasks have run.
+    task_environment_.RunUntilIdle();
+  }
+
   const TestRulesets& rulesets() const { return rulesets_; }
   VerifiedRulesetDealer* ruleset_dealer() { return ruleset_dealer_.get(); }
 
@@ -124,7 +129,7 @@ class SubresourceFilterVerifiedRulesetDealerTest : public ::testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestRulesets rulesets_;
   std::unique_ptr<VerifiedRulesetDealer> ruleset_dealer_;
 };
@@ -397,8 +402,9 @@ class TestVerifiedRulesetDealerClient {
 
     auto ruleset = dealer->GetRuleset();
     ruleset_is_created_ = !!ruleset;
-    if (ruleset_is_created_)
+    if (ruleset_is_created_) {
       contents_ = ReadRulesetContents(ruleset.get());
+    }
   }
 
   bool is_ruleset_file_available_ = false;
@@ -443,7 +449,7 @@ class SubresourceFilterVerifiedRulesetDealerHandleTest
  private:
   TestRulesets rulesets_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerHandleTest,
@@ -561,8 +567,9 @@ class TestVerifiedRulesetClient {
     ++invocation_counter_;
     ASSERT_TRUE(ruleset);
     has_ruleset_ = !!ruleset->Get();
-    if (has_ruleset_)
+    if (has_ruleset_) {
       contents_ = ReadRulesetContents(ruleset->Get());
+    }
   }
 
   bool has_ruleset_ = false;
@@ -615,7 +622,7 @@ class SubresourceFilterVerifiedRulesetHandleTest : public ::testing::Test {
   TestRulesets rulesets_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
-  content::BrowserTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(SubresourceFilterVerifiedRulesetHandleTest,

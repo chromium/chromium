@@ -48,8 +48,6 @@ static_library("browser") {
     "subresource_filter_safe_browsing_client_request.h",
     "unindexed_ruleset_stream_generator.cc",
     "unindexed_ruleset_stream_generator.h",
-    "verified_ruleset_dealer.cc",
-    "verified_ruleset_dealer.h",
   ]
   deps = [
     "//base",
@@ -171,7 +169,6 @@ source_set("unit_tests") {
     "subresource_filter_content_settings_manager_unittest.cc",
     "subresource_filter_safe_browsing_activation_throttle_unittest.cc",
     "subresource_filter_unittest.cc",
-    "verified_ruleset_dealer_unittest.cc",
   ]
   deps = [
     ":browser",
