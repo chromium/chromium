@@ -145,6 +145,8 @@ void AutoPictureInPictureTabHelper::MediaSessionInfoChanged(
   is_playing_ =
       session_info && session_info->playback_state ==
                           media_session::mojom::MediaPlaybackState::kPlaying;
+  has_sufficiently_visible_video_ =
+      session_info && session_info->meets_visibility_threshold;
 }
 
 void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
@@ -189,7 +191,7 @@ void AutoPictureInPictureTabHelper::MaybeStartOrStopObservingTabStrip() {
 
 bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
   // The tab must either have playback or be using camera/microphone to autopip.
-  if (!HasSufficientPlayback() && !IsUsingCameraOrMicrophone()) {
+  if (!MeetsVideoPlaybackConditions() && !IsUsingCameraOrMicrophone()) {
     return false;
   }
 
@@ -222,15 +224,15 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
   return true;
 }
 
-bool AutoPictureInPictureTabHelper::HasSufficientPlayback() const {
+bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
   if (!base::FeatureList::IsEnabled(
           media::kAutoPictureInPictureForVideoPlayback)) {
     return false;
   }
 
-  // TODO(https://crbug.com/1464351): Make sure that there is a video that is
-  // large enough and visible.
-  return has_audio_focus_ && is_playing_;
+  // TODO(crbug.com/328637466): Make sure that there is a video that is
+  // currently audible.
+  return has_audio_focus_ && is_playing_ && has_sufficiently_visible_video_;
 }
 
 bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {

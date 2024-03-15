@@ -145,8 +145,9 @@ class AutoPictureInPictureTabHelper
 
   bool IsEligibleForAutoPictureInPicture() const;
 
-  // Returns true if the tab is currently playing unmuted playback.
-  bool HasSufficientPlayback() const;
+  // Returns true if the tab is currently playing unmuted playback, and
+  // MediaSession reports true for |meets_visibility_threshold|.
+  bool MeetsVideoPlaybackConditions() const;
 
   // Returns true if the tab is currently using the camera or microphone.
   bool IsUsingCameraOrMicrophone() const;
@@ -203,6 +204,11 @@ class AutoPictureInPictureTabHelper
   // last navigation. Remains true even if the page unregisters for auto
   // picture-in-picture. It only resets on navigation.
   bool has_ever_registered_for_auto_picture_in_picture_ = false;
+
+  // True if the media session, associated with the observed WebContents, meets
+  // the video visibility threshold defined by |HTMLVideoElement|
+  // (kVisibilityThreshold) and tracked y the |MediaVideoVisibilityTracker|.
+  bool has_sufficiently_visible_video_ = false;
 
   // Connections with the media session service to listen for audio focus
   // updates and control media sessions.
