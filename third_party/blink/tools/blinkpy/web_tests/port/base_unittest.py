@@ -142,6 +142,64 @@ class PortTest(LoggingTestCase):
             port.output_filename(test_file, '-actual', '.png'),
             'fast/test_include=HTML._-actual.png')
 
+    def test_test_from_output_filename_html(self):
+        port = self.make_port()
+        virtual_suite = {
+            'prefix': 'fake-vts',
+            'platforms': [],
+            'bases': ['fast'],
+            'args': ['--fake-flag'],
+        }
+        fs = port.host.filesystem
+        fs.write_text_file(MOCK_WEB_TESTS + 'fast/test.html', '')
+        fs.write_text_file(MOCK_WEB_TESTS + 'VirtualTestSuites',
+                           json.dumps([virtual_suite]))
+
+        self.assertEqual(
+            port.test_from_output_filename('fast/test-expected.txt'),
+            'fast/test.html')
+        self.assertEqual(
+            port.test_from_output_filename('fast/test-expected.png'),
+            'fast/test.html')
+        self.assertEqual(
+            port.test_from_output_filename(
+                'virtual/fake-vts/fast/test-expected.png'),
+            'virtual/fake-vts/fast/test.html')
+        self.assertIsNone(
+            port.test_from_output_filename('fast/does-not-exist-expected.txt'))
+
+    def test_test_from_output_filename_wpt_variants(self):
+        port = self.make_port()
+        port.set_option_default('manifest_update', False)
+        manifest = {
+            'items': {
+                'testharness': {
+                    'has-variants.html': [
+                        '0123abcd',
+                        ['has-variants.html?a', {}],
+                        ['has-variants.html?b', {}],
+                    ],
+                },
+            },
+        }
+        fs = port.host.filesystem
+        fs.write_text_file(MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json',
+                           json.dumps(manifest))
+        fs.write_text_file(MOCK_WEB_TESTS + 'VirtualTestSuites',
+                           json.dumps([]))
+
+        self.assertEqual(
+            port.test_from_output_filename(
+                'external/wpt/has-variants_a-expected.txt'),
+            'external/wpt/has-variants.html?a')
+        self.assertEqual(
+            port.test_from_output_filename(
+                'external/wpt/has-variants_b-expected.txt'),
+            'external/wpt/has-variants.html?b')
+        self.assertIsNone(
+            port.test_from_output_filename(
+                'external/wpt/has-variants-expected.txt'))
+
     def test_expected_baselines_basic(self):
         port = self.make_port(port_name='foo')
         port.FALLBACK_PATHS = {'': ['foo']}

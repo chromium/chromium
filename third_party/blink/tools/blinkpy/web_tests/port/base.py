@@ -773,6 +773,41 @@ class Port(object):
             test_name_root, _ = self._filesystem.splitext(test_name)
         return test_name_root + suffix + extension
 
+    @memoized
+    def test_from_output_filename(self, baseline_path: str) -> Optional[str]:
+        """Derive the test corresponding to a baseline.
+
+        Arguments:
+            baseline_path: Path to a generic baseline relative to `web_tests/`
+                (i.e., not platform- or flag-specific). The baseline does not
+                need to exist on the filesystem. A virtual baseline resolves
+                to the corresponding virtual test.
+
+        Returns:
+            The test name, if found, and `None` otherwise.
+        """
+        stem, extension = self._filesystem.splitext(baseline_path)
+        if stem.endswith(self.BASELINE_SUFFIX):
+            suffix = self.BASELINE_SUFFIX
+        elif stem.endswith(self.BASELINE_MISMATCH_SUFFIX):
+            suffix = self.BASELINE_MISMATCH_SUFFIX
+        else:
+            return None
+
+        # This is a fast path for the common case of `.html` test files.
+        maybe_test = stem[:-len(suffix)] + '.html'
+        if self.tests([maybe_test]) == [maybe_test]:
+            return maybe_test
+
+        test_dir = self._filesystem.dirname(stem)
+        # `tests()` can be arbitrarily slow, but there's no better way to do the
+        # inversion because `output_filename()` sanitizes the original test name
+        # lossily.
+        for test in self.tests([test_dir]):
+            if baseline_path == self.output_filename(test, suffix, extension):
+                return test
+        return None
+
     def expected_baselines(self,
                            test_name,
                            extension,
