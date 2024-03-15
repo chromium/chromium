@@ -473,6 +473,11 @@ TEST_P(GURLTypedTest, Resolve) {
         {"git://host/b/c", "a", "git://host/b/a"},
         {"git://host/b/c", "../a", "git://host/a"},
 
+        {"git://host", "git:opaque", "git:opaque"},
+        {"git://host/path#ref", "git:opaque", "git:opaque"},
+        {"git:/path", "git:opaque", "git:opaque"},
+        {"https://host/path", "git:opaque", "git:opaque"},
+
         {"git:/", "", "git:/"},
         {"git:/", ".", "git:/"},
         {"git:/", "..", "git:/"},

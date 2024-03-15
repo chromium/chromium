@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <http://example.com/foo/%2e%2> against <about:blank>
   assert_equals: href expected "http://example.com/foo/%2e%2" but got "http://example.com/foo/.%2"
 [FAIL] Parsing: <http://example.com/foo/%2e./%2e%2e/.%2e/%2e.bar> against <about:blank>
@@ -90,12 +90,6 @@ Found 49 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
   assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~"
-[FAIL] Parsing: <abc:rootless> against <abc://host/path>
-  assert_equals: href expected "abc:rootless" but got "abc://host/rootless"
-[FAIL] Parsing: <abc:rootless> against <abc:/path>
-  assert_equals: href expected "abc:rootless" but got "abc:/rootless"
-[FAIL] Parsing: <abc:/rooted> against <abc://host/path>
-  assert_equals: href expected "abc:/rooted" but got "abc://host/rooted"
 [FAIL] Parsing: <https://xn--/> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 Harness: the test ran to completion.

@@ -175,9 +175,19 @@ bool DoIsRelativeURL(const char* base,
     return true;
   }
 
-  // If the scheme is not the same, then we can't count it as relative.
-  if (!AreSchemesEqual(base, base_parsed.scheme, url, scheme))
+  // If base scheme is not standard, or the schemes are different, we can't
+  // count it as relative.
+  //
+  // URL Standard: https://url.spec.whatwg.org/#scheme-state
+  //
+  // scheme state:
+  // > 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is
+  // >      url’s scheme:
+  if ((IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+       !IsStandard(base, base_parsed.scheme)) ||
+      !AreSchemesEqual(base, base_parsed.scheme, url, scheme)) {
     return true;
+  }
 
   // When the scheme that they both share is not hierarchical, treat the
   // incoming scheme as absolute (this way with the base of "data:foo",
