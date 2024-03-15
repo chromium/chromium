@@ -3525,6 +3525,7 @@ static_library("browser") {
       "//components/embedder_support/android:web_contents_delegate",
       "//components/endpoint_fetcher:endpoint_fetcher",
       "//components/external_intents/android",
+      "//components/facilitated_payments/android",
       "//components/favicon/android",
       "//components/favicon/core:database",
       "//components/image_fetcher:android",
