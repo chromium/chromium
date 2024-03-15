@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="FaviconAvailabilityStatus">
   <int value="0" label="Favicon available locally"/>
-  <int value="1" label="Favicon available via sync"/>
+  <int value="1" label="(obsolete) Favicon available via sync"/>
   <int value="2" label="Favicon not available"/>
 </enum>
 
