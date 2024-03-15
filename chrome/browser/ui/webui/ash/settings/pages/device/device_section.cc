@@ -1808,6 +1808,7 @@ void DeviceSection::AddDeviceDisplayStrings(
       {"displayAmbientColorSubtitle",
        IDS_SETTINGS_DISPLAY_AMBIENT_COLOR_SUBTITLE},
       {"displayArrangementTitle", IDS_SETTINGS_DISPLAY_ARRANGEMENT_TITLE},
+      {"displayBrightnessLabel", IDS_SETTINGS_DISPLAY_BRIGHTNESS_LABEL},
       {"displayMirror", IDS_SETTINGS_DISPLAY_MIRROR},
       {"displayMirrorDisplayName", IDS_SETTINGS_DISPLAY_MIRROR_DISPLAY_NAME},
       {"displayNightLightLabel", IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_LABEL},
@@ -1941,6 +1942,9 @@ void DeviceSection::AddDeviceDisplayStrings(
 
   html_source->AddBoolean("isDisplayPerformanceSupported",
                           IsDisplayPerformanceSupported());
+
+  html_source->AddBoolean("enableDisplayBrightnessControlInSettings",
+                          features::IsBrightnessControlInSettingsEnabled());
 }
 
 }  // namespace ash::settings

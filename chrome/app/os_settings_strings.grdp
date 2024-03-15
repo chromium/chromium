@@ -5612,6 +5612,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_ARRANGEMENT_TITLE" desc="In Device Settings > Displays, the label for the display arrangement section.">
     Arrangement
   </message>
+  <message name="IDS_SETTINGS_DISPLAY_BRIGHTNESS_LABEL" desc="In Device Settings > Displays, the label for setting the screen brightness of the selected display." translateable="false">
+    Display brightness
+  </message>
   <message name="IDS_SETTINGS_DISPLAY_MIRROR" desc="In Device Settings > Displays, the label for the control for mirroring.">
     Mirror <ph name="DISPLAY_NAME">$1<ex>HP Z27n</ex></ph>
   </message>

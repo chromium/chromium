@@ -44,6 +44,11 @@
     margin-bottom: 20px;
   }
 
+  #brightnessSliderWrapper {
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+  }
 </style>
 
 <!-- Display Shiny Performance Mode Controller -->
@@ -166,6 +171,25 @@
         <option value="0">$i18n{displayScreenPrimary}</option>
         <option value="1">$i18n{displayScreenExtended}</option>
       </select>
+    </div>
+  </template>
+
+  <!-- Display brightness controls -->
+  <template is="dom-if" restamp
+      if="[[showBrightnessControls_(selectedDisplay)]]">
+    <div class="settings-box indented">
+      <div id="brightnessControlsTitle" class="start" aria-hidden="true">
+        $i18n{displayBrightnessLabel}
+      </div>
+      <!-- TODO(cambickel): Replace placeholder value with prefs + add an
+           onChange handler. -->
+      <div id="brightnessSliderWrapper">
+        <cr-slider min="5" max="100"
+            key-press-slider-increment="10"
+            value="50"
+            aria-labelledby="brightnessControlsTitle">
+        </cr-slider>
+      </div>
     </div>
   </template>
 

@@ -9,6 +9,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/ash/common/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
@@ -885,6 +886,15 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   private showOverscanSetting_(display: DisplayUnitInfo): boolean {
     return !display.isInternal;
+  }
+
+  /**
+   * Returns true if display brightness controls should be shown for |display|.
+   */
+  private showBrightnessControls_(display: DisplayUnitInfo): boolean {
+    return loadTimeData.getBoolean(
+               'enableDisplayBrightnessControlInSettings') &&
+        display.isInternal;
   }
 
   /**

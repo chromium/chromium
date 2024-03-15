@@ -888,4 +888,84 @@ suite('<settings-display>', () => {
     assertTrue(displaySettingsProvider.getShinyPerformance());
   });
 
+  test('Display brightness, flag disabled', async () => {
+    loadTimeData.overrideValues(
+        {enableDisplayBrightnessControlInSettings: false});
+    await initPage();
+
+    // Set up a single display.
+    addDisplay(1);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    assertEquals(1, displayPage.displays.length);
+
+    const displayBrightness =
+        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#brightnessSliderWrapper');
+    assertFalse(!!displayBrightness);
+  });
+
+  test('Display brightness, flag enabled on internal display', async () => {
+    loadTimeData.overrideValues(
+        {enableDisplayBrightnessControlInSettings: true});
+    await initPage();
+
+    // Set up the internal display.
+    addDisplay(1);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    assertEquals(1, displayPage.displays.length);
+    flush();
+
+    // Display brightness slider should be present on the internal display.
+    const displayBrightness =
+        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#brightnessSliderWrapper');
+    assertTrue(!!displayBrightness);
+  });
+
+  test('Display brightness, flag enabled on external display', async () => {
+    loadTimeData.overrideValues(
+        {enableDisplayBrightnessControlInSettings: true});
+    await initPage();
+
+    // Set up the internal display.
+    addDisplay(1);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    assertEquals(1, displayPage.displays.length);
+    flush();
+
+    // Set up an external display.
+    addDisplay(2);
+    fakeSystemDisplay.onDisplayChanged.callListeners();
+    await fakeSystemDisplay.getInfoCalled.promise;
+    await fakeSystemDisplay.getLayoutCalled.promise;
+    assertEquals(2, displayPage.displays.length);
+    flush();
+
+    // Select the second display.
+    const displayLayout =
+        displayPage.shadowRoot!.querySelector('#displayLayout');
+    assertTrue(!!displayLayout);
+    const displayDiv = strictQuery(
+        `#_${kDisplayIdPrefix}2`, displayLayout.shadowRoot, HTMLElement);
+    assertTrue(!!displayDiv);
+    displayDiv.click();
+
+    // Check that the second display is selected.
+    assertEquals(displayPage.displays[1]!.id, displayPage.selectedDisplay!.id);
+    flush();
+
+    const displayBrightness =
+        displayPage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#brightnessSliderWrapper');
+
+    // Display brightness slider should not be present on external displays.
+    assertFalse(!!displayBrightness);
+  });
+
 });
