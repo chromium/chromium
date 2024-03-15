@@ -12,6 +12,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "base/scoped_observation.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -38,6 +39,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/widget/widget.h"
 
 namespace arc::input_overlay {
 
@@ -59,7 +61,8 @@ constexpr int kHeaderLeftMarginSpacing = 6;
 // ----------------------------
 // | |Name tag|        |keys| |
 // ----------------------------
-class ButtonOptionsActionEdit : public ActionEditView {
+class ButtonOptionsActionEdit : public ActionEditView,
+                                public views::WidgetObserver {
   METADATA_HEADER(ButtonOptionsActionEdit, ActionEditView)
 
  public:
@@ -88,6 +91,22 @@ class ButtonOptionsActionEdit : public ActionEditView {
 
   // ActionEditView:
   void ClickCallback() override { labels_view_->FocusLabel(); }
+
+  // views::View:
+  void AddedToWidget() override { observation_.Observe(GetWidget()); }
+
+  void RemovedFromWidget() override { observation_.Reset(); }
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override {
+    if (active) {
+      DCHECK(!for_editing_list_);
+      labels_view_->FocusLabel();
+    }
+  }
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
 };
 
 BEGIN_METADATA(ButtonOptionsActionEdit)

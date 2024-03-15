@@ -272,7 +272,8 @@ TEST_F(EditModeDisplayOverlayControllerTest, TestFocusCycler) {
   auto* options_focus_manager = button_options_menu->GetFocusManager();
   EXPECT_FALSE(mapping_focus_manager->GetFocusedView());
   EXPECT_FALSE(list_focus_manager->GetFocusedView());
-  EXPECT_FALSE(options_focus_manager->GetFocusedView());
+  // The first edit label is auto focused when button options menu shows up.
+  EXPECT_TRUE(options_focus_manager->GetFocusedView());
 
   // Keep pressing key tap to the last element of the button options menu.
   PressTabKeyToFirstOrLastElement(button_options_menu, /*reverse=*/false);
