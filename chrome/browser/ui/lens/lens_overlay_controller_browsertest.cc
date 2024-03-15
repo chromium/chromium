@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This class runs functional tests for lens overlay. These tests spin up a full
+// web browser, but allow for inspection and modification of internal state of
+// LensOverlayController and other business-logic classes.
+
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"

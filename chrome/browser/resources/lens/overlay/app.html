@@ -36,7 +36,8 @@
 </style>
 <div class="app-container">
   <lens-selection-overlay></lens-selection-overlay>
-  <cr-button class="action-button close" on-click="onCloseButtonClick_">
+  <cr-button id="close-button" class="action-button close"
+      on-click="onCloseButtonClick_">
     $i18n{close}
   </cr-button>
   <cr-button class="action-button side-panel"

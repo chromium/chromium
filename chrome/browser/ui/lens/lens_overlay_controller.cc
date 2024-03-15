@@ -79,6 +79,8 @@ LensOverlayController::~LensOverlayController() {
   lens_overlay_query_controller_.reset();
 }
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
+
 void LensOverlayController::ShowUI() {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff) {
@@ -325,6 +327,7 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+  web_view->SetProperty(views::kElementIdentifierKey, kOverlayId);
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       web_view->GetWebContents(), SK_ColorTRANSPARENT);
 

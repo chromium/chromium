@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 class TabStripModel;
@@ -47,6 +48,8 @@ class LensOverlayController : public TabStripModelObserver,
  public:
   explicit LensOverlayController(tabs::TabModel* tab_model);
   ~LensOverlayController() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
 
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground.
