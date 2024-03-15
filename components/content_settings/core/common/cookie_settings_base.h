@@ -89,10 +89,9 @@ class CookieSettingsBase {
     // Allow by global 3p cookie setting setting (e.g. Enterprise Policy:
     // BlockThirdPartyCookies, UX).
     kAllowByGlobalSetting = 2,
-    // (DEPRECATED) Allow by 3PCD metadata grants content settings. This was
-    // replaced by the `kAllowBy3PCDMetadata.+` enums below.
+    // (DEPRECATED) Allow by 3PCD metadata grants content settings.
     // kAllowBy3PCDMetadata = 3,
-    // Allow by third-party cookies deprecation trial.
+    // Allow by third-party deprecation trial.
     kAllowBy3PCD = 4,
     kAllowBy3PCDHeuristics = 5,
     kAllowByStorageAccess = 6,
@@ -101,8 +100,7 @@ class CookieSettingsBase {
     // Allow by 1P (AKA First Party, Top-level) DT (Deprecation Trial) token
     // being deployed.
     kAllowByTopLevel3PCD = 9,
-    // Allow by Enterprise Policy (SettingSource::SETTING_SOURCE_POLICY):
-    // CookiesAllowedForUrls.
+    // Allow by Enterprise Policy: CookiesAllowedForUrls.
     kAllowByEnterprisePolicyCookieAllowedForUrls = 10,
     // Same as kAllowBy3PCDMetadata but for
     // mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED rules.

@@ -1644,8 +1644,8 @@ class RedirectHeuristicBrowserTest : public PlatformBrowserTest {
   }
 };
 
-// Tests the conditions for recording RedirectHeuristic_CookieAccess2 and
-// RedirectHeuristic_CookieAccessThirdParty2 UKM events.
+// Tests the conditions for recording RedirectHeuristic_CookieAccess and
+// RedirectHeuristic_CookieAccessThirdParty UKM events.
 IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
                        RecordsRedirectHeuristicCookieAccessEvent) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -1726,7 +1726,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
 
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
       ukm_first_party_entries =
-          ukm_recorder.GetEntries("RedirectHeuristic.CookieAccess2", {});
+          ukm_recorder.GetEntries("RedirectHeuristic.CookieAccess", {});
 
   // Expect one UKM entry.
 
@@ -1745,7 +1745,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   // Expect one corresponding UKM entry for CookieAccessThirdParty.
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
       ukm_third_party_entries = ukm_recorder.GetEntries(
-          "RedirectHeuristic.CookieAccessThirdParty2", {});
+          "RedirectHeuristic.CookieAccessThirdParty", {});
   ASSERT_EQ(1u, ukm_third_party_entries.size());
   EXPECT_THAT(
       ukm_recorder.GetSourceForSourceId(ukm_third_party_entries[0].source_id)
@@ -1753,7 +1753,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
       Eq(tracker_url_pre_target_redirect));
 }
 
-// Tests setting different metrics for the RedirectHeuristic_CookieAccess2 UKM
+// Tests setting different metrics for the RedirectHeuristic_CookieAccess UKM
 // event.
 // TODO(https://crbug.com/1489241): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
@@ -1848,7 +1848,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
 
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
       ukm_recorder.GetEntries(
-          "RedirectHeuristic.CookieAccess2",
+          "RedirectHeuristic.CookieAccess",
           {"AccessId", "AccessAllowed", "IsAdTagged",
            "HoursSinceLastInteraction", "MillisecondsSinceRedirect",
            "OpenerHasSameSiteIframe", "SitesPassedCount",
@@ -1905,7 +1905,7 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   // matching access IDs.
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
       ukm_third_party_entries = ukm_recorder.GetEntries(
-          "RedirectHeuristic.CookieAccessThirdParty2", {"AccessId"});
+          "RedirectHeuristic.CookieAccessThirdParty", {"AccessId"});
   ASSERT_EQ(2u, ukm_third_party_entries.size());
 
   EXPECT_THAT(
