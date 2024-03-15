@@ -19019,6 +19019,7 @@ from previous Chrome versions.
   <int value="-813474479" label="site-per-process"/>
   <int value="-813269144" label="SyncPseudoUSSPriorityPreferences:disabled"/>
   <int value="-812461825" label="AutofillCreditCardSigninPromo:enabled"/>
+  <int value="-812082844" label="UniversalInstallRootScopeNoManifest:disabled"/>
   <int value="-810684526"
       label="AutofillToolkitViewsCreditCardDialogsMac:disabled"/>
   <int value="-810110236" label="EditPasswordsInSettings:enabled"/>
@@ -23854,6 +23855,7 @@ from previous Chrome versions.
   <int value="1377199649" label="CrOSSuspendToDiskAllowS4:enabled"/>
   <int value="1377802847" label="ViewTransition:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
+  <int value="1378638083" label="UniversalInstallRootScopeNoManifest:enabled"/>
   <int value="1379182781" label="MessagesForAndroidNearOomReduction:disabled"/>
   <int value="1379287559" label="FilesArchivemount2:enabled"/>
   <int value="1379571437" label="ExoPointerLock:disabled"/>

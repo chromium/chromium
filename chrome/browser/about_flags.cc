@@ -9605,6 +9605,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPwaRestoreUiDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUi)},
 
+    {"pwa-universal-install-roots",
+     flag_descriptions::kPwaUniversalInstallRootsName,
+     flag_descriptions::kPwaUniversalInstallRootsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         webapps::features::kUniversalInstallRootScopeNoManifest)},
+
     {"pwa-universal-install-ui", flag_descriptions::kPwaUniversalInstallUiName,
      flag_descriptions::kPwaUniversalInstallUiDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPwaUniversalInstallUi)},

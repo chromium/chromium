@@ -2070,11 +2070,17 @@ const char kPwaRestoreUiName[] = "Enable the PWA Restore UI";
 const char kPwaRestoreUiDescription[] =
     "When enabled, the PWA Restore UI can be shown";
 
+const char kPwaUniversalInstallRootsName[] =
+    "Enable PWA Universal Install on root domains";
+const char kPwaUniversalInstallRootsDescription[] =
+    "Enables installing sites from root domains even though they don't meet "
+    "the installability criteria as PWAs";
+
 const char kPwaUniversalInstallUiName[] =
-    "Enable the PWA Universal Install feature";
+    "Enable the PWA Universal Install dialog";
 const char kPwaUniversalInstallUiDescription[] =
-    "When enabled, activates a unified path for Install PWA and Add to home "
-    "screen";
+    "When enabled, activates a disambiguation dialog offering Install PWA and "
+    "Add to Home screen";
 
 const char kRestoreSyncedPlaceholderTabsName[] =
     "Restore synced placeholder tabs";
