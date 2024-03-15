@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/app_list/search/files/zero_state_drive_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/utility/persistent_proto.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
@@ -107,6 +109,9 @@ std::unique_ptr<KeyedService> BuildTestFileSuggestKeyedService(
 class ZeroStateDriveProviderTest : public testing::Test {
  protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        ash::features::kLauncherContinueSectionWithRecentsRollout);
+
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
@@ -156,6 +161,8 @@ class ZeroStateDriveProviderTest : public testing::Test {
   raw_ptr<TestFileSuggestKeyedService> file_suggest_service_ = nullptr;
   // The mount point for drive files.
   std::unique_ptr<ScopedTestMountPoint> drive_fs_mount_point_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/1348339): Add a test for a file mount-triggered update at

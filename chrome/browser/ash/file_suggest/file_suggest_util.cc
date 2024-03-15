@@ -33,9 +33,16 @@ std::string GetPrefixFromSuggestionType(FileSuggestionType type) {
 }  // namespace
 
 base::TimeDelta GetMaxFileSuggestionRecency() {
+  if (base::FeatureList::IsEnabled(
+          features::kLauncherContinueSectionWithRecents)) {
+    return base::Days(base::GetFieldTrialParamByFeatureAsInt(
+        features::kLauncherContinueSectionWithRecents, "max_recency_in_days",
+        kDefaultMaxRecencyInDays));
+  }
+
   return base::Days(base::GetFieldTrialParamByFeatureAsInt(
-      ash::features::kLauncherContinueSectionWithRecents, "max_recency_in_days",
-      kDefaultMaxRecencyInDays));
+      features::kLauncherContinueSectionWithRecentsRollout,
+      "max_recency_in_days", kDefaultMaxRecencyInDays));
 }
 
 double ToTimestampBasedScore(const FileSuggestData& data,

@@ -113,7 +113,8 @@ class FileSuggestKeyedServiceBrowserTest
  public:
   FileSuggestKeyedServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatureState(
-        ash::features::kLauncherContinueSectionWithRecents, UseDriveRecents());
+        ash::features::kLauncherContinueSectionWithRecentsRollout,
+        UseDriveRecents());
   }
   // drive::DriveIntegrationServiceBrowserTestBase:
   void SetUpOnMainThread() override {

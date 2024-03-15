@@ -1795,6 +1795,14 @@ BASE_FEATURE(kLauncherContinueSectionWithRecents,
              "LauncherContinueSectionWithRecents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Same as `kLauncherContinueSectionWithRecents`, but used to enable the feature
+// via finch, while ensuring minimum Chrome version - i.e. to avoid finch config
+// from enabling the feature on versions where
+// LauncherContinueSectionWithRecents was first added.
+BASE_FEATURE(kLauncherContinueSectionWithRecentsRollout,
+             "LauncherContinueSectionWithRecentsRollout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval,
              "LauncherNudgeShortInterval",
@@ -3787,7 +3795,9 @@ bool IsLanguagePacksInOobeEnabled() {
 }
 
 bool IsLauncherContinueSectionWithRecentsEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents);
+  return base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents) ||
+         base::FeatureList::IsEnabled(
+             kLauncherContinueSectionWithRecentsRollout);
 }
 
 bool IsLauncherNudgeShortIntervalEnabled() {
@@ -4564,9 +4574,15 @@ bool IsUseAuthPanelInSettingsEnabled() {
 }
 
 bool UseMixedFileLauncherContinueSection() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      ash::features::kLauncherContinueSectionWithRecents, "mix_local_and_drive",
-      false);
+  return (base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents) &&
+          base::GetFieldTrialParamByFeatureAsBool(
+              features::kLauncherContinueSectionWithRecents,
+              "mix_local_and_drive", false)) ||
+         (base::FeatureList::IsEnabled(
+              kLauncherContinueSectionWithRecentsRollout) &&
+          base::GetFieldTrialParamByFeatureAsBool(
+              features::kLauncherContinueSectionWithRecentsRollout,
+              "mix_local_and_drive", false));
 }
 
 }  // namespace ash::features

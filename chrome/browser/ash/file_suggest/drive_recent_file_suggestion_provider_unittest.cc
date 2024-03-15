@@ -158,7 +158,7 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
  public:
   DriveRecentFileSuggestionProviderTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLauncherContinueSectionWithRecents},
+        {ash::features::kLauncherContinueSectionWithRecentsRollout},
         {ash::features::kShowSharingUserInLauncherContinueSection});
   }
   DriveRecentFileSuggestionProviderTest(
@@ -277,7 +277,7 @@ class DriveRecentFileSuggestionProviderWithSharingUserTest
  public:
   DriveRecentFileSuggestionProviderWithSharingUserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLauncherContinueSectionWithRecents,
+        {ash::features::kLauncherContinueSectionWithRecentsRollout,
          ash::features::kShowSharingUserInLauncherContinueSection},
         {});
   }

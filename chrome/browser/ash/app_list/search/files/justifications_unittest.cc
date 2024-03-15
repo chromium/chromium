@@ -19,7 +19,7 @@ class JustificationsTest : public ::testing::Test {
  public:
   JustificationsTest() {
     scoped_features_.InitAndDisableFeature(
-        ash::features::kLauncherContinueSectionWithRecents);
+        ash::features::kLauncherContinueSectionWithRecentsRollout);
   }
 
  private:

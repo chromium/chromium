@@ -118,18 +118,12 @@ class LauncherContinueSectionTest
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   LauncherContinueSectionTest() {
-    if (MixLocalAndDriveFiles()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          {{ash::features::kLauncherContinueSectionWithRecents,
-            {{"mix_local_and_drive", "true"}}},
-           {ash::features::kShowSharingUserInLauncherContinueSection, {}}},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {ash::features::kLauncherContinueSectionWithRecents,
-           ash::features::kShowSharingUserInLauncherContinueSection},
-          {});
-    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ash::features::kLauncherContinueSectionWithRecentsRollout,
+          {{"mix_local_and_drive",
+            MixLocalAndDriveFiles() ? "true" : "false"}}},
+         {ash::features::kShowSharingUserInLauncherContinueSection, {}}},
+        {});
   }
   ~LauncherContinueSectionTest() override = default;
   LauncherContinueSectionTest(const LauncherContinueSectionTest&) = delete;

@@ -684,6 +684,9 @@ TEST_F(SearchControllerTest, ZeroStateResultsGetTimedOut) {
 }
 
 TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
+  if (ash::features::UseMixedFileLauncherContinueSection()) {
+    return;
+  }
   // Use the full ranking stack.
   search_controller_->set_ranker_manager_for_test(
       std::make_unique<RankerManager>(&profile_));
@@ -695,7 +698,7 @@ TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
 
   drive_provider->SetNextResults(MakeListResults(
       {"drive_a", "drive_b"}, {Category::kUnknown, Category::kUnknown},
-      {-1, -1}, {0.2, 0.1}));
+      {-1, -1}, {0.45, 0.1}));
   local_provider->SetNextResults(MakeListResults(
       {"local_a", "local_b"}, {Category::kUnknown, Category::kUnknown},
       {-1, -1}, {0.5, 0.4}));
@@ -706,6 +709,7 @@ TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
   search_controller_->StartZeroState(base::DoNothing(), base::Seconds(1));
 
   Wait();
+
   ExpectIdOrder({"drive_a", "drive_b", "local_a", "local_b"});
 }
 
