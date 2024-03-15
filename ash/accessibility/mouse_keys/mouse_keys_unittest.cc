@@ -22,7 +22,6 @@ namespace ash {
 
 // TODO(259372916): Add tests to verify interactions with other A11y features.
 // TODO(259372916): Add tests to toggle from Pref.
-// TODO(259372916): Add tests to check keyboard remapping.
 // TODO(259372916): Add tests for multiple screens.
 // TODO(259372916): Add tests different DPIs.
 // TODO(259372916): Add tests to verify cursor movement.
@@ -141,6 +140,39 @@ class MouseKeysTest : public AshTestBase {
     return event_capturer_.mouse_events();
   }
 
+  void ExpectMouseMovedInCircularPattern(
+      const std::vector<ui::MouseEvent>& mouse_events,
+      const gfx::Point& starting_position,
+      double delta) {
+    EXPECT_EQ(8u, mouse_events.size());
+    if (mouse_events.size() != 8u) {
+      return;
+    }
+
+    // There should be 8 mouse movements.
+    for (int i = 0; i < 8; ++i) {
+      EXPECT_EQ(ui::ET_MOUSE_MOVED, mouse_events[i].type());
+    }
+
+    // The pointer should move in a circular pattern.
+    auto position = starting_position + gfx::Vector2d(-delta, -delta);
+    EXPECT_EQ(mouse_events[0].location(), position);
+    position += gfx::Vector2d(0, -delta);
+    EXPECT_EQ(mouse_events[1].location(), position);
+    position += gfx::Vector2d(delta, -delta);
+    EXPECT_EQ(mouse_events[2].location(), position);
+    position += gfx::Vector2d(-delta, 0);
+    EXPECT_EQ(mouse_events[3].location(), position);
+    position += gfx::Vector2d(delta, 0);
+    EXPECT_EQ(mouse_events[4].location(), position);
+    position += gfx::Vector2d(-delta, delta);
+    EXPECT_EQ(mouse_events[5].location(), position);
+    position += gfx::Vector2d(0, delta);
+    EXPECT_EQ(mouse_events[6].location(), position);
+    position += gfx::Vector2d(delta, delta);
+    EXPECT_EQ(mouse_events[7].location(), position);
+  }
+
   MouseKeysController* GetMouseKeysController() {
     return Shell::Get()->mouse_keys_controller();
   }
@@ -149,6 +181,53 @@ class MouseKeysTest : public AshTestBase {
 
   void PressAndReleaseKey(ui::KeyboardCode key_code) {
     GetEventGenerator()->PressAndReleaseKey(key_code);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  ui::KeyEvent ColemakKeyEvent(ui::EventType type, ui::KeyboardCode key_code) {
+    switch (key_code) {
+      case ui::VKEY_7:
+        return ui::KeyEvent(type, key_code, ui::DomCode::DIGIT7, 0);
+      case ui::VKEY_8:
+        return ui::KeyEvent(type, key_code, ui::DomCode::DIGIT8, 0);
+      case ui::VKEY_9:
+        return ui::KeyEvent(type, key_code, ui::DomCode::DIGIT9, 0);
+      case ui::VKEY_L:
+        return ui::KeyEvent(type, key_code, ui::DomCode::US_U, 0);
+      case ui::VKEY_Y:
+        return ui::KeyEvent(type, key_code, ui::DomCode::US_O, 0);
+      case ui::VKEY_N:
+        return ui::KeyEvent(type, key_code, ui::DomCode::US_J, 0);
+      case ui::VKEY_E:
+        return ui::KeyEvent(type, key_code, ui::DomCode::US_K, 0);
+      case ui::VKEY_I:
+        return ui::KeyEvent(type, key_code, ui::DomCode::US_L, 0);
+      case ui::VKEY_U:
+        return ui::KeyEvent(type, key_code, ui::DomCode::US_I, 0);
+      case ui::VKEY_O:
+        return ui::KeyEvent(type, key_code, ui::DomCode::SEMICOLON, 0);
+      case ui::VKEY_J:
+        return ui::KeyEvent(type, key_code, ui::DomCode::US_Y, 0);
+      case ui::VKEY_K:
+        return ui::KeyEvent(type, key_code, ui::DomCode::US_N, 0);
+      default:
+        return ui::KeyEvent(type, ui::VKEY_UNKNOWN, 0, ui::EventTimeForNow());
+    }
+  }
+
+  void PressColemakKey(ui::KeyboardCode key_code) {
+    ui::KeyEvent key_event(ColemakKeyEvent(ui::ET_KEY_PRESSED, key_code));
+    GetEventGenerator()->Dispatch(&key_event);
+  }
+
+  void ReleaseColemakKey(ui::KeyboardCode key_code) {
+    ui::KeyEvent key_event(ColemakKeyEvent(ui::ET_KEY_RELEASED, key_code));
+    GetEventGenerator()->Dispatch(&key_event);
+  }
+
+  void PressAndReleaseColemakKey(ui::KeyboardCode key_code) {
+    PressColemakKey(key_code);
+    ReleaseColemakKey(key_code);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -284,33 +363,8 @@ TEST_F(MouseKeysTest, Move) {
   auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
 
-  ASSERT_EQ(8u, mouse_events.size());
-  for (int i = 0; i < 8; ++i) {
-    EXPECT_EQ(ui::ET_MOUSE_MOVED, mouse_events[i].type());
-  }
-
-  // The pointer should move in a circular pattern.
-  auto position =
-      kDefaultPosition + gfx::Vector2d(-MouseKeysController::kMoveDeltaDIP,
-                                       -MouseKeysController::kMoveDeltaDIP);
-  EXPECT_EQ(mouse_events[0].location(), position);
-  position += gfx::Vector2d(0, -MouseKeysController::kMoveDeltaDIP);
-  EXPECT_EQ(mouse_events[1].location(), position);
-  position += gfx::Vector2d(MouseKeysController::kMoveDeltaDIP,
-                            -MouseKeysController::kMoveDeltaDIP);
-  EXPECT_EQ(mouse_events[2].location(), position);
-  position += gfx::Vector2d(-MouseKeysController::kMoveDeltaDIP, 0);
-  EXPECT_EQ(mouse_events[3].location(), position);
-  position += gfx::Vector2d(MouseKeysController::kMoveDeltaDIP, 0);
-  EXPECT_EQ(mouse_events[4].location(), position);
-  position += gfx::Vector2d(-MouseKeysController::kMoveDeltaDIP,
-                            MouseKeysController::kMoveDeltaDIP);
-  EXPECT_EQ(mouse_events[5].location(), position);
-  position += gfx::Vector2d(0, MouseKeysController::kMoveDeltaDIP);
-  EXPECT_EQ(mouse_events[6].location(), position);
-  position += gfx::Vector2d(MouseKeysController::kMoveDeltaDIP,
-                            MouseKeysController::kMoveDeltaDIP);
-  EXPECT_EQ(mouse_events[7].location(), position);
+  ExpectMouseMovedInCircularPattern(mouse_events, kDefaultPosition,
+                                    MouseKeysController::kMoveDeltaDIP);
 
   // We should not get any more events.
   ClearEvents();
@@ -332,4 +386,49 @@ TEST_F(MouseKeysTest, Move) {
   EXPECT_EQ(16u, CheckForKeyEvents().size());
 }
 
+TEST_F(MouseKeysTest, KeyboardLayout) {
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+
+  // Enable Mouse Keys, and we should be able to move the mouse with 7, 8, 9, k,
+  // y, n, e, i.
+  ClearEvents();
+  GetMouseKeysController()->SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  PressAndReleaseColemakKey(ui::VKEY_7);
+  PressAndReleaseColemakKey(ui::VKEY_8);
+  PressAndReleaseColemakKey(ui::VKEY_9);
+  PressAndReleaseColemakKey(ui::VKEY_L);
+  PressAndReleaseColemakKey(ui::VKEY_Y);
+  PressAndReleaseColemakKey(ui::VKEY_N);
+  PressAndReleaseColemakKey(ui::VKEY_E);
+  PressAndReleaseColemakKey(ui::VKEY_I);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  ExpectMouseMovedInCircularPattern(mouse_events, kDefaultPosition,
+                                    MouseKeysController::kMoveDeltaDIP);
+
+  ClearEvents();
+  // Click
+  PressAndReleaseColemakKey(ui::VKEY_U);
+
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(2u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[1].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[1].flags());
+  EXPECT_EQ(mouse_events[1].location(), kDefaultPosition);
+
+  ClearEvents();
+  // Unmapped
+  PressAndReleaseColemakKey(ui::VKEY_O);
+  PressAndReleaseColemakKey(ui::VKEY_J);
+  PressAndReleaseColemakKey(ui::VKEY_K);
+  EXPECT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(6u, CheckForKeyEvents().size());
+}
 }  // namespace ash
