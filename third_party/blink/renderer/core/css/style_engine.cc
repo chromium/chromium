@@ -1876,8 +1876,7 @@ static bool FlagsCauseInvalidation(const MatchResult& result) {
   return result.HasFlag(MatchFlag::kAffectedByDrag) ||
          result.HasFlag(MatchFlag::kAffectedByFocusWithin) ||
          result.HasFlag(MatchFlag::kAffectedByHover) ||
-         result.HasFlag(MatchFlag::kAffectedByActive) ||
-         result.HasFlag(MatchFlag::kAffectedByActiveViewTransition);
+         result.HasFlag(MatchFlag::kAffectedByActive);
 }
 
 static bool AnyRuleCausesInvalidation(const MatchRequest& match_request,

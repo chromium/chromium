@@ -164,6 +164,9 @@ ViewTransition::ViewTransition(PassKey,
   CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled() || !types_);
   if (auto* originating_element = document_->documentElement()) {
     originating_element->ActiveViewTransitionStateChanged();
+    if (types_ && !types_->empty()) {
+      originating_element->ActiveViewTransitionTypeStateChanged();
+    }
   }
   ProcessCurrentState();
 }
@@ -306,6 +309,9 @@ bool ViewTransition::AdvanceTo(State state) {
   if (!was_initial && IsTerminalState(state_)) {
     if (auto* originating_element = document_->documentElement()) {
       originating_element->ActiveViewTransitionStateChanged();
+      if (types_ && !types_->empty()) {
+        originating_element->ActiveViewTransitionTypeStateChanged();
+      }
     }
   }
   // If we need to run in a lifecycle, but we're not in one, then make sure to
@@ -645,21 +651,21 @@ bool ViewTransition::MatchForOnlyChild(
   return style_tracker_->MatchForOnlyChild(pseudo_id, view_transition_name);
 }
 
-bool ViewTransition::MatchForActiveViewTransition(
+bool ViewTransition::MatchForActiveViewTransition() {
+  CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled());
+  return !IsTerminalState(state_);
+}
+
+bool ViewTransition::MatchForActiveViewTransitionType(
     const Vector<AtomicString>& pseudo_types) {
   CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled());
-
   if (IsTerminalState(state_)) {
     return false;
   }
 
-  // Empty pseudo types is :active-view-transition(*), which should match as
-  // long as there is a view transition.
-  if (pseudo_types.empty()) {
-    return true;
-  }
+  CHECK(!pseudo_types.empty());
 
-  // If types are not specified, then there is no match (other than above)
+  // If types are not specified, then there is no match.
   if (!types_ || types_->empty()) {
     return false;
   }

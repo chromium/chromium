@@ -387,14 +387,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     has_invalidation_flags_.ancestors_or_siblings_affected_by_hover_in_has =
         true;
   }
-  bool AncestorsOrSiblingsAffectedByActiveViewTransitionInHas() const {
-    return has_invalidation_flags_
-        .ancestors_or_siblings_affected_by_active_view_transition_in_has;
-  }
-  void SetAncestorsOrSiblingsAffectedByActiveViewTransitionInHas() {
-    has_invalidation_flags_
-        .ancestors_or_siblings_affected_by_active_view_transition_in_has = true;
-  }
   bool AncestorsOrSiblingsAffectedByActiveInHas() const {
     return has_invalidation_flags_
         .ancestors_or_siblings_affected_by_active_in_has;

@@ -111,9 +111,13 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool MatchForOnlyChild(PseudoId pseudo_id,
                          const AtomicString& view_transition_name) const;
 
-  // Returns true if the transition matches :active-view-transition with the
-  // given types.
-  bool MatchForActiveViewTransition(const Vector<AtomicString>& pseudo_types);
+  // Returns true if the transition matches :active-view-transition
+  bool MatchForActiveViewTransition();
+
+  // Returns true if the transition matches :active-view-transition-type with
+  // the given types.
+  bool MatchForActiveViewTransitionType(
+      const Vector<AtomicString>& pseudo_types);
 
   // ExecutionContextLifecycleObserver implementation.
   void ContextDestroyed() override;

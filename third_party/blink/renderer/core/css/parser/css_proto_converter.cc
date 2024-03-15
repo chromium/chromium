@@ -66,6 +66,7 @@ const std::string Converter::kPseudoLookupTable[] = {
     "-webkit-scrollbar-track-piece",
     "active",
     "active-view-transition",
+    "active-view-transition-type",
     "after",
     "autofill",
     "backdrop",

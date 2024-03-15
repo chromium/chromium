@@ -139,8 +139,10 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
       return kIdSpecificity;
     case kPseudoClass:
       switch (GetPseudoType()) {
-        case kPseudoActiveViewTransition:
-          return (IdentList().empty() ? 1 : 2) * kClassLikeSpecificity;
+        case kPseudoActiveViewTransitionType:
+          CHECK(!IdentList().empty());
+          // TODO(csswg-drafts:10071): Figure out the specificity.
+          return 2 * kClassLikeSpecificity;
         case kPseudoWhere:
           return 0;
         case kPseudoHost:
@@ -317,6 +319,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdViewTransitionNew;
     case kPseudoActive:
     case kPseudoActiveViewTransition:
+    case kPseudoActiveViewTransitionType:
     case kPseudoAny:
     case kPseudoAnyLink:
     case kPseudoAutofill:
@@ -490,6 +493,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-webkit-scrollbar-track", CSSSelector::kPseudoScrollbarTrack},
     {"-webkit-scrollbar-track-piece", CSSSelector::kPseudoScrollbarTrackPiece},
     {"active", CSSSelector::kPseudoActive},
+    {"active-view-transition", CSSSelector::kPseudoActiveViewTransition},
     {"after", CSSSelector::kPseudoAfter},
     {"any-link", CSSSelector::kPseudoAnyLink},
     {"autofill", CSSSelector::kPseudoAutofill},
@@ -571,7 +575,8 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
 
 const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"-webkit-any", CSSSelector::kPseudoAny},
-    {"active-view-transition", CSSSelector::kPseudoActiveViewTransition},
+    {"active-view-transition-type",
+     CSSSelector::kPseudoActiveViewTransitionType},
     {"cue", CSSSelector::kPseudoCue},
     {"dir", CSSSelector::kPseudoDir},
     {"has", CSSSelector::kPseudoHas},
@@ -791,6 +796,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     // For pseudo classes
     case kPseudoActive:
     case kPseudoActiveViewTransition:
+    case kPseudoActiveViewTransitionType:
     case kPseudoAny:
     case kPseudoAnyLink:
     case kPseudoAutofill:
@@ -1039,21 +1045,19 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       case kPseudoRelativeAnchor:
         NOTREACHED();
         return false;
-      case kPseudoActiveViewTransition:
-        if (IdentList().empty()) {
-          builder.Append("(*)");
-        } else {
-          String separator = "(";
-          for (AtomicString type : IdentList()) {
-            builder.Append(separator);
-            if (separator == "(") {
-              separator = ", ";
-            }
-            SerializeIdentifier(type, builder);
+      case kPseudoActiveViewTransitionType: {
+        CHECK(!IdentList().empty());
+        String separator = "(";
+        for (AtomicString type : IdentList()) {
+          builder.Append(separator);
+          if (separator == "(") {
+            separator = ", ";
           }
-          builder.Append(')');
+          SerializeIdentifier(type, builder);
         }
+        builder.Append(')');
         break;
+      }
       default:
         break;
     }

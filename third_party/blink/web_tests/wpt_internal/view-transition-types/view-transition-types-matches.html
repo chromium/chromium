@@ -8,20 +8,21 @@
 <script src="/common/reftest-wait.js"></script>
 <style>
 
-html:active-view-transition(*) #positive1 { background: green; }
-html:active-view-transition(foo) #positive2 { background: green; }
-html:active-view-transition(foo, bar) #positive3 { background: green; }
-html:active-view-transition(bar, baz, ba0) #positive4 { background: green; }
-html:has(:active-view-transition(bar)) #positive5 { background: green; }
+html:active-view-transition #positive1 { background: green; }
+html:active-view-transition-type(foo) #positive2 { background: green; }
+html:active-view-transition-type(foo, bar) #positive3 { background: green; }
+html:active-view-transition-type(bar, baz, ba0) #positive4 { background: green; }
+html:has(:active-view-transition-type(bar)) #positive5 { background: green; }
+html:active-view-transition:active-view-transition-type(foo) #positive6 { background: green; }
 
-html:active-view-transition(fooo) #negative1 { background: red; }
-html:active-view-transition(foo1, bar2) #negative2 { background: red; }
+html:active-view-transition-type(fooo) #negative1 { background: red; }
+html:active-view-transition-type(foo1, bar2) #negative2 { background: red; }
 /* invalid syntax */
-html:active-view-transition(foo, *) #negative3 { background: red; }
-html:active-view-transition(*, foo) #negative4 { background: red; }
-html:active-view-transition(foo,) #negative5 { background: red; }
-html:active-view-transition() #negative6 { background: red; }
-html:active-view-transition(,) #negative7 { background: red; }
+html:active-view-transition-type(*) #negative3 { background: red; }
+html:active-view-transition(foo) #negative4 { background: red; }
+html:active-view-transition-type(foo,) #negative5 { background: red; }
+html:active-view-transition-type() #negative6 { background: red; }
+html:active-view-transition-type(,) #negative7 { background: red; }
 
 .test {
   width: 100px;
@@ -32,6 +33,7 @@ html:active-view-transition(,) #negative7 { background: red; }
 #positive3 { view-transition-name: positive3; background: red }
 #positive4 { view-transition-name: positive4; background: red }
 #positive5 { view-transition-name: positive5; background: red }
+#positive6 { view-transition-name: positive6; background: red }
 #negative1 { view-transition-name: negative1; background: green }
 #negative2 { view-transition-name: negative2; background: green }
 #negative3 { view-transition-name: negative3; background: green }
@@ -66,7 +68,7 @@ html::view-transition-group(root) {
 
 html::view-transition { background: red; }
 /* also test this type of construct */
-html:active-view-transition(*)::view-transition { background: lightpink }
+html:active-view-transition::view-transition { background: lightpink }
 </style>
 
 <div id="container">
@@ -75,6 +77,7 @@ html:active-view-transition(*)::view-transition { background: lightpink }
   <div class="test" id="positive3"></div>
   <div class="test" id="positive4"></div>
   <div class="test" id="positive5"></div>
+  <div class="test" id="positive6"></div>
   <div class="test" id="negative1"></div>
   <div class="test" id="negative2"></div>
   <div class="test" id="negative3"></div>

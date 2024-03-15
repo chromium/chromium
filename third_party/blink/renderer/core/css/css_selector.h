@@ -220,6 +220,7 @@ class CORE_EXPORT CSSSelector {
   enum PseudoType {
     kPseudoActive,
     kPseudoActiveViewTransition,
+    kPseudoActiveViewTransitionType,
     kPseudoAfter,
     kPseudoAny,
     kPseudoAnyLink,
@@ -726,7 +727,7 @@ class CORE_EXPORT CSSSelector {
     Member<CSSSelectorList>
         selector_list_;  // Used :is, :not, :-webkit-any, etc.
     std::unique_ptr<Vector<AtomicString>>
-        ident_list_;  // Used for ::part(), :active-view-transition().
+        ident_list_;  // Used for ::part(), :active-view-transition-type().
 
     void Trace(Visitor* visitor) const;
   };

@@ -2011,20 +2011,25 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       DCHECK(context.relative_anchor_element);
       return context.relative_anchor_element == &element;
     case CSSSelector::kPseudoActiveViewTransition: {
-      // :active_view_transition is only valid on the html element.
+      // :active-view-transition is only valid on the html element.
       if (!IsA<HTMLElement>(element)) {
         return false;
       }
 
-      if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          element.SetAncestorsOrSiblingsAffectedByActiveViewTransitionInHas();
-        } else if (ImpactsNonSubject(context)) {
-          element.SetChildrenOrSiblingsAffectedByActiveViewTransition();
-        }
+      // The pseudo is only valid if there is a transition.
+      auto* transition =
+          ViewTransitionUtils::GetTransition(element.GetDocument());
+      if (!transition) {
+        return false;
       }
-      if (ImpactsSubject(context)) {
-        result.SetFlag(MatchFlag::kAffectedByActiveViewTransition);
+
+      // Ask the transition to match for active-view-transition.
+      return transition->MatchForActiveViewTransition();
+    }
+    case CSSSelector::kPseudoActiveViewTransitionType: {
+      // :active-view-transition-type is only valid on the html element.
+      if (!IsA<HTMLElement>(element)) {
+        return false;
       }
 
       // The pseudo is only valid if there is a transition.
@@ -2035,7 +2040,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
 
       // Ask the transition to match based on the argument list.
-      return transition->MatchForActiveViewTransition(selector.IdentList());
+      return transition->MatchForActiveViewTransitionType(selector.IdentList());
     }
     case CSSSelector::kPseudoUnparsed:
       // Only kept around for parsing; can never match anything

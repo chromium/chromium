@@ -1658,7 +1658,7 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       output_.push_back(std::move(selector));
       return true;
     }
-    case CSSSelector::kPseudoActiveViewTransition: {
+    case CSSSelector::kPseudoActiveViewTransitionType: {
       if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
         return false;
       }
@@ -1666,15 +1666,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       Vector<AtomicString> types;
       for (;;) {
         const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
-        // If the only ident is '*' then break out of the loop, and set empty
-        // ident list.
-        if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*') {
-          if (types.empty() && block.AtEnd()) {
-            break;
-          }
-          return false;
-        }
-
         if (ident.GetType() != kIdentToken) {
           return false;
         }
