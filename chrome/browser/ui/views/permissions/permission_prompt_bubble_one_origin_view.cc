@@ -306,6 +306,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
           /*cameras=*/requested_video_capture_device_ids,
           /*mics=*/requested_audio_capture_device_ids},
       *browser_->profile()->GetPrefs(),
+      /*allow_device_selection=*/true,
       media_preview_metrics::Context(
           media_preview_metrics::UiLocation::kPermissionPrompt));
 #endif

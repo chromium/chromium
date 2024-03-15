@@ -71,11 +71,12 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
   CHECK(scroll_contents);
 
   container_ = scroll_contents->AddChildView(std::make_unique<MediaView>());
-  container_->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          views::DISTANCE_RELATED_CONTROL_VERTICAL),
-                      0));
+  auto distance_related_control =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  container_->SetBetweenChildSpacing(distance_related_control);
+  container_->SetProperty(views::kMarginsKey,
+                          gfx::Insets::VH(distance_related_control, 0));
 
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
   UpdateMediaCoordinatorList();
@@ -178,11 +179,13 @@ void ActiveDevicesMediaCoordinator::AddMediaCoordinatorForDevice(
   auto coordinator_key = active_device_id.value_or(kMutableCoordinatorId);
   auto* prefs = user_prefs::UserPrefs::Get(web_contents_->GetBrowserContext());
   media_coordinators_.emplace(
-      coordinator_key, std::make_unique<MediaCoordinator>(
-                           view_type_, *container_,
-                           /*is_subsection=*/true, eligible_devices, *prefs,
-                           media_preview_metrics::Context(
-                               media_preview_metrics::UiLocation::kPageInfo)));
+      coordinator_key,
+      std::make_unique<MediaCoordinator>(
+          view_type_, *container_,
+          /*is_subsection=*/true, eligible_devices, *prefs,
+          /*allow_device_selection=*/!active_device_id.has_value(),
+          media_preview_metrics::Context(
+              media_preview_metrics::UiLocation::kPageInfo)));
   separators_.emplace(coordinator_key,
                       container_->AddChildView(CreateSeparator()));
 }

@@ -32,11 +32,14 @@ std::u16string GetDeviceName(size_t index) {
 
 }  // namespace
 
-class MediaViewControllerBaseTest : public TestWithBrowserView,
-                                    public ui::ComboboxModelObserver {
+class MediaViewControllerBaseTestParameterized
+    : public TestWithBrowserView,
+      public ui::ComboboxModelObserver,
+      public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
     TestWithBrowserView::SetUp();
+    allow_device_selection_ = GetParam();
     media_view_ = std::make_unique<MediaView>();
     combobox_model_ = std::make_unique<ui::SimpleComboboxModel>(
         std::vector<ui::SimpleComboboxModel::Item>());
@@ -47,6 +50,7 @@ class MediaViewControllerBaseTest : public TestWithBrowserView,
         /*combobox_accessible_name=*/kComboboxAccessibleName,
         /*no_devices_found_combobox_text=*/kNoDeviceComboboxText,
         /*no_devices_found_label_text=*/kNoDeviceLabelText,
+        /*allow_device_selection=*/allow_device_selection_,
         media_preview_metrics::Context(
             media_preview_metrics::UiLocation::kPermissionPrompt));
     combobox_model_->AddObserver(this);
@@ -97,6 +101,7 @@ class MediaViewControllerBaseTest : public TestWithBrowserView,
     combobox_model_->UpdateItemList(std::move(items));
   }
 
+  bool allow_device_selection_ = false;
   size_t actual_device_count_ = 0;
   std::unique_ptr<MediaView> media_view_;
   std::unique_ptr<ui::SimpleComboboxModel> combobox_model_;
@@ -105,7 +110,12 @@ class MediaViewControllerBaseTest : public TestWithBrowserView,
   std::unique_ptr<MediaViewControllerBase> controller_;
 };
 
-TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_NoDevices) {
+INSTANTIATE_TEST_SUITE_P(MediaViewControllerBaseTest,
+                         MediaViewControllerBaseTestParameterized,
+                         testing::Bool());
+
+TEST_P(MediaViewControllerBaseTestParameterized,
+       OnDeviceListChanged_NoDevices) {
   EXPECT_TRUE(IsNoDeviceLabelVisible());
   EXPECT_EQ(GetNoDeviceLabel(), kNoDeviceLabelText);
   EXPECT_TRUE(IsDeviceNameLabelVisible());
@@ -122,7 +132,8 @@ TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_NoDevices) {
   EXPECT_FALSE(IsComboboxVisible());
 }
 
-TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_OneDevice) {
+TEST_P(MediaViewControllerBaseTestParameterized,
+       OnDeviceListChanged_OneDevice) {
   EXPECT_TRUE(IsNoDeviceLabelVisible());
   EXPECT_EQ(GetNoDeviceLabel(), kNoDeviceLabelText);
   EXPECT_TRUE(IsDeviceNameLabelVisible());
@@ -133,12 +144,18 @@ TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_OneDevice) {
   UpdateComboboxModel(/*device_count=*/1);
 
   EXPECT_FALSE(IsNoDeviceLabelVisible());
-  EXPECT_TRUE(IsDeviceNameLabelVisible());
-  EXPECT_EQ(GetDeviceNameLabel(), GetDeviceName(1));
-  EXPECT_FALSE(IsComboboxVisible());
+  if (allow_device_selection_) {
+    EXPECT_FALSE(IsDeviceNameLabelVisible());
+    EXPECT_TRUE(IsComboboxVisible());
+  } else {
+    EXPECT_FALSE(IsComboboxVisible());
+    EXPECT_TRUE(IsDeviceNameLabelVisible());
+    EXPECT_EQ(GetDeviceNameLabel(), GetDeviceName(1));
+  }
 }
 
-TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_MultipleDevices) {
+TEST_P(MediaViewControllerBaseTestParameterized,
+       OnDeviceListChanged_MultipleDevices) {
   EXPECT_TRUE(IsNoDeviceLabelVisible());
   EXPECT_EQ(GetNoDeviceLabel(), kNoDeviceLabelText);
   EXPECT_TRUE(IsDeviceNameLabelVisible());
@@ -149,8 +166,14 @@ TEST_F(MediaViewControllerBaseTest, OnDeviceListChanged_MultipleDevices) {
   UpdateComboboxModel(/*device_count=*/2);
 
   EXPECT_FALSE(IsNoDeviceLabelVisible());
-  EXPECT_FALSE(IsDeviceNameLabelVisible());
-  // No need to check for `GetDeviceNameLabel()` since it is not visible.
-  EXPECT_TRUE(IsComboboxVisible());
-  EXPECT_EQ(GetComboboxAccessibleName(), kComboboxAccessibleName);
+  if (allow_device_selection_) {
+    EXPECT_FALSE(IsDeviceNameLabelVisible());
+    // No need to check for `GetDeviceNameLabel()` since it is not visible.
+    EXPECT_TRUE(IsComboboxVisible());
+    EXPECT_EQ(GetComboboxAccessibleName(), kComboboxAccessibleName);
+  } else {
+    EXPECT_FALSE(IsComboboxVisible());
+    EXPECT_TRUE(IsDeviceNameLabelVisible());
+    EXPECT_EQ(GetDeviceNameLabel(), GetDeviceName(1));
+  }
 }

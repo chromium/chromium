@@ -30,9 +30,13 @@ MediaCoordinator::MediaCoordinator(
     bool is_subsection,
     EligibleDevices eligible_devices,
     PrefService& prefs,
+    bool allow_device_selection,
     media_preview_metrics::Context metrics_context) {
   media_view_ =
       parent_view.AddChildView(std::make_unique<MediaView>(is_subsection));
+  media_view_->SetBetweenChildSpacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL));
 
   if (!is_subsection) {
     auto* provider = ChromeLayoutProvider::Get();
@@ -50,12 +54,13 @@ MediaCoordinator::MediaCoordinator(
   if (view_type != ViewType::kMicOnly) {
     camera_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
                                 eligible_devices.cameras, prefs,
-                                metrics_context);
+                                allow_device_selection, metrics_context);
   }
 
   if (view_type != ViewType::kCameraOnly) {
     mic_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
-                             eligible_devices.mics, prefs, metrics_context);
+                             eligible_devices.mics, prefs,
+                             allow_device_selection, metrics_context);
   }
 }
 

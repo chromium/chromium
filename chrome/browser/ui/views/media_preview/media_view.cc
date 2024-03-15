@@ -17,8 +17,6 @@ MediaView::MediaView(bool is_subsection) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
   SetInsideBorderInsets(insets);
-  SetBetweenChildSpacing(
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
 }
 
 void MediaView::RefreshSize() {

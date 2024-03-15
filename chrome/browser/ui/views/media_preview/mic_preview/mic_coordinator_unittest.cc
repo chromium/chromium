@@ -66,6 +66,7 @@ class MicCoordinatorTest : public TestWithBrowserView {
     coordinator_.emplace(
         *parent_view_,
         /*needs_borders=*/true, eligible_mic_ids, *profile()->GetPrefs(),
+        /*allow_device_selection=*/true,
         media_preview_metrics::Context(
             media_preview_metrics::UiLocation::kPermissionPrompt));
   }

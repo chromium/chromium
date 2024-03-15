@@ -41,6 +41,7 @@ class MediaViewControllerBase {
                           const std::u16string& combobox_accessible_name,
                           const std::u16string& no_devices_found_combobox_text,
                           const std::u16string& no_devices_found_label_text,
+                          bool allow_device_selection,
                           media_preview_metrics::Context metrics_context);
   MediaViewControllerBase(const MediaViewControllerBase&) = delete;
   MediaViewControllerBase& operator=(const MediaViewControllerBase&) = delete;
@@ -53,11 +54,11 @@ class MediaViewControllerBase {
   void OnDeviceListChanged(size_t device_count);
 
  private:
-  friend class MediaViewControllerBaseTest;
+  friend class MediaViewControllerBaseTestParameterized;
 
   void OnComboboxSelection();
 
-  void UpdateDeviceNameLabel(bool has_devices);
+  void UpdateDeviceNameLabel();
 
   const raw_ref<MediaView> base_view_;
   const raw_ref<MediaView> live_feed_container_;
@@ -66,6 +67,7 @@ class MediaViewControllerBase {
   const raw_ref<views::Combobox> device_selector_combobox_;
 
   const std::u16string no_devices_found_combobox_text_;
+  const bool allow_device_selection_;
 
   const SourceChangeCallback source_change_callback_;
 

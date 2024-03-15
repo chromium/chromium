@@ -22,6 +22,7 @@ MicCoordinator::MicCoordinator(views::View& parent_view,
                                bool needs_borders,
                                const std::vector<std::string>& eligible_mic_ids,
                                PrefService& prefs,
+                               bool allow_device_selection,
                                media_preview_metrics::Context metrics_context)
     : mic_mediator_(
           prefs,
@@ -30,6 +31,7 @@ MicCoordinator::MicCoordinator(views::View& parent_view,
       combobox_model_({}),
       eligible_mic_ids_(eligible_mic_ids),
       prefs_(&prefs),
+      allow_device_selection_(allow_device_selection),
       metrics_context_(metrics_context) {
   auto* mic_view = parent_view.AddChildView(std::make_unique<MediaView>());
   mic_view_tracker_.SetView(mic_view);
@@ -43,7 +45,7 @@ MicCoordinator::MicCoordinator(views::View& parent_view,
   // Safe to use base::Unretained() because `this` owns / outlives
   // `mic_view_controller_`.
   mic_view_controller_.emplace(
-      *mic_view, needs_borders, combobox_model_,
+      *mic_view, needs_borders, combobox_model_, allow_device_selection_,
       base::BindRepeating(&MicCoordinator::OnAudioSourceChanged,
                           base::Unretained(this)),
       metrics_context);

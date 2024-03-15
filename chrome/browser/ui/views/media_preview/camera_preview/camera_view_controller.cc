@@ -37,6 +37,7 @@ CameraViewController::CameraViewController(
     MediaView& base_view,
     bool needs_borders,
     ui::SimpleComboboxModel& combobox_model,
+    bool allow_device_selection,
     MediaViewControllerBase::SourceChangeCallback callback,
     media_preview_metrics::Context metrics_context)
     : combobox_model_(combobox_model) {
@@ -53,7 +54,7 @@ CameraViewController::CameraViewController(
   base_controller_ = std::make_unique<MediaViewControllerBase>(
       base_view, needs_borders, &combobox_model, std::move(callback),
       combobox_accessible_name, no_devices_found_combobox_text,
-      no_devices_found_label_text, metrics_context);
+      no_devices_found_label_text, allow_device_selection, metrics_context);
 }
 
 CameraViewController::~CameraViewController() = default;

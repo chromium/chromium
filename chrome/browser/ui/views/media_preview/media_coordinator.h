@@ -45,6 +45,7 @@ class MediaCoordinator {
                    bool is_subsection,
                    EligibleDevices eligible_devices,
                    PrefService& prefs,
+                   bool allow_device_selection,
                    media_preview_metrics::Context metrics_context);
   MediaCoordinator(const MediaCoordinator&) = delete;
   MediaCoordinator& operator=(const MediaCoordinator&) = delete;
@@ -53,7 +54,7 @@ class MediaCoordinator {
   void UpdateDevicePreferenceRanking();
 
  private:
-  raw_ptr<views::View> media_view_ = nullptr;
+  raw_ptr<MediaView> media_view_ = nullptr;
   std::optional<CameraCoordinator> camera_coordinator_;
   std::optional<MicCoordinator> mic_coordinator_;
 };

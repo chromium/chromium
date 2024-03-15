@@ -16,37 +16,11 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
-constexpr int kComboboxBorderThickness = 1;
 constexpr int kRoundedRadius = 12;
-
-void FormatDeviceNameLabel(const raw_ref<views::Label> device_name_label) {
-  auto* provider = ChromeLayoutProvider::Get();
-  const float label_radius = provider->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kComboboxRadius);
-  const int horizontal_padding = provider->GetDistanceMetric(
-      views::DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING);
-  const int vertical_padding =
-      provider->GetDistanceMetric(
-          DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING) /
-          2 -
-      kComboboxBorderThickness;
-  const auto background_color_id = features::IsChromeRefresh2023()
-                                       ? ui::kColorComboboxBackground
-                                       : ui::kColorTextfieldBackground;
-  const auto border_color_id = features::IsChromeRefresh2023()
-                                   ? ui::kColorComboboxContainerOutline
-                                   : ui::kColorFocusableBorderUnfocused;
-
-  device_name_label->SetBackground(views::CreateThemedRoundedRectBackground(
-      background_color_id, label_radius));
-  device_name_label->SetBorder(views::CreatePaddedBorder(
-      views::CreateThemedRoundedRectBorder(kComboboxBorderThickness,
-                                           label_radius, border_color_id),
-      gfx::Insets::VH(vertical_padding, horizontal_padding)));
-}
 
 }  // namespace
 
@@ -58,6 +32,7 @@ MediaViewControllerBase::MediaViewControllerBase(
     const std::u16string& combobox_accessible_name,
     const std::u16string& no_devices_found_combobox_text,
     const std::u16string& no_devices_found_label_text,
+    bool allow_device_selection,
     media_preview_metrics::Context metrics_context)
     : base_view_(base_view),
       live_feed_container_(raw_ref<MediaView>::from_ptr(
@@ -69,13 +44,12 @@ MediaViewControllerBase::MediaViewControllerBase(
       device_selector_combobox_(raw_ref<views::Combobox>::from_ptr(
           base_view_->AddChildView(std::make_unique<views::Combobox>(model)))),
       no_devices_found_combobox_text_(no_devices_found_combobox_text),
+      allow_device_selection_(allow_device_selection),
       source_change_callback_(std::move(source_change_callback)),
       metrics_context_(metrics_context) {
   CHECK(source_change_callback_);
 
   auto* provider = ChromeLayoutProvider::Get();
-  base_view_->SetBetweenChildSpacing(
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
   if (needs_borders) {
     const int kBorderThickness =
@@ -89,18 +63,25 @@ MediaViewControllerBase::MediaViewControllerBase(
 
   live_feed_container_->SetVisible(false);
 
+  // TODO(b/329725210): Make font match spec.
   no_devices_found_label_->SetText(no_devices_found_label_text);
   no_devices_found_label_->SetTextContext(
       views::style::CONTEXT_DIALOG_BODY_TEXT);
   no_devices_found_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
+  // TODO(b/329725210): Make font match spec.
   device_name_label_->SetText(no_devices_found_combobox_text_);
   device_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  FormatDeviceNameLabel(device_name_label_);
+  device_name_label_->SetProperty(
+      views::kMarginsKey, gfx::Insets().set_top(provider->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   device_selector_combobox_->SetAccessibleName(combobox_accessible_name);
   device_selector_combobox_->SetSizeToLargestLabel(false);
   device_selector_combobox_->SetVisible(false);
+  device_selector_combobox_->SetProperty(
+      views::kMarginsKey, gfx::Insets().set_top(provider->GetDistanceMetric(
+                              views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   // Unretained is safe, because `this` outlives `device_selector_combobox_`.
   device_selector_combobox_->SetCallback(base::BindRepeating(
@@ -113,18 +94,22 @@ MediaViewControllerBase::~MediaViewControllerBase() {
 
 void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
   bool has_devices = device_count > 0;
-  live_feed_container_->SetVisible(has_devices);
-  no_devices_found_label_->SetVisible(!has_devices);
-  UpdateDeviceNameLabel(has_devices);
-  // `device_name_label_` is shown instead of `device_selector_combobox_` when
-  // device count is less or equal to 1. We went with a label instead of a
-  // disabled combobox, for that case, because a disabled combobox is not
-  // accessible by screen reader on Windows.
-  device_name_label_->SetVisible(device_count <= 1);
-  device_selector_combobox_->SetVisible(device_count > 1);
-  if (has_devices) {
-    OnComboboxSelection();
+  if (!has_devices) {
+    live_feed_container_->SetVisible(false);
+    no_devices_found_label_->SetVisible(true);
+    device_name_label_->SetText(no_devices_found_combobox_text_);
+    device_name_label_->SetVisible(true);
+    device_selector_combobox_->SetVisible(false);
+    base_view_->RefreshSize();
+    return;
   }
+
+  live_feed_container_->SetVisible(true);
+  no_devices_found_label_->SetVisible(false);
+  UpdateDeviceNameLabel();
+  device_name_label_->SetVisible(!allow_device_selection_);
+  device_selector_combobox_->SetVisible(allow_device_selection_);
+  OnComboboxSelection();
   base_view_->RefreshSize();
 }
 
@@ -132,13 +117,9 @@ void MediaViewControllerBase::OnComboboxSelection() {
   source_change_callback_.Run(device_selector_combobox_->GetSelectedIndex());
 }
 
-void MediaViewControllerBase::UpdateDeviceNameLabel(bool has_devices) {
-  if (has_devices) {
-    auto index = device_selector_combobox_->GetSelectedIndex();
-    CHECK(index);
-    device_name_label_->SetText(
-        device_selector_combobox_->GetModel()->GetItemAt(index.value()));
-  } else {
-    device_name_label_->SetText(no_devices_found_combobox_text_);
-  }
+void MediaViewControllerBase::UpdateDeviceNameLabel() {
+  auto index = device_selector_combobox_->GetSelectedIndex();
+  CHECK(index);
+  device_name_label_->SetText(
+      device_selector_combobox_->GetModel()->GetItemAt(index.value()));
 }

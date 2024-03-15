@@ -19,6 +19,7 @@ CameraCoordinator::CameraCoordinator(
     bool needs_borders,
     const std::vector<std::string>& eligible_camera_ids,
     PrefService& prefs,
+    bool allow_device_selection,
     media_preview_metrics::Context metrics_context)
     : camera_mediator_(
           prefs,
@@ -27,6 +28,7 @@ CameraCoordinator::CameraCoordinator(
       combobox_model_({}),
       eligible_camera_ids_(eligible_camera_ids),
       prefs_(&prefs),
+      allow_device_selection_(allow_device_selection),
       metrics_context_(metrics_context) {
   auto* camera_view = parent_view.AddChildView(std::make_unique<MediaView>());
   camera_view_tracker_.SetView(camera_view);
@@ -40,7 +42,7 @@ CameraCoordinator::CameraCoordinator(
   // Safe to use base::Unretained() because `this` owns / outlives
   // `camera_view_controller_`.
   camera_view_controller_.emplace(
-      *camera_view, needs_borders, combobox_model_,
+      *camera_view, needs_borders, combobox_model_, allow_device_selection_,
       base::BindRepeating(&CameraCoordinator::OnVideoSourceChanged,
                           base::Unretained(this)),
       metrics_context);
