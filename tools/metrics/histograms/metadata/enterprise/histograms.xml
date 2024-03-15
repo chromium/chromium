@@ -3260,6 +3260,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SkyVault.LocalUserFilesCleanupCount" units="count"
+    expires_after="2025-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>ayaelattar@chromium.org</owner>
+  <summary>
+    The number of times cleanup of local files was initiated after user session
+    startup. Recorded at every time accumulating number of previous calls in
+    this session.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

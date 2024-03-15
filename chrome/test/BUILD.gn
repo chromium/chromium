@@ -4757,6 +4757,7 @@ if (!is_android) {
         "../browser/ash/policy/handlers/site_isolation_flag_handling_browsertest.cc",
         "../browser/ash/policy/handlers/variations_service_policy_browsertest.cc",
         "../browser/ash/policy/local_user_files/file_location_utils_browsertest.cc",
+        "../browser/ash/policy/local_user_files/local_files_cleanup_browsertest.cc",
         "../browser/ash/policy/local_user_files/observer_browsertest.cc",
         "../browser/ash/policy/local_user_files/policy_utils_browsertest.cc",
         "../browser/ash/policy/login/blocking_login_browsertest.cc",
