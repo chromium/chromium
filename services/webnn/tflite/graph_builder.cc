@@ -191,9 +191,8 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
 
 base::expected<::tflite::ActivationFunctionType, std::string>
 GetActivationTypeForClamp(const mojom::Clamp& clamp) {
-  const auto range_result = GetClampRange(clamp);
-  RETURN_IF_ERROR(range_result);
-  switch (range_result.value()) {
+  ASSIGN_OR_RETURN(ClampRange clamp_range, GetClampRange(clamp));
+  switch (clamp_range) {
     case ClampRange::kRelu:
       return ::tflite::ActivationFunctionType_RELU;
     case ClampRange::kRelu1:
@@ -207,10 +206,7 @@ base::expected<::tflite::ActivationFunctionType, std::string>
 GetActivationFunctionType(const mojom::Activation& activation) {
   switch (activation.which()) {
     case mojom::Activation::Tag::kClamp: {
-      const auto activation_result =
-          GetActivationTypeForClamp(*activation.get_clamp());
-      RETURN_IF_ERROR(activation_result);
-      return activation_result.value();
+      return GetActivationTypeForClamp(*activation.get_clamp());
     }
     case mojom::Activation::Tag::kRelu:
       return ::tflite::ActivationFunctionType_RELU;
@@ -283,10 +279,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperand(
   }
 
   // Create `Tensor` with operand shape, the index of buffer and the name.
-  const auto signed_operand_dimensions = ToSignedDimensions(operand.dimensions);
-  RETURN_IF_ERROR(signed_operand_dimensions);
+  ASSIGN_OR_RETURN(std::vector<int32_t> signed_operand_dimensions,
+                   ToSignedDimensions(operand.dimensions));
   const flatbuffers::Offset<flatbuffers::Vector<int32_t>> dimensions =
-      builder_.CreateVector<int32_t>(*std::move(signed_operand_dimensions));
+      builder_.CreateVector<int32_t>(std::move(signed_operand_dimensions));
   const auto operand_type = MojoOperandTypeToTFLite(operand.data_type);
   const StringOffset operand_name =
       operand.name.has_value() ? builder_.CreateString(*operand.name) : 0;
@@ -302,38 +298,28 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
   OperatorOffset operator_offset;
   switch (op.which()) {
     case mojom::Operation::Tag::kClamp: {
-      const auto clamp_result = SerializeClamp(*op.get_clamp());
-      RETURN_IF_ERROR(clamp_result);
-      operator_offset = clamp_result.value();
+      ASSIGN_OR_RETURN(operator_offset, SerializeClamp(*op.get_clamp()));
       break;
     }
     case mojom::Operation::Tag::kConv2d: {
-      const auto conv2d_result = SerializeConv2d(*op.get_conv2d());
-      RETURN_IF_ERROR(conv2d_result);
-      operator_offset = conv2d_result.value();
+      ASSIGN_OR_RETURN(operator_offset, SerializeConv2d(*op.get_conv2d()));
       break;
     }
     case mojom::Operation::Tag::kConcat:
       operator_offset = SerializeConcat(*op.get_concat());
       break;
     case mojom::Operation::Tag::kElementWiseBinary: {
-      const auto elementwise_result =
-          SerializeElementWiseBinary(*op.get_element_wise_binary());
-      RETURN_IF_ERROR(elementwise_result);
-      operator_offset = elementwise_result.value();
+      ASSIGN_OR_RETURN(operator_offset, SerializeElementWiseBinary(
+                                            *op.get_element_wise_binary()));
       break;
     }
     case mojom::Operation::Tag::kElementWiseUnary: {
-      const auto elementwise_result =
-          SerializeElementWiseUnary(*op.get_element_wise_unary());
-      RETURN_IF_ERROR(elementwise_result);
-      operator_offset = elementwise_result.value();
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeElementWiseUnary(*op.get_element_wise_unary()));
       break;
     }
     case mojom::Operation::Tag::kElu: {
-      const auto elu_result = SerializeElu(*op.get_elu());
-      RETURN_IF_ERROR(elu_result);
-      operator_offset = elu_result.value();
+      ASSIGN_OR_RETURN(operator_offset, SerializeElu(*op.get_elu()));
       break;
     }
     case mojom::Operation::Tag::kHardSwish:
@@ -343,24 +329,18 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       operator_offset = SerializeLeakyRelu(*op.get_leaky_relu());
       break;
     case mojom::Operation::Tag::kPad: {
-      const auto pad_result = SerializePad(*op.get_pad());
-      RETURN_IF_ERROR(pad_result);
-      operator_offset = pad_result.value();
+      ASSIGN_OR_RETURN(operator_offset, SerializePad(*op.get_pad()));
       break;
     }
     case mojom::Operation::Tag::kPool2d: {
-      const auto pool2d_result = SerializePool2d(*op.get_pool2d());
-      RETURN_IF_ERROR(pool2d_result);
-      operator_offset = pool2d_result.value();
+      ASSIGN_OR_RETURN(operator_offset, SerializePool2d(*op.get_pool2d()));
       break;
     }
     case mojom::Operation::Tag::kRelu:
       operator_offset = SerializeRelu(*op.get_relu());
       break;
     case mojom::Operation::Tag::kReshape: {
-      const auto reshape_result = SerializeReshape(*op.get_reshape());
-      RETURN_IF_ERROR(reshape_result);
-      operator_offset = reshape_result.value();
+      ASSIGN_OR_RETURN(operator_offset, SerializeReshape(*op.get_reshape()));
       break;
     }
     case mojom::Operation::Tag::kSigmoid:
@@ -668,11 +648,9 @@ int32_t GraphBuilder::InsertTransposeOperation(
 
 auto GraphBuilder::SerializeClamp(const mojom::Clamp& clamp)
     -> base::expected<OperatorOffset, std::string> {
-  const auto range_result = GetClampRange(clamp);
-  RETURN_IF_ERROR(range_result);
-
+  ASSIGN_OR_RETURN(ClampRange clamp_range, GetClampRange(clamp));
   ::tflite::BuiltinOperator code;
-  switch (range_result.value()) {
+  switch (clamp_range) {
     case ClampRange::kRelu:
       code = ::tflite::BuiltinOperator_RELU;
       break;
@@ -742,10 +720,7 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
   ::tflite::ActivationFunctionType activation =
       ::tflite::ActivationFunctionType_NONE;
   if (conv2d.activation) {
-    const auto activation_result =
-        GetActivationFunctionType(*conv2d.activation);
-    RETURN_IF_ERROR(activation_result);
-    activation = activation_result.value();
+    ASSIGN_OR_RETURN(activation, GetActivationFunctionType(*conv2d.activation));
   }
 
   // Get tflite padding mode with the size2d of input, filter, dilation.
@@ -759,18 +734,17 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
   CHECK_EQ(filter_shape.size(), 4u);
   const webnn::Size2d<uint32_t> filter_size2d = {.height = filter_shape[1],
                                                  .width = filter_shape[2]};
-  const auto padding_mode =
+  ASSIGN_OR_RETURN(
+      TfLitePadding padding_mode,
       GetTfLitePaddingMode(*conv2d.padding, input_size2d, filter_size2d,
-                           *conv2d.strides, *conv2d.dilations);
-  RETURN_IF_ERROR(padding_mode);
+                           *conv2d.strides, *conv2d.dilations));
   const int32_t input_index = operand_to_index_map_.at(conv2d.input_operand_id);
   // Insert a Pad operator before TfLite Conv2d if needed for explicit padding.
   std::optional<int32_t> explicit_pad_index;
-  if (padding_mode->paddings) {
-    const auto serialization_result = InsertPadOperation(
-        input_operand, input_index, padding_mode->paddings.value());
-    RETURN_IF_ERROR(serialization_result);
-    explicit_pad_index = serialization_result.value();
+  if (padding_mode.paddings) {
+    ASSIGN_OR_RETURN(explicit_pad_index,
+                     InsertPadOperation(input_operand, input_index,
+                                        padding_mode.paddings.value()));
   }
 
   ::tflite::BuiltinOperator operator_kind;
@@ -780,7 +754,7 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
     const uint32_t depth_multiplier = 1;
     operator_kind = ::tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
     builtin_options = ::tflite::CreateDepthwiseConv2DOptions(
-                          builder_, padding_mode->mode, conv2d.strides->width,
+                          builder_, padding_mode.mode, conv2d.strides->width,
                           conv2d.strides->height, depth_multiplier, activation,
                           conv2d.dilations->width, conv2d.dilations->height)
                           .Union();
@@ -788,7 +762,7 @@ auto GraphBuilder::SerializeConv2d(const mojom::Conv2d& conv2d)
   } else {
     operator_kind = ::tflite::BuiltinOperator_CONV_2D;
     builtin_options = ::tflite::CreateConv2DOptions(
-                          builder_, padding_mode->mode, conv2d.strides->width,
+                          builder_, padding_mode.mode, conv2d.strides->width,
                           conv2d.strides->height, activation,
                           conv2d.dilations->width, conv2d.dilations->height)
                           .Union();
@@ -1050,18 +1024,17 @@ auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
   webnn::Size2d<uint32_t> filter_size2d = {
       .height = pool2d.window_dimensions->height,
       .width = pool2d.window_dimensions->width};
-  const auto padding_mode =
+  ASSIGN_OR_RETURN(
+      TfLitePadding padding_mode,
       GetTfLitePaddingMode(*pool2d.padding, input_size2d, filter_size2d,
-                           *pool2d.strides, *pool2d.dilations);
-  RETURN_IF_ERROR(padding_mode);
+                           *pool2d.strides, *pool2d.dilations));
   // Insert a Pad operator before TfLite Pool2d if needed for explicit padding.
   std::optional<int32_t> explicit_pad_index;
   const int32_t input_index = operand_to_index_map_.at(pool2d.input_operand_id);
-  if (padding_mode->paddings) {
-    const auto serialization_result = InsertPadOperation(
-        input_operand, input_index, padding_mode->paddings.value());
-    RETURN_IF_ERROR(serialization_result);
-    explicit_pad_index = serialization_result.value();
+  if (padding_mode.paddings) {
+    ASSIGN_OR_RETURN(explicit_pad_index,
+                     InsertPadOperation(input_operand, input_index,
+                                        padding_mode.paddings.value()));
   }
 
   ::tflite::BuiltinOperator operator_code;
@@ -1077,7 +1050,7 @@ auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
   }
 
   const auto pool_2d_options = ::tflite::CreatePool2DOptions(
-      builder_, padding_mode->mode, pool2d.strides->width,
+      builder_, padding_mode.mode, pool2d.strides->width,
       pool2d.strides->height, filter_size2d.width, filter_size2d.height,
       ::tflite::ActivationFunctionType_NONE);
 
@@ -1106,13 +1079,13 @@ auto GraphBuilder::SerializeReshape(const mojom::Reshape& reshape)
   // Get the shape of the output tensor, such that this operator can reshape the
   // input to it.
   const mojom::Operand& output_operand = GetOperand(reshape.output_operand_id);
-  auto signed_output_dimensions = ToSignedDimensions(output_operand.dimensions);
-  RETURN_IF_ERROR(signed_output_dimensions);
+  ASSIGN_OR_RETURN(std::vector<int32_t> signed_output_dimensions,
+                   ToSignedDimensions(output_operand.dimensions));
 
   const auto reshape_options = ::tflite::CreateReshapeOptions(
       builder_,
       /*new_shape=*/builder_.CreateVector<int32_t>(
-          *std::move(signed_output_dimensions)));
+          std::move(signed_output_dimensions)));
 
   return SerializeUnaryOperation(
       ::tflite::BuiltinOperator_RESHAPE, reshape.input_operand_id,
