@@ -40,4 +40,10 @@ SystemDialogDelegateView* PineTestApi::GetOnboardingDialog() {
                            : nullptr;
 }
 
+PineScreenshotIconRowViewTestApi::PineScreenshotIconRowViewTestApi(
+    const PineScreenshotIconRowView* icon_row_view)
+    : icon_row_view_(icon_row_view) {}
+
+PineScreenshotIconRowViewTestApi::~PineScreenshotIconRowViewTestApi() = default;
+
 }  // namespace ash

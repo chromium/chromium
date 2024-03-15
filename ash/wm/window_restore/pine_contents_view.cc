@@ -10,7 +10,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "ash/wm/desks/desks_util.h"
@@ -20,9 +19,8 @@
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -66,77 +64,6 @@ constexpr int kLeftContentsChildSpacing = 20;
 constexpr int kSettingsIconSize = 24;
 constexpr int kContextMenuMaxWidth = 285;
 constexpr gfx::Insets kContextMenuLabelInsets = gfx::Insets::VH(0, 16);
-
-// TODO(minch): Update these values on filling icons to the icon row.
-constexpr int kIconRowWidth = 136;
-constexpr int kIconRowHeight = 40;
-constexpr int kIconRowRadius = 12;
-
-// The view holds a row of app icons resides at the bottom-left of the pine
-// screenshot preview.
-class PineIconRowView : public views::BoxLayoutView {
-  METADATA_HEADER(PineIconRowView, views::BoxLayoutView)
-
- public:
-  PineIconRowView() {
-    SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
-    SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-    SetPreferredSize(gfx::Size(kIconRowWidth, kIconRowHeight));
-
-    // TODO(minch): Add the icons to the content instead of an empty view.
-    AddChildView(views::Builder<views::View>()
-                     .SetBackground(views::CreateThemedSolidBackground(
-                         kColorAshShieldAndBaseOpaque))
-                     .SetPreferredSize(gfx::Size(kIconRowWidth, kIconRowHeight))
-                     .Build());
-  }
-
-  PineIconRowView(const PineIconRowView&) = delete;
-  PineIconRowView& operator=(const PineIconRowView&) = delete;
-  ~PineIconRowView() override = default;
-
- private:
-  // views::View:
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    const auto top_left = SkPoint::Make(0.f, 0.f);
-    const auto bottom_left = SkPoint::Make(0.f, kIconRowHeight);
-    const auto bottom_right = SkPoint::Make(kIconRowWidth, kIconRowHeight);
-
-    const int cutout_curve1_end_x = kIconRowRadius;
-    const int cutout_curve1_end_y = kIconRowRadius;
-
-    const int cutout_curve2_end_x = kIconRowWidth - kIconRowRadius;
-    const int cutout_curve2_end_y = 2 * kIconRowRadius;
-
-    auto clip_path =
-        SkPathBuilder()
-            // Start from the top-left point.
-            .moveTo(top_left)
-            // Draw the first concave arc at the top-left and a horizontal line
-            // connecting it to the top-right rounded corner.
-            .arcTo(SkPoint::Make(0, cutout_curve1_end_y),
-                   SkPoint::Make(cutout_curve1_end_x, cutout_curve1_end_y),
-                   kIconRowRadius)
-            // Draw the top-right rounded corner and a vertical line connecting
-            // it to the bottom-right concave arc.
-            .arcTo(SkPoint::Make(cutout_curve2_end_x, cutout_curve1_end_y),
-                   SkPoint::Make(cutout_curve2_end_x, cutout_curve2_end_y),
-                   kIconRowRadius)
-            // Draw the bottom-right concave arc and a horizontal line
-            // connecting it to the bottom-left rounded corner.
-            .arcTo(SkPoint::Make(cutout_curve2_end_x, kIconRowHeight),
-                   bottom_right, kIconRowRadius)
-            // Draw the bottom-left rounded corner and the vertical line
-            // connecting it to the top-left point.
-            .arcTo(bottom_left, top_left, kIconRowRadius)
-            .close()
-            .detach();
-    SetClipPath(clip_path);
-  }
-};
-
-BEGIN_METADATA(PineIconRowView)
-END_METADATA
 
 }  // namespace
 
@@ -222,9 +149,10 @@ PineContentsView::PineContentsView() {
       Shell::Get()->pine_controller()->pine_contents_data();
   CHECK(pine_contents_data);
   if (pine_contents_data->image.isNull()) {
-    container_view_ = AddChildView(std::make_unique<PineItemsContainerView>(
-        pine_contents_data->apps_infos));
-    container_view_->SetPreferredSize(kItemsContainerPreferredSize);
+    items_container_view_ =
+        AddChildView(std::make_unique<PineItemsContainerView>(
+            pine_contents_data->apps_infos));
+    items_container_view_->SetPreferredSize(kItemsContainerPreferredSize);
   } else {
     const gfx::ImageSkia& pine_image = pine_contents_data->image;
     const gfx::Size preview_size = pine_image.size();
@@ -246,7 +174,9 @@ PineContentsView::PineContentsView() {
 
     auto* icon_row_container =
         views::AsViewClass<views::BoxLayoutView>(icon_row_spacer->parent());
-    icon_row_container->AddChildView(std::make_unique<PineIconRowView>());
+    screenshot_icon_row_view_ = icon_row_container->AddChildView(
+        std::make_unique<PineScreenshotIconRowView>(
+            pine_contents_data->apps_infos));
     icon_row_container->SetFlexForView(icon_row_spacer, 1);
   }
 

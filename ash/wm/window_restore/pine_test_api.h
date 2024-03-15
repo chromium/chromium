@@ -9,6 +9,7 @@
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
+#include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "base/memory/raw_ptr.h"
 
 namespace ash {
@@ -29,11 +30,15 @@ class PineContentsViewTestApi {
   const PillButton* cancel_button() const {
     return pine_contents_view_->cancel_button_for_testing_;
   }
-  const PineItemsContainerView* container_view() const {
-    return pine_contents_view_->container_view_;
+  const PineItemsContainerView* items_container_view() const {
+    return pine_contents_view_->items_container_view_;
+  }
+  const PineScreenshotIconRowView* screenshot_icon_row_view() const {
+    return pine_contents_view_->screenshot_icon_row_view_;
   }
   const PineItemsOverflowView* overflow_view() const {
-    return pine_contents_view_->container_view_->overflow_view_for_testing_;
+    return pine_contents_view_->items_container_view_
+        ->overflow_view_for_testing_;
   }
 
  private:
@@ -86,6 +91,24 @@ class PineTestApi {
   ~PineTestApi();
 
   SystemDialogDelegateView* GetOnboardingDialog();
+};
+
+class PineScreenshotIconRowViewTestApi {
+ public:
+  explicit PineScreenshotIconRowViewTestApi(
+      const PineScreenshotIconRowView* icon_row_view);
+  PineScreenshotIconRowViewTestApi(const PineScreenshotIconRowViewTestApi&) =
+      delete;
+  PineScreenshotIconRowViewTestApi& operator=(
+      const PineScreenshotIconRowViewTestApi&) = delete;
+  ~PineScreenshotIconRowViewTestApi();
+
+  size_t image_views_count() const {
+    return icon_row_view_->image_view_map_.size();
+  }
+
+ private:
+  const raw_ptr<const PineScreenshotIconRowView> icon_row_view_;
 };
 
 }  // namespace ash

@@ -29,6 +29,7 @@
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
+#include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/pine_test_api.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/files/file_util.h"
@@ -69,16 +70,25 @@ class PineTest : public AshTestBase {
     const PineContentsView* contents_view =
         views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
     ASSERT_TRUE(contents_view);
-    ASSERT_TRUE(PineContentsViewTestApi(contents_view).container_view());
+    auto contents_view_test_api = PineContentsViewTestApi(contents_view);
+    ASSERT_TRUE(contents_view_test_api.items_container_view() ||
+                contents_view_test_api.screenshot_icon_row_view());
+  }
+
+  const PineContentsView* GetContentsView() const {
+    return views::AsViewClass<PineContentsView>(
+        OverviewGridTestApi(Shell::GetPrimaryRootWindow())
+            .pine_widget()
+            ->GetContentsView());
   }
 
   const PineItemsOverflowView* GetOverflowView() const {
-    return PineContentsViewTestApi(
-               views::AsViewClass<PineContentsView>(
-                   OverviewGridTestApi(Shell::GetPrimaryRootWindow())
-                       .pine_widget()
-                       ->GetContentsView()))
-        .overflow_view();
+    return PineContentsViewTestApi(GetContentsView()).overflow_view();
+  }
+
+  const PineScreenshotIconRowView* GetScreenshotIconRowView() const {
+    return PineContentsViewTestApi(GetContentsView())
+        .screenshot_icon_row_view();
   }
 
   // Used for testing overview. Returns a vector with `n` chrome browser app
@@ -90,6 +100,19 @@ class PineTest : public AshTestBase {
     }
 
     return data;
+  }
+
+  // TODO(minch): Make pine_contents_data->image can be altered, for example,
+  // some dummy image to make the test more unit-testy.
+  // Takes a screenshot of the entire display and save it to the given
+  // `file_path`, which is also set as the path to store the pine screenshot.
+  void TakeAndSavePineScreenshot(const base::FilePath& file_path) {
+    SetPineImagePathForTest(file_path);
+
+    TakePrimaryDisplayScreenshotAndSave(file_path);
+    int64_t file_size = 0;
+    ASSERT_TRUE(base::GetFileSize(file_path, &file_size));
+    EXPECT_GT(file_size, 0);
   }
 
   static base::Time FakeTimeNow() { return fake_time_; }
@@ -112,18 +135,12 @@ TEST_F(PineTest, StartOverviewPineSession) {
 }
 
 TEST_F(PineTest, NoOverflow) {
-  auto data = std::make_unique<PineContentsData>();
-  data->last_session_crashed = false;
-
   // Start a Pine session with restore data for one window.
   StartPineOverviewSession(MakeTestAppIds(1));
   EXPECT_FALSE(GetOverflowView());
 }
 
 TEST_F(PineTest, TwoWindowOverflow) {
-  auto data = std::make_unique<PineContentsData>();
-  data->last_session_crashed = false;
-
   // Start a Pine session with restore data for two overflow windows.
   StartPineOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 2));
 
@@ -139,9 +156,6 @@ TEST_F(PineTest, TwoWindowOverflow) {
 }
 
 TEST_F(PineTest, ThreeWindowOverflow) {
-  auto data = std::make_unique<PineContentsData>();
-  data->last_session_crashed = false;
-
   // Start a Pine session with restore data for three overflow windows.
   StartPineOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 3));
 
@@ -157,9 +171,6 @@ TEST_F(PineTest, ThreeWindowOverflow) {
 }
 
 TEST_F(PineTest, FourWindowOverflow) {
-  auto data = std::make_unique<PineContentsData>();
-  data->last_session_crashed = false;
-
   // Start a Pine session with restore data for four overflow windows.
   StartPineOverviewSession(MakeTestAppIds(pine::kOverflowMinThreshold + 4));
 
@@ -212,16 +223,7 @@ TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
   base::ScopedTempDir temp_dir;
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  const base::FilePath& file_path =
-      temp_dir.GetPath().AppendASCII("test_pine.png");
-  SetPineImagePathForTest(file_path);
-
-  // Take a screenshot of the display that in landscape orientation and save it
-  // to the pine image path.
-  TakePrimaryDisplayScreenshotAndSave(file_path);
-  int64_t file_size = 0;
-  ASSERT_TRUE(base::GetFileSize(file_path, &file_size));
-  EXPECT_GT(file_size, 0);
+  TakeAndSavePineScreenshot(temp_dir.GetPath().AppendASCII("test_pine.png"));
 
   // Rotate the display and trigger the accelerator to show the pine dialog.
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
@@ -238,6 +240,59 @@ TEST_F(PineTest, NoScreenshotWithDifferentDisplayOrientation) {
   // The image inside `PineContentsData` should be null when the landscape image
   // is going to be shown inside a display in the portrait orientation.
   EXPECT_TRUE(pine_contents_data->image.isNull());
+}
+
+TEST_F(PineTest, ScreenshotIconRowMaxElements) {
+  base::ScopedTempDir temp_dir;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  TakeAndSavePineScreenshot(temp_dir.GetPath().AppendASCII("test_pine.png"));
+
+  // Starts the session with the maximum number of elements that can be shown
+  // inside the icon row.
+  StartPineOverviewSession(MakeTestAppIds(pine::kScreenshotIconRowMaxElements));
+  const PineContentsData* pine_contents_data =
+      Shell::Get()->pine_controller()->pine_contents_data();
+  EXPECT_TRUE(pine_contents_data && !pine_contents_data->image.isNull());
+  const PineContentsView* contents_view = GetContentsView();
+  // Screenshot icon row should be shown instead of the list view when there is
+  // a screenshot.
+  EXPECT_FALSE(PineContentsViewTestApi(contents_view).items_container_view());
+  const PineScreenshotIconRowView* screenshot_icon_row_view =
+      GetScreenshotIconRowView();
+  EXPECT_TRUE(screenshot_icon_row_view);
+  // The icon row should show all the elements and all of them should be shown
+  // as icons.
+  EXPECT_EQ(5u, screenshot_icon_row_view->children().size());
+  EXPECT_EQ(5u, PineScreenshotIconRowViewTestApi(screenshot_icon_row_view)
+                    .image_views_count());
+}
+
+TEST_F(PineTest, ScreenshotIconRowExceedMaxElements) {
+  base::ScopedTempDir temp_dir;
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  TakeAndSavePineScreenshot(temp_dir.GetPath().AppendASCII("test_pine.png"));
+
+  // Starts the session with more elements that can be shown inside the icon
+  // row.
+  StartPineOverviewSession(
+      MakeTestAppIds(pine::kScreenshotIconRowMaxElements + 2));
+  const PineContentsData* pine_contents_data =
+      Shell::Get()->pine_controller()->pine_contents_data();
+  EXPECT_TRUE(pine_contents_data && !pine_contents_data->image.isNull());
+  const PineContentsView* contents_view = GetContentsView();
+  // Screenshot icon row should be shown instead of the list view when there is
+  // a screenshot.
+  EXPECT_FALSE(PineContentsViewTestApi(contents_view).items_container_view());
+  const PineScreenshotIconRowView* screenshot_icon_row_view =
+      GetScreenshotIconRowView();
+  EXPECT_TRUE(screenshot_icon_row_view);
+  // The icon row should still have at most 5 number of items, but only 4 of
+  // them should be icons. The last one should be a count label.
+  EXPECT_EQ(4u, PineScreenshotIconRowViewTestApi(screenshot_icon_row_view)
+                    .image_views_count());
+  EXPECT_EQ(5u, screenshot_icon_row_view->children().size());
 }
 
 // Tests that based on preferences (shown count, and last shown time), the nudge
@@ -378,6 +433,7 @@ TEST_F(PineTest, ClickRestoreToExit) {
   ASSERT_TRUE(overview_grid);
   EXPECT_FALSE(OverviewGridTestApi(overview_grid).pine_widget());
 }
+
 TEST_F(PineTest, PineItemView) {
   // Test when the tab count is within regular limits.
   auto item_view = std::make_unique<PineItemView>(

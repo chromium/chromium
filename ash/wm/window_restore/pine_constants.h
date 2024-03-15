@@ -20,6 +20,10 @@ inline constexpr int kMaxItems = 4;
 // items displayed alongside `PineItemsOverflowView`.
 inline constexpr int kOverflowMinThreshold = kMaxItems - 1;
 
+// The maximum number of elements that can be shown inside the screenshot icon
+// row.
+inline constexpr int kScreenshotIconRowMaxElements = 5;
+
 // The preferred size of the rounded background behind each window's icon.
 inline constexpr gfx::Size kItemIconBackgroundPreferredSize(40, 40);
 
