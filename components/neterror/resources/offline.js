@@ -1006,8 +1006,7 @@ Runner.prototype = {
               (e.target == this.touchController || e.target == this.canvas)));
 
         if (Runner.keycodes.JUMP[e.keyCode] ||
-            e.type === Runner.events.TOUCHSTART || isMobileMouseInput ||
-            (Runner.keycodes.DUCK[e.keyCode] && this.altGameModeActive)) {
+            e.type === Runner.events.TOUCHSTART || isMobileMouseInput) {
           e.preventDefault();
           // Starting the game for the first time.
           if (!this.playing) {
@@ -1035,10 +1034,7 @@ Runner.prototype = {
             }
             this.tRex.startJump(this.currentSpeed);
           }
-          // Ducking is disabled on alt game modes.
-        } else if (
-            !this.altGameModeActive && this.playing &&
-            Runner.keycodes.DUCK[e.keyCode]) {
+        } else if (this.playing && Runner.keycodes.DUCK[e.keyCode]) {
           e.preventDefault();
           if (this.tRex.jumping) {
             // Speed drop, activated only when jump key is not pressed.
@@ -1990,21 +1986,26 @@ GameOverPanel.prototype = {
       const altTextConfig =
           spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
 
-      if (this.flashCounter < GameOverPanel.FLASH_ITERATIONS &&
-          this.flashTimer > altTextConfig.FLASH_DURATION) {
-        this.flashTimer = 0;
-        this.originalText = !this.originalText;
+      if (altTextConfig.FLASHING) {
+        if (this.flashCounter < GameOverPanel.FLASH_ITERATIONS &&
+            this.flashTimer > altTextConfig.FLASH_DURATION) {
+          this.flashTimer = 0;
+          this.originalText = !this.originalText;
 
-        this.clearGameOverTextBounds();
-        if (this.originalText) {
-          this.drawGameOverText(GameOverPanel.dimensions, false);
-          this.flashCounter++;
-        } else {
-          this.drawGameOverText(altTextConfig, true);
+          this.clearGameOverTextBounds();
+          if (this.originalText) {
+            this.drawGameOverText(GameOverPanel.dimensions, false);
+            this.flashCounter++;
+          } else {
+            this.drawGameOverText(altTextConfig, true);
+          }
+        } else if (this.flashCounter >= GameOverPanel.FLASH_ITERATIONS) {
+          this.reset();
+          return;
         }
-      } else if (this.flashCounter >= GameOverPanel.FLASH_ITERATIONS) {
-        this.reset();
-        return;
+      } else {
+        this.clearGameOverTextBounds(altTextConfig);
+        this.drawGameOverText(altTextConfig, true);
       }
     }
 
@@ -2013,17 +2014,16 @@ GameOverPanel.prototype = {
 
   /**
    * Clear game over text.
+   * @param {Object} dimensions Game over text config.
    */
-  clearGameOverTextBounds() {
+  clearGameOverTextBounds(dimensions) {
     this.canvasCtx.save();
 
     this.canvasCtx.clearRect(
         Math.round(
-            this.canvasDimensions.WIDTH / 2 -
-            (GameOverPanel.dimensions.TEXT_WIDTH / 2)),
+            this.canvasDimensions.WIDTH / 2 - (dimensions.TEXT_WIDTH / 2)),
         Math.round((this.canvasDimensions.HEIGHT - 25) / 3),
-        GameOverPanel.dimensions.TEXT_WIDTH,
-        GameOverPanel.dimensions.TEXT_HEIGHT + 4);
+        dimensions.TEXT_WIDTH, dimensions.TEXT_HEIGHT + 4);
     this.canvasCtx.restore();
   },
 
@@ -2552,7 +2552,7 @@ Trex.prototype = {
     }
 
     Trex.animFrames.DUCKING.frames =
-        [spriteDefinition.RUNNING_1.x, spriteDefinition.RUNNING_2.x];
+        [spriteDefinition.DUCKING_1.x, spriteDefinition.DUCKING_2.x];
 
     // Update Trex config
     Trex.config.GRAVITY = spriteDefinition.GRAVITY || Trex.config.GRAVITY;
@@ -2561,6 +2561,7 @@ Trex.prototype = {
     Trex.config.MAX_JUMP_HEIGHT = spriteDefinition.MAX_JUMP_HEIGHT;
     Trex.config.MIN_JUMP_HEIGHT = spriteDefinition.MIN_JUMP_HEIGHT;
     Trex.config.WIDTH = spriteDefinition.RUNNING_1.w;
+    Trex.config.WIDTH_CRASHED = spriteDefinition.CRASHED.w;
     Trex.config.WIDTH_JUMP = spriteDefinition.JUMPING.w;
     Trex.config.INVERT_JUMP = spriteDefinition.INVERT_JUMP;
 
@@ -2648,12 +2649,10 @@ Trex.prototype = {
       this.timer = 0;
     }
 
-    if (!this.altGameModeEnabled) {
-      // Speed drop becomes duck if the down key is still being pressed.
-      if (this.speedDrop && this.yPos === this.groundYPos) {
-        this.speedDrop = false;
-        this.setDuck(true);
-      }
+    // Speed drop becomes duck if the down key is still being pressed.
+    if (this.speedDrop && this.yPos === this.groundYPos) {
+      this.speedDrop = false;
+      this.setDuck(true);
     }
   },
 
@@ -2670,13 +2669,20 @@ Trex.prototype = {
         this.config.WIDTH;
     let sourceHeight = this.config.HEIGHT;
     const outputHeight = sourceHeight;
+    const outputWidth =
+        this.altGameModeEnabled && this.status == Trex.status.CRASHED ?
+        this.config.WIDTH_CRASHED :
+        this.config.WIDTH;
 
     let jumpOffset = Runner.spriteDefinition.TREX.JUMPING.xOffset;
 
-    // Width of sprite changes on jump.
-    if (this.altGameModeEnabled && this.jumping &&
-        this.status !== Trex.status.CRASHED) {
-      sourceWidth = this.config.WIDTH_JUMP;
+    // Width of sprite can change on jump or crashed.
+    if (this.altGameModeEnabled) {
+      if (this.jumping && this.status !== Trex.status.CRASHED) {
+        sourceWidth = this.config.WIDTH_JUMP;
+      } else if (this.status == Trex.status.CRASHED) {
+        sourceWidth = this.config.WIDTH_CRASHED;
+      }
     }
 
     if (IS_HIDPI) {
@@ -2701,8 +2707,7 @@ Trex.prototype = {
     }
 
     // Ducking.
-    if (!this.altGameModeEnabled && this.ducking &&
-        this.status !== Trex.status.CRASHED) {
+    if (this.ducking && this.status !== Trex.status.CRASHED) {
       this.canvasCtx.drawImage(Runner.imageSprite, sourceX, sourceY,
           sourceWidth, sourceHeight,
           this.xPos, this.yPos,
@@ -2721,10 +2726,9 @@ Trex.prototype = {
         this.xPos++;
       }
       // Standing / running
-      this.canvasCtx.drawImage(Runner.imageSprite, sourceX, sourceY,
-          sourceWidth, sourceHeight,
-          this.xPos, this.yPos,
-          this.config.WIDTH, outputHeight);
+      this.canvasCtx.drawImage(
+          Runner.imageSprite, sourceX, sourceY, sourceWidth, sourceHeight,
+          this.xPos, this.yPos, outputWidth, outputHeight);
     }
     this.canvasCtx.globalAlpha = 1;
   },
