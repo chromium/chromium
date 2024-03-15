@@ -165,9 +165,13 @@ bool CookieJar::IPCNeeded() {
     return true;
   }
 
+  // No shared memory communication so IPC needed.
+  if (!shared_memory_version_client_.has_value()) {
+    return true;
+  }
+
   // Cookie string has changed.
-  if (shared_memory_version_client_.has_value() &&
-      shared_memory_version_client_->SharedVersionIsGreaterThan(
+  if (shared_memory_version_client_->SharedVersionIsGreaterThan(
           last_version_)) {
     return true;
   }
