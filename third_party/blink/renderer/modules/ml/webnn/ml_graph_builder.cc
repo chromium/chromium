@@ -755,8 +755,7 @@ MLOperand* MLGraphBuilder::input(String name,
   auto input_operand = MLOperand::ValidateAndCreateInput(
       this, desc->dataType().AsEnum(), desc->dimensions(), std::move(name));
   if (!input_operand.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      input_operand.error());
+    exception_state.ThrowTypeError(input_operand.error());
     return nullptr;
   }
   return input_operand.value();
@@ -768,8 +767,7 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
   auto constant_operand = MLOperand::ValidateAndCreateConstant(
       this, desc->dataType().AsEnum(), desc->dimensions(), buffer_view.Get());
   if (!constant_operand.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      constant_operand.error());
+    exception_state.ThrowTypeError(constant_operand.error());
     return nullptr;
   }
   return constant_operand.value();
