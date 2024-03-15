@@ -27,8 +27,8 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
 };
 
-// TODO(https://crbug.com/329708692): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(https://crbug.com/329708692): Flaky on Linux and Lacros.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CaptureScreenshot DISABLED_CaptureScreenshot
 #else
 #define MAYBE_CaptureScreenshot CaptureScreenshot
