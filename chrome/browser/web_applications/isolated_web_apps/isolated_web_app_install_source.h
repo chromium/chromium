@@ -20,7 +20,7 @@ namespace web_app {
 class IsolatedWebAppInstallSource {
  public:
   static IsolatedWebAppInstallSource FromGraphicalInstaller(
-      IwaSourceProdModeWithFileOp source);
+      IwaSourceBundleWithModeAndFileOp source);
 
   static IsolatedWebAppInstallSource FromExternalPolicy(
       IwaSourceProdModeWithFileOp source);

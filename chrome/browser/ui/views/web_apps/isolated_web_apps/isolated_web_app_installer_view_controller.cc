@@ -485,7 +485,8 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
       web_app_provider_->scheduler().InstallIsolatedWebApp(
           metadata.url_info(),
           IsolatedWebAppInstallSource::FromGraphicalInstaller(
-              model_->source().WithFileOp(IwaSourceBundleProdFileOp::kCopy)),
+              model_->source().WithFileOp(IwaSourceBundleProdFileOp::kCopy,
+                                          IwaSourceBundleDevFileOp::kCopy)),
           metadata.version(),
           /*optional_keep_alive=*/nullptr,
           /*optional_profile_keep_alive=*/nullptr,

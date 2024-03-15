@@ -26,7 +26,7 @@ IsolatedWebAppInstallerModel::ConfirmInstallationDialog::
     ~ConfirmInstallationDialog() = default;
 
 IsolatedWebAppInstallerModel::IsolatedWebAppInstallerModel(
-    const IwaSourceBundleProdMode& source)
+    const IwaSourceBundleWithMode& source)
     : source_(source), step_(Step::kNone) {}
 
 void IsolatedWebAppInstallerModel::AddObserver(Observer* observer) {

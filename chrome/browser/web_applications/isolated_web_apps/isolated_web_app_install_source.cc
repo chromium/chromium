@@ -17,9 +17,9 @@ namespace web_app {
 
 // static
 IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromGraphicalInstaller(
-    IwaSourceProdModeWithFileOp source) {
+    IwaSourceBundleWithModeAndFileOp source) {
   return IsolatedWebAppInstallSource(
-      IwaSourceWithModeAndFileOp{std::move(source)},
+      std::move(source),
       webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
 }
 

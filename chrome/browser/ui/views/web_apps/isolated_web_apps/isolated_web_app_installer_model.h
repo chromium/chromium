@@ -56,13 +56,13 @@ class IsolatedWebAppInstallerModel {
                                ConfirmInstallationDialog,
                                InstallationFailedDialog>;
 
-  explicit IsolatedWebAppInstallerModel(const IwaSourceBundleProdMode& source);
+  explicit IsolatedWebAppInstallerModel(const IwaSourceBundleWithMode& source);
   ~IsolatedWebAppInstallerModel();
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  const IwaSourceBundleProdMode& source() { return source_; }
+  const IwaSourceBundleWithMode& source() { return source_; }
 
   void SetStep(Step step);
   Step step() { return step_; }
@@ -77,7 +77,7 @@ class IsolatedWebAppInstallerModel {
 
  private:
   base::ObserverList<Observer> observers_;
-  IwaSourceBundleProdMode source_;
+  IwaSourceBundleWithMode source_;
   Step step_;
   std::optional<SignedWebBundleMetadata> bundle_metadata_;
   std::optional<Dialog> dialog_;
