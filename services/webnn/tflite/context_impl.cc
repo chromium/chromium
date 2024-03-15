@@ -5,6 +5,7 @@
 #include "services/webnn/tflite/context_impl.h"
 
 #include "services/webnn/tflite/graph_impl.h"
+#include "services/webnn/webnn_buffer_impl.h"
 
 namespace webnn::tflite {
 
