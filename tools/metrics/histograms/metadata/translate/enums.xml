@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Deprecated 07/2021. Reverted by user, manual translation"/>
   <int value="5" label="Reverted by user, automatic translation"/>
-  <int value="6" label="New translation requested by user"/>
+  <int value="6" label="Pending translation interrupted by new request"/>
   <int value="7" label="Abandoned"/>
   <int value="8"
       label="Deprecated 07/2021. Failed with no error, manual translation"/>
@@ -231,6 +231,7 @@ chromium-metrics-reviews@google.com.
       label="Manual translation Context Menu, after page was already
              translated"/>
   <int value="9" label="Automatic translation to a predefined target language"/>
+  <int value="10" label="Automatic translation by hrefTranslate"/>
 </enum>
 
 </enums>
