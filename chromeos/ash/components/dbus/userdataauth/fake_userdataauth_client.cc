@@ -1438,10 +1438,6 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
       session.requested_auth_session_intent);
   reply.mutable_auth_properties()->set_seconds_left(
       cryptohome::kAuthsessionInitialLifetime.InSeconds());
-  // TODO(b/301078137): Remove usage of these fields in favor of
-  // auth_properties.
-  reply.add_authorized_for(session.requested_auth_session_intent);
-  reply.set_seconds_left(cryptohome::kAuthsessionInitialLifetime.InSeconds());
 }
 
 void FakeUserDataAuthClient::UpdateAuthFactor(
@@ -1586,8 +1582,6 @@ void FakeUserDataAuthClient::GetAuthSessionStatus(
   reply.mutable_auth_properties()->add_authorized_for(
       auth_session->second.requested_auth_session_intent);
   reply.mutable_auth_properties()->set_seconds_left(time_left.InSeconds());
-  // TODO(b/301078137): Remove usage of these field in favor of auth_properties.
-  reply.set_time_left(time_left.InSeconds());
 }
 
 void FakeUserDataAuthClient::PrepareAuthFactor(
