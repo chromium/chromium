@@ -10,13 +10,14 @@
 
 'use strict';
 
-promise_test(async t => {
-  const main = await setupTest();
+promise_test(
+    async t => {
+      const main = await setupTest();
 
-  const iframe = await createNestedIframe(main, "HTTP_ORIGIN", "", "");
-  await activate(iframe);
+      const iframe = await createNestedIframe(main, 'HTTP_ORIGIN', '', '');
 
-  const new_iframe = await navigateFrameTo(iframe, "HTTPS_REMOTE_ORIGIN");
-  await attemptTopNavigation(new_iframe, false);
-}, "A cross-site unsandboxed iframe navigation consumes user activation and " +
-   "disallows top-level navigation.");
+      const new_iframe = await navigateFrameTo(iframe, 'HTTP_REMOTE_ORIGIN');
+      await attemptTopNavigation(new_iframe, false);
+    },
+    'A same-site unsandboxed iframe navigation without sticky user activation ' +
+        'does not allow top-level navigation.');

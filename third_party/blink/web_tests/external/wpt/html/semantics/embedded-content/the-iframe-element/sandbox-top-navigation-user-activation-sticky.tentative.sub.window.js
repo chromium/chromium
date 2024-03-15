@@ -12,11 +12,9 @@
 
 promise_test(async t => {
   const main = await setupTest();
+  const iframe_1 = await createNestedIframe(main,
+      "HTTP_ORIGIN", "allow-top-navigation-by-user-activation", "");
+  await activate(iframe_1);
 
-  const iframe = await createNestedIframe(main, "HTTP_ORIGIN", "", "");
-  await activate(iframe);
-
-  const new_iframe = await navigateFrameTo(iframe, "HTTPS_REMOTE_ORIGIN");
-  await attemptTopNavigation(new_iframe, false);
-}, "A cross-site unsandboxed iframe navigation consumes user activation and " +
-   "disallows top-level navigation.");
+  await attemptTopNavigation(iframe_1, true);
+}, "Allow top with user activation + user activation");
