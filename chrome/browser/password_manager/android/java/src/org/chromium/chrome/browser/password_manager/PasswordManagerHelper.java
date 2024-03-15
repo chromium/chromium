@@ -292,8 +292,6 @@ public class PasswordManagerHelper {
             String accountName,
             Callback<Void> successCallback,
             Callback<Exception> failureCallback) {
-        assert canUseUpm();
-
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.RUN_PASSWORD_CHECKUP);
@@ -333,8 +331,6 @@ public class PasswordManagerHelper {
             String accountName,
             Callback<Integer> successCallback,
             Callback<Exception> failureCallback) {
-        assert canUseUpm();
-
         PasswordCheckupClientMetricsRecorder passwordCheckupMetricsRecorder =
                 new PasswordCheckupClientMetricsRecorder(
                         PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT);
@@ -692,22 +688,34 @@ public class PasswordManagerHelper {
     }
 
     // TODO(crbug.com/1327578): Exceptions should be thrown by factory, remove this method.
-    private static PasswordCheckupClientHelper getPasswordCheckupClientHelper()
+    private PasswordCheckupClientHelper getPasswordCheckupClientHelper()
             throws PasswordCheckBackendException {
-        PasswordCheckupClientHelper helper =
-                PasswordCheckupClientHelperFactory.getInstance().createHelper();
-        if (helper != null) return helper;
-
-        if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
-            throw new PasswordCheckBackendException(
-                    "Backend version is not supported.",
-                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
-        }
         if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
             throw new PasswordCheckBackendException(
                     "Backend downstream implementation is not available.",
                     CredentialManagerError.BACKEND_NOT_AVAILABLE);
         }
+        // This checks against GMSCore version required for using the account store.
+        if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+            throw new PasswordCheckBackendException(
+                    "Backend version is not supported.",
+                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        }
+        // This check only may return true if the feature flag
+        // UnifiedPasswordManagerSyncOnlyInGMSCore is enabled. This checks against the account store
+        // GMSCore version if the user is syncing and against the local version if the user is not
+        // syncing.
+        if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                UserPrefs.get(mProfile),
+                hasChosenToSyncPasswords(SyncServiceFactory.getForProfile(mProfile)))) {
+            throw new PasswordCheckBackendException(
+                    "Backend version is not supported.",
+                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        }
+
+        PasswordCheckupClientHelper helper =
+                PasswordCheckupClientHelperFactory.getInstance().createHelper();
+        if (helper != null) return helper;
 
         throw new PasswordCheckBackendException(
                 "Can not instantiate backend client.", CredentialManagerError.UNCATEGORIZED);

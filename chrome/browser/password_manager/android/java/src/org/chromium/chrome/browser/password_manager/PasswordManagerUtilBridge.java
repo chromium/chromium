@@ -24,10 +24,26 @@ public class PasswordManagerUtilBridge {
         return PasswordManagerUtilBridgeJni.get().usesSplitStoresAndUPMForLocal(prefService);
     }
 
+    /**
+     * Checks if the GMSCore update is required to use the Password Manager functionality.
+     *
+     * @param prefService Preference service for checking if the user is enrolled into UPM.
+     * @param isPwdSyncEnabled Whether password syncing is enabled
+     * @return Whether the user is required to update GMSCore to use the Password Manager
+     *     functionality.
+     */
+    public static boolean isGmsCoreUpdateRequired(
+            PrefService prefService, boolean isPwdSyncEnabled) {
+        return PasswordManagerUtilBridgeJni.get()
+                .isGmsCoreUpdateRequired(prefService, isPwdSyncEnabled);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean canUseUPMBackend(boolean isPwdSyncEnabled, PrefService prefService);
 
         boolean usesSplitStoresAndUPMForLocal(PrefService prefService);
+
+        boolean isGmsCoreUpdateRequired(PrefService prefService, boolean isPwdSyncEnabled);
     }
 }
