@@ -465,6 +465,14 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
                                                 onc::kNetworkTechnologyTable);
       cellular->roaming = network->IndicateRoaming();
       cellular->signal_strength = network->signal_strength();
+      if (!network->payment_method().empty() ||
+          !network->payment_url().empty()) {
+        auto payment_portal = mojom::PaymentPortalProperties::New();
+        payment_portal->method = network->payment_method();
+        payment_portal->post_data = network->payment_post_data();
+        payment_portal->url = network->payment_url();
+        cellular->payment_portal = std::move(payment_portal);
+      }
 
       const DeviceState* cellular_device =
           network_state_handler->GetDeviceState(network->device_path());
@@ -474,8 +482,9 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
       cellular->sim_lock_enabled =
           sim_is_primary && cellular_device->sim_lock_enabled();
       cellular->sim_locked = sim_is_primary && cellular_device->IsSimLocked();
-      if (sim_is_primary)
+      if (sim_is_primary) {
         cellular->sim_lock_type = cellular_device->sim_lock_type();
+      }
       cellular->has_nick_name = network_name_util::HasNickName(
           cellular_esim_profile_handler, network);
       cellular->network_operator = network_name_util::GetServiceProvider(

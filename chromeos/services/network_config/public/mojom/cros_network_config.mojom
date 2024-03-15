@@ -223,6 +223,7 @@ struct CellularStateProperties {
   bool has_nick_name = false;
   // String representing the network operator.
   string network_operator;
+  PaymentPortalProperties? payment_portal;
 };
 
 struct EthernetStateProperties {

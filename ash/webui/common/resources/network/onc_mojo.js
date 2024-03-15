@@ -669,6 +669,8 @@ export class OncMojo {
         networkState.typeState.cellular.eid = cellularProperties.eid || '';
         networkState.typeState.cellular.activationState =
             cellularProperties.activationState;
+        networkState.typeState.cellular.paymentPortal =
+            cellularProperties.paymentPortal;
         networkState.typeState.cellular.networkTechnology =
             cellularProperties.networkTechnology || '';
         networkState.typeState.cellular.roaming =

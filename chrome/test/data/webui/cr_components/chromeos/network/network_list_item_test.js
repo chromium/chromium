@@ -211,6 +211,7 @@ suite('NetworkListItemTest', function() {
     // Set item to an activated pSIM network first.
     const managedPropertiesActivated =
         OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
+    managedPropertiesActivated.typeProperties.cellular.iccid = '100000';
     managedPropertiesActivated.typeProperties.cellular.activationState =
         ActivationStateType.kActivated;
     managedPropertiesActivated.typeProperties.cellular.paymentPortal = {
@@ -228,9 +229,11 @@ suite('NetworkListItemTest', function() {
     assertTrue(sublabel.hidden);
 
     // Set item to an unactivated eSIM network with a payment URL.
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
     const managedPropertiesESimNotActivated =
         OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesESimNotActivated.typeProperties.cellular.eid = 'eid';
+    managedPropertiesESimNotActivated.typeProperties.cellular.iccid = '100000';
     managedPropertiesESimNotActivated.typeProperties.cellular.activationState =
         ActivationStateType.kNotActivated;
     managedPropertiesESimNotActivated.typeProperties.cellular.paymentPortal = {
@@ -249,6 +252,7 @@ suite('NetworkListItemTest', function() {
     // Set item to an unactivated pSIM network with a payment URL.
     const managedPropertiesNotActivated =
         OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
+    managedPropertiesNotActivated.typeProperties.cellular.iccid = '100000';
     managedPropertiesNotActivated.typeProperties.cellular.activationState =
         ActivationStateType.kNotActivated;
     managedPropertiesNotActivated.typeProperties.cellular.paymentPortal = {
@@ -303,9 +307,11 @@ suite('NetworkListItemTest', function() {
     assertFalse(!!listItem.$$('#activateButton'));
 
     // Set item to an unactivated eSIM network without a payment URL.
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
     const managedPropertiesESimUnavailable =
         OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
     managedPropertiesESimUnavailable.typeProperties.cellular.eid = 'eid';
+    managedPropertiesESimUnavailable.typeProperties.cellular.iccid = '100000';
     managedPropertiesESimUnavailable.typeProperties.cellular.activationState =
         ActivationStateType.kNotActivated;
     managedPropertiesESimUnavailable.typeProperties.cellular.paymentPortal = {};
@@ -335,6 +341,7 @@ suite('NetworkListItemTest', function() {
     // Set item to an unactivated pSIM network without a payment URL.
     const managedPropertiesUnavailable =
         OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
+    managedPropertiesUnavailable.typeProperties.cellular.iccid = '1000000';
     managedPropertiesUnavailable.typeProperties.cellular.activationState =
         ActivationStateType.kNotActivated;
     managedPropertiesUnavailable.typeProperties.cellular.paymentPortal = {};
@@ -371,6 +378,7 @@ suite('NetworkListItemTest', function() {
     // Set item to an activated pSIM network first.
     const managedPropertiesActivated =
         OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
+    managedPropertiesActivated.typeProperties.cellular.iccid = '100000';
     managedPropertiesActivated.typeProperties.cellular.activationState =
         ActivationStateType.kActivated;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesActivated);
@@ -383,10 +391,12 @@ suite('NetworkListItemTest', function() {
     assertFalse(!!listItem.$$('#activatingPSimSpinner'));
 
     // Set item to an activating eSIM network.
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
     const managedPropertiesESimActivating =
         OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
 
     managedPropertiesESimActivating.typeProperties.cellular.eid = 'eid';
+    managedPropertiesESimActivating.typeProperties.cellular.iccid = '100000';
     managedPropertiesESimActivating.typeProperties.cellular.activationState =
         ActivationStateType.kActivating;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesESimActivating);
@@ -401,6 +411,7 @@ suite('NetworkListItemTest', function() {
     // Set item to an activating pSIM network.
     const managedPropertiesActivating =
         OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular');
+    managedPropertiesActivating.typeProperties.cellular.iccid = '100000';
     managedPropertiesActivating.typeProperties.cellular.activationState =
         ActivationStateType.kActivating;
     mojoApi_.setManagedPropertiesForTest(managedPropertiesActivating);
@@ -792,6 +803,7 @@ suite('NetworkListItemTest', function() {
 
       const managedPropertiesNotActivated = OncMojo.getDefaultManagedProperties(
           NetworkType.kCellular, 'cellular');
+      managedPropertiesNotActivated.typeProperties.cellular.iccid = '1000000';
       managedPropertiesNotActivated.typeProperties.cellular.activationState =
           ActivationStateType.kNotActivated;
       managedPropertiesNotActivated.typeProperties.cellular.paymentPortal = {
