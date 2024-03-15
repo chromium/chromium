@@ -15,6 +15,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_observer.h"
+#include "ui/views/view_class_properties.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(views::InkDropHost*)
 
@@ -138,6 +139,7 @@ void InkDrop::NotifyInkDropRippleAnimationEnded(InkDropState ink_drop_state) {
 InkDropContainerView::InkDropContainerView() {
   // Ensure the container View is found as the EventTarget instead of this.
   SetCanProcessEventsWithinSubtree(false);
+  SetProperty(kIsDecorativeViewKey, true);
 }
 
 BEGIN_METADATA(InkDropContainerView)
