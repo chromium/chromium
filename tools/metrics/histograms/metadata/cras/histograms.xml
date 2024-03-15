@@ -830,7 +830,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamAddError" enum="CrasStreamAddError"
-    expires_after="2024-03-16">
+    expires_after="2024-09-16">
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
