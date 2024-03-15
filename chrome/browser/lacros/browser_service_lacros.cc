@@ -224,6 +224,12 @@ void BrowserServiceLacros::NewWindow(bool incognito,
     return;
   }
 
+  if (ShowProfilePickerIfNeeded(incognito)) {
+    std::move(callback).Run(
+        crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
+    return;
+  }
+
   if (profile_id.has_value()) {
     LoadProfileWithId(
         base::BindOnce(&BrowserServiceLacros::NewWindowWithProfile,
@@ -234,11 +240,6 @@ void BrowserServiceLacros::NewWindow(bool incognito,
     return;
   }
 
-  if (ShowProfilePickerIfNeeded(incognito)) {
-    std::move(callback).Run(
-        crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
-    return;
-  }
   LoadMainProfile(base::BindOnce(&BrowserServiceLacros::NewWindowWithProfile,
                                  weak_ptr_factory_.GetWeakPtr(), incognito,
                                  should_trigger_session_restore,
@@ -314,6 +315,12 @@ void BrowserServiceLacros::NewTab(std::optional<uint64_t> profile_id,
     return;
   }
 
+  if (ShowProfilePickerIfNeeded(false)) {
+    std::move(callback).Run(
+        crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
+    return;
+  }
+
   if (profile_id.has_value()) {
     LoadProfileWithId(
         base::BindOnce(&BrowserServiceLacros::LaunchOrNewTabWithProfile,
@@ -325,11 +332,6 @@ void BrowserServiceLacros::NewTab(std::optional<uint64_t> profile_id,
     return;
   }
 
-  if (ShowProfilePickerIfNeeded(false)) {
-    std::move(callback).Run(
-        crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
-    return;
-  }
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::LaunchOrNewTabWithProfile,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -347,6 +349,12 @@ void BrowserServiceLacros::Launch(int64_t target_display_id,
     return;
   }
 
+  if (ShowProfilePickerIfNeeded(false)) {
+    std::move(callback).Run(
+        crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
+    return;
+  }
+
   if (profile_id.has_value()) {
     LoadProfileWithId(
         base::BindOnce(&BrowserServiceLacros::LaunchOrNewTabWithProfile,
@@ -358,11 +366,6 @@ void BrowserServiceLacros::Launch(int64_t target_display_id,
     return;
   }
 
-  if (ShowProfilePickerIfNeeded(false)) {
-    std::move(callback).Run(
-        crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
-    return;
-  }
   LoadMainProfile(
       base::BindOnce(&BrowserServiceLacros::LaunchOrNewTabWithProfile,
                      weak_ptr_factory_.GetWeakPtr(),
