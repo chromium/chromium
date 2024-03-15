@@ -35,7 +35,7 @@ class FileIndexServiceTest : public testing::Test {
   FileIndexServiceTest()
       : pinned_("label", u"pinned"),
         downloaded_("label", u"downloaded"),
-        starred_("label", u"started"),
+        starred_("label", u"starred"),
         task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
@@ -228,6 +228,36 @@ TEST_F(FileIndexServiceTest, GlobalSearch) {
               testing::ElementsAre(labeled_info));
   EXPECT_THAT(index_service_->Search(Query({content_term})),
               testing::ElementsAre(content_info));
+}
+
+TEST_F(FileIndexServiceTest, MixedSearch) {
+  // Setup: two files, both starred, one labeled "tax", one containing the word
+  // "tax" in its content.
+  const std::u16string tax_text = u"tax";
+  Term tax_content_term("content", tax_text);
+  Term tax_label_term("label", tax_text);
+  FileInfo tax_label_info(MakeLocalURL("foo.txt"), 1024, base::Time());
+  FileInfo tax_content_info(MakeLocalURL("bar.txt"), 1024, base::Time());
+
+  EXPECT_EQ(index_service_->UpdateFile({starred_, tax_content_term},
+                                       tax_content_info),
+            OpResults::kSuccess);
+  EXPECT_EQ(
+      index_service_->UpdateFile({starred_, tax_label_term}, tax_label_info),
+      OpResults::kSuccess);
+
+  // Searching with "starred tax" should return both files.
+  EXPECT_THAT(
+      index_service_->Search(Query({Term("", tax_text), Term("", u"starred")})),
+      testing::ElementsAre(tax_content_info, tax_label_info));
+  // Searching with with "label:starred content:tax" gives us just the file that
+  // has "tax" in content.
+  EXPECT_THAT(index_service_->Search(Query({starred_, tax_content_term})),
+              testing::ElementsAre(tax_content_info));
+  // Searching with with "label:starred label:tax" gives us just the file that
+  // has "tax" as a label.
+  EXPECT_THAT(index_service_->Search(Query({starred_, tax_label_term})),
+              testing::ElementsAre(tax_label_info));
 }
 
 TEST_F(FileIndexServiceTest, RemoveFile) {
