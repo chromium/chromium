@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_groups;
 
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -123,9 +122,21 @@ public class TabGroupModelFilter extends TabModelFilter {
         assert tab.getTabGroupId() == null;
         tab.setTabGroupId(Token.createRandom());
         mActualGroupCount++;
+        boolean didCreateNewGroup = true;
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            // If the destination group already has an assigned color, then this action is not
+            // for a new tab group creation. Currently, the only case where this would be called
+            // and it is not a new tab group creation is when a tab group is restored from the
+            // recent tabs page, where the color will be set before this call.
+            int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(tab.getRootId());
+            didCreateNewGroup = didCreateNewGroup && (destinationGroupColorId == INVALID_COLOR_ID);
+        }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
-            observer.didCreateNewGroup(tab, this);
+            if (didCreateNewGroup) {
+                observer.didCreateNewGroup(tab, this);
+            }
         }
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -190,9 +201,19 @@ public class TabGroupModelFilter extends TabModelFilter {
             List<Integer> originalRootIds = new ArrayList<>();
             List<Token> originalTabGroupIds = new ArrayList<>();
             String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
-            int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
+            int destinationGroupColorId = INVALID_COLOR_ID;
             boolean didCreateNewGroup =
                     !isTabInTabGroup(sourceTab) && !isTabInTabGroup(destinationTab);
+
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+                destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
+                // If the destination group already has an assigned color, then this action is not
+                // for a new tab group creation. Currently, the only case where this would be called
+                // and it is not a new tab group creation is when a tab group is restored from the
+                // recent tabs page, where the color will be set before this call.
+                didCreateNewGroup =
+                        didCreateNewGroup && (destinationGroupColorId == INVALID_COLOR_ID);
+            }
 
             if (!skipUpdateTabModel) {
                 tabsIncludingDestination.add(destinationTab);
@@ -299,7 +320,10 @@ public class TabGroupModelFilter extends TabModelFilter {
         }
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
-        int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
+        int destinationGroupColorId = INVALID_COLOR_ID;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
+        }
 
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);

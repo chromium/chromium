@@ -118,6 +118,13 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
 
         int rootId = tabIds[0];
+
+        // Ensure that the color is set before merging the tabs into a group on restore, to indicate
+        // that this is not going to be a new group creation.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            TabGroupColorUtils.storeTabGroupColor(rootId, color);
+        }
+
         if (tabIds.length == 1) {
             if (!ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
                 return;
@@ -129,10 +136,6 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
                 groupFilter.mergeTabsToGroup(id, rootId);
             }
-        }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
-            TabGroupColorUtils.storeTabGroupColor(rootId, color);
         }
 
         if (title == null || title.isEmpty()) return;

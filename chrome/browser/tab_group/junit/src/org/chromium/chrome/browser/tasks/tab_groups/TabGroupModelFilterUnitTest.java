@@ -69,7 +69,10 @@ import java.util.Set;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS)
+@EnableFeatures({
+    ChromeFeatureList.ANDROID_TAB_GROUP_STABLE_IDS,
+    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
+})
 public class TabGroupModelFilterUnitTest {
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
@@ -335,7 +338,7 @@ public class TabGroupModelFilterUnitTest {
                 .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);
         ContextUtils.initApplicationContextForTests(mContext);
         when(mSharedPreferencesTitle.getString(anyString(), any())).thenReturn(TAB_TITLE);
-        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
+        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(INVALID_COLOR_ID);
     }
 
     @Before
@@ -1602,6 +1605,10 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void mergeGroupToGroupNonAdjacent_notifyFilterObserver() {
+        // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
+        // is emitted, a color will have been set.
+        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
+
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab5, mTab6, mTab2, mTab3));
         List<Tab> expectedSourceTabs = mTabGroupModelFilter.getRelatedTabList(mTab2.getId());
         List<Integer> originalIndexes = new ArrayList<>();
@@ -1648,6 +1655,10 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void mergeGroupToTabAdjacent_notifyFilterObserver() {
+        // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
+        // is emitted, a color will have been set.
+        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
+
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab2, mTab3));
         List<Tab> expectedSourceTabs = mTabGroupModelFilter.getRelatedTabList(mTab3.getId());
         List<Integer> originalIndexes = new ArrayList<>();
@@ -1691,6 +1702,10 @@ public class TabGroupModelFilterUnitTest {
 
     @Test
     public void mergeTabToTab_notifyFilterObserver() {
+        // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
+        // is emitted, a color will have been set.
+        when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(COLOR_ID);
+
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab1));
         List<Integer> originalIndexes = new ArrayList<>();
         List<Integer> originalRootIds = new ArrayList<>();
