@@ -39,7 +39,7 @@ std::u16string GetDurationString(base::TimeDelta duration_to_format,
   icu::UnicodeString formatted;
   icu::FieldPosition ignore(icu::FieldPosition::DONT_CARE);
 
-  std::vector<const icu::Measure> measures;
+  std::vector<icu::Measure> measures;
 
   if (hours != 0) {
     measures.emplace_back(hours, icu::MeasureUnit::createHour(status), status);
