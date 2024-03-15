@@ -91,10 +91,10 @@ void Gradient::SortStopsIfNecessary() const {
 }
 
 static SkColor4f ResolveStopColorWithMissingParams(
-    Color color,
-    Color neighbor,
+    const Color& color,
+    const Color& neighbor,
     Color::ColorSpace color_space,
-    sk_sp<cc::ColorFilter> color_filter) {
+    const cc::ColorFilter* color_filter) {
   std::optional<float> param0 =
       color.Param0IsNone() ? neighbor.Param0() : color.Param0();
   std::optional<float> param1 =
@@ -148,7 +148,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
         pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
         colors.push_back(ResolveStopColorWithMissingParams(
             color, stops_[i - 1].color, color_space_interpolation_space_,
-            color_filter_));
+            color_filter_.get()));
       }
 
       if (i != stops_.size() - 1) {
@@ -156,7 +156,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
         pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
         colors.push_back(ResolveStopColorWithMissingParams(
             color, stops_[i + 1].color, color_space_interpolation_space_,
-            color_filter_));
+            color_filter_.get()));
       }
     } else {
       pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
