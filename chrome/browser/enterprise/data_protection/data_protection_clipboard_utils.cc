@@ -5,7 +5,9 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
 #include <algorithm>
+#include <queue>
 
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
@@ -13,12 +15,66 @@
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/clipboard_types.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace enterprise_data_protection {
 
 namespace {
+
+// Struct that holds information on the last data to have been replaced in the
+// OS clipboard by a Data Controls rule.
+struct LastReplacedClipboardData {
+  ui::ClipboardSequenceNumberToken seqno;
+  content::ClipboardPasteData clipboard_paste_data;
+};
+
+LastReplacedClipboardData& GetLastReplacedClipboardData() {
+  static base::NoDestructor<LastReplacedClipboardData> data;
+  return *data.get();
+}
+
+// Clipboard change observer used to observe seqno changes and update the data
+// in `GetLastReplacedClipboardData`.
+class ClipboardObserver : public ui::ClipboardObserver {
+ public:
+  static ClipboardObserver* GetInstance() {
+    static base::NoDestructor<ClipboardObserver> observer;
+    return observer.get();
+  }
+
+  // This can be called multiple times with different data types (text, html,
+  // png, etc.) before `OnClipboardDataChanged()` is called, so `data` is merged
+  // into `pending_seqno_data_` instead of replacing it entirely.
+  void AddDataToNextSeqno(content::ClipboardPasteData data) {
+    if (pending_seqno_data_.empty()) {
+      ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+    }
+    pending_seqno_data_.Merge(std::move(data));
+  }
+
+  // ui::ClipboardObserver:
+  void OnClipboardDataChanged() override {
+    GetLastReplacedClipboardData().seqno =
+        ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+            ui::ClipboardBuffer::kCopyPaste);
+    GetLastReplacedClipboardData().clipboard_paste_data.Merge(
+        std::move(pending_seqno_data_));
+    // Explicitly clear `pending_seqno_data_` in case it eventually holds a data
+    // member that doesn't clear itself after moving.
+    pending_seqno_data_ = content::ClipboardPasteData();
+
+    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+  }
+
+ private:
+  content::ClipboardPasteData pending_seqno_data_;
+};
 
 void HandleFileData(
     content::WebContents* web_contents,
@@ -208,6 +264,13 @@ void PasteIfAllowedByDataControls(
     return;
   }
 
+  // If the data currently being pasted was replaced when it was initially
+  // copied from Chrome, replace it back since it hasn't triggered a Data
+  // Controls rule when pasting.
+  if (metadata.seqno == GetLastReplacedClipboardData().seqno) {
+    clipboard_paste_data = GetLastReplacedClipboardData().clipboard_paste_data;
+  }
+
   PasteIfAllowedByContentAnalysis(destination.web_contents(), destination,
                                   metadata, std::move(clipboard_paste_data),
                                   std::move(callback));
@@ -248,11 +311,15 @@ void IsCopyToOSClipboardRestricted(
                      ->GetCopyToOSClipboardVerdict(
                          *source.data_transfer_endpoint()->GetURL());
 
-  // TODO(b/303640183): Add reporting logic.
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
-    std::u16string replacement_data = l10n_util::GetStringUTF16(
-        IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
-    std::move(callback).Run(data, std::move(replacement_data));
+    // Before calling `callback`, we remember `data` will correspond to the next
+    // clipboard sequence number so that it can be potentially replaced again at
+    // paste time.
+    ClipboardObserver::GetInstance()->AddDataToNextSeqno(data);
+    std::move(callback).Run(
+        data, /*replacement_data=*/l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE));
+
     return;
   }
 
