@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -51,7 +50,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
@@ -134,9 +132,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1459076")
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void dismissButtonClickSkipsSyncConsentPageWhenNoAccountsAreOnDevice() {
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -149,9 +144,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_is_less_than = Build.VERSION_CODES.O,
-            message = "This test is disabled on Android N because of https://crbug.com/1459076")
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void dismissButtonClickSkipsSyncConsentPageWhenOneAccountIsOnDevice() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
