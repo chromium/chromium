@@ -21,6 +21,7 @@ namespace {
 
 // UX Requirements:
 constexpr float kTextSize = 24.0f;
+constexpr int kWatermarkBlockWidth = 350;
 constexpr int kWatermarkBlockSpacing = 80;
 constexpr double kRotationAngle = 45;
 constexpr SkColor kFillColor = SkColorSetARGB(0x12, 0x00, 0x00, 0x00);
@@ -65,6 +66,8 @@ std::unique_ptr<gfx::RenderText> CreateRenderText(const gfx::Rect& display_rect,
   render_text->SetDisplayOffset(gfx::Vector2d(0, 0));
   render_text->SetDisplayRect(display_rect);
   render_text->SetText(text);
+  render_text->SetMultiline(true);
+  render_text->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);
   return render_text;
 }
 
@@ -86,17 +89,6 @@ std::unique_ptr<gfx::RenderText> CreateOutlineRenderText(
   return render_text;
 }
 
-std::vector<std::u16string> ExtractUTF16Lines(const std::string& text) {
-  std::vector<std::string> utf8_text_lines = base::SplitString(
-      text, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  std::vector<std::u16string> utf16_text_lines;
-  for (const std::string& utf8 : utf8_text_lines) {
-    utf16_text_lines.push_back(base::UTF8ToUTF16(std::move(utf8)));
-  }
-  return utf16_text_lines;
-}
-
 }  // namespace
 
 WatermarkView::WatermarkView() : WatermarkView(std::string("")) {}
@@ -114,34 +106,24 @@ WatermarkView::~WatermarkView() = default;
 void WatermarkView::SetString(const std::string& text) {
   DCHECK(base::IsStringUTF8(text));
 
-  text_fill_.clear();
-  text_outline_.clear();
+  text_fill_.reset();
+  text_outline_.reset();
 
-  std::vector<std::u16string> utf16_text_lines = ExtractUTF16Lines(text);
+  std::u16string utf16_text = base::UTF8ToUTF16(text);
 
-  // `block_width_` will be set to the maximum required width, while
+  // The coordinates here do not matter as the display rect will change for
+  // each drawn block.
+  gfx::Rect display_rect(0, 0, kWatermarkBlockWidth, 0);
+  text_fill_ = CreateFillRenderText(display_rect, utf16_text);
+  text_outline_ = CreateOutlineRenderText(display_rect, utf16_text);
+
   // `block_height_` is going to be the max required height for a single line
   // times the number of line.
-  block_width_ = 0;
-  block_height_ = 0;
-  single_line_height_ = 0;
-  for (const auto& line : utf16_text_lines) {
-    int w = 0;
-    int h = 0;
-    gfx::Canvas::SizeStringInt(line, WatermarkFontList(), &w, &h, kTextSize,
-                               gfx::Canvas::NO_ELLIPSIS);
-    block_width_ = std::max(block_width_, w);
-    single_line_height_ = std::max(single_line_height_, h);
-  }
-  block_height_ = single_line_height_ * utf16_text_lines.size();
-
-  for (const auto& line : utf16_text_lines) {
-    // The coordinates here do not matter as the display rect will change for
-    // each drawn block.
-    gfx::Rect display_rect(0, 0, 0, 0);
-    text_fill_.push_back(CreateFillRenderText(display_rect, line));
-    text_outline_.push_back(CreateOutlineRenderText(display_rect, line));
-  }
+  int w = kWatermarkBlockWidth;
+  gfx::Canvas::SizeStringInt(utf16_text, WatermarkFontList(), &w,
+                             &block_height_, kTextSize,
+                             gfx::Canvas::NO_ELLIPSIS);
+  block_height_ *= text_fill_->GetNumLines();
 
   // Invalidate the state of the view.
   SchedulePaint();
@@ -150,8 +132,8 @@ void WatermarkView::SetString(const std::string& text) {
 void WatermarkView::OnPaint(gfx::Canvas* canvas) {
   // Trying to render an empty string in Skia will fail. A string is required
   // to create the command buffer for the renderer.
-  if (text_fill_.empty()) {
-    DCHECK(text_outline_.empty());
+  if (!text_fill_) {
+    DCHECK(!text_outline_);
     return;
   }
 
@@ -189,23 +171,17 @@ void WatermarkView::SetBackgroundColor(SkColor background_color) {
 }
 
 void WatermarkView::DrawTextBlock(gfx::Canvas* canvas, int x, int y) {
-  DCHECK_EQ(text_fill_.size(), text_outline_.size());
+  gfx::Rect display_rect(x, y, kWatermarkBlockWidth, block_height_);
 
-  for (size_t i = 0; i < text_fill_.size(); ++i) {
-    gfx::Rect display_rect(x, y, block_width_, single_line_height_);
+  text_fill_->SetDisplayRect(display_rect);
+  text_fill_->Draw(canvas);
 
-    text_fill_[i]->SetDisplayRect(display_rect);
-    text_fill_[i]->Draw(canvas);
-
-    text_outline_[i]->SetDisplayRect(display_rect);
-    text_outline_[i]->Draw(canvas);
-
-    y += single_line_height_;
-  }
+  text_outline_->SetDisplayRect(display_rect);
+  text_outline_->Draw(canvas);
 }
 
 int WatermarkView::block_width_offset() const {
-  return block_width_ + kWatermarkBlockSpacing;
+  return kWatermarkBlockWidth + kWatermarkBlockSpacing;
 }
 
 int WatermarkView::block_height_offset() const {
@@ -266,10 +242,9 @@ int WatermarkView::max_x(double angle, const gfx::Rect& bounds) const {
 }
 
 int WatermarkView::min_y(double angle, const gfx::Rect& bounds) const {
-  // Instead of starting at Y=0, starting at `single_line_height_` lets the
-  // first line of text be in frame as text is drawn with (0,0) as the
-  // bottom-left corner.
-  return single_line_height_;
+  // Instead of starting at Y=0, starting at `kTextSize` lets the first line of
+  // text be in frame as text is drawn with (0,0) as the bottom-left corner.
+  return kTextSize;
 }
 
 int WatermarkView::max_y(double angle, const gfx::Rect& bounds) const {

@@ -16,16 +16,21 @@ namespace enterprise_watermark {
 
 namespace {
 
-// This string checks that non-latin characters render correctly, and that extra
-// whitespaces/newlines are removed.
-constexpr char kWatermarkMessage[] = R"(
-
+// This string checks that non-latin characters render correctly.
+constexpr char kMultilingualWatermarkMessage[] = R"(
     THIS IS CONFIDENTIAL!
 
     😀😀😀 草草草 www
 
     مضحك جداً
+)";
 
+// This string checks that long lines are properly handled by multiline logic.
+constexpr char kLongLinesWatermarkMessage[] = R"(
+This is a very long line that should be split up into multiple lines
+This is a shorter line
+It was not split
+This is another very long line that should be split up into multiple lines
 )";
 
 class WatermarkBrowserTestBase : public UiBrowserTest {
@@ -37,7 +42,7 @@ class WatermarkBrowserTestBase : public UiBrowserTest {
 
   void ShowUi(const std::string& name) override {
     BrowserView::GetBrowserViewForBrowser(browser())->SetWatermarkString(
-        kWatermarkMessage);
+        watermark_message_);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(
                        "/enterprise/watermark/watermark_test_page.html")));
@@ -57,9 +62,11 @@ class WatermarkBrowserTestBase : public UiBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_features_;
+  std::string watermark_message_ = kMultilingualWatermarkMessage;
 };
 
-class WatermarkBrowserTest : public WatermarkBrowserTestBase {
+class WatermarkBrowserTest : public WatermarkBrowserTestBase,
+                             public testing::WithParamInterface<const char*> {
  public:
   WatermarkBrowserTest() {
     scoped_features_.InitAndEnableFeature(features::kEnableWatermarkView);
@@ -80,8 +87,14 @@ IN_PROC_BROWSER_TEST_F(WatermarkDisabledBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
+IN_PROC_BROWSER_TEST_P(WatermarkBrowserTest, WatermarkShownAfterNavigation) {
+  watermark_message_ = GetParam();
   ShowAndVerifyUi();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WatermarkBrowserTest,
+                         testing::Values(kMultilingualWatermarkMessage,
+                                         kLongLinesWatermarkMessage));
 
 }  // namespace enterprise_watermark

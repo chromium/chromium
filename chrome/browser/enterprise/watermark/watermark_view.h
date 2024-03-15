@@ -57,21 +57,15 @@ class WatermarkView : public views::View {
   // "watermark_app" target.
   SkColor background_color_;
 
-  // Height/width required to draw all the lines in `text_fill_`/`text_outline_`
-  // in a single block.
-  int block_width_ = 0;
+  // Height required to draw all the lines in `text_fill_`/`text_outline_` in a
+  // single block.
   int block_height_ = 0;
 
-  // Height of a single line of `text_fill_` and `text_fill_`.
-  int single_line_height_ = 0;
-
-  // Containers for the fill/outline representations of each line in a single
-  // text block. This is done to avoid calling methods like
-  // `RenderText::SetText` as much as possible as that would invalidate that
-  // object's layout cache, and to avoid running into multiline issues for mixed
-  // character set cases.
-  std::vector<std::unique_ptr<gfx::RenderText>> text_fill_;
-  std::vector<std::unique_ptr<gfx::RenderText>> text_outline_;
+  // Containers for the fill/outline representations of a single text block.
+  // This is done to avoid calling methods like `RenderText::SetText` as much as
+  // possible as that would invalidate that object's layout cache.
+  std::unique_ptr<gfx::RenderText> text_fill_;
+  std::unique_ptr<gfx::RenderText> text_outline_;
 };
 
 }  // namespace enterprise_watermark
