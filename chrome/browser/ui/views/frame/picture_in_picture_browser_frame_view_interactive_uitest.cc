@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
@@ -61,7 +64,8 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void SetUpDocumentPIP() {
+  void SetUpDocumentPIP(
+      std::optional<bool> disallow_return_to_opener = std::nullopt) {
     // Navigate to test url.
     GURL test_page_url = ui_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
@@ -75,7 +79,15 @@ class PictureInPictureBrowserFrameViewTest : public InProcessBrowserTest {
     // Enter document pip.
     auto* pip_window_controller_ = content::PictureInPictureWindowController::
         GetOrCreateDocumentPictureInPictureController(active_web_contents);
-    ASSERT_EQ(true, EvalJs(active_web_contents, "createDocumentPipWindow()"));
+    std::string disallow_return_to_opener_js_string =
+        (disallow_return_to_opener.has_value()
+             ? (*disallow_return_to_opener ? "true" : "false")
+             : "undefined");
+    ASSERT_EQ(true,
+              EvalJs(active_web_contents,
+                     base::StrCat(
+                         {"createDocumentPipWindow({disallowReturnToOpener: ",
+                          disallow_return_to_opener_js_string, "})"})));
     ASSERT_NE(nullptr, pip_window_controller_);
 
     auto* child_web_contents = pip_window_controller_->GetChildWebContents();
@@ -417,5 +429,32 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #endif
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       RespectsDisallowReturnToOpenerWhenDefault) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
+
+  // The back-to-tab button should exist when `disallowReturnToOpener` is not
+  // specified.
+  EXPECT_NE(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       RespectsDisallowReturnToOpenerWhenTrue) {
+  ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP(/*disallow_return_to_opener=*/true));
+
+  // The back-to-tab button should not exist when `disallowReturnToOpener` is
+  // true.
+  EXPECT_EQ(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+                       RespectsDisallowReturnToOpenerWhenFalse) {
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpDocumentPIP(/*disallow_return_to_opener=*/false));
+
+  // The back-to-tab button should exist when `disallowReturnToOpener` is false.
+  EXPECT_NE(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+}
 
 }  // namespace

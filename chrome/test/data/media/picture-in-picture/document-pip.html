@@ -16,8 +16,8 @@ async function loadAndPlayVideo() {
 }
 
 var pipWindow;
-async function createDocumentPipWindow({ width = 300, height = 300 } = {}) {
-    pipWindow = await documentPictureInPicture.requestWindow({ width: width, height: height, });
+async function createDocumentPipWindow({ width = 300, height = 300, disallowReturnToOpener } = {}) {
+    pipWindow = await documentPictureInPicture.requestWindow({ width, height, disallowReturnToOpener });
     pipWindow.document.open();
     pipWindow.document.write("Hello, world.<a name='top'>top</a>");
     pipWindow.document.close();

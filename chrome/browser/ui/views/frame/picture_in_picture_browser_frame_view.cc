@@ -517,15 +517,22 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
         button_container_view_->AddChildView(std::move(image_view)));
   }
 
-  // Creates the back to tab button.
-  back_to_tab_button_ = button_container_view_->AddChildView(
-      std::make_unique<BackToTabButton>(base::BindRepeating(
-          [](PictureInPictureBrowserFrameView* frame_view) {
-            DefinitelyExitPictureInPicture(
-                *frame_view, PictureInPictureWindowManager::UiBehavior::
-                                 kCloseWindowAndFocusOpener);
-          },
-          base::Unretained(this))));
+  // Creates the back to tab button if one should be shown based on the given
+  // PictureInPictureWindowOptions. If the options don't exist (this can happen
+  // in some test situations), then default to displaying the back to tab
+  // button.
+  const std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
+      browser_view->GetDocumentPictureInPictureOptions();
+  if (!pip_options.has_value() || !pip_options->disallow_return_to_opener) {
+    back_to_tab_button_ = button_container_view_->AddChildView(
+        std::make_unique<BackToTabButton>(base::BindRepeating(
+            [](PictureInPictureBrowserFrameView* frame_view) {
+              DefinitelyExitPictureInPicture(
+                  *frame_view, PictureInPictureWindowManager::UiBehavior::
+                                   kCloseWindowAndFocusOpener);
+            },
+            base::Unretained(this))));
+  }
 
   // Creates the close button.
   close_image_button_ = button_container_view_->AddChildView(
@@ -538,8 +545,10 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
           base::Unretained(this))));
 
   // Enable button layer rendering to set opacity for animation.
-  back_to_tab_button_->SetPaintToLayer();
-  back_to_tab_button_->layer()->SetFillsBoundsOpaquely(false);
+  if (back_to_tab_button_) {
+    back_to_tab_button_->SetPaintToLayer();
+    back_to_tab_button_->layer()->SetFillsBoundsOpaquely(false);
+  }
   close_image_button_->SetPaintToLayer();
   close_image_button_->layer()->SetFillsBoundsOpaquely(false);
 
@@ -555,10 +564,12 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   move_camera_button_to_right_animation_.set_delegate(this);
 
   // Creates the button animations.
-  show_back_to_tab_button_animation_.set_continuous(false);
-  show_back_to_tab_button_animation_.set_delegate(this);
-  hide_back_to_tab_button_animation_.set_continuous(false);
-  hide_back_to_tab_button_animation_.set_delegate(this);
+  if (back_to_tab_button_) {
+    show_back_to_tab_button_animation_.set_continuous(false);
+    show_back_to_tab_button_animation_.set_delegate(this);
+    hide_back_to_tab_button_animation_.set_continuous(false);
+    hide_back_to_tab_button_animation_.set_delegate(this);
+  }
   show_close_button_animation_.set_continuous(false);
   show_close_button_animation_.set_delegate(this);
   hide_close_button_animation_.set_continuous(false);
@@ -834,10 +845,13 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
   top_bar_color_animation_.SetContainer(animation_container);
   move_camera_button_to_left_animation_.SetContainer(animation_container);
   move_camera_button_to_right_animation_.SetContainer(animation_container);
-  show_back_to_tab_button_animation_.SetContainer(animation_container);
-  hide_back_to_tab_button_animation_.SetContainer(animation_container);
-  show_close_button_animation_.SetContainer(animation_container);
-  hide_close_button_animation_.SetContainer(animation_container);
+
+  if (back_to_tab_button_) {
+    show_back_to_tab_button_animation_.SetContainer(animation_container);
+    hide_back_to_tab_button_animation_.SetContainer(animation_container);
+    show_close_button_animation_.SetContainer(animation_container);
+    hide_close_button_animation_.SetContainer(animation_container);
+  }
 
   // TODO(https://crbug.com/1475419): Don't force dark mode once we support a
   // light mode window.
@@ -1103,16 +1117,23 @@ void PictureInPictureBrowserFrameView::AnimationProgressed(
 
   if (animation == &move_camera_button_to_left_animation_ ||
       animation == &move_camera_button_to_right_animation_) {
+    int close_and_back_to_tab_button_combined_widths =
+        close_image_button_->width();
+    if (back_to_tab_button_) {
+      close_and_back_to_tab_button_combined_widths +=
+          back_to_tab_button_->width();
+    }
     for (ContentSettingImageView* view : content_setting_views_) {
       // Set the position of camera icon relative to |button_container_view_|.
       view->SetX(animation->CurrentValueBetween(
-          back_to_tab_button_->width() + close_image_button_->width(), 0));
+          close_and_back_to_tab_button_combined_widths, 0));
     }
     return;
   }
 
   if (animation == &show_back_to_tab_button_animation_ ||
       animation == &hide_back_to_tab_button_animation_) {
+    CHECK(back_to_tab_button_);
     back_to_tab_button_->layer()->SetOpacity(animation->GetCurrentValue());
     return;
   }
@@ -1179,7 +1200,9 @@ gfx::Rect PictureInPictureBrowserFrameView::GetContentSettingViewBounds(
 }
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBackToTabControlsBounds() const {
-  DCHECK(back_to_tab_button_);
+  if (!back_to_tab_button_) {
+    return gfx::Rect();
+  }
   return ConvertTopBarControlViewBounds(back_to_tab_button_,
                                         button_container_view_);
 }
@@ -1226,7 +1249,9 @@ void PictureInPictureBrowserFrameView::UpdateTopBarView(bool render_active) {
   // previous animations may override the new animations.
   if (render_active_) {
     move_camera_button_to_right_animation_.Stop();
-    hide_back_to_tab_button_animation_.Stop();
+    if (back_to_tab_button_) {
+      hide_back_to_tab_button_animation_.Stop();
+    }
     hide_close_button_animation_.Stop();
 
     top_bar_color_animation_.Show();
@@ -1235,16 +1260,22 @@ void PictureInPictureBrowserFrameView::UpdateTopBarView(bool render_active) {
     move_camera_button_to_left_animation_.Reset(0.0);
     move_camera_button_to_left_animation_.Show();
 
-    show_back_to_tab_button_animation_.Start();
+    if (back_to_tab_button_) {
+      show_back_to_tab_button_animation_.Start();
+    }
     show_close_button_animation_.Start();
   } else {
     move_camera_button_to_left_animation_.Stop();
-    show_back_to_tab_button_animation_.Stop();
+    if (back_to_tab_button_) {
+      show_back_to_tab_button_animation_.Stop();
+    }
     show_close_button_animation_.Stop();
 
     top_bar_color_animation_.Hide();
     move_camera_button_to_right_animation_.Start();
-    hide_back_to_tab_button_animation_.Start();
+    if (back_to_tab_button_) {
+      hide_back_to_tab_button_animation_.Start();
+    }
     hide_close_button_animation_.Start();
   }
 }
@@ -1316,16 +1347,24 @@ gfx::Insets PictureInPictureBrowserFrameView::GetClientAreaInsets(
 // Helper functions for testing.
 std::vector<gfx::Animation*>
 PictureInPictureBrowserFrameView::GetRenderActiveAnimationsForTesting() {
-  return std::vector<gfx::Animation*>(
+  std::vector<gfx::Animation*> animations(
       {&top_bar_color_animation_, &move_camera_button_to_left_animation_,
-       &show_back_to_tab_button_animation_, &show_close_button_animation_});
+       &show_close_button_animation_});
+  if (back_to_tab_button_) {
+    animations.push_back(&show_back_to_tab_button_animation_);
+  }
+  return animations;
 }
 
 std::vector<gfx::Animation*>
 PictureInPictureBrowserFrameView::GetRenderInactiveAnimationsForTesting() {
-  return std::vector<gfx::Animation*>(
+  std::vector<gfx::Animation*> animations(
       {&top_bar_color_animation_, &move_camera_button_to_right_animation_,
-       &hide_back_to_tab_button_animation_, &hide_close_button_animation_});
+       &hide_close_button_animation_});
+  if (back_to_tab_button_) {
+    animations.push_back(&hide_back_to_tab_button_animation_);
+  }
+  return animations;
 }
 
 views::View* PictureInPictureBrowserFrameView::GetBackToTabButtonForTesting() {
