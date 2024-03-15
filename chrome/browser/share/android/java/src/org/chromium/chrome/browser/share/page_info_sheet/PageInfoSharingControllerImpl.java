@@ -131,6 +131,10 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
 
         if (!UrlUtilities.isHttpOrHttps(tab.getUrl())) return false;
 
+        if (!PageInfoSharingBridge.doesProfileSupportPageInfo(tab.getProfile())) return false;
+
+        if (!PageInfoSharingBridge.doesTabSupportPageInfo(tab)) return false;
+
         return true;
     }
 

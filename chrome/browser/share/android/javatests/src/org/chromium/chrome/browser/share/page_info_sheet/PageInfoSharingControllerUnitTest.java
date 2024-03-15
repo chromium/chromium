@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,6 +35,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
@@ -49,7 +51,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.CHROME_SHARE_PAGE_INFO})
 public class PageInfoSharingControllerUnitTest {
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
@@ -61,12 +62,15 @@ public class PageInfoSharingControllerUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private PageInfoSharingBridgeJni mPageInfoSharingBridgeJni;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
         PageInfoSharingControllerImpl.resetForTesting();
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
+        mJniMocker.mock(PageInfoSharingBridgeJni.TEST_HOOKS, mPageInfoSharingBridgeJni);
         when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(any(String.class)))
                 .thenAnswer(
                         (invocation) -> {
@@ -99,6 +103,7 @@ public class PageInfoSharingControllerUnitTest {
     public void testIsAvailable_withNonHttpUrl() {
         Tab tab = Mockito.mock(Tab.class);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_ABOUT);
+        when(tab.getProfile()).thenReturn(mProfile);
 
         assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
     }
@@ -107,16 +112,47 @@ public class PageInfoSharingControllerUnitTest {
     public void testIsAvailable_withHttpUrl() {
         Tab tab = Mockito.mock(Tab.class);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(tab.getProfile()).thenReturn(mProfile);
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(eq(mProfile))).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(eq(tab))).thenReturn(true);
 
         assertTrue(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+    }
+
+    @Test
+    public void testIsAvailable_withUnsupportedProfile() {
+        Tab tab = Mockito.mock(Tab.class);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(tab.getProfile()).thenReturn(mProfile);
+
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(false);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
+
+        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
+    }
+
+    @Test
+    public void testIsAvailable_withUnsupportedLanguage() {
+        Tab tab = Mockito.mock(Tab.class);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(tab.getProfile()).thenReturn(mProfile);
+
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(false);
+
+        assertFalse(PageInfoSharingControllerImpl.getInstance().isAvailableForTab(tab));
     }
 
     @Test
     public void testIsAvailable_whileSharingAnotherTab() {
         Tab firstTab = Mockito.mock(Tab.class);
         when(firstTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(firstTab.getProfile()).thenReturn(mProfile);
         Tab secondTab = Mockito.mock(Tab.class);
         when(secondTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
+        when(secondTab.getProfile()).thenReturn(mProfile);
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(Mockito.any())).thenReturn(true);
 
         ChromeOptionShareCallback optionShareCallback = mock(ChromeOptionShareCallback.class);
 
@@ -142,6 +178,9 @@ public class PageInfoSharingControllerUnitTest {
         ChromeOptionShareCallback optionShareCallback = mock(ChromeOptionShareCallback.class);
         Tab tab = Mockito.mock(Tab.class);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(tab.getProfile()).thenReturn(mProfile);
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
 
         mActivityScenarioRule
                 .getScenario()
@@ -162,6 +201,9 @@ public class PageInfoSharingControllerUnitTest {
         ChromeOptionShareCallback optionShareCallback = mock(ChromeOptionShareCallback.class);
         Tab tab = Mockito.mock(Tab.class);
         when(tab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(tab.getProfile()).thenReturn(mProfile);
+        when(mPageInfoSharingBridgeJni.doesProfileSupportPageInfo(mProfile)).thenReturn(true);
+        when(mPageInfoSharingBridgeJni.doesTabSupportPageInfo(tab)).thenReturn(true);
         when(tab.getTitle()).thenReturn("Page title");
 
         mActivityScenarioRule

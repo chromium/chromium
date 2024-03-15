@@ -43,12 +43,15 @@ source_set("share") {
       "default_ranking_android.cc",
       "editor_screenshot_task.cc",
       "link_to_text_bridge.cc",
+      "page_info_sharing_bridge.cc",
+      "page_info_sharing_bridge.h",
       "qr_code_generator_android.cc",
     ]
     deps += [
       ":jni_headers",
       "//chrome/android:chrome_jni_headers",
       "//components/history/core/browser:browser",
+      "//components/translate/content/browser",
       "//components/ukm/content:content",
       "//ui/android",
       "//url",
@@ -64,6 +67,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/share/ShareDelegate.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareHistoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
+      "android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/share_sheet/ChromeOptionShareCallback.java",
     ]
 
@@ -86,6 +90,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/share/ShareHistoryBridge.java",
       "android/java/src/org/chromium/chrome/browser/share/ShareRankingBridge.java",
+      "android/java/src/org/chromium/chrome/browser/share/page_info_sheet/PageInfoSharingBridge.java",
     ]
   }
 }
