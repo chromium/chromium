@@ -686,7 +686,8 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
+    std::unique_ptr<DataTransferEndpoint> data_src,
+    uint32_t privacy_types) {
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
@@ -699,6 +700,19 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
   if (data_src && data_src->IsUrlType()) {
     HGLOBAL glob = CreateGlobalData(data_src->GetURL()->spec());
     WriteToClipboard(ClipboardFormatType::InternalSourceUrlType(), glob);
+  }
+  // Write privacy data if there is any.
+  // On Windows, there is no special format to conceal passwords, but
+  // don't save it in the history or cloud clipboard for privacy reasons.
+  if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
+    WriteConfidentialDataForPassword();
+  } else {
+    if (privacy_types & Clipboard::PrivacyTypes::kNoLocalClipboardHistory) {
+      WriteClipboardHistory();
+    }
+    if (privacy_types & Clipboard::PrivacyTypes::kNoCloudClipboard) {
+      WriteUploadCloudClipboard();
+    }
   }
 }
 
@@ -792,6 +806,36 @@ void ClipboardWin::WriteData(const ClipboardFormatType& format,
   memcpy(hdata_ptr, data.data(), data.size());
   ::GlobalUnlock(hdata);
   WriteToClipboard(format, hdata);
+}
+
+void ClipboardWin::WriteClipboardHistory() {
+  // Write a zero value to the clipboard to indicate that the clipboard history
+  // is not available.
+  DWORD value = 0;
+  WriteData(
+      ClipboardFormatType::ClipboardHistoryType(),
+      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+}
+
+void ClipboardWin::WriteUploadCloudClipboard() {
+  // Write a zero value to the clipboard to indicate that the cloud clipboard
+  // is not available.
+  DWORD value = 0;
+  WriteData(
+      ClipboardFormatType::UploadCloudClipboardType(),
+      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+}
+
+void ClipboardWin::WriteConfidentialDataForPassword() {
+  // Write a zero value to the clipboard to indicate that the clipboard history
+  // and cloud clipboard are not available.
+  DWORD value = 0;
+  WriteData(
+      ClipboardFormatType::ClipboardHistoryType(),
+      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
+  WriteData(
+      ClipboardFormatType::UploadCloudClipboardType(),
+      base::make_span(reinterpret_cast<const uint8_t*>(&value), sizeof(value)));
 }
 
 std::vector<uint8_t> ClipboardWin::ReadPngInternal(

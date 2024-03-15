@@ -70,6 +70,22 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       base::OnceCallback<void(std::u16string title, GURL url)>;
   using ReadDataCallback = base::OnceCallback<void(std::string result)>;
 
+  // This enum is used to specify different privacy types of the clipboard
+  // data. If a password is copied to the clipboard, based on platform support,
+  // it can be marked as concealed or a combination of types can be used to
+  // treat it as confidential.
+  // `kNoCloudClipboard` - The clipboard data should not be uploaded to the
+  // cloud.
+  // `kNoLocalClipboardHistory` - The clipboard data should not be stored in the
+  // local clipboard history.
+  // `kNoDisplay` - The clipboard data should be concealed.
+  enum PrivacyTypes {
+    kNone = 0,
+    kNoCloudClipboard = 1 << 0,
+    kNoLocalClipboardHistory = 1 << 1,
+    kNoDisplay = 1 << 2,  // Passwords and other credentials
+  };
+
   // An observer interface for content copied to the clipboard.
   class ClipboardWriteObserver : public base::CheckedObserver {
    public:
@@ -433,13 +449,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       ClipboardBuffer buffer,
       const ObjectMap& objects,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
-      std::unique_ptr<DataTransferEndpoint> data_src) = 0;
-
-  void DispatchPortableRepresentation(const ObjectMapParams& params);
-
-  // Write directly to the system clipboard.
-  void DispatchPlatformRepresentations(
-      std::vector<Clipboard::PlatformRepresentation> platform_representations);
+      std::unique_ptr<DataTransferEndpoint> data_src,
+      uint32_t privacy_types) = 0;
 
   virtual void WriteText(base::StringPiece text) = 0;
 
@@ -462,6 +473,17 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // Note: |data| may reference shared memory and may be concurrently mutated.
   virtual void WriteData(const ClipboardFormatType& format,
                          base::span<const uint8_t> data) = 0;
+
+  // Prevent data from being written to the clipboard history and cloud.
+  virtual void WriteClipboardHistory() = 0;
+  virtual void WriteUploadCloudClipboard() = 0;
+  virtual void WriteConfidentialDataForPassword() = 0;
+
+  void DispatchPortableRepresentation(const ObjectMapParams& params);
+
+  // Write directly to the system clipboard.
+  void DispatchPlatformRepresentations(
+      std::vector<Clipboard::PlatformRepresentation> platform_representations);
 
  private:
   // For access to WritePortableRepresentations().

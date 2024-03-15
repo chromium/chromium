@@ -1021,6 +1021,39 @@ TYPED_TEST(ClipboardTest, HtmlTest) {
       "</html>\r\n\r\n",
       "<p>Foo</p>");
 }
+
+TYPED_TEST(ClipboardTest, PrivacyMetadataTest) {
+  // We're testing platform-specific behavior, so use PlatformClipboardTest.
+  std::string test_suite_name = ::testing::UnitTest::GetInstance()
+                                    ->current_test_info()
+                                    ->test_suite_name();
+  if (test_suite_name != std::string("ClipboardTest/PlatformClipboardTest")) {
+    return;
+  }
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(u"foo");
+    clipboard_writer.MarkAsOffTheRecord();
+  }
+
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      ClipboardFormatType::ClipboardHistoryType(), ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      ClipboardFormatType::UploadCloudClipboardType(),
+      ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
+  std::string result;
+  this->clipboard().ReadData(ClipboardFormatType::ClipboardHistoryType(),
+                             /* data_dst = */ nullptr, &result);
+  DWORD history_data = std::strtoul(result.c_str(), nullptr, 16);
+  EXPECT_EQ(0ul, history_data);
+  this->clipboard().ReadData(ClipboardFormatType::UploadCloudClipboardType(),
+                             /* data_dst = */ nullptr, &result);
+  DWORD cloud_data = std::strtoul(result.c_str(), nullptr, 16);
+  EXPECT_EQ(0ul, cloud_data);
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 // Test writing all formats we have simultaneously.

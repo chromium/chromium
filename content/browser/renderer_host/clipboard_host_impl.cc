@@ -636,6 +636,9 @@ void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
 }
 
 void ClipboardHostImpl::CommitWrite() {
+  if (render_frame_host().GetBrowserContext()->IsOffTheRecord()) {
+    clipboard_writer_->MarkAsOffTheRecord();
+  }
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
 

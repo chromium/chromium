@@ -87,6 +87,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
 
   // Type only used by Chromium to track the source URL of clipboard data.
   static const ClipboardFormatType& InternalSourceUrlType();
+
+  // Prevents clipboard data from being included in the clipboard history.
+  static const ClipboardFormatType& ClipboardHistoryType();
+  // Prevents clipboard data from being included in the cloud clipboard.
+  static const ClipboardFormatType& UploadCloudClipboardType();
 #endif
 
   // For custom formats, individual types are added to the clipboard with a type

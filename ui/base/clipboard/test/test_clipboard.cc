@@ -313,7 +313,8 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
+    std::unique_ptr<DataTransferEndpoint> data_src,
+    uint32_t privacy_types) {
   Clear(buffer);
   default_store_buffer_ = buffer;
 
@@ -388,6 +389,18 @@ void TestClipboard::WriteData(const ClipboardFormatType& format,
                               base::span<const uint8_t> data) {
   GetDefaultStore().data[format] =
       std::string(reinterpret_cast<const char*>(data.data()), data.size());
+}
+
+void TestClipboard::WriteClipboardHistory() {
+  // TODO(crbug.com/40945200): Add support for this.
+}
+
+void TestClipboard::WriteUploadCloudClipboard() {
+  // TODO(crbug.com/40945200): Add support for this.
+}
+
+void TestClipboard::WriteConfidentialDataForPassword() {
+  // TODO(crbug.com/40945200): Add support for this.
 }
 
 TestClipboard::DataStore::DataStore() = default;

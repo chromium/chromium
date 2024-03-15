@@ -357,7 +357,8 @@ void ClipboardIOS::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
+    std::unique_ptr<DataTransferEndpoint> data_src,
+    uint32_t privacy_types) {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
@@ -460,6 +461,18 @@ void ClipboardIOS::WriteData(const ClipboardFormatType& format,
     format.ToNSString() : [NSData dataWithBytes:data.data() length:data.size()]
   };
   [GetPasteboard() addItems:@[ data_item ]];
+}
+
+void ClipboardIOS::WriteClipboardHistory() {
+  // TODO(crbug.com/40945200): Add support for this.
+}
+
+void ClipboardIOS::WriteUploadCloudClipboard() {
+  // TODO(crbug.com/40945200): Add support for this.
+}
+
+void ClipboardIOS::WriteConfidentialDataForPassword() {
+  // TODO(crbug.com/40945200): Add support for this.
 }
 
 std::vector<uint8_t> ClipboardIOS::ReadPngInternal(

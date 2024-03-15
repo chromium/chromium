@@ -444,7 +444,8 @@ void ClipboardMac::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
+    std::unique_ptr<DataTransferEndpoint> data_src,
+    uint32_t privacy_types) {
   WritePortableAndPlatformRepresentationsInternal(
       buffer, objects, std::move(platform_representations), std::move(data_src),
       GetPasteboard());
@@ -517,6 +518,18 @@ void ClipboardMac::WriteData(const ClipboardFormatType& format,
                              base::span<const uint8_t> data) {
   [GetPasteboard() setData:[NSData dataWithBytes:data.data() length:data.size()]
                    forType:format.ToNSString()];
+}
+
+void ClipboardMac::WriteClipboardHistory() {
+  // TODO(crbug.com/40945200): Add support for this.
+}
+
+void ClipboardMac::WriteUploadCloudClipboard() {
+  // TODO(crbug.com/40945200): Add support for this.
+}
+
+void ClipboardMac::WriteConfidentialDataForPassword() {
+  // TODO(crbug.com/40945200): Add support for this.
 }
 
 // Write an extra flavor that signifies WebKit was the last to modify the

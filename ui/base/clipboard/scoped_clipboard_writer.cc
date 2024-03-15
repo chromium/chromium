@@ -56,11 +56,21 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
   }
 
   if (!objects_.empty() || !platform_representations_.empty()) {
+    uint32_t privacy_types = 0;
+    if (confidential_) {
+      privacy_types |= Clipboard::PrivacyTypes::kNoDisplay;
+    }
+    if (off_the_record_) {
+      privacy_types |= Clipboard::PrivacyTypes::kNoLocalClipboardHistory;
+      privacy_types |= Clipboard::PrivacyTypes::kNoCloudClipboard;
+    }
     Clipboard::GetForCurrentThread()->WritePortableAndPlatformRepresentations(
         buffer_, objects_, std::move(platform_representations_),
-        std::move(data_src_));
+        std::move(data_src_), privacy_types);
   }
 
+  // TODO(snianu): Remove this code and move this
+  // to `WritePortableAndPlatformRepresentations`.
   if (confidential_)
     Clipboard::GetForCurrentThread()->MarkAsConfidential();
 }
@@ -173,6 +183,10 @@ void ScopedClipboardWriter::WriteImage(const SkBitmap& bitmap) {
 
 void ScopedClipboardWriter::MarkAsConfidential() {
   confidential_ = true;
+}
+
+void ScopedClipboardWriter::MarkAsOffTheRecord() {
+  off_the_record_ = true;
 }
 
 void ScopedClipboardWriter::WritePickledData(

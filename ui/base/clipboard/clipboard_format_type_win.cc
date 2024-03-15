@@ -308,4 +308,18 @@ const ClipboardFormatType& ClipboardFormatType::InternalSourceUrlType() {
   return *format;
 }
 
+// static
+const ClipboardFormatType& ClipboardFormatType::ClipboardHistoryType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ::RegisterClipboardFormat(L"CanIncludeInClipboardHistory"));
+  return *format;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::UploadCloudClipboardType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ::RegisterClipboardFormat(L"CanUploadToCloudClipboard"));
+  return *format;
+}
+
 }  // namespace ui

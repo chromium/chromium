@@ -99,6 +99,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // Mark the data to be written as confidential.
   void MarkAsConfidential();
 
+  // Data is copied from an incognito window.
+  void MarkAsOffTheRecord();
+
   // Removes all objects that would be written to the clipboard.
   void Reset();
 
@@ -117,6 +120,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   const ClipboardBuffer buffer_;
 
   bool confidential_ = false;
+  bool off_the_record_ = false;
 
   // The source of the data written in ScopedClipboardWriter, nullptr means it's
   // not set, or the source of the data can't be represented by

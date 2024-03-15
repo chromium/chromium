@@ -129,7 +129,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
       ClipboardBuffer buffer,
       const ObjectMap& objects,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
-      std::unique_ptr<DataTransferEndpoint> data_src) override;
+      std::unique_ptr<DataTransferEndpoint> data_src,
+      uint32_t privacy_types) override;
   void WriteText(base::StringPiece text) override;
   void WriteHTML(base::StringPiece markup,
                  std::optional<base::StringPiece> source_url) override;
@@ -141,6 +142,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
+  void WriteClipboardHistory() override;
+  void WriteUploadCloudClipboard() override;
+  void WriteConfidentialDataForPassword() override;
 
   const ClipboardInternal& GetInternalClipboard(ClipboardBuffer buffer) const;
   ClipboardInternal& GetInternalClipboard(ClipboardBuffer buffer);
