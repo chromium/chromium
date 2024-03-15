@@ -571,6 +571,12 @@ void MediaWebContentsObserver::OnRemotePlaybackMetadataChange(
       player_id, std::move(remote_playback_metadata));
 }
 
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnVideoVisibilityChanged(bool meets_visibility_threshold) {
+  media_web_contents_observer_->session_controllers_manager()
+      ->OnVideoVisibilityChanged(media_player_id_, meets_visibility_threshold);
+}
+
 bool MediaWebContentsObserver::IsMediaPlayerRemoteAvailable(
     const MediaPlayerId& player_id) {
   return media_player_remotes_.contains(player_id);

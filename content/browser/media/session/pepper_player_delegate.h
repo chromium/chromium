@@ -44,6 +44,7 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
+  bool HasSufficientlyVisibleVideo(int player_id) const override;
   RenderFrameHost* render_frame_host() const override;
   bool HasAudio(int player_id) const override;
   bool HasVideo(int player_id) const override;

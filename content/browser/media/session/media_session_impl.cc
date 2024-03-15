@@ -1118,6 +1118,8 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
                                   web_contents()->GetBrowserContext())
                             : false;
 
+  info->meets_visibility_threshold = HasSufficientlyVisibleVideo();
+
   return info;
 }
 
@@ -1680,6 +1682,13 @@ void MediaSessionImpl::OnAudioOutputSinkChangingDisabled() {
   RebuildAndNotifyMediaSessionInfoChanged();
 }
 
+void MediaSessionImpl::OnVideoVisibilityChanged() {
+  if (normal_players_.size() == 0) {
+    return;
+  }
+  RebuildAndNotifyMediaSessionInfoChanged();
+}
+
 void MediaSessionImpl::SetRemotePlaybackMetadata(
     media_session::mojom::RemotePlaybackMetadataPtr metadata) {
   remote_playback_metadata_ = std::move(metadata);
@@ -1877,6 +1886,17 @@ bool MediaSessionImpl::IsPictureInPictureAvailable() const {
 
   auto& first = normal_players_.begin()->first;
   return first.observer->IsPictureInPictureAvailable(first.player_id);
+}
+
+bool MediaSessionImpl::HasSufficientlyVisibleVideo() const {
+  for (const auto& player : normal_players_) {
+    if (player.first.observer->HasSufficientlyVisibleVideo(
+            player.first.player_id)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 std::string MediaSessionImpl::GetSharedAudioOutputDeviceId() const {

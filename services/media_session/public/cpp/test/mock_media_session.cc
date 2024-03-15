@@ -71,6 +71,11 @@ void MockMediaSessionMojoObserver::MediaSessionInfoChanged(
              expected_hide_metadata_ == session_info_->hide_metadata) {
     QuitWaitingIfNeeded();
     expected_hide_metadata_.reset();
+  } else if (expected_meets_visibility_threshold_.has_value() &&
+             expected_meets_visibility_threshold_ ==
+                 session_info_->meets_visibility_threshold) {
+    QuitWaitingIfNeeded();
+    expected_meets_visibility_threshold_.reset();
   } else {
     if (wanted_state_ == session_info_->state ||
         session_info_->playback_state == wanted_playback_state_ ||
@@ -288,6 +293,18 @@ base::TimeDelta MockMediaSessionMojoObserver::WaitForExpectedPositionAtLeast(
 
   return (*session_position_)
       ->GetPositionAtTime((*session_position_)->last_updated_time());
+}
+
+bool MockMediaSessionMojoObserver::WaitForMeetsVisibilityThreshold(
+    bool meets_visibility_threshold) {
+  if (session_info_ &&
+      session_info_->meets_visibility_threshold == meets_visibility_threshold) {
+    return meets_visibility_threshold;
+  }
+
+  expected_meets_visibility_threshold_ = meets_visibility_threshold;
+  StartWaiting();
+  return meets_visibility_threshold;
 }
 
 void MockMediaSessionMojoObserver::StartWaiting() {

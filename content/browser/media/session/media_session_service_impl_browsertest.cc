@@ -71,6 +71,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     return false;
   }
 
+  bool HasSufficientlyVisibleVideo(int player_id) const override {
+    return false;
+  }
+
   bool HasAudio(int player_id) const override { return true; }
   bool HasVideo(int player_id) const override { return false; }
 

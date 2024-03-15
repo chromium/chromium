@@ -332,6 +332,9 @@ class MediaSessionImpl : public MediaSession,
   // device switching.
   void OnAudioOutputSinkChangingDisabled();
 
+  // Called when any of the normal players video visibility changes.
+  CONTENT_EXPORT void OnVideoVisibilityChanged();
+
   // Update the value of `remote_playback_metadata_`.
   CONTENT_EXPORT void SetRemotePlaybackMetadata(
       media_session::mojom::RemotePlaybackMetadataPtr metadata);
@@ -471,6 +474,10 @@ class MediaSessionImpl : public MediaSession,
                      std::vector<media_session::MediaImage>& artwork);
 
   bool IsPictureInPictureAvailable() const;
+
+  // Iterates over all |normal_players_| and returns true if any of the players'
+  // videos is sufficiently visible, false otherwise.
+  CONTENT_EXPORT bool HasSufficientlyVisibleVideo() const;
 
   // Returns the device ID for the audio output device being used by all of the
   // normal players. If the players are not all using the same audio output

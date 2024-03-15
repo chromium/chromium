@@ -205,6 +205,14 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     return default_actions_;
   }
 
+  void OnVideoVisibilityChanged() {
+    GetMediaSession()->OnVideoVisibilityChanged();
+  }
+
+  bool HasSufficientlyVisibleVideo() {
+    return GetMediaSession()->HasSufficientlyVisibleVideo();
+  }
+
  private:
   std::set<media_session::mojom::MediaSessionAction> default_actions_;
 
@@ -798,6 +806,39 @@ TEST_F(MediaSessionImplTest,
   EXPECT_TRUE(base::Contains(
       observer.actions(),
       media_session::mojom::MediaSessionAction::kExitPictureInPicture));
+}
+
+TEST_F(MediaSessionImplTest, SufficientlyVisibleVideo_NoPlayer) {
+  OnVideoVisibilityChanged();
+
+  EXPECT_FALSE(HasSufficientlyVisibleVideo());
+}
+
+TEST_F(MediaSessionImplTest, SufficientlyVisibleVideo_MultiplePlayers) {
+  // Start with a single player with a video reporting as sufficiently visible.
+  int player1 = player_observer_->StartNewPlayer();
+  player_observer_->SetHasSufficientlyVisibleVideo(player1, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player1);
+
+  OnVideoVisibilityChanged();
+  EXPECT_TRUE(HasSufficientlyVisibleVideo());
+
+  // Add a second player with with a video reporting as sufficiently visible,
+  // and make player1 report that its video is not sufficiently visible.
+  int player2 = player_observer_->StartNewPlayer();
+  player_observer_->SetHasSufficientlyVisibleVideo(player2, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player2);
+
+  player_observer_->SetHasSufficientlyVisibleVideo(player1, false);
+
+  OnVideoVisibilityChanged();
+  EXPECT_TRUE(HasSufficientlyVisibleVideo());
+
+  // Make player2 report that its video is not sufficiently visible.
+  player_observer_->SetHasSufficientlyVisibleVideo(player2, false);
+
+  OnVideoVisibilityChanged();
+  EXPECT_FALSE(HasSufficientlyVisibleVideo());
 }
 
 TEST_F(MediaSessionImplTest, SessionInfoDontHideMetadataByDefault) {

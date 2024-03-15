@@ -111,6 +111,9 @@ interface MediaPlayerObserver {
   // Notifies that the RemotePlayback metadata of the media player has changed.
   OnRemotePlaybackMetadataChange(media_session.mojom.RemotePlaybackMetadata
                              remote_playback_metadata);
+
+  // Notifies that the video visibility has changed.
+  OnVideoVisibilityChanged(bool meets_visibility_threshold);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

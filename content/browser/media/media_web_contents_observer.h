@@ -215,6 +215,7 @@ class CONTENT_EXPORT MediaWebContentsObserver
     void OnRemotePlaybackMetadataChange(
         media_session::mojom::RemotePlaybackMetadataPtr
             remote_playback_metadata) override;
+    void OnVideoVisibilityChanged(bool meets_visibility_threshold) override;
 
    private:
     PlayerInfo* GetPlayerInfo();

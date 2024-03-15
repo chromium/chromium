@@ -446,6 +446,15 @@ TEST_F(MediaSessionControllerTest, PictureInPictureAvailability) {
       controller_->get_player_id_for_testing()));
 }
 
+TEST_F(MediaSessionControllerTest, SufficientlyVisibleVideo) {
+  EXPECT_FALSE(controller_->HasSufficientlyVisibleVideo(
+      controller_->get_player_id_for_testing()));
+
+  controller_->OnVideoVisibilityChanged(true);
+  EXPECT_TRUE(controller_->HasSufficientlyVisibleVideo(
+      controller_->get_player_id_for_testing()));
+}
+
 TEST_F(MediaSessionControllerTest, AudioOutputSinkIdChange) {
   EXPECT_EQ(controller_->GetAudioOutputSinkId(
                 controller_->get_player_id_for_testing()),

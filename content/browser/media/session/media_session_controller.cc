@@ -175,6 +175,11 @@ bool MediaSessionController::IsPictureInPictureAvailable(int player_id) const {
   return is_picture_in_picture_available_;
 }
 
+bool MediaSessionController::HasSufficientlyVisibleVideo(int player_id) const {
+  DCHECK_EQ(player_id_, player_id);
+  return has_sufficiently_visible_video_;
+}
+
 void MediaSessionController::OnPlaybackPaused(bool reached_end_of_stream) {
   is_paused_ = true;
 
@@ -229,6 +234,12 @@ void MediaSessionController::OnRemotePlaybackMetadataChanged(
     media_session::mojom::RemotePlaybackMetadataPtr metadata) {
   media_session_->SetRemotePlaybackMetadata(std::move(metadata));
   AddOrRemovePlayer();
+}
+
+void MediaSessionController::OnVideoVisibilityChanged(
+    bool meets_visibility_threshold) {
+  has_sufficiently_visible_video_ = meets_visibility_threshold;
+  media_session_->OnVideoVisibilityChanged();
 }
 
 bool MediaSessionController::IsMediaSessionNeeded() const {

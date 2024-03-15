@@ -83,6 +83,10 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
   // with MediaPosition.
   base::TimeDelta WaitForExpectedPositionAtLeast(const MediaPosition& position);
 
+  // Blocks until notified about MediaSessionInfo meets_visibility_threshold
+  // changing to the given value. Returns the value reported.
+  bool WaitForMeetsVisibilityThreshold(bool meets_visibility_threshold);
+
   const mojom::MediaSessionInfoPtr& session_info() const {
     return session_info_;
   }
@@ -116,6 +120,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
   std::optional<std::set<mojom::MediaSessionAction>> expected_actions_;
   std::optional<bool> expected_controllable_;
   std::optional<bool> expected_hide_metadata_;
+  std::optional<bool> expected_meets_visibility_threshold_;
   std::optional<
       std::pair<mojom::MediaSessionImageType, std::vector<MediaImage>>>
       expected_images_of_type_;

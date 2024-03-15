@@ -328,6 +328,66 @@ TEST_P(MediaSessionControllersManagerTest,
   observer.WaitForExpectedActions(GetDefaultActions());
 }
 
+TEST_P(MediaSessionControllersManagerTest, SufficientlyVisibleVideo) {
+  if (!IsMediaSessionEnabled()) {
+    return;
+  }
+
+  manager_->OnMetadata(media_player_id_, true, true,
+                       media::MediaContentType::kTransient);
+
+  media_session::test::MockMediaSessionMojoObserver observer(*media_session());
+
+  manager_->OnVideoVisibilityChanged(media_player_id_, true);
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+
+  // Verify that media session reports video is sufficiently visible.
+  EXPECT_TRUE(observer.WaitForMeetsVisibilityThreshold(true));
+
+  // Update video visibility to not sufficiently visible, and verify that media
+  // session reports video is not sufficiently visible.
+  manager_->OnVideoVisibilityChanged(media_player_id_, false);
+  EXPECT_FALSE(observer.WaitForMeetsVisibilityThreshold(false));
+}
+
+TEST_P(MediaSessionControllersManagerTest,
+       SufficientlyVisibleVideoMultiplePlayers) {
+  if (!IsMediaSessionEnabled()) {
+    return;
+  }
+
+  manager_->OnMetadata(media_player_id_, true, true,
+                       media::MediaContentType::kPersistent);
+  manager_->OnMetadata(media_player_id2_, true, true,
+                       media::MediaContentType::kPersistent);
+
+  media_session::test::MockMediaSessionMojoObserver observer(*media_session());
+
+  manager_->OnVideoVisibilityChanged(media_player_id_, true);
+  manager_->OnVideoVisibilityChanged(media_player_id2_, true);
+
+  // If there is exactly one player, media session reports its video visibility.
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  EXPECT_TRUE(observer.WaitForMeetsVisibilityThreshold(true));
+
+  // Change the video visibility of the first player's video.
+  manager_->OnVideoVisibilityChanged(media_player_id_, false);
+
+  // Stop the second player.
+  manager_->OnPause(media_player_id2_, true);
+
+  // There is exactly one player again (the second one). Media session should
+  // use its updated video visibility.
+  EXPECT_TRUE(observer.WaitForMeetsVisibilityThreshold(true));
+
+  // Stop the first player.
+  manager_->OnPause(media_player_id_, true);
+
+  // There are no remaining players. Media session should report there are no
+  // visible videos.
+  EXPECT_FALSE(observer.WaitForMeetsVisibilityThreshold(false));
+}
+
 // First bool is to indicate whether InternalMediaSession is enabled.
 // Second bool is to indicate whether AudioFocus is enabled.
 INSTANTIATE_TEST_SUITE_P(MediaSessionEnabledTestInstances,

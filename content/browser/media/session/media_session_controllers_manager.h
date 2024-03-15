@@ -95,6 +95,10 @@ class CONTENT_EXPORT MediaSessionControllersManager {
       const MediaPlayerId& id,
       media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata);
 
+  // Called when video visibility for the player |id| has changed.
+  void OnVideoVisibilityChanged(const MediaPlayerId& id,
+                                bool meets_visibility_threshold);
+
  private:
   using ControllersMap =
       std::map<MediaPlayerId, std::unique_ptr<MediaSessionController>>;

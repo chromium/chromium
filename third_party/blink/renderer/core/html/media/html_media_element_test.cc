@@ -198,6 +198,8 @@ class TestMediaPlayerObserver final
     run_loop_->Quit();
   }
 
+  void OnVideoVisibilityChanged(bool meets_visibility_threshold) override {}
+
   // Getters used from HTMLMediaElementTest.
   bool received_media_playing() const { return received_media_playing_; }
 

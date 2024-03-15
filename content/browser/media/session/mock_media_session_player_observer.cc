@@ -114,6 +114,13 @@ bool MockMediaSessionPlayerObserver::IsPictureInPictureAvailable(
   return false;
 }
 
+bool MockMediaSessionPlayerObserver::HasSufficientlyVisibleVideo(
+    int player_id) const {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  return players_[player_id].has_sufficiently_visible_video_;
+}
+
 RenderFrameHost* MockMediaSessionPlayerObserver::render_frame_host() const {
   if (render_frame_host_global_id_.has_value()) {
     return RenderFrameHost::FromID(render_frame_host_global_id_.value());
@@ -153,6 +160,14 @@ void MockMediaSessionPlayerObserver::SetPosition(
     media_session::MediaPosition& position) {
   EXPECT_GT(players_.size(), player_id);
   players_[player_id].position_ = position;
+}
+
+void MockMediaSessionPlayerObserver::SetHasSufficientlyVisibleVideo(
+    size_t player_id,
+    bool has_sufficiently_visible_video) {
+  EXPECT_GT(players_.size(), player_id);
+  players_[player_id].has_sufficiently_visible_video_ =
+      has_sufficiently_visible_video;
 }
 
 int MockMediaSessionPlayerObserver::received_suspend_calls() const {

@@ -42,6 +42,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
+  bool HasSufficientlyVisibleVideo(int player_id) const override;
   RenderFrameHost* render_frame_host() const override;
   bool HasAudio(int player_id) const override;
   bool HasVideo(int player_id) const override;
@@ -70,6 +71,10 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   // Set the position for |player_id|.
   void SetPosition(size_t player_id, media_session::MediaPosition& position);
 
+  // Set |has_sufficiently_visible_video| for |player_id|.
+  void SetHasSufficientlyVisibleVideo(size_t player_id,
+                                      bool has_sufficiently_visible_video);
+
   int received_suspend_calls() const;
   int received_resume_calls() const;
   int received_seek_forward_calls() const;
@@ -95,6 +100,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     std::string audio_sink_id_ =
         media::AudioDeviceDescription::kDefaultDeviceId;
     bool supports_device_switching_ = true;
+    bool has_sufficiently_visible_video_ = false;
   };
 
   // Basic representation of the players. The position in the vector is the

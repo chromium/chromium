@@ -349,7 +349,11 @@ void HTMLVideoElement::UpdateVisibilityTrackerStateIfExists() {
 }
 
 void HTMLVideoElement::ReportVisibility(bool meets_visibility_threshold) {
-  // TODO(crbug.com/1464351): Notify observers.
+  if (GetWebMediaPlayer()) {
+    for (auto& observer : GetMediaPlayerObserverRemoteSet()) {
+      observer->OnVideoVisibilityChanged(meets_visibility_threshold);
+    }
+  }
 }
 
 bool HTMLVideoElement::IsPersistent() const {
