@@ -20,9 +20,11 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
 namespace {
 
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
@@ -33,6 +35,8 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
               (const GURL& url, OpenUrlFrom from, Disposition disposition),
               (override));
 };
+
+}  // namespace
 
 class MahiPanelViewTest : public AshTestBase {
  public:
@@ -246,5 +250,46 @@ TEST_F(MahiPanelViewMockTimeTest, LoadingAnimations) {
   EXPECT_TRUE(outlines_container->GetVisible());
 }
 
-}  // namespace
+// Tests that pressing on the send button takes the user to the Q&A View and the
+// back button takes the user back to the main view.
+TEST_F(MahiPanelViewTest, TransitionToQuestionAnswerView) {
+  const auto* const summary_outlines_section = panel_view()->GetViewByID(
+      mahi_constants::ViewId::kSummaryOutlinesSection);
+  const auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  const auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  const auto* const back_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kBackButton);
+
+  // Assert that the views to be tested exist.
+  ASSERT_TRUE(summary_outlines_section);
+  ASSERT_TRUE(question_answer_view);
+  ASSERT_TRUE(back_button);
+  ASSERT_TRUE(send_button);
+
+  // Initially the Summary Outlines section is visible.
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+  EXPECT_FALSE(question_answer_view->GetVisible());
+  EXPECT_FALSE(back_button->GetVisible());
+  EXPECT_TRUE(send_button->GetVisible());
+
+  // Pressing the send button should take the user to the Q&A view.
+  LeftClickOn(send_button);
+  EXPECT_FALSE(summary_outlines_section->GetVisible());
+  EXPECT_TRUE(question_answer_view->GetVisible());
+  EXPECT_TRUE(back_button->GetVisible());
+  EXPECT_TRUE(send_button->GetVisible());
+
+  // Run layout so the back button updates its size and becomes clickable.
+  views::test::RunScheduledLayout(widget());
+
+  // Pressing the back button should take the user back to the main view.
+  LeftClickOn(back_button);
+  EXPECT_TRUE(summary_outlines_section->GetVisible());
+  EXPECT_FALSE(question_answer_view->GetVisible());
+  EXPECT_FALSE(back_button->GetVisible());
+  EXPECT_TRUE(send_button->GetVisible());
+}
+
 }  // namespace ash

@@ -19,6 +19,7 @@
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
 #include "ash/system/mahi/mahi_constants.h"
+#include "ash/system/mahi/mahi_question_answer_view.h"
 #include "ash/system/mahi/summary_outlines_section.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
@@ -174,13 +175,6 @@ class ContentScrollView : public views::ScrollView,
                                             0));
     scroll_bar->SetSnapBackOnDragOutside(false);
     SetVerticalScrollBar(std::move(scroll_bar));
-    SetContents(views::Builder<views::View>()
-                    .SetUseDefaultFillLayout(true)
-                    .AddChild(views::Builder<SummaryOutlinesSection>())
-                    // TODO(htpp://b/319731486): Change this view to the Q&A
-                    // section and show/hide it accordingly.
-                    .AddChild(views::Builder<views::View>())
-                    .Build());
   }
 
  private:
@@ -300,12 +294,14 @@ MahiPanelView::MahiPanelView() {
           }))
           .Build());
 
-  header_row->AddChildView(
+  back_button_ = header_row->AddChildView(
       IconButton::Builder()
           .SetViewId(mahi_constants::ViewId::kBackButton)
           .SetType(IconButton::Type::kSmallFloating)
           .SetVisible(false)  // Visible when Q&A View is showing.
           .SetVectorIcon(&kEcheArrowBackIcon)
+          .SetCallback(base::BindRepeating(&MahiPanelView::OnBackButtonPressed,
+                                           weak_ptr_factory_.GetWeakPtr()))
           // TODO(b/319264190): Replace string.
           .SetAccessibleName(u"Back to summary")
           .Build());
@@ -395,8 +391,21 @@ MahiPanelView::MahiPanelView() {
                                    CreateFeedbackButton(THUMBS_UP)),
                                views::Builder<views::View>(
                                    CreateFeedbackButton(THUMBS_DOWN))),
-              views::Builder<views::View>(
-                  std::make_unique<ContentScrollView>()))
+              views::Builder<views::ScrollView>(
+                  std::make_unique<ContentScrollView>())
+                  .SetContents(
+                      views::Builder<views::View>()
+                          .SetUseDefaultFillLayout(true)
+                          .AddChildren(
+                              views::Builder<SummaryOutlinesSection>()
+                                  .SetID(mahi_constants::ViewId::
+                                             kSummaryOutlinesSection)
+                                  .CopyAddressTo(&summary_outlines_section_),
+                              views::Builder<MahiQuestionAnswerView>()
+                                  .SetID(mahi_constants::ViewId::
+                                             kQuestionAnswerView)
+                                  .CopyAddressTo(&question_answer_view_)
+                                  .SetVisible(false))))
           .Build());
 
   auto* ask_question_container = AddChildView(
@@ -434,6 +443,8 @@ MahiPanelView::MahiPanelView() {
           .SetType(IconButton::Type::kSmallFloating)
           .SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase1)
           .SetVectorIcon(&vector_icons::kSendIcon)
+          .SetCallback(base::BindRepeating(&MahiPanelView::OnSendButtonPressed,
+                                           weak_ptr_factory_.GetWeakPtr()))
           // TODO(b/319264190): Replace string.
           .SetAccessibleName(u"Send")
           .Build());
@@ -467,6 +478,21 @@ void MahiPanelView::OnLearnMoreLinkClicked() {
       GURL(mahi_constants::kLearnMorePage),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
+}
+
+void MahiPanelView::OnSendButtonPressed() {
+  if (!question_answer_view_->GetVisible()) {
+    summary_outlines_section_->SetVisible(false);
+    question_answer_view_->SetVisible(true);
+    back_button_->SetVisible(true);
+  }
+  question_answer_view_->CreateSampleQuestionAnswer();
+}
+
+void MahiPanelView::OnBackButtonPressed() {
+  summary_outlines_section_->SetVisible(true);
+  question_answer_view_->SetVisible(false);
+  back_button_->SetVisible(false);
 }
 
 BEGIN_METADATA(MahiPanelView)

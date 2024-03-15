@@ -17,6 +17,10 @@ class Event;
 
 namespace ash {
 
+class IconButton;
+class MahiQuestionAnswerView;
+class SummaryOutlinesSection;
+
 // The code for Mahi main panel view. This view is placed within
 // `MahiPanelWidget`.
 class ASH_EXPORT MahiPanelView : public views::FlexLayoutView {
@@ -32,6 +36,13 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView {
   // Callbacks for buttons and link.
   void OnCloseButtonPressed(const ui::Event& event);
   void OnLearnMoreLinkClicked();
+  void OnBackButtonPressed();
+  void OnSendButtonPressed();
+
+  // Owned by the views hierarchy.
+  raw_ptr<IconButton> back_button_;
+  raw_ptr<MahiQuestionAnswerView> question_answer_view_;
+  raw_ptr<SummaryOutlinesSection> summary_outlines_section_;
 
   base::WeakPtrFactory<MahiPanelView> weak_ptr_factory_{this};
 };
