@@ -19,8 +19,6 @@ class Time;
 - (void)setGroupTitle:(NSString*)title;
 // Sets the group color.
 - (void)setGroupColor:(UIColor*)color;
-// Sets the group's date creation.
-- (void)setGroupDateCreation:(base::Time)date;
 
 @end
 

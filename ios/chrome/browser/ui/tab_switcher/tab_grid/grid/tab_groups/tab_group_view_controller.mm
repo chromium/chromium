@@ -23,7 +23,6 @@
 
 namespace {
 constexpr CGFloat kColoredDotSize = 20;
-constexpr CGFloat kDotSeparationSize = 4;
 constexpr CGFloat kTitleHorizontalMargin = 16;
 constexpr CGFloat kTitleVerticalMargin = 10;
 constexpr CGFloat kHorizontalMargin = 9;
@@ -47,8 +46,6 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   NSString* _groupTitle;
   // Group's color.
   UIColor* _groupColor;
-  // Group's creation date.
-  base::Time _groupCreationDate;
   // The title of the view.
   UIView* _primaryTitle;
   // The blur background.
@@ -215,10 +212,6 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   _groupColor = color;
 }
 
-- (void)setGroupDateCreation:(base::Time)date {
-  _groupCreationDate = date;
-}
-
 #pragma mark - Private
 
 // Returns the navigation item which contain the back button.
@@ -345,14 +338,6 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   return l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1);
 }
 
-// Returns the string which give information about the creation date.
-- (NSString*)creationDateString {
-  NSString* dateString = base::SysUTF16ToNSString(
-      base::LocalizedTimeFormatWithPattern(_groupCreationDate, "YYYY/MM/dd"));
-  return l10n_util::GetNSStringF(IDS_IOS_TAB_GROUP_CREATION_DATE,
-                                 base::SysNSStringToUTF16(dateString));
-}
-
 // Returns the configured sub titles view.
 - (UIView*)configuredSubTitle {
   UIView* subTitleView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -370,18 +355,6 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
       [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   numberOfTabsLabel.text = [self numberOfTabsString];
 
-  UILabel* creationDateLabel = [[UILabel alloc] init];
-  creationDateLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  creationDateLabel.textColor = textColor;
-  creationDateLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  creationDateLabel.text = [self creationDateString];
-
-  UIView* dotSeparation = [[UIView alloc] initWithFrame:CGRectZero];
-  dotSeparation.translatesAutoresizingMaskIntoConstraints = NO;
-  dotSeparation.layer.backgroundColor = textColor.CGColor;
-  dotSeparation.layer.cornerRadius = kDotSeparationSize / 2;
-
   // TODO(crbug.com/1501837): Add action to the button.
   UIButton* menuButton = [[UIButton alloc] init];
   menuButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -393,8 +366,6 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   menuButton.tintColor = UIColor.whiteColor;
 
   [subTitleView addSubview:numberOfTabsLabel];
-  [subTitleView addSubview:dotSeparation];
-  [subTitleView addSubview:creationDateLabel];
   [subTitleView addSubview:menuButton];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -405,25 +376,11 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
         constraintEqualToAnchor:subTitleView.topAnchor],
     [subTitleView.heightAnchor
         constraintEqualToAnchor:numberOfTabsLabel.heightAnchor],
-    [dotSeparation.leadingAnchor
-        constraintEqualToAnchor:numberOfTabsLabel.trailingAnchor
-                       constant:kDotTitleSeparationMargin],
-    [dotSeparation.centerYAnchor
-        constraintEqualToAnchor:numberOfTabsLabel.centerYAnchor],
-    [dotSeparation.heightAnchor constraintEqualToConstant:kDotSeparationSize],
-    [dotSeparation.widthAnchor constraintEqualToConstant:kDotSeparationSize],
-    [creationDateLabel.leadingAnchor
-        constraintEqualToAnchor:dotSeparation.trailingAnchor
-                       constant:kDotTitleSeparationMargin],
-    [creationDateLabel.centerYAnchor
-        constraintEqualToAnchor:numberOfTabsLabel.centerYAnchor],
     [menuButton.trailingAnchor
         constraintEqualToAnchor:subTitleView.trailingAnchor
                        constant:-kSubTitleHorizontalPadding],
     [menuButton.centerYAnchor
         constraintEqualToAnchor:numberOfTabsLabel.centerYAnchor],
-    [creationDateLabel.trailingAnchor
-        constraintLessThanOrEqualToAnchor:menuButton.leadingAnchor],
   ]];
 
   return subTitleView;
