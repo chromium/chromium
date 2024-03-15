@@ -1407,6 +1407,8 @@ source_set("ash") {
     "fusebox/fusebox_copy_to_fd.h",
     "fusebox/fusebox_errno.cc",
     "fusebox/fusebox_errno.h",
+    "fusebox/fusebox_histograms.cc",
+    "fusebox/fusebox_histograms.h",
     "fusebox/fusebox_moniker.cc",
     "fusebox/fusebox_moniker.h",
     "fusebox/fusebox_read_writer.cc",
