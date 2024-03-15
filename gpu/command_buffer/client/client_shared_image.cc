@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <GLES2/gl2.h>
+#include <GLES2/gl2extchromium.h>
 
 #include "base/containers/contains.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -146,6 +147,35 @@ void ClientSharedImage::SetColorSpaceOnNativeBuffer(
   gpu_memory_buffer_->SetColorSpace(color_space);
 }
 #endif
+
+uint32_t ClientSharedImage::GetTextureTarget() {
+  // On Mac, the platform-specific texture target is required if this
+  // SharedImage is backed by a native buffer. On other platforms, the
+  // platform-specific target is required if external sampling is used.
+#if BUILDFLAG(IS_MAC)
+  // NOTE: WebGPU usage on Mac results in SharedImages being backed by
+  // IOSurfaces.
+  uint32_t usages_requiring_native_buffer = SHARED_IMAGE_USAGE_SCANOUT |
+                                            SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                            SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+
+  bool uses_native_buffer = client_side_native_buffer_used_ ||
+                            (usage() & usages_requiring_native_buffer);
+
+  return uses_native_buffer ? GetPlatformSpecificTextureTarget()
+                            : GL_TEXTURE_2D;
+#else
+  bool uses_external_sampler =
+      format().PrefersExternalSampler() || format().IsLegacyMultiplanar();
+
+  // The client should configure an SI to use external sampling only if they
+  // have provided a native buffer to back that SI.
+  CHECK(!uses_external_sampler || client_side_native_buffer_used_);
+
+  return uses_external_sampler ? GetPlatformSpecificTextureTarget()
+                               : GL_TEXTURE_2D;
+#endif
+}
 
 uint32_t ClientSharedImage::GetTextureTargetForOverlays() {
 #if BUILDFLAG(IS_MAC)

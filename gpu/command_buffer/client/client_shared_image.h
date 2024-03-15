@@ -112,6 +112,11 @@ class GPU_EXPORT ClientSharedImage
   void SetColorSpaceOnNativeBuffer(const gfx::ColorSpace& color_space);
 #endif
 
+  // Returns the GL texture target to use for this SharedImage.
+  // TODO(crbug.com/41494843): Eliminate all the below variants in favor of all
+  // clients using this function.
+  uint32_t GetTextureTarget();
+
   // Returns the texture target to use for overlays:
   // * GL_TEXTURE_2D on platforms other than MacOS
   // * The platform-specific texture target for MacOS
