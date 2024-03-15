@@ -2644,8 +2644,17 @@ void DoubleNestedRunLoopStep2(DetachToBrowserTabDragControllerTest* test,
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop) {
+// TODO(crbug.com/326021146): flaky test.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop \
+  DISABLED_DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop
+#else
+#define MAYBE_DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop \
+  DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop
+#endif
+IN_PROC_BROWSER_TEST_P(
+    DetachToBrowserTabDragControllerTest,
+    MAYBE_DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   // Wayland doesn't necessarily support window move loops; this test doesn't
