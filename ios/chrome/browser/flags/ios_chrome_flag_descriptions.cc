@@ -57,6 +57,12 @@ const char kAutofillEnableCardBenefitsSyncDescription[] =
     "When enabled, card benefits offered by issuers will be synced from "
     "the Payments server.";
 
+const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[] =
+    "Enable dynamically loading fields for address input";
+const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[] =
+    "When enabled, the address fields for input would be dynamically loaded "
+    "based on the country value";
+
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[] =
     "Enable sending merchant domain in server card unmask requests";
 const char kAutofillEnableMerchantDomainInUnmaskCardRequestDescription[] =

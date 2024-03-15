@@ -52,6 +52,12 @@ extern const char kAutofillEnableCardBenefitsForCapitalOneDescription[];
 extern const char kAutofillEnableCardBenefitsSyncName[];
 extern const char kAutofillEnableCardBenefitsSyncDescription[];
 
+// Title and description for the flag to enable dynamically loading the fields
+// for address input based on the country value.
+extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];
+extern const char
+    kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[];
+
 // Title and description for the flag to send merchant_domain as a top-level
 // parameter in card unmask requests.
 extern const char kAutofillEnableMerchantDomainInUnmaskCardRequestName[];

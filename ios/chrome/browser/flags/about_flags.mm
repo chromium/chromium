@@ -24,6 +24,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_switches.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/browser_sync/browser_sync_switches.h"
 #import "components/commerce/core/commerce_feature_list.h"
@@ -1490,6 +1491,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardBenefitsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardBenefits)},
+    {"autofill-enable-dynamically-loading-fields-on-input",
+     flag_descriptions::
+         kAutofillEnableDynamicallyLoadingFieldsForAddressInputName,
+     flag_descriptions::
+         kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAutofillDynamicallyLoadsFieldsForAddressInput)},
     {"password-manager-signin-uff",
      flag_descriptions::kIOSPasswordSignInUffName,
      flag_descriptions::kIOSPasswordSignInUffDescription, flags_ui::kOsIos,

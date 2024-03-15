@@ -17,6 +17,7 @@ source_set("flags") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/common",
     "//components/bookmarks/common",
     "//components/browser_sync:switches",
     "//components/commerce/core:feature_list",
