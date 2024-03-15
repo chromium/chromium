@@ -2888,7 +2888,7 @@ class AutofillInteractiveTestDynamicForm : public AutofillInteractiveTest {
   void SetUpOnMainThread() override {
     AutofillInteractiveTest::SetUpOnMainThread();
     test_api(*GetBrowserAutofillManager())
-        .set_limit_before_refill(base::Minutes(1));
+        .set_limit_before_refill(base::Hours(1));
   }
 
   ValueWaiter ListenForRefill(

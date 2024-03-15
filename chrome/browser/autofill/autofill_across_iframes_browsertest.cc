@@ -79,7 +79,7 @@ class TestAutofillManager : public BrowserAutofillManager {
  public:
   explicit TestAutofillManager(ContentAutofillDriver* driver)
       : BrowserAutofillManager(driver, "en-US") {
-    test_api(*this).set_limit_before_refill(base::Minutes(1));
+    test_api(*this).set_limit_before_refill(base::Hours(1));
   }
 
   static TestAutofillManager& GetForRenderFrameHost(
