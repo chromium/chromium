@@ -207,10 +207,12 @@ function convert_srcs_to_project_files() {
         local neon_i8mm_sources=$(echo "$intrinsic_list" | \
           grep '_neon_i8mm\.c$')
         local sve_sources=$(echo "$intrinsic_list" | grep '_sve\.c$')
+        local sve2_sources=$(echo "$intrinsic_list" | grep '_sve2\.c$')
         write_gni neon_dotprod_sources $2_neon_dotprod \
           "$BASE_DIR/libvpx_srcs.gni"
         write_gni neon_i8mm_sources $2_neon_i8mm "$BASE_DIR/libvpx_srcs.gni"
         write_gni sve_sources $2_sve "$BASE_DIR/libvpx_srcs.gni"
+        write_gni sve2_sources $2_sve2 "$BASE_DIR/libvpx_srcs.gni"
       fi
      fi
   fi
@@ -395,6 +397,11 @@ all_platforms+=" --enable-realtime-only"
 all_platforms+=" --disable-install-docs"
 all_platforms+=" --disable-libyuv"
 x86_platforms="--enable-pic --as=yasm $DISABLE_AVX512 $HIGHBD"
+# SVE is disabled for Windows Arm64 due to a limitation with clang-cl-18:
+# third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
+# error: cannot mangle this built-in __SVInt8_t type yet
+disable_sve="--disable-sve --disable-sve2"
+
 gen_config_files linux/ia32 \
   "--target=x86-linux-gcc ${all_platforms} ${x86_platforms}"
 gen_config_files linux/x64 \
@@ -419,7 +426,7 @@ gen_config_files linux/loongarch \
 gen_config_files linux/ppc64 "--target=ppc64le-linux-gcc ${all_platforms}"
 gen_config_files linux/generic "--target=generic-gnu $HIGHBD ${all_platforms}"
 gen_config_files win/arm64-highbd \
-  "--target=arm64-win64-vs15 ${all_platforms} ${HIGHBD}"
+  "--target=arm64-win64-vs15 ${all_platforms} ${HIGHBD} ${disable_sve}"
 gen_config_files win/ia32 \
   "--target=x86-win32-vs14 ${all_platforms} ${x86_platforms}"
 gen_config_files win/x64 \
@@ -483,10 +490,7 @@ gen_rtcd_header linux/mips64el mips64el
 gen_rtcd_header linux/loongarch loongarch
 gen_rtcd_header linux/ppc64 ppc
 gen_rtcd_header linux/generic generic
-# SVE is disabled due to a limitation with clang-cl-18:
-# third_party\llvm-build\Release+Asserts\lib\clang\18\include\arm_sve.h(271,1):
-# error: cannot mangle this built-in __SVInt8_t type yet
-gen_rtcd_header win/arm64-highbd armv8 "${require_neon} --disable-sve"
+gen_rtcd_header win/arm64-highbd armv8 "${require_neon} ${disable_sve}"
 gen_rtcd_header win/ia32 x86 "${require_sse2}"
 gen_rtcd_header win/x64 x86_64
 gen_rtcd_header mac/ia32 x86 "${require_sse2}"
