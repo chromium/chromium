@@ -1,8 +1,5 @@
 # This is reserved for people that are comfortable with Chromium builders
 # and understand the implications of changing their configurations.
-
-set noparent
-
 bpastene@chromium.org
 estaab@chromium.org
 gatong@chromium.org
