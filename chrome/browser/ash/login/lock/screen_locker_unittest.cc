@@ -128,17 +128,21 @@ class ScreenLockerUnitTest : public testing::Test {
   }
 
   void CreateSessionForUser(bool is_public_account) {
+    ASSERT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
     if (is_public_account) {
       fake_user_manager_->AddPublicAccountUser(test_account_id_);
     } else {
       fake_user_manager_->AddUser(test_account_id_);
     }
-    fake_user_manager_->LoginUser(test_account_id_);
-
-    ASSERT_TRUE(user_manager::UserManager::Get()->GetPrimaryUser());
-    ASSERT_TRUE(ProfileManager::GetActiveUserProfile() == user_profile_);
     session_manager::SessionManager::Get()->CreateSession(
         test_account_id_, test_account_id_.GetUserEmail(), false);
+    fake_user_manager_->SimulateUserProfileLoad(test_account_id_);
+
+    auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+    ASSERT_TRUE(primary_user);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(primary_user,
+                                                            user_profile_);
+    ASSERT_TRUE(ProfileManager::GetActiveUserProfile() == user_profile_);
   }
 
   void TearDown() override {

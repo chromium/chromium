@@ -317,17 +317,25 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
                                          bool browser_restart,
                                          bool is_child) {
   for (user_manager::User* user : users_) {
-    if (user->username_hash() == username_hash) {
+    if (user->GetAccountId() == account_id) {
       user->set_is_logged_in(true);
+      user->set_username_hash(username_hash);
       logged_in_users_.push_back(user);
-
       if (!primary_user_) {
         primary_user_ = user;
+      }
+      if (!active_user_) {
+        active_user_ = user;
       }
       break;
     }
   }
-  // TODO(jamescook): This should set active_user_ and call NotifyOnLogin().
+
+  if (!active_user_ && IsEphemeralAccountId(account_id)) {
+    RegularUserLoggedInAsEphemeral(account_id,
+                                   user_manager::UserType::kRegular);
+  }
+  // TODO(jamescook): This should call NotifyOnLogin().
 }
 
 void FakeChromeUserManager::SwitchToLastActiveUser() {

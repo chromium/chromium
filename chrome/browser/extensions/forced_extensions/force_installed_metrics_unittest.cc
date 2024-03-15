@@ -924,10 +924,8 @@ TEST_F(ForceInstalledMetricsTest, ReportGuestSessionOnExtensionFailure) {
   auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
-  const AccountId account_id =
-      AccountId::FromUserEmail(profile()->GetProfileUserName());
   user_manager::User* user = fake_user_manager->AddGuestUser();
-  fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
+  fake_user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
   SetupForceList(ExtensionOrigin::kWebStore);
@@ -952,10 +950,8 @@ TEST_F(ForceInstalledMetricsTest,
   auto* fake_user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager scoped_user_manager(
       base::WrapUnique(fake_user_manager));
-  const AccountId account_id =
-      AccountId::FromUserEmail(profile()->GetProfileUserName());
   user_manager::User* user = fake_user_manager->AddGuestUser();
-  fake_user_manager->UserLoggedIn(account_id, user->username_hash(),
+  fake_user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
                                   false /* browser_restart */,
                                   false /* is_child */);
 
