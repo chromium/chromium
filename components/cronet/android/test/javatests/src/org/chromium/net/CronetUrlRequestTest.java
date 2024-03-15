@@ -57,6 +57,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -2960,6 +2961,188 @@ public class CronetUrlRequestTest {
         builder.build().start();
         callback.blockForDone();
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onRedirect_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onRedirectReceived(
+                            UrlRequest request, UrlResponseInfo info, String newLocationUrl) {
+                        callbackRequest.set(request);
+                        super.onRedirectReceived(request, info, newLocationUrl);
+                    }
+                };
+
+        startRequestAndAssertCallback(NativeTestServer.getRedirectURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onResponseStarted_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
+                        callbackRequest.set(request);
+                        super.onResponseStarted(request, info);
+                    }
+                };
+
+        startRequestAndAssertCallback(NativeTestServer.getSuccessURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onReadCompleted_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onReadCompleted(
+                            UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
+                        callbackRequest.set(request);
+                        super.onReadCompleted(request, info, byteBuffer);
+                    }
+                };
+
+        startRequestAndAssertCallback(
+                NativeTestServer.getEchoMethodURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onSucceeded_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
+                        callbackRequest.set(request);
+                        super.onSucceeded(request, info);
+                    }
+                };
+
+        startRequestAndAssertCallback(NativeTestServer.getSuccessURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onCanceled_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onCanceled(UrlRequest request, UrlResponseInfo info) {
+                        callbackRequest.set(request);
+                        super.onCanceled(request, info);
+                    }
+                };
+        callback.setFailure(FailureType.CANCEL_SYNC, ResponseStep.ON_RESPONSE_STARTED);
+
+        startRequestAndAssertCallback(NativeTestServer.getSuccessURL(), callback, callbackRequest);
+    }
+
+    // While our documentation does not specify that the request passed to the callbacks is the same
+    // object, it is an implicit expectation by our users that we should not break.
+    // See b/328442628 for an example regression.
+    @Test
+    public void testCallbackMethod_onFailed_receivesSameRequestObject() {
+        AtomicReference<UrlRequest> callbackRequest = new AtomicReference<>();
+        TestUrlRequestCallback callback =
+                new TestUrlRequestCallback() {
+                    @Override
+                    public void onFailed(
+                            UrlRequest request, UrlResponseInfo info, CronetException error) {
+                        callbackRequest.set(request);
+                        super.onFailed(request, info, error);
+                    }
+                };
+        callback.setFailure(FailureType.THROW_SYNC, ResponseStep.ON_RESPONSE_STARTED);
+
+        startRequestAndAssertCallback(NativeTestServer.getSuccessURL(), callback, callbackRequest);
+    }
+
+    private void startRequestAndAssertCallback(
+            String url,
+            TestUrlRequestCallback callback,
+            AtomicReference<UrlRequest> callbackRequest) {
+        UrlRequest request =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                        .build();
+        request.start();
+        callback.blockForDone();
+
+        assertThat(callbackRequest.get() == request).isTrue();
+    }
+
+    @Test
+    public void testCallback_twoRequestsFromOneBuilder_receivesCorrectRequestObject() {
+        AtomicReference<UrlRequest> onResponseStartedRequest = new AtomicReference<>();
+        AtomicReference<UrlRequest> onReadCompletedRequest = new AtomicReference<>();
+        AtomicReference<UrlRequest> onSucceededRequest = new AtomicReference<>();
+        TestUrlRequestCallback.SimpleSucceedingCallback callback =
+                new TestUrlRequestCallback.SimpleSucceedingCallback() {
+
+                    @Override
+                    public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
+                        onResponseStartedRequest.set(request);
+                        super.onResponseStarted(request, info);
+                    }
+
+                    @Override
+                    public void onReadCompleted(
+                            UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
+                        onReadCompletedRequest.set(request);
+                        super.onReadCompleted(request, info, byteBuffer);
+                    }
+
+                    @Override
+                    public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
+                        onSucceededRequest.set(request);
+                        super.onSucceeded(request, info);
+                    }
+                };
+
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                NativeTestServer.getSuccessURL(), callback, callback.getExecutor());
+        UrlRequest request1 = builder.build();
+        UrlRequest request2 = builder.build();
+        request1.start();
+        callback.done.block();
+
+        assertThat(onResponseStartedRequest.get() == request1).isTrue();
+        assertThat(onReadCompletedRequest.get() == request1).isTrue();
+        assertThat(onSucceededRequest.get() == request1).isTrue();
+
+        callback.done.close();
+        request2.start();
+        callback.done.block();
+
+        assertThat(onResponseStartedRequest.get() == request2).isTrue();
+        assertThat(onReadCompletedRequest.get() == request2).isTrue();
+        assertThat(onSucceededRequest.get() == request2).isTrue();
     }
 
     @NativeMethods("cronet_tests")

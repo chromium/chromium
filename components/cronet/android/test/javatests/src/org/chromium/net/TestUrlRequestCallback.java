@@ -408,4 +408,53 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         }
         return mFailureType != FailureType.CANCEL_ASYNC_WITHOUT_PAUSE;
     }
+
+    /**
+     * A simple callback for a succeeding non-redirected request. Fails when other callback methods
+     * that should not be executed are called.
+     */
+    public static class SimpleSucceedingCallback extends UrlRequest.Callback {
+        public final ConditionVariable done = new ConditionVariable();
+        private final ExecutorService mExecutor;
+
+        public SimpleSucceedingCallback() {
+            mExecutor = Executors.newSingleThreadExecutor();
+        }
+
+        @Override
+        public void onRedirectReceived(UrlRequest request, UrlResponseInfo info, String location) {
+            fail();
+        }
+
+        @Override
+        public void onResponseStarted(UrlRequest request, UrlResponseInfo info) {
+            request.read(ByteBuffer.allocateDirect(32 * 1024));
+        }
+
+        @Override
+        public void onReadCompleted(
+                UrlRequest request, UrlResponseInfo info, ByteBuffer byteBuffer) {
+            byteBuffer.clear(); // we don't care about the data
+            request.read(byteBuffer);
+        }
+
+        @Override
+        public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
+            done.open();
+        }
+
+        @Override
+        public void onCanceled(UrlRequest request, UrlResponseInfo info) {
+            fail();
+        }
+
+        @Override
+        public void onFailed(UrlRequest request, UrlResponseInfo info, CronetException e) {
+            fail(e.getMessage());
+        }
+
+        public ExecutorService getExecutor() {
+            return mExecutor;
+        }
+    }
 }

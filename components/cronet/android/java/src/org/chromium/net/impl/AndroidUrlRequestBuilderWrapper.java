@@ -10,6 +10,7 @@ import static org.chromium.net.impl.HttpEngineNativeProvider.EXT_VERSION;
 import android.net.Network;
 
 import androidx.annotation.RequiresExtension;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetEngine;
 
@@ -18,9 +19,13 @@ import java.util.concurrent.Executor;
 @RequiresExtension(extension = EXT_API_LEVEL, version = EXT_VERSION)
 class AndroidUrlRequestBuilderWrapper extends org.chromium.net.ExperimentalUrlRequest.Builder {
     private final android.net.http.UrlRequest.Builder mBackend;
+    private final AndroidUrlRequestCallbackWrapper mWrappedCallback;
 
-    public AndroidUrlRequestBuilderWrapper(android.net.http.UrlRequest.Builder backend) {
+    public AndroidUrlRequestBuilderWrapper(
+            android.net.http.UrlRequest.Builder backend,
+            AndroidUrlRequestCallbackWrapper wrappedCallback) {
         this.mBackend = backend;
+        this.mWrappedCallback = wrappedCallback;
     }
 
     @Override
@@ -76,6 +81,11 @@ class AndroidUrlRequestBuilderWrapper extends org.chromium.net.ExperimentalUrlRe
 
     @Override
     public org.chromium.net.ExperimentalUrlRequest build() {
-        return new AndroidUrlRequestWrapper(mBackend.build());
+        return AndroidUrlRequestWrapper.withRecordingToCallback(mBackend.build(), mWrappedCallback);
+    }
+
+    @VisibleForTesting
+    AndroidUrlRequestCallbackWrapper getCallback() {
+        return mWrappedCallback;
     }
 }

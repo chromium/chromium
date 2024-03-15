@@ -7,6 +7,7 @@ package org.chromium.net;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
@@ -207,11 +208,6 @@ public class CronetTestRule implements TestRule {
             excludedImplementations.addAll(
                     Arrays.asList(ignoreDueToMethodAnnotation.implementations()));
         }
-        if (Build.VERSION.SDK_INT < 34) {
-            excludedImplementations.add(CronetImplementation.AOSP_PLATFORM);
-        }
-
-        Log.i(TAG, "Excluded implementations: %s", excludedImplementations);
 
         Set<CronetImplementation> implementationsUnderTest =
                 EnumSet.complementOf(excludedImplementations);
@@ -220,6 +216,17 @@ public class CronetTestRule implements TestRule {
                                 + "Use DisabledTest instead")
                 .that(implementationsUnderTest)
                 .isNotEmpty();
+
+        if (Build.VERSION.SDK_INT < 34) {
+            implementationsUnderTest.remove(CronetImplementation.AOSP_PLATFORM);
+            assumeFalse(
+                    desc.getMethodName()
+                            + " skipped because it's supposed to run against only AOSP_PLATFORM but"
+                            + " test device is not U+",
+                    implementationsUnderTest.isEmpty());
+        }
+
+        Log.i(TAG, "Implementations to be tested against: %s", implementationsUnderTest);
 
         if (packageName.startsWith("org.chromium.net")) {
             for (CronetImplementation implementation : implementationsUnderTest) {
