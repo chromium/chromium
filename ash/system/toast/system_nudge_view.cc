@@ -207,7 +207,8 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
         AddChildView(std::move(image_and_text_container_unique));
   }
 
-  if (!nudge_data.image_model.IsEmpty()) {
+  const bool has_image = !nudge_data.image_model.IsEmpty();
+  if (has_image) {
     auto* image_view = image_and_text_container->AddChildView(
         views::Builder<views::ImageView>()
             .SetID(VIEW_ID_SYSTEM_NUDGE_IMAGE_VIEW)
@@ -234,16 +235,26 @@ SystemNudgeView::SystemNudgeView(const AnchoredNudgeData& nudge_data)
                    kImageViewSize);
   }
 
+  const bool has_title = !nudge_data.title_text.empty();
   auto* text_container = image_and_text_container->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::LayoutOrientation::kVertical,
+                                       views::MinimumFlexSizeRule::kPreferred,
+                                       views::MaximumFlexSizeRule::kUnbounded))
+          // If the nudge has an image and no title, vertically center the text.
+          .SetMainAxisAlignment(has_image && !has_title
+                                    ? views::LayoutAlignment::kCenter
+                                    : views::LayoutAlignment::kStart)
           .Build());
 
   auto label_width = nudge_data.image_model.IsEmpty()
                          ? kNudgeLabelWidth_NudgeWithoutLeadingImage
                          : kNudgeLabelWidth_NudgeWithLeadingImage;
 
-  if (!nudge_data.title_text.empty()) {
+  if (has_title) {
     auto* title_label = text_container->AddChildView(
         views::Builder<views::Label>()
             .SetID(VIEW_ID_SYSTEM_NUDGE_TITLE_LABEL)
