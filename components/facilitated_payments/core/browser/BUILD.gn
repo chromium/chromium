@@ -4,6 +4,8 @@
 
 static_library("browser") {
   sources = [
+    "facilitated_payments_api_client.h",
+    "facilitated_payments_api_client_delegate.h",
     "facilitated_payments_client.cc",
     "facilitated_payments_client.h",
     "facilitated_payments_driver.cc",

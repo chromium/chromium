@@ -13,6 +13,7 @@ static_library("android") {
   deps = [
     "//base",
     "//components/facilitated_payments/android/java:jni_headers",
+    "//components/facilitated_payments/core/browser",
   ]
 }
 
@@ -21,8 +22,8 @@ source_set("unit_tests") {
   sources = [ "facilitated_payments_api_client_android_unittest.cc" ]
   deps = [
     ":android",
+    "//components/facilitated_payments/core/browser",
     "//content/test:test_support",
-    "//testing/gmock",
     "//testing/gtest",
   ]
 }

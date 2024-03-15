@@ -10,41 +10,41 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
+#include "base/memory/weak_ptr.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 
 namespace payments::facilitated {
 
+class FacilitatedPaymentsApiClientDelegate;
+
 // Android implementation for facilitated payment APIs, such as PIX. Uses
 // Android APIs through JNI.
-class FacilitatedPaymentsApiClientAndroid {
+class FacilitatedPaymentsApiClientAndroid
+    : public FacilitatedPaymentsApiClient {
  public:
-  FacilitatedPaymentsApiClientAndroid();
-  virtual ~FacilitatedPaymentsApiClientAndroid();
+  explicit FacilitatedPaymentsApiClientAndroid(
+      base::WeakPtr<FacilitatedPaymentsApiClientDelegate> delegate);
+  ~FacilitatedPaymentsApiClientAndroid() override;
 
   FacilitatedPaymentsApiClientAndroid(
       const FacilitatedPaymentsApiClientAndroid& other) = delete;
   FacilitatedPaymentsApiClientAndroid& operator=(
       const FacilitatedPaymentsApiClientAndroid& other) = delete;
 
-  // Checks whether the facilitated payment API is available. The response is
-  // received in the OnIsAvailable() method. (If the API is not available, there
-  // is no need to show FOPs to the user.)
-  void IsAvailable();
+  // FacilitatedPaymentsApiClient implementation:
+  void IsAvailable() override;
+  void GetClientToken() override;
+  void InvokePurchaseAction(base::span<const uint8_t> action_token) override;
 
-  // Retrieves the client token to be used to initiate a payment. The response
-  // is received in the OnGetClientToken() method.
-  void GetClientToken();
-
-  // Invokes the purchase manager with the given action token. The result is
-  // received in the OnPurchaseActionResult() method.
-  void InvokePurchaseAction(base::span<const uint8_t> action_token);
-
-  // Virtual because tests override these methods.
-  virtual void OnIsAvailable(JNIEnv* env, jboolean is_available);
-  virtual void OnGetClientToken(JNIEnv* env, jobject jclient_token_byte_array);
-  virtual void OnPurchaseActionResult(JNIEnv* env,
-                                      jboolean is_purchase_action_successful);
+  void OnIsAvailable(JNIEnv* env, jboolean is_available);
+  void OnGetClientToken(
+      JNIEnv* env,
+      const base::android::JavaRef<jbyteArray>& jclient_token_byte_array);
+  void OnPurchaseActionResult(JNIEnv* env,
+                              jboolean is_purchase_action_successful);
 
  private:
+  base::WeakPtr<FacilitatedPaymentsApiClientDelegate> delegate_;
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 };
 
