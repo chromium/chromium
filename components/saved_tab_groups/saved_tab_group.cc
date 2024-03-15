@@ -141,6 +141,12 @@ SavedTabGroup& SavedTabGroup::SetPosition(size_t position) {
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetPinned(bool pinned) {
+  pinned_ = pinned;
+  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::AddTabLocally(SavedTabGroupTab tab) {
   InsertTabImpl(tab);
   UpdateTabPositionsImpl();

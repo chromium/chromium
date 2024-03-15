@@ -58,6 +58,8 @@ class SavedTabGroup {
   }
   std::optional<size_t> position() const { return position_; }
 
+  bool pinned() const { return pinned_; }
+
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
   // Accessors for Tabs based on id.
@@ -86,6 +88,7 @@ class SavedTabGroup {
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros);
   SavedTabGroup& SetPosition(size_t position);
+  SavedTabGroup& SetPinned(bool pinned);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
@@ -191,6 +194,10 @@ class SavedTabGroup {
   // A value of nullopt means that the group was not assigned a position and
   // will be assigned one when it is added into the SavedTabGroupModel.
   std::optional<size_t> position_;
+
+  // Whether the saved tab group is pinned in the bookmarks bar on desktop
+  // browsers.
+  bool pinned_ = false;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;
