@@ -79,6 +79,13 @@
   }
 
   /**
+   * @return {number} Total virtual time elapsed.
+   */
+  elapsedTime() {
+    return this.totalElapsedTime_;
+  }
+
+  /**
    * Revokes any granted virtual time, resulting in no more animation frames
    * being issued and final OnExpired call being made.
    */
