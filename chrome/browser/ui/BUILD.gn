@@ -4169,6 +4169,7 @@ static_library("ui") {
       "webui/signin/sync_confirmation_ui.h",
     ]
     deps += [
+      "//chrome/browser/lens/lens_overlay",
       "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//ui/webui",
     ]

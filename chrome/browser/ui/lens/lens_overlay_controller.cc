@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/lens/lens_overlay/lens_overlay_query_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
@@ -69,10 +70,13 @@ LensOverlayController::LensOverlayController(tabs::TabModel* tab_model)
     : tab_model_(tab_model) {
   // Automatically unregisters on destruction.
   tab_model_->owning_model()->AddObserver(this);
+  lens_overlay_query_controller_ =
+      std::make_unique<lens::LensOverlayQueryController>();
 }
 
 LensOverlayController::~LensOverlayController() {
   CloseUI();
+  lens_overlay_query_controller_.reset();
 }
 
 void LensOverlayController::ShowUI() {

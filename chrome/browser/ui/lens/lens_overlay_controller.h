@@ -22,6 +22,7 @@ class TabStripModel;
 
 namespace lens {
 class LensOverlaySidePanelCoordinator;
+class LensOverlayQueryController;
 }  // namespace lens
 
 namespace tabs {
@@ -201,6 +202,10 @@ class LensOverlayController : public TabStripModelObserver,
   // Observer for the WebContents of the associated tab. Only valid while the
   // overlay widget is showing.
   std::unique_ptr<UnderlyingWebContentsObserver> tab_contents_observer_;
+
+  // Query controller.
+  std::unique_ptr<lens::LensOverlayQueryController>
+      lens_overlay_query_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};
