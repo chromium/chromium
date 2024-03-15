@@ -11,8 +11,12 @@ namespace bluetooth {
 FakeLocalGattCharacteristic::FakeLocalGattCharacteristic(
     const std::string& characteristic_id,
     const device::BluetoothUUID& characteristic_uuid,
-    device::BluetoothLocalGattService* service)
-    : characteristic_id_(characteristic_id),
+    device::BluetoothLocalGattService* service,
+    Properties properties,
+    Permissions permissions)
+    : properties_(properties),
+      permissions_(permissions),
+      characteristic_id_(characteristic_id),
       characteristic_uuid_(characteristic_uuid),
       service_(service) {}
 
@@ -28,14 +32,12 @@ device::BluetoothUUID FakeLocalGattCharacteristic::GetUUID() const {
 
 FakeLocalGattCharacteristic::Properties
 FakeLocalGattCharacteristic::GetProperties() const {
-  NOTIMPLEMENTED();
-  return PROPERTY_NONE;
+  return properties_;
 }
 
 FakeLocalGattCharacteristic::Permissions
 FakeLocalGattCharacteristic::GetPermissions() const {
-  NOTIMPLEMENTED();
-  return PERMISSION_NONE;
+  return permissions_;
 }
 
 FakeLocalGattCharacteristic::NotificationStatus

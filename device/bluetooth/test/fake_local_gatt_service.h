@@ -25,8 +25,13 @@ class FakeLocalGattService : public device::BluetoothLocalGattService {
 
   // Adds a fake characteristic with |characteristic_uuid|
   // to this service.
-  void AddFakeCharacteristic(const std::string& characteristic_id,
-                             const device::BluetoothUUID& characteristic_uuid);
+  FakeLocalGattCharacteristic* AddFakeCharacteristic(
+      const std::string& characteristic_id,
+      const device::BluetoothUUID& characteristic_uuid,
+      device::BluetoothGattCharacteristic::Properties properties =
+          device::BluetoothGattCharacteristic::Property::PROPERTY_NONE,
+      device::BluetoothGattCharacteristic::Permissions permissions =
+          device::BluetoothGattCharacteristic::Permission::PERMISSION_NONE);
 
   // device::BluetoothGattService:
   std::string GetIdentifier() const override;
@@ -51,11 +56,16 @@ class FakeLocalGattService : public device::BluetoothLocalGattService {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void set_should_create_local_gatt_characteristic_succeed(bool success) {
+    should_create_local_gatt_characteristic_succeed_ = success;
+  }
+
  private:
+  bool should_create_local_gatt_characteristic_succeed_ = true;
   const std::string service_id_;
   const device::BluetoothUUID service_uuid_;
   const bool is_primary_;
-  base::flat_map<std::string,
+  base::flat_map<device::BluetoothUUID,
                  std::unique_ptr<device::BluetoothLocalGattCharacteristic>>
       uuid_to_fake_characteristic_map_;
   base::WeakPtrFactory<FakeLocalGattService> weak_ptr_factory_{this};

@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module bluetooth.mojom;
+
+// Possible permissions of a GattCharacteristic, sent in
+// GattService.CreateCharacteristic. This struct should stay in sync with
+// BluetoothGattCharacteristic::Permission defined in
+// //device/bluetooth/bluetooth_gatt_characteristic.h.
+struct GattCharacteristicPermissions {
+  bool read;
+  bool write;
+  bool read_encrypted;
+  bool write_encrypted;
+  bool read_encrypted_authenticated;
+  bool write_encrypted_authenticated;
+};
+

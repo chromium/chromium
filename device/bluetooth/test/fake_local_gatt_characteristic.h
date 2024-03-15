@@ -22,7 +22,9 @@ class FakeLocalGattCharacteristic
  public:
   FakeLocalGattCharacteristic(const std::string& characteristic_id,
                               const device::BluetoothUUID& characteristic_uuid,
-                              device::BluetoothLocalGattService* service);
+                              device::BluetoothLocalGattService* service,
+                              Properties properties,
+                              Permissions permissions);
   ~FakeLocalGattCharacteristic() override;
 
   // device::BluetoothGattCharacteristic:
@@ -37,7 +39,13 @@ class FakeLocalGattCharacteristic
                                         bool indicate) override;
   device::BluetoothLocalGattService* GetService() const override;
 
+  base::WeakPtr<FakeLocalGattCharacteristic> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
+  Properties properties_ = Property::PROPERTY_NONE;
+  Permissions permissions_ = Permission::PERMISSION_NONE;
   const std::string characteristic_id_;
   const device::BluetoothUUID characteristic_uuid_;
   raw_ptr<device::BluetoothLocalGattService> service_ = nullptr;

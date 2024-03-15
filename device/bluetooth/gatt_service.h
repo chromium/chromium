@@ -32,12 +32,19 @@ class GattService : public mojom::GattService,
       mojo::PendingReceiver<mojom::GattService> pending_gatt_service_receiver,
       mojo::PendingRemote<mojom::GattServiceObserver> pending_observer_remote,
       const device::BluetoothUUID& service_id,
-      const scoped_refptr<device::BluetoothAdapter>& adapter);
+      scoped_refptr<device::BluetoothAdapter> adapter);
   ~GattService() override;
   GattService(const GattService&) = delete;
   GattService& operator=(const GattService&) = delete;
 
  private:
+  // mojom::GattService:
+  void CreateCharacteristic(
+      const device::BluetoothUUID& characteristic_uuid,
+      const device::BluetoothGattCharacteristic::Permissions& permission,
+      const device::BluetoothGattCharacteristic::Properties& property,
+      CreateCharacteristicCallback callback) override;
+
   // device::BluetoothLocalGattService::Delegate:
   void OnCharacteristicReadRequest(
       const device::BluetoothDevice* device,
@@ -80,7 +87,9 @@ class GattService : public mojom::GattService,
       const device::BluetoothLocalGattCharacteristic* characteristic) override;
 
   const device::BluetoothUUID service_id_;
+  std::set<device::BluetoothUUID> characteristic_uuids_;
   mojo::Remote<mojom::GattServiceObserver> observer_remote_;
+  scoped_refptr<device::BluetoothAdapter> adapter_;
   mojo::Receiver<mojom::GattService> receiver_{this};
 };
 

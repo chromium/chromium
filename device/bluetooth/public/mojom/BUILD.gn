@@ -6,7 +6,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   generate_java = true
-  sources = [ "uuid.mojom" ]
+  sources = [
+    "gatt_characteristic_permissions.mojom",
+    "gatt_characteristic_properties.mojom",
+    "uuid.mojom",
+  ]
   webui_module_path = "/"
 
   # Indirect dependency of Blink test support so generate legacy bindings for
@@ -20,8 +24,22 @@ mojom("mojom") {
           mojom = "bluetooth.mojom.UUID"
           cpp = "::device::BluetoothUUID"
         },
+        {
+          mojom = "bluetooth.mojom.GattCharacteristicProperties"
+          cpp = "::device::BluetoothGattCharacteristic::Properties"
+        },
+        {
+          mojom = "bluetooth.mojom.GattCharacteristicPermissions"
+          cpp = "::device::BluetoothGattCharacteristic::Permissions"
+        },
       ]
-      traits_headers = [ "//device/bluetooth/public/mojom/uuid_mojom_traits.h" ]
+      traits_headers = [
+        "//device/bluetooth/public/mojom/uuid_mojom_traits.h",
+        "//device/bluetooth/public/mojom/gatt_characteristic_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//device/bluetooth/public/mojom/gatt_characteristic_mojom_traits.cc",
+      ]
       traits_public_deps = [ "//device/bluetooth/public/cpp" ]
     },
   ]

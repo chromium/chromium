@@ -56,6 +56,8 @@ build_webui("build") {
     "$root_gen_dir/device/bluetooth/public/mojom/adapter.mojom-webui.ts",
     "$root_gen_dir/device/bluetooth/public/mojom/device.mojom-webui.ts",
     "$root_gen_dir/device/bluetooth/public/mojom/uuid.mojom-webui.ts",
+    "$root_gen_dir/device/bluetooth/public/mojom/gatt_characteristic_properties.mojom-webui.ts",
+    "$root_gen_dir/device/bluetooth/public/mojom/gatt_characteristic_permissions.mojom-webui.ts",
   ]
 
   ts_composite = true

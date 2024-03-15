@@ -6,6 +6,8 @@ module bluetooth.mojom;
 
 import "device/bluetooth/public/mojom/device.mojom";
 import "device/bluetooth/public/mojom/uuid.mojom";
+import "device/bluetooth/public/mojom/gatt_characteristic_permissions.mojom";
+import "device/bluetooth/public/mojom/gatt_characteristic_properties.mojom";
 
 // Possible errors sent as a response by Adapter.ConnectToDevice on a Device
 // connection request.
@@ -141,6 +143,15 @@ interface ServerSocket {
 // TODO(b/311430390): Implement additional methods that will create and update a
 // GATT characteristic, and delete the GATT service.
 interface GattService {
+  // Creates a characteristic and adds it to the GATT service under the given
+  // characteristic uuid, using the service UUID tied to the `GattService`.
+  // This method will fail if the characteristic already exists at
+  // `characteristic_uuid`; it is expected that callers will only call
+  // when they want to create a characteristic that does not already exist.
+  [Sync]
+  CreateCharacteristic(UUID characteristic_uuid,
+    GattCharacteristicPermissions permissions,
+    GattCharacteristicProperties properties) => (bool success);
 };
 
 // Listener on `GattService` events.
