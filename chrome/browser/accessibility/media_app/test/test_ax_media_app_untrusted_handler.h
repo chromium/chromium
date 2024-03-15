@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_HELPERS_H_
-#define CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_HELPERS_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_
+#define CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_
 
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
@@ -11,7 +11,9 @@
 #include "services/screen_ai/buildflags/buildflags.h"
 
 namespace ash {
+
 class AXMediaAppUntrustedHandler;
+
 }  // namespace ash
 
 namespace ash::test {
@@ -84,4 +86,4 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
 
 }  // namespace ash::test
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_HELPERS_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_MEDIA_APP_TEST_TEST_AX_MEDIA_APP_UNTRUSTED_HANDLER_H_

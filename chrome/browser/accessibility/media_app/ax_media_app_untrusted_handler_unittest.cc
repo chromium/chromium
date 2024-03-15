@@ -12,7 +12,7 @@
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
-#include "chrome/browser/accessibility/media_app/test/test_helpers.h"
+#include "chrome/browser/accessibility/media_app/test/test_ax_media_app_untrusted_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"

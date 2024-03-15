@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/media_app/test/test_helpers.h"
+#include "chrome/browser/accessibility/media_app/test/test_ax_media_app_untrusted_handler.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "third_party/re2/src/re2/re2.h"

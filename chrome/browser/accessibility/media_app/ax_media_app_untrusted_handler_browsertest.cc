@@ -13,7 +13,7 @@
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
-#include "chrome/browser/accessibility/media_app/test/test_helpers.h"
+#include "chrome/browser/accessibility/media_app/test/test_ax_media_app_untrusted_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
