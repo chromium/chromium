@@ -1663,12 +1663,26 @@ bool AuthenticatorGPMPinSheetModel::IsForgotGPMPinButtonVisible() const {
   return mode_ == Mode::kPinEntry;
 }
 
+bool AuthenticatorGPMPinSheetModel::IsGPMPinOptionsButtonVisible() const {
+  return mode_ == Mode::kPinCreate;
+}
+
 std::u16string AuthenticatorGPMPinSheetModel::GetAcceptButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_CONFIRM);
 }
 
 void AuthenticatorGPMPinSheetModel::OnAccept() {
   dialog_model()->OnGPMPinEntered(pin_);
+}
+
+void AuthenticatorGPMPinSheetModel::OnGPMPinOptionChosen(
+    bool is_arbitrary) const {
+  if (!is_arbitrary) {
+    // The sheet already facilitates entering six digit pin.
+    return;
+  }
+
+  dialog_model()->OnGPMPinOptionChosen(is_arbitrary);
 }
 
 // AuthenticatorGPMArbitraryPinSheetModel ------------------------------------
@@ -1734,6 +1748,11 @@ bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonEnabled() const {
   return pin_.length() > 0;
 }
 
+bool AuthenticatorGPMArbitraryPinSheetModel::IsGPMPinOptionsButtonVisible()
+    const {
+  return mode_ == Mode::kPinCreate;
+}
+
 std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetAcceptButtonLabel()
     const {
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
@@ -1742,4 +1761,14 @@ std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetAcceptButtonLabel()
 void AuthenticatorGPMArbitraryPinSheetModel::OnAccept() {
   // TODO(rgod): Possibly add OnGPMArbitraryPinEntered().
   dialog_model()->OnGPMPinEntered(pin_);
+}
+
+void AuthenticatorGPMArbitraryPinSheetModel::OnGPMPinOptionChosen(
+    bool is_arbitrary) const {
+  if (is_arbitrary) {
+    // The sheet already facilitates entering arbitrary pin.
+    return;
+  }
+
+  dialog_model()->OnGPMPinOptionChosen(is_arbitrary);
 }

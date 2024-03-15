@@ -599,6 +599,9 @@ class AuthenticatorRequestDialogModel
   // Called when the user needs to set their GPM PIN for the first time.
   void OnCreateGPMPin();
 
+  // Called when the user chooses an option of creating a GPM pin.
+  void OnGPMPinOptionChosen(bool is_arbitrary);
+
   // Return the last entered GPM PIN.
   std::string&& TakeGPMPin();
 

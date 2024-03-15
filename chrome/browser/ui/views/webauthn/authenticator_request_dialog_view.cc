@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
+#include "chrome/browser/ui/views/webauthn/pin_options_button.h"
 #include "chrome/browser/ui/views/webauthn/sheet_view_factory.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -117,6 +118,11 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
             &AuthenticatorRequestDialogView::ForgotGPMPinPressed,
             base::Unretained(this)),
         u"Forgot PIN (UNTRANSLATED)"));
+  } else if (sheet_->model()->IsGPMPinOptionsButtonVisible()) {
+    SetExtraView(std::make_unique<PinOptionsButton>(
+        u"PIN options (UT)",
+        base::BindRepeating(&AuthenticatorRequestDialogView::GPMPinOptionChosen,
+                            base::Unretained(this))));
   } else {
     SetExtraView(std::make_unique<views::View>());
   }
@@ -327,6 +333,10 @@ void AuthenticatorRequestDialogView::ManageDevicesButtonPressed() {
 
 void AuthenticatorRequestDialogView::ForgotGPMPinPressed() {
   sheet_->model()->OnForgotGPMPin();
+}
+
+void AuthenticatorRequestDialogView::GPMPinOptionChosen(bool is_arbitrary) {
+  sheet_->model()->OnGPMPinOptionChosen(is_arbitrary);
 }
 
 void AuthenticatorRequestDialogView::OnDialogClosing() {

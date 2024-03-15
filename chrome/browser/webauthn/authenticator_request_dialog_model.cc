@@ -1272,6 +1272,13 @@ void AuthenticatorRequestDialogModel::OnCreateGPMPin() {
   SetCurrentStep(Step::kGPMCreatePin);
 }
 
+void AuthenticatorRequestDialogModel::OnGPMPinOptionChosen(bool is_arbitrary) {
+  DCHECK(current_step() == Step::kGPMCreatePin ||
+         current_step() == Step::kGPMCreateArbitraryPin);
+  SetCurrentStep(is_arbitrary ? Step::kGPMCreateArbitraryPin
+                              : Step::kGPMCreatePin);
+}
+
 std::string&& AuthenticatorRequestDialogModel::TakeGPMPin() {
   return std::move(gpm_pin_);
 }
