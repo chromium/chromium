@@ -91,6 +91,8 @@ bool IsValidProfile(Profile* profile) {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 
+// Safe Browsing checks are only applied when `params->mode` is
+// `kSave`, which is only for PPAPI requests.
 bool IsDownloadAllowedBySafeBrowsing(
     safe_browsing::DownloadCheckResult result) {
   using Result = safe_browsing::DownloadCheckResult;
@@ -616,6 +618,9 @@ void FileSelectHelper::GetSanitizedFilenameOnUIThread(
   base::FilePath default_file_path = profile_->last_selected_directory().Append(
       GetSanitizedFileName(params->default_file_name));
 #if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Mode `kSave` is only for PPAPI writes, which are checked by Safe Browsing.
+  // See comments on
+  // //third_party/blink/public/mojom/choosers/file_chooser.mojom.
   if (params->mode == FileChooserParams::Mode::kSave) {
     CheckDownloadRequestWithSafeBrowsing(default_file_path, std::move(params));
     return;
