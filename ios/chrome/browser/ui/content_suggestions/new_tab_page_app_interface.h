@@ -38,15 +38,6 @@
 // Resets SetUpList prefs to clear any completed items.
 + (void)resetSetUpListPrefs;
 
-// Returns YES if the SetUpListItemView for SignInSync is complete.
-+ (BOOL)setUpListItemSignInSyncIsComplete;
-
-// Returns YES if the SetUpListItemView for DefaultBrowser is complete.
-+ (BOOL)setUpListItemDefaultBrowserIsComplete;
-
-// Returns YES if the SetUpListItemView for Autofill is complete.
-+ (BOOL)setUpListItemAutofillIsComplete;
-
 // Returns YES if the Default Browser SetUpListItemView item in the Magic Stack
 // is complete.
 + (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete;

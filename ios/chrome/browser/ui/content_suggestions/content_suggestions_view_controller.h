@@ -11,7 +11,6 @@
 
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol ParcelTrackingOptInCommands;
-@protocol SetUpListViewDelegate;
 @class ContentSuggestionsMetricsRecorder;
 @class LayoutGuideCenter;
 class UrlLoadingBrowserAgent;
@@ -26,8 +25,7 @@ class UrlLoadingBrowserAgent;
 - (instancetype)initWithNibName:(NSString*)name
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience,
-                              SetUpListViewDelegate>
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
     audience;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
@@ -35,9 +33,6 @@ class UrlLoadingBrowserAgent;
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
-
-// Delegate for SetUpListView events.
-@property(nonatomic, weak) id<SetUpListViewDelegate> setUpListViewDelegate;
 
 // Handler for the Parcel Tracking Commands.
 @property(nonatomic, weak) id<ParcelTrackingOptInCommands>

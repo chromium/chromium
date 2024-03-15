@@ -136,11 +136,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   [self.presentationAudience didSelectSafetyCheckItem:type];
 }
 
-// Indicates that the user has tapped the given `view`.
-- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
-  [self.presentationAudience didTapSetUpListItemView:view];
-}
-
 #pragma mark - SafetyCheckManagerObserver
 
 - (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state {

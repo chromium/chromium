@@ -101,7 +101,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_tap_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
@@ -134,7 +134,7 @@
     NotificationsOptInCoordinatorDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
-    SetUpListViewDelegate>
+    SetUpListTapDelegate>
 
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
@@ -165,9 +165,6 @@
   // The coordinator that displays the opt-in notification settings view for the
   // Set Up List.
   NotificationsOptInCoordinator* _notificationsOptInCoordinator;
-
-  // The coordinator used to present an action sheet for the Set Up List menu.
-  ActionSheetCoordinator* _actionSheetCoordinator;
 
   // The Show More Menu presented from the Set Up List in the Magic Stack.
   SetUpListShowMoreViewController* _setUpListShowMoreViewController;
@@ -357,7 +354,6 @@
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   self.contentSuggestionsViewController.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
-  self.contentSuggestionsViewController.setUpListViewDelegate = self;
   self.contentSuggestionsViewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
   self.contentSuggestionsViewController.parcelTrackingCommandHandler =
@@ -659,10 +655,9 @@
   }
 }
 
-#pragma mark - SetUpListViewDelegate
+#pragma mark - SetUpListTapDelegate
 
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
-  if (IsMagicStackEnabled()) {
     if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
       [_magicStackRankingModel
           logMagicStackEngagementForType:ContentSuggestionsModuleType::
@@ -672,7 +667,6 @@
           logMagicStackEngagementForType:SetUpListModuleTypeForSetUpListType(
                                              type)];
     }
-  }
   [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
   [self.NTPMetricsDelegate setUpListItemOpened];
   PrefService* localState = GetApplicationContext()->GetLocalState();
@@ -712,36 +706,6 @@
   } else {
     completionBlock();
   }
-}
-
-- (void)showSetUpListMenuWithButton:(UIButton*)button {
-  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                           title:nil
-                         message:nil
-                            rect:button.bounds
-                            view:button];
-
-  __weak ContentSuggestionsMediator* weakMediator =
-      self.contentSuggestionsMediator;
-  [_actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SET_UP_LIST_SETTINGS_TURN_OFF)
-                action:^{
-                  [weakMediator.setUpListMediator disableModule];
-                }
-                 style:UIAlertActionStyleDestructive];
-  [_actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL)
-                action:nil
-                 style:UIAlertActionStyleCancel];
-  [_actionSheetCoordinator start];
-}
-
-- (void)setUpListViewHeightDidChange {
-  [self.delegate contentSuggestionsWasUpdated];
 }
 
 - (void)dismissSeeMoreViewController {

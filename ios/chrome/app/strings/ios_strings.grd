@@ -4556,12 +4556,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_NOTIFICATIONS_TITLE" desc="Title for the Set Up List item that encourages the user to enable Chrome notifications.">
         Get Notifications
       </message>
-      <message name="IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL" desc="Title for the item to cancel opening the Set Up List Settings action sheet.">
-        Cancel
-      </message>
-      <message name="IDS_IOS_SET_UP_LIST_SETTINGS_TURN_OFF" desc="Title for the item to turn off the Set Up List, in the Set Up List Settings action sheet.">
-        Turn off
-      </message>
       <message name="IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to sign in and set up syncing.">
         Sign in with your Google Account to sync your bookmarks, history, and more.
       </message>

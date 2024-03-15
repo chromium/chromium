@@ -20,8 +20,7 @@ source_set("set_up_list") {
     "set_up_list_show_more_item_view.mm",
     "set_up_list_show_more_view_controller.h",
     "set_up_list_show_more_view_controller.mm",
-    "set_up_list_view.h",
-    "set_up_list_view.mm",
+    "set_up_list_tap_delegate.h",
   ]
   deps = [
     ":constants",
@@ -151,10 +150,7 @@ source_set("utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "set_up_list_default_browser_promo_coordinator_unittest.mm",
-    "set_up_list_view_unittest.mm",
-  ]
+  sources = [ "set_up_list_default_browser_promo_coordinator_unittest.mm" ]
   deps = [
     ":constants",
     ":default_browser_promo",

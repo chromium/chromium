@@ -209,12 +209,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)showSetUpList {
   NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
-  if (IsMagicStackEnabled()) {
     DCHECK(!IsIOSMagicStackCollectionViewEnabled());
     [self.consumer showSetUpListModuleWithConfigs:[self setUpListConfigs]];
-  } else {
-    [self.consumer showSetUpListWithItems:items];
-  }
   [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
   for (SetUpListItemViewData* item in items) {
     [self.contentSuggestionsMetricsRecorder recordSetUpListItemShown:item.type];
@@ -284,23 +280,16 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         [self.audience replaceSetUpListWithAllSet:config];
       } else {
         [weakSelf.consumer showSetUpListDoneWithAnimations:^{
-          if (!IsMagicStackEnabled()) {
-            [weakSelf.delegate contentSuggestionsWasUpdated];
-          }
         }];
       }
-    } else if (IsMagicStackEnabled()) {
+    } else {
       [weakSelf.consumer scrollToNextMagicStackModuleForCompletedModule:
                              SetUpListModuleTypeForSetUpListType(item.type)];
     }
   };
-  if (IsMagicStackEnabled()) {
     [_consumers setUpListItemDidComplete:item
                        allItemsCompleted:completed
                               completion:completion];
-  } else {
-    [self.consumer markSetUpListItemComplete:item.type completion:completion];
-  }
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

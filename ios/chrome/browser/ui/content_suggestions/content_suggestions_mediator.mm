@@ -117,14 +117,6 @@
     [self.consumer setMostVisitedTilesConfig:self.mostVisitedTilesMediator
                                                  .mostVisitedConfig];
   }
-  if (!IsMagicStackEnabled()) {
-    if ([self.setUpListMediator shouldShowSetUpList]) {
-      [self.setUpListMediator showSetUpList];
-    } else {
-      [self.consumer
-          setShortcutTilesConfig:self.shortcutsMediator.shortcutsConfig];
-    }
-  }
 }
 
 - (void)setConsumer:(id<ContentSuggestionsConsumer>)consumer {

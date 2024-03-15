@@ -336,7 +336,7 @@ struct ViewConfig {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label = [[CrossfadeLabel alloc] init];
   label.text = [self descriptionText];
-  label.numberOfLines = IsMagicStackEnabled() ? 2 : 4;
+  label.numberOfLines = 2;
   label.lineBreakMode = NSLineBreakByTruncatingTail;
   label.font = [UIFont preferredFontForTextStyle:_config.description_font];
   label.adjustsFontForContentSizeCategory = YES;

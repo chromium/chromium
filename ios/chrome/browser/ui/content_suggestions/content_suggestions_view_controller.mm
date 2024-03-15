@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -77,15 +76,11 @@ const float kMagicStackCornerRadius = 16.0f;
 // The distance in which a replaced/replacing module will fade out/in of view.
 const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
 
-// The duration of the animation that hides the Set Up List.
-const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
-
 }  // namespace
 
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
     MagicStackModuleContainerDelegate,
-    SetUpListItemViewTapDelegate,
     URLDropDelegate,
     UIScrollViewDelegate,
     UIScrollViewAccessibilityDelegate>
@@ -118,8 +113,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // List of all of the Shortcut views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsShortcutTileView*>* shortcutsViews;
-// The SetUpListView, if it is currently being displayed.
-@property(nonatomic, strong) SetUpListView* setUpListView;
 // The current state of the Safety Check.
 @property(nonatomic, strong) SafetyCheckState* safetyCheckState;
 // Module Container for the `safetyCheckView` when being shown in Magic Stack.
@@ -138,18 +131,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   NSLayoutConstraint* _magicStackModuleWidth;
   BOOL _magicStackRankReceived;
   NSMutableArray<NSNumber*>* _magicStackModuleOrder;
-  NSArray<SetUpListItemViewData*>* _savedSetUpListItems;
-  SetUpListItemView* _setUpListSyncItemView;
-  SetUpListItemView* _setUpListDefaultBrowserItemView;
-  SetUpListItemView* _setUpListAutofillItemView;
-  SetUpListItemView* _setUpListNotificationsItemView;
   MagicStackModuleContainer* _setUpListSyncModule;
   MagicStackModuleContainer* _setUpListDefaultBrowserModule;
   MagicStackModuleContainer* _setUpListAutofillModule;
   MagicStackModuleContainer* _setUpListNotificationsModule;
   MagicStackModuleContainer* _setUpListCompactedModule;
   MagicStackModuleContainer* _setUpListAllSetModule;
-  NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
   MagicStackModuleContainer* _parcelTrackingModuleContainer;
   NSLayoutConstraint* _mostVisitedTilesStackviewHeightAnchor;
   NSLayoutConstraint* _shortcutsStackviewHeightAnchor;
@@ -217,9 +204,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     } else if (!ShouldPutMostVisitedSitesInMagicStack()) {
       [self createAndInsertMostVisitedModule];
     }
-  }
-  if (_savedSetUpListItems) {
-    [self showSetUpListWithItems:_savedSetUpListItems];
   }
   if (self.shortcutsViews) {
     if (!IsMagicStackEnabled()) {
@@ -554,96 +538,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
-- (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items {
-  DCHECK(!IsMagicStackEnabled());
-  if (!self.viewLoaded) {
-    _savedSetUpListItems = items;
-    return;
-  }
-  NSUInteger index = [self.verticalStackView.arrangedSubviews
-      indexOfObject:self.mostVisitedStackView];
-  if (index == NSNotFound) {
-    index = 0;
-  } else {
-    index++;
-  }
-
-  SetUpListView* setUpListView =
-      [[SetUpListView alloc] initWithItems:items rootView:self.view];
-  setUpListView.delegate = self.setUpListViewDelegate;
-  self.setUpListView = setUpListView;
-  [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [setUpListView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor],
-  ]];
-}
-
-- (void)markSetUpListItemComplete:(SetUpListItemType)type
-                       completion:(ProceduralBlock)completion {
-  if (IsMagicStackEnabled()) {
-    switch (type) {
-      case SetUpListItemType::kSignInSync:
-        [_setUpListSyncItemView markCompleteWithCompletion:completion];
-        break;
-      case SetUpListItemType::kDefaultBrowser:
-        [_setUpListDefaultBrowserItemView
-            markCompleteWithCompletion:completion];
-        break;
-      case SetUpListItemType::kAutofill:
-        [_setUpListAutofillItemView markCompleteWithCompletion:completion];
-        break;
-      case SetUpListItemType::kNotifications:
-        [_setUpListNotificationsItemView markCompleteWithCompletion:completion];
-        break;
-      default:
-        break;
-    }
-  } else {
-    [self.setUpListView markItemComplete:type completion:completion];
-  }
-}
-
 - (void)hideSetUpListWithAnimations:(ProceduralBlock)animations {
-  if (IsMagicStackEnabled()) {
     // Remove Modules with animation
     [self removeSetUpListItemsWithNewModule:nil];
-    return;
-  }
-
-  CHECK(self.setUpListView);
-  NSInteger index = [self.verticalStackView.arrangedSubviews
-      indexOfObject:self.setUpListView];
-  CHECK_NE(index, NSNotFound);
-
-  __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:kSetUpListHideAnimationDuration.InSecondsF()
-      animations:^{
-        __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        strongSelf.setUpListView.hidden = YES;
-        strongSelf.setUpListView.alpha = 0;
-        [strongSelf.view setNeedsLayout];
-        [strongSelf.view layoutIfNeeded];
-        if (animations) {
-          animations();
-        }
-      }
-      completion:^(BOOL finished) {
-        __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        [strongSelf.setUpListView removeFromSuperview];
-        strongSelf.setUpListView.delegate = nil;
-        strongSelf.setUpListView = nil;
-      }];
 }
 
 - (void)showSetUpListDoneWithAnimations:(ProceduralBlock)animations {
-  if (IsMagicStackEnabled()) {
     SetUpListItemViewData* allSetData =
         [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
                                            complete:NO];
@@ -657,16 +557,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     [allSetModule configureWithConfig:config];
     // Determine which module to swap out.
     [self removeSetUpListItemsWithNewModule:allSetModule];
-    return;
-  }
-  __weak __typeof(self) weakSelf = self;
-  [self.setUpListView showDoneWithAnimations:^{
-    [weakSelf.view setNeedsLayout];
-    [weakSelf.view layoutIfNeeded];
-    if (animations) {
-      animations();
-    }
-  }];
 }
 
 // Shows the Safety Check (Magic Stack) module with `state`.
@@ -750,12 +640,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   if (_magicStackRankReceived) {
     [self insertModuleIntoMagicStack:_parcelTrackingModuleContainer];
   }
-}
-
-#pragma mark - SetUpListItemViewTapDelegate methods
-
-- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
-  [self.audience didSelectSetUpListItem:view.type];
 }
 
 #pragma mark - UITraitEnvironment

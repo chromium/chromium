@@ -33,10 +33,6 @@ UIView* FakeOmnibox();
 // it is not in the view hierarchy.
 UILabel* DiscoverHeaderLabel();
 
-// Returns the SetUpListItemView with the given `accessibility_id`.
-SetUpListItemView* SetUpListItemViewWithAccessibilityId(
-    NSString* accessibility_id);
-
 // Returns the SetUpListItemView in a Magic Stack module with the given
 // `accessibility_id`.
 SetUpListItemView* SetUpListItemViewInMagicStackWithAccessibilityId(

@@ -147,9 +147,6 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
     }
   };
 
-  if (!IsMagicStackEnabled()) {
-    AddSignInItem();
-  }
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kDefaultBrowser, prefs,
                                    localState, authService));
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kAutofill, prefs,
@@ -163,10 +160,7 @@ bool IsSigninEnabled(AuthenticationService* auth_service) {
     AddItemIfNotNil(items, BuildItem(SetUpListItemType::kNotifications, prefs,
                                      localState, authService));
   }
-
-  if (IsMagicStackEnabled()) {
-    AddSignInItem();
-  }
+  AddSignInItem();
 
   // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
   return [[self alloc] initWithItems:items

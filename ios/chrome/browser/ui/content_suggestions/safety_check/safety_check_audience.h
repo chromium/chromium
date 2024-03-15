@@ -14,9 +14,6 @@ enum class SafetyCheckItemType;
 // Called when a Safety Check item is selected by the user.
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type;
 
-// Indicates that the user has tapped the given `view`.
-- (void)didTapSetUpListItemView:(SetUpListItemView*)view;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_AUDIENCE_H_

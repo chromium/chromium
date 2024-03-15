@@ -63,13 +63,7 @@ struct MagicStackOrderChange {
 
 // Indicates to the consumer to display the SetUpList - a list of
 // tasks that a new user may want to complete.
-- (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items;
 - (void)showSetUpListModuleWithConfigs:(NSArray<SetUpListConfig*>*)configs;
-
-// Marks a Set Up List item complete with an animation and updated appearance.
-// Calls the `completion` block when the animation is finished.
-- (void)markSetUpListItemComplete:(SetUpListItemType)type
-                       completion:(ProceduralBlock)completion;
 
 // Hides the Set Up List, if it is currently visible. The given `animations`
 // block will be called as part of the animation that hides the Set Up list, to

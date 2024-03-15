@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_item_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_tap_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -40,11 +40,11 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
 
 @implementation SetUpListShowMoreViewController {
   NSArray<SetUpListItemViewData*>* _items;
-  id<SetUpListViewDelegate> _tapDelegate;
+  id<SetUpListTapDelegate> _tapDelegate;
 }
 
 - (instancetype)initWithItems:(NSArray<SetUpListItemViewData*>*)items
-                  tapDelegate:(id<SetUpListViewDelegate>)tapDelegate {
+                  tapDelegate:(id<SetUpListTapDelegate>)tapDelegate {
   self = [super init];
   if (self) {
     _items = items;

@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
-#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -36,13 +35,6 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
       return resultView;
   }
   return nil;
-}
-
-// Returns the SetUpListView, if present.
-SetUpListView* GetSetUpListView() {
-  return base::apple::ObjCCast<SetUpListView>(
-      SubviewWithAccessibilityIdentifier(set_up_list::kAccessibilityID,
-                                         GetAnyKeyWindow()));
 }
 
 }  // namespace
@@ -74,12 +66,6 @@ UIView* FakeOmnibox() {
 UILabel* DiscoverHeaderLabel() {
   return base::apple::ObjCCast<UILabel>(SubviewWithAccessibilityIdentifier(
       DiscoverHeaderTitleAccessibilityID(), GetAnyKeyWindow()));
-}
-
-SetUpListItemView* SetUpListItemViewWithAccessibilityId(
-    NSString* accessibility_id) {
-  return base::apple::ObjCCast<SetUpListItemView>(
-      SubviewWithAccessibilityIdentifier(accessibility_id, GetSetUpListView()));
 }
 
 SetUpListItemView* SetUpListItemViewInMagicStackWithAccessibilityId(
