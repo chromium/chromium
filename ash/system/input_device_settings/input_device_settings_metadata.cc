@@ -7,6 +7,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/input_device.h"
@@ -14,6 +15,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/ozone/evdev/keyboard_mouse_combo_device_metrics.h"
 
 namespace ash {
 
@@ -1499,19 +1501,40 @@ const KeyboardMouseComboMetadata* GetKeyboardMouseComboMetadata(
 }
 
 DeviceType GetDeviceType(const ui::InputDevice& device) {
+  // Tracks whether the device was already logged to guarantee the device is
+  // only tracked once.
+  static base::NoDestructor<base::flat_set<VendorProductId>> logged_devices;
+  auto [_, should_record_metric] =
+      logged_devices->insert({device.vendor_id, device.product_id});
+
   const auto* keyboard_mouse_combo_metadata =
       GetKeyboardMouseComboMetadata(device);
   if (keyboard_mouse_combo_metadata) {
+    if (should_record_metric) {
+      base::UmaHistogramEnumeration(
+          "ChromeOS.Inputs.ComboDeviceClassification",
+          ui::ComboDeviceClassification::kKnownComboDevice);
+    }
     return DeviceType::kKeyboardMouseCombo;
   }
 
   const auto* keyboard_metadata = GetKeyboardMetadata(device);
   if (keyboard_metadata) {
+    if (should_record_metric) {
+      base::UmaHistogramEnumeration(
+          "ChromeOS.Inputs.ComboDeviceClassification",
+          ui::ComboDeviceClassification::kKnownMouseImposter);
+    }
     return DeviceType::kKeyboard;
   }
 
   const auto* mouse_metadata = GetMouseMetadata(device);
   if (mouse_metadata) {
+    if (should_record_metric) {
+      base::UmaHistogramEnumeration(
+          "ChromeOS.Inputs.ComboDeviceClassification",
+          ui::ComboDeviceClassification::kKnownKeyboardImposter);
+    }
     return DeviceType::kMouse;
   }
 

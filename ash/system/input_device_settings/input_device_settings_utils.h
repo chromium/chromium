@@ -134,8 +134,6 @@ ConvertListToButtonRemappingArray(
     const base::Value::List& list,
     mojom::CustomizationRestriction customization_restriction);
 
-ASH_EXPORT bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device);
-
 // Returns whether the given keyboard is ChromeOS layout keyboard.
 ASH_EXPORT bool IsChromeOSKeyboard(const mojom::Keyboard& keyboard);
 
