@@ -157,6 +157,26 @@ def __use_large_b289968566(ctx, step_config):
         "./obj/third_party/blink/renderer/core/unit_tests/web_media_player_impl_unittest.o",
         "./obj/third_party/perfetto/protos/perfetto/trace/merged_trace_lite/perfetto_trace.pb.o",
         "./obj/ui/gl/gl_unittest_utils/gl_bindings_autogen_mock.o",
+
+        # Fallback happens with follwoing args.gn (ci/Linux MSan Builder).
+        # dcheck_always_on = false
+        # is_component_build = false
+        # is_debug = false
+        # is_msan = true
+        # msan_track_origins = 2
+        # use_remoteexec = true
+        "./obj/chrome/test/unit_tests/site_settings_handler_unittest.o",
+        "./obj/components/policy/chrome_settings_proto_generated_compile_proto/chrome_settings.pb.o",
+        "./obj/content/test/content_browsertests/navigation_controller_impl_browsertest.o",
+        "./obj/content/test/content_unittests/auction_runner_unittest.o",
+        "./obj/net/dns/tests/host_resolver_manager_unittest.o",
+        "./obj/net/third_party/quiche/quiche_tests/oghttp2_adapter_test.o",
+        "./obj/net/third_party/quiche/quiche_tests/quic_connection_test.o",
+        "./obj/net/third_party/quiche/quiche_tests/structured_headers_generated_test.o",
+        "./obj/ui/accessibility/accessibility_unittests/ax_node_position_unittest.o",
+        "./obj/ui/gl/gl_unittest_utils/gl_bindings_autogen_mock.o",
+        "./obj/ui/gl/gl_unittest_utils/gl_mock.o",
+        "./obj/v8/v8_turboshaft/csa-optimize-phase.o",
     ]
     if runtime.os == "windows":
         exit137_list = [obj.removesuffix(".o") + ".obj" for obj in exit137_list if obj.startswith("./obj/")]
@@ -172,6 +192,8 @@ def __use_large_b289968566(ctx, step_config):
         r.update(rule)
         r["name"] += "/b289968566/exit-137"
         r["action_outs"] = exit137_list
+        # Some large compile take longer than the default timeout 2m.
+        r["timeout"] = "4m"
 
         # use `_large` variant of platform if it doesn't use default platform,
         # i.e. mac/win case.
