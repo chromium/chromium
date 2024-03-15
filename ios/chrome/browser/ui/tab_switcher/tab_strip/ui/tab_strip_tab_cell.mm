@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "base/strings/string_number_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -306,6 +307,22 @@ UIImage* DefaultFavicon() {
   [NSLayoutConstraint activateConstraints:_separatorHeightConstraints];
 }
 
+- (void)setTabIndex:(NSInteger)tabIndex {
+  if (_tabIndex == tabIndex) {
+    return;
+  }
+  _tabIndex = tabIndex;
+  [self updateAccessibilityValue];
+}
+
+- (void)setNumberOfTabs:(NSInteger)numberOfTabs {
+  if (_numberOfTabs == numberOfTabs) {
+    return;
+  }
+  _numberOfTabs = numberOfTabs;
+  [self updateAccessibilityValue];
+}
+
 #pragma mark - UICollectionViewCell
 
 - (void)applyLayoutAttributes:
@@ -320,6 +337,9 @@ UIImage* DefaultFavicon() {
   self.selected = NO;
   [self setFaviconImage:nil];
   self.item = nil;
+  self.numberOfTabs = 0;
+  self.tabIndex = 0;
+  self.accessibilityValue = nil;
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
@@ -340,12 +360,6 @@ UIImage* DefaultFavicon() {
 }
 
 #pragma mark - UIAccessibility
-
-- (BOOL)isAccessibilityElement {
-  // This makes the whole cell tappable in VoiceOver rather than the individual
-  // title and close button.
-  return YES;
-}
 
 - (NSArray*)accessibilityCustomActions {
   return @[ [[UIAccessibilityCustomAction alloc]
@@ -795,6 +809,15 @@ UIImage* DefaultFavicon() {
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.hidden = YES;
   return backgroundView;
+}
+
+- (void)updateAccessibilityValue {
+  // Use the accessibility Value as there is a pause when using the
+  // accessibility hint.
+  self.accessibilityValue =
+      l10n_util::GetNSStringF(IDS_IOS_TAB_STRIP_TAB_CELL_VOICE_OVER_VALUE,
+                              base::NumberToString16(self.tabIndex),
+                              base::NumberToString16(self.numberOfTabs));
 }
 
 @end

@@ -65,6 +65,8 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   /// `true` if the user is in incognito.
   public var isIncognito: Bool = false
 
+  private var numberOfTabs: Int = 0
+
   /// Handles model updates.
   public weak var mutator: TabStripMutator?
   /// Tab strip delegate.
@@ -214,6 +216,13 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     guard let items = items else {
       return
     }
+    numberOfTabs = 0
+    for item in items {
+      if case .tab(_) = item.item {
+        numberOfTabs += 1
+      }
+    }
+
     var snapshot = NSDiffableDataSourceSnapshot<Section, TabStripItemIdentifier>()
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
@@ -275,6 +284,12 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   ) {
     guard let diffableDataSource = diffableDataSource else { return }
 
+    for item in items {
+      if case .tab(_) = item.item {
+        numberOfTabs += 1
+      }
+    }
+
     var snapshot = diffableDataSource.snapshot()
 
     var insertedLast = false
@@ -324,6 +339,13 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
   func removeItems(_ items: [TabStripItemIdentifier]?) {
     guard let items = items, let diffableDataSource = diffableDataSource
     else { return }
+
+    for item in items {
+      if case .tab(_) = item.item {
+        numberOfTabs -= 1
+      }
+    }
+
     var snapshot = diffableDataSource.snapshot()
     snapshot.deleteItems(items)
     applySnapshot(
@@ -404,6 +426,8 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
       cell.accessibilityIdentifier = self.tabTripTabCellAccessibilityIdentifier(
         index: indexPath.item)
       cell.item = item
+      cell.tabIndex = indexPath.item + 1
+      cell.numberOfTabs = self.numberOfTabs
 
       item.fetchFavicon { (item: TabSwitcherItem?, image: UIImage?) -> Void in
         if let item = item, item == cell.item {

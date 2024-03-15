@@ -52,6 +52,12 @@
 // isEqual method on it.
 @property(nonatomic, weak) NSObject* item;
 
+// Used to know the position of the tab and the total number of tabs. This is
+// used by VoiceOver to let the user know the position of the tab and should not
+// be used elsewhere.
+@property(nonatomic, assign) NSInteger tabIndex;
+@property(nonatomic, assign) NSInteger numberOfTabs;
+
 // Sets the title of the cell.
 - (void)setTitle:(NSString*)title;
 // Sets the favicon for the page. Passing nil sets the default image.
