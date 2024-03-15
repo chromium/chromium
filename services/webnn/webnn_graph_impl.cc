@@ -685,8 +685,11 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
     // The conv2d operator is invalid.
     return false;
   }
-  if (output->dimensions.size() != 4) {
-    // The element of output dimensions should be 4.
+
+  // The input and output rank need to be validated before converting to
+  // `webnn::Conv2dAttributes`.
+  if (input->dimensions.size() != 4 || output->dimensions.size() != 4) {
+    // The element of input and output dimensions should be 4.
     return false;
   }
 
