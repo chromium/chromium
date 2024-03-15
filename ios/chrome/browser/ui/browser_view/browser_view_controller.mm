@@ -1491,8 +1491,14 @@ enum HeaderBehaviour {
             (UIViewAutoresizingFlexibleWidth |
              UIViewAutoresizingFlexibleBottomMargin);
       }
-      [self.view insertSubview:primaryToolbarView
-                  belowSubview:self.tabStripView];
+      if (IsModernTabStripOrRaccoonEnabled()) {
+        [self.view insertSubview:primaryToolbarView
+                    aboveSubview:self.tabStripView];
+      } else {
+        [self.view insertSubview:primaryToolbarView
+                    belowSubview:self.tabStripView];
+      }
+
     } else {
       [self.view addSubview:primaryToolbarView];
     }
@@ -2548,7 +2554,14 @@ enum HeaderBehaviour {
   tabStripFrame.origin.y = self.headerOffset;
   tabStripFrame.size.width = CGRectGetWidth([self view].bounds);
   [self.tabStripView setFrame:tabStripFrame];
-  [[self view] addSubview:tabStripView];
+
+  if (IsModernTabStripOrRaccoonEnabled()) {
+    UIView* primaryToolbar =
+        self.toolbarCoordinator.primaryToolbarViewController.view;
+    [self.view insertSubview:tabStripView belowSubview:primaryToolbar];
+  } else {
+    [self.view addSubview:tabStripView];
+  }
 }
 
 #pragma mark - FindBarPresentationDelegate
