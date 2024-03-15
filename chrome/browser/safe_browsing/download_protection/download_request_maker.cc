@@ -35,8 +35,6 @@ namespace {
 // The version of this client supporting tailored warnings.
 // Please update the description of TailoredInfo field in csd.proto when
 // changing this value.
-// Note: The name of this variable is checked by PRESUBMIT. Please update the
-// PRESUBMIT script before renaming this variable.
 // LINT.IfChange
 constexpr int kTailoredWarningVersion = 3;
 // LINT.ThenChange(components/safe_browsing/core/common/proto/csd.proto)
