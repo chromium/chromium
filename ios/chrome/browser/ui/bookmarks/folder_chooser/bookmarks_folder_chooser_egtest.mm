@@ -143,6 +143,13 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
                                                      @"Mobile Bookmarks"),
                                                  nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close folder editor.
+  [[EarlGrey selectElementWithMatcher:BookmarksSaveEditFolderButton()]
+      performAction:grey_tap()];
+  // Close bookmarks
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Tests moving bookmarks into a new folder created in the moving process.
@@ -727,6 +734,9 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Verify we enter the new folder. (instead of selecting it in edit mode).
   [BookmarkEarlGreyUI verifyEmptyBackgroundAppears];
+  // Close bookmarks
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Verify Move functionality on single folder through long press.
@@ -843,6 +853,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1.1")]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close bookmarks
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Verify Move functionality on multiple folder selection.
@@ -946,6 +960,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1")]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close bookmarks
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
 }
 
 - (void)testContextBarForSingleFolderSelectionSignedOut {
@@ -1290,6 +1308,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   // Verify context bar does not change after editing folder name.
   [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:YES
                                                      newFolderEnabled:YES];
+
+  // Close bookmarks
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Test the creation of a bookmark and new folder (by tapping on the star).
