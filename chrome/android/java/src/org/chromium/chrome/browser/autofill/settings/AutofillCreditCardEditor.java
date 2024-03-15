@@ -21,8 +21,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -31,8 +34,9 @@ import java.util.List;
 
 /** The base class for credit card settings. */
 public abstract class AutofillCreditCardEditor extends AutofillEditorBase
-        implements FragmentHelpAndFeedbackLauncher {
+        implements FragmentHelpAndFeedbackLauncher, ProfileDependentSetting {
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    private Profile mProfile;
     private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     protected CreditCard mCard;
@@ -62,7 +66,9 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
         noSelection.setLabel(getActivity().getString(R.string.select));
         profilesAdapter.add(noSelection);
 
-        List<AutofillProfile> profiles = PersonalDataManager.getInstance().getProfilesForSettings();
+        PersonalDataManager personalDataManager =
+                PersonalDataManagerFactory.getForProfile(mProfile);
+        List<AutofillProfile> profiles = personalDataManager.getProfilesForSettings();
         for (int i = 0; i < profiles.size(); i++) {
             AutofillProfile profile = profiles.get(i);
             if (!TextUtils.isEmpty(profile.getStreetAddress())) {
@@ -78,7 +84,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
         // http://crbug.com/623629
         if (profilesAdapter.getCount() == 1) mBillingAddress.setEnabled(false);
 
-        mCard = PersonalDataManager.getInstance().getCreditCard(mGUID);
+        mCard = personalDataManager.getCreditCard(mGUID);
         if (mCard != null) {
             if (!TextUtils.isEmpty(mCard.getBillingAddressId())) {
                 for (int i = 0; i < mBillingAddress.getAdapter().getCount(); i++) {
@@ -125,6 +131,16 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
     @Override
     public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
+    }
+
+    /** Return the {@link Profile} associated with the card being edited. */
+    public Profile getProfile() {
+        return mProfile;
     }
 
     /**

@@ -25,12 +25,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
@@ -43,8 +41,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Server credit card settings. */
-public class AutofillServerCardEditor extends AutofillCreditCardEditor
-        implements ProfileDependentSetting {
+public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_URL_FOR_GPAY_WEB =
             "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
     private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL_FOR_GPAY_WEB =
@@ -56,7 +53,6 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
     private static final String SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT =
             "Autofill.VirtualCard.SettingsPageEnrollment";
 
-    private Profile mProfile;
     private TextView mVirtualCardEnrollmentButton;
     private boolean mVirtualCardEnrollmentButtonShowsUnenroll;
     private AutofillPaymentMethodsDelegate mDelegate;
@@ -131,7 +127,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDelegate = new AutofillPaymentMethodsDelegate(mProfile);
+        mDelegate = new AutofillPaymentMethodsDelegate(getProfile());
         mVirtualCardEnrollmentUpdateResponseCallback =
                 isUpdateSuccessful -> {
                     // If the server card editor page was closed when the server call was in
@@ -375,7 +371,8 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
                 && mBillingAddress.getSelectedItem() instanceof AutofillProfile) {
             mCard.setBillingAddressId(
                     ((AutofillProfile) mBillingAddress.getSelectedItem()).getGUID());
-            PersonalDataManager.getInstance().updateServerCardBillingAddress(mCard);
+            PersonalDataManagerFactory.getForProfile(getProfile())
+                    .updateServerCardBillingAddress(mCard);
         }
         return true;
     }
@@ -383,11 +380,6 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor
     @Override
     protected boolean getIsDeletable() {
         return false;
-    }
-
-    @Override
-    public void setProfile(Profile profile) {
-        mProfile = profile;
     }
 
     public void setServerCardEditLinkOpenerCallbackForTesting(Callback<String> callback) {

@@ -18,15 +18,19 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 
-public class AutofillLocalIbanEditor extends AutofillEditorBase {
+public class AutofillLocalIbanEditor extends AutofillEditorBase implements ProfileDependentSetting {
     // This class creates a view for adding a local IBAN. A local IBAN gets saved to the
     // user's device only.
     protected Button mDoneButton;
     protected EditText mNickname;
     protected TextInputLayout mNicknameLabel;
     protected EditText mValue;
+
+    private Profile mProfile;
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillLocalIbanEditor() {}
@@ -91,6 +95,12 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase {
     private void updateSaveButtonEnabled() {
         // Enable save button if IBAN value is valid.
         mDoneButton.setEnabled(
-                PersonalDataManager.getInstance().isValidIban(mValue.getText().toString()));
+                PersonalDataManagerFactory.getForProfile(mProfile)
+                        .isValidIban(mValue.getText().toString()));
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 }
