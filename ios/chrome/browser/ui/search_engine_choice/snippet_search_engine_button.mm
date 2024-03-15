@@ -117,9 +117,17 @@ UILabel* SnippetLabel() {
     [self addSubview:snippetLabelContainer];
     _snippetLabelOneLine = SnippetLabel();
     _snippetLabelOneLine.numberOfLines = 1;
+    // Make sure the snippet is not streched.
+    [_snippetLabelOneLine
+        setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
+                          forAxis:UILayoutConstraintAxisVertical];
     [snippetLabelContainer addSubview:_snippetLabelOneLine];
     _snippetLabelExpanded = SnippetLabel();
     _snippetLabelExpanded.numberOfLines = 0;
+    // Make sure the snippet is not streched.
+    [_snippetLabelExpanded
+        setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
+                          forAxis:UILayoutConstraintAxisVertical];
     [snippetLabelContainer addSubview:_snippetLabelExpanded];
     // Add Chevron.
     _chevronButton = [[UIButton alloc] init];
