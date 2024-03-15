@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_CLIENT_SHARED_IMAGE_H_
 #define GPU_COMMAND_BUFFER_CLIENT_CLIENT_SHARED_IMAGE_H_
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -19,6 +20,10 @@ class TestSharedImageInterface;
 }
 
 namespace gpu {
+
+// Controls whether all ClientSharedImage::GetTextureTarget*(...) variants call
+// through to ClientSharedImage::GetTextureTarget() under the hood.
+GPU_EXPORT BASE_DECLARE_FEATURE(kUseUniversalGetTextureTargetFunction);
 
 struct ExportedSharedImage;
 

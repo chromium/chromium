@@ -677,17 +677,18 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 
   const unsigned texture_target =
 #if BUILDFLAG(IS_LINUX)
-      // Explicitly set GL_TEXTURE_EXTERNAL_OES as the
+      // Explicitly set GL_TEXTURE_EXTERNAL_OES if necessary:
       // `media::VideoFrame::RequiresExternalSampler()` requires it for NV12
-      // format, while `ClientSharedImage::GetTextureTarget()` will return
-      // GL_TEXTURE_2D.
-      // TODO(crbug.com/41494843): Eliminate this client-side check under the
-      // killswitch that switches ClientSharedImage::GetTextureTarget() to
-      // return GL_TEXTURE_EXTERNAL_OES if the ClientSI prefers external
-      // sampling or is legacy multiplanar, since at that point it will be
-      // redundant.
-      (video_frame_init_data.ready_buffer->info->pixel_format ==
-       media::PIXEL_FORMAT_NV12)
+      // format, while `ClientSharedImage::GetTextureTarget(BufferUsage,
+      // BufferFormat)` will return GL_TEXTURE_2D if it is not backed by
+      // ClientSharedImage::GetTextureTarget() (which by design handles this
+      // case correctly).
+      // TODO(crbug.com/41494843): Eliminate this client-side check post-rollout
+      // of ClientSharedImage::GetTextureTarget().
+      (!base::FeatureList::IsEnabled(
+           gpu::kUseUniversalGetTextureTargetFunction) &&
+       (video_frame_init_data.ready_buffer->info->pixel_format ==
+        media::PIXEL_FORMAT_NV12))
           ? GL_TEXTURE_EXTERNAL_OES
           :
 #endif

@@ -24,6 +24,10 @@ bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
 
 }  // namespace
 
+BASE_FEATURE(kUseUniversalGetTextureTargetFunction,
+             "UseUniversalGetTextureTargetFunction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ClientSharedImage::ScopedMapping::ScopedMapping() = default;
 ClientSharedImage::ScopedMapping::~ScopedMapping() {
   if (buffer_) {
@@ -178,6 +182,10 @@ uint32_t ClientSharedImage::GetTextureTarget() {
 }
 
 uint32_t ClientSharedImage::GetTextureTargetForOverlays() {
+  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
+    return GetTextureTarget();
+  }
+
 #if BUILDFLAG(IS_MAC)
   return GetPlatformSpecificTextureTarget();
 #else
@@ -186,6 +194,10 @@ uint32_t ClientSharedImage::GetTextureTargetForOverlays() {
 }
 
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferFormat format) {
+  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
+    return GetTextureTarget();
+  }
+
   return NativeBufferNeedsPlatformSpecificTextureTarget(format)
              ? GetPlatformSpecificTextureTarget()
              : GL_TEXTURE_2D;
@@ -193,6 +205,10 @@ uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferFormat format) {
 
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
                                              gfx::BufferFormat format) {
+  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
+    return GetTextureTarget();
+  }
+
   CHECK(HasHolder());
 
   auto capabilities = sii_holder_->Get()->GetCapabilities();
@@ -202,6 +218,10 @@ uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage,
 }
 
 uint32_t ClientSharedImage::GetTextureTarget(gfx::BufferUsage usage) {
+  if (base::FeatureList::IsEnabled(kUseUniversalGetTextureTargetFunction)) {
+    return GetTextureTarget();
+  }
+
   uint32_t usages_forcing_native_buffer = SHARED_IMAGE_USAGE_SCANOUT;
 #if BUILDFLAG(IS_MAC)
   // On Mac, WebGPU usage results in SharedImages being backed by IOSurfaces.
