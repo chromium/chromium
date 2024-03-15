@@ -2171,7 +2171,7 @@ if (enable_java_templates) {
       _target_sdk_version = invoker.override_target_sdk
     }
 
-    _inputs = [
+    _common_inputs = [
       invoker.build_config,
       android_sdk_tools_bundle_aapt2,
       android_sdk_jar,
@@ -2204,6 +2204,8 @@ if (enable_java_templates) {
       "//third_party/protobuf/python/google/protobuf/text_encoding.py",
       "//third_party/protobuf/python/google/protobuf/text_format.py",
     ]
+
+    _inputs = _common_inputs
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
 
@@ -2428,10 +2430,9 @@ if (enable_java_templates) {
             "$expectations_failure_dir/" +
             string_replace(invoker.expected_android_manifest, "/", "_")
         inputs = [
-          invoker.android_manifest,
-          invoker.build_config,
-          invoker.expected_android_manifest,
-        ]
+                   invoker.android_manifest,
+                   invoker.expected_android_manifest,
+                 ] + _common_inputs
         outputs = [
           _actual_file,
           _failure_file,
