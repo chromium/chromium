@@ -141503,65 +141503,13 @@
       ]
      },
      "text-box-trim": {
-      "text-box-trim-half-leading-block-box-001-ref.html": [
-       "4fc498a27bded7e4e870a055128f003383792bee",
-       [
-        null,
-        [
-         [
-          "/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
       "text-box-trim-half-leading-block-box-001.html": [
-       "9ad9ffc3fc68184745549c4759ea9534fc174527",
+       "2cbf1c26dbfa97b92a8e1a2739dae24b2042d4e3",
        [
         null,
         [
          [
-          "/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "text-box-trim-half-leading-inline-box-001.html": [
-       "130b68c6eb2ecfa400f9c13356a700200f49f13a",
-       [
-        null,
-        [
-         [
-          "/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-001-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "text-box-trim-half-leading-inline-box-002.html": [
-       "631b53697c1f6e0a1aff0153ad95e5c01cf4042b",
-       [
-        null,
-        [
-         [
-          "/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-002-ref.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "text-box-trim-half-leading-inline-box-003.html": [
-       "4c7e33663b53fa22fa3578c3260701692d48f8b8",
-       [
-        null,
-        [
-         [
-          "/css/css-inline/text-box-trim/text-box-trim-half-leading-inline-box-003-ref.html",
+          "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001-ref.html",
           "=="
          ]
         ],
@@ -319530,16 +319478,8 @@
        "e9a2fc218b369825c991e3109986481a922e671f",
        []
       ],
-      "text-box-trim-half-leading-inline-box-001-ref.html": [
-       "54df108fb9c581638784b1b28cd120fc59fa6c4e",
-       []
-      ],
-      "text-box-trim-half-leading-inline-box-002-ref.html": [
-       "0a615e6222cbe9c1cc656bc41b812619129eb2e5",
-       []
-      ],
-      "text-box-trim-half-leading-inline-box-003-ref.html": [
-       "bf0fb3283d353a06707542838a15938837e7a025",
+      "text-box-trim-half-leading-block-box-001-ref.html": [
+       "2dfe344ce35f59888337a34f1ae864925f9a35e4",
        []
       ]
      }
@@ -451385,6 +451325,20 @@
       ],
       "float-interpolation.html": [
        "c067f2f03ceb568154bee543f5f9b7a1989b940a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "margin-block-interpolation.html": [
+       "be4b6fdd8e0b8bd24d1545ffb3fa4651227bdbfa",
+       [
+        null,
+        {}
+       ]
+      ],
+      "margin-inline-interpolation.html": [
+       "86408ea6e94271efc7aa7e2c05b99538ba7d1b81",
        [
         null,
         {}
@@ -669033,6 +668987,57 @@
        }
       ]
      ],
+     "constant.https.any.js": [
+      "bf84454b8ac338bc3fae07dd9134603734937e51",
+      [
+       "webnn/validation_tests/constant.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API constant interface"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/constant.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API constant interface"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "elementwise_binary.https.any.js": [
       "97a1a2b93c9821116df58a38f50e3e5b4fa49c03",
       [
@@ -669168,6 +669173,57 @@
          [
           "title",
           "validation tests for WebNN API gru operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "input.https.any.js": [
+      "cbdb7aeb7c3866dd942c2048a8d180b84ad41bca",
+      [
+       "webnn/validation_tests/input.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API input interface"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/validation_tests/input.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API input interface"
          ],
          [
           "global",
