@@ -4852,6 +4852,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Notification.RemovedByLimitEnforcement"
+    units="notification removed" expires_after="2024-12-01">
+  <owner>newcomer@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when a notification is removed due to the number of notifications
+    reaching the limit.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Notification.SwipeControl.FadeIn.AnimationSmoothness"
     units="%" expires_after="2025-01-28">
   <owner>leandre@chromium.org</owner>

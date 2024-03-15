@@ -32,6 +32,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
+#include "base/metrics/histogram_functions.h"
 #endif
 
 namespace message_center {
@@ -611,6 +612,8 @@ void MessageCenterImpl::RemoveLastNotificationIfOverLimit() {
         notification_list_->GetOldestNonGroupedNotificationId();
     if (!oldest_notification_id.empty()) {
       RemoveNotification(oldest_notification_id, /*by_user=*/false);
+      base::UmaHistogramBoolean("Ash.Notification.RemovedByLimitEnforcement",
+                                true);
     }
   }
 }
