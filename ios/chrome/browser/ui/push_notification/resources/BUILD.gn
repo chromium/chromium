@@ -13,5 +13,9 @@ imageset("notifications_opt_in_banner") {
     "notifications_opt_in_banner.imageset/notifications_opt_in_banner_dark.png",
     "notifications_opt_in_banner.imageset/notifications_opt_in_banner_dark@2x.png",
     "notifications_opt_in_banner.imageset/notifications_opt_in_banner_dark@3x.png",
+    "notifications_opt_in_banner.imageset/notifications_opt_in_banner_dark_ipad.png",
+    "notifications_opt_in_banner.imageset/notifications_opt_in_banner_dark_ipad@2x.png",
+    "notifications_opt_in_banner.imageset/notifications_opt_in_banner_ipad.png",
+    "notifications_opt_in_banner.imageset/notifications_opt_in_banner_ipad@2x.png",
   ]
 }
