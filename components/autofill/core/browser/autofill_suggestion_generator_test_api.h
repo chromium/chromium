@@ -60,11 +60,10 @@ class AutofillSuggestionGeneratorTestApi {
       const CreditCard& credit_card,
       FieldType trigger_field_type,
       bool virtual_card_option,
-      bool card_linked_offer_available,
-      url::Origin origin = url::Origin()) const {
+      bool card_linked_offer_available) const {
     return suggestion_generator_->CreateCreditCardSuggestion(
         credit_card, trigger_field_type, virtual_card_option,
-        card_linked_offer_available, origin);
+        card_linked_offer_available);
   }
 
   // TODO(b/326950201): Remove and use GetOrderedCardsToSuggest instead.

@@ -171,13 +171,11 @@ class AutofillSuggestionGenerator {
   // Creates a suggestion for the given `credit_card`. `virtual_card_option`
   // suggests whether the suggestion is a virtual card option.
   // `card_linked_offer_available` indicates whether a card-linked offer is
-  // attached to the `credit_card`. `origin` is the webpage that the suggestion
-  // will be displayed on.
+  // attached to the `credit_card`.
   Suggestion CreateCreditCardSuggestion(const CreditCard& credit_card,
                                         FieldType trigger_field_type,
                                         bool virtual_card_option,
-                                        bool card_linked_offer_available,
-                                        const url::Origin& origin) const;
+                                        bool card_linked_offer_available) const;
 
   // Dedupes the given profiles based on if one is a subset of the other for
   // suggestions represented by `field_types`. The function returns at most
@@ -246,20 +244,17 @@ class AutofillSuggestionGenerator {
   // for virtual cards or card-linked offers.
   std::vector<Suggestion::Text> GetSuggestionLabelsForCard(
       const CreditCard& credit_card,
-      FieldType trigger_field_type,
-      const url::Origin& origin) const;
+      FieldType trigger_field_type) const;
 
   // Returns the benefit text to display in credit card suggestions if it is
   // available.
   std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
-      const CreditCard& credit_card,
-      const url::Origin& origin) const;
+      const CreditCard& credit_card) const;
 
   // Adjust the content of `suggestion` if it is a virtual card suggestion.
   void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
                                           const CreditCard& credit_card,
-                                          FieldType trigger_field_type,
-                                          const url::Origin& origin) const;
+                                          FieldType trigger_field_type) const;
 
   // Set the URL for the card art image to be shown in the `suggestion`.
   void SetCardArtURL(Suggestion& suggestion,

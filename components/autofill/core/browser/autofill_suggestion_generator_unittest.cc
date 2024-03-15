@@ -995,12 +995,6 @@ class AutofillCreditCardBenefitsLabelTest
          features::kAutofillEnableVirtualCardMetadata},
         /*disabled_features=*/{});
 
-    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                autofill_client()->GetAutofillOptimizationGuide()),
-            AttemptToGetEligibleCreditCardBenefitCategory)
-        .WillByDefault(testing::Return(
-            CreditCardCategoryBenefit::BenefitCategory::kSubscription));
-
     std::u16string benefit_description;
     int64_t instrument_id;
 
@@ -1017,8 +1011,17 @@ class AutofillCreditCardBenefitsLabelTest
       personal_data().AddCreditCardBenefitForTest(benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
+      // Set the page URL in order to ensure that the merchant benefit is
+      // displayed.
+      autofill_client()->set_last_committed_primary_main_frame_url(
+          benefit.merchant_domains().begin()->GetURL());
     } else if (absl::holds_alternative<CreditCardCategoryBenefit>(
                    GetBenefit())) {
+      ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+                  autofill_client()->GetAutofillOptimizationGuide()),
+              AttemptToGetEligibleCreditCardBenefitCategory)
+          .WillByDefault(testing::Return(
+              CreditCardCategoryBenefit::BenefitCategory::kSubscription));
       CreditCardCategoryBenefit benefit =
           absl::get<CreditCardCategoryBenefit>(GetBenefit());
       personal_data().AddCreditCardBenefitForTest(benefit);
@@ -1066,11 +1069,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
   EXPECT_THAT(
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(
-              card(), CREDIT_CARD_NUMBER,
-              /*virtual_card_option=*/false,
-              /*card_linked_offer_available=*/false,
-              /*origin=*/url::Origin::Create(GURL("http://www.example.com")))
+          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false)
           .labels,
       testing::ElementsAre(std::vector<Suggestion::Text>{
           Suggestion::Text(expected_benefit_text())}));
@@ -1082,11 +1083,9 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_VirtualCard) {
   EXPECT_THAT(
       test_api(suggestion_generator())
-          .CreateCreditCardSuggestion(
-              card(), CREDIT_CARD_NUMBER,
-              /*virtual_card_option=*/true,
-              /*card_linked_offer_available=*/false,
-              /*origin=*/url::Origin::Create(GURL("http://www.example.com")))
+          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/true,
+                                      /*card_linked_offer_available=*/false)
           .labels,
       testing::ElementsAre(
           std::vector<Suggestion::Text>{
@@ -1095,6 +1094,27 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
               Suggestion::Text(l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}));
 }
+
+// Checks that the merchant benefit description is not displayed for suggestions
+// where the webpage's URL is different from the benefit's applicable URL.
+TEST_P(AutofillCreditCardBenefitsLabelTest,
+       BenefitSuggestionLabelNotDisplayed_MerchantUrlIsDifferent) {
+  if (!absl::holds_alternative<CreditCardMerchantBenefit>(GetBenefit())) {
+    GTEST_SKIP() << "This test should not run for non-merchant benefits.";
+  }
+  autofill_client()->set_last_committed_primary_main_frame_url(
+      GURL("https://random-url.com"));
+  // Merchant benefit description is not returned.
+  EXPECT_THAT(
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(card(), CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/false)
+          .labels,
+      testing::ElementsAre(std::vector<Suggestion::Text>{Suggestion::Text(
+          card().DescriptiveExpiration(/*app_locale=*/"en-US"))}));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 class AutofillChildrenSuggestionGeneratorTest
