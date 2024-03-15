@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
@@ -2113,7 +2114,16 @@ TEST_F(MAYBE_ScreenManagerTest, ReplaceDisplayControllersCrtcs) {
   EXPECT_FALSE(new_controller->HasCrtc(drm_, crtc_id));
 }
 
-TEST_F(MAYBE_ScreenManagerTest, ReplaceDisplayControllersCrtcsNonexistent) {
+// TODO(b/322831691): Deterministic failure.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
+  DISABLED_ReplaceDisplayControllersCrtcsNonexistent
+#else
+#define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
+  ReplaceDisplayControllersCrtcsNonexistent
+#endif
+TEST_F(MAYBE_ScreenManagerTest,
+       MAYBE_ReplaceDisplayControllersCrtcsNonexistent) {
   // Initializes 2 CRTC-Connector pairs.
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
   uint32_t crtc_id = drm_->crtc_property(0).id;
