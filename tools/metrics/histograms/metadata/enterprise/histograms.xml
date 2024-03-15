@@ -525,6 +525,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DataProtection.NavigationFinished.URLVerdictSource"
+    enum="DataProtectionURLVerdictSource" expires_after="2025-03-18">
+  <owner>alshawwa@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>dpr-eng@google.com</owner>
+  <summary>
+    Records where the realtime url lookup verdict is read from in the data
+    protection navigation observer. It is logged once per navigation.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceLocalAccountPolicyInvalidations2"
     enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
   <owner>asumaneev@google.com</owner>

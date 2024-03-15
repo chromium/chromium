@@ -7,6 +7,8 @@
 #include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
@@ -26,6 +28,9 @@
 namespace enterprise_data_protection {
 
 namespace {
+
+constexpr char kURLVerdictSourceHistogram[] =
+    "Enterprise.DataProtection.URLVerdictSource";
 
 content::Page& GetPageFromWebContents(content::WebContents* web_contents) {
   return web_contents->GetPrimaryMainFrame()->GetPage();
@@ -157,6 +162,13 @@ std::string GetIdentifier(content::BrowserContext* browser_context) {
   return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
              browser_context)
       ->GetRealTimeUrlCheckIdentifier();
+}
+
+void LogVerdictSource(
+    DataProtectionNavigationObserver::URLVerdictSource verdict_source) {
+  VLOG(1) << "enterprise.watermark: verdict source: "
+          << static_cast<int>(verdict_source);
+  base::UmaHistogramEnumeration(kURLVerdictSourceHistogram, verdict_source);
 }
 
 }  // namespace
@@ -319,13 +331,16 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
   // Will need to see if in practice this is a problem.
   auto* ud = GetUserData(web_contents());
   if (ud) {
+    LogVerdictSource(URLVerdictSource::kPageUserData);
     RunPendingNavigationCallback(web_contents(),
                                  std::move(pending_navigation_callback_));
   } else if (watermark_text_.has_value()) {
+    LogVerdictSource(URLVerdictSource::kCachedLookupResult);
     UpdateDataProtectionState(web_contents()->GetWeakPtr(),
                               std::move(pending_navigation_callback_),
                               std::move(rt_lookup_response_), *watermark_text_);
   } else {
+    LogVerdictSource(URLVerdictSource::kPostNavigationLookup);
     DoLookup(
         lookup_service_, navigation_handle->GetURL(), identifier_,
         base::BindOnce(&UpdateDataProtectionState, web_contents()->GetWeakPtr(),

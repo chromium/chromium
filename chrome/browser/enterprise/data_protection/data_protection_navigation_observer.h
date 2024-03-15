@@ -42,6 +42,27 @@ class DataProtectionNavigationObserver
   // change this when adding new data protection settings.
   using Callback = base::OnceCallback<void(const std::string&)>;
 
+  // Log values for source of realtime URL lookup verdict. This is used to log
+  // metrics as DataProtectionURLVerdictSource, so numeric values must not be
+  // changed.
+  enum class URLVerdictSource {
+    // Verdict has been stored in the current Page's UserData.
+    kPageUserData = 0,
+
+    // Verdict has been stored by this class's lookup callback in the
+    // `watermark_text_` member.
+    kCachedLookupResult = 1,
+
+    // Verdict was not cached, so we needed to perform a lookup in
+    // DidFinishNavigation().
+    kPostNavigationLookup = 2,
+
+    // Verdict was stored in the WebContents' UserData.
+    kWebContentsUserData = 3,
+
+    kMaxValue = kWebContentsUserData
+  };
+
   // Creates a DataProtectionNavigationObserver if needed.  For example, the
   // user data may not be needed for internal chrome URLs, if this is a same doc
   // navigation, a non-primary-main frame navigation, or if the required
