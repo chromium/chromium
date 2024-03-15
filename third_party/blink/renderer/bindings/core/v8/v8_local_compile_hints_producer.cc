@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
@@ -37,7 +39,11 @@ void V8LocalCompileHintsProducer::RecordScript(
   cache_handlers_.emplace_back(cache_handler);
 }
 
-void V8LocalCompileHintsProducer::GenerateData() {
+void V8LocalCompileHintsProducer::GenerateData(bool final_data) {
+  if (cache_handlers_.empty()) {
+    return;
+  }
+
   LocalDOMWindow* window = frame_->DomWindow();
   CHECK(window);
   ExecutionContext* execution_context = window->GetExecutionContext();
@@ -66,8 +72,16 @@ void V8LocalCompileHintsProducer::GenerateData() {
         code_cache_host, V8CodeCache::TagForCompileHints(cache_handler),
         data->data, data->length);
   }
-  cache_handlers_.clear();
-  v8_scripts_.clear();
+  if (final_data) {
+    cache_handlers_.clear();
+    v8_scripts_.clear();
+    base::UmaHistogramEnumeration(kLocalCompileHintsGeneratedHistogram,
+                                  LocalCompileHintsGenerated::kFinal);
+
+  } else {
+    base::UmaHistogramEnumeration(kLocalCompileHintsGeneratedHistogram,
+                                  LocalCompileHintsGenerated::kNonFinal);
+  }
 }
 
 v8::ScriptCompiler::CachedData*

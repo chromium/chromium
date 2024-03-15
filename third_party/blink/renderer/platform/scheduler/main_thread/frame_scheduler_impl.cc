@@ -1000,6 +1000,9 @@ void FrameSchedulerImpl::OnFirstMeaningfulPaint(base::TimeTicks timestamp) {
   }
 
   main_thread_scheduler_->OnMainFramePaint();
+  if (delegate_) {
+    return delegate_->MainFrameFirstMeaningfulPaint();
+  }
 }
 
 void FrameSchedulerImpl::OnDispatchLoadEvent() {

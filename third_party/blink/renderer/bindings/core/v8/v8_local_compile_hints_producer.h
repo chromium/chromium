@@ -35,7 +35,7 @@ class CORE_EXPORT V8LocalCompileHintsProducer
   void RecordScript(ExecutionContext* execution_context,
                     const v8::Local<v8::Script> script,
                     ClassicScript* classic_script);
-  void GenerateData();
+  void GenerateData(bool final_data);
 
   void Trace(Visitor* visitor) const;
 

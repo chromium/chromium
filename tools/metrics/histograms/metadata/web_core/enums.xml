@@ -415,6 +415,11 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="No compile hints, streaming"/>
 </enum>
 
+<enum name="V8LocalCompileHintsGenerated">
+  <int value="0" label="Non-final"/>
+  <int value="1" label="Final"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

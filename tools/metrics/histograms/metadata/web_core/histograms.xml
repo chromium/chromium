@@ -786,6 +786,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebCore.Scripts.V8LocalCompileHintsGenerated"
+    enum="V8LocalCompileHintsGenerated" expires_after="2024-06-11">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-runtime@google.com</owner>
+  <summary>
+    Whether we produced the non-final or the final version of local compile
+    hints. This can be used for approximating how often we end up not generating
+    compile hints if we wait too long for the final compile hints generation.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

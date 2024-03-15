@@ -670,6 +670,10 @@ IN_PROC_BROWSER_TEST_F(LocalCompileHintsBrowserTest, LocalCompileHints) {
                          blink::v8_compile_hints::kStatusHistogram,
                          blink::v8_compile_hints::Status::
                              kProduceCompileHintsStreaming));
+    EXPECT_EQ(1,
+              histogram_tester.GetBucketCount(
+                  blink::v8_compile_hints::kLocalCompileHintsGeneratedHistogram,
+                  blink::v8_compile_hints::LocalCompileHintsGenerated::kFinal));
   }
 
   // Navigate away.

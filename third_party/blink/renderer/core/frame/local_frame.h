@@ -990,6 +990,7 @@ class CORE_EXPORT LocalFrame final
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time) override;
   void MainFrameInteractive() override;
+  void MainFrameFirstMeaningfulPaint() override;
 
   // Activates the user activation states of this frame and all its ancestors.
   //
