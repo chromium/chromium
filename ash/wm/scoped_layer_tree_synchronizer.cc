@@ -14,9 +14,7 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -373,37 +371,35 @@ gfx::RRectF ApplyTransform(const gfx::RRectF& bounds,
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
-// ScopedLayerTreeSynchronizer:
+// ScopedLayerTreeSynchronizerBase:
 
-ScopedLayerTreeSynchronizer::ScopedLayerTreeSynchronizer(ui::Layer* root_layer,
-                                                         bool restore_tree)
+ScopedLayerTreeSynchronizerBase::ScopedLayerTreeSynchronizerBase(
+    ui::Layer* root_layer,
+    bool restore_tree)
     : root_layer_(root_layer), restore_tree_(restore_tree) {
   CHECK(root_layer);
 }
 
-ScopedLayerTreeSynchronizer::~ScopedLayerTreeSynchronizer() {
-  if (restore_tree_) {
-    Restore();
-  }
-}
+ScopedLayerTreeSynchronizerBase::~ScopedLayerTreeSynchronizerBase() = default;
 
-void ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(
+bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
     ui::Layer* layer,
     const gfx::RRectF& reference_bounds) {
   CHECK(root_layer_->Contains(layer));
   if (reference_bounds.IsEmpty() ||
       reference_bounds.GetType() == gfx::RRectF::Type::kRect) {
-    return;
+    return false;
   }
 
-  SynchronizeLayerTreeRoundedCorners(layer, reference_bounds);
+  return SynchronizeLayerTreeRoundedCornersImpl(layer, reference_bounds);
 }
 
-void ScopedLayerTreeSynchronizer::SynchronizeLayerTreeRoundedCorners(
+bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
     ui::Layer* layer,
     const gfx::RRectF& reference_bounds) {
   CHECK(layer);
 
+  bool layer_altered = false;
   if (!layer->rounded_corner_radii().IsEmpty()) {
     gfx::Transform transform;
     layer->GetTargetTransformRelativeTo(root_layer_, &transform);
@@ -464,25 +460,31 @@ void ScopedLayerTreeSynchronizer::SynchronizeLayerTreeRoundedCorners(
 
         layer->SetRoundedCornerRadius(radii);
         layer->SetIsFastRoundedCorner(/*enable=*/!radii.IsEmpty());
+        layer_altered = true;
       }
     }
   }
 
+  bool subtree_altered = false;
   for (ui::Layer* child : layer->children()) {
-    SynchronizeLayerTreeRoundedCorners(child, reference_bounds);
+    subtree_altered |=
+        SynchronizeLayerTreeRoundedCorners(child, reference_bounds);
   }
+
+  return subtree_altered || layer_altered;
 }
 
-void ScopedLayerTreeSynchronizer::Restore() {
+void ScopedLayerTreeSynchronizerBase::RestoreLayerTree(ui::Layer* layer) {
+  CHECK(root_layer_->Contains(layer));
   if (original_layers_radii_.empty()) {
     return;
   }
 
-  RestoreLayerTree(root_layer_);
+  RestoreLayerTreeImpl(layer);
   original_layers_radii_.clear();
 }
 
-void ScopedLayerTreeSynchronizer::RestoreLayerTree(ui::Layer* layer) {
+void ScopedLayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
   if (original_layers_radii_.contains(layer)) {
     const auto& info = original_layers_radii_.at(layer);
     layer->SetRoundedCornerRadius(info.first);
@@ -495,23 +497,69 @@ void ScopedLayerTreeSynchronizer::RestoreLayerTree(ui::Layer* layer) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// ScopedLayerTreeSynchronizer:
+
+ScopedLayerTreeSynchronizer::ScopedLayerTreeSynchronizer(ui::Layer* root_layer,
+                                                         bool restore_tree)
+    : ScopedLayerTreeSynchronizerBase(root_layer, restore_tree) {}
+
+ScopedLayerTreeSynchronizer::~ScopedLayerTreeSynchronizer() {
+  Restore();
+}
+
+// Synchronizes the rounded corners of the subtree layers that are rooted at
+// `layer`. (layer must be a child layer of root_layer). If a corner of the
+// subtree's layer intersects or is drawn outside the curvature(if any) of
+// `reference_bounds', the radius of that corner is updated(synchronized) to
+// match radius of reference_bounds.
+// Note: The current implementation assumes that the subtree is contained
+// within the layer's bounds and the bounds are in the `root_layer`'s target
+// space.
+void ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(
+    ui::Layer* layer,
+    const gfx::RRectF& reference_bounds) {
+  SynchronizeLayerTreeRoundedCorners(layer, reference_bounds);
+}
+
+void ScopedLayerTreeSynchronizer::Restore() {
+  RestoreLayerTree(root_layer());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // ScopedWindowTreeSynchronizer:
 
 ScopedWindowTreeSynchronizer::ScopedWindowTreeSynchronizer(
     aura::Window* root_window,
     bool restore_tree)
-    : ScopedLayerTreeSynchronizer(root_window->layer(), restore_tree) {}
+    : ScopedLayerTreeSynchronizerBase(root_window->layer(), restore_tree) {}
 
-ScopedWindowTreeSynchronizer::~ScopedWindowTreeSynchronizer() {}
+ScopedWindowTreeSynchronizer::~ScopedWindowTreeSynchronizer() {
+  Restore();
+}
 
 void ScopedWindowTreeSynchronizer::SynchronizeRoundedCorners(
     aura::Window* window,
     const gfx::RRectF& reference_bounds,
     TransientTreeIgnorePredicate ignore_predicate) {
   for (auto* window_iter : GetTransientTreeIterator(window, ignore_predicate)) {
-    ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(window_iter->layer(),
-                                                           reference_bounds);
+    const bool altered = SynchronizeLayerTreeRoundedCorners(
+        window_iter->layer(), reference_bounds);
+    if (altered && !altered_window_observations_.IsObservingSource(window)) {
+      altered_window_observations_.AddObservation(window_iter);
+    }
   }
+}
+
+void ScopedWindowTreeSynchronizer::Restore() {
+  for (aura::Window* window : altered_window_observations_.sources()) {
+    RestoreLayerTree(window->layer());
+  }
+
+  altered_window_observations_.RemoveAllObservations();
+}
+
+void ScopedWindowTreeSynchronizer::OnWindowDestroying(aura::Window* window) {
+  altered_window_observations_.RemoveObservation(window);
 }
 
 }  // namespace ash
