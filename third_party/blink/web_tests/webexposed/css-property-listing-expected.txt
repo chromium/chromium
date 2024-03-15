@@ -310,7 +310,6 @@ All changes to this list should go through Blink's feature review process: http:
     popover-hide-delay
     popover-show-delay
     position
-    position-fallback
     position-fallback-bounds
     position-try-options
     position-try-order

@@ -355,7 +355,6 @@ pointerEvents
 popoverHideDelay
 popoverShowDelay
 position
-positionFallback
 positionFallbackBounds
 positionTry
 positionTryOptions

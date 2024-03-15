@@ -622,7 +622,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                const CSSPropertyValueSet* try_set,
                                const TryTacticList&,
                                AnchorEvaluator*);
-  StyleRulePositionFallback* GetPositionFallbackRule(const ScopedCSSName&);
   StyleRulePositionTry* GetPositionTryRule(const ScopedCSSName&);
   void RecalcStyle();
 

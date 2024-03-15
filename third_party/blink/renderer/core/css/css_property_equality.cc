@@ -590,8 +590,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.PointerEvents() == b.PointerEvents();
     case CSSPropertyID::kPosition:
       return a.GetPosition() == b.GetPosition();
-    case CSSPropertyID::kPositionFallback:
-      return base::ValuesEquivalent(a.PositionFallback(), b.PositionFallback());
     case CSSPropertyID::kPositionFallbackBounds:
       return base::ValuesEquivalent(a.PositionFallbackBounds(),
                                     b.PositionFallbackBounds());

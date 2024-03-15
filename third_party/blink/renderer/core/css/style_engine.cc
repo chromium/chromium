@@ -3548,16 +3548,6 @@ void StyleEngine::UpdateStyleForOutOfFlow(Element& element,
   }
 }
 
-StyleRulePositionFallback* StyleEngine::GetPositionFallbackRule(
-    const ScopedCSSName& scoped_name) {
-  const TreeScope* tree_scope = scoped_name.GetTreeScope();
-  if (!tree_scope) {
-    tree_scope = &GetDocument();
-  }
-  return GetStyleResolver().ResolvePositionFallbackRule(tree_scope,
-                                                        scoped_name.GetName());
-}
-
 StyleRulePositionTry* StyleEngine::GetPositionTryRule(
     const ScopedCSSName& scoped_name) {
   const TreeScope* tree_scope = scoped_name.GetTreeScope();

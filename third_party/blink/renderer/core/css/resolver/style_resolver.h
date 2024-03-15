@@ -224,10 +224,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const ComputedStyle& base_style,
       ActiveInterpolationsMap& transition_interpolations);
 
-  StyleRulePositionFallback* ResolvePositionFallbackRule(
-      const TreeScope* tree_scope,
-      AtomicString position_fallback_name);
-  const ComputedStyle* ResolvePositionFallbackStyle(Element&, unsigned index);
   StyleRulePositionTry* ResolvePositionTryRule(const TreeScope* tree_scope,
                                                AtomicString position_try_name);
 

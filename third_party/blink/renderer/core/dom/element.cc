@@ -3356,7 +3356,7 @@ const ComputedStyle* Element::StyleForLayoutObject(
     style = context->AdjustElementStyle(style);
   }
 
-  if (style->DependsOnSizeContainerQueries() || style->PositionFallback() ||
+  if (style->DependsOnSizeContainerQueries() ||
       style->GetPositionTryOptions() || style->HasAnchorFunctions()) {
     GetDocument().GetStyleEngine().SetStyleAffectedByLayout();
   }
@@ -9774,30 +9774,6 @@ bool Element::IsReplacedElementRespectingCSSOverflow() const {
           To<SVGSVGElement>(this)->IsOutermostSVGSVGElement() &&
           !IsDocumentElement()) ||
          IsA<HTMLFrameOwnerElement>(this);
-}
-
-const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {
-  // @position-fallback style must be computed out of the main style recalc,
-  // after the base style has been computed.
-  DCHECK_GE(GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kStyleClean);
-  const ComputedStyle* base_style = GetComputedStyle();
-  if (!base_style) {
-    return nullptr;
-  }
-  DCHECK(base_style->PositionFallback());
-  if (const ComputedStyle* cached_style =
-          base_style->GetCachedPositionFallbackStyle(index)) {
-    return cached_style;
-  }
-
-  const ComputedStyle* style =
-      GetDocument().GetStyleResolver().ResolvePositionFallbackStyle(*this,
-                                                                    index);
-  if (!style) {
-    return nullptr;
-  }
-  return base_style->AddCachedPositionFallbackStyle(style, index);
 }
 
 AnchorPositionScrollData& Element::EnsureAnchorPositionScrollData() {

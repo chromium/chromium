@@ -7001,38 +7001,6 @@ const CSSValue* Position::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.PositionInternal());
 }
 
-const CSSValue* PositionFallback::ParseSingleValue(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  if (CSSValue* value =
-          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range)) {
-    return value;
-  }
-  if (CSSValue* value = css_parsing_utils::ConsumeDashedIdent(range, context)) {
-    return value;
-  }
-  if (context.Mode() == kUASheetMode) {
-    CSSCustomIdentValue* value =
-        css_parsing_utils::ConsumeCustomIdent(range, context);
-    if (value && value->Value().StartsWith("-internal-")) {
-      return value;
-    }
-  }
-  return nullptr;
-}
-
-const CSSValue* PositionFallback::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  if (!style.PositionFallback()) {
-    return CSSIdentifierValue::Create(CSSValueID::kNone);
-  }
-  return MakeGarbageCollected<CSSCustomIdentValue>(*style.PositionFallback());
-}
-
 const CSSValue* PositionFallbackBounds::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

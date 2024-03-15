@@ -2765,10 +2765,9 @@ bool ComputedStyle::CanMatchSizeContainerQueries(const Element& element) const {
 
 bool ComputedStyle::IsInterleavingRoot(const ComputedStyle* style) {
   const ComputedStyle* unensured = ComputedStyle::NullifyEnsured(style);
-  return unensured &&
-         (unensured->IsContainerForSizeContainerQueries() ||
-          unensured->PositionFallback() || unensured->GetPositionTryOptions() ||
-          unensured->HasAnchorFunctions());
+  return unensured && (unensured->IsContainerForSizeContainerQueries() ||
+                       unensured->GetPositionTryOptions() ||
+                       unensured->HasAnchorFunctions());
 }
 
 bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {

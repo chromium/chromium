@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/css/css_initial_color_value.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
-#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
@@ -146,8 +145,7 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
           state.StyleBuilder().HasAnchorFunctions() ||
           (RuntimeEnabledFeatures::
                CSSAnchorPositioningCascadeFallbackEnabled() &&
-           (state.StyleBuilder().PositionFallback() != nullptr ||
-            state.StyleBuilder().GetPositionTryOptions() != nullptr))) &&
+           state.StyleBuilder().GetPositionTryOptions() != nullptr)) &&
          state.CanAffectAnimations();
 }
 
@@ -2383,8 +2381,7 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // elements with position-fallback/anchor(), we probably need to disable
   // for descendants of such elements as well.
   if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
-      (base_style->PositionFallback() != nullptr ||
-       base_style->GetPositionTryOptions() != nullptr)) {
+      base_style->GetPositionTryOptions() != nullptr) {
     return false;
   }
 
@@ -3154,39 +3151,6 @@ Element& StyleResolver::EnsureElementForFormattedText() {
   return *formatted_text_element_;
 }
 
-StyleRulePositionFallback* StyleResolver::ResolvePositionFallbackRule(
-    const TreeScope* tree_scope,
-    AtomicString position_fallback_name) {
-  if (!tree_scope) {
-    tree_scope = &GetDocument();
-  }
-
-  StyleRulePositionFallback* position_fallback_rule = nullptr;
-  for (; tree_scope; tree_scope = tree_scope->ParentTreeScope()) {
-    if (ScopedStyleResolver* resolver = tree_scope->GetScopedStyleResolver()) {
-      position_fallback_rule =
-          resolver->PositionFallbackForName(position_fallback_name);
-      if (position_fallback_rule) {
-        break;
-      }
-    }
-  }
-
-  // Try UA rules if no author rule matches
-  if (!position_fallback_rule) {
-    for (const auto& rule : CSSDefaultStyleSheets::Instance()
-                                .DefaultHtmlStyle()
-                                ->PositionFallbackRules()) {
-      if (position_fallback_name == rule->Name()) {
-        position_fallback_rule = rule;
-        break;
-      }
-    }
-  }
-
-  return position_fallback_rule;
-}
-
 StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(
     const TreeScope* tree_scope,
     AtomicString position_try_name) {
@@ -3217,43 +3181,6 @@ StyleRulePositionTry* StyleResolver::ResolvePositionTryRule(
   }
 
   return position_try_rule;
-}
-
-const ComputedStyle* StyleResolver::ResolvePositionFallbackStyle(
-    Element& element,
-    unsigned index) {
-  const ComputedStyle& base_style = element.ComputedStyleRef();
-  const ScopedCSSName* position_fallback = base_style.PositionFallback();
-  DCHECK(position_fallback);
-
-  const TreeScope* tree_scope = position_fallback->GetTreeScope();
-  if (!tree_scope) {
-    tree_scope = &GetDocument();
-  }
-
-  StyleRulePositionFallback* position_fallback_rule =
-      ResolvePositionFallbackRule(tree_scope, position_fallback->GetName());
-
-  if (!position_fallback_rule ||
-      index >= position_fallback_rule->ChildRules().size()) {
-    return nullptr;
-  }
-
-  StyleRuleTry* try_rule =
-      To<StyleRuleTry>(position_fallback_rule->ChildRules()[index].Get());
-  StyleResolverState state(GetDocument(), element);
-  state.SetStyle(base_style);
-  const CSSPropertyValueSet& properties = try_rule->Properties();
-
-  STACK_UNINITIALIZED StyleCascade cascade(state);
-  cascade.MutableMatchResult().BeginAddingAuthorRulesForTreeScope(*tree_scope);
-  AddMatchedPropertiesOptions options;
-  options.valid_property_filter = ValidPropertyFilter::kPositionTry;
-  cascade.MutableMatchResult().AddMatchedProperties(
-      &properties, CascadeOrigin::kAuthor, options);
-  cascade.Apply();
-
-  return state.TakeStyle();
 }
 
 }  // namespace blink

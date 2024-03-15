@@ -660,8 +660,7 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // https://drafts.csswg.org/css-anchor-position-1/#position-fallback-list
   bool MayHavePositionFallbackList() const {
-    return HasOutOfFlowPosition() &&
-           (PositionFallback() || GetPositionTryOptions());
+    return HasOutOfFlowPosition() && GetPositionTryOptions();
   }
 
   // Scroll properties.
