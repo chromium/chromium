@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>Tests that layout is updated on anchor-default value changes</title>
-<link rel="help" href="https://drafts4.csswg.org/css-anchor-position-1/#anchor-default">
+<title>Tests that layout is updated on position-anchor value changes</title>
+<link rel="help" href="https://drafts4.csswg.org/css-anchor-position-1/#position-anchor">
 <link rel="author" href="mailto:xiaochengh@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -13,11 +13,11 @@
   background: lime;
   top: anchor(top);
   left: anchor(right);
-  anchor-default: --a;
+  position-anchor: --a;
 }
 
 #target.after {
-  anchor-default: --b;
+  position-anchor: --b;
 }
 
 #anchor1, #anchor2 {
@@ -51,5 +51,5 @@ test(() => {
   // #target should be anchored to #anchor2 now
   assert_equals(target.offsetLeft, 200);
   assert_equals(target.offsetTop, 100);
-}, 'Layout is updated on `anchor-default` changes');
+}, 'Layout is updated on `position-anchor` changes');
 </script>

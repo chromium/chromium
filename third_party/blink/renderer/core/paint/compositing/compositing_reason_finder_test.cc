@@ -119,7 +119,7 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
       body { height: 200vh; }
       div { width: 100px; height: 100px; }
       #anchor { anchor-name: --a; position: absolute; background: orange; }
-      #target { anchor-default: --a; top: anchor(top);
+      #target { position-anchor: --a; top: anchor(top);
                 position: fixed; background: lime; }
     </style>
     <div id="anchor"></div>
@@ -160,7 +160,7 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosUndoOverscroll) {
       #anchor, #target { width: 100px; height: 100px; }
       #anchor { anchor-name: --a; position: absolute;
                 top: 300px; background: orange; }
-      #target { anchor-default: --a; top: anchor(top);
+      #target { position-anchor: --a; top: anchor(top);
                 position: fixed; background: lime; }
     </style>
     <div id="scroller">

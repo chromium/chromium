@@ -26540,7 +26540,7 @@ Called by update_use_counter_css.py.-->
   <int value="742" label="animation-range-end"/>
   <int value="743" label="animation-composition"/>
   <int value="744" label="top-layer"/>
-  <int value="745" label="anchor-default"/>
+  <int value="745" label="anchor-default (obsolete)"/>
   <int value="746" label="text-wrap"/>
   <int value="747" label="text-box-trim"/>
   <int value="748" label="overlay"/>
@@ -26583,6 +26583,7 @@ Called by update_use_counter_css.py.-->
   <int value="785" label="position-try"/>
   <int value="786" label="text-box-edge"/>
   <int value="787" label="reading-order-items"/>
+  <int value="788" label="position-anchor"/>
 </enum>
 
 <enum name="MediaEncryptionType">

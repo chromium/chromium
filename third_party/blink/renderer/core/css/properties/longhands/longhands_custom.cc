@@ -169,7 +169,7 @@ const CSSValue* AlignmentBaseline::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.AlignmentBaseline());
 }
 
-const CSSValue* AnchorDefault::ParseSingleValue(
+const CSSValue* PositionAnchor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -179,15 +179,15 @@ const CSSValue* AnchorDefault::ParseSingleValue(
   }
   return css_parsing_utils::ConsumeDashedIdent(range, context);
 }
-const CSSValue* AnchorDefault::CSSValueFromComputedStyleInternal(
+const CSSValue* PositionAnchor::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.AnchorDefault()) {
+  if (!style.PositionAnchor()) {
     return CSSIdentifierValue::Create(CSSValueID::kImplicit);
   }
-  return MakeGarbageCollected<CSSCustomIdentValue>(*style.AnchorDefault());
+  return MakeGarbageCollected<CSSCustomIdentValue>(*style.PositionAnchor());
 }
 
 // anchor-name: none | <dashed-ident>#

@@ -80,10 +80,10 @@ bool NeedsAnchorPositionScrollData(Element& element,
   }
   // There's an explicitly set default anchor or additional fallback-bounds rect
   // to track.
-  if (style.AnchorDefault() || style.PositionFallbackBounds()) {
+  if (style.PositionAnchor() || style.PositionFallbackBounds()) {
     return true;
   }
-  // Now we have `anchor-default: implicit`. We need `AnchorPositionScrollData`
+  // Now we have `position-anchor: implicit`. We need `AnchorPositionScrollData`
   // only if there's an implicit anchor element to track.
   return element.ImplicitAnchorElement();
 }

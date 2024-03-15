@@ -174,8 +174,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.AlignSelf() == b.AlignSelf();
     case CSSPropertyID::kAlignmentBaseline:
       return a.AlignmentBaseline() == b.AlignmentBaseline();
-    case CSSPropertyID::kAnchorDefault:
-      return base::ValuesEquivalent(a.AnchorDefault(), b.AnchorDefault());
+    case CSSPropertyID::kPositionAnchor:
+      return base::ValuesEquivalent(a.PositionAnchor(), b.PositionAnchor());
     case CSSPropertyID::kAnchorName:
       return base::ValuesEquivalent(a.AnchorName(), b.AnchorName());
     case CSSPropertyID::kAppearance:

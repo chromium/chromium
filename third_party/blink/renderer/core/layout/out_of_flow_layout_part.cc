@@ -440,7 +440,7 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(anchor_evaluator_storage, container_info,
                         candidate.Style().GetWritingDirection(),
-                        candidate.Style().AnchorDefault(),
+                        candidate.Style().PositionAnchor(),
                         *candidate.GetLayoutBox(), anchor_queries);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
   if (!anchor_evaluator) {
@@ -1745,12 +1745,12 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // See non_overflowing_scroll_range.h for documentation.
   Vector<NonOverflowingScrollRange> non_overflowing_ranges;
 
-  // Note: This assumes @try rounds can't affect writing-mode/anchor-default.
-  // writing-mode/anchor-default.
+  // Note: This assumes @try rounds can't affect writing-mode/position-anchor.
+  // writing-mode/position-anchor.
   std::optional<AnchorEvaluatorImpl> anchor_evaluator_storage;
   CreateAnchorEvaluator(anchor_evaluator_storage, node_info.container_info,
                         node_info.node.Style().GetWritingDirection(),
-                        node_info.node.Style().AnchorDefault(),
+                        node_info.node.Style().PositionAnchor(),
                         *node_info.node.GetLayoutBox(), anchor_queries);
   AnchorEvaluatorImpl* anchor_evaluator = &*anchor_evaluator_storage;
 
@@ -1829,14 +1829,14 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   // TryCalculateOffset may be called multiple times if we have multiple @try
   // candidates. However, the AnchorEvaluatorImpl instance remains the same
   // across TryCalculateOffset calls, and was created with the "original"
-  // writing-mode/anchor-default values.
+  // writing-mode/position-anchor values.
   //
   // Those properties are not allowed within @try, so it should not be possible
   // to end up with a candidate style with different values.
   DCHECK_EQ(node_info.node.Style().GetWritingDirection(),
             candidate_style.GetWritingDirection());
-  DCHECK(base::ValuesEquivalent(node_info.node.Style().AnchorDefault(),
-                                candidate_style.AnchorDefault()));
+  DCHECK(base::ValuesEquivalent(node_info.node.Style().PositionAnchor(),
+                                candidate_style.PositionAnchor()));
 
   const WritingDirectionMode candidate_writing_direction =
       candidate_style.GetWritingDirection();

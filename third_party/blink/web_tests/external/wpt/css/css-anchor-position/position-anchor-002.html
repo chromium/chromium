@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<title>Tests that 'anchor-default' property value is tree-scoped</title>
-<link rel="help" href="https://drafts.csswg.org/css-anchor-1/#anchor-default">
+<title>Tests that 'position-anchor' property value is tree-scoped</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-1/#position-anchor">
 <link rel="author" href="mailto:xiaochengh@chromium.org">
-<link rel="match" href="anchor-default-ref.html">
+<link rel="match" href="position-anchor-ref.html">
 <style>
 .anchor {
   width: 100px;
@@ -61,7 +61,7 @@ for (let host of document.querySelectorAll('.anchor')) {
   shadow.innerHTML = `
     <style>
       :host { anchor-name: --a; }
-      ::slotted(.target) { anchor-default: --a; }
+      ::slotted(.target) { position-anchor: --a; }
     </style>
     <slot></slot>
   `;

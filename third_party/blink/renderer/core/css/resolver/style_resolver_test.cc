@@ -3626,15 +3626,15 @@ TEST_P(ParameterizedStyleResolverTest, ScopedAnchorName) {
       *inner_anchor->ComputedStyleRef().AnchorName()->GetNames()[0]);
 }
 
-TEST_P(ParameterizedStyleResolverTest, ScopedAnchorDefault) {
+TEST_P(ParameterizedStyleResolverTest, ScopedPositionAnchor) {
   GetDocument().documentElement()->setHTMLUnsafe(R"HTML(
-    <div id="outer-anchor" style="anchor-default: --outer"></div>
-    <style>#host::part(anchor) { anchor-default: --part; }</style>
+    <div id="outer-anchor" style="position-anchor: --outer"></div>
+    <style>#host::part(anchor) { position-anchor: --part; }</style>
     <div id="host">
       <template shadowrootmode=open>
-        <style>:host { anchor-default: --host; }</style>
+        <style>:host { position-anchor: --host; }</style>
         <div id="part" part="anchor"></div>
-        <div id="inner-anchor" style="anchor-default: --inner"></div>
+        <div id="inner-anchor" style="position-anchor: --inner"></div>
       </template>
     </div>
   )HTML");
@@ -3649,16 +3649,16 @@ TEST_P(ParameterizedStyleResolverTest, ScopedAnchorDefault) {
 
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--outer"),
                                                  &GetDocument()),
-            *outer_anchor->ComputedStyleRef().AnchorDefault());
+            *outer_anchor->ComputedStyleRef().PositionAnchor());
   EXPECT_EQ(
       *MakeGarbageCollected<ScopedCSSName>(AtomicString("--host"), shadow),
-      *host->ComputedStyleRef().AnchorDefault());
+      *host->ComputedStyleRef().PositionAnchor());
   EXPECT_EQ(*MakeGarbageCollected<ScopedCSSName>(AtomicString("--part"),
                                                  &GetDocument()),
-            *part->ComputedStyleRef().AnchorDefault());
+            *part->ComputedStyleRef().PositionAnchor());
   EXPECT_EQ(
       *MakeGarbageCollected<ScopedCSSName>(AtomicString("--inner"), shadow),
-      *inner_anchor->ComputedStyleRef().AnchorDefault());
+      *inner_anchor->ComputedStyleRef().PositionAnchor());
 }
 
 TEST_P(ParameterizedStyleResolverTest, NoAnchorFunction) {

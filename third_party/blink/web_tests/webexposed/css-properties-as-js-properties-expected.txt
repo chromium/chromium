@@ -8,7 +8,6 @@ alignItems
 alignSelf
 alignmentBaseline
 all
-anchorDefault
 anchorName
 animation
 animationComposition
@@ -355,6 +354,7 @@ pointerEvents
 popoverHideDelay
 popoverShowDelay
 position
+positionAnchor
 positionFallbackBounds
 positionTry
 positionTryOptions

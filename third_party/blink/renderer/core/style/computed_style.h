@@ -484,9 +484,9 @@ class ComputedStyle final : public ComputedStyleBase {
    * class, and be kept to a minimum.
    */
 
-  // anchor-default
-  bool AnchorDefaultDataEquivalent(const ComputedStyle& o) const {
-    return base::ValuesEquivalent(AnchorDefault(), o.AnchorDefault());
+  // position-anchor
+  bool PositionAnchorDataEquivalent(const ComputedStyle& o) const {
+    return base::ValuesEquivalent(PositionAnchor(), o.PositionAnchor());
   }
 
   // anchor-name

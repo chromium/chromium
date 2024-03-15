@@ -200,8 +200,8 @@
                                  "opacity"]
           },
           {
-            predicate: "a.AnchorDefaultDataEquivalent(b)",
-            field_dependencies: ["anchor-default"]
+            predicate: "a.PositionAnchorDataEquivalent(b)",
+            field_dependencies: ["position-anchor"]
           },
         ]
     },

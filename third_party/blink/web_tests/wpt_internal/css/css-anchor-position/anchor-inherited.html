@@ -26,7 +26,7 @@
 }
 
 .anchored {
-  anchor-default: --a;
+  position-anchor: --a;
   position: absolute;
   /* Anchored directly on top */
   top: anchor(top);
@@ -39,7 +39,7 @@
 /* The child should have the same size as the anchored element,
    and inset by top:10px,left:20px vs. that element. */
 .child {
-  anchor-default: --unknown; /* Should have no effect. */
+  position-anchor: --unknown; /* Should have no effect. */
   position: relative;
   background: skyblue;
   top: inherit;

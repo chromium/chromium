@@ -15,11 +15,11 @@ namespace blink {
 
 namespace {
 
-// Finds the LayoutObject of the anchor element given by anchor-default.
-const LayoutObject* AnchorDefaultObject(const LayoutBox& box) {
+// Finds the LayoutObject of the anchor element given by position-anchor.
+const LayoutObject* PositionAnchorObject(const LayoutBox& box) {
   const ComputedStyle& style = box.StyleRef();
-  return style.AnchorDefault() ? box.FindTargetAnchor(*style.AnchorDefault())
-                               : box.AcceptableImplicitAnchor();
+  return style.PositionAnchor() ? box.FindTargetAnchor(*style.PositionAnchor())
+                                : box.AcceptableImplicitAnchor();
 }
 
 // Finds the LayoutObject of the element given by position-fallback-bounds.
@@ -139,7 +139,7 @@ AnchorPositionScrollData::ComputeDefaultAnchorAdjustmentData() const {
   }
 
   const LayoutObject* anchor_default_object =
-      AnchorDefaultObject(To<LayoutBox>(*layout_object));
+      PositionAnchorObject(To<LayoutBox>(*layout_object));
   if (!anchor_default_object) {
     return AdjustmentData();
   }

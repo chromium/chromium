@@ -1321,7 +1321,7 @@ TEST_P(VisualRectMappingTest, AnchorPositionScroll) {
         bottom: anchor(--anchor top);
         width: 50px;
         height: 50px;
-        anchor-default: --anchor;
+        position-anchor: --anchor;
       }
     </style>
     <div id=cb>

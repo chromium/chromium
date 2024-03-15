@@ -798,7 +798,7 @@ enum CSSSampleId {
     kAnimationRangeEnd = 742,
     kAnimationComposition = 743,
     kTopLayer = 744,
-    kAnchorDefault = 745,
+    // kAnchorDefault = 745,
     kTextWrap = 746,
     kTextBoxTrim = 747,
     kOverlay = 748,
@@ -841,6 +841,7 @@ enum CSSSampleId {
     kPositionTry = 785,
     kTextBoxEdge = 786,
     kReadingOrderItems = 787,
+    kPositionAnchor = 788,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

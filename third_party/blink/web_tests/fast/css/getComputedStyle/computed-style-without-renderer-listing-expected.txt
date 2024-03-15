@@ -42,7 +42,6 @@ align-content: normal
 align-items: normal
 align-self: auto
 alignment-baseline: auto
-anchor-default: implicit
 anchor-name: none
 animation-composition: replace
 animation-delay: 0s
@@ -293,6 +292,7 @@ pointer-events: auto
 popover-hide-delay: infinity * 1s
 popover-show-delay: 0.5s
 position: static
+position-anchor: implicit
 position-fallback-bounds: normal
 position-try-options: none
 position-try-order: normal

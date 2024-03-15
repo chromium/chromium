@@ -1737,7 +1737,7 @@
     "self-block",
     "self-inline",
 
-    // anchor-default
+    // position-anchor
     "implicit",
     // none,
 
