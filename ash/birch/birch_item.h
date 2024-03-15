@@ -103,6 +103,8 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   const GURL& conference_url() const { return conference_url_; }
 
  private:
+  static std::u16string GetSubtitle(base::Time start_time, base::Time end_time);
+
   base::Time start_time_;
   base::Time end_time_;
   // Link to the event in the Google Calendar UI.
@@ -142,6 +144,8 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   const base::Time& end_time() const { return end_time_; }
 
  private:
+  static std::u16string GetSubtitle();
+
   GURL file_url_;          // Link to the file.
   GURL icon_url_;          // Link to the file's icon's art asset.
   base::Time start_time_;  // Start time of the event (used for ranking).

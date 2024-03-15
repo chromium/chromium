@@ -13,11 +13,13 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 
 namespace ash {
@@ -78,15 +80,14 @@ BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
                                      const base::Time& end_time,
                                      const GURL& calendar_url,
                                      const GURL& conference_url)
-    : BirchItem(title,
-                base::TimeFormatTimeOfDay(start_time) + u" - " +
-                    base::TimeFormatTimeOfDay(end_time)),
+    : BirchItem(title, GetSubtitle(start_time, end_time)),
       start_time_(start_time),
       end_time_(end_time),
       calendar_url_(calendar_url),
       conference_url_(conference_url) {
   if (conference_url_.is_valid()) {
-    set_secondary_action(u"Join");
+    set_secondary_action(
+        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON));
   }
 }
 
@@ -142,6 +143,13 @@ void BirchCalendarItem::LoadIcon(LoadIconCallback callback) const {
   std::move(callback).Run(ui::ImageModel::FromVectorIcon(kCalendarEventIcon));
 }
 
+// static
+std::u16string BirchCalendarItem::GetSubtitle(base::Time start_time,
+                                              base::Time end_time) {
+  return base::TimeFormatTimeOfDay(start_time) + u" - " +
+         base::TimeFormatTimeOfDay(end_time);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchAttachmentItem::BirchAttachmentItem(const std::u16string& title,
@@ -149,7 +157,7 @@ BirchAttachmentItem::BirchAttachmentItem(const std::u16string& title,
                                          const GURL& icon_url,
                                          const base::Time& start_time,
                                          const base::Time& end_time)
-    : BirchItem(title, u"Attached to a meeting"),
+    : BirchItem(title, GetSubtitle()),
       file_url_(file_url),
       icon_url_(icon_url),
       start_time_(start_time),
@@ -199,6 +207,11 @@ void BirchAttachmentItem::PerformSecondaryAction() {
 
 void BirchAttachmentItem::LoadIcon(LoadIconCallback callback) const {
   DownloadImageFromUrl(icon_url_, std::move(callback));
+}
+
+// static
+std::u16string BirchAttachmentItem::GetSubtitle() {
+  return l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_SUBTITLE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

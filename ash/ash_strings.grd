@@ -7873,6 +7873,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_PINE_EDUCATION_NUDGE" translateable="false" desc="Text of the Pine education nudge.">
         You can go back to Overview at anytime to get back to suggestions
       </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_ATTACHMENT_SUBTITLE" translateable="false" desc="Subtitle for the calendar event file attachment suggestion chip">
+        Attached to a meeting
+      </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON" translateable="false" desc="Button label for joining a meeting associated with a calendar event">
+        Join
+      </message>
      </messages>
     </release>
 </grit>
