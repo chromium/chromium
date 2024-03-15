@@ -2712,6 +2712,45 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.Keyboard.AutoRepeatDelay.{State}"
+    units="ms" expires_after="2025-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the delay before auto repeat starts when the setting is {State}.
+  </summary>
+  <token key="State">
+    <variant name="Changed" summary="changed"/>
+    <variant name="Initial" summary="initialized"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Device.Keyboard.AutoRepeatEnabled.{State}"
+    enum="Boolean" expires_after="2025-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the whether auto repeat is enabled when the setting is {State}.
+  </summary>
+  <token key="State">
+    <variant name="Changed" summary="changed"/>
+    <variant name="Initial" summary="initialized"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.Settings.Device.Keyboard.AutoRepeatInterval.{State}"
+    units="ms" expires_after="2025-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the interval between auto repeated keys when the setting is {State}.
+  </summary>
+  <token key="State">
+    <variant name="Changed" summary="changed"/>
+    <variant name="Initial" summary="initialized"/>
+  </token>
+</histogram>
+
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.{KeyboardType}.Modifiers.Hash"
     units="hash" expires_after="2025-03-22">

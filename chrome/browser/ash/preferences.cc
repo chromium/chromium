@@ -834,6 +834,18 @@ void Preferences::ReportSensitivityPrefApplication(
   }
 }
 
+void Preferences::ReportTimePrefApplication(
+    ApplyReason reason,
+    const std::string& changed_histogram_name,
+    const std::string& started_histogram_name,
+    base::TimeDelta duration) {
+  if (reason == REASON_PREF_CHANGED) {
+    base::UmaHistogramTimes(changed_histogram_name, duration);
+  } else if (reason == REASON_INITIALIZATION) {
+    base::UmaHistogramTimes(started_histogram_name, duration);
+  }
+}
+
 void Preferences::ApplyPreferences(ApplyReason reason,
                                    const std::string& pref_name) {
   DCHECK(reason != REASON_PREF_CHANGED || !pref_name.empty());
@@ -1086,13 +1098,32 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
       known_user.SetBooleanPref(user_->GetAccountId(),
                                 prefs::kXkbAutoRepeatEnabled, enabled);
+      ReportBooleanPrefApplication(
+          reason, "ChromeOS.Settings.Device.Keyboard.AutoRepeatEnabled.Changed",
+          "ChromeOS.Settings.Device.Keyboard.AutoRepeatEnabled.Initial",
+          xkb_auto_repeat_enabled_.GetValue());
     }
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == prefs::kXkbAutoRepeatDelay ||
+      pref_name == prefs::kXkbAutoRepeatDelay) {
+    if (user_is_active) {
+      UpdateAutoRepeatRate();
+      ReportTimePrefApplication(
+          reason, "ChromeOS.Settings.Device.Keyboard.AutoRepeatDelay.Changed",
+          "ChromeOS.Settings.Device.Keyboard.AutoRepeatDelay.Initial",
+          base::Milliseconds(xkb_auto_repeat_delay_pref_.GetValue()));
+    }
+  }
+
+  if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kXkbAutoRepeatInterval) {
     if (user_is_active) {
       UpdateAutoRepeatRate();
+      ReportTimePrefApplication(
+          reason,
+          "ChromeOS.Settings.Device.Keyboard.AutoRepeatInterval.Changed",
+          "ChromeOS.Settings.Device.Keyboard.AutoRepeatInterval.Initial",
+          base::Milliseconds(xkb_auto_repeat_interval_pref_.GetValue()));
     }
   }
 

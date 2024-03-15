@@ -98,6 +98,12 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
       const std::string& started_histogram_name,
       int sensitivity_int);
 
+  // Add a sample to the appropriate UMA histogram for a time/rate preference.
+  void ReportTimePrefApplication(ApplyReason reason,
+                                 const std::string& changed_histogram_name,
+                                 const std::string& started_histogram_name,
+                                 base::TimeDelta duration);
+
   // This will set the OS settings when the preference changed or the user
   // owning these preferences became active. Also this method is called on
   // initialization. The reason of the call is stored as the |reason| parameter.
