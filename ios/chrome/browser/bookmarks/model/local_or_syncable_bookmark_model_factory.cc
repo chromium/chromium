@@ -102,9 +102,9 @@ LocalOrSyncableBookmarkModelFactory::GetForBrowserStateIfExists(
 }
 
 // static
-bookmarks::BookmarkModel*
-LocalOrSyncableBookmarkModelFactory::GetDedicatedUnderlyingModelForBrowserState(
-    ChromeBrowserState* browser_state) {
+bookmarks::BookmarkModel* LocalOrSyncableBookmarkModelFactory::
+    GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
+        ChromeBrowserState* browser_state) {
   CHECK(!base::FeatureList::IsEnabled(
       syncer::kEnableBookmarkFoldersForAccountStorage));
   LegacyBookmarkModel* model = GetForBrowserState(browser_state);

@@ -146,12 +146,12 @@ class PriceNotificationsPriceTrackingMediatorTest
         test_chrome_browser_state->GetSharedURLLoaderFactory());
     local_or_syncable_bookmark_model_ =
         ios::LocalOrSyncableBookmarkModelFactory::
-            GetDedicatedUnderlyingModelForBrowserState(
+            GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
                 test_chrome_browser_state.get());
     bookmarks::test::WaitForBookmarkModelToLoad(
         local_or_syncable_bookmark_model_);
     account_bookmark_model_ = ios::AccountBookmarkModelFactory::
-        GetDedicatedUnderlyingModelForBrowserState(
+        GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
             test_chrome_browser_state.get());
     bookmarks::test::WaitForBookmarkModelToLoad(account_bookmark_model_);
 

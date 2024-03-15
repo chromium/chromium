@@ -57,7 +57,8 @@ PowerBookmarkServiceFactory::BuildServiceInstanceFor(
           ? ios::BookmarkModelFactory::
                 GetModelForBrowserStateIfUnificationEnabledOrDie(chrome_state)
           : ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
-                ->GetDedicatedUnderlyingModelForBrowserState(chrome_state);
+                ->GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
+                    chrome_state);
 
   return std::make_unique<power_bookmarks::PowerBookmarkService>(
       bookmark_model, state->GetStatePath().AppendASCII("power_bookmarks"),

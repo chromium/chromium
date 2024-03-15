@@ -45,9 +45,11 @@ std::unique_ptr<HistoryClientImpl> BuildHistoryClientWithTwoBookmarkModels(
       syncer::kEnableBookmarkFoldersForAccountStorage));
   return std::make_unique<HistoryClientImpl>(
       LocalOrSyncableBookmarkModelFactory::
-          GetDedicatedUnderlyingModelForBrowserState(browser_state),
-      AccountBookmarkModelFactory::GetDedicatedUnderlyingModelForBrowserState(
-          browser_state));
+          GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
+              browser_state),
+      AccountBookmarkModelFactory::
+          GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
+              browser_state));
 }
 
 std::unique_ptr<HistoryClientImpl> BuildHistoryClient(

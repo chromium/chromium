@@ -135,7 +135,7 @@ bookmarks::BookmarkModel* CommercePushNotificationClient::GetBookmarkModel() {
                    GetModelForBrowserStateIfUnificationEnabledOrDie(
                        GetLastUsedBrowserState())
              : ios::LocalOrSyncableBookmarkModelFactory::
-                   GetDedicatedUnderlyingModelForBrowserState(
+                   GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
                        GetLastUsedBrowserState());
 }
 

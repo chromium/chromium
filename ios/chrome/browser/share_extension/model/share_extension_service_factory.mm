@@ -64,7 +64,7 @@ ShareExtensionServiceFactory::BuildServiceInstanceFor(
                 GetModelForBrowserStateIfUnificationEnabledOrDie(
                     chrome_browser_state)
           : ios::LocalOrSyncableBookmarkModelFactory::
-                GetDedicatedUnderlyingModelForBrowserState(
+                GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
                     chrome_browser_state);
 
   return std::make_unique<ShareExtensionService>(

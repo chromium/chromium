@@ -152,9 +152,11 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
 
   return std::make_unique<MergedBookmarkModel>(
       LocalOrSyncableBookmarkModelFactory::
-          GetDedicatedUnderlyingModelForBrowserState(browser_state),
-      AccountBookmarkModelFactory::GetDedicatedUnderlyingModelForBrowserState(
-          browser_state));
+          GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
+              browser_state),
+      AccountBookmarkModelFactory::
+          GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
+              browser_state));
 }
 
 }  // namespace

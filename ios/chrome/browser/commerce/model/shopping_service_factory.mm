@@ -97,9 +97,11 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
   } else {
     local_or_syncable_bookmark_model =
         ios::LocalOrSyncableBookmarkModelFactory::GetInstance()
-            ->GetDedicatedUnderlyingModelForBrowserState(chrome_state);
+            ->GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
+                chrome_state);
     account_bookmark_model = ios::AccountBookmarkModelFactory::
-        GetDedicatedUnderlyingModelForBrowserState(chrome_state);
+        GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
+            chrome_state);
   }
 
   return std::make_unique<ShoppingService>(
