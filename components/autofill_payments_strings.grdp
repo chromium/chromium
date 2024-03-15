@@ -1118,7 +1118,7 @@
       Card benefits available
     </message>
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY" desc="Tag present on each entry in the credit card list on the payments settings page if that entry has associated benefits and a product terms URL. It is also a hyperlink text which opens the product terms page.">
-      terms apply
+      See terms here
     </message>
   </if>
   <if expr="is_android">
