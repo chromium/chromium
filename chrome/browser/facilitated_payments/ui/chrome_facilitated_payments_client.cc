@@ -18,7 +18,6 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
 ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() = default;
 
 bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt() {
-  DLOG(WARNING) << "*** VISH LOGS *** " << "PIX UI SHOWN";
   return false;
 }
 

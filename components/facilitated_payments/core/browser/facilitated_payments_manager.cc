@@ -113,7 +113,6 @@ void FacilitatedPaymentsManager::ProcessPixCodeDetectionResult(
     DelayedTriggerPixCodeDetection(kRetriggerPixCodeDetectionWaitTime);
     return;
   }
-  client_->ShowPixPaymentPrompt();
   ukm::builders::FacilitatedPayments_PixCodeDetectionResult(ukm_source_id_)
       .SetResult(static_cast<uint8_t>(result))
       .SetLatencyInMillis(GetPixCodeDetectionLatencyInMillis())
