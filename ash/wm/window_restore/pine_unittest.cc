@@ -399,4 +399,45 @@ TEST_F(PineTest, PineItemView) {
             5u);
 }
 
+// Tests that the pine dialog remains in the center after zooming the display up
+// or down.
+TEST_F(PineTest, ZoomDisplay) {
+  Shell::Get()
+      ->pine_controller()
+      ->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
+
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  OverviewGrid* overview_grid = GetOverviewGridForRoot(root);
+  ASSERT_TRUE(overview_grid);
+  views::Widget* pine_widget = OverviewGridTestApi(overview_grid).pine_widget();
+  ASSERT_TRUE(pine_widget);
+  const gfx::Rect& initial_bounds = pine_widget->GetWindowBoundsInScreen();
+
+  // Checks the widget bounds. The x should be exactly centered in the display,
+  // the y is near the center and the size remains the same.
+  auto verify_widget_bounds = [&root, &pine_widget,
+                               &initial_bounds](const std::string& test_name) {
+    SCOPED_TRACE(test_name);
+    const gfx::Rect root_bounds = root->GetBoundsInScreen();
+    const gfx::Rect widget_bounds = pine_widget->GetWindowBoundsInScreen();
+    EXPECT_EQ(root_bounds.CenterPoint().x(), widget_bounds.CenterPoint().x());
+    EXPECT_LT(widget_bounds.CenterPoint().y(), root_bounds.CenterPoint().y());
+    EXPECT_GT(widget_bounds.CenterPoint().y(),
+              root_bounds.CenterPoint().y() - 20);
+    EXPECT_EQ(initial_bounds.size(), widget_bounds.size());
+  };
+
+  // Zoom up twice and down once and verify the bounds of the pine widget at all
+  // stages.
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const int64_t display_id = WindowTreeHostManager::GetPrimaryDisplayId();
+  display_manager->ZoomDisplay(display_id, /*up=*/true);
+  verify_widget_bounds("Zoom 1, up");
+  display_manager->ZoomDisplay(display_id, /*up=*/true);
+  verify_widget_bounds("Zoom 2, up");
+  display_manager->ZoomDisplay(display_id, /*up=*/false);
+  verify_widget_bounds("Zoom 2, down");
+}
+
 }  // namespace ash

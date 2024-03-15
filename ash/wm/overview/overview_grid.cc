@@ -672,7 +672,7 @@ void OverviewGrid::PrepareForOverview() {
   }
 
   if (ShouldShowPineDialog(root_window_)) {
-    pine_widget_ = PineContentsView::Create(root_window_);
+    pine_widget_ = PineContentsView::Create(GetGridEffectiveBounds());
     pine_widget_->ShowInactive();
 
     // If the enter type is immediate, `ShowInactive()` is sufficient as
@@ -2249,6 +2249,15 @@ void OverviewGrid::RefreshGridBounds(bool animate) {
   SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
                               /*ignored_items=*/{}, animate);
   UpdateNoWindowsWidget(empty(), animate, /*is_continuous_enter=*/false);
+
+  if (pine_widget_) {
+    PineContentsView* contents_view =
+        views::AsViewClass<PineContentsView>(pine_widget_->GetContentsView());
+    CHECK(contents_view);
+    gfx::Rect pine_bounds = GetGridEffectiveBounds();
+    pine_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
+    pine_widget_->SetBounds(pine_bounds);
+  }
 }
 
 void OverviewGrid::UpdateSaveDeskButtons() {

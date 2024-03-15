@@ -35,7 +35,8 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   PineContentsView& operator=(const PineContentsView&) = delete;
   ~PineContentsView() override;
 
-  static std::unique_ptr<views::Widget> Create(aura::Window* root);
+  static std::unique_ptr<views::Widget> Create(
+      const gfx::Rect& grid_bounds_in_screen);
 
  private:
   friend class PineContentsViewTestApi;

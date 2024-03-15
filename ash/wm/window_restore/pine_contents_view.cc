@@ -260,10 +260,14 @@ PineContentsView::PineContentsView() {
 PineContentsView::~PineContentsView() = default;
 
 // static
-std::unique_ptr<views::Widget> PineContentsView::Create(aura::Window* root) {
+std::unique_ptr<views::Widget> PineContentsView::Create(
+    const gfx::Rect& grid_bounds_in_screen) {
   auto contents_view = std::make_unique<PineContentsView>();
-  gfx::Rect contents_bounds = root->GetBoundsInScreen();
+  gfx::Rect contents_bounds = grid_bounds_in_screen;
   contents_bounds.ClampToCenteredSize(contents_view->GetPreferredSize());
+
+  aura::Window* root = Shell::GetRootWindowForDisplayId(
+      display::Screen::GetScreen()->GetDisplayMatching(contents_bounds).id());
 
   views::Widget::InitParams params;
   params.bounds = contents_bounds;

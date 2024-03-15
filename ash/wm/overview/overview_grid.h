@@ -301,7 +301,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   bool IsDesksBarViewActive() const;
 
   // Gets the effective bounds of this grid (the area in which the windows are
-  // positioned, taking into account the availability of the Desks bar).
+  // positioned, taking into account the availability of the desks bar and birch
+  // bar).
   gfx::Rect GetGridEffectiveBounds() const;
 
   // Gets the horizontal paddings according to the shelf alignment and the
@@ -503,6 +504,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   friend class DesksTemplatesTest;
   friend class OverviewGridTestApi;
   friend class OverviewTestBase;
+  FRIEND_TEST_ALL_PREFIXES(PineTest, ZoomDisplay);
 
   // Struct which holds data required to perform nudges. Nudge in the context of
   // overview view means an overview item is currently being dragged vertically
