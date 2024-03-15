@@ -566,6 +566,10 @@ BOOL ShouldDismissKeyboardOnScroll() {
     path = [NSIndexPath indexPathForRow:path.row - 1 inSection:path.section];
   }
 
+  [self.tableView scrollToRowAtIndexPath:path
+                        atScrollPosition:UITableViewScrollPositionTop
+                                animated:NO];
+
   self.highlightedIndexPath = path;
 }
 
@@ -604,6 +608,10 @@ BOOL ShouldDismissKeyboardOnScroll() {
   } else {
     path = [NSIndexPath indexPathForRow:path.row + 1 inSection:path.section];
   }
+
+  [self.tableView scrollToRowAtIndexPath:path
+                        atScrollPosition:UITableViewScrollPositionBottom
+                                animated:NO];
 
   // There is a row below, move highlight there.
   self.highlightedIndexPath = path;
