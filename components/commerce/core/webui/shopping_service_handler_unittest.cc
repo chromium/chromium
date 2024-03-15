@@ -421,6 +421,34 @@ TEST_F(ShoppingServiceHandlerTest,
   run_loop.Run();
 }
 
+TEST_F(ShoppingServiceHandlerTest, TestGetProductInfoForUrl) {
+  base::RunLoop run_loop;
+
+  shopping_service_->SetIsPriceInsightsEligible(true);
+
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->title = "example_title";
+  info->product_cluster_title = "example_cluster_title";
+  info->product_cluster_id = std::optional<uint64_t>(123u);
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  handler_->GetProductInfoForUrl(
+      GURL("http://example.com/"),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, const GURL& url,
+             shopping_service::mojom::ProductInfoPtr product_info) {
+            ASSERT_EQ("example_title", product_info->title);
+            ASSERT_EQ("example_cluster_title", product_info->cluster_title);
+            ASSERT_EQ(123u, product_info->cluster_id);
+            ASSERT_EQ("http://example.com/", url.spec());
+            run_loop->Quit();
+          },
+          &run_loop));
+
+  run_loop.Run();
+}
+
 TEST_F(ShoppingServiceHandlerTest,
        TestGetProductInfoForCurrentUrl_FeatureIneligible) {
   base::RunLoop run_loop;

@@ -139,6 +139,10 @@ interface ShoppingServiceHandler {
   // Returns the product info for current url.
   GetProductInfoForCurrentUrl() => (ProductInfo productInfo);
 
+  // Returns the product info for the provided URL.
+  GetProductInfoForUrl(url.mojom.Url url)
+      => (url.mojom.Url url, ProductInfo productInfo);
+
   // Returns the price insights info for current url.
   GetPriceInsightsInfoForCurrentUrl() => (PriceInsightsInfo priceInsightsInfo);
 

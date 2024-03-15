@@ -413,8 +413,40 @@ void ShoppingServiceHandler::GetProductInfoForCurrentUrl(
 
   shopping_service_->GetProductInfoForUrl(
       delegate_->GetCurrentTabUrl().value(),
-      base::BindOnce(&ShoppingServiceHandler::OnFetchProductInfoForCurrentUrl,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(
+          [](base::WeakPtr<ShoppingServiceHandler> handler,
+             GetProductInfoForCurrentUrlCallback callback, const GURL& url,
+             const std::optional<const ProductInfo>& info) {
+            if (!handler) {
+              std::move(callback).Run(
+                  shopping_service::mojom::ProductInfo::New());
+              return;
+            }
+
+            std::move(callback).Run(
+                ProductInfoToMojoProduct(url, info, handler->locale_));
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShoppingServiceHandler::GetProductInfoForUrl(
+    const GURL& url,
+    GetProductInfoForUrlCallback callback) {
+  shopping_service_->GetProductInfoForUrl(
+      url, base::BindOnce(
+               [](base::WeakPtr<ShoppingServiceHandler> handler,
+                  GetProductInfoForUrlCallback callback, const GURL& url,
+                  const std::optional<const ProductInfo>& info) {
+                 if (!handler) {
+                   std::move(callback).Run(
+                       url, shopping_service::mojom::ProductInfo::New());
+                   return;
+                 }
+
+                 std::move(callback).Run(url, ProductInfoToMojoProduct(
+                                                  url, info, handler->locale_));
+               },
+               weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ShoppingServiceHandler::IsShoppingListEligible(
@@ -524,13 +556,6 @@ void ShoppingServiceHandler::GetParentBookmarkFolderNameForCurrentUrl(
 
 void ShoppingServiceHandler::ShowBookmarkEditorForCurrentUrl() {
   delegate_->ShowBookmarkEditorForCurrentUrl();
-}
-
-void ShoppingServiceHandler::OnFetchProductInfoForCurrentUrl(
-    GetProductInfoForCurrentUrlCallback callback,
-    const GURL& url,
-    const std::optional<const ProductInfo>& info) {
-  std::move(callback).Run(ProductInfoToMojoProduct(url, info, locale_));
 }
 
 void ShoppingServiceHandler::GetPriceInsightsInfoForCurrentUrl(

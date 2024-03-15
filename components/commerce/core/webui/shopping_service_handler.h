@@ -33,7 +33,6 @@ namespace commerce {
 
 class ShoppingService;
 struct PriceInsightsInfo;
-struct ProductInfo;
 
 class ShoppingServiceHandler :
         public shopping_service::mojom::ShoppingServiceHandler,
@@ -85,6 +84,8 @@ class ShoppingServiceHandler :
   void UntrackPriceForBookmark(int64_t bookmark_id) override;
   void GetProductInfoForCurrentUrl(
       GetProductInfoForCurrentUrlCallback callback) override;
+  void GetProductInfoForUrl(const GURL& url,
+                            GetProductInfoForUrlCallback callback) override;
   void GetPriceInsightsInfoForCurrentUrl(
       GetPriceInsightsInfoForCurrentUrlCallback callback) override;
   void GetProductSpecificationsForUrls(
@@ -134,11 +135,6 @@ class ShoppingServiceHandler :
 
   void HandleSubscriptionChange(const CommerceSubscription& sub,
                                 bool is_tracking);
-
-  void OnFetchProductInfoForCurrentUrl(
-      GetProductInfoForCurrentUrlCallback callback,
-      const GURL& url,
-      const std::optional<const ProductInfo>& info);
 
   void OnFetchPriceInsightsInfoForCurrentUrl(
       GetPriceInsightsInfoForCurrentUrlCallback callback,

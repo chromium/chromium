@@ -67,6 +67,10 @@ export class BrowserProxyImpl implements BrowserProxy {
     return this.handler.getProductInfoForCurrentUrl();
   }
 
+  getProductInfoForUrl(url: Url) {
+    return this.handler.getProductInfoForUrl(url);
+  }
+
   getPriceInsightsInfoForCurrentUrl() {
     return this.handler.getPriceInsightsInfoForCurrentUrl();
   }
