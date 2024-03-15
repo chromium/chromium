@@ -6,6 +6,10 @@
     --content-container-width: 500px;
     --radio-button-horizontal-padding: 16px;
     --choice-gap: 16px;
+    --search-engine-name-line-height: 20px;
+    --marketing-snippet-line-height: 16px;
+    --choice-height: calc(var(--search-engine-name-line-height) +
+        var(--marketing-snippet-line-height));
     color: var(--cr-primary-text-color);
   }
 
@@ -63,7 +67,6 @@
   }
 
   .choice {
-    align-items: center;
     display: flex;
     flex-direction: row;
     gap: var(--choice-gap);
@@ -84,6 +87,8 @@
     border-radius: 4px;
     flex: none;
     height: var(--search-engine-icon-size);
+    /* So that the icon doesn't change position when the snippet is expanded. */
+    margin-top: calc((var(--choice-height) - var(--search-engine-icon-size))/2);
     width: var(--search-engine-icon-size);
   }
 
@@ -99,8 +104,13 @@
   }
 
   cr-radio-button {
+    /* So that the radio button doesn't change position when the snippet is
+    expanded. */
+    --cr-radio-button-disc-margin-block-start: calc((var(--choice-height) -
+        var(--cr-radio-button-size))/2);
     --cr-radio-button-label-spacing: 16px;
     --cr-radio-button-size: 20px;
+    align-items: start;
     background-color: var(--google-grey-100);
     border-bottom: 1px solid var(--background-color);
     border-radius: 2px;
@@ -189,7 +199,7 @@
     color: var(--cr-secondary-text-color);
     font-size: 0.75rem;
     font-weight: 400;
-    line-height: 16px;
+    line-height: var(--marketing-snippet-line-height);
   }
 
   .truncate-text {
@@ -201,7 +211,7 @@
   .search-engine-name {
     font-size: 0.875rem;
     font-weight: 700;
-    line-height: 20px;
+    line-height: var(--search-engine-name-line-height);
   }
 
   @media (prefers-color-scheme: dark) {
