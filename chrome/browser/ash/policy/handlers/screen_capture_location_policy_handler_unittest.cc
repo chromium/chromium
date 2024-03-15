@@ -8,7 +8,9 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -37,10 +39,15 @@ MATCHER_P2(PrefHasValue, name, value, "") {
 }  // namespace
 
 class ScreenCaptureLocationPolicyHandlerTest : public testing::Test {
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+  }
+
  protected:
   PolicyMap policy_;
   ScreenCaptureLocationPolicyHandler handler_;
   PrefValueMap prefs_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ScreenCaptureLocationPolicyHandlerTest, Default) {
@@ -55,12 +62,12 @@ TEST_F(ScreenCaptureLocationPolicyHandlerTest, Default) {
 TEST_F(ScreenCaptureLocationPolicyHandlerTest, SetPolicyInvalid) {
   const std::string path = "/root/${google_drive}/foo";
   policy_.Set(key::kScreenCaptureLocation, POLICY_LEVEL_MANDATORY,
-              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(path),
               nullptr);
   PolicyErrorMap errors;
   EXPECT_FALSE(handler_.CheckPolicySettings(policy_, &errors));
   EXPECT_EQ(1u, errors.size());
-  constexpr char16_t kExpected[] = u"Expected string value.";
+  constexpr char16_t kExpected[] = u"Value doesn't match format.";
   EXPECT_EQ(kExpected, errors.GetErrorMessages(key::kScreenCaptureLocation));
 
   handler_.ApplyPolicySettings(policy_, &prefs_);
@@ -89,5 +96,20 @@ INSTANTIATE_TEST_SUITE_P(
     ScreenCaptureLocationPolicyHandlerTestWithParamInstance,
     ScreenCaptureLocationPolicyHandlerTestWithParam,
     testing::Values("${onedrive}/foo", "${google_drive}", "", "Downloads"));
+
+TEST_F(ScreenCaptureLocationPolicyHandlerTest, FeatureDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(features::kSkyVault);
+  const std::string path = "${google_drive}";
+  policy_.Set(key::kScreenCaptureLocation, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(path),
+              nullptr);
+  PolicyErrorMap errors;
+  EXPECT_TRUE(handler_.CheckPolicySettings(policy_, &errors));
+  EXPECT_EQ(0u, errors.size());
+
+  handler_.ApplyPolicySettings(policy_, &prefs_);
+  EXPECT_THAT(&prefs_, PrefNotSet(ash::prefs::kCaptureModePolicySavePath));
+}
 
 }  // namespace policy

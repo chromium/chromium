@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/local_user_files/file_location_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
@@ -36,8 +37,7 @@ bool ScreenCaptureLocationPolicyHandler::CheckPolicySettings(
 
   if (value &&
       !policy::local_user_files::IsValidLocationString(value->GetString())) {
-    errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
-                     value->GetString());
+    errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR);
     return false;
   }
 
@@ -57,8 +57,12 @@ void ScreenCaptureLocationPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  const std::string str = value->GetString();
-  prefs->SetString(ash::prefs::kCaptureModePolicySavePath, str);
+  if (base::FeatureList::IsEnabled(features::kSkyVault)) {
+    const std::string str = value->GetString();
+    prefs->SetString(ash::prefs::kCaptureModePolicySavePath, str);
+  } else {
+    VLOG(1) << "SkyVault not enabled, ignoring ScreenCaptureLocation policy";
+  }
 }
 
 }  // namespace policy
