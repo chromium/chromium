@@ -465,6 +465,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3365529507898144230">Uložiť vo Fotkách</translation>
 <translation id="3371831930909698441">Prekladač je k dispozícii. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="3377063233124932127">Uložené záložky, heslá a ďalšie položky nájdete odteraz na začiatku.</translation>
+<translation id="3387261909427947069">Spôsoby platby</translation>
 <translation id="3393920035788932672">Povolené okná</translation>
 <translation id="3398509000872871492">Pripojenie je zabezpečené</translation>
 <translation id="3404232721752787413">Uložiť vo Fotkách Google</translation>
@@ -1064,6 +1065,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6383719166112032471">Otvoriť umiestnenie…</translation>
 <translation id="6387994324662817823">Heslá sa ukladajú do správcu hesiel od Googlu iba v tomto zariadení.</translation>
 <translation id="6389470377220713856">Meno na karte</translation>
+<translation id="6404422529625928907">Otvoriť na Disku Google</translation>
 <translation id="6406506848690869874">Synchronizácia</translation>
 <translation id="6410390304316730527">Bezpečné prehliadanie vás chráni pred útočníkmi, ktorí vás môžu oklamať, aby ste urobili niečo nebezpečné, napríklad nainštalovali škodlivý softvér alebo odhalili osobné údaje, ako sú heslá, telefónne čísla alebo kreditné karty. Ak ho vypnete, pri prehliadaní neznámych alebo pochybných webov postupujte opatrne.</translation>
 <translation id="6410883413783534063">Otvorte karty a navštívte tak rôzne stránky naraz</translation>
@@ -1446,6 +1448,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8299417921174340354">Ak chcete používať heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="8299613349954694191">Otvorte kartu inkognito a prehliadajte internet v súkromí.</translation>
 <translation id="8311853334103696030">Skryť „Sledovať cenu“</translation>
+<translation id="8313645224014086262">Uložiť súbor</translation>
 <translation id="8319076807703933069">Nové vyhľadávanie</translation>
 <translation id="8328777765163860529">Zavrieť všetky</translation>
 <translation id="8343993175958086504">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení.</translation>
@@ -1559,6 +1562,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8868471676553493380">{count,plural, =1{{count} karta}few{{count} karty}many{{count} Tabs}other{{count} kariet}}</translation>
 <translation id="8870413625673593573">Nedávno zatvorené</translation>
 <translation id="8876882697946675716">Udržiavajte svoje zariadenia synchronizované</translation>
+<translation id="8879604564928138696">Vyskúšajte dvojitým klepnutím</translation>
 <translation id="8879984884633913185">Skryť položku Vymazať dáta prehliadania</translation>
 <translation id="8881801611828450202">Hľadať tento obrázok v službe <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Odosiela webové adresy niektorých navštívených stránok, obmedzené informácie o systéme a určitý obsah stránok, aby pomáhalo objavovať nové hrozby a chrániť všetkých na internete.</translation>

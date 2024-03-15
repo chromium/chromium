@@ -485,7 +485,6 @@
 <translation id="1370384480654163477">Прегледајте и измените фајлове од последње посете овом сајту:</translation>
 <translation id="1372841398847029212">Синхронизујте са налогом</translation>
 <translation id="1373176046406139583">Подешавање видљивости контролише ко може да дели садржај са вама док је екран откључан. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
-<translation id="1373600239834196313">Већину функција бочне табле можете да отворите преко Chrome менија</translation>
 <translation id="1374844444528092021">Сертификат који захтева мрежа „<ph name="NETWORK_NAME" />“ или није инсталиран или више није важећи. Набавите нови сертификат и покушајте поново да се повежете.</translation>
 <translation id="1375557162880614858">Желите ли да активирате ChromeVox, уграђени читач екрана за Chrome OS Flex?</translation>
 <translation id="1375938286942050085">Подешавање је довршено. Сада припремите уређај за играње игара</translation>
@@ -1373,7 +1372,6 @@
 <translation id="2019718679933488176">&amp;Отвори аудио снимак на новој картици</translation>
 <translation id="2020183425253392403">Прикажи подешавања мрежне адресе</translation>
 <translation id="2020225359413970060">Скенирај датотеку</translation>
-<translation id="2020779321517562133">Уклони копију</translation>
 <translation id="2022953316617983419">QR кôд</translation>
 <translation id="2023042679320690325"><ph name="BRAND" /> не може да проверава да ли су лозинке угрожене повредом података. Пробајте поново за 24 сата.</translation>
 <translation id="2023167225947895179">Овај PIN може лако да се погоди</translation>
@@ -1560,7 +1558,6 @@
 <translation id="2156877321344104010">Поново покрени безбедносну проверу</translation>
 <translation id="2157474325782140681">Да бисте користили додатне функције, користите Dell базну станицу компатибилну са овим Chromebook-ом.</translation>
 <translation id="215753907730220065">Изађи из режима целог екрана</translation>
-<translation id="2157875535253991059">Ова страница је сада у режиму целог екрана.</translation>
 <translation id="2158249272743343757">Избриши податке за персонализацију...</translation>
 <translation id="2158475082070321257">Копирај линк до истакнутог текста</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2242,7 +2239,6 @@
 <translation id="2663302507110284145">Језик</translation>
 <translation id="2665394472441560184">Додајте нову реч</translation>
 <translation id="2665647207431876759">Истекло</translation>
-<translation id="2665717534925640469">Ова страница је сада у режиму целог екрана и онемогућила је курсор.</translation>
 <translation id="2665919335226618153">О, не! Дошло је до грешке током форматирања.</translation>
 <translation id="2666247341166669829">Ниво напуњености батерије за леву <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Друге апликације су подешене да отварају исте линкове као апликација <ph name="APP_NAME" />. Овим се апликације <ph name="APP_NAME_2" /> и <ph name="APP_NAME_3" /> онемогућавају да отварају подржане линкове.</translation>
@@ -3011,7 +3007,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="326999365752735949">Преузимање diff датотеке</translation>
 <translation id="3270965368676314374">Читање слика, музике и других медија са рачунара, мењање и брисање тих медија</translation>
-<translation id="3274763671541996799">Прешли сте на режим целог екрана.</translation>
 <translation id="3275778809241512831">Интерни безбедносни кључ тренутно није безбедан. Уклоните га из свих услуга у којима сте га користили. Ресетујте безбедносни кључ да бисте решили проблем.</translation>
 <translation id="3275778913554317645">Отвори као прозор</translation>
 <translation id="3277214528693754078">Крећите се помоћу курсора за текст (навигација курсором)</translation>
@@ -3049,7 +3044,6 @@
 <translation id="3301554464236215299">Овај фајл се не преузима често и можда је опасан</translation>
 <translation id="33022249435934718">GDI надимци</translation>
 <translation id="3302388252085547855">Унесите образложење...</translation>
-<translation id="3303260552072730022">Додатак је активирао режим целог екрана.</translation>
 <translation id="3303795387212510132">Желите ли да дозволите да апликација отвара <ph name="PROTOCOL_SCHEME" /> линкове?</translation>
 <translation id="3303818374450886607">Примерака</translation>
 <translation id="3303855915957856445">Нису пронађени резултати претраге</translation>
@@ -3819,7 +3813,6 @@
 <translation id="3887022758415973389">Прегледајте листу уређаја</translation>
 <translation id="3888501106166145415">Повезане WiFi мреже</translation>
 <translation id="3888550877729210209">Прављење бележака помоћу апликације <ph name="LOCK_SCREEN_APP_NAME" /></translation>
-<translation id="3888586133700543064">Ове информације нам помажу да боље разумемо проблем који имате са Помоћником. Чувају се највише 90 дана, а приступ је ограничен на одговарајуће тимове за инжењеринг и повратне информације.</translation>
 <translation id="3890064827463908288">Укључите Chrome синхронизацију да бисте користили WiFi синхронизацију</translation>
 <translation id="389313931326656921">Доделите прекидач радњи Следеће</translation>
 <translation id="3893268973182382220">Учитавање овог окна тренутно није могуће</translation>
@@ -3827,7 +3820,6 @@
 <translation id="3893536212201235195">Читање и мењање ваших подешавања приступачности</translation>
 <translation id="3893630138897523026">ChromeVox (говорне повратне информације)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">Уврсти недавну историју Помоћника преко Sherlog-а. Она може да обухвата ваш идентитет, локацију и информације о отклањању грешака. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Додајте фолдер</translation>
 <translation id="3894770151966614831">Желите ли да преместите на Google налог?</translation>
 <translation id="3894983081771074056">Понашање тастатуре и миша, подешавања језика и друго</translation>
@@ -5883,7 +5875,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Ова апликација захтева приступ Play продавници</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5519053700692355541">Већину функција бочне табле можете да отворите преко Chrome менија у горњем десном углу</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Додатно заштитите налог помоћу јаке лозинке. Биће сачувана у алатки <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Је ли ово почетна страница коју сте очекивали?</translation>
@@ -6854,7 +6845,6 @@
 <translation id="6277518330158259200">С&amp;ними екран</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Промени локацију</translation>
-<translation id="6279183038361895380">Притисните |<ph name="ACCELERATOR" />| да бисте приказали показивач</translation>
 <translation id="6280215091796946657">Пријави ме на други налог</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Премашује ограничење од 1 листа папира}one{Премашује ограничење од {COUNT} листа папира}few{Премашује ограничење од {COUNT} листа папира}other{Премашује ограничење од {COUNT} листова папира}}</translation>
@@ -7127,7 +7117,6 @@
 <translation id="6512759338201777379">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" />, са расположењем <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome ће користити мобилне податке ако нисте повезани са другом мрежом.</translation>
 <translation id="6514010653036109809">Доступан уређај:</translation>
-<translation id="6514565641373682518">Ова страница је онемогућила курсор.</translation>
 <translation id="6517227424170598783">Желите да уклоните пречицу <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />?</translation>
 <translation id="6517420300299531857">Фајлови на Мом диску се аутоматски синхронизују са Chromebook-ом, па можете да им приступате без интернет везе. То ће заузети око <ph name="REQUIRED_SPACE" />. Тренутно вам је доступно <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Уређај можда више неће радити како треба, а ви ћете можда имати проблема са безбедношћу и перформансама. Искључивање ажурирања може да утиче и на ваше право на правне тужбе ако наиђете на проблеме.</translation>
@@ -7868,6 +7857,7 @@
 <translation id="7078120482318506217">Све мреже</translation>
 <translation id="708060913198414444">К&amp;опирај адресу аудио садржаја</translation>
 <translation id="7082568314107259011">Администратор управља мрежом <ph name="NETWORK_NAME" /></translation>
+<translation id="7082850163410901674">Обавештења су искључена у подешавањима Mac система</translation>
 <translation id="7083774521940805477">Steam за Chromebook (beta) није доступан на Chromebook-у.</translation>
 <translation id="708550780726587276">(није конфигурисано)</translation>
 <translation id="7086672505018440886">Уврсти Chrome датотеке евиденције у архиву.</translation>
@@ -8163,7 +8153,6 @@
 <translation id="7339785458027436441">Проверавај правопис током куцања</translation>
 <translation id="7339898014177206373">Нови прозор</translation>
 <translation id="7340179705876485790">Да бисте се вратили за више од 1 странице, кликните и задржите Назад.</translation>
-<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> је сада у режиму целог екрана.</translation>
 <translation id="7340650977506865820">Сајт дели екран</translation>
 <translation id="7340757554212515731">Аутоматски шаљите извештаје о отказивању, као и дијагностику и податке о коришћењу Google-у</translation>
 <translation id="734088800888587319">Показатељи мреже</translation>
@@ -9422,9 +9411,7 @@
 <translation id="8261625296061301062">Софтвер за скенер је инсталиран</translation>
 <translation id="8262971894813353037">Омогућава нови дизајн радне површине за WebUI. Морате да омогућите и Chrome освежавање за 2023.</translation>
 <translation id="8263336784344783289">Дајте назив овој групи</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> је онемогућио курсор.</translation>
 <translation id="8264024885325823677">Овим подешавањем управља администратор.</translation>
-<translation id="8264718194193514834">Додатак „<ph name="EXTENSION_NAME" />“ је активирао режим целог екрана.</translation>
 <translation id="826511437356419340">Ушли сте у режим прегледа прозора. Превуците да бисте се кретали или притисните Tab ако користите тастатуру.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Прозор без архивирања се неће отворити када поново покренете}one{{COUNT} прозор без архивирања се неће отворити када поново покренете}few{{COUNT} прозора без архивирања се неће отворити када поново покренете}other{{COUNT} прозора без архивирања се неће отворити када поново покренете}}</translation>
 <translation id="8266947622852630193">Све методе уноса</translation>
@@ -9935,7 +9922,6 @@
 <translation id="8662795692588422978">Особе</translation>
 <translation id="8662911384982557515">Промените почетну страницу у: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome не може да подеси позадину.</translation>
-<translation id="8663051876219324457">Дозволите апликацијама, веб-сајтовима и системским услугама да користе локацију. Локација може да користи изворе као што су WiFi, мобилне мреже и сензори да би се лакше одредила локација уређаја. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Увек блокирај више аутоматских преузимања на хосту <ph name="HOST" /></translation>
 <translation id="8664389313780386848">&amp;Прикажи извор странице</translation>
 <translation id="8665110742939124773">Унели сте нетачан приступни кôд. Пробајте поново.</translation>
@@ -9944,7 +9930,6 @@
 <translation id="8666268818656583275">F тастери ће се сада понашати као системски тастери у горњем реду</translation>
 <translation id="8666321716757704924">Дозволе су поново омогућене за <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Имате лозинке које могу да се побољшају</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> је сада у режиму целог екрана и онемогућио је курсор.</translation>
 <translation id="8667760277771450375">Истражујемо начине да ограничимо праћење на различитим сајтовима и истовремено омогућимо сајтовима да зауставе непожељне огласе и преваре.</translation>
 <translation id="8668378421690365723">Уређај можда више неће радити како треба и можда ће имати проблема са безбедношћу и перформансама.</translation>
 <translation id="8669284339312441707">Топлије</translation>

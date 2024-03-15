@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">内置键盘</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">这将允许具有相应权限的系统服务使用您的位置信息。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">打开账号设置</translation>
 <translation id="6462978824459367242">APN“添加”按钮现已启用</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6647510110698214773">加密算法</translation>
 <translation id="6650062777702288430">假名/字母数字切换</translation>
+<translation id="6657240842932274095">允许系统服务使用您的位置信息？</translation>
 <translation id="6657585470893396449">密码</translation>
 <translation id="6659594942844771486">标签页</translation>
 <translation id="66621959568103627">珊瑚粉</translation>

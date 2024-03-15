@@ -612,11 +612,9 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3526440770046466733">Maak skakel in nuwe oortjie oop en bly in huidige oortjie</translation>
 <translation id="353086728817903341">Gekoppel aan <ph name="NUM_DEVICES" /> toestelle</translation>
 <translation id="3533126039236445965">Apps op rak</translation>
-<translation id="3537350467437346467">Onlangs bekyk</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-warmkol</translation>
 <translation id="3540893133818942399">Maak die opstelling toe vir die bekyk van jou foon se onlangse foto’s en media</translation>
 <translation id="3542066395059568317">Jy sal aanbevelings sien sodat jy kan aangaan waar jy opgehou het. Jy kan regsklik om aanbevelings te verwyder.</translation>
-<translation id="3547318469722231257">Jy het dit verander</translation>
 <translation id="3552189655002856821">Wi-fi is afgeskakel</translation>
 <translation id="3554215588514239132">Wys of versteek ontwikkelaarnutsgoedpaneel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> is vasgespeld</translation>
@@ -713,7 +711,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3859364108019690">Kan nie apps stroom nie</translation>
 <translation id="3861651314799684201">Druk Enter om volskerm op te neem</translation>
-<translation id="3882323608730650973">Verander</translation>
 <translation id="3886872229787704059">Vandag oopgemaak</translation>
 <translation id="3891340733213178823">Druk Ctrl+Shift+Q twee keer om af te meld.</translation>
 <translation id="3893630138897523026">ChromeVox (gesproke terugvoer)</translation>
@@ -1628,6 +1625,7 @@ Nuwe installasie</translation>
 <translation id="746232733191930409">Skermopnamemodus</translation>
 <translation id="7466449121337984263">Raak asseblief die sensor</translation>
 <translation id="7477793887173910789">Beheer jou musiek, video's en meer</translation>
+<translation id="7488762544858401571">Gewysig</translation>
 <translation id="7489261257412536105">Gaan na volskerm of verlaat dit</translation>
 <translation id="7490360161041035804">Jy kan belangrike lêers vasspeld, insluitend Google Drive-lêers. Hou oor ’n item of maak Lêers oop en regsklik ’n item om dit vas te speld.</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
@@ -2073,7 +2071,6 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="953431725143473984">Skakel die toestel af?</translation>
 <translation id="954052413789300507">Nie genoeg spasie vir <ph name="FILENAME" /> nie. Maak spasie beskikbaar.</translation>
 <translation id="954520015070501466">30 minute</translation>
-<translation id="954786879461589145">Verander deur <ph name="USER" /></translation>
 <translation id="974545358917229949">Wys tans <ph name="RESULT_COUNT" /> resultate vir <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Geen sperdatum nie</translation>
 <translation id="98120814841227350">Gaan na einde van dokument</translation>

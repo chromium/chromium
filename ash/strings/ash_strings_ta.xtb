@@ -612,11 +612,9 @@
 <translation id="3526440770046466733">புதிய பக்கத்தில் இணைப்பைத் திறக்கும், ஆனால் தற்போதைய பக்கத்திலேயே இருக்கும்</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> சாதனங்களுடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="3533126039236445965">ஷெல்ஃபில் உள்ள ஆப்ஸ்</translation>
-<translation id="3537350467437346467">நீங்கள் பார்த்தவை</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> ஹாட்ஸ்பாட்</translation>
 <translation id="3540893133818942399">மொபைலில் உள்ள சமீபத்திய படங்களையும் மீடியாவையும் பார்க்கும்படி அமைப்பதை நிராகரிக்கலாம்</translation>
 <translation id="3542066395059568317">நீங்கள் விட்ட இடத்தில் இருந்து தொடர்வதற்கு உதவும் வகையில் பரிந்துரைகள் காட்டப்படும். வலது கிளிக் செய்து அவற்றை அகற்றலாம்.</translation>
-<translation id="3547318469722231257">நீங்கள் மாற்றியவை</translation>
 <translation id="3552189655002856821">வைஃபை முடக்கப்பட்டது</translation>
 <translation id="3554215588514239132">டெவெலப்பர் கருவிகள் பேனலைக் காட்டு அல்லது மறை</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ஷெல்ஃபில் நிலையாகப் பொருத்தப்பட்டது</translation>
@@ -712,7 +710,6 @@
 <translation id="385300504083504382">தொடக்கம்</translation>
 <translation id="3859364108019690">ஆப்ஸை ஸ்ட்ரீம் செய்ய முடியவில்லை</translation>
 <translation id="3861651314799684201">முழுத்திரையை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
-<translation id="3882323608730650973">மாற்றப்பட்டவை</translation>
 <translation id="3886872229787704059">இன்று திறக்கப்பட்டது</translation>
 <translation id="3891340733213178823">வெளியேற Ctrl+Shift+Q ஐ இருமுறை அழுத்தவும்.</translation>
 <translation id="3893630138897523026">ChromeVox (பேச்சுவடிவ கருத்து)</translation>
@@ -1627,6 +1624,7 @@
 <translation id="746232733191930409">ஸ்கிரீன் ரெக்கார்டிங் பயன்முறை</translation>
 <translation id="7466449121337984263">சென்சாரைத் தொடவும்</translation>
 <translation id="7477793887173910789">உங்கள் இசை, வீடியோக்கள் மற்றும் பலவற்றைக் கட்டுப்படுத்தலாம்</translation>
+<translation id="7488762544858401571">திருத்தியது</translation>
 <translation id="7489261257412536105">முழுத்திரைக்கு மாறு/வெளியேறு</translation>
 <translation id="7490360161041035804">Google Drive ஃபைல்கள் உட்பட முக்கியமான ஃபைல்களைப் பின் செய்யலாம். பின் செய்ய, ஃபைலின் மேலே கர்சரைக் கொண்டுசெல்லவும் அல்லது Filesஸைத் திறந்து ஒரு ஃபைலில் வலது கிளிக் செய்யவும்.</translation>
 <translation id="7497767806359279797">மொழியையும் கீபோர்ட்டையும் தேர்வுசெய்யவும்</translation>
@@ -2072,7 +2070,6 @@
 <translation id="953431725143473984">சாதனத்தை ஷட் டவுன் செய்யவா?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்க போதிய இடமில்லை. சேமிப்பிடத்தைக் காலியாக்கவும்.</translation>
 <translation id="954520015070501466">30 நிமி</translation>
-<translation id="954786879461589145"><ph name="USER" /> மாற்றியவை</translation>
 <translation id="974545358917229949"><ph name="QUERY" />க்கான <ph name="RESULT_COUNT" /> முடிவுகளைக் காட்டுகிறது</translation>
 <translation id="981011780479609956">முடிக்க வேண்டிய தேதி இல்லாதவை</translation>
 <translation id="98120814841227350">ஆவணத்தின் இறுதிக்குச் செல்</translation>

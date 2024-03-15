@@ -117,6 +117,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="4195557071150719219">Zobraziť nedávne karty v prehliadači Chromium</translation>
 <translation id="4200712796753248893">Používať akcie prehliadača Chromium v systéme iOS</translation>
 <translation id="420541179527342563">Ak chcete deaktivovať režim silnej zámky v prehliadači Chromium, vypnite ho vo svojom iPade.</translation>
+<translation id="427331839909790668">Prepojte Chromium a ďalšie služby Googlu, ak chcete, aby prispôsobovali vaše prostredie vzájomným zdieľaním a využívaním údajov</translation>
 <translation id="4408912345039114853">Spustiť kontrolu bezpečnosti v prehliadači Chromium</translation>
 <translation id="4432744876818348753">Prihláste sa, aby ste mohli Chromium využívať naplno.</translation>
 <translation id="4445228361214254027">Vaša organizácia vypla možnosť používať a ukladať údaje prehliadača Chromium vo vašom účte Google. Nové záložky, heslá a ďalšie položky sa budú ukladať iba do tohto zariadenia.</translation>
@@ -218,6 +219,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="6852799557929001644">Majte prístup k heslám a ďalším údajom prehliadača Chromium v iných aplikáciách v tomto zariadení.</translation>
 <translation id="6887138405044152640">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v ňom do prehliadača Chromium.</translation>
 <translation id="6911341667534646387">Naďalej používajte údaje prehliadača Chromium vo svojom účte Google</translation>
+<translation id="7002548535535009764">Ak chcete mať k dispozícii najprispôsobenejšie prostredie, zahrňte Chromium do funkcií <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPade použiť v iných aplikáciách.</translation>
 <translation id="7018284295775193585">Chromium sa nedá aktualizovať</translation>
 <translation id="7045244423563602563">Upravte Chromium podľa seba</translation>

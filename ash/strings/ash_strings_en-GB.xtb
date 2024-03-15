@@ -612,11 +612,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="3526440770046466733">Open link in new tab and stay in current tab</translation>
 <translation id="353086728817903341">Connected to <ph name="NUM_DEVICES" /> devices</translation>
 <translation id="3533126039236445965">Apps in shelf</translation>
-<translation id="3537350467437346467">You viewed</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">Dismiss setting up viewing your phone's recent photos and media</translation>
 <translation id="3542066395059568317">You’ll see recommendations so that you can continue where you left off. You can right-click to remove recommendations.</translation>
-<translation id="3547318469722231257">You modified</translation>
 <translation id="3552189655002856821">Wi-Fi is turned off</translation>
 <translation id="3554215588514239132">Show or hide Developer tools panel</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> was pinned</translation>
@@ -712,7 +710,6 @@ Connect your device to power.</translation>
 <translation id="385300504083504382">Beginning</translation>
 <translation id="3859364108019690">Can't stream apps</translation>
 <translation id="3861651314799684201">Press enter to record full screen</translation>
-<translation id="3882323608730650973">Modified</translation>
 <translation id="3886872229787704059">Opened today</translation>
 <translation id="3891340733213178823">Press Ctrl+Shift+Q twice to sign out.</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
@@ -1627,6 +1624,7 @@ New install</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
+<translation id="7488762544858401571">Edited</translation>
 <translation id="7489261257412536105">Enter or exit fullscreen</translation>
 <translation id="7490360161041035804">You can pin important files, including Google Drive files. To pin, hover over an item or open Files and right-click an item.</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
@@ -2072,7 +2070,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="953431725143473984">Shut down the device?</translation>
 <translation id="954052413789300507">Not enough space for <ph name="FILENAME" />. Free up space.</translation>
 <translation id="954520015070501466">30 min</translation>
-<translation id="954786879461589145"><ph name="USER" /> modified</translation>
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="981011780479609956">No due date</translation>
 <translation id="98120814841227350">Go to end of document</translation>

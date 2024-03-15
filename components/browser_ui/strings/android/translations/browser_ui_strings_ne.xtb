@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2597457036804169544">साइटहरूमा अँध्यारो थिम लागू नगर्नुहोस्</translation>
 <translation id="2606760465469169465">स्वतः पुष्टि गर्ने अनुमति</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">कुनै विशेष साइटलाई JavaScript को प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">संरक्षित सामग्री</translation>
 <translation id="662080504995468778">यहीँ रहनुहोस्</translation>
 <translation id="6653342741369270081">फुल स्क्रिनबाट बाहिरिन "पछाडि जानुहोस्" बटन थिच्नुहोस्।</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{"यो ट्याब प्रयोग गरेर जारी राख्नुहोस्" लुकाउनुहोस्}other{"यी ट्याबहरू प्रयोग गरेर जारी राख्नुहोस्" लुकाउनुहोस्}}</translation>
 <translation id="6689172468748959065">प्रोफाइल तस्बिरहरू</translation>
 <translation id="6697925417670533197">जारी डाउनलोडहरू</translation>
 <translation id="6722828510648505498">पहिचान सेवा प्रदायकहरूबाट प्राप्त साइन इन गर्ने प्रम्प्टहरू ब्लक गरियोस्।</translation>

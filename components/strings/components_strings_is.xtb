@@ -12,7 +12,6 @@
 <translation id="1021753677514347426">Þetta vandamál tengist vottorði sem þú eða einhver annar setti upp í tækinu þínu. Vitað er að þetta vottorð er notað til að fylgjast með og grípa inn í netkerfi og Chromium treystir því ekki. Þrátt fyrir að notkun þess geti í einhverjum tilvikum átt rétt á sér, svo sem á skóla- eða fyrirtækjaneti, vill Chromium tryggja að þú vitir af því, þótt þú getir ekki komið í veg fyrir notkun þess. Eftirlit getur átt sér stað í öllum vöfrum eða forritum sem nota vefinn.</translation>
 <translation id="1024111578869940408">Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera illgreinanlegar breytingar á vefslóðinni.</translation>
 <translation id="1024913885641459127">Umsagnir um vörur og verðsamanburður</translation>
-<translation id="1028781062521375153">Sjá upplýsingar</translation>
 <translation id="102916930470544692">Aðgangslykill</translation>
 <translation id="1030706264415084469"><ph name="URL" /> vill fá að geyma mikið magn gagna varanlega í tækinu þínu</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ekkert}=1{Frá 1 vefsvæði. Skráir þig út af flestum vefsvæðum. }one{Frá # vefsvæði. Skráir þig út af flestum vefsvæðum. }other{Frá # vefsvæðum. Skráir þig út af flestum vefsvæðum. }}</translation>
@@ -183,6 +182,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="132301787627749051">Leita að mynd á klippiborði</translation>
 <translation id="1323433172918577554">Sýna meira</translation>
 <translation id="132390688737681464">Vista og fylla út heimilisföng</translation>
+<translation id="1325749054628832887">Umfjöllunarefni auglýsinga er bara einn af mörgum hlutum sem vefsvæði getur notað til að sérsníða auglýsingar. Jafnvel án umfjöllunarefna auglýsinga geta vefsvæði sýnt þér auglýsingar en þær verða kannski ekki eins áhugaverðar. Nánar um <ph name="BEGIN_LINK" />umsjón með persónuvernd auglýsinga<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Senda skýrslu</translation>
 <translation id="1330449323196174374">Túristabrot vinstra megin</translation>
 <translation id="1333745675627230582">Spila Chrome Dino leikinn</translation>
@@ -357,7 +357,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1640180200866533862">Notendareglur</translation>
 <translation id="1640244768702815859">Prófaðu að <ph name="BEGIN_LINK" />fara á heimasíðu vefsvæðisins<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Fresta úttaki til</translation>
-<translation id="164212631332220697">Greiddu með <ph name="CARD_DETAIL" /> þegar þú gengur frá kaupunum.</translation>
 <translation id="1643651787397909318">Hnappur til að opna öryggisathugun Chrome, virkjaðu til að opna síðu öryggisathugunar Chrome í stillingunum</translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1645368109819982629">Óstuddar samskiptareglur</translation>

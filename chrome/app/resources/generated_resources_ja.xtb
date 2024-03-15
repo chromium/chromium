@@ -483,7 +483,6 @@
 <translation id="1370384480654163477">前回このサイトにアクセスしたときのファイルを表示、編集する。</translation>
 <translation id="1372841398847029212">アカウントに同期</translation>
 <translation id="1373176046406139583">デバイスの公開設定では、画面のロックが解除されているときに、あなたとファイルを共有できる相手を管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="1373600239834196313">サイドパネルのほとんどの機能は Chrome メニューから開けます</translation>
 <translation id="1374844444528092021">ネットワーク「<ph name="NETWORK_NAME" />」が要求する証明書がインストールされていないか、証明書の有効期限が切れています。新しい証明書を取得して、もう一度接続してみてください。</translation>
 <translation id="1375557162880614858">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。</translation>
 <translation id="1375938286942050085">セットアップは完了です。デバイスでゲームをお楽しみください</translation>
@@ -1372,7 +1371,6 @@
 <translation id="2019718679933488176">オーディオを新しいタブで開く(&amp;O)</translation>
 <translation id="2020183425253392403">ネットワーク アドレス設定を表示</translation>
 <translation id="2020225359413970060">ファイルをスキャン</translation>
-<translation id="2020779321517562133">コピーを削除</translation>
 <translation id="2022953316617983419">QR コード</translation>
 <translation id="2023042679320690325"><ph name="BRAND" /> でパスワードがデータ侵害の被害にあっていないか確認することができません。24 時間後にもう一度お試しください。</translation>
 <translation id="2023167225947895179">推測されやすい PIN です</translation>
@@ -1559,7 +1557,6 @@
 <translation id="2156877321344104010">安全チェックを再実行</translation>
 <translation id="2157474325782140681">すべての機能を利用できるようにするには、この Chromebook に対応した Dell のドッキング ステーションを使用してください。</translation>
 <translation id="215753907730220065">全画面表示を終了</translation>
-<translation id="2157875535253991059">現在このページは全画面表示です。</translation>
 <translation id="2158249272743343757">入力履歴を削除...</translation>
 <translation id="2158475082070321257">選択箇所へのリンクをコピー</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2238,7 +2235,6 @@
 <translation id="2663302507110284145">言語</translation>
 <translation id="2665394472441560184">新しい単語を追加</translation>
 <translation id="2665647207431876759">期限切れ</translation>
-<translation id="2665717534925640469">現在このページは全画面表示で、マウスカーソルは無効になります。</translation>
 <translation id="2665919335226618153">フォーマット中にエラーが発生しました。</translation>
 <translation id="2666247341166669829">左のバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリが複数あります。設定を変更すると、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> で対応リンクを開けなくなります。</translation>
@@ -3007,7 +3003,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="326999365752735949">差分のダウンロード中</translation>
 <translation id="3270965368676314374">パソコンからの写真、音楽、その他のメディアの読み取り、変更、削除</translation>
-<translation id="3274763671541996799">全画面表示になりました。</translation>
 <translation id="3275778809241512831">ご使用の内部セキュリティ キーは現在、安全ではありません。このキーを使用しているすべてのサービスからキーを削除してください。この問題を解決するには、セキュリティ キーをリセットしてください。</translation>
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
 <translation id="3277214528693754078">テキスト カーソルを使って移動する（カーソル ブラウジング）</translation>
@@ -3045,7 +3040,6 @@
 <translation id="3301554464236215299">このファイルは一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります</translation>
 <translation id="33022249435934718">GDI ハンドル</translation>
 <translation id="3302388252085547855">理由を入力してください...</translation>
-<translation id="3303260552072730022">拡張機能によって自動的に全画面表示になりました。</translation>
 <translation id="3303795387212510132">アプリに <ph name="PROTOCOL_SCHEME" /> リンクの表示を許可しますか？</translation>
 <translation id="3303818374450886607">部数</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
@@ -3814,7 +3808,6 @@
 <translation id="3887022758415973389">デバイスリストを表示する</translation>
 <translation id="3888501106166145415">関連付けられている Wi-Fi ネットワーク</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> でメモをとる</translation>
-<translation id="3888586133700543064">アシスタントで発生した問題を詳しく把握するために、情報の提供をお願いいたします。ご提供いただいた情報は最大 90 日間保存され、エンジニアリングとフィードバックの担当者のみが閲覧します。</translation>
 <translation id="3890064827463908288">Wi-Fi 同期を使用するには Chrome 同期をオンにしてください</translation>
 <translation id="389313931326656921">スイッチを「次へ」に割り当てます</translation>
 <translation id="3893268973182382220">現在、このパネルを読み込むことができません</translation>
@@ -3822,7 +3815,6 @@
 <translation id="3893536212201235195">ユーザー補助設定の読み取りと変更</translation>
 <translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">Sherlog から最近のアシスタント履歴を含める。これには、ID、位置情報、デバッグ情報などが含まれる可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">フォルダの追加</translation>
 <translation id="3894770151966614831">Google アカウントに移動しますか？</translation>
 <translation id="3894983081771074056">キーボードとマウスの動作、言語設定など</translation>
@@ -5876,7 +5868,6 @@
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">このアプリは、Play ストアへのアクセスが必要です</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5519053700692355541">サイドパネルのほとんどの機能は右上の Chrome メニューから開けます</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">安全なパスワードでこのアカウントのセキュリティを強化できます。<ph name="EMAIL" /> の <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されます。</translation>
 <translation id="5521078259930077036">このホーム ページでよろしいですか？</translation>
@@ -6846,7 +6837,6 @@
 <translation id="6277518330158259200">スクリーンショットを撮る(&amp;A)</translation>
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6278776436938569440">場所を変更</translation>
-<translation id="6279183038361895380">カーソルを表示するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="6280215091796946657">別のアカウントでログイン</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{上限（1 枚）を超えています}other{上限（{COUNT} 枚）を超えています}}</translation>
@@ -7119,7 +7109,6 @@
 <translation id="6512759338201777379">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">他のネットワークに接続していない場合、Google Chrome はモバイル データを使用します。</translation>
 <translation id="6514010653036109809">接続可能なデバイス:</translation>
-<translation id="6514565641373682518">このページではマウスカーソルが無効になります。</translation>
 <translation id="6517227424170598783">「<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />」のショートカットを削除しますか？</translation>
 <translation id="6517420300299531857">マイドライブ内のファイルは Chromebook と自動的に同期されるので、インターネット接続がなくてもアクセスできます。この操作で約 <ph name="REQUIRED_SPACE" /> が使用されます。現在の空き容量は <ph name="FREE_SPACE_AVAILABLE" /> です。</translation>
 <translation id="6517709704288360414">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。また、更新を無効にすると、問題発生時に法的申し立てを行う権利にも影響が及ぶ場合があります。</translation>
@@ -8148,7 +8137,6 @@
 <translation id="7339785458027436441">入力中にスペルチェック</translation>
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="7340179705876485790">いくつか前のページに戻るには、「戻る」を長押しします。</translation>
-<translation id="7340431621085453413">現在 <ph name="FULLSCREEN_ORIGIN" /> は全画面表示です。</translation>
 <translation id="7340650977506865820">サイトで画面が共有されています</translation>
 <translation id="7340757554212515731">障害レポート、診断データ、使用状況データを自動的に Google に送信します</translation>
 <translation id="734088800888587319">ネットワーク指標</translation>
@@ -9406,9 +9394,7 @@
 <translation id="8261625296061301062">スキャナ ソフトウェアをインストールしました</translation>
 <translation id="8262971894813353037">WebUI の新しいデスクトップ デザインを有効にします。Chrome Refresh 2023 も有効にする必要があります。</translation>
 <translation id="8263336784344783289">このグループに名前を付ける</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> でマウスカーソルが無効になりました。</translation>
 <translation id="8264024885325823677">この設定は管理者によって管理されています。</translation>
-<translation id="8264718194193514834">「<ph name="EXTENSION_NAME" />」によって全画面表示になりました。</translation>
 <translation id="826511437356419340">ウィンドウ概観モードに切り替わりました。移動するにはスワイプするか、キーボードの場合は Tab キーを押してください。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{シークレット ウィンドウは、再起動後は自動的には開きません}other{現在開いている {COUNT} 個のシークレット ウィンドウは、再起動後は自動的には開きません}}</translation>
 <translation id="8266947622852630193">すべての入力方法</translation>
@@ -9919,7 +9905,6 @@
 <translation id="8662795692588422978">ユーザー</translation>
 <translation id="8662911384982557515">ホームページを次に変更: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">壁紙は設定できません。</translation>
-<translation id="8663051876219324457">アプリ、ウェブサイト、システム サービスに位置情報の使用を許可します。デバイスの位置情報の特定に、Wi-Fi、モバイル ネットワーク、センサーなどのソースを使用する場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> 上での複数ファイルの自動ダウンロードを常にブロックする</translation>
 <translation id="8664389313780386848">ページのソースを表示(&amp;V)</translation>
 <translation id="8665110742939124773">間違ったアクセスコードが入力されました。もう一度お試しください。</translation>
@@ -9928,7 +9913,6 @@
 <translation id="8666268818656583275">F キーはシステムの最上段のキーと同じように動作します</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> にもう一度権限を許可しました</translation>
 <translation id="8667261224612332309">改善できるパスワードがあります</translation>
-<translation id="8667328578593601900">現在 <ph name="FULLSCREEN_ORIGIN" /> は全画面表示で、マウスカーソルは無効です。</translation>
 <translation id="8667760277771450375">Chrome では、サイトが広告のスパムと不正行為を防止できるようにしながら、クロスサイト トラッキングを制限する方法を模索しています。</translation>
 <translation id="8668378421690365723">お使いのデバイスが正しく動作しなくなり、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
 <translation id="8669284339312441707">暖色</translation>

@@ -1844,6 +1844,13 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Nếu bạn không đặt chính sách này, <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web. Nếu không, tùy chọn cài đặt cá nhân của người dùng sẽ được áp dụng.
 
       Để biết thông tin chi tiết về mẫu URL hợp lệ, vui lòng truy cập vào https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Tuy nhiên, kể từ phiên bản M85, các mẫu có ký tự đại diện "*" và "[*.]" trong máy chủ sẽ không được hỗ trợ trong chính sách này nữa.</translation>
+<translation id="2421713016375433338">URL tới một hình ảnh sẽ được dùng làm huy hiệu doanh nghiệp cho hồ sơ. URL phải trỏ đến một hình ảnh.
+
+Huy hiệu này sẽ được hiển thị bên dưới ảnh hồ sơ trong trình đơn hồ sơ và hình ảnh sẽ được đổi kích thước cho vừa với không gian 16x16 dành cho huy hiệu.
+
+Nếu bạn không đặt chính sách này, thì biểu tượng toà nhà mặc định sẽ hiển thị.
+
+Nếu xảy ra lỗi trong khi cố gắng tải và hiển thị hình ảnh, thì biểu tượng toà nhà mặc định sẽ hiển thị.</translation>
 <translation id="2421779938235645781">Màu đèn nền bàn phím khớp với hình nền hiện tại</translation>
 <translation id="2423255396068675416">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng có thể chạy <ph name="PRODUCT_CROSTINI_NAME" /> miễn là <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> và <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> đều được đặt thành Bật. Việc đặt chính sách này thành Tắt sẽ tắt <ph name="PRODUCT_CROSTINI_NAME" /> đối với người dùng. Khi bạn đổi chính sách này thành Tắt, chính sách sẽ được áp dụng cho các vùng chứa <ph name="PRODUCT_CROSTINI_NAME" /> mới đang khởi động, chứ không phải các vùng chứa đã chạy.</translation>
 <translation id="242521047682347997">Không cho phép người dùng đồng bộ hoá tin nhắn SMS giữa Chromebook và điện thoại</translation>
@@ -2273,6 +2280,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
       Khi bạn không đặt hoặc đặt chính sách này thành bật, trình xem PDF sẽ có thể chú thích trong tệp PDF.
 
       Khi bạn đặt chính sách này thành tắt, trình xem PDF sẽ không thể chú thích trong tệp PDF.</translation>
+<translation id="2769199041812510302">URL đến biểu trưng của doanh nghiệp</translation>
 <translation id="2769952903507981510">Định cấu hình tên miền bắt buộc cho máy chủ truy cập từ xa</translation>
 <translation id="2770376586681635746">Kiểm soát việc người dùng có thể thêm tài khoản Kerberos hay không.
 

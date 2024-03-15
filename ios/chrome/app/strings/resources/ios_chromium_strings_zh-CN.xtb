@@ -117,6 +117,7 @@
 <translation id="4195557071150719219">查看最近使用 Chromium 打开的标签页</translation>
 <translation id="4200712796753248893">在 iOS 上使用 Chromium 操作</translation>
 <translation id="420541179527342563">若要在 Chromium 中停用锁定模式，请在您的 iPad 上关闭该模式。</translation>
+<translation id="427331839909790668">如果您想让 Chromium 和其他 Google 服务利用彼此的数据为您提供个性化体验，请关联这些服务</translation>
 <translation id="4408912345039114853">运行 Chromium 安全检查</translation>
 <translation id="4432744876818348753">登录即可充分利用 Chromium。</translation>
 <translation id="4445228361214254027">贵组织已关闭在您的 Google 账号中保存 Chromium 数据并使用这些数据的功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
@@ -218,6 +219,7 @@
 <translation id="6852799557929001644">在此设备上的其他应用中使用 Chromium 中保存的密码和其他信息。</translation>
 <translation id="6887138405044152640">若要将此标签页发送到另一设备，请在该设备上登录 Chromium。</translation>
 <translation id="6911341667534646387">请继续使用您的 Google 账号中的 Chromium 数据</translation>
+<translation id="7002548535535009764">若要获得最具个性化的体验，请在“<ph name="FEATURE_NAME_1" />”和“<ph name="FEATURE_NAME_2" />”中包括 Chromium</translation>
 <translation id="7006920032187763988">您可在 iPad 上的其他应用内使用已保存至密码管理器的密码。</translation>
 <translation id="7018284295775193585">Chromium 无法更新</translation>
 <translation id="7045244423563602563">定制您的专属 Chromium</translation>

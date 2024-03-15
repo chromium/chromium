@@ -612,11 +612,9 @@
 <translation id="3526440770046466733">Відкрити посилання на новій вкладці й залишитися на поточній вкладці</translation>
 <translation id="353086728817903341">Підключено до стількох пристроїв: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Додатки на панелі запуску</translation>
-<translation id="3537350467437346467">Ви переглядали</translation>
 <translation id="3539957339480430241">Точка доступу <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Відхиліть налаштування перегляду нещодавніх фотографій і медіафайлів на телефоні</translation>
 <translation id="3542066395059568317">Ви побачите рекомендації, тож зможете продовжити з місця зупинки. Натисніть правою кнопкою миші, щоб видалити їх.</translation>
-<translation id="3547318469722231257">Ви змінювали</translation>
 <translation id="3552189655002856821">Wi-Fi вимкнено</translation>
 <translation id="3554215588514239132">Показати або сховати панель Інструментів розробника</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" />: закріплено</translation>
@@ -712,7 +710,6 @@
 <translation id="385300504083504382">На початок</translation>
 <translation id="3859364108019690">Не вдалося виконати потокове передавання додатків</translation>
 <translation id="3861651314799684201">Щоб записати весь екран, натисніть клавішу Enter</translation>
-<translation id="3882323608730650973">Змінено</translation>
 <translation id="3886872229787704059">Відкрито сьогодні</translation>
 <translation id="3891340733213178823">Щоб вийти, двічі натисніть Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (голосові підказки)</translation>
@@ -1627,6 +1624,7 @@
 <translation id="746232733191930409">Режим запису екрана</translation>
 <translation id="7466449121337984263">Торкніться сканера</translation>
 <translation id="7477793887173910789">Керуйте музикою, відео й іншим контентом</translation>
+<translation id="7488762544858401571">Відредагований файл</translation>
 <translation id="7489261257412536105">Відкрити на весь екран або вийти з повноекранного режиму</translation>
 <translation id="7490360161041035804">Ви можете закріпити важливі файли, зокрема з Google Диска. Для цього наведіть курсор на об’єкт або відкрийте додаток Файли й натисніть об’єкт правою кнопкою миші.</translation>
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
@@ -2072,7 +2070,6 @@
 <translation id="953431725143473984">Завершити роботу пристрою?</translation>
 <translation id="954052413789300507">Недостатньо місця для файлу "<ph name="FILENAME" />". Очистьте пам’ять.</translation>
 <translation id="954520015070501466">30 хвилин</translation>
-<translation id="954786879461589145">Змінено користувачем <ph name="USER" /></translation>
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">Термін здачі не вказано</translation>
 <translation id="98120814841227350">Перейти в кінець документа</translation>

@@ -487,7 +487,6 @@
 <translation id="1370384480654163477">عرض وتعديل الملفات التي تم منحها أذونات خلال آخر مرة زرت فيها هذا الموقع الإلكتروني:</translation>
 <translation id="1372841398847029212">المزامنة مع حسابك</translation>
 <translation id="1373176046406139583">تسمح لك عناصر التحكّم في ظهور جهازك بتحديد من يمكنه مشاركة الملفات معك عندما تكون شاشة جهازك غير مقفلة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="1373600239834196313">‏يمكنك فتح معظم ميزات اللوحة الجانبية من خلال قائمة Chrome.</translation>
 <translation id="1374844444528092021">الشهادة المطلوبة من الشبكة "<ph name="NETWORK_NAME" />" لم يتم تثبيتها أو لم تعد صالحة.  يُرجى الحصول على شهادة جديدة وإعادة الاتصال من جديد.</translation>
 <translation id="1375557162880614858">‏هل تريد تفعيل قارئ الشاشة ChromeVox المضمّن لنظام التشغيل ChromeOS Flex؟</translation>
 <translation id="1375938286942050085">اكتملت عملية إعداد جهازك وحان وقت تجهيزه لتشغيل أحدث الألعاب</translation>
@@ -1380,7 +1379,6 @@
 <translation id="2019718679933488176">&amp;فتح ملف الصوت في علامة تبويب جديدة</translation>
 <translation id="2020183425253392403">عرض إعدادات عنوان الشبكة</translation>
 <translation id="2020225359413970060">فحص الملف</translation>
-<translation id="2020779321517562133">إزالة نسخة البيانات</translation>
 <translation id="2022953316617983419">رمز الاستجابة السريعة</translation>
 <translation id="2023042679320690325">لا يستطيع "<ph name="BRAND" />" التأكد من أنّ كلمات مرورك لم تتعرض لعمليات اختراق للبيانات. يُرجی إعادة المحاولة بعد 24 ساعة.</translation>
 <translation id="2023167225947895179">قد يكون رقم التعريف الشخصي سهل التخمين</translation>
@@ -1567,7 +1565,6 @@
 <translation id="2156877321344104010">تشغيل اختبار "التحقق من الأمان" مرة أخرى</translation>
 <translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
-<translation id="2157875535253991059">هذه الصفحة في وضع ملء الشاشة الآن.</translation>
 <translation id="2158249272743343757">حذف بيانات التخصيص...</translation>
 <translation id="2158475082070321257">نسخ الرابط المؤدي إلى نص محدد</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2249,7 +2246,6 @@
 <translation id="2663302507110284145">اللغة</translation>
 <translation id="2665394472441560184">إضافة كلمة جديدة</translation>
 <translation id="2665647207431876759">منتهي الصلاحية</translation>
-<translation id="2665717534925640469">هذه الصفحة في وضع ملء الشاشة الآن وتم إيقاف مؤشر الماوس.</translation>
 <translation id="2665919335226618153">عذرًا، حدث خطأ أثناء التنسيق.</translation>
 <translation id="2666247341166669829">مستوى شحن بطارية السماعة اليسرى %<ph name="PERCENTAGE" />.</translation>
 <translation id="2667144577800272420">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> من فتح الروابط المتوافقة.</translation>
@@ -3018,7 +3014,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ملف واحد}zero{# ملف}two{ملفّان}few{# ملفّات}many{# ملفًّا}other{# ملف}}</translation>
 <translation id="326999365752735949">تنزيل الاختلافات</translation>
 <translation id="3270965368676314374">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وتغييرها وحذفها</translation>
-<translation id="3274763671541996799">تم الانتقال إلى وضع ملء الشاشة.</translation>
 <translation id="3275778809241512831">مفتاح الأمان الداخلي غير آمن حاليًا. يُرجى إزالته من أي خدمة استخدمته معها. ولحل المشكلة، يُرجى إعادة ضبط مفتاح الأمان.</translation>
 <translation id="3275778913554317645">فتح كنافذة</translation>
 <translation id="3277214528693754078">التنقُّل في الصفحة باستخدام مؤشر النص (ميزة "التصفُّح النصي بالمؤشر")</translation>
@@ -3056,7 +3051,6 @@
 <translation id="3301554464236215299">لا يتم تنزيل هذا الملف عادةً، وقد يكون خطيرًا.</translation>
 <translation id="33022249435934718">معالجات واجهة الجهاز الرسومية</translation>
 <translation id="3302388252085547855">إدخال السبب...</translation>
-<translation id="3303260552072730022">تم تبديل إضافة إلى ملء الشاشة.</translation>
 <translation id="3303795387212510132">هل تريد السماح للتطبيق بفتح روابط <ph name="PROTOCOL_SCHEME" />؟</translation>
 <translation id="3303818374450886607">النسخ</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
@@ -3827,7 +3821,6 @@
 <translation id="3887022758415973389">عرض قائمة الأجهزة</translation>
 <translation id="3888501106166145415">‏شبكات Wi-Fi المرتبطة</translation>
 <translation id="3888550877729210209">تسجيل الملاحظات من خلال <ph name="LOCK_SCREEN_APP_NAME" /></translation>
-<translation id="3888586133700543064">‏تساعدنا هذه المعلومات في فهم مشكلتك على "مساعد Google" بشكل أفضل. ويتم تخزين هذه المعلومات لمدة تصل إلى 90 يومًا ويقتصر الوصول إليها على الفِرق المختصّة في الهندسة والتعامل مع ملاحظات المستخدمين.</translation>
 <translation id="3890064827463908288">‏تفعيل ميزة "مزامنة Chrome" لاستخدام "مزامنة الواي فاي"</translation>
 <translation id="389313931326656921">تخصيص مفتاح تحكّم للإجراء "التالي"</translation>
 <translation id="3893268973182382220">لا يمكن تحميل هذه اللوحة الآن.</translation>
@@ -3835,7 +3828,6 @@
 <translation id="3893536212201235195">قراءة وتغيير إعدادات تسهيل الاستخدام</translation>
 <translation id="3893630138897523026">‏ChromeVox (التعليق المنطوق)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">‏تضمين سجل "مساعد Google" الأخير عبر Sherlog. قد يتضمن هذا الهوية والموقع الجغرافي ومعلومات تصحيح الأخطاء. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">إضافة مجلد</translation>
 <translation id="3894770151966614831">‏هل تريد نقل كلمات المرور إلى حساب Google؟</translation>
 <translation id="3894983081771074056">سلوك لوحة المفاتيح والماوس، والإعدادات المفضّلة للّغة، وغير ذلك</translation>
@@ -5889,7 +5881,6 @@
 <translation id="5514315914873062345">‏مفتاح Tab</translation>
 <translation id="5517304475148761050">‏يتطلّب هذا التطبيق الوصول إلى "متجر Play"</translation>
 <translation id="5517412723934627386">نوع الشبكة <ph name="NETWORK_TYPE" /> - الاسم المعروض للشبكة <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5519053700692355541">‏يمكنك فتح معظم ميزات اللوحة الجانبية من خلال قائمة Chrome أعلى يسار الصفحة.</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">يمكنك الحفاظ على أمان هذا الحساب باستخدام كلمة مرور قوية. سيتم حفظ كلمة المرور في "<ph name="GOOGLE_PASSWORD_MANAGER" />" للحساب <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">هل هذه هي الصفحة الرئيسية التي كنت تتوقع ظهورها؟</translation>
@@ -6859,7 +6850,6 @@
 <translation id="6277518330158259200">الت&amp;قاط لقطة شاشة</translation>
 <translation id="6278428485366576908">المظهر</translation>
 <translation id="6278776436938569440">تغيير الموقع الجغرافي</translation>
-<translation id="6279183038361895380">اضغط على |<ph name="ACCELERATOR" />| لعرض المؤشر</translation>
 <translation id="6280215091796946657">تسجيل الدخول باستخدام حساب مختلف</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{تم تجاوز الحد المسموح به والبالغ ورقة واحدة.}zero{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}two{تم تجاوز الحد المسموح به والبالغ ورقتان ({COUNT}).}few{تم تجاوز الحد المسموح به والبالغ {COUNT} أوراق.}many{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}other{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}}</translation>
@@ -7132,7 +7122,6 @@
 <translation id="6512759338201777379">تم إنشاء الصورة رقم <ph name="INDEX" /> بالعنوان "<ph name="SUBJECT" />" والحالة "<ph name="MOOD" />".</translation>
 <translation id="6513247462497316522">‏سيستخدم Google Chrome بيانات الجوال إذا لم تكن متصلاً بشبكة أخرى.</translation>
 <translation id="6514010653036109809">الجهاز المتاح:</translation>
-<translation id="6514565641373682518">أوقفت هذه الصفحة مؤشر الماوس.</translation>
 <translation id="6517227424170598783">هل تريد إزالة الاختصار "<ph name="SHORTCUT_NAME" /> - ‏<ph name="APP_NAME" />"؟</translation>
 <translation id="6517420300299531857">‏تتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت. سيتم استخدام مساحة تخزين تبلغ <ph name="REQUIRED_SPACE" /> تقريبًا. مساحة التخزين المتوفّرة حاليًا تبلغ <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">من المحتمَل أن يتوقف جهازك عن العمل بشكل صحيح، وقد تواجه مشاكل تتعلّق بالأمان والأداء. عند إيقاف التحديثات، قد يتأثّر أيضًا حقك في تقديم دعاوى قانونية في حال واجهتك أي مشاكل.</translation>
@@ -8173,7 +8162,6 @@
 <translation id="7339785458027436441">تحقق من التدقيق الإملائي أثناء الكتابة</translation>
 <translation id="7339898014177206373">نافذة جديدة</translation>
 <translation id="7340179705876485790">للرجوع أكثر من صفحة واحدة، انقر مع الاستمرار على زر الرجوع.</translation>
-<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> في وضع ملء الشاشة الآن.</translation>
 <translation id="7340650977506865820">يشارك الموقع الإلكتروني شاشتك.</translation>
 <translation id="7340757554212515731">‏يؤدي تفعيل هذا الخيار إلى إرسال تقارير الأعطال بالإضافة إلى بيانات التشخيص وبيانات الاستخدام إلى Google تلقائيًا.</translation>
 <translation id="734088800888587319">مقاييس الشبكة</translation>
@@ -9432,9 +9420,7 @@
 <translation id="8261625296061301062">تم تثبيت برنامج الماسح الضوئي</translation>
 <translation id="8262971894813353037">‏يؤدي هذا لتفعيل تصميم سطح المكتب الجديد في واجهة WebUI. يجب أيضًا تفعيل التصميم الجديد لعام 2023 في Chrome.</translation>
 <translation id="8263336784344783289">تسمية هذه المجموعة</translation>
-<translation id="8263744495942430914">أوقف <ph name="FULLSCREEN_ORIGIN" /> مؤشر الماوس.</translation>
 <translation id="8264024885325823677">يتولى مشرفك إدارة هذا الإعداد.</translation>
-<translation id="8264718194193514834">شغّلت الإضافة <ph name="EXTENSION_NAME" /> وضع ملء الشاشة.</translation>
 <translation id="826511437356419340">‏تم الدخول إلى وضع "نظرة عامة للنافذة". مرّر سريعًا للتنقُّل أو اضغط على مفتاح التبويب (Tab) في حال كنت تستخدم لوحة المفاتيح.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{لن يتم فتح نافذة التصفُّح المتخفي بعد إعادة التشغيل.}zero{لن يتم فتح نوافذ التصفُّح المتخفي البالغ عددها {COUNT} بعد إعادة التشغيل.}two{لن يتم فتح نافذتَي التصفُّح المتخفي ({COUNT}) بعد إعادة التشغيل.}few{لن يتم فتح نوافذ التصفُّح المتخفي البالغ عددها {COUNT} بعد إعادة التشغيل.}many{لن يتم فتح نوافذ التصفُّح المتخفي البالغ عددها {COUNT} بعد إعادة التشغيل.}other{لن يتم فتح نوافذ التصفُّح المتخفي البالغ عددها {COUNT} بعد إعادة التشغيل.}}</translation>
 <translation id="8266947622852630193">جميع أساليب الإدخال</translation>
@@ -9945,7 +9931,6 @@
 <translation id="8662795692588422978">الأشخاص</translation>
 <translation id="8662911384982557515">تغيير الصفحة الرئيسية إلى: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">‏يتعذر على Chrome تعيين هذه الخلفية.</translation>
-<translation id="8663051876219324457">‏يمكنك السماح للتطبيقات والمواقع الإلكترونية وخدمات النظام باستخدام خدمة الموقع الجغرافي التي بإمكانها استخدام مصادر، مثل شبكة Wi-Fi وشبكات الجوّال وأجهزة الاستشعار للمساعدة في تقدير الموقع الجغرافي لجهازك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">حظر عمليات التنزيل المتعددة تلقائيًا بشكل دائم على <ph name="HOST" /></translation>
 <translation id="8664389313780386848">عرض م&amp;صدر الصفحة</translation>
 <translation id="8665110742939124773">لقد أدخلت رمز دخول غير صحيح. يُرجى إعادة المحاولة.</translation>
@@ -9954,7 +9939,6 @@
 <translation id="8666268818656583275">ستنفِّذ مفاتيح الوظائف الآن إجراءات مفاتيح الصف العلوي للنظام</translation>
 <translation id="8666321716757704924">الأذونات المسموح بها مرة أخرى لـ <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">هناك كلمات مرور يمكن تحسينها.</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> في وضع ملء الشاشة الآن وتم إيقاف مؤشر الماوس.</translation>
 <translation id="8667760277771450375">نحن نستكشف طرقًا للحد من تتبُّع الاستخدام بين مواقع إلكترونية مختلفة، مع السماح لهذه المواقع بحظر الرسائل الإعلانية غير المرغوب فيها ومنع الاحتيال.</translation>
 <translation id="8668378421690365723">من المحتمَل أن يتوقف جهازك عن العمل بشكل مناسب، وقد يواجه مشاكل تتعلّق بالأمان والأداء.</translation>
 <translation id="8669284339312441707">أكثر دفئًا</translation>

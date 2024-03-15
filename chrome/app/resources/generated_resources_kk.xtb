@@ -483,7 +483,6 @@
 <translation id="1370384480654163477">Осы сайтқа соңғы рет кірген кезіңіздегі файлдарды көру және өзгерту:</translation>
 <translation id="1372841398847029212">Аккаунтпен синхрондау</translation>
 <translation id="1373176046406139583">Экранның құлпы ашық кезде, көріну мүмкіндігі сізбен кім бөлісе алатынын басқарады. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
-<translation id="1373600239834196313">Бүйірлік панель функцияларының көпшілігін Chrome мәзірінен ашуға болады.</translation>
 <translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" желісіне қажетті сертификат орнатылмаған немесе жарамсыз болып қалды. Жаңа сертификат алып, қайта қосылып көріңіз.</translation>
 <translation id="1375557162880614858">ChromeOS Flex операциялық жүйесіне арналған ендірілген ChromeVox экран оқу құралын іске қосқыңыз келе ме?</translation>
 <translation id="1375938286942050085">Орнату аяқталды. Енді құрылғыңызды ойынға дайындаңыз</translation>
@@ -1372,7 +1371,6 @@
 <translation id="2019718679933488176">&amp;Аудионы жаңа қойындыда ашу</translation>
 <translation id="2020183425253392403">Желі мекенжайы параметрлерін көрсету</translation>
 <translation id="2020225359413970060">Файлды сканерлеу</translation>
-<translation id="2020779321517562133">Көшірмені өшіру</translation>
 <translation id="2022953316617983419">QR коды</translation>
 <translation id="2023042679320690325"><ph name="BRAND" /> құпия сөздеріңізді деректердің жылыстауына тексере алмайды. 24 сағаттан қайталап көріңіз.</translation>
 <translation id="2023167225947895179">PIN коды табуға оңай болуы мүмкін</translation>
@@ -1559,7 +1557,6 @@
 <translation id="2156877321344104010">Қауіпсіздік шарасын қайта қолдану</translation>
 <translation id="2157474325782140681">Қосымша функцияларды пайдалану үшін осы Chromebook құрылғысымен жұмыс істеуге арналған қондыру станциясын пайдаланыңыз.</translation>
 <translation id="215753907730220065">Толық экраннан шығу</translation>
-<translation id="2157875535253991059">Бұл бет енді толық экранға ауысты.</translation>
 <translation id="2158249272743343757">Жекелендіру деректерін жою...</translation>
 <translation id="2158475082070321257">Ерекшеленген мәтіннің сілтемесін көшіру</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2241,7 +2238,6 @@
 <translation id="2663302507110284145">Тіл</translation>
 <translation id="2665394472441560184">Жаңа сөз қосу</translation>
 <translation id="2665647207431876759">Мерзімі өтті</translation>
-<translation id="2665717534925640469">Бұл бет енді толық экранда көрсетілген және мұнда курсор жоқ.</translation>
 <translation id="2665919335226618153">Қап! Пішімдеу кезінде қате пайда болды.</translation>
 <translation id="2666247341166669829">Сол құлақаспаптың батарея деңгейі: <ph name="PERCENTAGE" />%</translation>
 <translation id="2667144577800272420"><ph name="APP_NAME" /> ашқан сілтемелерді басқа қолданбалар да аша алатын болып реттелді. <ph name="APP_NAME_2" /> және <ph name="APP_NAME_3" /> қолдау көрсету сілтемелерін аша алмай қалады.</translation>
@@ -3010,7 +3006,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файл}}</translation>
 <translation id="326999365752735949">Басқасын жүктеу</translation>
 <translation id="3270965368676314374">Компьютеріңізден фотосуреттерді, музыканы және басқа медиафайлдарды оқу, өзгерту және жою</translation>
-<translation id="3274763671541996799">Толық экранға өттіңіз.</translation>
 <translation id="3275778809241512831">Ішкі қауіпсіздік кілті сенімді емес. Оны өзіңіз қолданатын қызметтердің барлығынан өшіріңіз. Бұл ақауды түзету үшін қауіпсіздік кілтін бастапқы күйге қайтарыңыз.</translation>
 <translation id="3275778913554317645">Терезе ретінде ашу</translation>
 <translation id="3277214528693754078">Мәтін курсорымен қозғалу (белсенді курсор режимі)</translation>
@@ -3048,7 +3043,6 @@
 <translation id="3301554464236215299">Бұл файл жиі жүктеп алынбайды және қауіпті болуы мүмкін</translation>
 <translation id="33022249435934718">GDI дескрипторлары</translation>
 <translation id="3302388252085547855">Түсініктеме енгізіңіз…</translation>
-<translation id="3303260552072730022">Кеңейтім толық экранды іске қосты.</translation>
 <translation id="3303795387212510132">Қолданбаға <ph name="PROTOCOL_SCHEME" /> сілтемелерін ашуға рұқсат берілсін бе?</translation>
 <translation id="3303818374450886607">Көшірмелер</translation>
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
@@ -3818,7 +3812,6 @@
 <translation id="3887022758415973389">Құрылғылар тізімін көрсету</translation>
 <translation id="3888501106166145415">Байланыстырылған Wi-Fi желілері</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> қолданбасымен жазбалар жазу</translation>
-<translation id="3888586133700543064">Бұл ақпарат Assistant ақауын жақсырақ түсінуімізге көмектеседі. Ол 90 күнге дейін сақталады және тиісті инженерлер мен кері байланыс ұжымына ғана қолжетімді болады.</translation>
 <translation id="3890064827463908288">Wi-Fi деректерін синхрондау үшін Chrome Sync функциясын қосыңыз.</translation>
 <translation id="389313931326656921">"Келесі" әрекетіне ауыстырғыш тағайындау</translation>
 <translation id="3893268973182382220">Дәл қазір бұл панельді жүктеу мүмкін емес</translation>
@@ -3826,7 +3819,6 @@
 <translation id="3893536212201235195">Арнайы мүмкіндіктер параметрлерін оқу және өзгерту</translation>
 <translation id="3893630138897523026">ChromeVox (дауыстық көмек)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">Sherlog арқылы есепте Assistant қолданбасын соңғы пайдалану тарихын қамту. Оның ішінде жеке деректеріңіз, геодерек және қателерді түзету ақпараты болуы мүмкін. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Қалта қосу</translation>
 <translation id="3894770151966614831">Құпия сөз Google аккаунтына ауыстырылсын ба?</translation>
 <translation id="3894983081771074056">Пернетақта мен тінтуір әрекеті, тіл параметрлері және т.б</translation>
@@ -5883,7 +5875,6 @@
 <translation id="5514315914873062345">Tab пернесі</translation>
 <translation id="5517304475148761050">Қолданбаға Play Store дүкеніне кіру рұқсаты қажет</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5519053700692355541">Бүйірлік панель функцияларының көпшілігін жоғарғы оң жақтағы Chrome мәзірінен ашуға болады</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Бұл аккаунтты күрделі құпия сөзбен қауіпсіз сақтаңыз. <ph name="EMAIL" /> аккаунты үшін ол мына жерде сақталады: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="5521078259930077036">Бұл сіз күткен бастапқы бет пе?</translation>
@@ -6850,7 +6841,6 @@
 <translation id="6277518330158259200">Скриншот т&amp;үсіру</translation>
 <translation id="6278428485366576908">Тақырып</translation>
 <translation id="6278776436938569440">Орналасқан жерін өзгерту</translation>
-<translation id="6279183038361895380">Курсорды көрсету үшін |<ph name="ACCELERATOR" />| басыңыз</translation>
 <translation id="6280215091796946657">Басқа аккаунтпен кіру</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 қағаз парақ шектеуінен асты}other{{COUNT} қағаз парақ шектеуінен асты}}</translation>
@@ -7123,7 +7113,6 @@
 <translation id="6512759338201777379">Келесі сипаттарға ие жасалған сурет: <ph name="INDEX" />, <ph name="SUBJECT" />, <ph name="MOOD" /> реңкі.</translation>
 <translation id="6513247462497316522">Басқа желіге қосылмаған болсаңыз, Google Chrome ұялы деректерді пайдаланады.</translation>
 <translation id="6514010653036109809">Қолжетімді құрылғы:</translation>
-<translation id="6514565641373682518">Бұл бет тінтуір жүгіргісін өшірді.</translation>
 <translation id="6517227424170598783">"<ph name="SHORTCUT_NAME" /> — <ph name="APP_NAME" />" таңбашасын өшіру қажет пе?</translation>
 <translation id="6517420300299531857">Жеке Drive ішіндегі файлдарыңыз Chromebook-қа автоматты түрде синхрондалады, осылайша оларды интернет байланысынсыз пайдалана аласыз. Бұл шамамен <ph name="REQUIRED_SPACE" /> пайдаланады. Қазір сізге <ph name="FREE_SPACE_AVAILABLE" /> қолжетімді.</translation>
 <translation id="6517709704288360414">Құрылғыңыз дұрыс жұмыс істемей, өнімділікке және қауіпсіздікке қатысты ақаулар пайда болуы мүмкін. Жаңартуларды өшірсеңіз, ақаулар пайда болған жағдайда құқықтық шағым жібере алмауыңыз мүмкін.</translation>
@@ -8154,7 +8143,6 @@
 <translation id="7339785458027436441">Теру кезінде емлені тексеру</translation>
 <translation id="7339898014177206373">Жаңа терезе</translation>
 <translation id="7340179705876485790">1-ден аса бет артқа оралу үшін "Артқа" түймесін басып тұрыңыз.</translation>
-<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> енді толық экран болып табылады.</translation>
 <translation id="7340650977506865820">Сайт экраныңызды бөлісуде</translation>
 <translation id="7340757554212515731">Жаңылыс туралы есептерді, сондай-ақ диагностика және пайдалану туралы деректі Google-ға автоматты түрде жібереді.</translation>
 <translation id="734088800888587319">Желі көрсеткіштері</translation>
@@ -9411,9 +9399,7 @@
 <translation id="8261625296061301062">Сканердің бағдарламалық құралы орнатылды</translation>
 <translation id="8262971894813353037">WebUI үшін жаңа жұмыс үстелі дизайнын іске қосады. Chrome Refresh 2023-ті де қосу қажет.</translation>
 <translation id="8263336784344783289">Топтың атауын енгізіңіз</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> тінтуір курсорын өшірді.</translation>
 <translation id="8264024885325823677">Бұл параметрді әкімшіңіз басқарады.</translation>
-<translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" толық экранды іске қосты.</translation>
 <translation id="826511437356419340">Терезе шолу режимі қосылды. Өту үшін сырғытыңыз. Пернетақтаны пайдаланып жатсаңыз, Tab түймесін басыңыз.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Қайта іске қосылғанда инкогнито терезесі қайта ашылмайды.}other{Қайта іске қосылғанда {COUNT} инкогнито терезесі қайта ашылмайды.}}</translation>
 <translation id="8266947622852630193">Барлық енгізу әдістері</translation>
@@ -9924,7 +9910,6 @@
 <translation id="8662795692588422978">Байланыстар</translation>
 <translation id="8662911384982557515">Негізгі бетті келесіге өзгерту: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome тұсқағазды орната алмайды.</translation>
-<translation id="8663051876219324457">Қолданбалардың, веб-сайттардың және жүйелік қызметтердің локацияңызды пайдалануына рұқсат беріңіз. Құрылғының орналасқан жерін анықтау үшін Wi-Fi, мобильдік желілер және датчиктер пайдаланылуы мүмкін. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> хостында бірнеше автоматтық жүктеуге әрқашан тыйым салу</translation>
 <translation id="8664389313780386848">&amp;Бет дереккөзін көру</translation>
 <translation id="8665110742939124773">Қате рұқсат кодын енгіздіңіз. Қайталап көріңіз.</translation>
@@ -9933,7 +9918,6 @@
 <translation id="8666268818656583275">F пернелері енді жүйенің жоғарғы жол пернелері сияқты әрекетке ие болады</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> үшін рұқсаттар қайта берілді</translation>
 <translation id="8667261224612332309">Сізде жақсартуға болатын құпия сөздер бар.</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> енді толық экранда және тінтуіріңіздің курсорын өшірді.</translation>
 <translation id="8667760277771450375">Сайттарға жарнама спамдарының шығуын және алаяқтықты тоқтатуға мүмкіндік бере отырып, сайтаралық бақылауды шектеу жолдарын зерттеудеміз.</translation>
 <translation id="8668378421690365723">Құрылғыңыз енді дұрыс жұмыс істемей, қауіпсіздік пен өнімділікке қатысты ақаулар пайда болуы мүмкін.</translation>
 <translation id="8669284339312441707">Жылырақ</translation>

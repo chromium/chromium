@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Međuspremnik</translation>
 <translation id="2597457036804169544">Ne primjenjuj tamnu temu na web-lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Dopuštanje JavaScripta za određenu web-lokaciju.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Napusti</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6653342741369270081">Pritisnite gumb za natrag da biste zatvorili prikaz na cijelom zaslonu.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Sakrij Nastavi s ovom karticom}one{Sakrij Nastavi s ovim karticama}few{Sakrij Nastavi s ovim karticama}other{Sakrij Nastavi s ovim karticama}}</translation>
 <translation id="6689172468748959065">Fotografije profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
 <translation id="6722828510648505498">Blokiraj upite za prijavu s usluga za provjeru identiteta.</translation>

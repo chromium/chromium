@@ -483,7 +483,6 @@
 <translation id="1370384480654163477">查看和編輯上次造訪這個網站時的檔案：</translation>
 <translation id="1372841398847029212">同步到你的帳戶</translation>
 <translation id="1373176046406139583">裝置分享設定可以控制當螢幕處於解鎖狀態時，哪些人能夠與你分享內容。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="1373600239834196313">大部分的側邊面板功能都可以透過 Chrome 選單開啟</translation>
 <translation id="1374844444528092021">網路「<ph name="NETWORK_NAME" />」要求的憑證尚未安裝或已經無效。請取得新憑證，然後嘗試重新連線。</translation>
 <translation id="1375557162880614858">是否要啟動 ChromeOS Flex 內建的螢幕閱讀器 ChromeVox？</translation>
 <translation id="1375938286942050085">設定完成！備妥裝置以進行接下來的遊戲</translation>
@@ -1375,7 +1374,6 @@
 <translation id="2019718679933488176">在新分頁中開啟音效(&amp;O)</translation>
 <translation id="2020183425253392403">顯示網路位址設定</translation>
 <translation id="2020225359413970060">掃描檔案</translation>
-<translation id="2020779321517562133">移除副本</translation>
 <translation id="2022953316617983419">QR code</translation>
 <translation id="2023042679320690325"><ph name="BRAND" />無法檢查你的密碼是否在資料侵害事件中外洩，請過 24 小時後再試一次。</translation>
 <translation id="2023167225947895179">你所輸入的 PIN 碼可能很容易被別人猜到</translation>
@@ -1562,7 +1560,6 @@
 <translation id="2156877321344104010">再次執行安全檢查</translation>
 <translation id="2157474325782140681">如要取得其他功能，請使用這部 Chromebook 的專用座架。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
-<translation id="2157875535253991059">這個頁面已顯示為全螢幕。</translation>
 <translation id="2158249272743343757">刪除個人化資料...</translation>
 <translation id="2158475082070321257">複製醒目顯示文字的連結</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2244,7 +2241,6 @@
 <translation id="2663302507110284145">語言</translation>
 <translation id="2665394472441560184">新增字詞</translation>
 <translation id="2665647207431876759">已過期</translation>
-<translation id="2665717534925640469">這個網頁已顯示為全螢幕，並停用了滑鼠游標。</translation>
 <translation id="2665919335226618153">糟糕！格式化過程中發生錯誤。</translation>
 <translation id="2666247341166669829">左側耳機電量為 <ph name="PERCENTAGE" />%。</translation>
 <translation id="2667144577800272420">其他應用程式所設定會開啟的連結與「<ph name="APP_NAME" />」的設定相同，這會導致「<ph name="APP_NAME_2" />」和「<ph name="APP_NAME_3" />」無法開啟支援的連結。</translation>
@@ -3013,7 +3009,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
 <translation id="326999365752735949">正在下載差異部分</translation>
 <translation id="3270965368676314374">讀取、變更及刪除你電腦中的相片、音樂及其他媒體</translation>
-<translation id="3274763671541996799">你已進入全螢幕模式。</translation>
 <translation id="3275778809241512831">你的內部安全金鑰目前有安全疑慮，請將該金鑰從所有搭配使用的服務中移除。如要解決此問題，請重設安全金鑰。</translation>
 <translation id="3275778913554317645">在視窗中開啟</translation>
 <translation id="3277214528693754078">使用文字游標進行瀏覽 (鍵盤瀏覽)</translation>
@@ -3051,7 +3046,6 @@
 <translation id="3301554464236215299">這個檔案不是常見的下載項目，可能含有危險內容</translation>
 <translation id="33022249435934718">GDI 控制代碼</translation>
 <translation id="3302388252085547855">輸入理由...</translation>
-<translation id="3303260552072730022">某個擴充功能啟用了全螢幕。</translation>
 <translation id="3303795387212510132">要允許應用程式開啟「<ph name="PROTOCOL_SCHEME" />」連結嗎？</translation>
 <translation id="3303818374450886607">份數</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
@@ -3821,7 +3815,6 @@
 <translation id="3887022758415973389">顯示裝置清單</translation>
 <translation id="3888501106166145415">關聯的 Wi-Fi 網路</translation>
 <translation id="3888550877729210209">使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
-<translation id="3888586133700543064">這項資訊可協助我們進一步瞭解 Google 助理的問題。此資訊最多會保存 90 天，而且僅開放相關的工程團隊和意見回饋團隊存取。</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi 同步功能</translation>
 <translation id="389313931326656921">指派代表「下一個」的外接切換裝置</translation>
 <translation id="3893268973182382220">目前無法載入這個面板</translation>
@@ -3829,7 +3822,6 @@
 <translation id="3893536212201235195">讀取及變更你的無障礙設定</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">透過 Sherlog 納入最近的 Google 助理歷史記錄。這可能包括你的身分、位置和偵錯資訊。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">新增資料夾</translation>
 <translation id="3894770151966614831">要移至 Google 帳戶嗎？</translation>
 <translation id="3894983081771074056">鍵盤和滑鼠行為、語言偏好設定等</translation>
@@ -5885,7 +5877,6 @@
 <translation id="5514315914873062345">Tab 鍵</translation>
 <translation id="5517304475148761050">這個應用程式需要存取 Play 商店才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5519053700692355541">你可以使用右上方的 Chrome 選單開啟大部分的側邊面板功能</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">使用高強度密碼強化這個帳戶的安全性。系統會將這組密碼儲存至 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="5521078259930077036">這是你想要的首頁嗎？</translation>
@@ -6851,7 +6842,6 @@
 <translation id="6277518330158259200">擷取螢幕畫面(&amp;A)</translation>
 <translation id="6278428485366576908">主題</translation>
 <translation id="6278776436938569440">變更位置</translation>
-<translation id="6279183038361895380">按下 |<ph name="ACCELERATOR" />| 即可顯示游標</translation>
 <translation id="6280215091796946657">以其他帳戶登入</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{超出 1 張紙的限制}other{超出 {COUNT} 張紙的限制}}</translation>
@@ -7124,7 +7114,6 @@
 <translation id="6512759338201777379">AI 生成的<ph name="SUBJECT" />圖片 <ph name="INDEX" />，情境為<ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">如果你沒有連線至其他網路，Google Chrome 將使用行動數據網路連線。</translation>
 <translation id="6514010653036109809">可用的裝置：</translation>
-<translation id="6514565641373682518">這個網頁已停用滑鼠游標。</translation>
 <translation id="6517227424170598783">要移除「<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />」捷徑嗎？</translation>
 <translation id="6517420300299531857">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。這會使用大約 <ph name="REQUIRED_SPACE" /> 的空間。你目前的可用空間為 <ph name="FREE_SPACE_AVAILABLE" />。</translation>
 <translation id="6517709704288360414">裝置可能無法再正常運作，你可能會遇到安全性和效能問題。關閉更新可能也會影響你在遇到問題時，提出法律請求的權利。</translation>
@@ -7861,6 +7850,7 @@
 <translation id="7078120482318506217">所有網路</translation>
 <translation id="708060913198414444">複製音訊位址(&amp;O)</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 由系統管理員管理</translation>
+<translation id="7082850163410901674">Mac 系統設定已關閉這個應用程式的通知</translation>
 <translation id="7083774521940805477">你的 Chromebook 無法使用 Steam for Chromebook (Beta 版)。</translation>
 <translation id="708550780726587276">(未設定)</translation>
 <translation id="7086672505018440886">封存 Chrome 記錄檔。</translation>
@@ -8156,7 +8146,6 @@
 <translation id="7339785458027436441">輸入時檢查拼字</translation>
 <translation id="7339898014177206373">開啟新視窗</translation>
 <translation id="7340179705876485790">如果要返回的頁數超過 1 頁以上，請點選並按住「返回」。</translation>
-<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕。</translation>
 <translation id="7340650977506865820">網站正在分享你的螢幕畫面</translation>
 <translation id="7340757554212515731">自動將當機報告連同診斷與使用資料傳送給 Google</translation>
 <translation id="734088800888587319">網路指標</translation>
@@ -9415,9 +9404,7 @@
 <translation id="8261625296061301062">掃描器軟體安裝完成</translation>
 <translation id="8262971894813353037">啟用新的電腦版 WebUI 設計。必須一併啟用 2023 年 Chrome WebUI 更新計畫。</translation>
 <translation id="8263336784344783289">為這個群組命名</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已停用滑鼠游標。</translation>
 <translation id="8264024885325823677">這項設定是由系統管理員管理。</translation>
-<translation id="8264718194193514834">「<ph name="EXTENSION_NAME" />」啟用了全螢幕。</translation>
 <translation id="826511437356419340">已進入視窗總覽模式。滑動畫面或按下鍵盤上的 Tab 鍵即可瀏覽。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{重新啟動後，系統將不會開啟無痕視窗}other{重新啟動後，系統將不會重新開啟 {COUNT} 個無痕視窗}}</translation>
 <translation id="8266947622852630193">所有輸入法</translation>
@@ -9928,7 +9915,6 @@
 <translation id="8662795692588422978">人員</translation>
 <translation id="8662911384982557515">將你的首頁變更為：<ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome 無法設定桌布。</translation>
-<translation id="8663051876219324457">允許應用程式、網站和系統服務使用你的位置資訊。定位功能可能會使用 Wi-Fi、行動網路和感應器等來源的資訊，推測裝置所在位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">一律禁止在 <ph name="HOST" /> 自動下載多個檔案</translation>
 <translation id="8664389313780386848">檢視網頁原始碼(&amp;V)</translation>
 <translation id="8665110742939124773">輸入的存取碼有誤，請再試一次。</translation>
@@ -9937,7 +9923,6 @@
 <translation id="8666268818656583275">功能鍵現在會執行系統最上排按鍵原本的行為。</translation>
 <translation id="8666321716757704924">已重新授權給 <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">你有密碼修改建議</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> 已顯示為全螢幕，並且停用了滑鼠游標。</translation>
 <translation id="8667760277771450375">我們正在開發限制跨網站追蹤的方法，同時讓網站能夠防範廣告垃圾內容和欺詐行為。</translation>
 <translation id="8668378421690365723">裝置可能無法再正常運作，而且可能會有安全性和效能問題。</translation>
 <translation id="8669284339312441707">暖色調</translation>

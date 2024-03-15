@@ -22,6 +22,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1436059927646026729">Åpne den nyligste fanen min i Chrome</translation>
 <translation id="1449241544691504574">Legg til bokmerker i Chrome</translation>
 <translation id="1462727070346936664">Logg på for å få mest mulig ut av Chrome.</translation>
+<translation id="1462833127986525564">Knytt sammen Chrome og andre Google-tjenester hvis du vil at de skal gi deg en personlig tilpasset opplevelse ved bruk av data fra hverandre</translation>
 <translation id="1491435845014430217">Slå på «Lås inkognitofaner når du lukker Chrome».</translation>
 <translation id="1493827051843127077">Angi Chrome som standard for å synkronisere faner, passord og betalingsopplysninger på alle enhetene dine</translation>
 <translation id="1504372625950710826">Chrome kunne ikke se etter oppdateringer. Se om du er koblet til internett.</translation>
@@ -142,6 +143,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4834499902900503484">Passord som du lagrer når du er logget på Chrome, lagres i Google-kontoen din. <ph name="BEGIN_LINK" />Gå til innstillingene<ph name="END_LINK" /> for å slå dette av.</translation>
 <translation id="484033449593719797">Støttes ikke i Chrome Beta</translation>
 <translation id="4840404732697892756">Google Passordlagring kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
+<translation id="4856636171409137183">For å få en mest mulig personlig tilpasset opplevelse, inkluder Chrome i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome kan hjelpe deg med å spore denne pakken på Ny fane-siden.}other{Chrome kan hjelpe deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="4903674399067644695">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chrome.</translation>
 <translation id="49200511069271369">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du logger på, og hvordan Chrome kan brukes. Administratoren kan konfigurere eller begrense visse funksjoner.</translation>

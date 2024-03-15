@@ -2150,6 +2150,7 @@ Los orígenes no especificados en la política ni en la configuración del usuar
       Esta política se aplica a la pantalla de inicio de sesión. También puedes consultar la política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica a la sesión del usuario. Se recomienda asignar el mismo valor a ambas políticas. Si los valores de las dos políticas no coinciden, es posible que se produzca un retraso al acceder a una sesión de usuario mientras se aplica el valor especificado por la política del usuario.
       </translation>
 <translation id="2697717608663878828">Habilitar el experimento Encrypted ClientHello de TLS</translation>
+<translation id="2697818835890656951">Etiqueta de perfil personalizada</translation>
 <translation id="2699836109975228367">Habilitar el audio en mono en la pantalla de inicio de sesión</translation>
 <translation id="2702023190395322609">Habilitar recomendaciones de contenido multimedia</translation>
 <translation id="2702682139813393777">Forzar que los hosts de mensajería nativa de Windows se inicien mediante cmd.exe</translation>
@@ -3491,6 +3492,9 @@ Consulta https://wicg.github.io/private-network-access/ para saber las restricci
 
       Nota: En los dispositivos administrados de <ph name="MS_AD_NAME" />, esta política admite una expansión de <ph name="MACHINE_NAME_VARIABLE" /> al nombre de máquina de <ph name="MS_AD_NAME" /> o una subcadena de este. Por ejemplo, si el nombre del equipo es <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> se sustituye por 4 caracteres después de la sexta posición; es decir, <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posición se basa en cero.</translation>
 <translation id="377044054160169374">Aplicar intervención de experiencia abusiva</translation>
+<translation id="3771860261556084445">Estos controles de políticas añaden una etiqueta personalizada que se utiliza para identificar un perfil con sesión iniciada. Esta etiqueta se mostrará en distintos lugares para ayudar a los usuarios a identificar el perfil; por ejemplo, junto al icono del perfil de la barra de herramientas.
+Esta etiqueta también se usará como nombre predeterminado para los nuevos perfiles creados que los usuarios pueden modificar.
+Si no se establece esta política y es necesario mostrar una etiqueta, se usará la etiqueta predeterminada "Trabajo" o "Centro educativo".</translation>
 <translation id="3778689139323007309">Realizar comprobaciones de revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados localmente</translation>
 <translation id="3780152581321609624">Incluir un puerto no estándar en SPN de Kerberos</translation>
 <translation id="3788662722837364290">Configuración de la administración de energía cuando el usuario está inactivo</translation>
@@ -6641,6 +6645,16 @@ Los orígenes no especificados en la política ni en la configuración del usuar
 <translation id="6374945506685352202">Lista de bloqueados de tipos de instalación de extensiones</translation>
 <translation id="6376540107659524656">Inhabilitar SSH en la aplicación del sistema Terminal</translation>
 <translation id="6376659517206731212">Puede ser obligatoria</translation>
+<translation id="637677821295115289">Establece el directorio en el que se guardan las capturas de pantalla (tanto en forma de imagen como de vídeo).
+Si esta política se define como recomendada, se utilizará el valor de forma predeterminada, pero los usuarios podrán cambiarlo.
+Si no se define como recomendada, el usuario no podrá cambiar este valor y las capturas se guardarán siempre en el directorio definido.
+
+La política usa el mismo formato que la política <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+La ubicación se podría establecer en un sistema de archivos local o en <ph name="GOOGLE_DRIVE_NAME" /> (con el prefijo "${google_drive}") o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (con el prefijo "${microsoft_onedrive}").
+Si a esta política se le asigna una cadena vacía, las capturas de pantalla se almacenarán en el directorio local Descargas.
+Consulta una lista de variables que puedes utilizar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.
+
+Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio predeterminado Descargas para almacenar capturas de pantalla, y los usuarios podrán cambiarlo.</translation>
 <translation id="6377031865393559909">Permitir que los usuarios usen plantillas de escritorio</translation>
 <translation id="6378076389057087301">Especificar si la actividad de audio afecta a la administración de energía</translation>
 <translation id="6378393933102834628">Si se asigna el valor "Verdadero" a esta política, se mostrarán los accesos directos a aplicaciones. Si se le asigna el valor "Falso", no se mostrarán nunca estos accesos directos.

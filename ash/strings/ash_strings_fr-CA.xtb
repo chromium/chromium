@@ -611,11 +611,9 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3526440770046466733">Ouvrir le lien dans un nouvel onglet et demeurer dans l'onglet actuel</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="3533126039236445965">Applications dans l'étagère</translation>
-<translation id="3537350467437346467">Consulté par vous</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> point d'accès sans fil</translation>
 <translation id="3540893133818942399">Ignorez la configuration de l'affichage des photos et du contenu multimédia récents de votre téléphone</translation>
 <translation id="3542066395059568317">Des recommandations s'afficheront pour vous permettre de reprendre le cours de vos activités. Vous pouvez faire un clic droit pour retirer les recommandations.</translation>
-<translation id="3547318469722231257">Modifié par vous</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554215588514239132">Afficher ou masquer le panneau Outils pour les développeurs</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
@@ -711,7 +709,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="385300504083504382">Début</translation>
 <translation id="3859364108019690">Impossible de diffuser des applications</translation>
 <translation id="3861651314799684201">Appuyez sur Entrée pour enregistrer en plein écran</translation>
-<translation id="3882323608730650973">Modifié récemment</translation>
 <translation id="3886872229787704059">Ouvert aujourd'hui</translation>
 <translation id="3891340733213178823">Appuyez deux fois sur Ctrl + Maj + Q pour vous déconnecter.</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
@@ -1617,6 +1614,7 @@ Nouvelle installation</translation>
 <translation id="746232733191930409">Mode d'enregistrement de l'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
 <translation id="7477793887173910789">Commandez votre musique, vos vidéos et plus encore</translation>
+<translation id="7488762544858401571">Modifié</translation>
 <translation id="7489261257412536105">Passer au mode plein écran ou le quitter</translation>
 <translation id="7490360161041035804">Vous pouvez épingler des fichiers importants, y compris des fichiers Google Drive. Pour épingler, pointez un élément ou ouvrez Fichiers et faites un clic droit sur un élément.</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
@@ -2056,7 +2054,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="953431725143473984">Éteindre l'appareil?</translation>
 <translation id="954052413789300507">Espace de stockage insuffisant pour <ph name="FILENAME" />. Libérez de l'espace de stockage.</translation>
 <translation id="954520015070501466">30 min</translation>
-<translation id="954786879461589145">Modifié par <ph name="USER" /></translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Aucune échéance</translation>
 <translation id="98120814841227350">Aller à la fin du document</translation>

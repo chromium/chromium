@@ -486,7 +486,6 @@
 <translation id="1370384480654163477">उन फ़ाइलों को देखें और उनमें बदलाव करें जिनकी अनुमति आपने पिछली बार इस साइट पर जाने के दौरान दी थी:</translation>
 <translation id="1372841398847029212">अपने खाते से सिंक करें</translation>
 <translation id="1373176046406139583">'किसको दिखाई दे' सेटिंग में जाकर, आप यह तय कर सकते हैं कि डिवाइस की स्क्रीन अनलॉक होने पर, कौन आपके साथ फ़ाइलें शेयर कर सकता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
-<translation id="1373600239834196313">Chrome मेन्यू की मदद से, साइड पैनल की ज़्यादातर सुविधाओं को खोला जा सकता है</translation>
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" के लिए ज़रूरी प्रमाणपत्र या तो इंस्टॉल नहीं है या अब मान्य नहीं है.  कृपया नया प्रमाणपत्र पाएं और फिर से कनेक्ट करने की कोशिश करें.</translation>
 <translation id="1375557162880614858">क्या आपको ChromeOS Flex के बिल्ट-इन स्क्रीन रीडर ChromeVox को चालू करना है?</translation>
 <translation id="1375938286942050085">सेट अप पूरा हो गया है! अब अपने डिवाइस को गेमिंग के लिए तैयार करें</translation>
@@ -1388,7 +1387,6 @@
 <translation id="2019718679933488176">ऑडियो नए टैब में &amp;खोलें</translation>
 <translation id="2020183425253392403">नेटवर्क पता सेटिंग दिखाएं</translation>
 <translation id="2020225359413970060">फ़ाइल को स्कैन करें</translation>
-<translation id="2020779321517562133">कॉपी हटाएं</translation>
 <translation id="2022953316617983419">क्यूआर कोड</translation>
 <translation id="2023042679320690325">डेटा का गलत इस्तेमाल होने पर, <ph name="BRAND" /> आपके पासवर्ड की जांच नहीं कर सकता. 24 घंटे बाद फिर से कोशिश करें.</translation>
 <translation id="2023167225947895179">पिन का अनुमान लगाना आसान हो सकता है</translation>
@@ -1575,7 +1573,6 @@
 <translation id="2156877321344104010">फिर से सुरक्षा जांच करें</translation>
 <translation id="2157474325782140681">ज़्यादा सुविधाएं पाने के लिए, ऐसा Dell डॉकिंग स्टेशन इस्तेमाल करें जिसे इस Chromebook के साथ काम करने के लिए बनाया गया हो.</translation>
 <translation id="215753907730220065">फ़ुल स्क्रीन से बाहर निकलें</translation>
-<translation id="2157875535253991059">यह पेज अब फ़ुल स्‍क्रीन है.</translation>
 <translation id="2158249272743343757">आपके हिसाब से बनाने से जुड़ा डेटा मिटाया जा रहा है...</translation>
 <translation id="2158475082070321257">हाइलाइट किए गए टेक्स्ट का लिंक कॉपी करें</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2260,7 +2257,6 @@
 <translation id="2663302507110284145">भाषा</translation>
 <translation id="2665394472441560184">एक नया शब्द जोड़ें</translation>
 <translation id="2665647207431876759">समय खत्म</translation>
-<translation id="2665717534925640469">यह पेज अब फ़ुल स्‍क्रीन है और आपका माउस कर्सर बंद कर दिया गया है.</translation>
 <translation id="2665919335226618153">हे भगवान! फ़ॉर्मेटिंग के दौरान गड़बड़ी आई.</translation>
 <translation id="2666247341166669829">बाएं वायरलेस बड में <ph name="PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="2667144577800272420">अन्य ऐप्लिकेशन, <ph name="APP_NAME" /> की तरह उन लिंक को खोलने के लिए तैयार हैं. यह <ph name="APP_NAME_2" /> और <ph name="APP_NAME_3" /> को सहायता लिंक खोलने से रोकता है.</translation>
@@ -3029,7 +3025,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{फ़ाइल}one{# फ़ाइल}other{# फ़ाइलें}}</translation>
 <translation id="326999365752735949">अंतर डाउनलोड करना</translation>
 <translation id="3270965368676314374">अपने कंप्यूटर के फ़ोटो, संगीत और दूसरे मीडिया पढ़ें, बदलें और मिटाएं</translation>
-<translation id="3274763671541996799">आप फ़ुल स्‍क्रीन में देख रहे हैं.</translation>
 <translation id="3275778809241512831">आपकी अंदरूनी सुरक्षा कुंजी फ़िलहाल सुरक्षित नहीं है. आपने जिन सेवाओं पर इसका इस्तेमाल किया है उन सभी सेवाओं से इसे हटाएं. इस समस्या को ठीक करने के लिए, कृपया सुरक्षा कुंजी को रीसेट करें.</translation>
 <translation id="3275778913554317645">विंडो के रूप में खोलें</translation>
 <translation id="3277214528693754078">टेक्स्ट कर्सर की मदद से नेविगेट करें (कैरेट ब्राउज़िंग)</translation>
@@ -3067,7 +3062,6 @@
 <translation id="3301554464236215299">यह फ़ाइल आम तौर पर डाउनलोड नहीं की जाती है और यह खतरनाक हो सकती है</translation>
 <translation id="33022249435934718">GDI हैंडल</translation>
 <translation id="3302388252085547855">वजह डालें...</translation>
-<translation id="3303260552072730022">किसी एक्‍सटेंशन ने फ़ुल स्‍क्रीन ट्रिगर किया है.</translation>
 <translation id="3303795387212510132">क्या आप <ph name="PROTOCOL_SCHEME" /> लिंक खोलने के लिए, ऐप्लिकेशन को अनुमति देना चाहते हैं?</translation>
 <translation id="3303818374450886607">प्रतियां</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
@@ -3837,7 +3831,6 @@
 <translation id="3887022758415973389">डिवाइसों की सूची दिखाएं</translation>
 <translation id="3888501106166145415">जुड़े हुए वाई-फ़ाई नेटवर्क</translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> से नोट लेना</translation>
-<translation id="3888586133700543064">इस जानकारी से, हमें Assistant से जुड़ी आपकी समस्या को बेहतर तरीके से समझने में मदद मिलती है. इस जानकारी को 90 दिनों तक सेव करके रखा जाता है. साथ ही, इसका ऐक्सेस उन इंजीनियरिंग और फ़ीडबैक टीमों के पास ही रहता है जो आपकी समस्या पर काम करती हैं.</translation>
 <translation id="3890064827463908288">'वाई-फ़ाई सिंक' इस्तेमाल करने के लिए 'Chrome सिंक' चालू करें</translation>
 <translation id="389313931326656921">“आगे बढ़ें” के लिए स्विच असाइन करें</translation>
 <translation id="3893268973182382220">यह पैनल अभी लोड नहीं किया जा सकता</translation>
@@ -3845,7 +3838,6 @@
 <translation id="3893536212201235195">अपनी सुलभता सेटिंग पढ़ें और उसमें बदलाव करें</translation>
 <translation id="3893630138897523026">ChromeVox (बोला गया फ़ीडबैक)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">Sherlog की मदद से हाल ही का Assistant इतिहास शामिल करें. इसमें आपकी पहचान, जगह, और डीबग की जानकारी शामिल हो सकती है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">फ़ोल्डर जोड़ें</translation>
 <translation id="3894770151966614831">पासवर्ड को Google खाते में ले जाना चाहते हैं?</translation>
 <translation id="3894983081771074056">कीबोर्ड और माउस के काम करने का डिफ़ॉल्ट तरीका, भाषा की प्राथमिकताएं वगैरह</translation>
@@ -5902,7 +5894,6 @@
 <translation id="5514315914873062345">टैब</translation>
 <translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play Store' के ऐक्सेस की ज़रूरत है</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5519053700692355541">साइड पैनल की ज़्यादातर सुविधाएं खोलने के लिए, सबसे ऊपर दाईं ओर मौजूद Chrome मेन्यू का इस्तेमाल करें</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">इस खाते को मज़बूत पासवर्ड से सुरक्षित रखें. <ph name="EMAIL" /> के लिए, इस पासवर्ड को <ph name="GOOGLE_PASSWORD_MANAGER" /> में सेव किया जाएगा.</translation>
 <translation id="5521078259930077036">क्या यह वही होम पेज है जिसे आप देखना चाह रहे थे?</translation>
@@ -6872,7 +6863,6 @@
 <translation id="6277518330158259200">स्क्री&amp;नशॉट लें</translation>
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6278776436938569440">जगह बदलें</translation>
-<translation id="6279183038361895380">अपना कर्सर दिखाने के लिए |<ph name="ACCELERATOR" />| दबाएं</translation>
 <translation id="6280215091796946657">किसी दूसरे खाते से साइन इन करें</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{काग़ज़ की 1 शीट से ज़्यादा प्रिंट नहीं कर सकते}one{काग़ज़ की {COUNT} शीट से ज़्यादा प्रिंट नहीं कर सकते}other{काग़ज़ की {COUNT} शीट से ज़्यादा प्रिंट नहीं कर सकते}}</translation>
@@ -7145,7 +7135,6 @@
 <translation id="6512759338201777379"><ph name="MOOD" /> मूड के साथ <ph name="SUBJECT" /> की हाल में जनरेट की गई इमेज <ph name="INDEX" />.</translation>
 <translation id="6513247462497316522">अगर आप कि‍सी अन्‍य नेटवर्क से कनेक्‍ट न हों तो Google Chrome मोबाइल डेटा का उपयोग करेगा.</translation>
 <translation id="6514010653036109809">उपलब्ध डिवाइस:</translation>
-<translation id="6514565641373682518">इस पेज ने आपका माउस कर्सर अक्षम कर दिया है.</translation>
 <translation id="6517227424170598783">क्या आपको "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />" शॉर्टकट हटाना है?</translation>
 <translation id="6517420300299531857">'मेरी ड्राइव' में मौजूद फ़ाइलें, आपके Chromebook से अपने-आप सिंक हो जाती हैं. इससे उन फ़ाइलों को, बिना इंटरनेट कनेक्शन के ऐक्सेस किया जा सकता है. इससे करीब, <ph name="REQUIRED_SPACE" /> स्टोरेज का इस्तेमाल होगा. फ़िलहाल, आपके पास <ph name="FREE_SPACE_AVAILABLE" /> स्टोरेज उपलब्ध है.</translation>
 <translation id="6517709704288360414">हो सकता है कि आपका डिवाइस ठीक से काम न करे. इसके अलावा, आपको सुरक्षा और परफ़ॉर्मेंस से जुड़ी समस्याएं आ सकती हैं. किसी गड़बड़ी का सामना करने पर, उपयोगकर्ताओं के पास कानूनी दावा करने का अधिकार होता है. हालांकि, अपडेट की सुविधा बंद करने पर, हो सकता है कि आप ऐसा न कर पाएं.</translation>
@@ -7884,6 +7873,7 @@
 <translation id="7078120482318506217">सभी नेटवर्क</translation>
 <translation id="708060913198414444">ऑडियो के पते को कॉ&amp;पी करें</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> को आपका एडमिन मैनेज करता है</translation>
+<translation id="7082850163410901674">Mac की System Settings में, Chrome ऐप्लिकेशन से सूचनाएं पाने की सुविधा बंद है</translation>
 <translation id="7083774521940805477">आपके Chromebook पर, Steam for Chromebook (बीटा वर्शन) उपलब्ध नहीं है.</translation>
 <translation id="708550780726587276">(कॉन्फ़िगर नहीं की गई)</translation>
 <translation id="7086672505018440886">संग्रह में Chrome लॉग फ़ाइलों को शामिल करें.</translation>
@@ -8179,7 +8169,6 @@
 <translation id="7339785458027436441">लिखते समय स्पेलिंग की जाँच करें</translation>
 <translation id="7339898014177206373">नई विंडो</translation>
 <translation id="7340179705876485790">पिछले पेज से पहले वाले किसी पेज पर जाने के लिए, 'वापस जाएं' पर क्लिक करके रखें.</translation>
-<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> अब फ़ुल स्‍क्रीन है.</translation>
 <translation id="7340650977506865820">साइट आपकी स्क्रीन शेयर कर रही है</translation>
 <translation id="7340757554212515731">क्रैश रिपोर्ट, गड़बड़ी की जानकारी, और इस्तेमाल से जुड़ा डेटा, Google को अपने-आप भेजा जाता है</translation>
 <translation id="734088800888587319">नेटवर्क मेट्रिक</translation>
@@ -9436,9 +9425,7 @@
 <translation id="8261625296061301062">स्कैनर सॉफ़्टवेयर इंस्टॉल किया गया</translation>
 <translation id="8262971894813353037">WebUI के लिए डेस्कटॉप के नए डिज़ाइन को चालू करता है. Chrome Refresh 2023 की सुविधा भी चालू होनी चाहिए.</translation>
 <translation id="8263336784344783289">इस ग्रुप को नाम दें</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ने आपका माउस कर्सर अक्षम कर दिया है.</translation>
 <translation id="8264024885325823677">इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
-<translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ने पूरी स्क्रीन ट्रिगर की है.</translation>
 <translation id="826511437356419340">विंडो की खास जानकारी वाले मोड पर पहुंच गए. एक जगह से दूसरी जगह जाने के लिए स्वाइप करें या tab बटन दबाएं (अगर कीबाेर्ड का इस्तेमाल कर रहे हैं).</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{ब्राउज़र को फिर से लॉन्च करने पर, आपकी गुप्त विंडो नहीं खुलेगी}one{ब्राउज़र को फिर से लॉन्च करने पर, आपकी {COUNT} गुप्त विंडो नहीं खुलेगी}other{ब्राउज़र को फिर से लॉन्च करने पर, आपकी {COUNT} गुप्त विंडो नहीं खुलेंगी}}</translation>
 <translation id="8266947622852630193">इनपुट के सभी तरीके</translation>
@@ -9949,7 +9936,6 @@
 <translation id="8662795692588422978">लोग</translation>
 <translation id="8662911384982557515">अपना होम पेज: <ph name="HOME_PAGE" /> में बदलें</translation>
 <translation id="8662978096466608964">Chrome वॉलपेपर सेट नहीं कर सकता.</translation>
-<translation id="8663051876219324457">ऐप्लिकेशन, वेबसाइटों, और सिस्टम की सेवाओं को अपनी जगह की जानकारी का इस्तेमाल करने की अनुमति दें. जगह की जानकारी देने वाली सेवा, आपके डिवाइस की मौजूदा जगह का अनुमान लगाने के लिए, वाई-फ़ाई, मोबाइल नेटवर्क, और सेंसर जैसे सोर्स का इस्तेमाल कर सकती है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505"><ph name="HOST" /> पर एकाधिक स्वचालित डाउनलोड हमेशा ब्लॉक करें</translation>
 <translation id="8664389313780386848">पेज का स्रोत &amp;देखें</translation>
 <translation id="8665110742939124773">आपने गलत ऐक्सेस कोड डाला है. फिर से कोशिश करें.</translation>
@@ -9958,7 +9944,6 @@
 <translation id="8666268818656583275">अब सबसे ऊपर वाली पंक्ति के बटन, फ़ंक्शन बटन की तरह काम करेंगे</translation>
 <translation id="8666321716757704924"><ph name="WEBSITE" /> को फिर से अनुमतियां दी गईं</translation>
 <translation id="8667261224612332309">आपके पास ऐसे पासवर्ड हैं जिन्हें बेहतर बनाया जा सकता है</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> अब फ़ुल स्‍क्रीन है और आपका माउस कर्सर बंद कर दिया गया है.</translation>
 <translation id="8667760277771450375">हम ऐसे उपाय खोज रहे हैं जिनसे क्रॉस साइट ट्रैकिंग को कम किया जा सके. साथ ही, जिनसे स्पैम वाले विज्ञापन और धोखाधड़ी पर रोक लगाने में, साइटों की मदद की जा सके.</translation>
 <translation id="8668378421690365723">इस वजह से हो सकता है कि आपका डिवाइस ठीक से काम न करे. इसके अलावा, सुरक्षा और परफ़ॉर्मेंस से जुड़ी समस्याएं आ सकती हैं.</translation>
 <translation id="8669284339312441707">वॉर्मर</translation>

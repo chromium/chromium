@@ -465,6 +465,7 @@
 <translation id="3365529507898144230">保存在相册中</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
+<translation id="3387261909427947069">付款方式</translation>
 <translation id="3393920035788932672">允许显示弹出式窗口</translation>
 <translation id="3398509000872871492">连接是安全的</translation>
 <translation id="3404232721752787413">保存在 Google 相册中</translation>
@@ -1064,6 +1065,7 @@
 <translation id="6383719166112032471">打开位置信息…</translation>
 <translation id="6387994324662817823">系统会将密码仅保存到此设备上的 Google 密码管理工具中。</translation>
 <translation id="6389470377220713856">持卡人姓名</translation>
+<translation id="6404422529625928907">在 Google 云端硬盘中打开</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6410390304316730527">“安全浏览”功能可保护您免受攻击者诱骗，以防做出一些危险操作，例如安装恶意软件或泄露个人信息（如密码、电话号码或信用卡信息）。如果关闭此功能，当浏览不熟悉或信誉不佳的网站时，请一定多加小心。</translation>
 <translation id="6410883413783534063">打开多个标签页即可同时访问不同网页</translation>
@@ -1446,6 +1448,7 @@
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8299613349954694191">打开一个无痕式标签页即可私密地浏览网页。</translation>
 <translation id="8311853334103696030">隐藏“跟踪价格”</translation>
+<translation id="8313645224014086262">保存文件</translation>
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8328777765163860529">全部关闭</translation>
 <translation id="8343993175958086504">备份您的资料，以便在任意设备上使用。</translation>
@@ -1559,6 +1562,7 @@
 <translation id="8868471676553493380">{count,plural, =1{{count} 个标签页}other{{count} 个标签页}}</translation>
 <translation id="8870413625673593573">最近关闭的标签页</translation>
 <translation id="8876882697946675716">让您的各部设备保持同步</translation>
+<translation id="8879604564928138696">点按两次即可试用</translation>
 <translation id="8879984884633913185">隐藏“清除浏览数据”</translation>
 <translation id="8881801611828450202">在 <ph name="SEARCH_ENGINE" /> 中搜索此图片</translation>
 <translation id="8898822736010347272">向 Google 发送您访问的部分网页的网址、有限的系统信息以及部分网页内容，以协助我们发现新威胁并保护网络上的所有用户。</translation>

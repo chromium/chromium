@@ -612,11 +612,9 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3526440770046466733">Lingi avamine uuel vahelehel ja praegusele vahelehele jäämine</translation>
 <translation id="353086728817903341">Ühendatud <ph name="NUM_DEVICES" /> seadmega</translation>
 <translation id="3533126039236445965">Riiulil olevad rakendused</translation>
-<translation id="3537350467437346467">Vaatasite faili</translation>
 <translation id="3539957339480430241">Teenuse <ph name="DEVICE_NAME" /> kuumkoht</translation>
 <translation id="3540893133818942399">Teie telefoni hiljutiste fotode ja meediafailide kuvamise seadistamisest loobumine</translation>
 <translation id="3542066395059568317">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite paremklõpsata.</translation>
-<translation id="3547318469722231257">Muutsite faili</translation>
 <translation id="3552189655002856821">WiFi on välja lülitatud</translation>
 <translation id="3554215588514239132">Arendajatööriistade paneeli kuvamine või peitmine</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kinnitati</translation>
@@ -713,7 +711,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="385300504083504382">Algus</translation>
 <translation id="3859364108019690">Rakendusi ei saa voogesitada</translation>
 <translation id="3861651314799684201">Vajutage täisekraani salvestamiseks sisestusklahvi</translation>
-<translation id="3882323608730650973">Muudetud</translation>
 <translation id="3886872229787704059">Täna avatud</translation>
 <translation id="3891340733213178823">Väljalogimiseks vajutage kaks korda klahvikombinatsiooni Ctrl + tõstuklahv + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (kõnena esitatud tagasiside)</translation>
@@ -1628,6 +1625,7 @@ Uus installimine</translation>
 <translation id="746232733191930409">Ekraanisalvestuse režiim</translation>
 <translation id="7466449121337984263">Puudutage andurit</translation>
 <translation id="7477793887173910789">Hallake oma muusikat, videoid ja muud</translation>
+<translation id="7488762544858401571">Muudetud</translation>
 <translation id="7489261257412536105">Lülitage täisekraanile või väljuge sealt</translation>
 <translation id="7490360161041035804">Võite kinnitada olulised failid, sealhulgas Google Drive'i failid. Kinnitamiseks hõljutage kursorit üksuse kohal või avage rakendus Failid ning paremklõpsake üksusel.</translation>
 <translation id="7497767806359279797">Valige keel ja klaviatuur</translation>
@@ -2073,7 +2071,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="953431725143473984">Kas lülitada seade välja?</translation>
 <translation id="954052413789300507">Faili <ph name="FILENAME" /> jaoks pole piisavalt ruumi. Vabastage ruumi.</translation>
 <translation id="954520015070501466">30 min</translation>
-<translation id="954786879461589145">Kasutaja <ph name="USER" /> poolt muudetud</translation>
 <translation id="974545358917229949">Kuvatud on <ph name="RESULT_COUNT" /> tulemust päringule <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Tähtaega pole</translation>
 <translation id="98120814841227350">Dokumendi lõppu liikumine</translation>

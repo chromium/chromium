@@ -117,6 +117,7 @@ Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i 
 <translation id="4195557071150719219">Prikaz nedavnih kartica u Chromiumu</translation>
 <translation id="4200712796753248893">Upotreba radnji Chromiuma na iOS-u</translation>
 <translation id="420541179527342563">Da biste onemogućili način zaključavanja u Chromiumu, isključite ga na iPadu.</translation>
+<translation id="427331839909790668">Povežite Chromium i druge Googleove usluge ako želite da personaliziraju vaš doživljaj međusobno dijeleći podatke</translation>
 <translation id="4408912345039114853">Pokreni sigurnosnu provjeru u Chromiumu</translation>
 <translation id="4432744876818348753">Prijavite se da biste iskoristili sve prednosti Chromiuma.</translation>
 <translation id="4445228361214254027">Vaša organizacija isključila je mogućnost upotrebe i spremanja Chromiumovih podataka na vaš Google račun. Nove oznake, zaporke i drugi podaci spremat će se samo na ovom uređaju.</translation>
@@ -218,6 +219,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="6852799557929001644">Pristupajte zaporkama u Chromiumu i ostalom u drugim aplikacijama na ovom uređaju.</translation>
 <translation id="6887138405044152640">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chromium na tom uređaju.</translation>
 <translation id="6911341667534646387">Nastavite upotrebljavati podatke iz Chromiuma na svom Google računu</translation>
+<translation id="7002548535535009764">Da biste dobili najpersonaliziraniji doživljaj, uključite Chromium u značajke <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">Zaporke koje ste spremili u Upravitelj zaporki možete koristiti u drugim aplikacijama na iPadu.</translation>
 <translation id="7018284295775193585">Chromium se ne može ažurirati</translation>
 <translation id="7045244423563602563">Prilagodite Chromium sebi</translation>

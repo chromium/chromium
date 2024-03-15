@@ -612,11 +612,9 @@
 <translation id="3526440770046466733">Отваряне на връзката в нов раздел и оставане в текущия раздел</translation>
 <translation id="353086728817903341">Установена е връзка с(ъс) <ph name="NUM_DEVICES" /> устройства</translation>
 <translation id="3533126039236445965">Приложения в лентата</translation>
-<translation id="3537350467437346467">Прегледано от вас</translation>
 <translation id="3539957339480430241">Точка за достъп на <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Отхвърляне на настройването на прегледа на скорошните снимки и мултимедийни файлове на телефона ви</translation>
 <translation id="3542066395059568317">Ще виждате препоръки, така че да можете да продължавате оттам, откъдето сте прекъснали. Имате възможност да кликнете с десния бутон върху дадена препоръка, за да я премахнете.</translation>
-<translation id="3547318469722231257">Променено от вас</translation>
 <translation id="3552189655002856821">Функцията за Wi-Fi е изключена</translation>
 <translation id="3554215588514239132">Показване или скриване на панела с инструменти за програмисти</translation>
 <translation id="3554637740840164787">Фиксирахте <ph name="ITEM_TITLE" /></translation>
@@ -712,7 +710,6 @@
 <translation id="385300504083504382">Началото</translation>
 <translation id="3859364108019690">Поточното предаване на приложения не е възможно</translation>
 <translation id="3861651314799684201">Натиснете Enter за записване на целия екран</translation>
-<translation id="3882323608730650973">Променено</translation>
 <translation id="3886872229787704059">Отваряно днес</translation>
 <translation id="3891340733213178823">Натиснете два пъти „Ctrl+Shift+Q“ за изход.</translation>
 <translation id="3893630138897523026">ChromeVox (обратна връзка с говор)</translation>
@@ -1627,6 +1624,7 @@
 <translation id="746232733191930409">Режим за записване на екрана</translation>
 <translation id="7466449121337984263">Моля, докоснете сензора</translation>
 <translation id="7477793887173910789">Управление на музиката, видеоклиповете и др.</translation>
+<translation id="7488762544858401571">Редактиран</translation>
 <translation id="7489261257412536105">Включване или изключване на режимa на цял екран</translation>
 <translation id="7490360161041035804">Можете да фиксирате важни файлове, включително такива в Google Диск. За да фиксирате елемент, задръжте курсора на мишката върху него или отворете „Файлове“ и кликнете с десния бутон на мишката върху елемента.</translation>
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
@@ -2072,7 +2070,6 @@
 <translation id="953431725143473984">Да се изключи ли устройството?</translation>
 <translation id="954052413789300507">Няма достатъчно място за <ph name="FILENAME" />. Освободете място.</translation>
 <translation id="954520015070501466">30 мин</translation>
-<translation id="954786879461589145">Променено от <ph name="USER" /></translation>
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="981011780479609956">Няма крайна дата</translation>
 <translation id="98120814841227350">Преместване в края на документа</translation>

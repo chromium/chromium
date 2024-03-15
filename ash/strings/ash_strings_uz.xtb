@@ -612,11 +612,9 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3526440770046466733">Havolani yangi varaqda ochib joriy varaqda qolish</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ta qurilmaga ulandi</translation>
 <translation id="3533126039236445965">Paneldagi ilovalar</translation>
-<translation id="3537350467437346467">Siz ochgan fayllar</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3540893133818942399">Telefondagi oxirgi surat va media fayllarni koʻrishni sozlash oynasini yopish</translation>
 <translation id="3542066395059568317">Siz uchun takliflar kelgan joyidan davom etadi. Takliflarni oʻng klik bilan olib tashlash mumkin.</translation>
-<translation id="3547318469722231257">Siz tahrirlagan fayllar</translation>
 <translation id="3552189655002856821">Wi-Fi yoqilmagan</translation>
 <translation id="3554215588514239132">Dasturchi vositalari panelini ochish va yopish</translation>
 <translation id="3554637740840164787">Mahkamlandi: <ph name="ITEM_TITLE" /></translation>
@@ -712,7 +710,6 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="385300504083504382">Boshi</translation>
 <translation id="3859364108019690">Ilovalar namoyish etilmaydi</translation>
 <translation id="3861651314799684201">Butun ekranni yozib olish uchun Enter tugmasini bosing</translation>
-<translation id="3882323608730650973">Tahrirlangan</translation>
 <translation id="3886872229787704059">Bugun ochilgan</translation>
 <translation id="3891340733213178823">Chiqish uchun “Control+Shift+Q” tugmalarini ikki marta bosing.</translation>
 <translation id="3893630138897523026">ChromeVox (ovozli ta’rif)</translation>
@@ -1627,6 +1624,7 @@ yangi oʻrnatilgan</translation>
 <translation id="746232733191930409">Ekranni yozib olish rejimi</translation>
 <translation id="7466449121337984263">Sensorga tegining</translation>
 <translation id="7477793887173910789">Multimedia boshqaruvi</translation>
+<translation id="7488762544858401571">Tahrirlangan</translation>
 <translation id="7489261257412536105">Butun ekran rejimiga kirish/chiqish</translation>
 <translation id="7490360161041035804">Google Drive omboridagi kabi muhim fayllarni mahkamlash mumkin. Mahkamlash uchun sichqonchani fayl ustiga suring yoki Fayllar ilovasini ochib, unga oʻng klik bosing.</translation>
 <translation id="7497767806359279797">Til va klaviaturani tanlang</translation>
@@ -2072,7 +2070,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="953431725143473984">Qurilma oʻchirilsinmi?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> uchun joy yetmaydi. Xotiradan joy oching.</translation>
 <translation id="954520015070501466">30 daq</translation>
-<translation id="954786879461589145"><ph name="USER" /> tahrirlagan fayllar</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> – <ph name="RESULT_COUNT" /> natija chiqdi</translation>
 <translation id="981011780479609956">Muddatsiz</translation>
 <translation id="98120814841227350">Hujjat oxiriga o‘tish</translation>

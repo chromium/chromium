@@ -1867,6 +1867,13 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si no la estableces, se aplicará <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Sin embargo, a partir de la versión M85, ya no serán compatibles para esta política los patrones que incluyan comodines "*" y "[*.]" en el host.</translation>
+<translation id="2421713016375433338">Una URL a una imagen que se usará como insignia de la empresa para el perfil. La URL debe dirigir a una imagen.
+
+Esta insignia se mostrará en el menú de perfil debajo de la imagen de perfil y se ajustará su tamaño al espacio de 16 × 16 reservado para ella.
+
+Si no estableces esta política, se mostrará un ícono de edificio predeterminado.
+
+Si se produce un error mientras intentas obtener y mostrar la imagen, aparecerá un ícono de edificio predeterminado.</translation>
 <translation id="2421779938235645781">El color de retroiluminación del teclado coincide con el fondo de pantalla actual</translation>
 <translation id="2423255396068675416">Si habilitas la política o no la estableces, los usuarios podrán ejecutar <ph name="PRODUCT_CROSTINI_NAME" />, siempre que estén habilitadas las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" />. Si inhabilitas la política, se desactivará <ph name="PRODUCT_CROSTINI_NAME" /> para los usuarios. En ese caso, se comenzará a aplicar la política en los contenedores de <ph name="PRODUCT_CROSTINI_NAME" /> que se inicien a partir de ese momento, pero no en aquellos que ya estén en ejecución.</translation>
 <translation id="242521047682347997">No permitir que los usuarios sincronicen mensajes SMS entre su teléfono y su Chromebook</translation>
@@ -2329,6 +2336,7 @@ Si la inhabilitas o no la estableces, los usuarios podrán transferir archivos a
       Si no estableces esta política o la estableces como verdadera, el visor de PDF podrá agregar anotaciones en archivos PDF.
 
       Si la estableces como falsa, el visor de PDF no podrá agregar anotaciones en archivos PDF.</translation>
+<translation id="2769199041812510302">URL del logotipo de empresa</translation>
 <translation id="2769952903507981510">Configura el nombre de dominio requerido para los hosts de acceso remoto.</translation>
 <translation id="2770376586681635746">Determina si los usuarios pueden agregar cuentas de Kerberos.
 

@@ -12,7 +12,6 @@
 <translation id="1021753677514347426">Ky problem ndodh për shkak të një certifikate që instalove ti ose dikush tjetër në pajisjen tënde. Certifikata njihet se është përdorur për të monitoruar dhe ndërhyrë në rrjete dhe nuk është e besuar nga Chromium. Megjithëse ekzistojnë disa raste legjitime për monitorimin, si p.sh. një rrjet shkolle ose kompanie, Chromium dëshiron të sigurohet që je në dijeni se kjo ndodh, edhe nëse nuk arrin ta ndalosh. Monitorimi mund të ndodhë në çdo shfletues ose aplikacion që ka qasje në ueb.</translation>
 <translation id="1024111578869940408">Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek adresa e uebit ndryshime që janë të vështira për t'u dalluar.</translation>
 <translation id="1024913885641459127">Komente për produkte dhe krahasime çmimesh</translation>
-<translation id="1028781062521375153">Shiko detajet</translation>
 <translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1030706264415084469"><ph name="URL" /> do të ruajë në mënyrë të përhershme të dhëna të mëdha në pajisjen tënde</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt. Bën që të dalësh nga llogaria nga shumica e sajteve. }other{Nga # sajte. Bën që të dalësh nga llogaria nga shumica e sajteve. }}</translation>
@@ -183,6 +182,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="132301787627749051">Kërko për imazhin e kujtesës së fragmenteve</translation>
 <translation id="1323433172918577554">Shfaq më shumë</translation>
 <translation id="132390688737681464">Ruaj dhe plotëso adresat</translation>
+<translation id="1325749054628832887">Temat e reklamave janë vetëm një nga shumë gjëra që mund të përdorë një sajt për personalizimin e reklamave. Edhe pa temat e reklamave, sajtet mund të të shfaqin përsëri reklama, por ato mund të jenë më pak interesante. Mëso më shumë rreth <ph name="BEGIN_LINK" />menaxhimit të privatësisë së reklamave<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Dërgo një raport</translation>
 <translation id="1330449323196174374">Palosje me dritare majtas</translation>
 <translation id="1333745675627230582">Luaj lojën Chrome Dino</translation>
@@ -357,7 +357,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1640180200866533862">Politikat e përdoruesit</translation>
 <translation id="1640244768702815859">Provo <ph name="BEGIN_LINK" />të vizitosh faqen kryesore të sajtit<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Vonoje daljen deri në</translation>
-<translation id="164212631332220697">Paguaj me <ph name="CARD_DETAIL" /> në përfundim të blerjes.</translation>
 <translation id="1643651787397909318">Shko te butoni i kontrollit të sigurisë të Chrome dhe aktivizoje për të vizituar faqen e kontrollit të sigurisë të Chrome te cilësimet</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1645368109819982629">Protokolli nuk mbështetet</translation>

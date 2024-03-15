@@ -12,7 +12,6 @@
 <translation id="1021753677514347426">此問題由您或其他人在裝置上安裝的憑證而導致。由於憑證曾用作監控及網絡攔截，因此不獲 Chromium 信任。雖然有些監控理由合理 (例如學校或公司網絡)，且無法停止有關監控，但 Chromium 仍希望就此通知您。任何使用網絡的瀏覽器和應用程式都可能受到監控。</translation>
 <translation id="1024111578869940408">攻擊者有時會在網址中加入難以辨識的變更來仿冒網站。</translation>
 <translation id="1024913885641459127">產品評論和價格比較</translation>
-<translation id="1028781062521375153">查看詳情</translation>
 <translation id="102916930470544692">密鑰</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在您的裝置上永久儲存大量數據</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{無}=1{來自 1 個網站。刪除 Cookie 後，大多數網站都會將你登出。}other{來自 # 個網站。刪除 Cookie 後，大多數網站都會將你登出。}}</translation>
@@ -183,6 +182,7 @@
 <translation id="132301787627749051">搵剪貼簿嘅圖</translation>
 <translation id="1323433172918577554">顯示更多</translation>
 <translation id="132390688737681464">儲存和填入地址</translation>
+<translation id="1325749054628832887">廣告主題只是網站在放送個人化廣告時的其中一項依據。即使你未開啟此設定，網站仍可放送廣告，但廣告內容可能較不貼近你的需求。進一步瞭解如何<ph name="BEGIN_LINK" />管理廣告私隱權<ph name="LINK_END" />。</translation>
 <translation id="1329916999021038454">傳送報告</translation>
 <translation id="1330449323196174374">左半邊對摺</translation>
 <translation id="1333745675627230582">暢玩 Chrome 恐龍遊戲</translation>
@@ -357,7 +357,6 @@
 <translation id="1640180200866533862">使用者政策</translation>
 <translation id="1640244768702815859">請嘗試<ph name="BEGIN_LINK" />瀏覽網站首頁<ph name="END_LINK" />。</translation>
 <translation id="1641976391427233992">延遲輸出直到</translation>
-<translation id="164212631332220697">使用 <ph name="CARD_DETAIL" /> 結帳付款。</translation>
 <translation id="1643651787397909318">去 Chrome 嘅安全檢查按鈕，啟動呢個按扭就可以去設定入面嘅 Chrome 安全檢查頁面</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1645368109819982629">不支援的通訊協定</translation>

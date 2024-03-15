@@ -22,6 +22,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea n
 <translation id="1436059927646026729">Otvori moju posljednju karticu u Chromeu</translation>
 <translation id="1449241544691504574">Dodavanje oznaka u Chrome</translation>
 <translation id="1462727070346936664">Prijavite se da iskoristite prednosti Chromea.</translation>
+<translation id="1462833127986525564">Povežite Chrome i druge Googleove usluge ako želite da personaliziraju vaš doživljaj međusobno dijeleći podatke</translation>
 <translation id="1491435845014430217">Uključite "Zaključaj anonimne kartice prilikom zatvaranja Chromea".</translation>
 <translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i podatke o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
@@ -142,6 +143,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4834499902900503484">Kada ste prijavljeni u Chrome, lozinke koje sačuvate će se pohraniti na Google računu. Da ovo isključite, <ph name="BEGIN_LINK" />idite u postavke<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Nije podržano u Beta verziji Chromea</translation>
 <translation id="4840404732697892756">Google upravitelj lozinki može provjeriti vaše lozinke kada se prijavite s Google računom.</translation>
+<translation id="4856636171409137183">Da biste dobili najpersonaliziraniji doživljaj, uključite Chrome u značajke <ph name="FEATURE_NAME_1" /> i <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome vam može pomoći da pratite ovaj paket na stranici na novoj kartici.}one{Chrome vam može pomoći da pratite ove pakete na stranici na novoj kartici.}few{Chrome vam može pomoći da pratite ove pakete na stranici na novoj kartici.}other{Chrome vam može pomoći da pratite ove pakete na stranici na novoj kartici.}}</translation>
 <translation id="4903674399067644695">Kartica prikazuje prijedloge o tome kako iskoristiti sve prednosti Chromea.</translation>
 <translation id="49200511069271369">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji se prijavljujete i načinom na koji se Chrome može koristiti. Vaš administrator može postaviti ili ograničiti određene funkcije.</translation>

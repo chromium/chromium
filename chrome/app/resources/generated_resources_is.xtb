@@ -486,7 +486,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1370384480654163477">Skoða og breyta skrám frá síðustu heimsókn á þetta vefsvæði:</translation>
 <translation id="1372841398847029212">Samstilla við reikninginn þinn</translation>
 <translation id="1373176046406139583">Sýnileiki tækisins stýrir því hverjir geta deilt efni með þér þegar skjárinn er ekki læstur. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
-<translation id="1373600239834196313">Þú getur opnað flesta hliðargluggaeiginleika í gegnum valmynd Chrome</translation>
 <translation id="1374844444528092021">Vottorðið sem netið „<ph name="NETWORK_NAME" />“ krefst er annaðhvort ekki uppsett eða ekki lengur í gildi. Fáðu nýtt vottorð og reyndu aftur að tengjast.</translation>
 <translation id="1375557162880614858">Viltu kveikja á ChromeVox, innbyggða skjálesaranum fyrir ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Uppsetningu er lokið! Undirbúðu tækið þitt fyrir leikjaspilun næst</translation>
@@ -1388,7 +1387,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="2019718679933488176">&amp;Opna hljóð í nýjum flipa</translation>
 <translation id="2020183425253392403">Sýna stillingar fyrir vistfang netkerfis</translation>
 <translation id="2020225359413970060">Skanna skrá</translation>
-<translation id="2020779321517562133">Fjarlægja afrit</translation>
 <translation id="2022953316617983419">QR-kóði</translation>
 <translation id="2023042679320690325"><ph name="BRAND" /> getur ekki athugað hvort aðgangsorðin þín hafi komið fram í öryggisbroti. Reyndu aftur eftir sólarhring.</translation>
 <translation id="2023167225947895179">Hugsanlega er auðvelt að giska á PIN-númerið</translation>
@@ -1575,7 +1573,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2156877321344104010">Keyra öryggisathugun aftur</translation>
 <translation id="2157474325782140681">Til að fá viðbótareiginleika skaltu nota Dell-dokku sem er hönnuð fyrir þessa Chromebook tölvu.</translation>
 <translation id="215753907730220065">Hætta að nota allan skjáinn</translation>
-<translation id="2157875535253991059">Þessi síða birtist núna á öllum skjánum.</translation>
 <translation id="2158249272743343757">Eyða sérsniðsgögnum...</translation>
 <translation id="2158475082070321257">Afrita tengil í merktan texta</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2260,7 +2257,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2663302507110284145">Tungumál</translation>
 <translation id="2665394472441560184">Bæta nýju orði við</translation>
 <translation id="2665647207431876759">Útrunnið</translation>
-<translation id="2665717534925640469">Þessi síða er nú birt á öllum skjánum og hefur gert músarbendilinn óvirkan.</translation>
 <translation id="2665919335226618153">Obbosí! Villa kom upp við að sníða.</translation>
 <translation id="2666247341166669829">Staða rafhlöðu vinstra megin <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Önnur forrit eru stillt á að opna sömu tengla og <ph name="APP_NAME" />. Þetta slekkur á því að <ph name="APP_NAME_2" /> og <ph name="APP_NAME_3" /> opni studda tengla.</translation>
@@ -3029,7 +3025,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3269689705184377744">{COUNT,plural, =1{Skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="326999365752735949">Sækir breytingaskrá</translation>
 <translation id="3270965368676314374">Lesa, breyta og eyða myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
-<translation id="3274763671541996799">Þú notar nú allan skjáinn.</translation>
 <translation id="3275778809241512831">Innbyggður öryggislykill er ótraustur eins og er. Fjarlægðu hann úr allri þjónustu sem þú notar hann í. Til að leysa vandamálið skaltu núllstilla öryggislykilinn.</translation>
 <translation id="3275778913554317645">Opna sem glugga</translation>
 <translation id="3277214528693754078">Fletta með textabendli (skoðun með textabendli)</translation>
@@ -3067,7 +3062,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3301554464236215299">Ekki er algengt að þessi skrá sé sótt og hún kann að vera hættuleg</translation>
 <translation id="33022249435934718">GDI-heiti</translation>
 <translation id="3302388252085547855">Færðu inn rök...</translation>
-<translation id="3303260552072730022">Viðbót notaði allan skjáinn.</translation>
 <translation id="3303795387212510132">Leyfa forritinu að opna <ph name="PROTOCOL_SCHEME" /> tengla?</translation>
 <translation id="3303818374450886607">Eintök</translation>
 <translation id="3303855915957856445">Engar leitarniðurstöður fundust</translation>
@@ -3837,7 +3831,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3887022758415973389">Sýna tækjalista</translation>
 <translation id="3888501106166145415">Tengd WiFi-net</translation>
 <translation id="3888550877729210209">Glósur með <ph name="LOCK_SCREEN_APP_NAME" /></translation>
-<translation id="3888586133700543064">Þessar upplýsingar auðvelda okkur að skilja vandamál þitt með Hjálparann. Upplýsingarnar eru geymdar í allt að 90 daga og aðgangur að þeim er takmarkaður við viðeigandi tölvu- og þjónustuteymi.</translation>
 <translation id="3890064827463908288">Kveiktu á Chrome samstillingu til að nota Wi-Fi-samstillingu</translation>
 <translation id="389313931326656921">Úthlutaðu rofa fyrir „Áfram“</translation>
 <translation id="3893268973182382220">Ekki er hægt að hlaða þessu svæði núna</translation>
@@ -3845,7 +3838,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3893536212201235195">Lesa og breyta aðgengisstillingum</translation>
 <translation id="3893630138897523026">ChromeVox (raddsvörun)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">Láta nýlegan feril hjálparans fylgja með Sherlog. Upplýsingar um hver þú ert, staðsetning þín og upplýsingar um villuleit gætu fylgt með. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Bæta möppu við</translation>
 <translation id="3894770151966614831">Færa á Google-reikning?</translation>
 <translation id="3894983081771074056">Virkni lyklaborðs og músar, tungumálastillingar og fleira</translation>
@@ -5903,7 +5895,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Þetta forrit krefst aðgangs að Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5519053700692355541">Þú getur opnað flesta eiginleika hliðarglugga í gegnum valmynd Chrome efst til hægri</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Gættu betur að öryggi þessa reiknings með traustu aðgangsorði. Það verður vistað í <ph name="GOOGLE_PASSWORD_MANAGER" /> fyrir <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">Er þetta heimasíðan sem þú bjóst við?</translation>
@@ -6873,7 +6864,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6277518330158259200">T&amp;aka skjámynd</translation>
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6278776436938569440">Breyta staðsetningu</translation>
-<translation id="6279183038361895380">Ýttu á |<ph name="ACCELERATOR" />| til að sýna bendilinn</translation>
 <translation id="6280215091796946657">Skrá inn með öðrum reikningi</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Yfir 1 blaðsíðu mörkum}one{Yfir {COUNT} blaðsíðu mörkum}other{Yfir {COUNT} blaðsíðna mörkum}}</translation>
@@ -7146,7 +7136,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6512759338201777379">Tilbúin mynd <ph name="INDEX" /> af <ph name="SUBJECT" /> með <ph name="MOOD" />-stemningu.</translation>
 <translation id="6513247462497316522">Google Chrome notar farsímagögn ef þú ert ekki með tengingu við annað net.</translation>
 <translation id="6514010653036109809">Tiltækt tæki:</translation>
-<translation id="6514565641373682518">Þessi síða hefur gert músarbendilinn óvirkan.</translation>
 <translation id="6517227424170598783">Fjarlægja flýtileiðina „<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />“?</translation>
 <translation id="6517420300299531857">Skrárnar á drifinu þínu samstillast sjálfkrafa við Chromebook-tækið svo þú getir nálgast þær án nettengingar. Þetta notar um <ph name="REQUIRED_SPACE" /> af geymslurýminu. Þú ert með <ph name="FREE_SPACE_AVAILABLE" /> laus.</translation>
 <translation id="6517709704288360414">Tækið þitt virkar hugsanlega ekki rétt lengur og vandamál varðandi öryggi og afköst gætu komið upp. Ef slökkt er á uppfærslum getur það einnig haft áhrif á réttindi þín til að leggja fram réttarkröfur ef vandamál koma upp.</translation>
@@ -8179,7 +8168,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7339785458027436441">Athuga stafsetningu meðan á innslætti stendur</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7340179705876485790">Haltu inni bakkhnappinum til að fara til baka um fleiri en 1 síðu.</translation>
-<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> er núna á öllum skjánum.</translation>
 <translation id="7340650977506865820">Vefsvæði er að deila skjánum þínum</translation>
 <translation id="7340757554212515731">Sendir hrunskýrslur ásamt greiningar- og notkunargögnum sjálfkrafa til Google</translation>
 <translation id="734088800888587319">Mæligildi netkerfis</translation>
@@ -9437,9 +9425,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8261625296061301062">Skönnunarhugbúnaður uppsettur</translation>
 <translation id="8262971894813353037">Virkjar nýju skjáborðshönnunina fyrir WebUI. Endurnýjun Chrome 2023 verður einnig virkjuð.</translation>
 <translation id="8263336784344783289">Nefna hóp</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> hefur slökkt á músarbendlinum.</translation>
 <translation id="8264024885325823677">Kerfisstjórinn þinn stjórnar þessari stillingu.</translation>
-<translation id="8264718194193514834">„<ph name="EXTENSION_NAME" />“ notaði allan skjáinn.</translation>
 <translation id="826511437356419340">Gluggayfirlitsstilling opnuð. Strjúktu til að fletta eða ýttu á dálkalykilinn ef þú notar lyklaborð.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Huliðsgluggi opnast ekki eftir endurræsingu}one{{COUNT} huliðsgluggi opnast ekki eftir endurræsingu}other{{COUNT} huliðsgluggar opnast ekki eftir endurræsingu}}</translation>
 <translation id="8266947622852630193">Allar innsláttaraðferðir</translation>
@@ -9950,7 +9936,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8662795692588422978">Fólk</translation>
 <translation id="8662911384982557515">Breyta heimasíðunni þinni í: <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome getur ekki valið veggfóður.</translation>
-<translation id="8663051876219324457">Leyfa forritum, vefsvæðum og kerfisþjónustum að nota staðsetninguna þína. Staðsetning kann að nota tækni á borð við Wi-Fi, farsímakerfi og skynjara til að áætla staðsetningu tækisins. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Alltaf loka á sjálfvirkt niðurhal margra skráa á <ph name="HOST" /></translation>
 <translation id="8664389313780386848">Skoða frumkóða síðu</translation>
 <translation id="8665110742939124773">Þú slóst inn rangan aðgangskóða. Reyndu aftur.</translation>
@@ -9959,7 +9944,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8666268818656583275">F-lyklar hafa nú sömu virkni og kerfislyklar í efstu röð</translation>
 <translation id="8666321716757704924">Heimildir leyfðar aftur fyrir <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Þú ert með aðgangsorð sem mætti bæta</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> er núna á öllum skjánum og hefur gert músarbendilinn óvirkan.</translation>
 <translation id="8667760277771450375">Við leitum leiða til að takmarka rakningu milli vefsvæða en gera vefsvæðum á sama tíma kleift að stöðva rusl og svik í auglýsingum.</translation>
 <translation id="8668378421690365723">Tækið þitt virkar hugsanlega ekki rétt lengur og vandamál varðandi öryggi og afköst gætu komið upp.</translation>
 <translation id="8669284339312441707">Hlýrra</translation>

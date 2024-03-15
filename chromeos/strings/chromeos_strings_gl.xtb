@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
 <translation id="3492882532495507361">Despacho de estilo <ph name="OFFICE_STYLE" /> con tons <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">A medición dos datos provén do teu Chromebook. É posible que non coincidan cos datos do provedor.</translation>
 <translation id="3502426834823382181">mostra todas as aplicacións</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimento de rendemento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiz. Chrome OS</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Número de veces que a batería se someteu a un ciclo de carga completo</translation>
 <translation id="3877066159641251281">Escoitar a tradución</translation>
 <translation id="3885327323343477505">Cambiar protector de pantalla</translation>
+<translation id="3889914174935857450">Restablecer data</translation>
 <translation id="391412459402535266">Non se puido realizar a proba do dispositivo. Cambia ao modo de ordenador portátil para realizala.</translation>
 <translation id="3916998944874125962">facer unha captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Non hai ningún escáner dispoñible</translation>
 <translation id="6232017090690406397">Batería</translation>
+<translation id="6234024205316847054">Mostrar esquema</translation>
 <translation id="6235460611964961764">Restablecer uso de datos de forma manual</translation>
 <translation id="6243280677745499710">Establecido actualmente</translation>
 <translation id="6250316632541035980">touciño e ovos</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Escoller o material gráfico exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">intro</translation>
 <translation id="7119389851461848805">alimentación</translation>
+<translation id="7129287270910503851">O teu uso de datos restablecerase este día de cada mes</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Busca atallos</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">Detalles do APN</translation>
 <translation id="8522687886059337719">Xa podes acceder a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />protectores de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Con tecnoloxía da IA de Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">É posible que sexa obrigatorio activar esta opción para conectarte á rede do teu operador. Para obter máis detalles, ponte en contacto con el.</translation>
 <translation id="8576249514688522074">Non iniciada</translation>

@@ -612,11 +612,9 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3526440770046466733">Odpiranje povezave na novem zavihku in zadržanje na trenutnem zavihku</translation>
 <translation id="353086728817903341">Vzpostavljena je povezava s toliko napravami: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
-<translation id="3537350467437346467">Ogledali ste si:</translation>
 <translation id="3539957339480430241">Dostopna točka naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Opustitev nastavitve ogleda nedavnih fotografij in predstavnosti telefona</translation>
 <translation id="3542066395059568317">Prikazana bodo priporočila, da boste lahko nadaljevali tam, kjer ste končali. Priporočila lahko odstranite s klikom desnega gumba.</translation>
-<translation id="3547318469722231257">Spremenili ste:</translation>
 <translation id="3552189655002856821">Povezava Wi-Fi je izklopljena.</translation>
 <translation id="3554215588514239132">Prikaz ali skrivanje podokna z orodji za razvijalce</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> je bil pripet</translation>
@@ -712,7 +710,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="385300504083504382">Začetek</translation>
 <translation id="3859364108019690">Aplikacij ni mogoče pretočno predvajati</translation>
 <translation id="3861651314799684201">Pritisnite Enter, če želite snemati v celozaslonskem načinu</translation>
-<translation id="3882323608730650973">Spremenjeno</translation>
 <translation id="3886872229787704059">Odprto danes</translation>
 <translation id="3891340733213178823">Dvakrat pritisnite Ctrl + Shift + Q, če se želite odjaviti.</translation>
 <translation id="3893630138897523026">ChromeVox (izgovorjava povratnih informacij)</translation>
@@ -1627,6 +1624,7 @@ Nova namestitev</translation>
 <translation id="746232733191930409">Način snemanja zaslona</translation>
 <translation id="7466449121337984263">Dotaknite se tipala</translation>
 <translation id="7477793887173910789">Upravljanje glasbe, videoposnetkov in drugega</translation>
+<translation id="7488762544858401571">Urejeno</translation>
 <translation id="7489261257412536105">Preklop v celozaslonski način ali izhod iz njega</translation>
 <translation id="7490360161041035804">Pripnete lahko pomembne datoteke, vključno z datotekami v Googlu Drive. Če želite pripeti element, premaknite miškin kazalec nanj ali odprite Datoteke in element kliknite z desnim gumbom.</translation>
 <translation id="7497767806359279797">Izbira jezika in tipkovnice</translation>
@@ -2072,7 +2070,6 @@ Nova namestitev</translation>
 <translation id="953431725143473984">Želite izklopiti napravo?</translation>
 <translation id="954052413789300507">Ni dovolj prostora za datoteko <ph name="FILENAME" />. Sprostite prostor.</translation>
 <translation id="954520015070501466">30 min</translation>
-<translation id="954786879461589145">Spremenil uporabnik <ph name="USER" /></translation>
 <translation id="974545358917229949">Prikaz <ph name="RESULT_COUNT" /> rezultatov za poizvedbo <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Brez roka</translation>
 <translation id="98120814841227350">Premik na konec dokumenta</translation>

@@ -22,6 +22,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1436059927646026729">Abrir Mi última pestaña en Chrome</translation>
 <translation id="1449241544691504574">Añadir marcadores a Chrome</translation>
 <translation id="1462727070346936664">Inicia sesión para sacarle el máximo partido a Chrome.</translation>
+<translation id="1462833127986525564">Vincula Chrome y otros servicios de Google si quieres que personalicen tu experiencia usando los datos de todos ellos</translation>
 <translation id="1491435845014430217">Activa Bloquear pestañas de Incógnito al cerrar Chrome.</translation>
 <translation id="1493827051843127077">Selecciona Chrome como navegador principal para sincronizar tus pestañas, contraseñas e información de pago en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no ha podido comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
@@ -142,6 +143,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4834499902900503484">Si has iniciado sesión en Chrome, las contraseñas que guardes se añadirán a tu cuenta de Google. Para desactivar esta opción, <ph name="BEGIN_LINK" />ve a la configuración<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">No compatible con Chrome Beta</translation>
 <translation id="4840404732697892756">El Gestor de contraseñas de Google puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google.</translation>
+<translation id="4856636171409137183">Para disfrutar de una experiencia más personalizada, incluye Chrome en <ph name="FEATURE_NAME_1" /> y <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome puede ayudarte a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chrome puede ayudarte a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="4903674399067644695">En esta tarjeta se muestran sugerencias sobre cómo sacarle el máximo partido a Chrome.</translation>
 <translation id="49200511069271369">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en el que se puede usar Chrome. Tu administrador puede configurar o restringir ciertas funciones.</translation>

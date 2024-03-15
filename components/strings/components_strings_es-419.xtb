@@ -12,7 +12,6 @@
 <translation id="1021753677514347426">Se produjo este problema debido a un certificado que tú o alguien más instaló en el dispositivo. El certificado se usa para interceptar y supervisar redes, y no es de confianza para Chromium. Si bien existen usos legítimos de la supervisión, como en el caso de redes de empresas o instituciones educativas, Chromium quiere asegurarse de que estás al tanto de esta situación, aunque no puedas impedirlo. La supervisión puede ocurrir en cualquier navegador o app que acceda a la Web.</translation>
 <translation id="1024111578869940408">A veces los atacantes hacen cambios difíciles de detectar en la dirección web para imitar sitios.</translation>
 <translation id="1024913885641459127">Opiniones sobre productos y comparaciones de precios</translation>
-<translation id="1028781062521375153">Ver detalles</translation>
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu dispositivo</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ninguno}=1{De 1 sitio. Saldrás de la mayoría de los sitios. }other{De # sitios. Saldrás de la mayoría de los sitios. }}</translation>
@@ -183,6 +182,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="132301787627749051">Buscar imagen del portapapeles</translation>
 <translation id="1323433172918577554">Mostrar más</translation>
 <translation id="132390688737681464">Guardar y completar direcciones</translation>
+<translation id="1325749054628832887">Los temas de anuncios son solo una de las muchas opciones que un sitio puede usar para personalizar los anuncios. Incluso sin los temas de anuncios, los sitios pueden seguir mostrándote anuncios, pero es posible que sean menos interesantes. Obtén más información para <ph name="BEGIN_LINK" />administrar tu privacidad en los anuncios<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Enviar un informe</translation>
 <translation id="1330449323196174374">Plegado en ventana a la izquierda</translation>
 <translation id="1333745675627230582">Jugar al juego del dinosaurio de Chrome</translation>
@@ -357,7 +357,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1640180200866533862">Políticas de usuario</translation>
 <translation id="1640244768702815859">Intenta <ph name="BEGIN_LINK" />visitar la página principal del sitio<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Retrasar la salida hasta</translation>
-<translation id="164212631332220697">Pagar con <ph name="CARD_DETAIL" /> en la confirmación de la compra.</translation>
 <translation id="1643651787397909318">Botón para ir a la verificación de seguridad de Chrome; actívalo para visitar la página verificación de seguridad de Chrome en la configuración</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1645368109819982629">Protocolo no compatible</translation>

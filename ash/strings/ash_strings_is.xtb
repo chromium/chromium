@@ -612,11 +612,9 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3526440770046466733">Opna tengil í nýjum flipa og halda áfram í núverandi flipa</translation>
 <translation id="353086728817903341">Tengdist við <ph name="NUM_DEVICES" /> tæki</translation>
 <translation id="3533126039236445965">Forrit á hillu</translation>
-<translation id="3537350467437346467">Þú skoðaðir</translation>
 <translation id="3539957339480430241">Heitur reitur <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Hafna að setja upp skoðun nýlegra mynda og efnis í símanum</translation>
 <translation id="3542066395059568317">Þú sérð tillögur svo þú getir haldið áfram þar sem frá var horfið. Þú getur hægrismellt til að fjarlægja tillögur.</translation>
-<translation id="3547318469722231257">Þú breyttir</translation>
 <translation id="3552189655002856821">Slökkt er á Wi-Fi</translation>
 <translation id="3554215588514239132">Sýna eða fela svæði forritunarverkfæra</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> var fest</translation>
@@ -712,7 +710,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="385300504083504382">Byrjun</translation>
 <translation id="3859364108019690">Ekki er hægt að streyma forritum</translation>
 <translation id="3861651314799684201">Ýttu á Enter til að taka upp allan skjáinn</translation>
-<translation id="3882323608730650973">Breytt</translation>
 <translation id="3886872229787704059">Opnað í dag</translation>
 <translation id="3891340733213178823">Ýttu tvisvar á Ctrl+Shift+Q til að skrá þig út.</translation>
 <translation id="3893630138897523026">ChromeVox (raddsvörun)</translation>
@@ -1627,6 +1624,7 @@ Ný uppsetning</translation>
 <translation id="746232733191930409">Skjáupptökustilling</translation>
 <translation id="7466449121337984263">Snertu fingrafaralesarann</translation>
 <translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
+<translation id="7488762544858401571">Breytt</translation>
 <translation id="7489261257412536105">Opna eða loka öllum skjánum</translation>
 <translation id="7490360161041035804">Þú getur fest mikilvægar skrár, þ.m.t. skrár á Google Drive. Til að festa skaltu halda bendlinum yfir atriði eða opna Files og hægrismella á atriði.</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
@@ -2072,7 +2070,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="953431725143473984">Slökkva á tækinu?</translation>
 <translation id="954052413789300507">Ekki nægilegt pláss fyrir <ph name="FILENAME" />. Losaðu um pláss.</translation>
 <translation id="954520015070501466">30 mín.</translation>
-<translation id="954786879461589145"><ph name="USER" /> breytti</translation>
 <translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
 <translation id="981011780479609956">Enginn skiladagur</translation>
 <translation id="98120814841227350">Fara aftast í skjal</translation>

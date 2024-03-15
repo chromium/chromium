@@ -612,11 +612,9 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3526440770046466733">Otevřít odkaz na nové kartě a zůstat na aktuální kartě</translation>
 <translation id="353086728817903341">Připojeno k několika zařízením (<ph name="NUM_DEVICES" />)</translation>
 <translation id="3533126039236445965">Aplikace na poličce</translation>
-<translation id="3537350467437346467">Zobrazili jste</translation>
 <translation id="3539957339480430241">Hotspot zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Zavřít nastavení zobrazování nedávných fotek a médií z telefonu</translation>
 <translation id="3542066395059568317">Budou se zobrazovat doporučení, abyste mohli pokračovat od místa, kde jste skončili. Doporučení můžete odstranit kliknutím pravým tlačítkem.</translation>
-<translation id="3547318469722231257">Změnili jste</translation>
 <translation id="3552189655002856821">Wi-Fi je vypnuta</translation>
 <translation id="3554215588514239132">Zobrazit nebo skrýt panel Nástroje pro vývojáře</translation>
 <translation id="3554637740840164787">Položka <ph name="ITEM_TITLE" /> byla připnuta</translation>
@@ -712,7 +710,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="385300504083504382">Začátek</translation>
 <translation id="3859364108019690">Nelze streamovat aplikace</translation>
 <translation id="3861651314799684201">Stisknutím klávesy Enter spustíte nahrávání celé obrazovky</translation>
-<translation id="3882323608730650973">Změněno</translation>
 <translation id="3886872229787704059">Otevřeno dnes</translation>
 <translation id="3891340733213178823">Odhlaste se dvojitým stisknutím kombinace kláves Ctrl+Shift+Q.</translation>
 <translation id="3893630138897523026">ChromeVox (hlasová odezva)</translation>
@@ -1626,6 +1623,7 @@ Nová instalace</translation>
 <translation id="746232733191930409">Režim nahrávání obrazovky</translation>
 <translation id="7466449121337984263">Dotkněte se senzoru</translation>
 <translation id="7477793887173910789">Ovládejte hudbu, videa a další obsah</translation>
+<translation id="7488762544858401571">Upravené</translation>
 <translation id="7489261257412536105">Zapnout nebo vypnout režim celé obrazovky</translation>
 <translation id="7490360161041035804">Důležité soubory, včetně souborů z Disku Google, můžete připnout. Pokud chcete položku připnout, buď na ni umístěte kurzor, nebo otevřete aplikaci Soubory a klikněte na ni pravým tlačítkem.</translation>
 <translation id="7497767806359279797">Vybrat jazyk a klávesnici</translation>
@@ -2070,7 +2068,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="953431725143473984">Vypnout zařízení?</translation>
 <translation id="954052413789300507">Pro soubor <ph name="FILENAME" /> není k dispozici dostatek volného místa. Uvolněte místo.</translation>
 <translation id="954520015070501466">30 min</translation>
-<translation id="954786879461589145"><ph name="USER" /> upravil(a)</translation>
 <translation id="974545358917229949">Zobrazuje se tento počet výsledků pro dotaz <ph name="QUERY" />: <ph name="RESULT_COUNT" /></translation>
 <translation id="981011780479609956">Bez termínu</translation>
 <translation id="98120814841227350">Přejít na konec dokumentu</translation>

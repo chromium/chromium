@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Vstavaná klávesnica</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Týmto povolíte systémovým službám s daným povolením používať vašu polohu. Nastavenie Poloha pomáha odhadnúť polohu vášho zariadenia pomocou zdrojov, ako sú Wi-Fi, mobilné siete a senzory. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Slabé (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Prejsť do nastavení účtu</translation>
 <translation id="6462978824459367242">Tlačidlo Pridať názov prístupového bodu (APN) je teraz povolené</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6647510110698214773">Algoritmus šifrovania</translation>
 <translation id="6650062777702288430">Prepínanie písmen kana a alfanumerických znakov</translation>
+<translation id="6657240842932274095">Chcete povoliť systémovým službám používať vašu polohu?</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="66621959568103627">koralovo ružovom</translation>

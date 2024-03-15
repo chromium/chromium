@@ -22,6 +22,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="1436059927646026729">Otvoriť najnovšiu kartu v Chrome</translation>
 <translation id="1449241544691504574">Pridať záložky do Chromu</translation>
 <translation id="1462727070346936664">Prihláste sa, aby ste mohli Chrome využívať naplno.</translation>
+<translation id="1462833127986525564">Prepojte Chrome a ďalšie služby Googlu, ak chcete, aby prispôsobovali vaše prostredie vzájomným zdieľaním a využívaním údajov</translation>
 <translation id="1491435845014430217">Zapnite Uzamknúť karty inkognito pri zavretí Chromu.</translation>
 <translation id="1493827051843127077">Nastavte si Chrome ako predvolený prehliadač a karty, heslá a platobné údaje sa budú  synchronizovať vo všetkých vašich zariadeniach</translation>
 <translation id="1504372625950710826">Chromu sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
@@ -142,6 +143,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="4834499902900503484">Keď sa prihlásite do Chromu, heslá sa budú ukladať do vášho účtu Google. Ak chcete túto možnosť vypnúť, <ph name="BEGIN_LINK" />prejdite do nastavení<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Nepodporované vo verzii Chrome Beta</translation>
 <translation id="4840404732697892756">Správca hesiel môže kontrolovať heslá, keď sa prihlásite účtom Google.</translation>
+<translation id="4856636171409137183">Ak chcete mať k dispozícii najprispôsobenejšie prostredie, zahrňte Chrome do funkcií <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome vám môže pomôcť sledovať túto zásielku na stránke na novej karte.}few{Chrome vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}many{Chrome can help you track these packages on the New Tab Page.}other{Chrome vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="4903674399067644695">Na tejto karte sa vám zobrazujú návrhy, ako využívať Chrome naplno.</translation>
 <translation id="49200511069271369">Vaša organizácia <ph name="DOMAIN" /> spravuje účet, do ktorého sa prihlasujete, a spôsob, akým sa dá Chrome používať. Váš správca môže nastaviť alebo obmedziť určité funkcie.</translation>

@@ -483,7 +483,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1370384480654163477">Visualiza y edita archivos de la última vez que visitaste este sitio:</translation>
 <translation id="1372841398847029212">Sincronizar con tu cuenta</translation>
 <translation id="1373176046406139583">La opción de visibilidad controla quién puede compartir contenido contigo mientras está desbloqueada la pantalla. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="1373600239834196313">Puedes abrir la mayoría de las funciones del panel lateral desde el menú de Chrome</translation>
 <translation id="1374844444528092021">El certificado que requiere la red "<ph name="NETWORK_NAME" />" no está instalado o ya no es válido. Obtén un nuevo certificado e intenta volver a conectarte.</translation>
 <translation id="1375557162880614858">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex?</translation>
 <translation id="1375938286942050085">Se completó la configuración; prepara tu dispositivo para jugar</translation>
@@ -1372,7 +1371,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="2019718679933488176">Abrir audi&amp;o en una nueva pestaña</translation>
 <translation id="2020183425253392403">Mostrar la configuración de direcciones de red</translation>
 <translation id="2020225359413970060">Analizar archivo</translation>
-<translation id="2020779321517562133">Quitar copia</translation>
 <translation id="2022953316617983419">Código QR</translation>
 <translation id="2023042679320690325"><ph name="BRAND" /> no puede revisar tus contraseñas para detectar una violación de la seguridad de los datos. Vuelve a intentarlo dentro de 24 horas.</translation>
 <translation id="2023167225947895179">Es posible que el PIN sea fácil de adivinar</translation>
@@ -1559,7 +1557,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2156877321344104010">Volver a ejecutar la Verificación de seguridad</translation>
 <translation id="2157474325782140681">Para obtener más funciones, usa una estación de conexión Dell diseñada para funcionar con esta Chromebook.</translation>
 <translation id="215753907730220065">Salir de pantalla completa</translation>
-<translation id="2157875535253991059">Esta página está en modo de pantalla completa.</translation>
 <translation id="2158249272743343757">Borrar datos de personalización…</translation>
 <translation id="2158475082070321257">Copiar el vínculo al texto destacado</translation>
 <translation id="2159488579268505102">USB-C</translation>
@@ -2241,7 +2238,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2663302507110284145">Idioma</translation>
 <translation id="2665394472441560184">Agregar una palabra nueva</translation>
 <translation id="2665647207431876759">Caducado</translation>
-<translation id="2665717534925640469">Esta página se está visualizando en pantalla completa y ha inhabilitado el cursor del mouse.</translation>
 <translation id="2665919335226618153">Se produjo un error durante la aplicación de formato.</translation>
 <translation id="2666247341166669829">Nivel de batería del Pixel Bud izquierdo <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Se configuraron otras apps para abrir los mismos vínculos que <ph name="APP_NAME" />. Esta acción impedirá que <ph name="APP_NAME_2" /> y <ph name="APP_NAME_3" /> abran los vínculos compatibles.</translation>
@@ -3010,7 +3006,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3269689705184377744">{COUNT,plural, =1{Archivo}other{# archivos}}</translation>
 <translation id="326999365752735949">Descargando diff</translation>
 <translation id="3270965368676314374">Leer, cambiar y eliminar fotos, música y otro contenido multimedia desde tu computadora</translation>
-<translation id="3274763671541996799">Has activado el modo de pantalla completa.</translation>
 <translation id="3275778809241512831">Por el momento, tu llave de seguridad interna no es segura. Quítala de los servicios donde la hayas usado. Para resolver este problema, restablécela.</translation>
 <translation id="3275778913554317645">Abrir como ventana</translation>
 <translation id="3277214528693754078">Navegar con el cursor de texto (navegación por cursor de texto)</translation>
@@ -3048,7 +3043,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3301554464236215299">Este archivo no se descarga con frecuencia y podría ser peligroso</translation>
 <translation id="33022249435934718">A cargo de GDI</translation>
 <translation id="3302388252085547855">Escribir justificación…</translation>
-<translation id="3303260552072730022">Una extensión activó la pantalla completa.</translation>
 <translation id="3303795387212510132">¿Deseas permitir que la app abra vínculos de <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copias</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
@@ -3818,7 +3812,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3887022758415973389">Mostrar la lista de dispositivos</translation>
 <translation id="3888501106166145415">Redes Wi-Fi asociadas</translation>
 <translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
-<translation id="3888586133700543064">Esta información nos permite entender mejor tu problema con Asistente. Estos datos se almacenan por 90 días. El acceso a esta información está restringido a los equipos de ingeniería y comentarios correspondientes.</translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi-Fi</translation>
 <translation id="389313931326656921">Asignar interruptor a "Siguiente"</translation>
 <translation id="3893268973182382220">No se puede cargar este panel ahora mismo</translation>
@@ -3826,7 +3819,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3893536212201235195">Leer y cambiar la configuración de accesibilidad</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios por voz)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
-<translation id="3894123633473837029">Incluir el historial reciente del Asistente a través de Sherlog. Estos datos pueden incluir tu identidad, ubicación y la información de depuración. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Agregar carpeta</translation>
 <translation id="3894770151966614831">¿Quieres moverla a una Cuenta de Google?</translation>
 <translation id="3894983081771074056">Comportamiento del teclado y del mouse, preferencias de idioma y mucho más</translation>
@@ -5883,7 +5875,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5514315914873062345">Tab</translation>
 <translation id="5517304475148761050">Esta app necesita acceso a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
-<translation id="5519053700692355541">Puedes abrir la mayoría de las funciones del panel lateral a través del menú de Chrome en la esquina superior derecha</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5519900055135507385">Protege aún más esta cuenta con una contraseña segura. Se guardará en el <ph name="GOOGLE_PASSWORD_MANAGER" /> de <ph name="EMAIL" />.</translation>
 <translation id="5521078259930077036">¿Esta es la página principal que esperabas ver?</translation>
@@ -6853,7 +6844,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6277518330158259200">Tomar captura de pantalla</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Cambiar ubicación</translation>
-<translation id="6279183038361895380">Presiona |<ph name="ACCELERATOR" />| para mostrar tu cursor</translation>
 <translation id="6280215091796946657">Acceder con otra cuenta</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Se superó el límite de 1 hoja de papel}other{Se superó el límite de {COUNT} hojas de papel}}</translation>
@@ -7126,7 +7116,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6512759338201777379">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizará los datos para celulares si no te conectas a otra red.</translation>
 <translation id="6514010653036109809">Dispositivo disponible:</translation>
-<translation id="6514565641373682518">Esta página ha inhabilitado el cursor del mouse.</translation>
 <translation id="6517227424170598783">¿Quieres quitar el atajo "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
 <translation id="6517420300299531857">Los archivos de Mi unidad se sincronizan automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet. Espacio aproximado que se usará: <ph name="REQUIRED_SPACE" />. Espacio disponible actual: <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Es posible que el dispositivo ya no funcione de manera adecuada y que tengas problemas de seguridad y rendimiento. Desactivar las actualizaciones puede afectar tu derecho a realizar demandas legales si tienes un problema.</translation>
@@ -8158,7 +8147,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7339785458027436441">Controlar ortografía al escribir</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340179705876485790">Para retroceder más de 1 página, mantén presionado Atrás.</translation>
-<translation id="7340431621085453413">Visualización de <ph name="FULLSCREEN_ORIGIN" /> en pantalla completa.</translation>
 <translation id="7340650977506865820">El sitio está compartiendo la pantalla</translation>
 <translation id="7340757554212515731">Envía automáticamente informes de fallas, datos de uso y de diagnóstico a Google</translation>
 <translation id="734088800888587319">Métricas de red</translation>
@@ -9417,9 +9405,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8261625296061301062">Se instaló el software del escáner</translation>
 <translation id="8262971894813353037">Habilita el nuevo diseño de escritorio para WebUI. También se debe habilitar la actualización de 2023 para Chrome.</translation>
 <translation id="8263336784344783289">Escribe un nombre para este grupo</translation>
-<translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ha inhabilitado el cursor del mouse.</translation>
 <translation id="8264024885325823677">El administrador controla esta configuración.</translation>
-<translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" activó la pantalla completa.</translation>
 <translation id="826511437356419340">Se activó el modo de vista Recientes. Desliza el dedo para navegar o presiona Tab si usas un teclado.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{No se volverá a abrir la ventana de incógnito después de reiniciar el navegador}other{No se volverán a abrir {COUNT} ventanas de incógnito después de reiniciar el navegador}}</translation>
 <translation id="8266947622852630193">Todos los métodos de entrada</translation>
@@ -9930,7 +9916,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8662795692588422978">Personas</translation>
 <translation id="8662911384982557515">Cambiar la página principal por <ph name="HOME_PAGE" /></translation>
 <translation id="8662978096466608964">Chrome no puede establecer el fondo de pantalla.</translation>
-<translation id="8663051876219324457">Permitir que las apps, los sitios web y los servicios del sistema usen tu ubicación. La ubicación puede usar fuentes como Wi-Fi, redes móviles y sensores para obtener la ubicación estimada del dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8663099077749055505">Siempre bloquear varias descargas automáticas en <ph name="HOST" /></translation>
 <translation id="8664389313780386848">&amp;Ver código fuente de página</translation>
 <translation id="8665110742939124773">Has ingresado un código de acceso incorrecto. Vuelve a intentarlo.</translation>
@@ -9939,7 +9924,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8666268818656583275">Las teclas de función ahora tendrán el mismo comportamiento que las teclas de la fila superior del sistema</translation>
 <translation id="8666321716757704924">Se volvieron a otorgar permisos para <ph name="WEBSITE" /></translation>
 <translation id="8667261224612332309">Tienes contraseñas que se pueden mejorar</translation>
-<translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> se está visualizando en pantalla completa y ha inhabilitado el cursor del mouse.</translation>
 <translation id="8667760277771450375">Estamos explorando formas de restringir el seguimiento entre sitios web, a la vez que habilitamos a los sitios para frenar el fraude y el spam de anuncios.</translation>
 <translation id="8668378421690365723">Es posible que el dispositivo ya no funcione de manera adecuada y que tengas problemas de seguridad y rendimiento.</translation>
 <translation id="8669284339312441707">Cálido</translation>

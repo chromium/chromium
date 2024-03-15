@@ -612,11 +612,9 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3526440770046466733">Bağlantıyı yeni sekmede açıp geçerli sekmede kal</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> cihaza bağlanıldı</translation>
 <translation id="3533126039236445965">Raftaki uygulamalar</translation>
-<translation id="3537350467437346467">Görüntülediniz</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> hotspot'u</translation>
 <translation id="3540893133818942399">Telefonunuzdaki son fotoğrafları ve medya içeriklerini görme seçeneğini ayarlamayı kapatın</translation>
 <translation id="3542066395059568317">Kaldığınız yerden devam edebilmeniz için öneriler gösterilir. Sağ tıklayarak önerileri kaldırabilirsiniz.</translation>
-<translation id="3547318469722231257">Değişiklik yaptınız</translation>
 <translation id="3552189655002856821">Kablosuz bağlantı kapalı</translation>
 <translation id="3554215588514239132">Geliştirici Araçları panelini göster veya gizle</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> sabitlendi</translation>
@@ -712,7 +710,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="385300504083504382">Başlangıç</translation>
 <translation id="3859364108019690">Uygulama yayınlanamıyor</translation>
 <translation id="3861651314799684201">Tam ekran kaydı için enter tuşuna basın</translation>
-<translation id="3882323608730650973">Değiştirildi</translation>
 <translation id="3886872229787704059">Bugün açıldı</translation>
 <translation id="3891340733213178823">Oturumu kapatmak için Ctrl+ÜstKrktr+Q tuşlarına iki defa basın.</translation>
 <translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>
@@ -1627,6 +1624,7 @@ Yeni yüklenmiş</translation>
 <translation id="746232733191930409">Ekran kaydetme modu</translation>
 <translation id="7466449121337984263">Lütfen sensöre dokunun</translation>
 <translation id="7477793887173910789">Müzik, video ve diğer içeriklerinizi kontrol edin</translation>
+<translation id="7488762544858401571">Düzenlenmiş</translation>
 <translation id="7489261257412536105">Tam ekran moduna geç veya tam ekran modundan çık</translation>
 <translation id="7490360161041035804">Google Drive dosyaları da dahil olmak üzere önemli dosyaları sabitleyebilirsiniz. Sabitlemek için fareyle bir öğenin üzerine gelin veya Dosyalar'ı açıp öğeyi sağ tıklayın.</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
@@ -2072,7 +2070,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="953431725143473984">Cihaz kapatılsın mı?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> için yeterli alan yok. Yer açın.</translation>
 <translation id="954520015070501466">30 dk.</translation>
-<translation id="954786879461589145"><ph name="USER" /> değişiklik yaptı</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> için <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
 <translation id="981011780479609956">Teslim tarihi yok</translation>
 <translation id="98120814841227350">Dokümanın sonuna gider</translation>

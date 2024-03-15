@@ -12,7 +12,6 @@
 <translation id="1021753677514347426">Este problema prodúcese por causa dun certificado instalado por ti ou por outra persoa no teu dispositivo. Sábese que este certificado se utiliza para supervisar e interceptar redes, e Chromium non confía nel. Aínda que existen algunhas situacións lexítimas para a supervisión, como no caso de redes de empresas ou de centros educativos, Chromium quere asegurarse de que sexas consciente do que acontece, inda que non poidas facer nada ao respecto. A supervisión pode levarse a cabo en calquera navegador ou aplicación que acceda á Web.</translation>
 <translation id="1024111578869940408">Ás veces, os atacantes imitan sitios facendo cambios no enderezo web que son difíciles de ver.</translation>
 <translation id="1024913885641459127">Recensións de produtos e comparativas de prezos</translation>
-<translation id="1028781062521375153">Ver detalles</translation>
 <translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1030706264415084469">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu dispositivo</translation>
 <translation id="1030949145805074938">{COUNT,plural, =0{Ningún}=1{De 1 sitio. Pecha a túa sesión na maioría dos sitios. }other{De # sitios. Pecha a túa sesión na maioría dos sitios. }}</translation>
@@ -183,6 +182,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="132301787627749051">Buscar imaxe do portapapeis</translation>
 <translation id="1323433172918577554">Mostrar máis</translation>
 <translation id="132390688737681464">Gardar e autocompletar enderezos</translation>
+<translation id="1325749054628832887">Os temas dos anuncios son só unha das moitas opcións que poden usar os sitios para personalizar os anuncios. Mesmo sen eles, os sitios poden seguir mostrándoche anuncios, pero é posible que che resulten menos interesantes. Máis información sobre <ph name="BEGIN_LINK" />como xestionar a privacidade nos anuncios<ph name="LINK_END" />.</translation>
 <translation id="1329916999021038454">Enviar un informe</translation>
 <translation id="1330449323196174374">Dobrez en ventá na parte esquerda</translation>
 <translation id="1333745675627230582">Xogar a xogo do dinosauro de Chrome</translation>
@@ -204,6 +204,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1355301061807280185">Emprego</translation>
 <translation id="1357195169723583938">Quen utilizou o dispositivo recentemente e cando o fixo</translation>
 <translation id="1358187717814494928">Crear folla</translation>
+<translation id="1358223345833465883">O teu buscador en Chromium</translation>
 <translation id="1359836962251219822">Utensilios de cociña</translation>
 <translation id="1360955481084547712">Abrir unha nova ventá do modo de incógnito para navegar de forma privada</translation>
 <translation id="1363819917331173092">Non ofrecer opción de traducir páxinas escritas en <ph name="SOURCE_LANGUAGE" /></translation>
@@ -277,6 +278,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Aplicación de políticas:</translation>
 <translation id="1495677929897281669">Volver á pestana</translation>
+<translation id="1500286806237135498">Cámaras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Mostra tarxetas da túa Conta de Google</translation>
 <translation id="1504042622576912555">Cartón dunha onda</translation>
 <translation id="1507202001669085618">&lt;p&gt;Verás este erro se utilizas un portal wifi no que tes que iniciar sesión para poder conectarte a Internet.&lt;/p&gt;
@@ -355,7 +357,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1640180200866533862">Políticas de usuario</translation>
 <translation id="1640244768702815859">Proba a <ph name="BEGIN_LINK" />visitar a páxina de inicio do sitio<ph name="END_LINK" />.</translation>
 <translation id="1641976391427233992">Atrasar saída ata</translation>
-<translation id="164212631332220697">Paga con este método (<ph name="CARD_DETAIL" />) ao procesar a compra</translation>
 <translation id="1643651787397909318">Botón Vai á comprobación de seguranza de Chrome: actívao para visitar a páxina de comprobación de seguranza de Chrome na configuración</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1645368109819982629">Protocolo non compatible</translation>
@@ -918,6 +919,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2728127805433021124">O certificado do servidor está asinado cun algoritmo de sinatura débil.</translation>
 <translation id="272937284275742856">Verificando os detalles de pago de maneira segura...</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar diagnósticos de conectividade<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">Máis información sobre o buscador en Chromium</translation>
 <translation id="2731382536835015353">44 × 68 in</translation>
 <translation id="2734319753272419592">Permite que Google use os teus carros para buscar descontos personalizados. Cando haxa algún desconto, aparecerán automaticamente nos teus carros.</translation>
 <translation id="273785062888389088">Control de climatización</translation>
@@ -2224,6 +2226,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5316812925700871227">Xirar á esquerda</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5319366980180850702">Clásicos da literatura</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />O teu buscador predeterminado permíteche procurar información na Web e potencia as funcións de Chromium<ph name="END_BOLD" />, como a busca desde a barra de enderezos e a partir de imaxes de páxinas web. Pode que algunha función non estea dispoñible se o buscador non a admite.</translation>
 <translation id="5323043727018853753">O contido inserido está permitido</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> de <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">O teu navegador non está xestionado</translation>
@@ -2618,6 +2621,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6106989379647458772">É posible que a páxina web de <ph name="PAGE" /> estea temporalmente inactiva ou que se trasladase definitivamente a un enderezo web novo.</translation>
 <translation id="6107012941649240045">Emitido para</translation>
 <translation id="6107924765192360631">Comeza cunhas cantas palabras ou cun primeiro borrador para obter suxestións de escritura.</translation>
+<translation id="6108702513636120202">O teu buscador en Chromium</translation>
 <translation id="6108849843016142864">Réptiles e anfibios</translation>
 <translation id="610911394827799129">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Ver o texto e as imaxes que se copian no portapapeis</translation>
@@ -3791,6 +3795,7 @@ Detalles adicionais:
 <translation id="8316555157357957253">En uso agora</translation>
 <translation id="8319269383395457801">Vendas inmobiliarias</translation>
 <translation id="831997045666694187">Serán</translation>
+<translation id="8321448084834652864">Podes cambiar o buscador en calquera momento na configuración de Chromium.</translation>
 <translation id="8321476692217554900">notificacións</translation>
 <translation id="8322402665880479974">Camas e cabeceiras</translation>
 <translation id="832567874344484841">Comida para o almorzo</translation>
@@ -4146,6 +4151,7 @@ Detalles adicionais:
 <translation id="9042827002460091668">Comproba a conexión a Internet e téntao de novo</translation>
 <translation id="9044359186343685026">Usar Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Estas accións esixen que a política <ph name="POLICY_NAME" /> se defina como <ph name="POLICY_VALUE" />: <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 x 36 in</translation>
 <translation id="9049981332609050619">Intentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado non válido.</translation>
@@ -4259,6 +4265,7 @@ Detalles adicionais:
 <translation id="961663415146723894">Encadernación na parte inferior</translation>
 <translation id="961930410699694996">Permítese o uso da localización esta vez</translation>
 <translation id="962484866189421427">Este contido pode tentar instalar aplicacións enganosas que pretenden pasar por algo que non son ou recompilar datos que se poden utilizar para facer un seguimento das túas accións. <ph name="BEGIN_LINK" />Mostrar igualmente<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">De acordo cunha lei da túa rexión, Chromium pídeche que escollas un buscador predeterminado. Estes buscadores son populares na túa zona e móstranse en orde aleatoria.</translation>
 <translation id="963837307749850257">Todos os usuarios</translation>
 <translation id="964050462028070434">Xestionar contrasinais e claves de acceso…</translation>
 <translation id="969892804517981540">Compilación oficial</translation>

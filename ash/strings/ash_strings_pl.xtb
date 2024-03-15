@@ -361,6 +361,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2499445554382787206">Menu profilu biurka. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
 <translation id="2504454902900101003">Zamknij konfigurację wyświetlania najnowszych zdjęć, plików multimedialnych i powiadomień z telefonu</translation>
+<translation id="2505378917951323738">Nie udało się edytować zadania. Spróbuj ponownie, gdy połączysz się z internetem.</translation>
 <translation id="2509468283778169019">CAPS LOCK jest włączony.</translation>
 <translation id="2514415433888497495">Zatrzymaj: <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> – <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -613,11 +614,9 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3526440770046466733">Otwórz link na nowej karcie, pozostając na bieżącej</translation>
 <translation id="353086728817903341">Połączono z <ph name="NUM_DEVICES" /> urządzeniami</translation>
 <translation id="3533126039236445965">Aplikacje na półce</translation>
-<translation id="3537350467437346467">Wyświetlony przez Ciebie</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> – hotspot</translation>
 <translation id="3540893133818942399">Zamknij konfigurację wyświetlania najnowszych zdjęć i plików multimedialnych z telefonu</translation>
 <translation id="3542066395059568317">Zobaczysz rekomendacje, dzięki którym możesz kontynuować od ostatniego miejsca. Możesz je usunąć kliknięciem prawym przyciskiem.</translation>
-<translation id="3547318469722231257">Zmodyfikowany przez Ciebie</translation>
 <translation id="3552189655002856821">Wi-Fi jest wyłączone</translation>
 <translation id="3554215588514239132">Pokaż lub ukryj panel Narzędzi dla programistów</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> został przypięty</translation>
@@ -684,6 +683,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="371370241367527062">Przedni mikrofon</translation>
 <translation id="3713734891607377840">Otwórz po pobraniu</translation>
 <translation id="3726171378575546917">Aplikacji <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ani jeszcze <ph name="UNAVAILABLE_APPS_COUNT" /> nie ma na tym urządzeniu.</translation>
+<translation id="3727231512028252576">Nie udało się wczytać elementów. Spróbuj ponownie, gdy połączysz się z internetem.</translation>
 <translation id="3735740477244556633">Sortuj według</translation>
 <translation id="3738664582935948253">W nagraniach ekranu możesz teraz pokazywać kliknięcia i skróty klawiszowe</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
@@ -713,7 +713,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="385300504083504382">Początek</translation>
 <translation id="3859364108019690">Nie można przesyłać strumieniowo aplikacji</translation>
 <translation id="3861651314799684201">Aby nagrać pełny ekran, naciśnij Enter</translation>
-<translation id="3882323608730650973">Zmodyfikowany</translation>
 <translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
@@ -915,6 +914,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
 <translation id="4644727592819780893">Region jest za mały i nie można go pokazać na podglądzie z aparatu</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rekomendowana aplikacja</translation>
+<translation id="4649019912155580914">Edytowany przez Ciebie</translation>
 <translation id="4654916960643280876">Zaznaczone pole wyboru <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="4657775630156561295">Ta sugestia zostanie trwale usunięta z historii sugestii na Twoim koncie:
 
@@ -1438,6 +1438,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6643169293433369663">Cofnij sortowanie według nazwy</translation>
 <translation id="6649641931981131786">Dostosuj kamerę tak, aby pokazywała Cię pośrodku ekranu.</translation>
 <translation id="6650072551060208490">Strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
+<translation id="6650742588569439432">Nie udało się wczytać elementów.</translation>
 <translation id="6650933572246256093">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten klucz dostępu: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="666343722268997814">Otwórz menu prawego przycisku myszy dla zaznaczonego elementu</translation>
@@ -1628,6 +1629,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="746232733191930409">Tryb nagrywania ekranu</translation>
 <translation id="7466449121337984263">Dotknij czytnika</translation>
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
+<translation id="7488762544858401571">Edytowano</translation>
 <translation id="7489261257412536105">Otwórz lub zamknij pełny ekran</translation>
 <translation id="7490360161041035804">Możesz przypiąć ważne pliki, w tym pliki na Dysku Google. Aby przypiąć element, najedź na niego kursorem lub otwórz Pliki i kliknij go prawym przyciskiem myszy.</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
@@ -1688,6 +1690,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7672095158465655885">Połączono z: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Wklej zawartość schowka jako zwykły tekst</translation>
 <translation id="7684531502177797067">Zmieniono kamerę. Obecnie podłączone urządzenie to <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Otwarty przez Ciebie</translation>
 <translation id="7689817529363080918">Zezwala to na dostęp do mikrofonu w przypadku aplikacji <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> oraz wszystkich aplikacji i stron internetowych, które mają uprawnienia do korzystania z niego</translation>
 <translation id="7704000866383261579">Ponów ostatnią czynność</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1783,6 +1786,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8000066093800657092">Brak sieci</translation>
 <translation id="8001755249288974029">Zaznacz tekst od kursora do początku wiersza</translation>
 <translation id="8004512796067398576">Zwiększ</translation>
+<translation id="8015361438441228492">Nie udało się edytować zadania.</translation>
 <translation id="8026334261755873520">Wyczyść dane przeglądania</translation>
 <translation id="802782383769312836">Poprzednie biurko: <ph name="DESK_NAME" />. Biurko <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Nie udało się nawiązać połączenia z hotspotem</translation>
@@ -1907,6 +1911,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8551588720239073785">Ustawienia daty i godziny</translation>
 <translation id="8553395910833293175">Już przypisano do wszystkich biurek.</translation>
 <translation id="8555757996376137129">Usuń bieżące biurko</translation>
+<translation id="8559845965695780508">Edytował(a) <ph name="USER" /></translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> zaleca aktualizację tego urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Oto kilka sugestii, które możesz wypróbować</translation>
 <translation id="857201607579416096">Menu zostało przeniesione w prawy dolny róg ekranu.</translation>
@@ -2074,7 +2079,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="953431725143473984">Wyłączyć urządzenie?</translation>
 <translation id="954052413789300507">Za mało miejsca na plik <ph name="FILENAME" />. Zwolnij miejsce.</translation>
 <translation id="954520015070501466">30 min</translation>
-<translation id="954786879461589145">Zmodyfikowany przez: <ph name="USER" /></translation>
 <translation id="974545358917229949">Wyświetlam wyniki (<ph name="RESULT_COUNT" />) dla zapytania <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Brak terminu</translation>
 <translation id="98120814841227350">Przejdź na koniec dokumentu</translation>

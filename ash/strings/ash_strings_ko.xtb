@@ -612,11 +612,9 @@
 <translation id="3526440770046466733">새 탭에서 링크 열기 및 현재 탭 유지</translation>
 <translation id="353086728817903341">기기 <ph name="NUM_DEVICES" />대에 연결됨</translation>
 <translation id="3533126039236445965">앱 표시줄의 앱</translation>
-<translation id="3537350467437346467">내가 확인함</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> 핫스팟</translation>
 <translation id="3540893133818942399">휴대전화의 최근 사진 및 미디어 보기 설정 닫기</translation>
 <translation id="3542066395059568317">이전에 중단한 부분부터 계속할 수 있도록 추천 항목이 표시됩니다. 추천 항목을 삭제하려면 마우스 오른쪽 버튼으로 클릭하세요.</translation>
-<translation id="3547318469722231257">내가 수정함</translation>
 <translation id="3552189655002856821">Wi-Fi가 사용 중지됨</translation>
 <translation id="3554215588514239132">개발자 도구 패널 표시 또는 숨기기</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> 고정됨</translation>
@@ -712,7 +710,6 @@
 <translation id="385300504083504382">시작</translation>
 <translation id="3859364108019690">앱을 스트리밍할 수 없음</translation>
 <translation id="3861651314799684201">전체 화면을 녹화하려면 Enter를 누르세요</translation>
-<translation id="3882323608730650973">수정됨</translation>
 <translation id="3886872229787704059">오늘 열림</translation>
 <translation id="3891340733213178823">로그아웃하려면 Ctrl+Shift+Q를 두 번 누릅니다.</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
@@ -1627,6 +1624,7 @@
 <translation id="746232733191930409">화면 녹화 모드</translation>
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
+<translation id="7488762544858401571">수정된 문서</translation>
 <translation id="7489261257412536105">전체 화면을 보거나 종료합니다.</translation>
 <translation id="7490360161041035804">Google Drive 파일 등 중요한 파일을 고정할 수 있습니다. 항목을 고정하려면 항목 위로 마우스를 가져가거나 Files를 열고 고정할 항목을 마우스 오른쪽 버튼으로 클릭합니다.</translation>
 <translation id="7497767806359279797">언어 및 키보드 선택</translation>
@@ -2072,7 +2070,6 @@
 <translation id="953431725143473984">기기를 종료하시겠습니까?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> 파일을 저장할 공간이 부족합니다. 기기 여유 공간을 확보하세요.</translation>
 <translation id="954520015070501466">30분</translation>
-<translation id="954786879461589145"><ph name="USER" />님이 수정함</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> 검색결과 <ph name="RESULT_COUNT" />개 표시 중</translation>
 <translation id="981011780479609956">기한 없음</translation>
 <translation id="98120814841227350">문서 하단으로 이동</translation>
