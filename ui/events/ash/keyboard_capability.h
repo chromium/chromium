@@ -198,7 +198,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
     // Handling for all keyboards that support supplying a custom layout
     // via sysfs attribute (aka Vivaldi). See crbug.com/1076241
     kKbdTopRowLayoutCustom = 5,
-    kKbdTopRowLayoutMax = kKbdTopRowLayoutCustom
+
+    // TODO(dpad@, b/329475925)
+    kKbdTopRowLayoutSplitModifiers = 6,
+    kKbdTopRowLayoutMax = kKbdTopRowLayoutSplitModifiers
   };
 
   struct KeyboardInfo {
@@ -209,8 +212,9 @@ class KeyboardCapability : public InputDeviceEventObserver {
     KeyboardInfo& operator=(const KeyboardInfo&) = delete;
     ~KeyboardInfo();
 
-    DeviceType device_type;
-    KeyboardTopRowLayout top_row_layout;
+    DeviceType device_type = DeviceType::kDeviceInternalKeyboard;
+    KeyboardTopRowLayout top_row_layout =
+        KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
     std::vector<uint32_t> top_row_scan_codes;
     std::vector<TopRowActionKey> top_row_action_keys;
   };
@@ -345,9 +349,18 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if the CapsLock key exists on the given keyboard.
   bool HasCapsLockKey(const KeyboardDevice& keyboard) const;
 
+  // Check if the Function key exists on the given keyboard.
+  bool HasFunctionKey(const KeyboardDevice& keyboard) const;
+
+  // Check if the RightAlt key exists on the given keyboard.
+  bool HasRightAltKey(const KeyboardDevice& keyboard) const;
+
   // Finds the keyboard with the corresponding  `device_id` and checks its
   // `DeviceType` to determine if it's a ChromeOS keyboard.
   bool IsChromeOSKeyboard(int device_id) const;
+
+  // Returns whether or not the given keyboard is a split modifier keyboard.
+  bool IsSplitModifierKeyboard(const KeyboardDevice& keyboard) const;
 
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.

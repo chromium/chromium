@@ -467,6 +467,8 @@ std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
           std::begin(kLayoutWilcoDrallionTopRowActionKeys),
           std::end(kLayoutWilcoDrallionTopRowActionKeys));
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+    case KeyboardCapability::KeyboardTopRowLayout::
+        kKbdTopRowLayoutSplitModifiers:
       return IdentifyCustomTopRowActionKeys(scan_code_to_evdev_key_converter,
                                             keyboard, top_row_scan_codes);
   }
@@ -587,6 +589,7 @@ std::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
       }
       break;
     case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutSplitModifiers:
       // TODO(zhangwenyu): Handle custom vivaldi layout.
       return std::nullopt;
   }
@@ -647,6 +650,7 @@ bool KeyboardCapability::HasLauncherButton(
     case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
     case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
     case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutSplitModifiers:
       return true;
   }
 }
@@ -717,8 +721,11 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
     modifier_keys.push_back(mojom::ModifierKey::kAssistant);
   }
 
-  if (ash::features::IsSplitKeyboardRefactorEnabled()) {
+  if (HasFunctionKey(keyboard)) {
     modifier_keys.push_back(mojom::ModifierKey::kFunction);
+  }
+
+  if (HasRightAltKey(keyboard)) {
     modifier_keys.push_back(mojom::ModifierKey::kRightAlt);
   }
 
@@ -787,6 +794,12 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
   keyboard_info.top_row_action_keys = IdentifyTopRowActionKeys(
       scan_code_to_evdev_key_converter_, keyboard, keyboard_info.device_type,
       keyboard_info.top_row_layout, keyboard_info.top_row_scan_codes);
+
+  if (ash::features::IsSplitKeyboardRefactorEnabled() &&
+      IsInternalKeyboard(keyboard)) {
+    keyboard_info.top_row_layout =
+        KeyboardTopRowLayout::kKbdTopRowLayoutSplitModifiers;
+  }
 
   // If we are unable to identify the device, erase the entry from the map.
   if (keyboard_info.device_type == DeviceType::kDeviceUnknown) {
@@ -925,7 +938,8 @@ const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
 bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
   // Some external keyboards falsely claim to have assistant keys. However, this
   // can be trusted for internal + ChromeOS external keyboards.
-  return keyboard.has_assistant_key && IsChromeOSKeyboard(keyboard.id);
+  return keyboard.has_assistant_key && IsChromeOSKeyboard(keyboard.id) &&
+         !IsSplitModifierKeyboard(keyboard);
 }
 
 bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {
@@ -942,6 +956,25 @@ bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
   return !IsChromeOSKeyboard(keyboard.id) ||
          kChromeOSKeyboardsWithCapsLock.contains(
              {keyboard.vendor_id, keyboard.product_id});
+}
+
+bool KeyboardCapability::HasFunctionKey(const KeyboardDevice& keyboard) const {
+  return IsSplitModifierKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
+  return IsSplitModifierKeyboard(keyboard);
+}
+
+bool KeyboardCapability::IsSplitModifierKeyboard(
+    const KeyboardDevice& keyboard) const {
+  const auto* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return false;
+  }
+
+  return keyboard_info->top_row_layout ==
+         KeyboardTopRowLayout::kKbdTopRowLayoutSplitModifiers;
 }
 
 void KeyboardCapability::OnDeviceListsComplete() {

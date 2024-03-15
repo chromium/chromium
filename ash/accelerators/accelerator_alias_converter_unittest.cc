@@ -169,6 +169,8 @@ class AcceleratorAliasConverterTest : public AshTestBase {
             std::end(ui::kLayoutWilcoDrallionTopRowActionKeys));
         break;
       case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+      case ui::KeyboardCapability::KeyboardTopRowLayout::
+          kKbdTopRowLayoutSplitModifiers:
         break;
     }
     Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
