@@ -95,9 +95,6 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.floating_lacros@jacuzzi",
   "inputs.VirtualKeyboardHandwriting.floating_lacros@octopus",
 
-  # b/329323601: Need tast-test fix to be applied.
-  "dlp.DataLeakPreventionRulesListFilesUSB.ash_blocked",
-
   # b/314004675
   "filemanager.DrivefsUI.fieldtrial_testing_config_on@reven-vmtest",
   "filemanager.DrivefsUI.fieldtrial_testing_config_on@betty-pi-arc",
