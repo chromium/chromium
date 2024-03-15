@@ -9,7 +9,7 @@
 #include <sstream>
 #include <vector>
 
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -480,14 +480,19 @@ std::ostream& operator<<(std::ostream& os, const TutorialFailure& failure) {
 
 IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
                        TutorialConsistencyCheck) {
-  const auto kAlwaysPresentElementIds =
-      base::MakeFixedFlatSet<ui::ElementIdentifier>(
-          {kToolbarAppMenuButtonElementId, kToolbarAvatarButtonElementId,
-           kToolbarBackButtonElementId, kBrowserViewElementId,
-           kToolbarForwardButtonElementId, kNewTabButtonElementId,
-           kOmniboxElementId, kToolbarSidePanelButtonElementId,
-           kTabSearchButtonElementId, kTabStripElementId,
-           kTabStripRegionElementId, kTopContainerElementId});
+  const base::flat_set<ui::ElementIdentifier> kAlwaysPresentElementIds = {
+      kToolbarAppMenuButtonElementId,
+      kToolbarAvatarButtonElementId,
+      kToolbarBackButtonElementId,
+      kBrowserViewElementId,
+      kToolbarForwardButtonElementId,
+      kNewTabButtonElementId,
+      kOmniboxElementId,
+      kToolbarSidePanelButtonElementId,
+      kTabSearchButtonElementId,
+      kTabStripElementId,
+      kTabStripRegionElementId,
+      kTopContainerElementId};
 
   std::vector<TutorialFailure> failures;
 
