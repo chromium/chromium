@@ -2490,6 +2490,44 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
           .SetAbsErrorLimit(2)));
 }
 
+TEST_P(VideoRendererPixelHiLoTest, SimpleYCoCgYUVRect) {
+  gfx::Rect rect(this->device_viewport_size_);
+
+  CompositorRenderPassId id{1};
+  auto pass = CreateTestRootRenderPass(id, rect);
+  // Set the output color space to match the input primaries and transfer.
+  this->display_color_spaces_ = kRec601DisplayColorSpaces;
+
+  CreateTestMultiplanarVideoDrawQuad_Striped(
+      media::PIXEL_FORMAT_I420,
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
+                      gfx::ColorSpace::TransferID::SMPTE170M,
+                      gfx::ColorSpace::MatrixID::YCOCG,
+                      gfx::ColorSpace::RangeID::LIMITED),
+      false, IsHighbit(), gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f), pass.get(),
+      this->video_resource_updater_.get(), rect, rect,
+      this->resource_provider_.get(), this->child_resource_provider_.get(),
+      this->child_context_provider_.get());
+
+  AggregatedRenderPassId new_id{1};
+  auto copy_pass = cc::CopyToAggregatedRenderPass(
+      pass.get(), new_id, gfx::ContentColorUsage::kSRGB);
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(copy_pass));
+
+  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // upload support lands for Windows for multiplanar SI.
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list,
+      base::FilePath(FILE_PATH_LITERAL("yuv_stripes_ycocg_limited.png")),
+      cc::FuzzyPixelComparator()
+          .DiscardAlpha()
+          .SetErrorPixelsPercentageLimit(100.f)
+          .SetAvgAbsErrorLimit(1.2f)
+          .SetAbsErrorLimit(2)));
+}
+
 #if BUILDFLAG(IS_IOS)
 // TODO(crbug.com/1421171): currently failing on iOS.
 #define MAYBE_ClippedYUVRect DISABLED_ClippedYUVRect
