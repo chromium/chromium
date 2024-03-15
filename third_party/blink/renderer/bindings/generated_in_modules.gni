@@ -796,6 +796,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multi_cache_query_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multi_cache_query_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_navigation_preload_state.cc",

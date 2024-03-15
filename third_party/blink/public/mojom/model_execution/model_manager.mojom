@@ -6,6 +6,11 @@ module blink.mojom;
 
 import "third_party/blink/public/mojom/model_execution/model_session.mojom";
 
+struct ModelGenericSessionSamplingParams {
+  uint32 top_k;
+  float temperature;
+};
+
 // The manager that could create a new session for the model.
 interface ModelManager {
   // Returns if it is possible to create a generic session. For example, when
@@ -16,6 +21,8 @@ interface ModelManager {
   // Note that this could return false even if the previous
   // `CanCreateGenericSession()` returns true, because some errors can only
   // occur when we actually create the generic session.
-  CreateGenericSession(pending_receiver<blink.mojom.ModelGenericSession> session)
-    => (bool success);
+  CreateGenericSession(
+    pending_receiver<blink.mojom.ModelGenericSession> session,
+    ModelGenericSessionSamplingParams? sampling_params
+  ) => (bool success);
 };

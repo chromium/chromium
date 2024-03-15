@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/model_execution/model_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -45,6 +46,7 @@ class ModelManager final : public ScriptWrappable,
       ExceptionState& exception_state);
   ScriptPromiseTyped<ModelGenericSession> createGenericSession(
       ScriptState* script_state,
+      ModelGenericSessionOptions* options,
       ExceptionState& exception_state);
 
  private:

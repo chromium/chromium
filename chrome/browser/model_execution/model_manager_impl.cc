@@ -44,6 +44,7 @@ void ModelManagerImpl::CanCreateGenericSession(
 
 void ModelManagerImpl::CreateGenericSession(
     mojo::PendingReceiver<blink::mojom::ModelGenericSession> receiver,
+    blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
     CreateGenericSessionCallback callback) {
   content::BrowserContext* browser_context = browser_context_.get();
   if (!browser_context) {
@@ -65,12 +66,19 @@ void ModelManagerImpl::CreateGenericSession(
     return;
   }
 
+  optimization_guide::SessionConfigParams config_params =
+      optimization_guide::SessionConfigParams{.disable_server_fallback = true};
+  if (sampling_params) {
+    config_params.sampling_params = optimization_guide::SamplingParams{
+        .top_k = sampling_params->top_k,
+        .temperature = sampling_params->temperature};
+  }
+
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session = service->StartSession(
           optimization_guide::proto::ModelExecutionFeature::
               MODEL_EXECUTION_FEATURE_TEST,
-          optimization_guide::SessionConfigParams{.disable_server_fallback =
-                                                      true});
+          config_params);
   // TODO(leimy): after this check is done by optimization guide and we can
   // return that from `CanStartModelExecutionSession()`, we should replace this
   // block by a CHECK, and stop returning any boolean value from this method.

@@ -8,9 +8,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/model_execution/model_manager.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/model_execution/model_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_generic_model_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_model_generic_session_options.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/model_execution/model_execution_metrics.h"
 #include "third_party/blink/renderer/modules/model_execution/model_generic_session.h"
@@ -105,6 +108,7 @@ ModelManager::canCreateGenericSession(ScriptState* script_state,
 
 ScriptPromiseTyped<ModelGenericSession> ModelManager::createGenericSession(
     ScriptState* script_state,
+    ModelGenericSessionOptions* options,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid() ||
       !GetModelManagerRemote().is_connected()) {
@@ -123,10 +127,25 @@ ScriptPromiseTyped<ModelGenericSession> ModelManager::createGenericSession(
           script_state);
   auto promise = resolver->Promise();
 
+  mojom::blink::ModelGenericSessionSamplingParamsPtr sampling_params;
+  if (options) {
+    if (!options->hasTopK() && !options->hasTemperature()) {
+      sampling_params = nullptr;
+    } else if (options->hasTopK() && options->hasTemperature()) {
+      sampling_params = mojom::blink::ModelGenericSessionSamplingParams::New(
+          options->topK(), options->temperature());
+    } else {
+      exception_state.ThrowTypeError(
+          "Initializing a new session must either specify both topK and "
+          "temperature, or neither of them.");
+      return ScriptPromiseTyped<ModelGenericSession>();
+    }
+  }
+
   ModelGenericSession* generic_session =
       MakeGarbageCollected<ModelGenericSession>(task_runner_);
   GetModelManagerRemote()->CreateGenericSession(
-      generic_session->GetModelSessionReceiver(),
+      generic_session->GetModelSessionReceiver(), std::move(sampling_params),
       WTF::BindOnce(
           [](ScriptPromiseResolverTyped<ModelGenericSession>* resolver,
              ModelGenericSession* generic_session, bool success) {

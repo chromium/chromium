@@ -10,5 +10,7 @@ enum GenericModelAvailability { "readily", "after-download", "no" };
 ]
 interface ModelManager {
   [CallWith=ScriptState, RaisesException] Promise<GenericModelAvailability> canCreateGenericSession();
-  [CallWith=ScriptState, RaisesException] Promise<ModelGenericSession> createGenericSession();
+  [CallWith=ScriptState, RaisesException] Promise<ModelGenericSession> createGenericSession(
+    optional ModelGenericSessionOptions options = {}
+  );
 };

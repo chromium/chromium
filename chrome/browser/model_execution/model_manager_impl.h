@@ -40,6 +40,7 @@ class ModelManagerImpl : public content::DocumentUserData<ModelManagerImpl>,
 
   void CreateGenericSession(
       mojo::PendingReceiver<::blink::mojom::ModelGenericSession> receiver,
+      blink::mojom::ModelGenericSessionSamplingParamsPtr sampling_params,
       CreateGenericSessionCallback callback) override;
 
   base::WeakPtr<content::BrowserContext> browser_context_;
