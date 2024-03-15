@@ -675,6 +675,16 @@ export class Preview {
           this.faceOverlay?.show(rects);
         };
 
+    const updatePTZ = () => {
+      const ptz = this.ptzController?.getSettings();
+      showValue('#preview-ptz-pan', `Pan ${ptz?.pan?.toFixed(1) ?? '-'}`);
+      showValue('#preview-ptz-tilt', `Tilt ${ptz?.tilt?.toFixed(1) ?? '-'}`);
+      const zoomValue =
+          ptz?.zoom !== undefined ? `${ptz.zoom.toFixed(1)}x` : '-';
+      showValue('#preview-ptz-zoom', `Zoom ${zoomValue}`);
+    };
+    displayCategory('#preview-ptz', this.ptzController !== null);
+
     const callback = (metadata: CameraMetadata) => {
       showValue('#preview-resolution', resolution);
       showValue('#preview-device-name', deviceName);
@@ -731,6 +741,8 @@ export class Preview {
       // We always need to run updateFace() even if face rectangles are obsent
       // in the metadata, which may happen if there is no face detected.
       updateFace(faceMode, faceRects);
+
+      updatePTZ();
     };
 
     this.metadataObserver = await deviceOperator.addMetadataObserver(
