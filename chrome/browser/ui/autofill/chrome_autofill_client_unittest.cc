@@ -82,7 +82,9 @@ class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
 
 class TestChromeAutofillClient : public ChromeAutofillClient {
  public:
-  using ChromeAutofillClient::ChromeAutofillClient;
+  explicit TestChromeAutofillClient(content::WebContents* web_contents)
+      : ChromeAutofillClient(web_contents) {}
+  ~TestChromeAutofillClient() override = default;
 
 #if BUILDFLAG(IS_ANDROID)
   MockFastCheckoutClient* GetFastCheckoutClient() override {
@@ -163,7 +165,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   }
 
   raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
-  TestAutofillClientInjector<testing::NiceMock<TestChromeAutofillClient>>
+  TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
   base::OnceCallback<void()> setup_flags_;
 };
