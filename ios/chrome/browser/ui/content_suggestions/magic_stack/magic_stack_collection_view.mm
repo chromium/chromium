@@ -144,7 +144,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   }
   MagicStackSnapshot* snapshot = [self.diffableDataSource snapshot];
   [snapshot deleteItemsWithIdentifiers:@[ item ]];
-  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 #pragma mark - UIScrollViewDelegate

@@ -4,8 +4,6 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/segmentation_platform/public/constants.h"
-#import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
@@ -45,8 +43,6 @@ void SignInAndSync() {
 
 // Checks that the visibility of the tab resumption tile matches `should_show`.
 void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
-  id<GREYMatcher> matcher =
-      should_show ? grey_sufficientlyVisible() : grey_notVisible();
   GREYCondition* tile_shown = [GREYCondition
       conditionWithName:@"Tile shown"
                   block:^BOOL {
@@ -55,7 +51,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
                         selectElementWithMatcher:
                             grey_accessibilityID(
                                 kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier)]
-                        assertWithMatcher:matcher
+                        assertWithMatcher:grey_notNil()
                                     error:&error];
                     return error == nil;
                   }];
@@ -65,7 +61,7 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
   if (should_show) {
     GREYAssertTrue(success, @"Tile did not appear.");
   } else {
-    GREYAssertTrue(success, @"Tile visible.");
+    GREYAssertFalse(success, @"Tile appeared.");
   }
 }
 
@@ -95,16 +91,9 @@ NSString* HostnameFromGURL(GURL URL) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  std::string enable_magic_stack_segmentation_arg =
-      std::string(
-          segmentation_platform::features::kSegmentationPlatformIosModuleRanker
-              .name) +
-      ":" + segmentation_platform::kDefaultModelEnabledParam + "/true" + "," +
-      kMagicStack.name;
   config.additional_args.push_back(
       "--enable-features=" + std::string(kTabResumption.name) + ":" +
       kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam + "," +
-      enable_magic_stack_segmentation_arg + "," +
       syncer::kSyncSessionOnVisibilityChanged.name);
   return config;
 }
@@ -113,16 +102,9 @@ NSString* HostnameFromGURL(GURL URL) {
 - (void)relaunchAppWithStartSurfaceEnabled {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  std::string enable_magic_stack_segmentation_arg =
-      std::string(
-          segmentation_platform::features::kSegmentationPlatformIosModuleRanker
-              .name) +
-      ":" + segmentation_platform::kDefaultModelEnabledParam + "/true" + "," +
-      kMagicStack.name;
   config.additional_args.push_back(
       "--enable-features=" + std::string(kStartSurface.name) + "<" +
-      std::string(kStartSurface.name) + "," +
-      enable_magic_stack_segmentation_arg);
+      std::string(kStartSurface.name));
   config.additional_args.push_back(
       "--force-fieldtrials=" + std::string(kStartSurface.name) + "/Test");
   config.additional_args.push_back(
@@ -138,8 +120,6 @@ NSString* HostnameFromGURL(GURL URL) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   SignInAndSync();
   [NewTabPageAppInterface disableSetUpList];
-  [ChromeEarlGrey resetDataForLocalStatePref:tab_resumption_prefs::
-                                                 kTabResumptioDisabledPref];
   [NTPAppInterface recordModuleFreshnessSignalForType:
                        ContentSuggestionsModuleType::kTabResumption];
   [[self class] closeAllTabs];
