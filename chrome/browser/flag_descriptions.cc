@@ -4369,12 +4369,6 @@ const char kRelatedSearchesAllLanguageName[] =
 const char kRelatedSearchesAllLanguageDescription[] =
     "Enables requesting related searches suggestions for all the languages.";
 
-const char kRemoveUPMUnenrollmentName[] = "Removes unenrollment fro UPM.";
-const char kRemoveUPMUnenrollmentDescription[] =
-    "Instead of unenrolling from UPM the Password Manager will be disabled (no "
-    "password saving, no password generation, etc.) until the error "
-    "disappears.";
-
 const char kRequestDesktopSiteWindowSettingName[] =
     "Window setting for request desktop site on Android.";
 const char kRequestDesktopSiteWindowSettingDescription[] =

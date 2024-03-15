@@ -48,13 +48,6 @@ void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
     return;
   }
 
-  // This check enrolls the client into "RemoveUPMUnenrollment" study allowing
-  // us to understand the impact of removing unenrollemnt and percentage of user
-  // left without Password Manager / unenrolled from UPM.
-  if (prefs->GetBoolean(prefs::kUserReceivedGMSCoreError)) {
-    PasswordStoreAndroidBackendDispatcherBridge::CanRemoveUnenrollment();
-  }
-
   if (password_manager_upm_eviction::IsCurrentUserEvicted(prefs)) {
     base::UmaHistogramEnumeration(
         kUPMActiveHistogram,
@@ -87,10 +80,28 @@ ActionOnApiError GetRecoveryActionForPassphraseRequiredError(
   return ActionOnApiError::kEvict;
 }
 
+bool CanRemoveUnenrollment(PrefService* pref_service) {
+  switch (static_cast<prefs::UseUpmLocalAndSeparateStoresState>(
+      pref_service->GetInteger(
+          prefs::kPasswordsUseUPMLocalAndSeparateStores))) {
+    case prefs::UseUpmLocalAndSeparateStoresState::kOff:
+      // If split stores is not enabled remove unenrollment only if
+      // `kUnifiedPasswordManagerSyncOnlyInGMSCore` is enabled.
+      return base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+    case prefs::UseUpmLocalAndSeparateStoresState::kOn:
+    case prefs::UseUpmLocalAndSeparateStoresState::kOffAndMigrationPending:
+      // Remove unenrollment completely since user is now part of split stores
+      // experiment.
+      return true;
+  }
+  NOTREACHED_NORETURN();
+}
+
 ActionOnApiError GetRecoveryActionOnApiError(
     AndroidBackendAPIErrorCode api_error_code,
-    bool does_gms_core_version_allow_for_removing_unenrollment,
-    bool supports_passphrase_error_fix) {
+    bool supports_passphrase_error_fix,
+    PrefService* pref_service) {
   switch (api_error_code) {
     case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
     case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
@@ -119,13 +130,8 @@ ActionOnApiError GetRecoveryActionOnApiError(
     case AndroidBackendAPIErrorCode::kLeakCheckServiceResourceExhausted:
       break;
   }
-  if (does_gms_core_version_allow_for_removing_unenrollment) {
-    return ActionOnApiError::kDisableSaving;
-  }
-  return base::FeatureList::IsEnabled(
-             features::kUnifiedPasswordManagerSyncOnlyInGMSCore)
-             ? ActionOnApiError::kDisableSaving
-             : ActionOnApiError::kEvict;
+  return CanRemoveUnenrollment(pref_service) ? ActionOnApiError::kDisableSaving
+                                             : ActionOnApiError::kEvict;
 }
 
 template <typename Response, typename CallbackType>
@@ -370,8 +376,8 @@ PasswordStoreAndroidAccountBackend::RecoverOnErrorAndReturnResult(
     AndroidBackendAPIErrorCode error) {
   CHECK(sync_service_);
   switch (GetRecoveryActionOnApiError(
-      error, bridge_helper()->CanRemoveUnenrollment(),
-      sync_service_->SupportsExplicitPassphrasePlatformClient())) {
+      error, sync_service_->SupportsExplicitPassphrasePlatformClient(),
+      prefs())) {
     case ActionOnApiError::kEvict: {
       // if `kUnifiedPasswordManagerSyncOnlyInGMSCore` is enabled eviction
       // should not happen.

@@ -10879,12 +10879,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kFullscreenInsetsApiMigrationOnAutomotive)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"remove-upm-unenrollment", flag_descriptions::kRemoveUPMUnenrollmentName,
-     flag_descriptions::kRemoveUPMUnenrollmentDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(password_manager::features::kRemoveUPMUnenrollment)},
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
     {"butter-on-desktop-followup",
      flag_descriptions::kButterOnDesktopFollowupName,

@@ -27,7 +27,6 @@ using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
 constexpr int kGMSCoreMinVersionForGetAffiliatedAPI = 232012000;
 constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
-constexpr int kGMSCoreVersionWithFewerErrors = 225012000;
 
 base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
     std::string account) {
@@ -81,26 +80,6 @@ bool PasswordStoreAndroidBackendDispatcherBridge::
 
   return base::FeatureList::IsEnabled(
       password_manager::features::kUseGMSCoreForBrandingInfo);
-}
-
-bool PasswordStoreAndroidBackendDispatcherBridge::CanRemoveUnenrollment() {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
-  int current_gms_core_version;
-  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
-    return false;
-  }
-
-  if (current_gms_core_version < kGMSCoreVersionWithFewerErrors) {
-    return false;
-  }
-
-  // Check minimum GMSCore version from Finch in case it was bumped.
-  if (current_gms_core_version <
-      features::kMinimumGMSCoreVersionToRemoveUnenrollment.Get()) {
-    return false;
-  }
-
-  return base::FeatureList::IsEnabled(features::kRemoveUPMUnenrollment);
 }
 
 PasswordStoreAndroidBackendDispatcherBridgeImpl::

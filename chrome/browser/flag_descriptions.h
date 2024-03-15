@@ -2580,9 +2580,6 @@ extern const char kReengagementNotificationDescription[];
 extern const char kRelatedSearchesAllLanguageName[];
 extern const char kRelatedSearchesAllLanguageDescription[];
 
-extern const char kRemoveUPMUnenrollmentName[];
-extern const char kRemoveUPMUnenrollmentDescription[];
-
 extern const char kRequestDesktopSiteWindowSettingName[];
 extern const char kRequestDesktopSiteWindowSettingDescription[];
 

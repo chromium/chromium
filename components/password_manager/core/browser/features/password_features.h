@@ -38,12 +38,6 @@ BASE_DECLARE_FEATURE(kButterOnDesktopFollowup);
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 
 #if BUILDFLAG(IS_ANDROID)
-// Disables eviction from UPM when error occurs and instead disables password
-// manager until the error is gone.
-BASE_DECLARE_FEATURE(kRemoveUPMUnenrollment);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 // Enables filling password on a website when there is saved password on
 // affiliated website.
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid);
@@ -200,14 +194,6 @@ BASE_DECLARE_FEATURE(kUseGMSCoreForBrandingInfo);
 #endif
 
 // All features parameters in alphabetical order.
-
-#if BUILDFLAG(IS_ANDROID)
-// Minimum GMSCore version required to remove unenrollment. Setting version
-// lower than the default one will have no effect.
-inline constexpr base::FeatureParam<int>
-    kMinimumGMSCoreVersionToRemoveUnenrollment{
-        &kRemoveUPMUnenrollment, "min_gms_core_version", 225012000};
-#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // This enum supports enabling specific arms of the

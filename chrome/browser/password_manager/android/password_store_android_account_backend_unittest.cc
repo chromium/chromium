@@ -2121,7 +2121,6 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, NoEvictIfM4FlagEnabled) {
       PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
       base::NullCallback(), base::DoNothing());
   backend().OnSyncServiceInitialized(sync_service());
-  ON_CALL(*bridge_helper(), CanRemoveUnenrollment).WillByDefault(Return(false));
 
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillRepeatedly(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
@@ -2156,8 +2155,9 @@ class PasswordStoreAndroidAccountBackendWithoutUnenrollmentTest
         PasswordStoreAndroidAccountBackend::RemoteChangesReceived(),
         base::NullCallback(), base::DoNothing());
     backend().OnSyncServiceInitialized(sync_service());
-    ON_CALL(*bridge_helper(), CanRemoveUnenrollment)
-        .WillByDefault(Return(true));
+    prefs()->SetInteger(
+        prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
   }
 
   AndroidBackendAPIErrorCode GetAPIErrorCode() {

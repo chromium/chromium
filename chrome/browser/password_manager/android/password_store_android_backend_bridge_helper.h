@@ -40,10 +40,6 @@ class PasswordStoreAndroidBackendBridgeHelper {
   // Returns true if GMS Core supports new GetAllLoginsWithBrandingInfo API.
   virtual bool CanUseGetAllLoginsWithBrandingInfoAPI() = 0;
 
-  // Returns true if user shouldn't be evicted from the experiment due to
-  // GMSCore errors.
-  virtual bool CanRemoveUnenrollment() = 0;
-
   // Sets the `consumer` that is notified on job completion as defined in
   // `PasswordStoreAndroidBackendReceiverBridge::Consumer`.
   virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;

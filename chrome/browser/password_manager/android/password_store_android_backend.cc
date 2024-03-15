@@ -332,17 +332,14 @@ bool ShouldRetryOperationOnError(PasswordStoreOperation operation,
 }
 
 PasswordStoreBackendErrorType APIErrorCodeToErrorType(
-    AndroidBackendAPIErrorCode api_error_code,
-    bool can_remove_unenrollment) {
+    AndroidBackendAPIErrorCode api_error_code) {
   switch (api_error_code) {
     case AndroidBackendAPIErrorCode::kAuthErrorResolvable:
       return PasswordStoreBackendErrorType::kAuthErrorResolvable;
     case AndroidBackendAPIErrorCode::kAuthErrorUnresolvable:
       return PasswordStoreBackendErrorType::kAuthErrorUnresolvable;
     case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
-      return can_remove_unenrollment
-                 ? PasswordStoreBackendErrorType::kKeyRetrievalRequired
-                 : PasswordStoreBackendErrorType::kUncategorized;
+      return PasswordStoreBackendErrorType::kKeyRetrievalRequired;
     case AndroidBackendAPIErrorCode::kNetworkError:
     case AndroidBackendAPIErrorCode::kInternalError:
     case AndroidBackendAPIErrorCode::kDeveloperError:
@@ -867,8 +864,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       // on error.
       reported_error.recovery_type =
           RecoverOnErrorAndReturnResult(api_error_code);
-      reported_error.type = APIErrorCodeToErrorType(
-          api_error_code, bridge_helper_->CanRemoveUnenrollment());
+      reported_error.type = APIErrorCodeToErrorType(api_error_code);
     }
   }
 

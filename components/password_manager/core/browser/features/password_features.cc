@@ -38,12 +38,6 @@ BASE_FEATURE(kClearUndecryptablePasswordsOnSync,
 );
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kRemoveUPMUnenrollment,
-             "RemoveUPMUnenrollment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid,
              "FillingAcrossAffiliatedWebsitesAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
