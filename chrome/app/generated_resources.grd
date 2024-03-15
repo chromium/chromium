@@ -3458,8 +3458,20 @@ are declared in tools/grit/grit_rule.gni.
         Google Safe Browsing now scans suspicious files you try downloading as part of the enhanced protection you chose.
       </message>
       <message name="IDS_DEEP_SCANNING_PROMPT_REMOVAL_IPH_ACTION"
-	       desc="Text shown on the action button in the in-product-help, leading users to chrome://settings">
-	Settings
+               desc="Text shown on the action button in the in-product-help, leading users to chrome://settings">
+        Settings
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_IMMEDIATE_DEEP_SCAN_IN_PROGRESS"
+               desc="Text shown in the download bubble when a deep scan is in progress">
+        This file might be malware.<ph name="LINE_BREAK">$1</ph>Google Safe Browsing is checking if this file is unsafe &#8212; a scan usually takes a few seconds.
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_IMMEDIATE_DEEP_SCAN_CANCEL"
+               desc="Text shown in the download bubble to allow users to cancel a download being deep scanned">
+        Cancel download
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_IMMEDIATE_DEEP_SCAN_BYPASS"
+              desc="Text shown in the download bubble to allow users to bypass a deep scan">
+        Download suspicious file
       </message>
 
       <!-- Local archive decryption in download bubble -->

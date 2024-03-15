@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -423,26 +424,44 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
       has_progress_bar_ = true;
       is_progress_bar_looping_ = true;
-      warning_summary_ = l10n_util::GetStringUTF16(
-          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING);
-      warning_secondary_icon_ = &vector_icons::kDocumentScannerIcon;
-      warning_secondary_text_ =
-          download::DoesDownloadConnectorBlock(model.profile(), model.GetURL())
-              ? l10n_util::GetStringUTF16(
-                    IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_ENTERPRISE_SECONDARY)
-              : l10n_util::GetStringUTF16(
-                    IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_SECONDARY);
-      PopulatePrimarySubpageButton(
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_DISCARD),
-          DownloadCommands::Command::DISCARD,
-          /*is_prominent=*/false);
-      if (!download::DoesDownloadConnectorBlock(model.profile(),
-                                                model.GetURL())) {
+      if (DownloadItemWarningData::DownloadDeepScanTrigger(
+              model.GetDownloadItem()) ==
+          DownloadItemWarningData::DeepScanTrigger::
+              TRIGGER_IMMEDIATE_DEEP_SCAN) {
+        warning_summary_ = l10n_util::GetStringFUTF16(
+            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_IMMEDIATE_DEEP_SCAN_IN_PROGRESS,
+            u"\n\n");
+        PopulatePrimarySubpageButton(
+            l10n_util::GetStringUTF16(
+                IDS_DOWNLOAD_BUBBLE_SUBPAGE_IMMEDIATE_DEEP_SCAN_CANCEL),
+            DownloadCommands::Command::DISCARD);
         PopulateSecondarySubpageButton(
             l10n_util::GetStringUTF16(
-                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_CANCEL),
-            DownloadCommands::Command::CANCEL_DEEP_SCAN);
+                IDS_DOWNLOAD_BUBBLE_SUBPAGE_IMMEDIATE_DEEP_SCAN_BYPASS),
+            DownloadCommands::Command::BYPASS_DEEP_SCANNING);
+      } else {
+        warning_summary_ = l10n_util::GetStringUTF16(
+            IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING);
+        warning_secondary_icon_ = &vector_icons::kDocumentScannerIcon;
+        warning_secondary_text_ =
+            download::DoesDownloadConnectorBlock(model.profile(),
+                                                 model.GetURL())
+                ? l10n_util::GetStringUTF16(
+                      IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_ENTERPRISE_SECONDARY)
+                : l10n_util::GetStringUTF16(
+                      IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_SECONDARY);
+        PopulatePrimarySubpageButton(
+            l10n_util::GetStringUTF16(
+                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_DISCARD),
+            DownloadCommands::Command::DISCARD,
+            /*is_prominent=*/false);
+        if (!download::DoesDownloadConnectorBlock(model.profile(),
+                                                  model.GetURL())) {
+          PopulateSecondarySubpageButton(
+              l10n_util::GetStringUTF16(
+                  IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_CANCEL),
+              DownloadCommands::Command::CANCEL_DEEP_SCAN);
+        }
       }
       return;
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING: {
