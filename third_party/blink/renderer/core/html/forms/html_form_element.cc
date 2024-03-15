@@ -765,6 +765,10 @@ void HTMLFormElement::CollectListedElements(
     ListedElement::List* elements_including_shadow_trees,
     bool in_shadow_tree) const {
   DCHECK(!in_shadow_tree || elements_including_shadow_trees);
+  // A performance optimization used below - if `root_is_descendant` is true,
+  // then we can save some checks whether elements that we are traversing are
+  // descendants of `this`.
+  const bool root_is_descendant = in_shadow_tree || &root == this;
   HeapVector<Member<HTMLFormElement>> nested_forms;
   if (!in_shadow_tree) {
     elements.clear();
@@ -811,12 +815,12 @@ void HTMLFormElement::CollectListedElements(
     // Descend recursively into shadow DOM if the following conditions are met:
     // - We are supposed to gather elements in shadow trees.
     // - `element` is a shadow root.
-    // - `element` is a shadow-including descendant of `this`. If we are already
-    //    inside shadow DOM, then this is true by induction.
+    // - `element` is a shadow-including descendant of `this`. If `root` is a
+    //   descendant of `this`, then that is trivially true.
     // - If `kAutofillIncludeFormElementsInShadowDom` is disabled, then we also
     //   require that there no nested forms.
     if (elements_including_shadow_trees && element.AuthorShadowRoot() &&
-        (in_shadow_tree || element.IsDescendantOf(this)) &&
+        (root_is_descendant || element.IsDescendantOf(this)) &&
         (base::FeatureList::IsEnabled(
              features::kAutofillIncludeFormElementsInShadowDom) ||
          !HasFormInBetween(in_shadow_tree ? &root : this, &element))) {
