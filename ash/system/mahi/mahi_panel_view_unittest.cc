@@ -197,6 +197,92 @@ TEST_F(MahiPanelViewTest, LearnMoreLink) {
       panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink));
 }
 
+// Make sure the `PanelContentsContainer` is larger than its contents when the
+// contents are short.
+TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithShortSummary) {
+  auto panel_bounds = gfx::Size(300, 400);
+
+  // Create a panel with a short summary.
+  fake_mahi_manager()->set_summary_text(u"Short summary");
+  auto mahi_view = std::make_unique<MahiPanelView>();
+  mahi_view->SetPreferredSize(panel_bounds);
+  mahi_view->SizeToPreferredSize();
+
+  int short_content_height =
+      mahi_view->GetViewByID(mahi_constants::kSummaryOutlinesSection)
+          ->bounds()
+          .height();
+  int short_contents_container_height =
+      mahi_view->GetViewByID(mahi_constants::kPanelContentsContainer)
+          ->bounds()
+          .height();
+
+  // The container should be larger than the contents when the summary is short.
+  EXPECT_GT(short_contents_container_height, short_content_height);
+}
+
+// Make sure the `PanelContentsContainer` is smaller than its contents when the
+// contents are long.
+TEST_F(MahiPanelViewTest, PanelContentsViewBoundsWithLongSummary) {
+  auto panel_bounds = gfx::Size(300, 400);
+
+  // Create a panel with a long summary.
+  std::u16string long_summary;
+  for (int i = 0; i < 100; i++) {
+    long_summary += u"Long Summary\n";
+  }
+  fake_mahi_manager()->set_summary_text(long_summary);
+  auto mahi_view = std::make_unique<MahiPanelView>();
+  mahi_view->SetPreferredSize(panel_bounds);
+  mahi_view->SizeToPreferredSize();
+
+  int long_content_height =
+      mahi_view->GetViewByID(mahi_constants::kSummaryOutlinesSection)
+          ->bounds()
+          .height();
+  int long_contents_container_height =
+      mahi_view->GetViewByID(mahi_constants::kPanelContentsContainer)
+          ->bounds()
+          .height();
+
+  // The container should be smaller than the contents when the summary is long.
+  EXPECT_LT(long_contents_container_height, long_content_height);
+}
+
+// Make sure the `PanelContentsContainer` is always sized to occupy the same
+// amount of space in the `MahiPanelView` irrespective of its contents size.
+TEST_F(MahiPanelViewTest, PanelContentsViewBoundsStayConstant) {
+  auto panel_bounds = gfx::Size(300, 400);
+
+  // Create a panel with a short summary.
+  fake_mahi_manager()->set_summary_text(u"Short summary");
+  auto mahi_view1 = std::make_unique<MahiPanelView>();
+  mahi_view1->SetPreferredSize(panel_bounds);
+  mahi_view1->SizeToPreferredSize();
+
+  // Create a panel with a long summary.
+  std::u16string long_summary;
+  for (int i = 0; i < 100; i++) {
+    long_summary += u"Long Summary\n";
+  }
+  fake_mahi_manager()->set_summary_text(long_summary);
+  auto mahi_view2 = std::make_unique<MahiPanelView>();
+  mahi_view2->SetPreferredSize(panel_bounds);
+  mahi_view2->SizeToPreferredSize();
+
+  int short_contents_container_height =
+      mahi_view1->GetViewByID(mahi_constants::kPanelContentsContainer)
+          ->bounds()
+          .height();
+  int long_contents_container_height =
+      mahi_view2->GetViewByID(mahi_constants::kPanelContentsContainer)
+          ->bounds()
+          .height();
+
+  // The container size should stay constant irrespective of summary length.
+  EXPECT_EQ(short_contents_container_height, long_contents_container_height);
+}
+
 // A test class that uses a mock time task environment.
 class MahiPanelViewMockTimeTest : public MahiPanelViewTest {
  public:

@@ -160,10 +160,6 @@ class ContentScrollView : public views::ScrollView,
   ContentScrollView() {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
     SetBackgroundThemeColorId(cros_tokens::kCrosSysSystemOnBase);
-    SetProperty(views::kFlexBehaviorKey,
-                views::FlexSpecification(views::FlexSpecification(
-                    views::MinimumFlexSizeRule::kPreferred,
-                    views::MaximumFlexSizeRule::kUnbounded)));
     ClipHeightTo(/*min_height=*/0, /*max_height=*/INT_MAX);
     SetDrawOverflowIndicator(false);
     auto scroll_bar = std::make_unique<RoundedScrollBar>(
@@ -316,11 +312,10 @@ MahiPanelView::MahiPanelView() {
           .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
             layout->SetDefault(views::kMarginsKey,
                                gfx::Insets::VH(0, kHeaderRowSpacing));
-            layout->SetProperty(
-                views::kFlexBehaviorKey,
-                views::FlexSpecification(views::FlexSpecification(
-                    views::MinimumFlexSizeRule::kPreferred,
-                    views::MaximumFlexSizeRule::kUnbounded)));
+            layout->SetProperty(views::kFlexBehaviorKey,
+                                views::FlexSpecification(
+                                    views::MinimumFlexSizeRule::kPreferred,
+                                    views::MaximumFlexSizeRule::kUnbounded));
           }))
           .AddChildren(
               views::Builder<views::Label>()
@@ -377,7 +372,13 @@ MahiPanelView::MahiPanelView() {
   // Add a scrollable view of the panel's content, with a feedback section.
   AddChildView(
       views::Builder<views::View>()
+          .SetID(mahi_constants::ViewId::kPanelContentsContainer)
           .SetUseDefaultFillLayout(true)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::LayoutOrientation::kVertical,
+                                       views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kUnbounded))
           .AddChildren(
               // Add buttons for the user to give feedback on the content.
               views::Builder<views::BoxLayoutView>()

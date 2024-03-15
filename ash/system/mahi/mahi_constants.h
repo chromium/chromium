@@ -27,6 +27,7 @@ enum ViewId {
   kOutlinesContainer,
   kSummaryLoadingAnimatedImage,
   kOutlinesLoadingAnimatedImage,
+  kPanelContentsContainer,
 };
 
 // The size of the icon that appears in the panel's source row.
