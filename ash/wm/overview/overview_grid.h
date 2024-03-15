@@ -524,6 +524,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Initializes the widget that contains the `BirchBarView` contents.
   void MaybeInitBirchBarWidget();
 
+  void ShowBirchBarWidget();
+
   // Destroys birch bar widget.
   void DestroyBirchBarWidget();
 

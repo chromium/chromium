@@ -221,16 +221,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
 std::vector<std::unique_ptr<BirchItem>> BirchModel::GetItemsForDisplay() {
   std::vector<std::unique_ptr<BirchItem>> results = GetAllItems();
 
-  // The items are already sorted by ranking, so truncate the vector to find the
-  // top 4 results.
-  constexpr size_t kMaxResults = 4;
-  if (results.size() > kMaxResults) {
-    results.resize(kMaxResults);
-  }
-
-  // Remove any items with no ranking, as these should not be shown. This is
-  // done after the resize() for efficiency. The unranked items are sorted to
-  // the end, so the resize() has likely already removed them.
+  // Remove any items with no ranking, as these should not be shown.
   std::erase_if(results, [](const auto& item) {
     return item->ranking() == std::numeric_limits<float>::max();
   });

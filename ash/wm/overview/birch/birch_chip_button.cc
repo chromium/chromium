@@ -165,18 +165,18 @@ BirchChipButton::BirchChipButton()
 
 BirchChipButton::~BirchChipButton() = default;
 
-void BirchChipButton::SetBirchItem(std::unique_ptr<BirchItem> item) {
-  item_ = std::move(item);
+void BirchChipButton::Init(BirchItem* item) {
+  item_ = item;
 
   title_->SetText(item_->title());
   subtitle_->SetText(item_->subtitle());
 
-  SetCallback(base::BindRepeating(&BirchItem::PerformAction,
-                                  base::Unretained(item_.get())));
+  SetCallback(
+      base::BindRepeating(&BirchItem::PerformAction, base::Unretained(item_)));
   if (item_->secondary_action().has_value()) {
     auto* button = SetAddon(std::make_unique<PillButton>(
         base::BindRepeating(&BirchItem::PerformSecondaryAction,
-                            base::Unretained(item_.get())),
+                            base::Unretained(item_)),
         *item_->secondary_action(), PillButton::Type::kPrimaryWithoutIcon));
     button->SetProperty(views::kMarginsKey, gfx::Insets::VH(0, 16));
   }

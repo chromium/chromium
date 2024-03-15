@@ -48,6 +48,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_drop_target.h"
@@ -2669,15 +2670,31 @@ void OverviewGrid::MaybeInitBirchBarWidget() {
       birch_bar_view_->AddRelayoutCallback(
           base::BindRepeating(&OverviewGrid::OnBirchBarLayoutChanged,
                               weak_ptr_factory_.GetWeakPtr()));
-  birch_bar_widget_->Show();
+
+  // Initialize the birch bar view with birch bar controller.
+  auto* birch_bar_controller = BirchBarController::Get();
+  CHECK(birch_bar_controller);
+  birch_bar_controller->RegisterBar(
+      birch_bar_view_, base::BindOnce(&OverviewGrid::ShowBirchBarWidget,
+                                      weak_ptr_factory_.GetWeakPtr()));
 
   // Stack birch bar at bottom to guarantee the dragged window is above it.
   auto* window = birch_bar_widget_->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
 }
 
+void OverviewGrid::ShowBirchBarWidget() {
+  CHECK(birch_bar_widget_);
+  birch_bar_widget_->Show();
+  // TODO(zxdan): add birch bar showing animation.
+}
+
 void OverviewGrid::DestroyBirchBarWidget() {
   if (birch_bar_widget_) {
+    // The birch bar controller may be destroyed when shutting down Overview.
+    if (auto* birch_bar_controller = BirchBarController::Get()) {
+      birch_bar_controller->OnBarDestroying(birch_bar_view_);
+    }
     birch_bar_view_ = nullptr;
     birch_bar_widget_.reset();
   }

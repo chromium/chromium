@@ -753,15 +753,23 @@ TEST_F(BirchModelTest, GetAllItems) {
 TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
   BirchModel* model = Shell::Get()->birch_model();
 
-  // Insert one item of each type.
+  // Insert two calendar items.
+  // The first one has ranking 5.f;
   std::vector<BirchCalendarItem> calendar_item_list;
   calendar_item_list.emplace_back(u"Event 1", /*start_time=*/base::Time(),
                                   /*end_time=*/base::Time(),
                                   /*calendar_url=*/GURL(),
                                   /*conference_url=*/GURL());
   calendar_item_list.back().set_ranking(5.f);
+
+  // The second one has no ranking.
+  calendar_item_list.emplace_back(u"Event 2", /*start_time=*/base::Time(),
+                                  /*end_time=*/base::Time(),
+                                  /*calendar_url=*/GURL(),
+                                  /*conference_url=*/GURL());
   model->SetCalendarItems(std::move(calendar_item_list));
 
+  // Insert one item for other types.
   std::vector<BirchAttachmentItem> attachment_item_list;
   attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
                                     /*icon_url=*/GURL(),
@@ -791,8 +799,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
 
   std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
 
-  // The maximum of 4 items are returned.
-  ASSERT_EQ(items.size(), 4u);
+  // We should only get 5 ranked items.
+  ASSERT_EQ(items.size(), 5u);
 
   // The items are in priority order.
   EXPECT_FLOAT_EQ(items[0]->ranking(), 1.f);
@@ -803,6 +811,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
   EXPECT_STREQ(items[2]->GetItemType(), BirchTabItem::kItemType);
   EXPECT_FLOAT_EQ(items[3]->ranking(), 4.f);
   EXPECT_STREQ(items[3]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_FLOAT_EQ(items[4]->ranking(), 5.f);
+  EXPECT_STREQ(items[4]->GetItemType(), BirchCalendarItem::kItemType);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
@@ -846,9 +856,6 @@ TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
 
   std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
 
-  // The maximum of 4 items are returned.
-  ASSERT_EQ(items.size(), 4u);
-
   // Both calendar events are included.
   EXPECT_FLOAT_EQ(items[0]->ranking(), 1.f);
   EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
@@ -858,6 +865,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
   EXPECT_STREQ(items[2]->GetItemType(), BirchAttachmentItem::kItemType);
   EXPECT_FLOAT_EQ(items[3]->ranking(), 4.f);
   EXPECT_STREQ(items[3]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_FLOAT_EQ(items[4]->ranking(), 5.f);
+  EXPECT_STREQ(items[4]->GetItemType(), BirchFileItem::kItemType);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {

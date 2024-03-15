@@ -44,7 +44,7 @@ class BirchChipButton : public views::Button,
   ~BirchChipButton() override;
 
   // Chip configuration methods.
-  void SetBirchItem(std::unique_ptr<BirchItem> item);
+  void Init(BirchItem* item);
 
   template <typename T>
   T* SetAddon(std::unique_ptr<T> addon_view) {
@@ -72,10 +72,11 @@ class BirchChipButton : public views::Button,
   // Sets the item icon.
   void SetIconImage(const ui::ImageModel& icon_image);
 
-  std::unique_ptr<BirchItem> item_;
-
   // The removal chip context menu controller.
   std::unique_ptr<RemovalChipMenuController> removal_chip_menu_controller_;
+
+  // The source of the chip.
+  raw_ptr<BirchItem> item_ = nullptr;
 
   // The components owned by the chip view.
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
@@ -90,7 +91,7 @@ class BirchChipButton : public views::Button,
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, views::Button)
-VIEW_BUILDER_PROPERTY(std::unique_ptr<BirchItem>, BirchItem)
+VIEW_BUILDER_METHOD(Init, BirchItem*)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, Addon)
 VIEW_BUILDER_PROPERTY(BirchChipButton::Delegate*, Delegate)
 END_VIEW_BUILDER

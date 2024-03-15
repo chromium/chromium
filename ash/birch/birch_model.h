@@ -76,7 +76,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // Returns all items, sorted by ranking. Includes unranked items.
   std::vector<std::unique_ptr<BirchItem>> GetAllItems();
 
-  // Returns at most 4 items, sorted by ranking.
+  // Returns all items, sorted by ranking.
   std::vector<std::unique_ptr<BirchItem>> GetItemsForDisplay();
 
   // Returns whether all data in the model is currently fresh.

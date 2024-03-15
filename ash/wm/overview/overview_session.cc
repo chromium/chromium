@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/window_properties.h"
@@ -25,6 +26,7 @@
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
 #include "ash/wm/overview/overview_focus_cycler.h"
@@ -200,6 +202,11 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
         std::make_unique<SavedDeskDialogController>();
   }
 
+  // Create this before the birch bar widget.
+  if (features::IsForestFeatureEnabled()) {
+    birch_bar_controller_ = std::make_unique<BirchBarController>();
+  }
+
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::sort(root_windows.begin(), root_windows.end(),
             [](const aura::Window* a, const aura::Window* b) {
@@ -326,6 +333,10 @@ void OverviewSession::Shutdown() {
   // Resetting here will close any dialogs, and DCHECK anyone trying to open a
   // dialog past this point.
   saved_desk_dialog_controller_.reset();
+
+  // Resetting the birch bar controller before shutting down overview grids to
+  // avoid dangling pointers.
+  birch_bar_controller_.reset();
 
   // Stop observing screen metrics changes first to avoid auto-positioning
   // windows in response to work area changes from window activation.

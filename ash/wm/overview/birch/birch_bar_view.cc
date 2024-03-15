@@ -6,13 +6,12 @@
 
 #include <vector>
 
-#include "ash/birch/birch_model.h"
+#include "ash/birch/birch_item.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_settings.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shell.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -29,8 +28,6 @@ namespace ash {
 
 namespace {
 
-// The capacity of chips bar.
-constexpr int kMaxChipsNum = 4;
 // The spacing between chips and chips rows.
 constexpr int kChipSpacing = 8;
 // Horizontal paddings of the bar container.
@@ -81,8 +78,6 @@ BirchBarView::BirchBarView(aura::Window* root_window)
                        .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
                        .SetBetweenChildSpacing(kChipSpacing))
       .BuildChildren();
-  Shell::Get()->birch_model()->RequestBirchDataFetch(base::BindOnce(
-      &BirchBarView::AddChipsFromBirchModel, weak_factory_.GetWeakPtr()));
 }
 
 BirchBarView::~BirchBarView() = default;
@@ -121,31 +116,18 @@ base::CallbackListSubscription BirchBarView::AddRelayoutCallback(
   return relayout_callback_list_.Add(std::move(callback));
 }
 
-void BirchBarView::AddChipsFromBirchModel() {
-  std::vector<std::unique_ptr<BirchItem>> items =
-      Shell::Get()->birch_model()->GetAllItems();
-
-  int added_items = 0;
-  for (auto& item : items) {
-    AddChip(std::move(item));
-    ++added_items;
-    if (added_items == kMaxChipsNum) {
-      break;
-    }
-  }
-}
 int BirchBarView::GetChipsNum() const {
   return chips_.size();
 }
 
-void BirchBarView::AddChip(std::unique_ptr<BirchItem> item) {
+void BirchBarView::AddChip(BirchItem* item) {
   if (static_cast<int>(chips_.size()) == kMaxChipsNum) {
     NOTREACHED() << "The number of birch chips reaches the limit of 4";
     return;
   }
 
   auto chip = views::Builder<BirchChipButton>()
-                  .SetBirchItem(std::move(item))
+                  .Init(item)
                   .SetDelegate(this)
                   .SetPreferredSize(chip_size_)
                   .Build();

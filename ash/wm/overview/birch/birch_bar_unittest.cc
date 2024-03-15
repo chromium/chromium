@@ -56,16 +56,6 @@ class TestBirchItem : public BirchItem {
   }
 };
 
-// Add one chip with title, subtitle and an icon to the given `birch_bar_view`.
-void AddOneChipToBirchBar(
-    BirchBarView* birch_bar_view,
-    const std::u16string& title,
-    const std::u16string& subtitle,
-    const std::optional<std::u16string>& secondary_action) {
-  birch_bar_view->AddChip(
-      std::make_unique<TestBirchItem>(title, subtitle, secondary_action));
-}
-
 }  // namespace
 
 // The test class of birch bar with Forest feature enabled by default.
@@ -266,13 +256,16 @@ TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
       OverviewGridTestApi(root).birch_bar_widget();
 
   // Add chips to the bar in landscape mode.
+  std::vector<std::unique_ptr<BirchItem>> items_;
   for (int i = 0; i < 4; i++) {
     std::optional<std::u16string> secondary_action;
     if (i % 2) {
       secondary_action = u"add-on";
     }
-    AddOneChipToBirchBar(birch_bar_view, u"title", u"subtitle",
-                         secondary_action);
+    auto item = std::make_unique<TestBirchItem>(u"title", u"subtitle",
+                                                secondary_action);
+    birch_bar_view->AddChip(item.get());
+    items_.emplace_back(std::move(item));
     EXPECT_EQ(birch_bar_widget->GetWindowBoundsInScreen(),
               params.expected_landscape_bounds[i]);
   }

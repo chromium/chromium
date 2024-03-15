@@ -49,6 +49,8 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
   METADATA_HEADER(BirchBarView, views::BoxLayoutView)
 
  public:
+  static constexpr int kMaxChipsNum = 4;
+
   enum class RelayoutReason {
     // Relayout caused by adding or removing chips.
     kAddRemoveChip,
@@ -83,7 +85,7 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
   // Adds a new birch chip to the bar.
   // TODO(zxdan): move the function to private when using model and replace the
   // arguments with chip data structure.
-  void AddChip(std::unique_ptr<BirchItem> birch_item);
+  void AddChip(BirchItem* birch_item);
 
   // BirchChipButton::Delegate:
   void RemoveChip(BirchChipButton* chip) override;
@@ -98,10 +100,6 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
     kOneByFour,
     kTwoByTwo,
   };
-
-  // Called in response to birch item fetch requested from birch mode.
-  // Adds chips for top items present in the birch model.
-  void AddChipsFromBirchModel();
 
   // Calculates the chip size according to current shelf position and display
   // size.
@@ -137,8 +135,6 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
 
   base::RepeatingCallbackList<RelayoutCallback::RunType>
       relayout_callback_list_;
-
-  base::WeakPtrFactory<BirchBarView> weak_factory_{this};
 };
 
 }  // namespace ash
