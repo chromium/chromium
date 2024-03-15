@@ -94,6 +94,14 @@ assert(!is_nacl || is_nacl_saigo,
 assert(!is_win || is_clang,
        "only clang-cl is supported on Windows, see https://crbug.com/988071")
 
+# Whether we should provide a `__libcpp_verbose_abort` handler that discards
+# `__VA_ARGS__` and just calls base::ImmediateCrash() for hardening failures.
+# This conditional matches `defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()` in
+# base/check.h. I.e. we optimize `::std::__libcpp_verbose_abort(__VA_ARGS__)`
+# to discard `__VA_ARGS__` when we disable logging from CHECK() failures.
+use_nodebug_assertion =
+    use_custom_libcxx && is_official_build && !is_debug && !dcheck_always_on
+
 # Determines whether libevent should be dep.
 dep_libevent = !is_fuchsia && !is_win && !is_mac && !is_nacl
 
@@ -1116,7 +1124,7 @@ component("base") {
     public_deps += [ "//build/rust:cxx_cppdeps" ]
   }
 
-  if (use_custom_libcxx && enable_safe_libcxx && !is_debug) {
+  if (use_nodebug_assertion) {
     public_deps += [ ":nodebug_assertion" ]
   }
 
@@ -2702,7 +2710,7 @@ static_library("base_static") {
   }
 }
 
-if (use_safe_libcxx && !is_debug) {
+if (use_nodebug_assertion) {
   # nodebug_assertion.cc has to be in its own source_set instead of being
   # included as a source in //base as otherwise its symbols won't be linked in
   # if they end up in an archive.
