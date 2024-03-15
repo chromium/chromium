@@ -179,7 +179,11 @@ suite('<os-settings-ui> page visibility', () => {
   // Sort by order of menu items
   const routeNames: Array<keyof OsSettingsRoutes> = [
     'INTERNET',
-    'BLUETOOTH',
+    // Currently in the revamp, the Bluetooth L1 page automatically
+    // redirects to the Bluetooth devices subpage.
+    // TODO(b/309808834) Uncomment the line for the Bluetooth route below once
+    // the L1 page is revamped and re-implemented.
+    // 'BLUETOOTH',
     'MULTIDEVICE',
     'OS_PEOPLE',
     'KERBEROS',

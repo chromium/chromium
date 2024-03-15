@@ -805,6 +805,12 @@ const PATH_REDIRECT_PAIRS: Array<[string, string]> = [
     routesMojom.FILES_SECTION_PATH,
     routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
   ],
+  // TODO(b/309808834) Remove this pair once the Bluetooth L1 page is revamped
+  // with up-leveled content.
+  [
+    routesMojom.BLUETOOTH_SECTION_PATH,
+    routesMojom.BLUETOOTH_DEVICES_SUBPAGE_PATH,
+  ],
 ];
 
 /**

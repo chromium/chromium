@@ -37,6 +37,10 @@ suite('Router', () => {
           routesMojom.FILES_SECTION_PATH,
           routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
         ],
+        [
+          routesMojom.BLUETOOTH_SECTION_PATH,
+          routesMojom.BLUETOOTH_DEVICES_SUBPAGE_PATH,
+        ],
       ];
       redirectPairs.forEach(([path, redirectPath]) => {
         test(

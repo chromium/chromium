@@ -134,18 +134,18 @@ suite('<main-page-container> Route Navigation', () => {
 
   suite('From Root', () => {
     test('to Page should show and focus that page', async () => {
-      // Simulate navigating from root to Bluetooth page
+      // Simulate navigating from root to Personalization page
       await runAndWaitForContainerShown(() => {
-        Router.getInstance().navigateTo(routes.BLUETOOTH);
+        Router.getInstance().navigateTo(routes.PERSONALIZATION);
       });
 
-      assertIsOnlyActivePage(Section.kBluetooth);
-      assertIsOnlyVisiblePage(Section.kBluetooth);
-      assertPageIsFocused(Section.kBluetooth);
+      assertIsOnlyActivePage(Section.kPersonalization);
+      assertIsOnlyVisiblePage(Section.kPersonalization);
+      assertPageIsFocused(Section.kPersonalization);
     });
 
     test('to Subpage should activate parent (top-level) page', async () => {
-      // Simulate navigating from root to Bluetooth subpage
+      // Simulate navigating from root to Bluetooth devices subpage
       await runAndWaitForContainerShown(() => {
         Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
       });
@@ -178,14 +178,14 @@ suite('<main-page-container> Route Navigation', () => {
     });
 
     test('to another Page should show and focus that page', async () => {
-      // Simulate navigating from A11y page to Bluetooth page
+      // Simulate navigating from A11y page to Personalization page
       await runAndWaitForContainerShown(() => {
-        Router.getInstance().navigateTo(routes.BLUETOOTH);
+        Router.getInstance().navigateTo(routes.PERSONALIZATION);
       });
 
-      assertIsOnlyActivePage(Section.kBluetooth);
-      assertIsOnlyVisiblePage(Section.kBluetooth);
-      assertPageIsFocused(Section.kBluetooth);
+      assertIsOnlyActivePage(Section.kPersonalization);
+      assertIsOnlyVisiblePage(Section.kPersonalization);
+      assertPageIsFocused(Section.kPersonalization);
     });
 
     test('to Subpage should activate parent (top-level) page', async () => {
@@ -230,35 +230,35 @@ suite('<main-page-container> Route Navigation', () => {
           Router.getInstance().navigateTo(routes.DISPLAY);
           await flushTasks();
 
-          // Simulate navigating from subpage to Bluetooth page
+          // Simulate navigating from subpage to Personalization page
           await runAndWaitForContainerShown(() => {
-            Router.getInstance().navigateTo(routes.BLUETOOTH);
+            Router.getInstance().navigateTo(routes.PERSONALIZATION);
           });
 
-          assertIsOnlyActivePage(Section.kBluetooth);
-          assertIsOnlyVisiblePage(Section.kBluetooth);
-          assertPageIsFocused(Section.kBluetooth);
+          assertIsOnlyActivePage(Section.kPersonalization);
+          assertIsOnlyVisiblePage(Section.kPersonalization);
+          assertPageIsFocused(Section.kPersonalization);
         });
 
     test(
         'to different top-level Page via back button should show that page',
         async () => {
-          // Simulate current route is Bluetooth page
-          Router.getInstance().navigateTo(routes.BLUETOOTH);
+          // Simulate current route is Personalization page
+          Router.getInstance().navigateTo(routes.PERSONALIZATION);
           await flushTasks();
 
           // Simulate navigating to Display subpage (under Device page)
           Router.getInstance().navigateTo(routes.DISPLAY);
           await flushTasks();
 
-          // Simulate navigating to Bluetooth page via back navigation
+          // Simulate navigating to Personalization page via back navigation
           await runAndWaitForContainerShown(() => {
             Router.getInstance().navigateToPreviousRoute();
           });
 
-          assertIsOnlyActivePage(Section.kBluetooth);
-          assertIsOnlyVisiblePage(Section.kBluetooth);
-          assertPageIsFocused(Section.kBluetooth);
+          assertIsOnlyActivePage(Section.kPersonalization);
+          assertIsOnlyVisiblePage(Section.kPersonalization);
+          assertPageIsFocused(Section.kPersonalization);
         });
   });
 });
