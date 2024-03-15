@@ -489,9 +489,23 @@ public class AwContentsClientBridge {
 
     @CalledByNativeUnchecked
     private boolean shouldOverrideUrlLoading(
-            String url, boolean hasUserGesture, boolean isRedirect, boolean isOutermostMainFrame) {
+            String url,
+            boolean hasUserGesture,
+            boolean isRedirect,
+            String[] requestHeaderNames,
+            String[] requestHeaderValues,
+            boolean isOutermostMainFrame) {
+        HashMap<String, String> requestHeaders = null;
+        if (requestHeaderNames.length > 0) {
+            requestHeaders = new HashMap<String, String>(requestHeaderNames.length);
+            for (int i = 0; i < requestHeaderNames.length; ++i) {
+                assert !requestHeaders.containsKey(requestHeaderNames[i]);
+                assert !requestHeaderValues[i].isEmpty();
+                requestHeaders.put(requestHeaderNames[i], requestHeaderValues[i]);
+            }
+        }
         return mClient.shouldIgnoreNavigation(
-                mContext, url, isOutermostMainFrame, hasUserGesture, isRedirect);
+                mContext, url, isOutermostMainFrame, hasUserGesture, requestHeaders, isRedirect);
     }
 
     @CalledByNative

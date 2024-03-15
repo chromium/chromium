@@ -218,6 +218,7 @@ public abstract class AwContentsClient {
             String url,
             boolean isOutermostMainFrame,
             boolean hasUserGesture,
+            @Nullable HashMap<String, String> requestHeaders,
             boolean isRedirect) {
         AwContentsClientCallbackHelper.CancelCallbackPoller poller =
                 mCallbackHelper.getCancelCallbackPoller();
@@ -227,7 +228,7 @@ public abstract class AwContentsClient {
             // Note: only GET requests can be overridden, so we hardcode the method.
             AwWebResourceRequest request =
                     new AwWebResourceRequest(
-                            url, isOutermostMainFrame, hasUserGesture, "GET", null);
+                            url, isOutermostMainFrame, hasUserGesture, "GET", requestHeaders);
             request.isRedirect = isRedirect;
             recordBrowsingFallbackHistogram(false);
             return shouldOverrideUrlLoading(request);

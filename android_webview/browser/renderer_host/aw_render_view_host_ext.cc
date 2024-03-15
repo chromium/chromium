@@ -20,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace android_webview {
@@ -190,8 +191,9 @@ void AwRenderViewHostExt::ShouldOverrideUrlLoading(
   AwContentsClientBridge* client =
       AwContentsClientBridge::FromWebContents(web_contents());
   if (client) {
-    if (!client->ShouldOverrideUrlLoading(url, has_user_gesture, is_redirect,
-                                          is_main_frame, &ignore_navigation)) {
+    if (!client->ShouldOverrideUrlLoading(
+            url, has_user_gesture, is_redirect, is_main_frame,
+            net::HttpRequestHeaders(), &ignore_navigation)) {
       // If the shouldOverrideUrlLoading call caused a java exception we should
       // always return immediately here!
       return;

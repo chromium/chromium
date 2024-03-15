@@ -5,7 +5,16 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_NET_HELPERS_H_
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_NET_HELPERS_H_
 
+#include <string>
+#include <vector>
+
 class GURL;
+
+namespace net {
+
+class HttpRequestHeaders;
+
+}  // namespace net
 
 namespace android_webview {
 
@@ -21,6 +30,12 @@ bool ShouldBlockURL(const GURL& url, AwContentsIoThreadClient* client);
 // Determines the desired size for WebView's on-disk HttpCache, measured in
 // Bytes.
 int GetHttpCacheSize();
+
+// Convert `net::HttpRequestHeaders` to a pair of vectors to be passed through
+// JNI.
+void ConvertRequestHeadersToVectors(const net::HttpRequestHeaders& headers,
+                                    std::vector<std::string>* header_names,
+                                    std::vector<std::string>* header_values);
 
 }  // namespace android_webview
 

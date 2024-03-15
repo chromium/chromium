@@ -1116,6 +1116,7 @@ bool ContentBrowserClient::ShouldOverrideUrlLoading(
     bool has_user_gesture,
     bool is_redirect,
     bool is_outermost_main_frame,
+    bool is_prerendering,
     ui::PageTransition transition,
     bool* ignore_navigation) {
   return true;

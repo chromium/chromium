@@ -704,6 +704,7 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
     bool has_user_gesture,
     bool is_redirect,
     bool is_outermost_main_frame,
+    bool is_prerendering,
     ui::PageTransition transition,
     bool* ignore_navigation) {
   *ignore_navigation = false;
@@ -760,9 +761,16 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
     }
   }
 
+  net::HttpRequestHeaders request_headers;
+  if (is_prerendering) {
+    // We pass the `Sec-Purpose` header to tell the embedder that the navigation
+    // is for prerendering, within the existing API surface.
+    request_headers.SetHeader("Sec-Purpose", "prefetch;prerender");
+  }
+
   return client_bridge->ShouldOverrideUrlLoading(
       url, has_user_gesture, is_redirect, is_outermost_main_frame,
-      ignore_navigation);
+      request_headers, ignore_navigation);
 }
 
 bool AwContentBrowserClient::CreateThreadPool(std::string_view name) {

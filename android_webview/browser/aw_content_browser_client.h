@@ -177,6 +177,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
                                 bool has_user_gesture,
                                 bool is_redirect,
                                 bool is_outermost_main_frame,
+                                bool is_prerendering,
                                 ui::PageTransition transition,
                                 bool* ignore_navigation) override;
   bool CreateThreadPool(std::string_view name) override;
