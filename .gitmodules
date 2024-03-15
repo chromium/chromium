@@ -453,6 +453,9 @@
 	path = third_party/perl
 	url = https://chromium.googlesource.com/chromium/deps/perl
 	gclient-condition = checkout_win
+[submodule "third_party/protobuf-javascript/src"]
+	path = third_party/protobuf-javascript/src
+	url = https://chromium.googlesource.com/external/github.com/protocolbuffers/protobuf-javascript
 [submodule "third_party/pthreadpool/src"]
 	path = third_party/pthreadpool/src
 	url = https://chromium.googlesource.com/external/github.com/Maratyszcza/pthreadpool

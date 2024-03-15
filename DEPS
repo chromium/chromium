@@ -1665,6 +1665,9 @@ deps = {
       'condition': 'checkout_win',
   },
 
+  'src/third_party/protobuf-javascript/src':
+    Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + 'e34549db516f8712f678fcd4bc411613b5cc5295',
+
   'src/third_party/pthreadpool/src':
     Var('chromium_git') + '/external/github.com/Maratyszcza/pthreadpool.git' + '@' + '4fe0e1e183925bf8cfa6aae24237e724a96479b8',
 

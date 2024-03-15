@@ -117,6 +117,7 @@
 /pefile
 /ppapi
 /proguard/lib/
+/protobuf-javascript/src
 /protobuf/java/lite/target/
 /psyco_win32
 /pthreads-win32
