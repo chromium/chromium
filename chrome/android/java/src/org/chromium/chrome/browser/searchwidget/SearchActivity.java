@@ -149,8 +149,10 @@ public class SearchActivity extends AsyncInitializationActivity
 
     private View mAnchorView;
 
-    /** Incoming intent request type. See {@link SearchActivityUtils#IntentOrigin}. */
+    // Incoming intent request type. See {@link SearchActivityUtils#IntentOrigin}.
     @IntentOrigin Integer mIntentOrigin;
+    // Incoming intent search type. See {@link SearchActivityUtils#SearchType}.
+    @SearchType Integer mSearchType;
 
     /** Whether the user is now allowed to perform searches. */
     private boolean mIsActivityUsable;
@@ -348,6 +350,12 @@ public class SearchActivity extends AsyncInitializationActivity
     @VisibleForTesting
     /* package */ void handleNewIntent(Intent intent) {
         mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
+        mSearchType = SearchActivityUtils.getIntentSearchType(intent);
+
+        if (mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET) {
+            recordQuickActionSearchType(mSearchType);
+        }
+
         mSearchBoxDataProvider.setIsFromQuickActionSearchWidget(
                 mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
     }
@@ -497,11 +505,7 @@ public class SearchActivity extends AsyncInitializationActivity
         CustomTabsConnection.getInstance().warmup(0);
         VoiceRecognitionHandler voiceRecognitionHandler =
                 mLocationBarCoordinator.getVoiceRecognitionHandler();
-        @SearchType int searchType = SearchActivityUtils.getIntentSearchType(getIntent());
-        if (mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET) {
-            recordQuickActionSearchType(searchType);
-        }
-        mSearchBox.onDeferredStartup(searchType, voiceRecognitionHandler, getWindowAndroid());
+        mSearchBox.onDeferredStartup(mSearchType, voiceRecognitionHandler, getWindowAndroid());
         RecordUserAction.record("SearchWidget.WidgetSelected");
 
         getActivityDelegate().onFinishDeferredInitialization();
@@ -572,12 +576,8 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     private void beginQuery() {
-        @SearchType int searchType = SearchActivityUtils.getIntentSearchType(getIntent());
-        if (mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET) {
-            recordQuickActionSearchType(searchType);
-        }
         mSearchBox.beginQuery(
-                searchType,
+                mSearchType,
                 getOptionalIntentQuery(),
                 mLocationBarCoordinator.getVoiceRecognitionHandler(),
                 getWindowAndroid());
