@@ -59,6 +59,12 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
                        DismissCallback dismiss_callback,
                        MoreDetailsCallback more_details_callback) override;
 
+  void ShowLoadingDialog(const std::string& top_frame_for_display,
+                         const std::string& idp_for_display,
+                         blink::mojom::RpContext rp_context,
+                         blink::mojom::RpMode rp_mode,
+                         DismissCallback dismiss_callback) override;
+
   std::string GetTitle() const override;
 
   void ShowUrl(LinkType link_type, const GURL& url) override;

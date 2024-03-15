@@ -45,7 +45,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     AUTO_REAUTHN = 2,
     SIGN_IN_TO_IDP_STATIC = 3,
     SIGN_IN_ERROR = 4,
-    COUNT = 5
+    LOADING = 5,
+    COUNT = 6
   };
 
   enum class DialogType {
@@ -86,6 +87,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                        blink::mojom::RpMode rp_mode,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
+  void ShowLoadingDialog(const std::string& top_frame_etld_plus_one,
+                         const std::string& idp_etld_plus_one,
+                         blink::mojom::RpContext rp_context,
+                         blink::mojom::RpMode rp_mode) override;
   void OnAccountsDisplayed() override;
 
   void ShowUrl(LinkType link_type, const GURL& url) override;
@@ -184,7 +189,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
     // Shown when an error has occurred during the user's sign-in attempt and
     // IDP has not provided any details on the failure.
-    SIGN_IN_ERROR
+    SIGN_IN_ERROR,
+
+    // Shown after the user has triggered a button flow and while the accounts
+    // are being fetched.
+    LOADING
   };
 
   // This enum describes the outcome of the mismatch dialog and is used for

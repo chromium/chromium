@@ -178,6 +178,14 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       DismissCallback dismiss_callback,
       MoreDetailsCallback more_details_callback);
 
+  // Shows a loading UI when the user triggers a button flow and while waiting
+  // for their accounts to be fetched.
+  virtual void ShowLoadingDialog(const std::string& top_frame_for_display,
+                                 const std::string& idp_for_display,
+                                 blink::mojom::RpContext rp_context,
+                                 blink::mojom::RpMode rp_mode,
+                                 DismissCallback dismiss_callback);
+
   // Only to be called after a dialog is shown.
   virtual std::string GetTitle() const;
   virtual std::optional<std::string> GetSubtitle() const;

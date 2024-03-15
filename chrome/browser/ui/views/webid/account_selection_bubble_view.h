@@ -79,6 +79,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override;
 
+  void ShowLoadingDialog() override;
+
   void CloseDialog() override;
 
   std::string GetDialogTitle() const override;

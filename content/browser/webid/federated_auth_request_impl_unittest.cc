@@ -306,6 +306,13 @@ enum class ErrorDialogAction {
   kMoreDetails,
 };
 
+// Action on loading dialog taken by TestDialogController.
+// Does not indicate a test expectation.
+enum class LoadingDialogAction {
+  kNone,
+  kClose,
+};
+
 struct MockConfiguration {
   const char* token;
   base::flat_map<std::string, MockIdpInfo> idp_info;
@@ -314,6 +321,7 @@ struct MockConfiguration {
   AccountsDialogAction accounts_dialog_action;
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action;
   ErrorDialogAction error_dialog_action;
+  LoadingDialogAction loading_dialog_action;
   std::optional<GURL> continue_on;
   MediationRequirement mediation_requirement = MediationRequirement::kOptional;
   std::optional<TokenError> token_error;
@@ -380,7 +388,8 @@ static const MockConfiguration kConfigurationValid{
     /*delay_token_response=*/false,
     AccountsDialogAction::kSelectFirstAccount,
     IdpSigninStatusMismatchDialogAction::kNone,
-    ErrorDialogAction::kClose};
+    ErrorDialogAction::kClose,
+    LoadingDialogAction::kNone};
 
 static const RequestExpectations kExpectationSuccess{
     RequestTokenStatus::kSuccess, FederatedAuthRequestResult::kSuccess,
@@ -403,7 +412,8 @@ MockConfiguration kConfigurationMultiIdpValid{
     false /* delay_token_response */,
     AccountsDialogAction::kSelectFirstAccount,
     IdpSigninStatusMismatchDialogAction::kNone,
-    ErrorDialogAction::kClose};
+    ErrorDialogAction::kClose,
+    LoadingDialogAction::kNone};
 
 url::Origin OriginFromString(const std::string& url_string) {
   return url::Origin::Create(GURL(url_string));
@@ -649,6 +659,8 @@ class TestDialogController
     // State related to ShowErrorDialog().
     bool did_show_error_dialog{false};
     std::optional<TokenError> token_error;
+    // State related to ShowLoadingDialog().
+    bool did_show_loading_dialog{false};
     // List of IDP strings for which a mismatch is shown in a test.
     std::vector<std::string> displayed_mismatch_idps;
   };
@@ -657,7 +669,8 @@ class TestDialogController
       : accounts_dialog_action_(config.accounts_dialog_action),
         idp_signin_status_mismatch_dialog_action_(
             config.idp_signin_status_mismatch_dialog_action),
-        error_dialog_action_(config.error_dialog_action) {}
+        error_dialog_action_(config.error_dialog_action),
+        loading_dialog_action_(config.loading_dialog_action) {}
 
   ~TestDialogController() override = default;
   TestDialogController(TestDialogController&) = delete;
@@ -805,6 +818,28 @@ class TestDialogController
     }
   }
 
+  void ShowLoadingDialog(const std::string& top_frame_for_display,
+                         const std::string& idp_for_display,
+                         blink::mojom::RpContext rp_context,
+                         blink::mojom::RpMode rp_mode,
+                         IdentityRequestDialogController::DismissCallback
+                             dismiss_callback) override {
+    if (!state_) {
+      return;
+    }
+
+    state_->did_show_loading_dialog = true;
+    switch (loading_dialog_action_) {
+      case LoadingDialogAction::kClose:
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(dismiss_callback),
+                                      DismissReason::kCloseButton));
+        break;
+      case LoadingDialogAction::kNone:
+        break;
+    }
+  }
+
   base::WeakPtr<TestDialogController> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -814,6 +849,7 @@ class TestDialogController
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action_{
       IdpSigninStatusMismatchDialogAction::kNone};
   ErrorDialogAction error_dialog_action_{ErrorDialogAction::kNone};
+  LoadingDialogAction loading_dialog_action_{LoadingDialogAction::kNone};
 
   // Pointer so that the state can be queried after FederatedAuthRequestImpl
   // destroys TestDialogController.
@@ -5351,6 +5387,35 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowSkipsMismatchUI) {
 
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
+// Test that button flow shows the loading dialog.
+TEST_F(FederatedAuthRequestImplTest, ButtonFlowShowsLoadingUI) {
+  ExpectSuccessfulButtonFlow();
+  EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
+}
+
+// Test dismissing a button flow through the loading UI.
+TEST_F(FederatedAuthRequestImplTest, ButtonFlowDismissLoadingUI) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmButtonMode);
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kButton;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.loading_dialog_action = LoadingDialogAction::kClose;
+
+  RunAuthTest(parameters, expectations, configuration);
+  EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
 }
 
 TEST_F(FederatedAuthRequestImplTest, CloseModalDialogView) {

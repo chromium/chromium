@@ -247,6 +247,14 @@ void AccountSelectionViewAndroid::ShowErrorDialog(
       ConvertToJavaIdentityCredentialTokenError(env, error));
 }
 
+void AccountSelectionViewAndroid::ShowLoadingDialog(
+    const std::string& top_frame_for_display,
+    const std::string& idp_for_display,
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode) {
+  // TODO(crbug.com/327273595): Prototype button flow on Android.
+}
+
 std::string AccountSelectionViewAndroid::GetTitle() const {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> title =

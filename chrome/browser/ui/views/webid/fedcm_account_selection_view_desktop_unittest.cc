@@ -44,7 +44,8 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
     kVerifying,
     kFailure,
     kError,
-    kRequestPermission
+    kRequestPermission,
+    kLoading
   };
 
   explicit TestAccountSelectionView(views::Widget* dialog_widget)
@@ -107,6 +108,11 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
       const IdentityProviderDisplayData& idp_display_data) override {
     sheet_type_ = SheetType::kRequestPermission;
     account_ids_ = {account.id};
+  }
+
+  void ShowLoadingDialog() override {
+    sheet_type_ = SheetType::kLoading;
+    account_ids_ = {};
   }
 
   std::string GetDialogTitle() const override { return std::string(); }
@@ -311,6 +317,18 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne, rp_context,
         rp_mode, content::IdentityProviderMetadata(), /*error=*/std::nullopt);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kError,
+              account_selection_view_->sheet_type_);
+    return controller;
+  }
+
+  std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowLoadingDialog(
+      blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn,
+      blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kButton) {
+    auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+        delegate_.get(), account_selection_view_.get());
+    controller->ShowLoadingDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
+                                  rp_context, rp_mode);
+    EXPECT_EQ(TestAccountSelectionView::SheetType::kLoading,
               account_selection_view_->sheet_type_);
     return controller;
   }
@@ -1548,4 +1566,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
+}
+
+// Tests that the user can dismiss the loading modal.
+TEST_F(FedCmAccountSelectionViewDesktopTest, DismissLoadingModal) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowLoadingDialog();
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+  observer->OnCloseButtonClicked(CreateMouseEvent());
 }

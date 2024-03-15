@@ -111,6 +111,11 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog_->ShowVerifyingSheet(account, idp_data, kTitleSignIn);
   }
 
+  void CreateLoadingDialog() {
+    CreateAccountSelectionModal();
+    dialog_->ShowLoadingDialog();
+  }
+
   void PerformHeaderChecks(views::View* header,
                            const std::u16string& expected_title,
                            const std::u16string& expected_body) {
@@ -309,6 +314,37 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     }
   }
 
+  void TestLoadingDialog(const std::u16string& expected_title,
+                         const std::u16string& expected_body = u"") {
+    CreateLoadingDialog();
+    // Order: Progress bar, header, placeholder account chooser, button row
+    std::vector<std::string> expected_class_names = {"ProgressBar", "View",
+                                                     "View", "View"};
+    EXPECT_THAT(GetChildClassNames(dialog()),
+                testing::ElementsAreArray(expected_class_names));
+
+    PerformHeaderChecks(dialog()->children()[1], expected_title, expected_body);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>>
+        placeholder_account_chooser = dialog()->children()[2]->children();
+    // Order: Placeholder account image, placeholder text column
+    ASSERT_EQ(placeholder_account_chooser.size(), 2u);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>>
+        placeholder_text_column = placeholder_account_chooser[1]->children();
+    // Order: Placeholder account name, placeholder account email
+    ASSERT_EQ(placeholder_text_column.size(), 2u);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> button_row =
+        dialog()->children()[3]->children();
+    for (const auto& button : button_row) {
+      auto* text_button = static_cast<views::MdTextButton*>(button);
+      ASSERT_TRUE(!text_button->GetEnabled() ||
+                  text_button->GetText() ==
+                      l10n_util::GetStringUTF16(IDS_CANCEL));
+    }
+  }
+
   AccountSelectionModalView* dialog() { return dialog_; }
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
@@ -336,6 +372,11 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleAccounts) {
 // Tests that the request permission dialog is rendered correctly.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, RequestPermission) {
   TestRequestPermission(kTitleRequestPermission);
+}
+
+// Tests that the loading dialog is rendered correctly.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, Loading) {
+  TestLoadingDialog(kTitleSignIn, kBodySignIn);
 }
 
 // Tests that the verifying sheet is rendered correctly, when it is shown after

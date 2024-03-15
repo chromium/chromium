@@ -372,6 +372,53 @@ void FedCmAccountSelectionView::ShowErrorDialog(
   // associated web contents are hidden.
 }
 
+void FedCmAccountSelectionView::ShowLoadingDialog(
+    const std::string& top_frame_etld_plus_one,
+    const std::string& idp_etld_plus_one,
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode) {
+  CHECK(rp_mode == blink::mojom::RpMode::kButton);
+
+  state_ = State::LOADING;
+  notify_delegate_of_dismiss_ = true;
+
+  bool create_view = !account_selection_view_;
+  if (create_view) {
+    account_selection_view_ = CreateAccountSelectionView(
+        base::UTF8ToUTF16(top_frame_etld_plus_one),
+        /*iframe_etld_plus_one=*/std::nullopt,
+        base::UTF8ToUTF16(idp_etld_plus_one), rp_context, rp_mode,
+        /*has_modal_support=*/true);
+
+    if (!account_selection_view_) {
+      delegate_->OnDismiss(DismissReason::kOther);
+      return;
+    }
+  }
+
+  account_selection_view_->ShowLoadingDialog();
+
+  if (!GetDialogWidget()) {
+    delegate_->OnDismiss(DismissReason::kOther);
+    return;
+  }
+
+  // Initialize InputEventActivationProtector to handle potentially unintended
+  // input events. Do not override `input_protector_` set by
+  // SetInputEventActivationProtectorForTesting().
+  if (!input_protector_) {
+    input_protector_ = std::make_unique<views::InputEventActivationProtector>();
+  }
+
+  if (create_view && is_web_contents_visible_) {
+    GetDialogWidget()->Show();
+    input_protector_->VisibilityChanged(true);
+  }
+  // Else:
+  // The dialog is not guaranteed to be shown. The dialog will be hidden if the
+  // associated web contents are hidden.
+}
+
 void FedCmAccountSelectionView::ShowUrl(LinkType link_type, const GURL& url) {
   Browser* browser = chrome::FindBrowserWithTab(delegate_->GetWebContents());
   TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -709,6 +756,9 @@ FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
 
     case State::SIGN_IN_ERROR:
       return SheetType::SIGN_IN_ERROR;
+
+    case State::LOADING:
+      return SheetType::LOADING;
 
     default:
       NOTREACHED_NORETURN();

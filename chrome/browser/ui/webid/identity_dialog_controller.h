@@ -67,6 +67,11 @@ class IdentityDialogController
                        const std::optional<TokenError>& error,
                        DismissCallback dismiss_callback,
                        MoreDetailsCallback more_details_callback) override;
+  void ShowLoadingDialog(const std::string& top_frame_for_display,
+                         const std::string& idp_for_display,
+                         blink::mojom::RpContext rp_context,
+                         blink::mojom::RpMode rp_mode,
+                         DismissCallback dismiss_callback) override;
 
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;

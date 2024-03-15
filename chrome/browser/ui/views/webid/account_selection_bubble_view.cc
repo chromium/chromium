@@ -508,6 +508,11 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   PreferredSizeChanged();
 }
 
+void AccountSelectionBubbleView::ShowLoadingDialog() {
+  NOTREACHED()
+      << "ShowLoadingDialog is only implemented for AccountSelectionModalView";
+}
+
 void AccountSelectionBubbleView::ShowRequestPermissionDialog(
     const std::u16string& top_frame_for_display,
     const content::IdentityRequestAccount& account,

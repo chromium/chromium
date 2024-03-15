@@ -44,6 +44,11 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
                        blink::mojom::RpMode rp_mode,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
+  void ShowLoadingDialog(const std::string& top_frame_for_display,
+                         const std::string& idp_for_display,
+                         blink::mojom::RpContext rp_context,
+                         blink::mojom::RpMode rp_mode) override;
+
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
   void ShowUrl(LinkType link_type, const GURL& url) override;

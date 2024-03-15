@@ -957,6 +957,22 @@ void FederatedAuthRequestImpl::RequestToken(
         /*token_error=*/std::nullopt, should_delay_callback);
     return;
   }
+
+  // Show loading dialog while fetching endpoints if it is a button flow.
+  if (rp_mode_ == RpMode::kButton) {
+    CHECK(idp_order_.size() > 0);
+    // TODO(crbug.com/1307709): Handle button mode with multiple IdP.
+    const GURL& idp_config_url = idp_order_[0];
+    auto get_info_it = token_request_get_infos_.find(idp_config_url);
+    CHECK(get_info_it != token_request_get_infos_.end());
+    request_dialog_controller_->ShowLoadingDialog(
+        GetTopFrameOriginForDisplay(GetEmbeddingOrigin()),
+        FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
+        get_info_it->second.rp_context, rp_mode_,
+        base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   CHECK(!unique_idps.empty());
   FetchEndpointsForIdps(std::move(unique_idps), /*for_idp_signin=*/false);
 }

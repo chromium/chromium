@@ -74,6 +74,8 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override;
 
+  void ShowLoadingDialog() override;
+
   void CloseDialog() override;
 
   std::string GetDialogTitle() const override;
@@ -83,6 +85,12 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // Returns a View for header of an account chooser. It contains text to prompt
   // the user to sign in to an RP with an account from an IDP.
   std::unique_ptr<views::View> CreateAccountChooserHeader(
+      const content::IdentityProviderMetadata& idp_metadata);
+
+  // Returns a View for header of a request permission dialog. It contains text
+  // to prompt the user to confirm a sign in to an RP with an account from an
+  // IDP.
+  std::unique_ptr<views::View> CreateRequestPermissionHeader(
       const content::IdentityProviderMetadata& idp_metadata);
 
   // Returns a View for single account chooser. It contains a row of account
@@ -100,11 +108,8 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
       const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
 
-  // Returns a View for header of a request permission dialog. It contains text
-  // to prompt the user to confirm a sign in to an RP with an account from an
-  // IDP.
-  std::unique_ptr<views::View> CreateRequestPermissionHeader(
-      const content::IdentityProviderMetadata& idp_metadata);
+  // Returns a View for an account row that acts as a placeholder.
+  std::unique_ptr<views::View> CreatePlaceholderAccountRow();
 
   // Returns a View for a row of custom buttons. A cancel button is always
   // shown, a continue button is shown if `continue_callback` is specified and a
@@ -113,6 +118,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   std::unique_ptr<views::View> CreateButtonRow(
       std::optional<views::Button::PressedCallback> continue_callback,
       std::optional<views::Button::PressedCallback> use_other_account_callback);
+
+  // Adds a progress bar at the top of the modal dialog.
+  void AddProgressBar();
 
   // Resizes the modal dialog to the size of its contents.
   void UpdateModalPositionAndTitle();

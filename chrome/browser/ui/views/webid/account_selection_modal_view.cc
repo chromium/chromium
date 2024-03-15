@@ -87,6 +87,29 @@ AccountSelectionModalView::AccountSelectionModalView(
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
 
+void AccountSelectionModalView::AddProgressBar() {
+  // Change top margin of header to accommodate progress bar.
+  CHECK(header_view_);
+  constexpr int kVerifyingTopMargin = 16;
+  static_cast<views::BoxLayout*>(header_view_->GetLayoutManager())
+      ->set_inside_border_insets(gfx::Insets::TLBR(
+          /*top=*/kVerifyingTopMargin, /*left=*/kDialogMargin, /*bottom=*/0,
+          /*right=*/kDialogMargin));
+
+  // Add progress bar.
+  views::ProgressBar* progress_bar =
+      AddChildViewAt(std::make_unique<views::ProgressBar>(), 0);
+  progress_bar->SetPreferredHeight(kModalProgressBarHeight);
+  progress_bar->SetPreferredCornerRadii(std::nullopt);
+
+  // Use an infinite animation: SetValue(-1).
+  progress_bar->SetValue(-1);
+  progress_bar->SetBackgroundColor(SK_ColorLTGRAY);
+  progress_bar->SetPreferredSize(
+      gfx::Size(kDialogWidth, kModalProgressBarHeight));
+  progress_bar->SizeToPreferredSize();
+}
+
 void AccountSelectionModalView::UpdateModalPositionAndTitle() {
   constrained_window::UpdateWebContentsModalDialogPosition(
       GetWidget(),
@@ -119,6 +142,58 @@ void AccountSelectionModalView::InitDialogWidget() {
   }
 
   dialog_widget_ = widget->GetWeakPtr();
+}
+
+std::unique_ptr<views::View>
+AccountSelectionModalView::CreatePlaceholderAccountRow() {
+  std::unique_ptr<views::View> placeholder_account_icon =
+      std::make_unique<views::View>();
+  placeholder_account_icon->SetPreferredSize(
+      gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+  placeholder_account_icon->SizeToPreferredSize();
+  placeholder_account_icon->SetBackground(
+      views::CreateRoundedRectBackground(SK_ColorLTGRAY, kDesiredAvatarSize));
+
+  auto row = std::make_unique<views::View>();
+  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets::VH(/*vertical=*/kVerticalSpacing,
+                      /*horizontal=*/kDialogMargin),
+      kLeftRightPadding));
+  row->AddChildView(std::move(placeholder_account_icon));
+
+  constexpr int kPlaceholderVerticalSpacing = 2;
+  views::View* const text_column =
+      row->AddChildView(std::make_unique<views::View>());
+  text_column->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::VH(/*vertical=*/kPlaceholderVerticalSpacing,
+                                  /*horizontal=*/0));
+
+  constexpr int kPlaceholderRadius = 2;
+  constexpr int kPlaceholderTextHeight = 10;
+  constexpr int kPlaceholderAccountNameWidth = 80;
+  constexpr int kPlaceholderAccountEmailWidth = 130;
+  views::View* placeholder_account_name =
+      text_column->AddChildView(std::make_unique<views::View>());
+  placeholder_account_name->SetPreferredSize(
+      gfx::Size(kPlaceholderAccountNameWidth, kPlaceholderTextHeight));
+  placeholder_account_name->SizeToPreferredSize();
+  placeholder_account_name->SetBackground(
+      views::CreateRoundedRectBackground(SK_ColorLTGRAY, kPlaceholderRadius));
+
+  views::View* placeholder_account_email =
+      text_column->AddChildView(std::make_unique<views::View>());
+  placeholder_account_email->SetPreferredSize(
+      gfx::Size(kPlaceholderAccountEmailWidth, kPlaceholderTextHeight));
+  placeholder_account_email->SizeToPreferredSize();
+  placeholder_account_email->SetBackground(
+      views::CreateRoundedRectBackground(SK_ColorLTGRAY, kPlaceholderRadius));
+
+  return row;
 }
 
 std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
@@ -187,7 +262,8 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
 
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreateAccountChooserHeader(
-    const content::IdentityProviderMetadata& idp_metadata) {
+    const content::IdentityProviderMetadata& idp_metadata =
+        content::IdentityProviderMetadata()) {
   std::unique_ptr<views::View> header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -289,25 +365,7 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   // This might change if we choose to integrate auto re-authn with button mode.
   CHECK(dialog_widget_);
 
-  // Change top margin of header to accommodate progress bar.
-  CHECK(header_view_);
-  constexpr int kVerifyingTopMargin = 16;
-  static_cast<views::BoxLayout*>(header_view_->GetLayoutManager())
-      ->set_inside_border_insets(gfx::Insets::TLBR(
-          /*top=*/kVerifyingTopMargin, /*left=*/kDialogMargin, /*bottom=*/0,
-          /*right=*/kDialogMargin));
-
-  // Show progress bar.
-  views::ProgressBar* progress_bar =
-      AddChildViewAt(std::make_unique<views::ProgressBar>(), 0);
-  progress_bar->SetPreferredHeight(kModalProgressBarHeight);
-  progress_bar->SetPreferredCornerRadii(std::nullopt);
-  // Use an infinite animation: SetValue(-1).
-  progress_bar->SetValue(-1);
-  progress_bar->SetBackgroundColor(SK_ColorLTGRAY);
-  progress_bar->SetPreferredSize(
-      gfx::Size(kDialogWidth, kModalProgressBarHeight));
-  progress_bar->SizeToPreferredSize();
+  AddProgressBar();
 
   // Disable account chooser.
   CHECK(account_chooser_);
@@ -398,6 +456,17 @@ void AccountSelectionModalView::ShowErrorDialog(
     const std::optional<TokenError>& error) {
   NOTREACHED()
       << "ShowErrorDialog is only implemented for AccountSelectionBubbleView";
+}
+
+void AccountSelectionModalView::ShowLoadingDialog() {
+  header_view_ = AddChildView(CreateAccountChooserHeader());
+  AddProgressBar();
+  AddChildView(CreatePlaceholderAccountRow());
+  button_row_ = AddChildView(
+      CreateButtonRow(/*continue_callback=*/std::nullopt,
+                      /*use_other_account_callback=*/std::nullopt));
+
+  InitDialogWidget();
 }
 
 std::unique_ptr<views::View>

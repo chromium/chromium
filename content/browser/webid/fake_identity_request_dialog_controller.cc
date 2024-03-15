@@ -100,6 +100,15 @@ void FakeIdentityRequestDialogController::ShowErrorDialog(
   }
 }
 
+void FakeIdentityRequestDialogController::ShowLoadingDialog(
+    const std::string& top_frame_for_display,
+    const std::string& idp_for_display,
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode,
+    DismissCallback dismiss_callback) {
+  title_ = "Loading";
+}
+
 std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;
 }

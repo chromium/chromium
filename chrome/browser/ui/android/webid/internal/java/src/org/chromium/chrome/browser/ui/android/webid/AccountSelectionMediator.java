@@ -62,10 +62,10 @@ import java.util.List;
  */
 class AccountSelectionMediator {
     /**
-     * The following integers are used for histograms. Do not remove or modify existing values,
-     * but you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in
-     * sync with SheetType in chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h
-     * as well as with FedCmSheetType in tools/metrics/histograms/enums.xml.
+     * The following integers are used for histograms. Do not remove or modify existing values, but
+     * you may add new values at the end and increase NUM_ENTRIES. This enum should be kept in sync
+     * with SheetType in chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h as
+     * well as with FedCmSheetType in tools/metrics/histograms/enums.xml.
      */
     @IntDef({
         SheetType.ACCOUNT_SELECTION,
@@ -73,6 +73,7 @@ class AccountSelectionMediator {
         SheetType.AUTO_REAUTHN,
         SheetType.SIGN_IN_TO_IDP_STATIC,
         SheetType.SIGN_IN_ERROR,
+        SheetType.LOADING,
         SheetType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -82,8 +83,9 @@ class AccountSelectionMediator {
         int AUTO_REAUTHN = 2;
         int SIGN_IN_TO_IDP_STATIC = 3;
         int SIGN_IN_ERROR = 4;
+        int LOADING = 5;
 
-        int NUM_ENTRIES = 5;
+        int NUM_ENTRIES = 6;
     }
 
     private boolean mRegisteredObservers;

@@ -249,6 +249,9 @@ class AccountSelectionViewBase {
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) = 0;
 
+  // Updates the FedCM dialog to show the "loading" sheet.
+  virtual void ShowLoadingDialog() = 0;
+
   // Closes the dialog, without dismissing the FedCM API.
   virtual void CloseDialog() = 0;
 

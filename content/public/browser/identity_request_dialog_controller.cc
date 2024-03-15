@@ -100,6 +100,17 @@ void IdentityRequestDialogController::ShowErrorDialog(
   }
 }
 
+void IdentityRequestDialogController::ShowLoadingDialog(
+    const std::string& top_frame_for_display,
+    const std::string& idp_for_display,
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode,
+    DismissCallback dismiss_callback) {
+  if (!is_interception_enabled_) {
+    std::move(dismiss_callback).Run(DismissReason::kOther);
+  }
+}
+
 std::string IdentityRequestDialogController::GetTitle() const {
   return std::string();
 }

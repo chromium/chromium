@@ -54,6 +54,12 @@ class MockIdentityRequestDialogController
                     const std::optional<IdentityCredentialTokenError>&,
                     DismissCallback,
                     MoreDetailsCallback));
+  MOCK_METHOD5(ShowLoadingDialog,
+               void(const std::string&,
+                    const std::string&,
+                    blink::mojom::RpContext rp_context,
+                    blink::mojom::RpMode rp_mode,
+                    DismissCallback));
   MOCK_METHOD2(ShowModalDialog, WebContents*(const GURL&, DismissCallback));
   MOCK_METHOD0(CloseModalDialog, void());
 

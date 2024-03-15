@@ -93,6 +93,11 @@ class AccountSelectionView {
       const content::IdentityProviderMetadata& idp_metadata,
       const std::optional<TokenError>& error) = 0;
 
+  virtual void ShowLoadingDialog(const std::string& top_frame_for_display,
+                                 const std::string& idp_for_display,
+                                 blink::mojom::RpContext rp_context,
+                                 blink::mojom::RpMode rp_mode) = 0;
+
   virtual std::string GetTitle() const = 0;
   virtual std::optional<std::string> GetSubtitle() const = 0;
 

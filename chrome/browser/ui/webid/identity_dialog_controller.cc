@@ -92,6 +92,21 @@ void IdentityDialogController::ShowErrorDialog(
                                  idp_metadata, error);
 }
 
+void IdentityDialogController::ShowLoadingDialog(
+    const std::string& top_frame_for_display,
+    const std::string& idp_for_display,
+    blink::mojom::RpContext rp_context,
+    blink::mojom::RpMode rp_mode,
+    DismissCallback dismiss_callback) {
+  on_dismiss_ = std::move(dismiss_callback);
+  if (!account_view_) {
+    account_view_ = AccountSelectionView::Create(this);
+  }
+
+  account_view_->ShowLoadingDialog(top_frame_for_display, idp_for_display,
+                                   rp_context, rp_mode);
+}
+
 void IdentityDialogController::OnLoginToIdP(const GURL& idp_config_url,
                                             const GURL& idp_login_url) {
   std::move(on_login_).Run(idp_config_url, idp_login_url);
