@@ -24,7 +24,10 @@ import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -38,7 +41,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -46,6 +48,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -86,6 +89,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
 
     private final @MessageType int mType;
     private final Activity mActivity;
+    private final Profile mProfile;
     private final IdentityManager mIdentityManager;
     private final SyncService mSyncService;
     private final MessageDispatcher mMessageDispatcher;
@@ -97,29 +101,28 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     private static final String TAG = "SyncErrorMessage";
 
     /**
-     * Creates a {@link SyncErrorMessage} in the window of |dispatcher|, or results in a no-op
-     * if preconditions are not satisfied. The conditions are:
-     * a) there is an ongoing sync error and it belongs to the subset defined by
-     *    {@link MessageType}.
-     * b) a minimal time interval has passed since the UI was last shown.
-     * c) there is no other instance of the UI being shown on this window.
-     * d) there is a valid {@link MessageDispatcher} in this window.
+     * Creates a {@link SyncErrorMessage} in the window of |dispatcher|, or results in a no-op if
+     * preconditions are not satisfied. The conditions are:
+     *
+     * <p>a) there is an ongoing sync error and it belongs to the subset defined by {@link
+     * MessageType}.
+     *
+     * <p>b) a minimal time interval has passed since the UI was last shown.
+     *
+     * <p>c) there is no other instance of the UI being shown on this window.
+     *
+     * <p>d) there is a valid {@link MessageDispatcher} in this window.
      *
      * @param windowAndroid The {@link WindowAndroid} to show and dismiss message UIs.
-     * @param identityManager The {@link IdentityManager}.
-     * @param syncService The {@link SyncService}.
+     * @param profile The {@link Profile}.
      */
-    public static void maybeShowMessageUi(
-            WindowAndroid windowAndroid,
-            IdentityManager identityManager,
-            SyncService syncService,
-            PrefService prefService) {
+    public static void maybeShowMessageUi(WindowAndroid windowAndroid, Profile profile) {
         try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
-            if (getMessageType(getError(syncService)) == MessageType.NOT_SHOWN) {
+            if (getMessageType(getError(profile)) == MessageType.NOT_SHOWN) {
                 return;
             }
 
-            if (!SyncErrorMessageImpressionTracker.canShowNow(prefService)) {
+            if (!SyncErrorMessageImpressionTracker.canShowNow(UserPrefs.get(profile))) {
                 return;
             }
 
@@ -137,25 +140,18 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
             }
             SYNC_ERROR_MESSAGE_KEY.attachToHost(
                     host,
-                    new SyncErrorMessage(
-                            dispatcher,
-                            windowAndroid.getActivity().get(),
-                            identityManager,
-                            syncService));
+                    new SyncErrorMessage(dispatcher, windowAndroid.getActivity().get(), profile));
         }
     }
 
-    private SyncErrorMessage(
-            MessageDispatcher dispatcher,
-            Activity activity,
-            IdentityManager identityManager,
-            SyncService syncService) {
-        @SyncError int error = getError(syncService);
+    private SyncErrorMessage(MessageDispatcher dispatcher, Activity activity, Profile profile) {
+        @SyncError int error = getError(profile);
 
         mType = getMessageType(error);
         mActivity = activity;
-        mIdentityManager = identityManager;
-        mSyncService = syncService;
+        mProfile = profile;
+        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
+        mSyncService = SyncServiceFactory.getForProfile(mProfile);
         mSyncService.addSyncStateChangedListener(this);
 
         String errorMessage = getMessage(activity, error);
@@ -190,7 +186,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     @Override
     public void syncStateChanged() {
         // If the error disappeared or changed type in the meantime, dismiss the UI.
-        if (mType != getMessageType(getError(mSyncService))) {
+        if (mType != getMessageType(getError(mProfile))) {
             mMessageDispatcher.dismissMessage(mModel, DismissReason.UNKNOWN);
             assert !SYNC_ERROR_MESSAGE_KEY.isAttachedToAnyHost(this)
                     : "Message UI should have been dismissed";
@@ -457,14 +453,15 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
                         CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
     }
 
-    private static @SyncError int getError(SyncService syncService) {
+    private static @SyncError int getError(Profile profile) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         // Check if there is an identity error.
         if (!syncService.hasSyncConsent()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
             return SyncSettingsUtils.getIdentityError(syncService);
         }
-        return SyncSettingsUtils.getSyncError(syncService);
+        return SyncSettingsUtils.getSyncError(profile);
     }
 
     @VisibleForTesting

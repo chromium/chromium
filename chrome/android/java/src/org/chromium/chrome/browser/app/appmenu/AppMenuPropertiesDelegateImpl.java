@@ -965,7 +965,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             // syncing users).
             return SyncSettingsUtils.getIdentityError(syncService)
                             != SyncSettingsUtils.SyncError.NO_ERROR
-                    || SyncSettingsUtils.getSyncError(syncService)
+                    || SyncSettingsUtils.getSyncError(profile)
                             != SyncSettingsUtils.SyncError.NO_ERROR;
         }
         return false;
@@ -992,7 +992,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
             if (SyncSettingsUtils.getIdentityError(syncService)
                             != SyncSettingsUtils.SyncError.NO_ERROR
-                    || SyncSettingsUtils.getSyncError(syncService)
+                    || SyncSettingsUtils.getSyncError(profile)
                             != SyncSettingsUtils.SyncError.NO_ERROR) {
                 return mContext.getResources().getString(R.string.menu_settings_account_error);
             }

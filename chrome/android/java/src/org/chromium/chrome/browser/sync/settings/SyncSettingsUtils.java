@@ -31,7 +31,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -55,6 +57,7 @@ public class SyncSettingsUtils {
         int EMAIL = 1;
     }
 
+    // Keep in sync with SyncErrorReason variant in sync/histograms.xml and signin/histograms.xml.
     @IntDef({
         SyncError.NO_ERROR,
         SyncError.AUTH_ERROR,
@@ -112,7 +115,8 @@ public class SyncSettingsUtils {
     }
 
     /** Returns the type of the sync error, for syncing users. */
-    public static @SyncError int getSyncError(SyncService syncService) {
+    public static @SyncError int getSyncError(Profile profile) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService == null) {
             return SyncError.NO_ERROR;
         }
@@ -218,7 +222,8 @@ public class SyncSettingsUtils {
     }
 
     /** Return a short summary of the current sync status. */
-    public static String getSyncStatusSummary(Context context, SyncService syncService) {
+    public static String getSyncStatusSummary(Context context, Profile profile) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService == null) {
             return context.getString(R.string.sync_off);
         }
@@ -302,7 +307,8 @@ public class SyncSettingsUtils {
     }
 
     /** Returns an icon that represents the current sync state. */
-    public static @Nullable Drawable getSyncStatusIcon(Context context, SyncService syncService) {
+    public static @Nullable Drawable getSyncStatusIcon(Context context, Profile profile) {
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         if (syncService == null
                 || !syncService.hasSyncConsent()
                 || syncService.getSelectedTypes().isEmpty()
@@ -310,7 +316,7 @@ public class SyncSettingsUtils {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
 
-        if (getSyncError(syncService) != SyncError.NO_ERROR) {
+        if (getSyncError(profile) != SyncError.NO_ERROR) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_error_48dp);
         }
 

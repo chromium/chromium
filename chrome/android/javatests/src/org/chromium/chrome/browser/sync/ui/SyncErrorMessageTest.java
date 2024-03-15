@@ -199,7 +199,8 @@ public class SyncErrorMessageTest {
                         () -> {
                             mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
                                     SyncFirstSetupCompleteSource.BASIC_FLOW);
-                            return SyncSettingsUtils.getSyncError(mSyncTestRule.getSyncService());
+                            return SyncSettingsUtils.getSyncError(
+                                    mSyncTestRule.getProfile(/* incognito= */ false));
                         });
 
         Assert.assertEquals(MessageType.NOT_SHOWN, SyncErrorMessage.getMessageType(syncError));

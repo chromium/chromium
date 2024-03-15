@@ -351,14 +351,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                 .getPrimaryAccountInfo(ConsentLevel.SYNC)
                         != null;
 
-        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
+        mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity(), getProfile()));
+        mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity(), getProfile()));
 
-        mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity(), syncService));
-        mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity(), syncService));
         mManageSync.setOnPreferenceClickListener(
                 pref -> {
                     Context context = getContext();
-                    if (syncService.isSyncDisabledByEnterprisePolicy()) {
+                    if (SyncServiceFactory.getForProfile(getProfile())
+                            .isSyncDisabledByEnterprisePolicy()) {
                         SyncSettingsUtils.showSyncDisabledByAdministratorToast(context);
                     } else if (isSyncConsentAvailable) {
                         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();

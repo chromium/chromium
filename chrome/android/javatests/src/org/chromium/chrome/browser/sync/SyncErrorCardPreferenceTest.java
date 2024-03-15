@@ -99,8 +99,7 @@ public class SyncErrorCardPreferenceTest {
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () ->
                                 SyncSettingsUtils.getSyncError(
-                                        SyncServiceFactory.getForProfile(
-                                                ProfileManager.getLastUsedRegularProfile())));
+                                        ProfileManager.getLastUsedRegularProfile()));
         Assert.assertEquals(
                 "SyncError did not match expected value", expectedSyncError, currentSyncError);
     }

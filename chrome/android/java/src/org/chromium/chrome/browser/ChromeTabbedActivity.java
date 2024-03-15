@@ -170,10 +170,8 @@ import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.ui.SyncErrorMessage;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
@@ -247,7 +245,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.profile_metrics.BrowserProfileType;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -2521,11 +2518,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
                         try (TraceEvent e =
                                 TraceEvent.scoped("CheckSyncErrorOnDidFinishNavigation")) {
-                            SyncErrorMessage.maybeShowMessageUi(
-                                    getWindowAndroid(),
-                                    IdentityServicesProvider.get().getIdentityManager(profile),
-                                    SyncServiceFactory.getForProfile(profile),
-                                    UserPrefs.get(profile));
+                            SyncErrorMessage.maybeShowMessageUi(getWindowAndroid(), profile);
                         }
                         try (TraceEvent te = TraceEvent.scoped("updateActiveWebContents")) {
                             SendTabToSelfAndroidBridge.updateActiveWebContents(
