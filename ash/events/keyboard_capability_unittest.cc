@@ -86,31 +86,6 @@ ui::InputDeviceType EXTERNAL_BLUETOOTH =
 ui::InputDeviceType EXTERNAL_UNKNOWN =
     ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
 
-const ui::DeviceCapabilities kSplitModifiersKeyboard = {
-    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
-    /* name */ "AT Translated Set 2 keyboard",
-    /* phys */ "isa0060/serio0/input0",
-    /* uniq */ "",
-    /* bustype */ "0011",
-    /* vendor */ "0001",
-    /* product */ "0001",
-    /* version */ "ab83",
-    /* prop */ "0",
-    /* ev */ "120013",
-    /* key */
-    "88 0 0 0 0 0 402000000 3003078f800d001 feffffdfffefffff fffffffffffffffe",
-    /* rel */ "0",
-    /* abs */ "0",
-    /* msc */ "10",
-    /* sw */ "0",
-    /* led */ "7",
-    /* ff */ "0",
-    /* abs_axis */ nullptr,
-    /* abs_axis_count */ 0,
-    /* kbd_function_row_physmap */ "",
-    /* kbd_top_row_layout */ "6",
-};
-
 struct KeyEventTestData {
   // All currently connected keyboards' connection type, e.g.
   // INPUT_DEVICE_INTERNAL.
@@ -252,12 +227,9 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
   ui::KeyboardDevice AddFakeKeyboardInfoToKeyboardCapability(
       int device_id,
       ui::DeviceCapabilities capabilities,
-      ui::KeyboardCapability::DeviceType device_type,
-      ui::KeyboardCapability::KeyboardTopRowLayout top_row_layout) {
+      ui::KeyboardCapability::DeviceType device_type) {
     ui::KeyboardCapability::KeyboardInfo keyboard_info;
     keyboard_info.device_type = device_type;
-    keyboard_info.top_row_layout = top_row_layout;
-
     ui::KeyboardDevice fake_keyboard =
         KeyboardDeviceFromCapabilities(device_id, capabilities);
 
@@ -418,13 +390,11 @@ TEST_F(KeyboardCapabilityTest, TestRemoveDevicesFromList) {
   const ui::KeyboardDevice input_device1 =
       AddFakeKeyboardInfoToKeyboardCapability(
           kDeviceId1, ui::kEveKeyboard,
-          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2);
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
   const ui::KeyboardDevice input_device2 =
       AddFakeKeyboardInfoToKeyboardCapability(
           kDeviceId2, ui::kHpUsbKeyboard,
-          ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard,
-          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1);
+          ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard);
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {input_device1, input_device2});
@@ -619,13 +589,11 @@ TEST_F(KeyboardCapabilityTest, TestHasSettingsKey) {
   EXPECT_TRUE(keyboard_capability_->HasSettingsKey(external_keyboard));
 }
 
-class ModifierKeyTest
-    : public KeyboardCapabilityTest,
-      public testing::WithParamInterface<
-          std::tuple<ui::DeviceCapabilities,
-                     ui::KeyboardCapability::DeviceType,
-                     ui::KeyboardCapability::KeyboardTopRowLayout,
-                     std::vector<ui::mojom::ModifierKey>>> {};
+class ModifierKeyTest : public KeyboardCapabilityTest,
+                        public testing::WithParamInterface<
+                            std::tuple<ui::DeviceCapabilities,
+                                       ui::KeyboardCapability::DeviceType,
+                                       std::vector<ui::mojom::ModifierKey>>> {};
 
 // Tests that the given `ui::DeviceCapabilities` and
 // `ui::KeyboardCapability::DeviceType` combo generates the given set of
@@ -636,55 +604,40 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(std::vector<
                       std::tuple<ui::DeviceCapabilities,
                                  ui::KeyboardCapability::DeviceType,
-                                 ui::KeyboardCapability::KeyboardTopRowLayout,
                                  std::vector<ui::mojom::ModifierKey>>>{
         {ui::kEveKeyboard,
          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-         ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2,
          {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
           ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
           ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kAssistant}},
         {ui::kDrobitKeyboard,
          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-         ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom,
          {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
           ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
           ui::mojom::ModifierKey::kAlt}},
-        {kSplitModifiersKeyboard,
-         ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-         ui::KeyboardCapability::KeyboardTopRowLayout::
-             kKbdTopRowLayoutSplitModifiers,
-         {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
-          ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
-          ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kFunction,
-          ui::mojom::ModifierKey::kRightAlt}},
         {ui::kLogitechKeyboardK120,
          ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard,
-         ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1,
          {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
           ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
           ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kCapsLock}},
         {ui::kHpUsbKeyboard,
          ui::KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard,
-         ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1,
          {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
           ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
           ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kCapsLock}},
         // Tests that an external chromeos keyboard correctly omits capslock.
         {ui::kHpUsbKeyboard,
          ui::KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard,
-         ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom,
          {ui::mojom::ModifierKey::kBackspace, ui::mojom::ModifierKey::kControl,
           ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kEscape,
           ui::mojom::ModifierKey::kAlt}}}));
 
 TEST_P(ModifierKeyTest, TestGetModifierKeys) {
-  auto [capabilities, device_type, top_row_layout, expected_modifier_keys] =
-      GetParam();
+  auto [capabilities, device_type, expected_modifier_keys] = GetParam();
 
   const ui::KeyboardDevice test_keyboard =
       AddFakeKeyboardInfoToKeyboardCapability(kDeviceId1, capabilities,
-                                              device_type, top_row_layout);
+                                              device_type);
   auto modifier_keys = keyboard_capability_->GetModifierKeys(test_keyboard);
 
   base::ranges::sort(expected_modifier_keys);
@@ -806,8 +759,7 @@ TEST_F(KeyboardCapabilityTest, TestHasAssistantKey) {
   const ui::KeyboardDevice test_keyboard_1 =
       AddFakeKeyboardInfoToKeyboardCapability(
           kDeviceId1, ui::kEveKeyboard,
-          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2);
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
 
   EXPECT_TRUE(keyboard_capability_->HasAssistantKey(test_keyboard_1));
 
@@ -816,9 +768,7 @@ TEST_F(KeyboardCapabilityTest, TestHasAssistantKey) {
   const ui::KeyboardDevice test_keyboard_2 =
       AddFakeKeyboardInfoToKeyboardCapability(
           kDeviceId1, ui::kDrallionKeyboard,
-          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard,
-          ui::KeyboardCapability::KeyboardTopRowLayout::
-              kKbdTopRowLayoutDrallion);
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard);
 
   EXPECT_FALSE(keyboard_capability_->HasAssistantKey(test_keyboard_2));
 }
