@@ -378,6 +378,10 @@
       settable_from_internals: true,
     },
     {
+      name: "AutoPictureInPictureVideoHeuristics",
+      status: "experimental",
+    },
+    {
       // Flag set by the media::kAutoplayIgnoreWebAudio feature flag.
       name: "AutoplayIgnoresWebAudio",
       base_feature: "none",

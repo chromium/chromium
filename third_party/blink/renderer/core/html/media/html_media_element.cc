@@ -2934,6 +2934,8 @@ void HTMLMediaElement::PauseInternal(PlayPromiseError code,
     ScheduleRejectPlayPromises(code);
   }
 
+  OnPause();
+
   UpdatePlayState(pause_speech);
 }
 

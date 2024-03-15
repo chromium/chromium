@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/media/media_custom_controls_fullscreen_detector.h"
 #include "third_party/blink/renderer/core/html/media/media_remoting_interstitial.h"
+#include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
 #include "third_party/blink/renderer/core/html/media/picture_in_picture_interstitial.h"
 #include "third_party/blink/renderer/core/html/media/video_frame_callback_requester.h"
 #include "third_party/blink/renderer/core/html/media/video_wake_lock.h"
@@ -71,6 +72,17 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 
 namespace blink {
+
+namespace {
+// Represents the visibility threshold to be used by the
+// |visibility_tracker_|. Where visibility is defined as: intersecting
+// with the viewport and not occluded by other html elements within the page,
+// with the exception of MediaControls.
+//
+// An HTMLVideoElement with visibility greater or equal than
+// |kVisibilityThreshold| is considered visible, and not visible otherwise.
+constexpr float kVisibilityThreshold = 0.80f;
+}  // namespace
 
 HTMLVideoElement::HTMLVideoElement(Document& document)
     : HTMLMediaElement(html_names::kVideoTag, document),
@@ -102,6 +114,7 @@ HTMLVideoElement::HTMLVideoElement(Document& document)
 void HTMLVideoElement::Trace(Visitor* visitor) const {
   visitor->Trace(image_loader_);
   visitor->Trace(custom_controls_fullscreen_detector_);
+  visitor->Trace(visibility_tracker_);
   visitor->Trace(wake_lock_);
   visitor->Trace(remoting_interstitial_);
   visitor->Trace(picture_in_picture_interstitial_);
@@ -119,18 +132,24 @@ Node::InsertionNotificationRequest HTMLVideoElement::InsertedInto(
   if (insertion_point.isConnected())
     custom_controls_fullscreen_detector_->Attach();
 
-  return HTMLMediaElement::InsertedInto(insertion_point);
+  auto insertion_notification_request =
+      HTMLMediaElement::InsertedInto(insertion_point);
+
+  UpdateVisibilityTrackerStateIfExists();
+
+  return insertion_notification_request;
 }
 
 void HTMLVideoElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLMediaElement::RemovedFrom(insertion_point);
   custom_controls_fullscreen_detector_->Detach();
-
+  UpdateVisibilityTrackerStateIfExists();
   SetPersistentState(false);
 }
 
 void HTMLVideoElement::ContextDestroyed() {
   custom_controls_fullscreen_detector_->ContextDestroyed();
+  UpdateVisibilityTrackerStateIfExists();
   HTMLMediaElement::ContextDestroyed();
 }
 
@@ -303,6 +322,36 @@ void HTMLVideoElement::SetPersistentStateInternal(bool persistent) {
     GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
 }
 
+void HTMLVideoElement::CreateVisibilityTrackerIfNeeded() {
+  if (!RuntimeEnabledFeatures::AutoPictureInPictureVideoHeuristicsEnabled()) {
+    return;
+  }
+
+  if (visibility_tracker_) {
+    return;
+  }
+
+  // Callback used by |MediaVideoVisibilityTracker| to report whether |this|
+  // meets/does not meet the visibility threshold (kVisibilityThreshold).
+  auto report_visibility_cb = WTF::BindRepeating(
+      &HTMLVideoElement::ReportVisibility, WrapWeakPersistent(this));
+
+  visibility_tracker_ = MakeGarbageCollected<MediaVideoVisibilityTracker>(
+      *this, kVisibilityThreshold, std::move(report_visibility_cb));
+}
+
+void HTMLVideoElement::UpdateVisibilityTrackerStateIfExists() {
+  if (!visibility_tracker_) {
+    return;
+  }
+
+  visibility_tracker_->UpdateVisibilityTrackerState();
+}
+
+void HTMLVideoElement::ReportVisibility(bool meets_visibility_threshold) {
+  // TODO(crbug.com/1464351): Notify observers.
+}
+
 bool HTMLVideoElement::IsPersistent() const {
   return is_persistent_;
 }
@@ -313,12 +362,19 @@ void HTMLVideoElement::OnPlay() {
     UpdatePictureInPictureAvailability();
   }
 
+  CreateVisibilityTrackerIfNeeded();
+  UpdateVisibilityTrackerStateIfExists();
+
   if (!RuntimeEnabledFeatures::VideoAutoFullscreenEnabled() ||
       FastHasAttribute(html_names::kPlaysinlineAttr)) {
     return;
   }
 
   webkitEnterFullscreen();
+}
+
+void HTMLVideoElement::OnPause() {
+  UpdateVisibilityTrackerStateIfExists();
 }
 
 void HTMLVideoElement::OnLoadStarted() {
@@ -462,6 +518,17 @@ void HTMLVideoElement::DidMoveToNewDocument(Document& old_document) {
     image_loader_->ElementDidMoveToNewDocument();
 
   wake_lock_->ElementDidMoveToNewDocument();
+
+  if (visibility_tracker_) {
+    // Ensure that the |visibility_tracker_| is detached when |this| is moved to
+    // a new document. Calling |ElementDidMoveToNewDocument| on the tracker at
+    // this point prevents having the tracker attached to an old document. The
+    // subsequent call to |UpdateVisibilityTrackerStateIfExists| will re-attach
+    // the tracker to the new document if needed.
+    visibility_tracker_->ElementDidMoveToNewDocument();
+    UpdateVisibilityTrackerStateIfExists();
+  }
+
   HTMLMediaElement::DidMoveToNewDocument(old_document);
   if (image_loader_) {
     image_loader_->UpdateFromElement();

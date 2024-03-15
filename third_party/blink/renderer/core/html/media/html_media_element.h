@@ -514,6 +514,7 @@ class CORE_EXPORT HTMLMediaElement
   void ContextDestroyed() override;
 
   virtual void OnPlay() {}
+  virtual void OnPause() {}
   virtual void OnLoadStarted() {}
   virtual void OnLoadFinished() {}
 
