@@ -419,8 +419,9 @@ void AppUninstallDialogView::InitializeSubAppList(
   sub_apps_container->SetBetweenChildSpacing(
       provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
   sub_apps_container->SetInsideBorderInsets(gfx::Insets::TLBR(
-      0, provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL), 0,
-      0));
+      0,
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
+      0, 0));
 
   for (const SubApp& sub_app : sub_apps) {
     auto box = std::make_unique<views::BoxLayoutView>();

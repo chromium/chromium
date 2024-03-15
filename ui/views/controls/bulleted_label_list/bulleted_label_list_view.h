@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_BULLETED_LABEL_LIST_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_BULLETED_LABEL_LIST_VIEW_H_
+#ifndef UI_VIEWS_CONTROLS_BULLETED_LABEL_LIST_BULLETED_LABEL_LIST_VIEW_H_
+#define UI_VIEWS_CONTROLS_BULLETED_LABEL_LIST_BULLETED_LABEL_LIST_VIEW_H_
 
-#include "ui/base/metadata/metadata_header_macros.h"
+#include <vector>
+
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-class BulletedLabelListView : public views::View {
-  METADATA_HEADER(BulletedLabelListView, views::View)
+
+namespace views {
+
+class VIEWS_EXPORT BulletedLabelListView : public View {
+  METADATA_HEADER(BulletedLabelListView, View)
 
  public:
   BulletedLabelListView();
@@ -21,4 +26,6 @@ class BulletedLabelListView : public views::View {
   void AddLabel(const std::u16string& text);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_BULLETED_LABEL_LIST_VIEW_H_
+}  // namespace views
+
+#endif  // UI_VIEWS_CONTROLS_BULLETED_LABEL_LIST_BULLETED_LABEL_LIST_VIEW_H_

@@ -71,8 +71,6 @@ enum ChromeDistanceMetric {
   DISTANCE_TOAST_CONTROL_VERTICAL,
   // Vertical margin for labels in a toast.
   DISTANCE_TOAST_LABEL_VERTICAL,
-  // Horizontal spacing between controls that are logically unrelated.
-  DISTANCE_UNRELATED_CONTROL_HORIZONTAL,
   // Larger horizontal spacing between unrelated controls.
   DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE,
   // Larger vertical spacing between unrelated controls.

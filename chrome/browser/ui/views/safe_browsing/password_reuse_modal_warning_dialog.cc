@@ -216,7 +216,7 @@ void PasswordReuseModalWarningDialog::CreateGaiaPasswordReuseModalWarningDialog(
   // Makes message label align with title label.
   const int horizontal_adjustment =
       provider->GetDistanceMetric(DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE) +
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   if (base::i18n::IsRTL()) {
     message_body_label->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, 0, 0, horizontal_adjustment)));

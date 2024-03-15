@@ -154,8 +154,6 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_TOAST_LABEL_VERTICAL:
       return 12;
-    case DISTANCE_UNRELATED_CONTROL_HORIZONTAL:
-      return kHarmonyLayoutUnit;
     case DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE:
       return kHarmonyLayoutUnit;
     case DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE:

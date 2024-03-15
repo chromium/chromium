@@ -119,7 +119,7 @@ std::unique_ptr<views::ScrollView> CreateSubAppsListView(
   sub_app_list->SetBetweenChildSpacing(
       GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
   sub_app_list->SetInsideBorderInsets(gfx::Insets().set_left(
-      GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
+      GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
 
   // Add a box view for each sub app containing the app's icon and title.
   for (const std::unique_ptr<WebAppInstallInfo>& sub_app : sub_apps) {

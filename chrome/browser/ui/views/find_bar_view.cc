@@ -156,7 +156,7 @@ FindBarView::FindBarView(FindBarHost* host) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   const auto horizontal_margin =
       gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
-                             DISTANCE_UNRELATED_CONTROL_HORIZONTAL) /
+                             views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL) /
                              2);
   const gfx::Insets vector_button =
       layout_provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON);

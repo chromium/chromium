@@ -107,6 +107,8 @@ enum DistanceMetric {
   DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN,
   // Horizontal padding applied to text in a textfield.
   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING,
+  // Horizontal spacing between controls that are logically unrelated.
+  DISTANCE_UNRELATED_CONTROL_HORIZONTAL,
   // Vertical spacing between controls that are logically unrelated.
   DISTANCE_UNRELATED_CONTROL_VERTICAL,
   // Padding in vector icons. This is a general number for more vector icons.

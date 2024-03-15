@@ -375,7 +375,7 @@ void ZoomBubbleView::Init() {
   constexpr int kPercentLabelPadding = 64;
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const int spacing =
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   gfx::Insets inset_border_insets =
       provider->GetInsetsMetric(INSETS_TOAST) - margins();
   inset_border_insets.set_top_bottom(0, 0);

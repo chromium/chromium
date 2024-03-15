@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/bulleted_label_list_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -28,6 +27,7 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -536,8 +536,8 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
       CreateFormattedLabel(l10n_util::GetStringUTF16(GetInfoMessage())));
   std::vector<int> bullet_string_ids = GetSubMessages();
   if (!bullet_string_ids.empty()) {
-    auto* list_view =
-        container->AddChildView(std::make_unique<BulletedLabelListView>());
+    auto* list_view = container->AddChildView(
+        std::make_unique<views::BulletedLabelListView>());
     for (const auto& id : bullet_string_ids)
       list_view->AddLabel(l10n_util::GetStringUTF16(id));
     list_view->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(2, 1));
@@ -672,7 +672,7 @@ void SadTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   constexpr int kMaxContentWidth = 600;
   const int max_width =
       std::min(width() - ChromeLayoutProvider::Get()->GetDistanceMetric(
-                             DISTANCE_UNRELATED_CONTROL_HORIZONTAL) *
+                             views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL) *
                              2,
                kMaxContentWidth);
 

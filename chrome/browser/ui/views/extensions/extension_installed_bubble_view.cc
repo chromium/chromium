@@ -219,11 +219,12 @@ void ExtensionInstalledBubbleView::Init() {
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL));
   layout->set_minimum_cross_axis_size(kRightColumnWidth);
   // Indent by the size of the icon.
-  layout->set_inside_border_insets(gfx::Insets::TLBR(
-      0,
-      GetWindowIcon().Size().width() +
-          provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
-      0, 0));
+  layout->set_inside_border_insets(
+      gfx::Insets::TLBR(0,
+                        GetWindowIcon().Size().width() +
+                            provider->GetDistanceMetric(
+                                views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
+                        0, 0));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   SetLayoutManager(std::move(layout));

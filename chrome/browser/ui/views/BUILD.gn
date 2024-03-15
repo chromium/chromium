@@ -43,6 +43,7 @@ component("views") {
     "//ui/events",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//ui/views",
     "//url",
   ]
 

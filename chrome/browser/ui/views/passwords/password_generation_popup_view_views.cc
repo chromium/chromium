@@ -622,7 +622,7 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   const int kVerticalPadding =
       provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL);
   const int kHorizontalMargin =
-      provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 
   if (controller_->ShouldShowNudgePassword()) {
     auto nudge_password_view = CreateNudgePasswordView(controller_);

@@ -2,22 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bulleted_label_list_view.h"
+#include "ui/views/controls/bulleted_label_list/bulleted_label_list_view.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include <algorithm>
+#include <vector>
+#include <memory>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
+namespace views {
+
 namespace {
 
-class BulletView : public views::View {
-  METADATA_HEADER(BulletView, views::View)
+class BulletView : public View {
+ METADATA_HEADER(BulletView, View)
 
  public:
   BulletView() = default;
@@ -56,7 +62,7 @@ BulletedLabelListView::BulletedLabelListView()
 
 BulletedLabelListView::BulletedLabelListView(
     const std::vector<std::u16string>& texts) {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+  const int width = LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
   SetLayoutManager(std::make_unique<views::TableLayout>())
       ->AddColumn(views::LayoutAlignment::kStretch,
@@ -86,3 +92,6 @@ void BulletedLabelListView::AddLabel(const std::u16string& text) {
 
 BEGIN_METADATA(BulletedLabelListView)
 END_METADATA
+
+}  // namespace views
+

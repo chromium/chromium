@@ -5157,8 +5157,6 @@ static_library("ui") {
       "views/bubble_anchor_util_views.h",
       "views/bubble_menu_item_factory.cc",
       "views/bubble_menu_item_factory.h",
-      "views/bulleted_label_list_view.cc",
-      "views/bulleted_label_list_view.h",
       "views/certificate_selector.cc",
       "views/certificate_selector.h",
       "views/chrome_browser_main_extra_parts_views.cc",

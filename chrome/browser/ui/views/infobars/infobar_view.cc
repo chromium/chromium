@@ -56,7 +56,7 @@ namespace {
 
 int GetElementSpacing() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+      views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
 }
 
 gfx::Insets GetCloseButtonSpacing() {
