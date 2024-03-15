@@ -113,6 +113,10 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   PermissionPromptBubbleBaseView* GetPromptBubbleView();
 
+  PermissionPromptChipModel* permission_prompt_model() {
+    return permission_prompt_model_.get();
+  }
+
   bool should_expand_for_testing();
 
   bool is_collapse_timer_running_for_testing() const {
@@ -142,8 +146,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   }
 
   std::optional<permissions::PermissionRequestManager*>
-  active_permission_request_manager_for_testing() {
-    CHECK_IS_TEST();
+  active_permission_request_manager() {
     return active_chip_permission_request_manager_;
   }
 

@@ -12,7 +12,9 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -109,6 +111,37 @@ void RecordIndicators(ContentSettingImageModel* indicator_model,
       permissions, indicator_model->is_blocked(),
       indicator_model->blocked_on_system_level(), clicked);
 }
+
+// If permission request chip is visible, the indicator's verbose state (the
+// expand animation) should be suppressed.
+bool SuppressVerboseState(ChipController* request_chip_controller) {
+  if (!request_chip_controller->IsPermissionPromptChipVisible()) {
+    return false;
+  }
+
+  PermissionPromptChipModel* prompt_model =
+      request_chip_controller->permission_prompt_model();
+
+  if (!prompt_model) {
+    return false;
+  }
+
+  ContentSettingsType prompt_type = prompt_model->content_settings_type();
+
+  // If currently displayed permission request chip is not for media
+  // permissions, the expand animation should be suppressed.
+  if (prompt_type != ContentSettingsType::MEDIASTREAM_CAMERA &&
+      prompt_type != ContentSettingsType::MEDIASTREAM_MIC) {
+    return true;
+  }
+
+  std::optional<permissions::PermissionRequestManager*> prm =
+      request_chip_controller->active_permission_request_manager();
+
+  // If there are pending permission requests in `PermissionRequestManager`,
+  // then the expand animation should be suppressed.
+  return prm.has_value() && prm.value()->has_pending_requests();
+}
 }  // namespace
 
 PermissionDashboardController::PermissionDashboardController(
@@ -143,7 +176,6 @@ bool PermissionDashboardController::Update(
 
   if (!indicator_model->is_visible()) {
     if (!indicator_chip->GetVisible()) {
-      indicator_chip->GetViewAccessibility().SetIsIgnored(true);
       return false;
     }
 
@@ -195,22 +227,29 @@ bool PermissionDashboardController::Update(
   indicator_chip->SetVisible(true);
 
   if (ShouldExpandChipIndicator(content_settings)) {
-    indicator_chip->ResetAnimation();
     indicator_chip->SetMessage(GetIndicatorTitle(indicator_model));
-    indicator_chip->AnimateExpand(
-        GetAnimationDuration(kExpandAnimationDuration));
+    is_verbose_ = false;
+
+    if (SuppressVerboseState(request_chip_controller())) {
+      // Permission request chip is visible it was drawn without a divider. Add
+      // the divider between an indicator and the request chip.
+      permission_dashboard_view_->UpdateDividerViewVisibility();
+    } else {
+      indicator_chip->ResetAnimation();
+      indicator_chip->AnimateExpand(
+          GetAnimationDuration(kExpandAnimationDuration));
+    }
   }
 
   UpdateIndicatorsVisibilityFlags(location_bar_view_);
 
-  indicator_chip->SetTooltipText(indicator_model->get_tooltip());
-  indicator_chip->GetViewAccessibility().SetIsIgnored(false);
-
-  // An alert role is required in order to fire the alert event.
-  indicator_chip->SetAccessibleRole(ax::mojom::Role::kAlert);
-
   if (indicator_model->ShouldNotifyAccessibility(
           location_bar_view_->GetWebContents())) {
+    indicator_chip->SetTooltipText(indicator_model->get_tooltip());
+    indicator_chip->GetViewAccessibility().SetIsIgnored(false);
+    // An alert role is required in order to fire the alert event.
+    indicator_chip->SetAccessibleRole(ax::mojom::Role::kAlert);
+
     auto name = l10n_util::GetStringUTF16(
         indicator_model->AccessibilityAnnouncementStringId());
     indicator_chip->SetAccessibleName(name);
