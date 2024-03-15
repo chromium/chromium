@@ -49,6 +49,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
@@ -600,11 +601,10 @@ public class FirstRunActivitySigninAndSyncTest {
 
     private <T extends FirstRunFragment> void waitUntilCurrentPageIs(Class<T> fragmentClass) {
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return fragmentClass.isInstance(
-                            mFirstRunActivity.getCurrentFragmentForTesting());
-                },
-                fragmentClass.getName() + " should be the current page");
+                () ->
+                        Criteria.checkThat(
+                                mFirstRunActivity.getCurrentFragmentForTesting(),
+                                Matchers.instanceOf(fragmentClass)));
     }
 
     private void launchFirstRunActivityAndWaitForNativeInitialization() {
