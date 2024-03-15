@@ -37,6 +37,10 @@ component("animation") {
     sources += [ "animation_android.cc" ]
   }
 
+  if (is_chromeos) {
+    sources += [ "animation_chromeos.cc" ]
+  }
+
   if (is_mac) {
     sources += [ "animation_mac.mm" ]
   }

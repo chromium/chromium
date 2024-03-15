@@ -112,18 +112,17 @@ bool Animation::ShouldRenderRichAnimation() {
          RichAnimationRenderMode::FORCE_ENABLED;
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 // static
 bool Animation::ShouldRenderRichAnimationImpl() {
   return true;
-  // Defined in platform specific file for Windows and OSX and Linux.
+  // Defined in platform specific file for Windows, OSX, ChromeOS and Linux.
 }
 
 // static
 bool Animation::ScrollAnimationsEnabledBySystem() {
   return true;
-  // Defined in platform specific files for Windows and OSX and Linux.
+  // Defined in platform specific file for Windows, OSX, ChromeOS and Linux.
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -137,8 +136,7 @@ void Animation::UpdatePrefersReducedMotion() {
   prefers_reduced_motion_ = false;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 
 // static
 bool Animation::PrefersReducedMotion() {

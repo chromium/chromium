@@ -27,6 +27,7 @@ enum class A11yFeatureType {
   kLiveCaption,
   kMonoAudio,
   kMouseKeys,
+  kReducedAnimations,
   kSelectToSpeak,
   kSpokenFeedback,
   kStickyKeys,

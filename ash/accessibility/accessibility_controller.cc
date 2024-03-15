@@ -80,6 +80,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/native_theme/native_theme.h"
@@ -165,6 +166,9 @@ const FeatureData kFeatures[] = {
     {FeatureType::kSpokenFeedback, prefs::kAccessibilitySpokenFeedbackEnabled,
      &kSystemMenuAccessibilityChromevoxIcon,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SPOKEN_FEEDBACK},
+    {FeatureType::kReducedAnimations,
+     prefs::kAccessibilityReducedAnimationsEnabled, nullptr, 0,
+     /*toggleable_in_quicksettings=*/false},
     {FeatureType::kSelectToSpeak, prefs::kAccessibilitySelectToSpeakEnabled,
      &kSystemMenuAccessibilitySelectToSpeakIcon,
      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK},
@@ -1077,13 +1081,11 @@ void AccessibilityController::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kAccessibilityColorCorrectionEnabled,
                                 false);
-    registry->RegisterBooleanPref(
-        prefs::kAccessibilityColorCorrectionHasBeenSetup, false);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityColorCorrectionHasBeenSetup, false);
 
-    if (::features::IsAccessibilityReducedAnimationsEnabled()) {
-      registry->RegisterBooleanPref(
-          prefs::kAccessibilityReducedAnimationsEnabled, false);
-    }
+  registry->RegisterBooleanPref(prefs::kAccessibilityReducedAnimationsEnabled,
+                                false);
 
   // TODO(b/266816160): Make ChromeVox prefs are syncable, to so that ChromeOS
   // backs up users' ChromeVox settings and reflects across their devices.
@@ -1459,6 +1461,11 @@ AccessibilityController::Feature& AccessibilityController::mono_audio() const {
 
 AccessibilityController::Feature& AccessibilityController::mouse_keys() const {
   return GetFeature(FeatureType::kMouseKeys);
+}
+
+AccessibilityController::Feature& AccessibilityController::reduced_animations()
+    const {
+  return GetFeature(FeatureType::kReducedAnimations);
 }
 
 AccessibilityController::Feature& AccessibilityController::spoken_feedback()
@@ -2890,6 +2897,10 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
 
       // ChromeVox focus highlighting overrides the other focus highlighting.
       focus_highlight().UpdateFromPref();
+      break;
+    case FeatureType::kReducedAnimations:
+      gfx::Animation::SetPrefersReducedMotionForA11y(
+          reduced_animations().enabled());
       break;
     case FeatureType::kSelectToSpeak:
       select_to_speak_state_ = SelectToSpeakState::kSelectToSpeakStateInactive;
