@@ -153,6 +153,7 @@ const char kHTTPSPage[] = "/ssl/google.html";
 const char kMaliciousPage[] = "/safe_browsing/malware.html";
 const char kCrossSiteMaliciousPage[] = "/safe_browsing/malware2.html";
 const char kMaliciousIframe[] = "/safe_browsing/malware_iframe.html";
+const char kRedirectToMalware[] = "/safe_browsing/redirect_to_malware.html";
 const char kUnrelatedUrl[] = "https://www.google.com";
 const char kEnhancedProtectionUrl[] = "chrome://settings/security?q=enhanced";
 const char kMaliciousJsPage[] = "/safe_browsing/malware_js.html";
@@ -3407,6 +3408,12 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
   }
 
  protected:
+  // Helper struct for test cases.
+  struct UrlAndIsUnsafe {
+    std::string relative_url;
+    bool is_unsafe;
+  };
+
   void SetURLLoaderFactoryForTesting() {
     auto ref_counted_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -3433,15 +3440,19 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
         ->AddDangerousUrl(url, threat_type);
   }
 
-  void ReturnUnsafeUrlRealTimeVerdictInUrlLoader(GURL url) {
+  void ReturnUrlRealTimeVerdictInUrlLoader(GURL url, bool is_unsafe) {
     constexpr char kRealTimeLookupUrl[] =
         "https://safebrowsing.google.com/safebrowsing/clientreport/realtime";
     RTLookupResponse response;
     RTLookupResponse::ThreatInfo* new_threat_info = response.add_threat_info();
     RTLookupResponse::ThreatInfo threat_info;
-    threat_info.set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
-    threat_info.set_threat_type(
-        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+    if (is_unsafe) {
+      threat_info.set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+      threat_info.set_threat_type(
+          RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+    } else {
+      threat_info.set_verdict_type(RTLookupResponse::ThreatInfo::SAFE);
+    }
     threat_info.set_cache_duration_sec(60);
     threat_info.set_cache_expression_using_match_type(url.host());
     threat_info.set_cache_expression_match_type(
@@ -3455,14 +3466,19 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
 
   // The following events happen in sequence:
   //   1. WillProcessResponse is called.
-  //   2. Safe Browsing check completes.
+  //   2. Safe Browsing checks complete.
   //   3. Navigation finished.
-  GURL SetupWarningShownBetweenProcessResponseAndFinishNavigationAndNavigate() {
-    GURL url = embedded_test_server()->GetURL(kMaliciousPage);
+  GURL SetupWarningShownBetweenProcessResponseAndFinishNavigationAndNavigate(
+      std::vector<UrlAndIsUnsafe> url_and_server_redirects) {
+    CHECK(!url_and_server_redirects.empty());
+    GURL original_url = embedded_test_server()->GetURL(
+        url_and_server_redirects.front().relative_url);
+    GURL final_url = embedded_test_server()->GetURL(
+        url_and_server_redirects.back().relative_url);
     content::TestNavigationManager navigation_manager(
-        browser()->tab_strip_model()->GetActiveWebContents(), url);
+        browser()->tab_strip_model()->GetActiveWebContents(), original_url);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), original_url, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     EXPECT_TRUE(navigation_manager.WaitForResponse());
 
@@ -3474,7 +3490,12 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
             factory_.test_safe_browsing_service()->ui_manager().get());
     EXPECT_EQ(tracker->PendingCheckersSizeForTesting(), 1u);
 
-    ReturnUnsafeUrlRealTimeVerdictInUrlLoader(url);
+    for (const auto& url_and_server_redirect : url_and_server_redirects) {
+      GURL url =
+          embedded_test_server()->GetURL(url_and_server_redirect.relative_url);
+      ReturnUrlRealTimeVerdictInUrlLoader(url,
+                                          url_and_server_redirect.is_unsafe);
+    }
     SafeBrowsingBlockingPageTestHelper::MaybeWaitForAsyncChecksToComplete(
         browser()->tab_strip_model()->GetActiveWebContents(),
         factory_.test_safe_browsing_service()->ui_manager().get(),
@@ -3488,7 +3509,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
     // After the navigation is finished, we need to wait for the navigation of
     // the interstitial to complete.
     content::TestNavigationManager interstitial_navigation_manager(
-        browser()->tab_strip_model()->GetActiveWebContents(), url);
+        browser()->tab_strip_model()->GetActiveWebContents(), final_url);
     EXPECT_TRUE(interstitial_navigation_manager.WaitForNavigationFinished());
     content::WaitForLoadStop(
         browser()->tab_strip_model()->GetActiveWebContents());
@@ -3499,18 +3520,23 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
     // Reset dangerous response so future URLs are not accidentally flagged
     // by real-time URL check.
     test_url_loader_factory_.ClearResponses();
-    return url;
+    return final_url;
   }
 
   // The following events happen in sequence:
   //   1. Navigation finished.
-  //   2. Safe Browsing check completes.
-  GURL SetupWarningShownAfterFinishNavigationAndNavigate() {
-    GURL url = embedded_test_server()->GetURL(kMaliciousPage);
+  //   2. Safe Browsing checks complete.
+  GURL SetupWarningShownAfterFinishNavigationAndNavigate(
+      std::vector<UrlAndIsUnsafe> url_and_server_redirects) {
+    CHECK(!url_and_server_redirects.empty());
+    GURL original_url = embedded_test_server()->GetURL(
+        url_and_server_redirects.front().relative_url);
+    GURL final_url = embedded_test_server()->GetURL(
+        url_and_server_redirects.back().relative_url);
     content::TestNavigationManager navigation_manager(
-        browser()->tab_strip_model()->GetActiveWebContents(), url);
+        browser()->tab_strip_model()->GetActiveWebContents(), original_url);
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::CURRENT_TAB,
+        browser(), original_url, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_NO_WAIT);
     EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
 
@@ -3522,7 +3548,12 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
             factory_.test_safe_browsing_service()->ui_manager().get());
     EXPECT_EQ(tracker->PendingCheckersSizeForTesting(), 1u);
 
-    ReturnUnsafeUrlRealTimeVerdictInUrlLoader(url);
+    for (const auto& url_and_server_redirect : url_and_server_redirects) {
+      GURL url =
+          embedded_test_server()->GetURL(url_and_server_redirect.relative_url);
+      ReturnUrlRealTimeVerdictInUrlLoader(url,
+                                          url_and_server_redirect.is_unsafe);
+    }
     SafeBrowsingBlockingPageTestHelper::MaybeWaitForAsyncChecksToComplete(
         browser()->tab_strip_model()->GetActiveWebContents(),
         factory_.test_safe_browsing_service()->ui_manager().get(),
@@ -3534,10 +3565,11 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
     // Reset dangerous response so future URLs are not accidentally
     // flagged by real-time URL check.
     test_url_loader_factory_.ClearResponses();
-    return url;
+    return final_url;
   }
 
   GURL SetupPostCommitInterstitialAndNavigate(
+      std::vector<UrlAndIsUnsafe> url_and_server_redirects,
       base::OnceClosure report_sent_callback) {
     // Call SetupUrlRealTimeVerdictInCacheManager with a random URL to ensure
     // RealTimeUrlLookupServiceBase::CanCheckUrl returns true so the real time
@@ -3547,9 +3579,11 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTest
     SetReportSentCallback(std::move(report_sent_callback));
     bool check_complete_after_navigation_finish = GetParam();
     if (check_complete_after_navigation_finish) {
-      return SetupWarningShownAfterFinishNavigationAndNavigate();
+      return SetupWarningShownAfterFinishNavigationAndNavigate(
+          url_and_server_redirects);
     } else {
-      return SetupWarningShownBetweenProcessResponseAndFinishNavigationAndNavigate();
+      return SetupWarningShownBetweenProcessResponseAndFinishNavigationAndNavigate(
+          url_and_server_redirects);
     }
   }
 
@@ -3588,7 +3622,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
                        VerifyHistogramsAndHitReport) {
   EnableAsyncCheck();
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
-  SetupPostCommitInterstitialAndNavigate(
+  GURL url = SetupPostCommitInterstitialAndNavigate(
+      {{kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
 
   int hit_report_count =
@@ -3609,6 +3644,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   EnableAsyncCheck();
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   SetupPostCommitInterstitialAndNavigate(
+      {{kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
 
   EXPECT_EQ(VISIBLE, GetVisibility(browser(), "primary-button"));
@@ -3635,6 +3671,43 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   EnableAsyncCheck();
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   GURL url = SetupPostCommitInterstitialAndNavigate(
+      {{kMaliciousPage, /* is_unsafe */ true}},
+      threat_report_sent_runner->QuitClosure());
+
+  EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
+  AssertNoInterstitial(browser());  // Assert the interstitial is gone
+
+  EXPECT_EQ(url, browser()
+                     ->tab_strip_model()
+                     ->GetActiveWebContents()
+                     ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
+                       PostCommitInterstitialServerRedirect_OriginIsUnsafe) {
+  EnableAsyncCheck();
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  GURL url = SetupPostCommitInterstitialAndNavigate(
+      {{kRedirectToMalware, /* is_unsafe */ true},
+       {kMaliciousPage, /* is_unsafe */ false}},
+      threat_report_sent_runner->QuitClosure());
+
+  EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
+  AssertNoInterstitial(browser());  // Assert the interstitial is gone
+
+  EXPECT_EQ(url, browser()
+                     ->tab_strip_model()
+                     ->GetActiveWebContents()
+                     ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
+                       PostCommitInterstitialServerRedirect_RedirectIsUnsafe) {
+  EnableAsyncCheck();
+  auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
+  GURL url = SetupPostCommitInterstitialAndNavigate(
+      {{kRedirectToMalware, /* is_unsafe */ false},
+       {kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
@@ -3651,6 +3724,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   EnableAsyncCheck();
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   GURL url = SetupPostCommitInterstitialAndNavigate(
+      {{kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
 
   ThreatDetails* threat_details = details_factory_.get_details();
@@ -3683,6 +3757,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   EnableAsyncCheck();
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   GURL url = SetupPostCommitInterstitialAndNavigate(
+      {{kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
@@ -3716,6 +3791,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
 
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   GURL url = SetupPostCommitInterstitialAndNavigate(
+      {{kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
 
   // The security indicator should be downgraded while the interstitial shows.
@@ -3746,6 +3822,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   // shows.
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   GURL main_url = SetupPostCommitInterstitialAndNavigate(
+      {{kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
   WebContents* error_tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(error_tab);
@@ -3834,6 +3911,7 @@ IN_PROC_BROWSER_TEST_P(
   // Trigger a post commit interstitial.
   auto threat_report_sent_runner = std::make_unique<base::RunLoop>();
   GURL main_url = SetupPostCommitInterstitialAndNavigate(
+      {{kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
 
   // Commands should work.
