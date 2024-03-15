@@ -113,14 +113,34 @@ std::ostream& operator<<(std::ostream& os, IwaSourceBundleProdFileOp file_op);
 inline constexpr IwaSourceBundleDevFileOp kDefaultBundleDevFileOp =
     IwaSourceBundleDevFileOp::kReference;
 
-class IwaSourceBundle {
+namespace internal {
+
+class IwaSourceBundleBase {
+ public:
+  explicit IwaSourceBundleBase(base::FilePath);
+  ~IwaSourceBundleBase();
+
+  bool operator==(const IwaSourceBundleBase&) const;
+
+  const base::FilePath& path() const { return path_; }
+
+ protected:
+  base::FilePath path_;
+};
+
+}  // namespace internal
+
+class IwaSourceBundle : public internal::IwaSourceBundleBase {
  public:
   explicit IwaSourceBundle(base::FilePath);
   ~IwaSourceBundle();
 
-  bool operator==(const IwaSourceBundle&) const;
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  /* implicit */ IwaSourceBundle(IwaSourceBundleWithMode other);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  /* implicit */ IwaSourceBundle(IwaSourceBundleWithModeAndFileOp other);
 
-  const base::FilePath& path() const { return path_; }
+  bool operator==(const IwaSourceBundle&) const;
 
   [[nodiscard]] IwaSourceBundleWithModeAndFileOp WithModeAndFileOp(
       IwaSourceBundleModeAndFileOp mode_and_file_op) const;
@@ -130,14 +150,13 @@ class IwaSourceBundle {
       IwaSourceBundleProdFileOp file_op) const;
 
   base::Value ToDebugValue() const;
-
- protected:
-  base::FilePath path_;
 };
 std::ostream& operator<<(std::ostream& os, const IwaSourceBundle& source);
 
-class IwaSourceBundleWithMode : public IwaSourceBundle {
+class IwaSourceBundleWithMode : public internal::IwaSourceBundleBase {
  public:
+  friend class IwaSourceBundle;
+
   IwaSourceBundleWithMode(base::FilePath path, bool dev_mode);
   ~IwaSourceBundleWithMode();
 
@@ -151,6 +170,12 @@ class IwaSourceBundleWithMode : public IwaSourceBundle {
 
   bool operator==(const IwaSourceBundleWithMode&) const;
 
+  // Depending on whether `this` is a dev mode or prod mode source, returns a
+  // source with either the `prod_file_op` or `dev_file_op` file operation.
+  [[nodiscard]] IwaSourceBundleWithModeAndFileOp WithFileOp(
+      IwaSourceBundleProdFileOp prod_file_op,
+      IwaSourceBundleDevFileOp dev_file_op) const;
+
   bool dev_mode() const { return dev_mode_; }
 
   base::Value ToDebugValue() const;
@@ -161,7 +186,7 @@ class IwaSourceBundleWithMode : public IwaSourceBundle {
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleWithMode& source);
 
-class IwaSourceBundleDevMode : public IwaSourceBundle {
+class IwaSourceBundleDevMode : public internal::IwaSourceBundleBase {
  public:
   friend class IwaSourceBundleWithMode;
 
@@ -178,7 +203,7 @@ class IwaSourceBundleDevMode : public IwaSourceBundle {
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleDevMode& source);
 
-class IwaSourceBundleProdMode : public IwaSourceBundle {
+class IwaSourceBundleProdMode : public internal::IwaSourceBundleBase {
  public:
   friend class IwaSourceBundleWithMode;
 
@@ -195,8 +220,9 @@ class IwaSourceBundleProdMode : public IwaSourceBundle {
 std::ostream& operator<<(std::ostream& os,
                          const IwaSourceBundleProdMode& source);
 
-class IwaSourceBundleWithModeAndFileOp : public IwaSourceBundle {
+class IwaSourceBundleWithModeAndFileOp : public internal::IwaSourceBundleBase {
  public:
+  friend class IwaSourceBundle;
   friend class IwaSourceBundleWithMode;
 
   using ModeAndFileOp = IwaSourceBundleModeAndFileOp;
@@ -327,6 +353,12 @@ class IwaSourceWithMode {
   ~IwaSourceWithMode();
 
   bool operator==(const IwaSourceWithMode&) const;
+
+  // Depending on whether `this` is a dev mode or prod mode source, returns a
+  // source with either the `prod_file_op` or `dev_file_op` file operation.
+  [[nodiscard]] IwaSourceWithModeAndFileOp WithFileOp(
+      IwaSourceBundleProdFileOp prod_file_op,
+      IwaSourceBundleDevFileOp dev_file_op) const;
 
   bool dev_mode() const;
   const Variant& variant() const { return variant_; }

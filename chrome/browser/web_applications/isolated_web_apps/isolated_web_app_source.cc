@@ -93,9 +93,25 @@ std::ostream& operator<<(std::ostream& os, IwaSourceBundleProdFileOp file_op) {
   }
 }
 
-IwaSourceBundle::IwaSourceBundle(base::FilePath path)
+namespace internal {
+
+IwaSourceBundleBase::IwaSourceBundleBase(base::FilePath path)
     : path_(std::move(path)) {}
+IwaSourceBundleBase::~IwaSourceBundleBase() = default;
+
+bool IwaSourceBundleBase::operator==(const IwaSourceBundleBase&) const =
+    default;
+
+}  // namespace internal
+
+IwaSourceBundle::IwaSourceBundle(base::FilePath path)
+    : internal::IwaSourceBundleBase(std::move(path)) {}
 IwaSourceBundle::~IwaSourceBundle() = default;
+
+IwaSourceBundle::IwaSourceBundle(IwaSourceBundleWithMode other)
+    : internal::IwaSourceBundleBase(std::move(other.path_)) {}
+IwaSourceBundle::IwaSourceBundle(IwaSourceBundleWithModeAndFileOp other)
+    : internal::IwaSourceBundleBase(std::move(other.path_)) {}
 
 bool IwaSourceBundle::operator==(const IwaSourceBundle& other) const = default;
 
@@ -125,7 +141,7 @@ std::ostream& operator<<(std::ostream& os, const IwaSourceBundle& source) {
 
 IwaSourceBundleWithMode::IwaSourceBundleWithMode(base::FilePath path,
                                                  bool dev_mode)
-    : IwaSourceBundle(std::move(path)), dev_mode_(dev_mode) {}
+    : internal::IwaSourceBundleBase(std::move(path)), dev_mode_(dev_mode) {}
 IwaSourceBundleWithMode::~IwaSourceBundleWithMode() = default;
 
 IwaSourceBundleWithMode::IwaSourceBundleWithMode(IwaSourceBundleDevMode other)
@@ -139,6 +155,19 @@ IwaSourceBundleWithMode::IwaSourceBundleWithMode(
 bool IwaSourceBundleWithMode::operator==(
     const IwaSourceBundleWithMode& other) const = default;
 
+[[nodiscard]] IwaSourceBundleWithModeAndFileOp
+IwaSourceBundleWithMode::WithFileOp(
+    IwaSourceBundleProdFileOp prod_file_op,
+    IwaSourceBundleDevFileOp dev_file_op) const {
+  if (dev_mode_) {
+    return IwaSourceBundleWithModeAndFileOp(path_,
+                                            ToBundleModeAndFileOp(dev_file_op));
+  } else {
+    return IwaSourceBundleWithModeAndFileOp(
+        path_, ToBundleModeAndFileOp(prod_file_op));
+  }
+}
+
 base::Value IwaSourceBundleWithMode::ToDebugValue() const {
   return base::Value(base::Value::Dict()
                          .Set("path", base::FilePathToValue(path_))
@@ -151,7 +180,7 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 IwaSourceBundleDevMode::IwaSourceBundleDevMode(base::FilePath path)
-    : IwaSourceBundle(std::move(path)) {}
+    : internal::IwaSourceBundleBase(std::move(path)) {}
 IwaSourceBundleDevMode::~IwaSourceBundleDevMode() = default;
 
 bool IwaSourceBundleDevMode::operator==(
@@ -174,7 +203,7 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 IwaSourceBundleProdMode::IwaSourceBundleProdMode(base::FilePath path)
-    : IwaSourceBundle(std::move(path)) {}
+    : internal::IwaSourceBundleBase(std::move(path)) {}
 IwaSourceBundleProdMode::~IwaSourceBundleProdMode() = default;
 
 bool IwaSourceBundleProdMode::operator==(
@@ -199,16 +228,17 @@ std::ostream& operator<<(std::ostream& os,
 IwaSourceBundleWithModeAndFileOp::IwaSourceBundleWithModeAndFileOp(
     base::FilePath path,
     ModeAndFileOp mode_and_file_op)
-    : IwaSourceBundle(std::move(path)), mode_and_file_op_(mode_and_file_op) {}
+    : internal::IwaSourceBundleBase(std::move(path)),
+      mode_and_file_op_(mode_and_file_op) {}
 IwaSourceBundleWithModeAndFileOp::~IwaSourceBundleWithModeAndFileOp() = default;
 
 IwaSourceBundleWithModeAndFileOp::IwaSourceBundleWithModeAndFileOp(
     IwaSourceBundleDevModeWithFileOp other)
-    : IwaSourceBundle(std::move(other.path_)),
+    : internal::IwaSourceBundleBase(std::move(other.path_)),
       mode_and_file_op_(ToBundleModeAndFileOp(other.file_op_)) {}
 IwaSourceBundleWithModeAndFileOp::IwaSourceBundleWithModeAndFileOp(
     IwaSourceBundleProdModeWithFileOp other)
-    : IwaSourceBundle(std::move(other.path_)),
+    : internal::IwaSourceBundleBase(std::move(other.path_)),
       mode_and_file_op_(ToBundleModeAndFileOp(other.file_op_)) {}
 
 bool IwaSourceBundleWithModeAndFileOp::operator==(
@@ -363,6 +393,21 @@ IwaSourceWithMode::~IwaSourceWithMode() = default;
 
 bool IwaSourceWithMode::operator==(const IwaSourceWithMode& other) const =
     default;
+
+[[nodiscard]] IwaSourceWithModeAndFileOp IwaSourceWithMode::WithFileOp(
+    IwaSourceBundleProdFileOp prod_file_op,
+    IwaSourceBundleDevFileOp dev_file_op) const {
+  return absl::visit(
+      base::Overloaded{
+          [&](const IwaSourceBundleWithMode& source)
+              -> IwaSourceWithModeAndFileOp::Variant {
+            return source.WithFileOp(prod_file_op, dev_file_op);
+          },
+          [&](const IwaSourceProxy& source)
+              -> IwaSourceWithModeAndFileOp::Variant { return source; },
+      },
+      variant_);
+}
 
 bool IwaSourceWithMode::dev_mode() const {
   return absl::visit(

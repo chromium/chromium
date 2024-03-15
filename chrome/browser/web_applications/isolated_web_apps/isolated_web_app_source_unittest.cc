@@ -128,6 +128,25 @@ TEST_F(IwaSourceBundleWithModeTest, FromDevOrProdMode) {
   }
 }
 
+TEST_F(IwaSourceBundleWithModeTest, WithFileOp) {
+  {
+    IwaSourceBundleWithMode bundle{kExamplePath, /*dev_mode=*/false};
+    EXPECT_THAT(
+        bundle.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
+                          IwaSourceBundleDevFileOp::kReference),
+        Eq(IwaSourceBundleWithModeAndFileOp{
+            kExamplePath, IwaSourceBundleModeAndFileOp::kProdModeCopy}));
+  }
+  {
+    IwaSourceBundleWithMode bundle{kExamplePath, /*dev_mode=*/true};
+    EXPECT_THAT(
+        bundle.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
+                          IwaSourceBundleDevFileOp::kReference),
+        Eq(IwaSourceBundleWithModeAndFileOp{
+            kExamplePath, IwaSourceBundleModeAndFileOp::kDevModeReference}));
+  }
+}
+
 using IwaSourceBundleDevModeTest = IwaSourceTestBase;
 
 TEST_F(IwaSourceBundleDevModeTest, Works) {
@@ -352,6 +371,27 @@ TEST_F(IwaSourceWithModeTest, FromStorageLocation) {
         profile_dir, IwaStorageProxy(kExampleOrigin));
     EXPECT_THAT(source.dev_mode(), IsTrue());
     EXPECT_THAT(source, Eq(IwaSourceProxy(kExampleOrigin)));
+  }
+}
+
+TEST_F(IwaSourceWithModeTest, WithFileOp) {
+  {
+    IwaSourceWithMode source{
+        IwaSourceBundleWithMode(kExamplePath, /*dev_mode=*/false)};
+    EXPECT_THAT(
+        source.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
+                          IwaSourceBundleDevFileOp::kReference),
+        Eq(IwaSourceBundleWithModeAndFileOp{
+            kExamplePath, IwaSourceBundleModeAndFileOp::kProdModeCopy}));
+  }
+  {
+    IwaSourceWithMode source{
+        IwaSourceBundleWithMode(kExamplePath, /*dev_mode=*/true)};
+    EXPECT_THAT(
+        source.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
+                          IwaSourceBundleDevFileOp::kReference),
+        Eq(IwaSourceBundleWithModeAndFileOp{
+            kExamplePath, IwaSourceBundleModeAndFileOp::kDevModeReference}));
   }
 }
 
