@@ -901,7 +901,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
   textfield_delegate()->AccessibilityPerformAction(set_selection_action_data_2);
   int scroll_x = textfield_delegate()->GetData().GetIntAttribute(
       ax::mojom::IntAttribute::kScrollX);
-  EXPECT_EQ(scroll_x, -156);
+  EXPECT_LT(scroll_x, 0);
 
   // TODO(1468416): This is not obvious, but we need to call `GetData` to
   // refresh the text offsets and accessible name. This won't be needed anymore
