@@ -425,6 +425,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Update Engine is active"/>
   <int value="4" label="Hiberimage is not set up"/>
   <int value="5" label="Prior user logout"/>
+  <int value="6" label="PinWeaver has credentials"/>
 </enum>
 
 <enum name="CrosHibernateCycleEvent">
