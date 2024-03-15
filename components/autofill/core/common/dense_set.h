@@ -87,10 +87,8 @@ class Bitset {
     return x;
   }
 
-  friend constexpr auto operator<=>(const Bitset& lhs,
-                                    const Bitset& rhs) = default;
-  friend constexpr bool operator==(const Bitset& lhs,
-                                   const Bitset& rhs) = default;
+  friend auto operator<=>(const Bitset& lhs, const Bitset& rhs) = default;
+  friend bool operator==(const Bitset& lhs, const Bitset& rhs) = default;
 
   constexpr base::span<const Word, kNumWords> data() const { return words_; }
 

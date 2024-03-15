@@ -17,8 +17,7 @@ struct QueryParams {
   QueryParams(const QueryParams& other);
   QueryParams& operator=(const QueryParams& other);
 
-  friend constexpr bool operator==(const QueryParams&,
-                                   const QueryParams&) = default;
+  friend bool operator==(const QueryParams&, const QueryParams&) = default;
 
   // Resource types to measure.
   ResourceTypeSet resource_types;

@@ -135,10 +135,10 @@ struct GlobalId {
     return static_cast<bool>(renderer_id);
   }
 
-  friend constexpr auto operator<=>(const GlobalId<RendererId>& lhs,
-                                    const GlobalId<RendererId>& rhs) = default;
-  friend constexpr bool operator==(const GlobalId<RendererId>& lhs,
-                                   const GlobalId<RendererId>& rhs) = default;
+  friend auto operator<=>(const GlobalId<RendererId>& lhs,
+                          const GlobalId<RendererId>& rhs) = default;
+  friend bool operator==(const GlobalId<RendererId>& lhs,
+                         const GlobalId<RendererId>& rhs) = default;
 };
 
 }  // namespace internal
