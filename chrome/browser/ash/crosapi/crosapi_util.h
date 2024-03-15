@@ -14,7 +14,6 @@
 #include "base/files/scoped_file.h"
 #include "base/token.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
@@ -58,7 +57,6 @@ struct InitialBrowserAction {
 // with all the parameters, including the ones that are only
 // available after login.
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
-    EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
     std::optional<browser_util::LacrosSelection> lacros_selection,
@@ -70,7 +68,6 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
 // with all the parameters, including the ones that are only
 // available after login.
 base::ScopedFD CreateStartupData(
-    EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
     std::optional<browser_util::LacrosSelection> lacros_selection,
@@ -78,7 +75,6 @@ base::ScopedFD CreateStartupData(
 
 // Serializes and writes post-login parameters into the given FD.
 bool WritePostLoginData(base::PlatformFile fd,
-                        EnvironmentProvider* environment_provider,
                         InitialBrowserAction initial_browser_action);
 
 // Returns the device settings needed for Lacros.

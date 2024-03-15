@@ -266,10 +266,8 @@ TEST_F(CrosapiUtilTest, IsArcAvailable) {
   IdleServiceAsh::DisableForTesting();
   AddRegularUser(TestingProfile::kDefaultProfileUserName);
 
-  EnvironmentProvider environment_provider;
   mojom::BrowserInitParamsPtr browser_init_params =
       browser_util::GetBrowserInitParams(
-          &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
           /*is_keep_alive_enabled=*/false, std::nullopt);
@@ -283,10 +281,8 @@ TEST_F(CrosapiUtilTest, IsTabletFormFactor) {
   IdleServiceAsh::DisableForTesting();
   AddRegularUser(TestingProfile::kDefaultProfileUserName);
 
-  EnvironmentProvider environment_provider;
   mojom::BrowserInitParamsPtr browser_init_params =
       browser_util::GetBrowserInitParams(
-          &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
           /*is_keep_alive_enabled=*/false, std::nullopt);
@@ -302,10 +298,8 @@ TEST_F(CrosapiUtilTest, SerialNumber) {
   statistics_provider_.SetMachineStatistic("serial_number",
                                            expected_serial_number);
 
-  EnvironmentProvider environment_provider;
   mojom::BrowserInitParamsPtr browser_init_params =
       browser_util::GetBrowserInitParams(
-          &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
           /*is_keep_alive_enabled=*/false, std::nullopt);
@@ -332,10 +326,8 @@ TEST_F(CrosapiUtilTest, BrowserInitParamsContainsUserPolicy) {
   task_environment_.RunUntilIdle();
 
   std::string actual_user_policy_blob;
-  EnvironmentProvider environment_provider;
   mojom::BrowserInitParamsPtr browser_init_params =
       browser_util::GetBrowserInitParams(
-          &environment_provider,
           browser_util::InitialBrowserAction(
               crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
           /*is_keep_alive_enabled=*/false, std::nullopt);

@@ -20,7 +20,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/common/channel_info.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/policy/core/common/values_util.h"
@@ -156,8 +155,6 @@ class BrowserLauncher {
       base::OnceCallback<
           void(base::expected<base::TimeTicks, LaunchFailureReason>)> callback);
 
-  EnvironmentProvider& environment_provider() { return environment_provider_; }
-
   // Returns true if process is valid.
   bool IsProcessValid() const;
 
@@ -272,9 +269,6 @@ class BrowserLauncher {
   // Used to wait for the primary user profile to be fully created.
   std::unique_ptr<PrimaryProfileCreationWaiter>
       primary_profile_creation_waiter_;
-
-  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  EnvironmentProvider environment_provider_;
 
   // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
   // new or existing lacros startup tasks are not executed during shutdown.

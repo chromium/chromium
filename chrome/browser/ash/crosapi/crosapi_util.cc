@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
+#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/hosted_app_util.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
@@ -170,12 +171,16 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
 #include "chromeos/version/version_loader.h"
+#include "components/account_id/account_id.h"
+#include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_service.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_constants.h"
@@ -597,6 +602,74 @@ crosapi::mojom::BrowserInitParams::LacrosSelection GetLacrosSelection(
   }
 }
 
+mojom::DeviceMode GetDeviceMode() {
+  policy::DeviceMode mode = ash::InstallAttributes::Get()->GetMode();
+  switch (mode) {
+    case policy::DEVICE_MODE_PENDING:
+      // "Pending" is an internal detail of InstallAttributes and doesn't need
+      // its own mojom value.
+      return mojom::DeviceMode::kNotSet;
+    case policy::DEVICE_MODE_NOT_SET:
+      return mojom::DeviceMode::kNotSet;
+    case policy::DEVICE_MODE_CONSUMER:
+      return mojom::DeviceMode::kConsumer;
+    case policy::DEVICE_MODE_ENTERPRISE:
+      return mojom::DeviceMode::kEnterprise;
+    case policy::DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE:
+      return mojom::DeviceMode::kLegacyRetailMode;
+    case policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:
+      return mojom::DeviceMode::kConsumerKioskAutolaunch;
+    case policy::DEVICE_MODE_DEMO:
+      return mojom::DeviceMode::kDemo;
+  }
+}
+
+// Returns the account used to sign into the device. May be a Gaia account or a
+// Microsoft Active Directory account.
+// Returns a `nullopt` for Guest Sessions, Managed Guest Sessions,
+// Demo Mode, and Kiosks.
+std::optional<account_manager::Account> GetDeviceAccount() {
+  // Lacros doesn't support Multi-Login. Get the Primary User.
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!user) {
+    return std::nullopt;
+  }
+
+  const AccountId& account_id = user->GetAccountId();
+  switch (account_id.GetAccountType()) {
+    case AccountType::ACTIVE_DIRECTORY:
+      return std::make_optional(account_manager::Account{
+          account_manager::AccountKey{
+              account_id.GetObjGuid(),
+              account_manager::AccountType::kActiveDirectory},
+          user->GetDisplayEmail()});
+    case AccountType::GOOGLE:
+      return std::make_optional(account_manager::Account{
+          account_manager::AccountKey{account_id.GetGaiaId(),
+                                      account_manager::AccountType::kGaia},
+          user->GetDisplayEmail()});
+    case AccountType::UNKNOWN:
+      return std::nullopt;
+  }
+}
+
+base::Time GetLastPolicyFetchAttemptTimestamp() {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!user) {
+    return base::Time();
+  }
+
+  policy::CloudPolicyCore* core = GetCloudPolicyCoreForUser(*user);
+  if (!core) {
+    return base::Time();
+  }
+
+  return core->refresh_scheduler() ? core->refresh_scheduler()->last_refresh()
+                                   : base::Time();
+}
+
 }  // namespace
 
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
@@ -619,7 +692,6 @@ InitialBrowserAction::~InitialBrowserAction() = default;
 
 void InjectBrowserInitParams(
     mojom::BrowserInitParams* params,
-    EnvironmentProvider* environment_provider,
     bool is_keep_alive_enabled,
     std::optional<browser_util::LacrosSelection> lacros_selection) {
   params->crosapi_version = crosapi::mojom::Crosapi::Version_;
@@ -632,7 +704,7 @@ void InjectBrowserInitParams(
           ? mojom::MetricsReportingManaged::kManaged
           : mojom::MetricsReportingManaged::kNotManaged;
 
-  params->device_mode = environment_provider->GetDeviceMode();
+  params->device_mode = GetDeviceMode();
   params->interface_versions = GetInterfaceVersions();
 
   // TODO(crbug.com/1093194): This should be updated to a new value when
@@ -825,16 +897,15 @@ void InjectBrowserInitParams(
 
 template <typename BrowserParams>
 void InjectBrowserPostLoginParams(BrowserParams* params,
-                                  EnvironmentProvider* environment_provider,
                                   InitialBrowserAction initial_browser_action) {
   static_assert(std::is_same<mojom::BrowserInitParams, BrowserParams>() ||
                 std::is_same<mojom::BrowserPostLoginParams, BrowserParams>());
 
-  params->session_type = environment_provider->GetSessionType();
-  params->default_paths = environment_provider->GetDefaultPaths();
+  params->session_type = EnvironmentProvider::Get()->GetSessionType();
+  params->default_paths = EnvironmentProvider::Get()->GetDefaultPaths();
 
   const std::optional<account_manager::Account> maybe_device_account =
-      environment_provider->GetDeviceAccount();
+      GetDeviceAccount();
   if (maybe_device_account) {
     params->device_account =
         account_manager::ToMojoAccount(maybe_device_account.value());
@@ -845,7 +916,7 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
           ProfileManager::GetPrimaryUserProfile());
   params->device_account_policy = GetDeviceAccountPolicy();
   params->last_policy_fetch_attempt_timestamp =
-      environment_provider->GetLastPolicyFetchAttemptTimestamp().ToTimeT();
+      GetLastPolicyFetchAttemptTimestamp().ToTimeT();
 
   params->initial_browser_action = initial_browser_action.action;
 
@@ -861,49 +932,44 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
 }
 
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
-    EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
     std::optional<browser_util::LacrosSelection> lacros_selection,
     bool include_post_login_params) {
   mojom::BrowserInitParamsPtr params = mojom::BrowserInitParams::New();
-  InjectBrowserInitParams(params.get(), environment_provider,
-                          is_keep_alive_enabled, lacros_selection);
+  InjectBrowserInitParams(params.get(), is_keep_alive_enabled,
+                          lacros_selection);
   if (include_post_login_params) {
-    InjectBrowserPostLoginParams(params.get(), environment_provider,
+    InjectBrowserPostLoginParams(params.get(),
                                  std::move(initial_browser_action));
   }
   return params;
 }
 
 mojom::BrowserPostLoginParamsPtr GetBrowserPostLoginParams(
-    EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action) {
   mojom::BrowserPostLoginParamsPtr params =
       mojom::BrowserPostLoginParams::New();
-  InjectBrowserPostLoginParams(params.get(), environment_provider,
-                               std::move(initial_browser_action));
+  InjectBrowserPostLoginParams(params.get(), std::move(initial_browser_action));
   return params;
 }
 
 base::ScopedFD CreateStartupData(
-    EnvironmentProvider* environment_provider,
     InitialBrowserAction initial_browser_action,
     bool is_keep_alive_enabled,
     std::optional<LacrosSelection> lacros_selection,
     bool include_post_login_params) {
   const auto& data = GetBrowserInitParams(
-      environment_provider, std::move(initial_browser_action),
-      is_keep_alive_enabled, lacros_selection, include_post_login_params);
+      std::move(initial_browser_action), is_keep_alive_enabled,
+      lacros_selection, include_post_login_params);
 
   return chromeos::CreateMemFDFromBrowserInitParams(data);
 }
 
 bool WritePostLoginData(base::PlatformFile fd,
-                        EnvironmentProvider* environment_provider,
                         InitialBrowserAction initial_browser_action) {
-  const auto& data = GetBrowserPostLoginParams(
-      environment_provider, std::move(initial_browser_action));
+  const auto& data =
+      GetBrowserPostLoginParams(std::move(initial_browser_action));
 
   std::vector<uint8_t> serialized =
       crosapi::mojom::BrowserPostLoginParams::Serialize(&data);

@@ -368,8 +368,7 @@ BrowserManager::BrowserManager(
   if (!socket_path.empty()) {
     test_mojo_connection_manager_ =
         std::make_unique<crosapi::TestMojoConnectionManager>(
-            base::FilePath(socket_path),
-            &browser_launcher_.environment_provider());
+            base::FilePath(socket_path));
   }
 }
 

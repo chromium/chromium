@@ -45,7 +45,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/device_ownership_waiter.h"
 #include "chrome/browser/ash/crosapi/device_ownership_waiter_impl.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/browser/ash/crosapi/primary_profile_creation_waiter.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"
@@ -872,7 +871,6 @@ void BrowserLauncher::LaunchProcess(
   // Vice versa, if we're launching at login screen, we want to split
   // the parameters in pre-login and post-login.
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
-      &environment_provider_,
       browser_util::InitialBrowserAction(
           mojom::InitialBrowserAction::kDoNotOpenWindow),
       !is_keep_alive_enabled, lacros_selection, !launching_at_login_screen);
@@ -994,7 +992,7 @@ void BrowserLauncher::WritePostLoginData(
 
   // Write post-login parameters into the anonymous pipe.
   bool write_success = browser_util::WritePostLoginData(
-      postlogin_pipe_fd_.get(), &environment_provider_,
+      postlogin_pipe_fd_.get(),
       browser_util::InitialBrowserAction(
           mojom::InitialBrowserAction::kDoNotOpenWindow));
   PCHECK(write_success);

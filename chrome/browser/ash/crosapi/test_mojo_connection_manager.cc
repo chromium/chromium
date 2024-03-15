@@ -16,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
-#include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/account_manager_core/account.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -48,9 +47,7 @@ base::ScopedFD CreateSocketForTesting(const base::FilePath& socket_path) {
 }  // namespace
 
 TestMojoConnectionManager::TestMojoConnectionManager(
-    const base::FilePath& socket_path,
-    EnvironmentProvider* environment_provider)
-    : environment_provider_(environment_provider) {
+    const base::FilePath& socket_path) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&CreateSocketForTesting, socket_path),
@@ -88,7 +85,6 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
       }));
 
   base::ScopedFD startup_fd = browser_util::CreateStartupData(
-      environment_provider_,
       browser_util::InitialBrowserAction(
           mojom::InitialBrowserAction::kUseStartupPreference),
       /*is_keep_alive_enabled=*/false, std::nullopt);

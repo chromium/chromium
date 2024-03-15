@@ -16,8 +16,6 @@
 
 namespace crosapi {
 
-class EnvironmentProvider;
-
 // An extension of BrowserManager to help set up and manage the mojo connections
 // between the test executable and ash-chrome in testing environment.
 //
@@ -34,8 +32,7 @@ class EnvironmentProvider;
 // when launching it inside gdb.
 class TestMojoConnectionManager {
  public:
-  explicit TestMojoConnectionManager(const base::FilePath& socket_path,
-                                     EnvironmentProvider* environment_provider);
+  explicit TestMojoConnectionManager(const base::FilePath& socket_path);
 
   TestMojoConnectionManager(const TestMojoConnectionManager&) = delete;
   TestMojoConnectionManager& operator=(const TestMojoConnectionManager&) =
@@ -49,9 +46,6 @@ class TestMojoConnectionManager {
 
   // Called when a client, such as a test launcher, attempts to connect.
   void OnTestingSocketAvailable();
-
-  // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  raw_ptr<EnvironmentProvider> environment_provider_;
 
   // A socket for a client, such as a test launcher, to connect to.
   base::ScopedFD testing_socket_;
