@@ -244,22 +244,29 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
 // the metricsPrivateIndividualApis extension API
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
                        DemoModeAppRecordMetricsFromComponentContent) {
+  constexpr int kAttractLoopTimestamp = 5000, kEasyPageDuration = 6500,
+                kProcessorPageDuration = 7300;
   const std::string kTestJs =
       "import {metricsService, Page, PillarButton, DetailsPage} from "
       "'./demo_mode_metrics_service.js'; "
       "document.addEventListener('DOMContentLoaded', () => {"
       "  metricsService.recordAttractLoopBreak();"
-      "  metricsService.recordAttractLoopBreakTimestamp(10000);"
+      "  metricsService.recordAttractLoopBreakTimestamp(" +
+      base::ToString(kAttractLoopTimestamp) +
+      ");"
       "  metricsService.recordAttractLoopBreakTimestamp(NaN);"
       "  metricsService.recordHomePageButtonClick(Page.EASY); "
       "  metricsService.recordHomePageButtonClick(Page.CHROMEOS); "
-      "  metricsService.recordPageViewDuration(Page.EASY, 10000); "
+      "  metricsService.recordPageViewDuration(Page.EASY, " +
+      base::ToString(kEasyPageDuration) +
+      "); "
       "  metricsService.recordPageViewDuration(Page.EASY, NaN); "
       "  metricsService.recordPillarPageButtonClick(PillarButton.NEXT); "
       "  metricsService.recordNavbarButtonClick(Page.FAST); "
       "  metricsService.recordDetailsPageClicked(DetailsPage.MOBILE_GAMING); "
-      "  metricsService.recordDetailsPageViewDuration(DetailsPage.PROCESSOR, "
-      "10000); "
+      "  metricsService.recordDetailsPageViewDuration(DetailsPage.PROCESSOR, " +
+      base::ToString(kProcessorPageDuration) +
+      "); "
       "  metricsService.recordDetailsPageViewDuration(DetailsPage.PROCESSOR, "
       "NaN); "
       "});";
@@ -299,12 +306,14 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
   histogram_tester_.ExpectBucketCount("DemoMode.Highlights.FirstInteraction",
                                       2 /* Fast button click */, 0);
   histogram_tester_.ExpectTimeBucketCount(
-      "DemoMode.Highlights.PageStayDuration.EasyPage", base::Seconds(10), 1);
+      "DemoMode.AttractLoop.Timestamp",
+      base::Milliseconds(kAttractLoopTimestamp), 1);
+  histogram_tester_.ExpectTimeBucketCount(
+      "DemoMode.Highlights.PageStayDuration.EasyPage",
+      base::Milliseconds(kEasyPageDuration), 1);
   histogram_tester_.ExpectTimeBucketCount(
       "DemoMode.Highlights.DetailsPageStayDuration.ProcessorPage",
-      base::Seconds(10), 1);
-  histogram_tester_.ExpectTimeBucketCount("DemoMode.AttractLoop.Timestamp",
-                                          base::Seconds(10), 1);
+      base::Milliseconds(kProcessorPageDuration), 1);
   histogram_tester_.ExpectBucketCount(
       "DemoMode.Highlights.Error", 0 /* Invalid attract loop break timestamp */,
       1);
