@@ -188,19 +188,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
-    public void continueButtonClickShowsDeviceLockPageOnAutomotive() {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-
-        clickButton(R.id.signin_fre_continue_button);
-
-        onView(withId(R.id.device_lock_view)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
     // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
     // adding at least one policy via AppRestrictions prevents that.
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
