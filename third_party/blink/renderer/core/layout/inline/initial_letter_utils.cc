@@ -94,9 +94,7 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
     const FontHeight text_metrics = paragraph_style.GetFontHeight();
     FontHeight line_metrics = text_metrics;
     FontHeight leading_space = CalculateLeadingSpace(
-        paragraph_style.ComputedLineHeightAsFixed(), line_metrics,
-        initial_letter_box_style.TextBoxTrim(),
-        paragraph_style.GetWritingMode());
+        paragraph_style.ComputedLineHeightAsFixed(), line_metrics);
     line_metrics.AddLeading(leading_space);
     const LayoutUnit descent = line_metrics.descent;
     return block_offset - descent;

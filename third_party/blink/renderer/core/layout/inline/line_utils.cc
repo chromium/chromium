@@ -9,14 +9,6 @@
 
 namespace blink {
 
-namespace {
-
-void TrimLeadingSpace(LayoutUnit& leading_space) {
-  leading_space = LayoutUnit();
-}
-
-}  // namespace
-
 InlineCursor NGContainingLineBoxOf(const PositionWithAffinity& position) {
   const InlineCaretPosition caret_position =
       ComputeInlineCaretPosition(position);
@@ -38,29 +30,13 @@ bool InSameNGLineBox(const PositionWithAffinity& position1,
 }
 
 FontHeight CalculateLeadingSpace(const LayoutUnit& line_height,
-                                 const FontHeight& current_height,
-                                 const ETextBoxTrim& text_box_trim,
-                                 WritingMode writing_mode) {
+                                 const FontHeight& current_height) {
   // TODO(kojii): floor() is to make text dump compatible with legacy test
   // results. Revisit when we paint.
   LayoutUnit ascent_leading_spacing{
       ((line_height - current_height.LineHeight()) / 2).Floor()};
   LayoutUnit descent_leading_spacing =
       line_height - current_height.LineHeight() - ascent_leading_spacing;
-
-  // TODO(https://crbug.com/1278634): Trim it to the specified edges instead.
-  if (UNLIKELY(text_box_trim == ETextBoxTrim::kBoth ||
-               text_box_trim == ETextBoxTrim::kStart)) {
-    TrimLeadingSpace(IsFlippedLinesWritingMode(writing_mode)
-                         ? descent_leading_spacing
-                         : ascent_leading_spacing);
-  }
-  if (UNLIKELY(text_box_trim == ETextBoxTrim::kBoth ||
-               text_box_trim == ETextBoxTrim::kEnd)) {
-    TrimLeadingSpace(IsFlippedLinesWritingMode(writing_mode)
-                         ? ascent_leading_spacing
-                         : descent_leading_spacing);
-  }
   return FontHeight(ascent_leading_spacing, descent_leading_spacing);
 }
 

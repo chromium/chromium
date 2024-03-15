@@ -138,8 +138,7 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   FontHeight emphasis_marks_outsets =
       ComputeEmphasisMarkOutsets(styleref, fontref);
   FontHeight leading_space = CalculateLeadingSpace(
-      styleref.ComputedLineHeightAsFixed(fontref), text_metrics,
-      styleref.TextBoxTrim(), styleref.GetWritingMode());
+      styleref.ComputedLineHeightAsFixed(fontref), text_metrics);
   if (emphasis_marks_outsets.IsEmpty()) {
     text_metrics.AddLeading(leading_space);
   } else {
@@ -177,8 +176,7 @@ void InlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result) {
     FontHeight fallback_metrics =
         fallback_font->GetFontMetrics().GetFontHeight(baseline_type);
     FontHeight leading_space = CalculateLeadingSpace(
-        fallback_font->GetFontMetrics().FixedLineSpacing(), fallback_metrics,
-        style->TextBoxTrim(), style->GetWritingMode());
+        fallback_font->GetFontMetrics().FixedLineSpacing(), fallback_metrics);
     fallback_metrics.AddLeading(leading_space);
     metrics.Unite(fallback_metrics);
   }
@@ -1151,8 +1149,7 @@ FontHeight InlineLayoutStateStack::MetricsForTopAndBottomAlign(
     // Include the line-height property. The inline box has the height of the
     // font metrics without the line-height included.
     FontHeight leading_space =
-        CalculateLeadingSpace(style.ComputedLineHeightAsFixed(), box_metrics,
-                              style.TextBoxTrim(), style.GetWritingMode());
+        CalculateLeadingSpace(style.ComputedLineHeightAsFixed(), box_metrics);
     box_metrics.AddLeading(leading_space);
     metrics.Unite(box_metrics);
   }
