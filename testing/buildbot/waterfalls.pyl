@@ -4668,7 +4668,7 @@
         'browser_config': 'release_x64',
         'mixins': [
           'limited_capacity_bot',
-          'win10_amd_rx_5500_xt',
+          'win10_amd_rx_5500_xt_stable',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',

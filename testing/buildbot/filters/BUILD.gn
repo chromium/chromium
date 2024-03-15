@@ -336,6 +336,7 @@ source_set("gl_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator_12.gl_unittests.filter",
     "//testing/buildbot/filters/win.win_arm64.gl_unittests.filter",
+    "//testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter",
   ]
 }
 

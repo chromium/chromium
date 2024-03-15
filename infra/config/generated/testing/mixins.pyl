@@ -1293,13 +1293,13 @@
       },
     },
   },
-  'win10_amd_rx_5500_xt': {
+  'win10_amd_rx_5500_xt_stable': {
     'swarming': {
       'dimensions': {
         'display_attached': '1',
-        'gpu': '1002:7340',
-        'os': 'Windows-10',
-        'pool': 'chromium.tests.gpu.experimental',
+        'gpu': '1002:7340-31.0.24002.92',
+        'os': 'Windows-10-19045.3930',
+        'pool': 'chromium.tests.gpu',
       },
     },
   },

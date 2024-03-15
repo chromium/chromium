@@ -206,6 +206,11 @@ crbug.com/1402261 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_* [
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] WebGLCanvasCaptureTraceTest_VideoStream* [ RetryOnFailure ]
 
+# VP9 zero copy appears to be broken on newer driver versions.
+crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9 [ Failure ]
+crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
+crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

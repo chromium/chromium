@@ -3062,6 +3062,11 @@
       'linux-exp-msan-fyi-rel',
     ],
     'modifications': {
+      'Win10 FYI x64 Release (AMD RX 5500 XT)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter',
+        ],
+      },
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': [
           # crbug.com/1523061

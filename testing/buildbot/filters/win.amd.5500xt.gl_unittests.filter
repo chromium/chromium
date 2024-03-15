@@ -1,0 +1,4 @@
+# crbug.com/329691945
+-All/DirectCompositionPixelTest.SoftwareVideoSwapchain/0
+-All/DirectCompositionPixelTest.SoftwareVideoSwapchain/1
+-DCompPresenterPixelTest.SoftwareVideoSwapchain
