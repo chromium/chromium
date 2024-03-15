@@ -4,6 +4,11 @@
 
 #include "ash/wm/window_restore/pine_test_api.h"
 
+#include "ash/shell.h"
+#include "ash/style/system_dialog_delegate_view.h"
+#include "ash/wm/window_restore/pine_controller.h"
+#include "ui/views/view_utils.h"
+
 namespace ash {
 
 PineContentsViewTestApi::PineContentsViewTestApi(
@@ -22,5 +27,17 @@ PineItemsOverflowViewTestApi::PineItemsOverflowViewTestApi(
     : overflow_view_(overflow_view) {}
 
 PineItemsOverflowViewTestApi::~PineItemsOverflowViewTestApi() = default;
+
+PineTestApi::PineTestApi() = default;
+
+PineTestApi::~PineTestApi() = default;
+
+SystemDialogDelegateView* PineTestApi::GetOnboardingDialog() {
+  auto* onboarding_widget =
+      Shell::Get()->pine_controller()->onboarding_widget_.get();
+  return onboarding_widget ? views::AsViewClass<SystemDialogDelegateView>(
+                                 onboarding_widget->GetContentsView())
+                           : nullptr;
+}
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
+#include "ash/style/system_dialog_delegate_view.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -33,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/views/test/widget_test.h"
 
 namespace ash::full_restore {
 
@@ -469,6 +471,53 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, DISABLED_ReenterOverviewPineSession) {
   ToggleOverview();
   WaitForOverviewEnterAnimation();
   EXPECT_FALSE(GetPineDialogRestoreButton());
+}
+
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_Onboarding) {
+  // The restore pref setting is 'Ask every time' by default.
+  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
+            prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
+  prefs->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CreateBrowser(profile);
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Tests that when Restore is 'Ask every time' and there is restore data, we
+// show the onboarding dialog.
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, Onboarding) {
+  // The first time after rebooting, we show the onboarding dialog.
+  auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
+  EXPECT_TRUE(onboarding_dialog);
+
+  // Press the accept button.
+  test::Click(onboarding_dialog->GetAcceptButtonForTesting(), /*flag=*/0);
+  views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
+
+  // Verify we have entered overview. The restore button will be null if
+  // we failed to enter overview.
+  WaitForOverviewEnterAnimation();
+  const PillButton* restore_button = GetPineDialogRestoreButton();
+  ASSERT_TRUE(restore_button);
+
+  // Click the "Restore" button and verify we have launched 1 browser.
+  BrowsersWaiter waiter(/*expected_count=*/1);
+  test::Click(restore_button, /*flag=*/0);
+  waiter.Wait();
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Attempt to show the dialog again. Since we've already shown it, we
+  // don't show it again.
+  Shell::Get()->pine_controller()->MaybeShowPineOnboardingMessage(
+      /*restore_on=*/true);
+  EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
 }
 
 }  // namespace ash::full_restore

@@ -60,7 +60,7 @@ class ASH_EXPORT PineController : public OverviewObserver {
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
  private:
-  friend class PineTest;
+  friend class PineTestApi;
   FRIEND_TEST_ALL_PREFIXES(PineTest, OnboardingMetrics);
 
   static void SetIgnorePrefsForTesting(bool val);

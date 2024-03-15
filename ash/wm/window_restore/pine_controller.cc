@@ -20,6 +20,7 @@
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -120,6 +121,7 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
   if (!ShouldShowPineOnboarding()) {
     return;
   }
+  GetActivePrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, false);
 
   auto dialog =
       views::Builder<SystemDialogDelegateView>()
@@ -165,7 +167,6 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
 
   onboarding_widget_ = std::make_unique<views::Widget>(std::move(params));
   onboarding_widget_->Show();
-  GetActivePrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, false);
 }
 
 void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
@@ -235,6 +236,13 @@ void PineController::MaybeStartPineOverviewSession(
   }
 
   pine_contents_data_ = std::move(pine_contents_data);
+
+  // If this is the first time starting pine, show the onboarding dialog
+  // instead. Pine session will be started if the user hits 'Accept'.
+  if (ShouldShowPineOnboarding()) {
+    MaybeShowPineOnboardingMessage(/*restore_on=*/true);
+    return;
+  }
 
   RecordPineScreenshotMetrics(Shell::Get()->local_state());
   image_util::DecodeImageFile(
@@ -323,11 +331,22 @@ void PineController::StartPineOverviewSession() {
 }
 
 void PineController::OnOnboardingAcceptPressed(bool restore_on) {
-  // TODO(sophiewen): Bind this to start the pine session.
+  // TODO(sophiewen): Update the pref when UX decide what to do.
   if (!restore_on) {
     // We only record the action taken if the user had Restore off.
     base::UmaHistogramBoolean(kPineOnboardingHistogram, true);
   }
+  // Wait until the onboarding widget is destroyed before starting overview,
+  // since we disallow entering overview while system modal windows are open.
+  // Use a weak ptr since `this` can be deleted before we close all windows.
+  onboarding_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
+      base::BindOnce(
+          [](const base::WeakPtr<PineController>& weak_this) {
+            if (weak_this) {
+              weak_this->StartPineOverviewSession();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PineController::OnOnboardingCancelPressed() {

@@ -14,6 +14,7 @@
 namespace ash {
 
 class PillButton;
+class SystemDialogDelegateView;
 
 class PineContentsViewTestApi {
  public:
@@ -75,6 +76,16 @@ class PineItemsOverflowViewTestApi {
 
  private:
   const raw_ptr<const PineItemsOverflowView> overflow_view_;
+};
+
+class PineTestApi {
+ public:
+  explicit PineTestApi();
+  PineTestApi(const PineTestApi&) = delete;
+  PineTestApi& operator=(const PineTestApi&) = delete;
+  ~PineTestApi();
+
+  SystemDialogDelegateView* GetOnboardingDialog();
 };
 
 }  // namespace ash
