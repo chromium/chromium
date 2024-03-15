@@ -48,7 +48,7 @@ void ProfileReportGeneratorIOS::GetSigninUserInfo(
   signed_in_user_info->set_email(
       base::SysNSStringToUTF8(account_info.userEmail));
   signed_in_user_info->set_obfuscated_gaia_id(
-      base::SysNSStringToUTF8(account_info.hashedGaiaID));
+      base::SysNSStringToUTF8(account_info.gaiaID));
 }
 
 void ProfileReportGeneratorIOS::GetExtensionInfo(
