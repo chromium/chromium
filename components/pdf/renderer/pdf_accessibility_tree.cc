@@ -2274,7 +2274,7 @@ PdfAccessibilityTree::GetPluginContainerAXObject() {
   if (obj.IsDetached()) {
     return std::nullopt;
   }
-  return obj;
+  return std::optional(obj);
 }
 
 std::unique_ptr<gfx::Transform>
@@ -2364,12 +2364,8 @@ void PdfAccessibilityTree::SerializeNode(const ui::AXNode* node,
 }
 
 std::unique_ptr<ui::AXActionTarget> PdfAccessibilityTree::CreateActionTarget(
-    ui::AXNodeID id) {
-  ui::AXNode* target_node = GetFromId(id);
-  if (!target_node) {
-    return std::make_unique<ui::NullAXActionTarget>();
-  }
-  return std::make_unique<PdfAXActionTarget>(*target_node, this);
+    const ui::AXNode& target_node) {
+  return std::make_unique<PdfAXActionTarget>(target_node, this);
 }
 
 void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
