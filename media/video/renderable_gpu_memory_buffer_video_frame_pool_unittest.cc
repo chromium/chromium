@@ -462,13 +462,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     RenderableGpuMemoryBufferVideoFramePoolTest,
     testing::Combine(
-#if BUILDFLAG(IS_FUCHSIA)
-        // kUseMultiPlaneFormatForHardwareVideo experiment has been enabled on
-        // Fuchsia fully and codepath is deleted.
-        testing::Values(true),
-#else
         testing::Bool(),
-#endif
         testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_NV12,
                         media::VideoPixelFormat::PIXEL_FORMAT_ARGB)));
 
