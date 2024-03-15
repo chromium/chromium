@@ -12,6 +12,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace {
 
@@ -64,6 +65,8 @@ IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
   SelectedKeywordView* selected_keyword_view =
       browser_view->toolbar()->location_bar()->selected_keyword_view();
   ASSERT_NE(selected_keyword_view, nullptr);
+
+  views::test::RunScheduledLayout(browser_view);
 
   // Verify that the label in the omnibox is the extension's shortname.
   EXPECT_EQ(extension->short_name(),
