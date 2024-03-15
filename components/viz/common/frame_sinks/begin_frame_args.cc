@@ -8,7 +8,7 @@
 
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/traced_value.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
 
 namespace viz {
@@ -27,9 +27,9 @@ const char* BeginFrameArgs::TypeToString(BeginFrameArgsType type) {
 }
 
 namespace {
-perfetto::protos::pbzero::BeginFrameArgs::BeginFrameArgsType
+perfetto::protos::pbzero::BeginFrameArgsV2::BeginFrameArgsType
 TypeToProtozeroEnum(BeginFrameArgs::BeginFrameArgsType type) {
-  using pbzeroType = perfetto::protos::pbzero::BeginFrameArgs;
+  using pbzeroType = perfetto::protos::pbzero::BeginFrameArgsV2;
   switch (type) {
     case BeginFrameArgs::INVALID:
       return pbzeroType::BEGIN_FRAME_ARGS_TYPE_INVALID;
@@ -171,13 +171,11 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
 
 void BeginFrameArgs::AsProtozeroInto(
     perfetto::EventContext& ctx,
-    perfetto::protos::pbzero::BeginFrameArgs* state) const {
+    perfetto::protos::pbzero::BeginFrameArgsV2* state) const {
   state->set_type(TypeToProtozeroEnum(type));
   state->set_source_id(frame_id.source_id);
   state->set_sequence_number(frame_id.sequence_number);
-  // TODO(yjliu) add frames_throttled_since_last to third_party
-  // chrome_compositor_scheduler_state.proto
-  // state->set_frames_throttled_since_last(frames_throttled_since_last);
+  state->set_frames_throttled_since_last(frames_throttled_since_last);
   state->set_frame_time_us(frame_time.since_origin().InMicroseconds());
   state->set_deadline_us(deadline.since_origin().InMicroseconds());
   state->set_interval_delta_us(interval.InMicroseconds());

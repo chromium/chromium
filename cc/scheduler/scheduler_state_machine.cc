@@ -24,44 +24,44 @@ SchedulerStateMachine::SchedulerStateMachine(const SchedulerSettings& settings)
 
 SchedulerStateMachine::~SchedulerStateMachine() = default;
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     LayerTreeFrameSinkState
     SchedulerStateMachine::LayerTreeFrameSinkStateToProtozeroEnum(
         LayerTreeFrameSinkState state) {
-  using pbzeroMajorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState;
+  using pbzeroMajorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2;
   switch (state) {
     case LayerTreeFrameSinkState::NONE:
-      return pbzeroMajorState::LAYER_TREE_FRAME_NONE;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_NONE;
     case LayerTreeFrameSinkState::ACTIVE:
-      return pbzeroMajorState::LAYER_TREE_FRAME_ACTIVE;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_ACTIVE;
     case LayerTreeFrameSinkState::CREATING:
-      return pbzeroMajorState::LAYER_TREE_FRAME_CREATING;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_CREATING;
     case LayerTreeFrameSinkState::WAITING_FOR_FIRST_COMMIT:
-      return pbzeroMajorState::LAYER_TREE_FRAME_WAITING_FOR_FIRST_COMMIT;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_WAITING_FOR_FIRST_COMMIT;
     case LayerTreeFrameSinkState::WAITING_FOR_FIRST_ACTIVATION:
-      return pbzeroMajorState::LAYER_TREE_FRAME_WAITING_FOR_FIRST_ACTIVATION;
+      return pbzeroMajorStateV2::LAYER_TREE_FRAME_WAITING_FOR_FIRST_ACTIVATION;
   }
   NOTREACHED();
-  return pbzeroMajorState::LAYER_TREE_FRAME_UNSPECIFIED;
+  return pbzeroMajorStateV2::LAYER_TREE_FRAME_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     BeginImplFrameState
     SchedulerStateMachine::BeginImplFrameStateToProtozeroEnum(
         BeginImplFrameState state) {
-  using pbzeroMajorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState;
+  using pbzeroMajorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2;
   switch (state) {
     case BeginImplFrameState::IDLE:
-      return pbzeroMajorState::BEGIN_IMPL_FRAME_IDLE;
+      return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_IDLE;
     case BeginImplFrameState::INSIDE_BEGIN_FRAME:
-      return pbzeroMajorState::BEGIN_IMPL_FRAME_INSIDE_BEGIN_FRAME;
+      return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_INSIDE_BEGIN_FRAME;
     case BeginImplFrameState::INSIDE_DEADLINE:
-      return pbzeroMajorState::BEGIN_IMPL_FRAME_INSIDE_DEADLINE;
+      return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_INSIDE_DEADLINE;
   }
   NOTREACHED();
-  return pbzeroMajorState::BEGIN_IMPL_FRAME_UNSPECIFIED;
+  return pbzeroMajorStateV2::BEGIN_IMPL_FRAME_UNSPECIFIED;
 }
 
 const char* SchedulerStateMachine::BeginImplFrameDeadlineModeToString(
@@ -82,12 +82,12 @@ const char* SchedulerStateMachine::BeginImplFrameDeadlineModeToString(
   return "???";
 }
 
-perfetto::protos::pbzero::ChromeCompositorSchedulerState::
+perfetto::protos::pbzero::ChromeCompositorSchedulerStateV2::
     BeginImplFrameDeadlineMode
     SchedulerStateMachine::BeginImplFrameDeadlineModeToProtozeroEnum(
         BeginImplFrameDeadlineMode mode) {
   using pbzeroSchedulerState =
-      perfetto::protos::pbzero::ChromeCompositorSchedulerState;
+      perfetto::protos::pbzero::ChromeCompositorSchedulerStateV2;
   switch (mode) {
     case BeginImplFrameDeadlineMode::NONE:
       return pbzeroSchedulerState::DEADLINE_MODE_NONE;
@@ -104,104 +104,105 @@ perfetto::protos::pbzero::ChromeCompositorSchedulerState::
   return pbzeroSchedulerState::DEADLINE_MODE_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     BeginMainFrameState
     SchedulerStateMachine::BeginMainFrameStateToProtozeroEnum(
         BeginMainFrameState state) {
-  using pbzeroMajorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState;
+  using pbzeroMajorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2;
   switch (state) {
     case BeginMainFrameState::IDLE:
-      return pbzeroMajorState::BEGIN_MAIN_FRAME_IDLE;
+      return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_IDLE;
     case BeginMainFrameState::SENT:
-      return pbzeroMajorState::BEGIN_MAIN_FRAME_SENT;
+      return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_SENT;
     case BeginMainFrameState::READY_TO_COMMIT:
-      return pbzeroMajorState::BEGIN_MAIN_FRAME_READY_TO_COMMIT;
+      return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_READY_TO_COMMIT;
   }
   NOTREACHED();
-  return pbzeroMajorState::BEGIN_MAIN_FRAME_UNSPECIFIED;
+  return pbzeroMajorStateV2::BEGIN_MAIN_FRAME_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2::
     ForcedRedrawOnTimeoutState
     SchedulerStateMachine::ForcedRedrawOnTimeoutStateToProtozeroEnum(
         ForcedRedrawOnTimeoutState state) {
-  using pbzeroMajorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState;
+  using pbzeroMajorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MajorStateV2;
   switch (state) {
     case ForcedRedrawOnTimeoutState::IDLE:
-      return pbzeroMajorState::FORCED_REDRAW_IDLE;
+      return pbzeroMajorStateV2::FORCED_REDRAW_IDLE;
     case ForcedRedrawOnTimeoutState::WAITING_FOR_COMMIT:
-      return pbzeroMajorState::FORCED_REDRAW_WAITING_FOR_COMMIT;
+      return pbzeroMajorStateV2::FORCED_REDRAW_WAITING_FOR_COMMIT;
     case ForcedRedrawOnTimeoutState::WAITING_FOR_ACTIVATION:
-      return pbzeroMajorState::FORCED_REDRAW_WAITING_FOR_ACTIVATION;
+      return pbzeroMajorStateV2::FORCED_REDRAW_WAITING_FOR_ACTIVATION;
     case ForcedRedrawOnTimeoutState::WAITING_FOR_DRAW:
-      return pbzeroMajorState::FORCED_REDRAW_WAITING_FOR_DRAW;
+      return pbzeroMajorStateV2::FORCED_REDRAW_WAITING_FOR_DRAW;
   }
   NOTREACHED();
-  return pbzeroMajorState::FORCED_REDRAW_UNSPECIFIED;
+  return pbzeroMajorStateV2::FORCED_REDRAW_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MinorState::
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2::
     ScrollHandlerState
     ScrollHandlerStateToProtozeroEnum(ScrollHandlerState state) {
-  using pbzeroMinorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MinorState;
+  using pbzeroMinorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2;
   switch (state) {
     case ScrollHandlerState::SCROLL_AFFECTS_SCROLL_HANDLER:
-      return pbzeroMinorState::SCROLL_AFFECTS_SCROLL_HANDLER;
+      return pbzeroMinorStateV2::SCROLL_AFFECTS_SCROLL_HANDLER;
     case ScrollHandlerState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER:
-      return pbzeroMinorState::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
+      return pbzeroMinorStateV2::SCROLL_DOES_NOT_AFFECT_SCROLL_HANDLER;
   }
   NOTREACHED();
-  return pbzeroMinorState::SCROLL_HANDLER_UNSPECIFIED;
+  return pbzeroMinorStateV2::SCROLL_HANDLER_UNSPECIFIED;
 }
 
-perfetto::protos::pbzero::ChromeCompositorSchedulerAction
+perfetto::protos::pbzero::ChromeCompositorSchedulerActionV2
 SchedulerStateMachine::ActionToProtozeroEnum(Action action) {
   using pbzeroSchedulerAction =
-      perfetto::protos::pbzero::ChromeCompositorSchedulerAction;
+      perfetto::protos::pbzero::ChromeCompositorSchedulerActionV2;
   switch (action) {
     case Action::NONE:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_NONE;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_NONE;
     case Action::SEND_BEGIN_MAIN_FRAME:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_SEND_BEGIN_MAIN_FRAME;
+      return pbzeroSchedulerAction::
+          CC_SCHEDULER_ACTION_V2_SEND_BEGIN_MAIN_FRAME;
     case Action::COMMIT:
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_COMMIT;
     case Action::POST_COMMIT:
-      // TODO(szager): Add CC_SCHEDULER_ACTION_POST_COMMIT to perfetto
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_COMMIT;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_POST_COMMIT;
     case Action::ACTIVATE_SYNC_TREE:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_ACTIVATE_SYNC_TREE;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_ACTIVATE_SYNC_TREE;
     case Action::DRAW_IF_POSSIBLE:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_DRAW_IF_POSSIBLE;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_IF_POSSIBLE;
     case Action::DRAW_FORCED:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_DRAW_FORCED;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_FORCED;
     case Action::DRAW_ABORT:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_DRAW_ABORT;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_DRAW_ABORT;
     case Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_BEGIN_LAYER_TREE_FRAME_SINK_CREATION;
+          CC_SCHEDULER_ACTION_V2_BEGIN_LAYER_TREE_FRAME_SINK_CREATION;
     case Action::PREPARE_TILES:
-      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_PREPARE_TILES;
+      return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_PREPARE_TILES;
     case Action::INVALIDATE_LAYER_TREE_FRAME_SINK:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_INVALIDATE_LAYER_TREE_FRAME_SINK;
+          CC_SCHEDULER_ACTION_V2_INVALIDATE_LAYER_TREE_FRAME_SINK;
     case Action::PERFORM_IMPL_SIDE_INVALIDATION:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_PERFORM_IMPL_SIDE_INVALIDATION;
+          CC_SCHEDULER_ACTION_V2_PERFORM_IMPL_SIDE_INVALIDATION;
     case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL;
+          CC_SCHEDULER_ACTION_V2_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL;
     case Action::NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON:
       return pbzeroSchedulerAction::
-          CC_SCHEDULER_ACTION_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON;
+          CC_SCHEDULER_ACTION_V2_NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON;
   }
   NOTREACHED();
-  return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_UNSPECIFIED;
+  return pbzeroSchedulerAction::CC_SCHEDULER_ACTION_V2_UNSPECIFIED;
 }
 
 void SchedulerStateMachine::AsProtozeroInto(
-    perfetto::protos::pbzero::ChromeCompositorStateMachine* state) const {
+    perfetto::protos::pbzero::ChromeCompositorStateMachineV2* state) const {
   auto* major_state = state->set_major_state();
   major_state->set_next_action(ActionToProtozeroEnum(NextAction()));
   major_state->set_begin_impl_frame_state(

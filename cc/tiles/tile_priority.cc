@@ -85,19 +85,20 @@ std::string TreePriorityToString(TreePriority prio) {
   }
 }
 
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MinorState::TreePriority
-TreePriorityToProtozeroEnum(TreePriority priority) {
-  using pbzeroMinorState =
-      perfetto::protos::pbzero::ChromeCompositorStateMachine::MinorState;
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2::
+    TreePriority
+    TreePriorityToProtozeroEnum(TreePriority priority) {
+  using pbzeroMinorStateV2 =
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2;
   switch (priority) {
     case TreePriority::SAME_PRIORITY_FOR_BOTH_TREES:
-      return pbzeroMinorState::TREE_PRIORITY_SAME_PRIORITY_FOR_BOTH_TREES;
+      return pbzeroMinorStateV2::TREE_PRIORITY_SAME_PRIORITY_FOR_BOTH_TREES;
     case TreePriority::SMOOTHNESS_TAKES_PRIORITY:
-      return pbzeroMinorState::TREE_PRIORITY_SMOOTHNESS_TAKES_PRIORITY;
+      return pbzeroMinorStateV2::TREE_PRIORITY_SMOOTHNESS_TAKES_PRIORITY;
     case TreePriority::NEW_CONTENT_TAKES_PRIORITY:
-      return pbzeroMinorState::TREE_PRIORITY_NEW_CONTENT_TAKES_PRIORITY;
+      return pbzeroMinorStateV2::TREE_PRIORITY_NEW_CONTENT_TAKES_PRIORITY;
   }
-  return pbzeroMinorState::TREE_PRIORITY_UNSPECIFIED;
+  return pbzeroMinorStateV2::TREE_PRIORITY_UNSPECIFIED;
 }
 
 void GlobalStateThatImpactsTilePriority::AsValueInto(

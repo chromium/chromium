@@ -13,8 +13,8 @@
 #include <string>
 
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/cc_export.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 
 namespace cc {
 
@@ -94,8 +94,9 @@ enum TreePriority {
 // TODO(nuskos): remove TreePriorityToString once we have a utility function to
 // take protozero to strings.
 std::string TreePriorityToString(TreePriority prio);
-perfetto::protos::pbzero::ChromeCompositorStateMachine::MinorState::TreePriority
-TreePriorityToProtozeroEnum(TreePriority priority);
+perfetto::protos::pbzero::ChromeCompositorStateMachineV2::MinorStateV2::
+    TreePriority
+    TreePriorityToProtozeroEnum(TreePriority priority);
 
 class GlobalStateThatImpactsTilePriority {
  public:

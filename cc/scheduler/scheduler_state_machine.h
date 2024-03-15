@@ -7,13 +7,13 @@
 
 #include <stdint.h>
 
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/cc_export.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
 #include "cc/scheduler/scheduler_settings.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 
 namespace cc {
 
@@ -49,8 +49,8 @@ class CC_EXPORT SchedulerStateMachine {
     WAITING_FOR_FIRST_COMMIT,
     WAITING_FOR_FIRST_ACTIVATION,
   };
-  static perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
-      LayerTreeFrameSinkState
+  static perfetto::protos::pbzero::ChromeCompositorStateMachineV2::
+      MajorStateV2::LayerTreeFrameSinkState
       LayerTreeFrameSinkStateToProtozeroEnum(LayerTreeFrameSinkState state);
 
   // Note: BeginImplFrameState does not cycle through these states in a fixed
@@ -60,8 +60,8 @@ class CC_EXPORT SchedulerStateMachine {
     INSIDE_BEGIN_FRAME,
     INSIDE_DEADLINE,
   };
-  static perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
-      BeginImplFrameState
+  static perfetto::protos::pbzero::ChromeCompositorStateMachineV2::
+      MajorStateV2::BeginImplFrameState
       BeginImplFrameStateToProtozeroEnum(BeginImplFrameState state);
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -88,7 +88,7 @@ class CC_EXPORT SchedulerStateMachine {
   // used typed macros so we can remove this ToString function.
   static const char* BeginImplFrameDeadlineModeToString(
       BeginImplFrameDeadlineMode mode);
-  static perfetto::protos::pbzero::ChromeCompositorSchedulerState::
+  static perfetto::protos::pbzero::ChromeCompositorSchedulerStateV2::
       BeginImplFrameDeadlineMode
       BeginImplFrameDeadlineModeToProtozeroEnum(
           BeginImplFrameDeadlineMode mode);
@@ -99,8 +99,8 @@ class CC_EXPORT SchedulerStateMachine {
     READY_TO_COMMIT,  // A previously issued BeginMainFrame has been processed,
                       // and is ready to commit.
   };
-  static perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
-      BeginMainFrameState
+  static perfetto::protos::pbzero::ChromeCompositorStateMachineV2::
+      MajorStateV2::BeginMainFrameState
       BeginMainFrameStateToProtozeroEnum(BeginMainFrameState state);
 
   // When a redraw is forced, it goes through a complete commit -> activation ->
@@ -111,8 +111,8 @@ class CC_EXPORT SchedulerStateMachine {
     WAITING_FOR_ACTIVATION,
     WAITING_FOR_DRAW,
   };
-  static perfetto::protos::pbzero::ChromeCompositorStateMachine::MajorState::
-      ForcedRedrawOnTimeoutState
+  static perfetto::protos::pbzero::ChromeCompositorStateMachineV2::
+      MajorStateV2::ForcedRedrawOnTimeoutState
       ForcedRedrawOnTimeoutStateToProtozeroEnum(
           ForcedRedrawOnTimeoutState state);
 
@@ -148,11 +148,11 @@ class CC_EXPORT SchedulerStateMachine {
     NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_UNTIL,
     NOTIFY_BEGIN_MAIN_FRAME_NOT_EXPECTED_SOON,
   };
-  static perfetto::protos::pbzero::ChromeCompositorSchedulerAction
+  static perfetto::protos::pbzero::ChromeCompositorSchedulerActionV2
   ActionToProtozeroEnum(Action action);
 
   void AsProtozeroInto(
-      perfetto::protos::pbzero::ChromeCompositorStateMachine* state) const;
+      perfetto::protos::pbzero::ChromeCompositorStateMachineV2* state) const;
 
   Action NextAction() const;
   void WillSendBeginMainFrame();

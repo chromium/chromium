@@ -20,7 +20,7 @@ namespace perfetto {
 class EventContext;
 namespace protos {
 namespace pbzero {
-class BeginFrameArgs;
+class BeginFrameArgsV2;
 }
 }  // namespace protos
 }  // namespace perfetto
@@ -192,7 +192,7 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat> AsValue() const;
   void AsValueInto(base::trace_event::TracedValue* dict) const;
   void AsProtozeroInto(perfetto::EventContext& ctx,
-                       perfetto::protos::pbzero::BeginFrameArgs* args) const;
+                       perfetto::protos::pbzero::BeginFrameArgsV2* args) const;
 
   std::string ToString() const;
 
