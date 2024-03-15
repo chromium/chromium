@@ -15,7 +15,8 @@
 namespace ui {
 
 #if !BUILDFLAG(IS_WIN)
-void MapNativeColorsToCSSSystemColors(ColorMixer& mixer) {}
+void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
+}
 #endif
 
 void AddDuskPageColorsToMixer(ColorMixer& mixer) {
@@ -27,7 +28,7 @@ void AddDuskPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x70, 0xEB, 0xDE)};
   mixer[kColorCssSystemMenuHilight] = {SkColorSetRGB(0x80, 0x00, 0x80)};
   mixer[kColorCssSystemScrollbar] = {SkColorSetRGB(0x2D, 0x32, 0x36)};
-  mixer[kColorCssSystemWindowText] = {SkColorSetRGB(0x2D, 0x32, 0x36)};
+  mixer[kColorCssSystemWindow] = {SkColorSetRGB(0x2D, 0x32, 0x36)};
   mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
 }
 
@@ -40,7 +41,7 @@ void AddDesertPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x00, 0x63, 0xB3)};
   mixer[kColorCssSystemMenuHilight] = {SK_ColorBLACK};
   mixer[kColorCssSystemScrollbar] = {SkColorSetRGB(0xFF, 0xFA, 0xEF)};
-  mixer[kColorCssSystemWindowText] = {SkColorSetRGB(0xFF, 0xFA, 0xEF)};
+  mixer[kColorCssSystemWindow] = {SkColorSetRGB(0xFF, 0xFA, 0xEF)};
   mixer[kColorCssSystemWindowText] = {SkColorSetRGB(0x3D, 0x3D, 0x3D)};
 }
 
@@ -53,7 +54,7 @@ void AddBlackPageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemHotlight] = {SK_ColorYELLOW};
   mixer[kColorCssSystemMenuHilight] = {SkColorSetRGB(0x80, 0x00, 0x80)};
   mixer[kColorCssSystemScrollbar] = {SK_ColorBLACK};
-  mixer[kColorCssSystemWindowText] = {SK_ColorBLACK};
+  mixer[kColorCssSystemWindow] = {SK_ColorBLACK};
   mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
 }
 
@@ -66,7 +67,7 @@ void AddWhitePageColorsToMixer(ColorMixer& mixer) {
   mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x00, 0x00, 0x9F)};
   mixer[kColorCssSystemMenuHilight] = {SK_ColorBLACK};
   mixer[kColorCssSystemScrollbar] = {SK_ColorWHITE};
-  mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
+  mixer[kColorCssSystemWindow] = {SK_ColorWHITE};
   mixer[kColorCssSystemWindowText] = {SK_ColorBLACK};
 }
 
@@ -83,14 +84,13 @@ void AddCssSystemColorMixer(ColorProvider* provider,
       break;
     }
     case ColorProviderKey::ForcedColors::kNone:
-      if (key.color_mode == ColorProviderKey::ColorMode::kLight) {
-        // Only add system colors for light mode in Windows as dark system
-        // colors are not exposed yet.
-        MapNativeColorsToCSSSystemColors(mixer);
-      }
+      CompleteDefaultCssSystemColorDefinition(
+          mixer,
+          /*dark_mode=*/key.color_mode == ColorProviderKey::ColorMode::kDark);
+      MapNativeColorsToCssSystemColors(mixer, key);
       break;
     case ColorProviderKey::ForcedColors::kActive:
-      MapNativeColorsToCSSSystemColors(mixer);
+      MapNativeColorsToCssSystemColors(mixer, key);
       break;
     case ColorProviderKey::ForcedColors::kDusk:
       AddDuskPageColorsToMixer(mixer);

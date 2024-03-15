@@ -11,7 +11,7 @@ class ColorMixer;
 class ColorProvider;
 struct ColorProviderKey;
 
-void MapNativeColorsToCSSSystemColors(ColorMixer& mixer);
+void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key);
 
 // Adds a color mixer to `provider` for system colors. Intended
 // for colors used by Blink to support CSS system colors.

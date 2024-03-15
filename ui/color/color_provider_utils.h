@@ -93,11 +93,13 @@ ColorProvider COMPONENT_EXPORT(COLOR)
 ColorProvider COMPONENT_EXPORT(COLOR)
     CreateEmulatedForcedColorsColorProviderForTest();
 
-// Creates a default color provider for Blink Pages that are not associated with
-// a web view. This includes tests, dummy pages,  and non ordinary pages. These
-// scenarios do not use the normal machinery to establish color providers in the
-// renderer. The color mappings for this provider are derived from old Aura
-// colors for controls.
+// TODO(crbug.com/40779801): Enhance this function by incorporating platform
+// specific overrides, particularly for CSS system colors.
+// Creates a default fallback color provider for Blink Pages that are not
+// associated with a web view. This includes tests, dummy pages, and non
+// ordinary pages. These scenarios do not use the normal machinery to establish
+// color providers in the renderer. The color mappings for this provider are
+// derived from old Aura colors for controls.
 ColorProvider COMPONENT_EXPORT(COLOR)
     CreateDefaultColorProviderForBlink(bool dark_mode);
 
@@ -117,6 +119,11 @@ void COMPONENT_EXPORT(COLOR)
 void COMPONENT_EXPORT(COLOR)
     CompleteDefaultNonWebNativeRendererColorIdsDefinition(
         ui::ColorMixer& mixer);
+
+// Completes default color definitions for the CSS system colors.
+void COMPONENT_EXPORT(COLOR)
+    CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
+                                            bool dark_mode);
 
 // Returns a default set of color maps for tests and non ordinary pages. These
 // places do not use the normal machinery to establish a color provider in the

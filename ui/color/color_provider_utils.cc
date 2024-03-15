@@ -26,6 +26,17 @@ struct RendererColorIdTable {
   ColorId color_id;
 };
 constexpr RendererColorIdTable kRendererColorIdMap[] = {
+    {RendererColorId::kColorCssSystemBtnFace, kColorCssSystemBtnFace},
+    {RendererColorId::kColorCssSystemBtnText, kColorCssSystemBtnText},
+    {RendererColorId::kColorCssSystemGrayText, kColorCssSystemGrayText},
+    {RendererColorId::kColorCssSystemHighlight, kColorCssSystemHighlight},
+    {RendererColorId::kColorCssSystemHighlightText,
+     kColorCssSystemHighlightText},
+    {RendererColorId::kColorCssSystemHotlight, kColorCssSystemHotlight},
+    {RendererColorId::kColorCssSystemMenuHilight, kColorCssSystemMenuHilight},
+    {RendererColorId::kColorCssSystemScrollbar, kColorCssSystemScrollbar},
+    {RendererColorId::kColorCssSystemWindow, kColorCssSystemWindow},
+    {RendererColorId::kColorCssSystemWindowText, kColorCssSystemWindowText},
     {RendererColorId::kColorMenuBackground, kColorMenuBackground},
     {RendererColorId::kColorMenuItemBackgroundSelected,
      kColorMenuItemBackgroundSelected},
@@ -394,8 +405,7 @@ void AddEmulatedForcedColorsToMixer(ColorMixer& mixer, bool dark_mode) {
   mixer[kColorCssSystemMenuHilight] = {
       dark_mode ? SkColorSetRGB(0x80, 0x00, 0x80) : SK_ColorBLACK};
   mixer[kColorCssSystemScrollbar] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
-  mixer[kColorCssSystemWindowText] = {dark_mode ? SK_ColorBLACK
-                                                : SK_ColorWHITE};
+  mixer[kColorCssSystemWindow] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
   mixer[kColorCssSystemWindowText] = {dark_mode ? SK_ColorWHITE
                                                 : SK_ColorBLACK};
 }
@@ -418,7 +428,7 @@ ColorProvider CreateEmulatedForcedColorsColorProvider(bool dark_mode) {
 
   // Set these color ids as some non web native RendererColorIds depend on their
   // values.
-  mixer[kColorPrimaryBackground] = {kColorCssSystemWindowText};
+  mixer[kColorPrimaryBackground] = {kColorCssSystemWindow};
   mixer[kColorEndpointForeground] =
       GetColorWithMaxContrast(kColorPrimaryBackground);
   mixer[kColorEndpointBackground] =
@@ -507,6 +517,7 @@ ColorProvider COMPONENT_EXPORT(COLOR)
                                       : gfx::kGoogleGrey300};
   mixer[kColorSeparator] = {kColorMidground};
   CompleteDefaultNonWebNativeRendererColorIdsDefinition(mixer);
+  CompleteDefaultCssSystemColorDefinition(mixer, dark_mode);
 
   if (dark_mode) {
     mixer[kColorWebNativeControlAccent] = {SkColorSetRGB(0x99, 0xC8, 0xFF)};
@@ -684,10 +695,9 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlAccentDisabled] = {kColorCssSystemGrayText};
   mixer[kColorWebNativeControlAccentHovered] = {kColorCssSystemHighlight};
   mixer[kColorWebNativeControlAccentPressed] = {kColorCssSystemHighlight};
-  mixer[kColorWebNativeControlAutoCompleteBackground] = {
-      kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlBackground] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlBackgroundDisabled] = {kColorCssSystemWindowText};
+  mixer[kColorWebNativeControlAutoCompleteBackground] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlBackground] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlBackgroundDisabled] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlBorder] = {kColorCssSystemBtnText};
   mixer[kColorWebNativeControlBorderDisabled] = {kColorCssSystemGrayText};
   mixer[kColorWebNativeControlBorderHovered] = {kColorCssSystemBtnText};
@@ -696,15 +706,15 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlButtonBorderDisabled] = {kColorCssSystemGrayText};
   mixer[kColorWebNativeControlButtonBorderHovered] = {kColorCssSystemBtnText};
   mixer[kColorWebNativeControlButtonBorderPressed] = {kColorCssSystemBtnText};
-  mixer[kColorWebNativeControlButtonFill] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlButtonFillDisabled] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlButtonFillHovered] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlButtonFillPressed] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlFill] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlFillDisabled] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlFillHovered] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlFillPressed] = {kColorCssSystemWindowText};
-  mixer[kColorWebNativeControlLightenLayer] = {kColorCssSystemWindowText};
+  mixer[kColorWebNativeControlButtonFill] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlButtonFillDisabled] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlButtonFillHovered] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlButtonFillPressed] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlFill] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlFillDisabled] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlFillHovered] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlFillPressed] = {kColorCssSystemWindow};
+  mixer[kColorWebNativeControlLightenLayer] = {kColorCssSystemWindow};
   mixer[kColorWebNativeControlProgressValue] = {kColorCssSystemHighlight};
   mixer[kColorWebNativeControlScrollbarArrowForeground] = {
       kColorCssSystemBtnText};
@@ -718,6 +728,29 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
   mixer[kColorWebNativeControlSliderHovered] = {kColorCssSystemHighlight};
   mixer[kColorWebNativeControlSliderPressed] = {kColorCssSystemHighlight};
   CompleteScrollbarColorsDefinition(mixer);
+}
+
+void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
+                                             bool dark_mode) {
+  mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0x80, 0x80, 0x80)};
+  mixer[kColorCssSystemHighlight] = {SK_ColorBLUE};
+  mixer[kColorCssSystemHighlightText] = {SK_ColorWHITE};
+  mixer[kColorCssSystemHotlight] = {SkColorSetRGB(0x00, 0x00, 0xEE)};
+  if (dark_mode) {
+    mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0x6B, 0x6B, 0x6B)};
+    mixer[kColorCssSystemBtnText] = {SK_ColorWHITE};
+    mixer[kColorCssSystemMenuHilight] = {SkColorSetRGB(0x80, 0x00, 0x80)};
+    mixer[kColorCssSystemScrollbar] = {SkColorSetRGB(0x12, 0x12, 0x12)};
+    mixer[kColorCssSystemWindow] = {SkColorSetRGB(0x12, 0x12, 0x12)};
+    mixer[kColorCssSystemWindowText] = {SK_ColorWHITE};
+  } else {
+    mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
+    mixer[kColorCssSystemBtnText] = {SK_ColorBLACK};
+    mixer[kColorCssSystemMenuHilight] = {SK_ColorBLACK};
+    mixer[kColorCssSystemScrollbar] = {SK_ColorWHITE};
+    mixer[kColorCssSystemWindow] = {SK_ColorWHITE};
+    mixer[kColorCssSystemWindowText] = {SK_ColorBLACK};
+  }
 }
 
 void COMPONENT_EXPORT(COLOR)

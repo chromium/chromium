@@ -9,6 +9,16 @@ module color.mojom;
 // defined subset of colors. If changing this you must also update the mapping
 // in color_provider_utils.cc.
 enum RendererColorId {
+  kColorCssSystemBtnFace,
+  kColorCssSystemBtnText,
+  kColorCssSystemGrayText,
+  kColorCssSystemHighlight,
+  kColorCssSystemHighlightText,
+  kColorCssSystemHotlight,
+  kColorCssSystemMenuHilight,
+  kColorCssSystemScrollbar,
+  kColorCssSystemWindow,
+  kColorCssSystemWindowText,
   kColorMenuBackground,
   kColorMenuItemBackgroundSelected,
   kColorMenuSeparator,
