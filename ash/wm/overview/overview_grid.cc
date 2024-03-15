@@ -3120,8 +3120,14 @@ void OverviewGrid::OnBirchBarLayoutChanged(
     return;
   }
 
+  const int previous_birch_bar_height =
+      birch_bar_widget_->GetWindowBoundsInScreen().height();
   if (MaybeUpdateBirchBarWidgetBounds()) {
-    PositionWindows(/*animate=*/true);
+    // Only re-position the windows if the birch bar height changes.
+    if (previous_birch_bar_height !=
+        birch_bar_widget_->GetWindowBoundsInScreen().height()) {
+      PositionWindows(/*animate=*/true);
+    }
   }
 }
 
