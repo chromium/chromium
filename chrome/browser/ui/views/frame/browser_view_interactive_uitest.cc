@@ -340,7 +340,8 @@ class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
 
 // TODO(b/326134178): Disable the flaky test on branded Lacros builder
 // (ci/linux-lacros-chrome).
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/41484767): Disable flaky test on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
   DISABLED_LoadingAnimationChangeOnMinimizeAndRestore
 #else
