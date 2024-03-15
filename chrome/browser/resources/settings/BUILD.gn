@@ -374,6 +374,7 @@ build_webui("build") {
     "settings_vars.css",
 
     # subfolder files
+    "autofill_page/screen_reader_only.css",
     "autofill_page/passwords_shared.css",
     "privacy_page/privacy_guide/privacy_guide_fragment_shared.css",
     "search_engines_page/search_engine_entry.css",

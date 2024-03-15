@@ -132,7 +132,6 @@ build_webui("build") {
       "cr_radio_button/cr_radio_button_style.css",
       "cr_radio_button/cr_radio_button_style_lit.css",
       "cr_radio_group/cr_radio_group.css",
-      "cr_screen_reader_only.css",
       "cr_shared_style.css",
       "cr_shared_style_lit.css",
       "cr_shared_vars.css",
