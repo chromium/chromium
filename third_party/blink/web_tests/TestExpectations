@@ -6800,3 +6800,6 @@ crbug.com/1467464 http/tests/devtools/profiler/heap-snapshot.js [ Failure Pass T
 
 # May fail due to test framework issue. Disabling while this is being resolved.
 crbug.com/1367312 [ Win ] fast/dom/timer-throttling-hidden-page.html [ Failure Pass ]
+
+# TODO(crbug.com/328677885): Re-enable this test.
+crbug.com/328677885 external/wpt/html/semantics/embedded-content/the-img-element/srcset/avoid-reload-on-resize.html [ Failure Pass ]
