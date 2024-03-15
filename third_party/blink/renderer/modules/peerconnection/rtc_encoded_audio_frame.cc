@@ -26,18 +26,23 @@ SetMetadataValidationOutcome IsAllowedSetMetadataChange(
     const RTCEncodedAudioFrameMetadata* new_metadata) {
   // Only changing the RTP Timestamp is supported.
 
-  if (!new_metadata->hasSynchronizationSource() ||
-      current_metadata->synchronizationSource() !=
-          new_metadata->synchronizationSource()) {
+  if (new_metadata->hasSynchronizationSource() !=
+          current_metadata->hasSynchronizationSource() ||
+      (new_metadata->hasSynchronizationSource() &&
+       current_metadata->synchronizationSource() !=
+           new_metadata->synchronizationSource())) {
     return SetMetadataValidationOutcome{false, "Bad synchronizationSource"};
   }
-  if (!new_metadata->hasContributingSources() ||
-      current_metadata->contributingSources() !=
-          new_metadata->contributingSources()) {
+  if (new_metadata->hasContributingSources() !=
+          current_metadata->hasContributingSources() ||
+      (new_metadata->hasContributingSources() &&
+       current_metadata->contributingSources() !=
+           new_metadata->contributingSources())) {
     return SetMetadataValidationOutcome{false, "Bad contributingSources"};
   }
-  if (!new_metadata->hasPayloadType() ||
-      current_metadata->payloadType() != new_metadata->payloadType()) {
+  if (new_metadata->hasPayloadType() != current_metadata->hasPayloadType() ||
+      (new_metadata->hasPayloadType() &&
+       current_metadata->payloadType() != new_metadata->payloadType())) {
     return SetMetadataValidationOutcome{false, "Bad payloadType"};
   }
   if (new_metadata->hasSequenceNumber() !=
@@ -59,6 +64,38 @@ SetMetadataValidationOutcome IsAllowedSetMetadataChange(
 }
 
 }  // namespace
+
+RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
+    RTCEncodedAudioFrame* original_frame,
+    ExceptionState& exception_state) {
+  return RTCEncodedAudioFrame::Create(original_frame, nullptr, exception_state);
+}
+
+RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
+    RTCEncodedAudioFrame* original_frame,
+    RTCEncodedAudioFrameMetadata* new_metadata,
+    ExceptionState& exception_state) {
+  RTCEncodedAudioFrame* new_frame;
+  if (original_frame) {
+    new_frame = MakeGarbageCollected<RTCEncodedAudioFrame>(
+        original_frame->Delegate()->CloneWebRtcFrame());
+  } else {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "Cannot create a new AudioFrame: input Audioframe is empty.");
+    return nullptr;
+  }
+  if (new_metadata) {
+    String error_message;
+    if (!new_frame->SetMetadata(new_metadata, error_message)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidModificationError,
+          "Cannot create a new AudioFrame: " + error_message);
+      return nullptr;
+    }
+  }
+  return new_frame;
+}
 
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface>
@@ -108,19 +145,28 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
   return metadata;
 }
 
-void RTCEncodedAudioFrame::setMetadata(RTCEncodedAudioFrameMetadata* metadata,
-                                       ExceptionState& exception_state) {
+bool RTCEncodedAudioFrame::SetMetadata(
+    const RTCEncodedAudioFrameMetadata* metadata,
+    String& error_message) {
   SetMetadataValidationOutcome validation =
       IsAllowedSetMetadataChange(getMetadata(), metadata);
   if (!validation.allowed) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidModificationError,
-        "Invalid modification of RTCEncodedAudioFrameMetadata. " +
-            validation.error_msg);
+    error_message = "Invalid modification of RTCEncodedAudioFrameMetadata. " +
+                    validation.error_msg;
+    return false;
   }
 
-  delegate_->SetRtpTimestamp(metadata->rtpTimestamp(), exception_state);
-  return;
+  return delegate_->SetRtpTimestamp(metadata->rtpTimestamp(), error_message);
+}
+
+void RTCEncodedAudioFrame::setMetadata(RTCEncodedAudioFrameMetadata* metadata,
+                                       ExceptionState& exception_state) {
+  String error_message;
+  if (!SetMetadata(metadata, error_message)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidModificationError,
+        "Cannot setMetadata: " + error_message);
+  }
 }
 
 void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
@@ -129,7 +175,11 @@ void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
 
 void RTCEncodedAudioFrame::setTimestamp(uint32_t timestamp,
                                         ExceptionState& exception_state) {
-  delegate_->SetRtpTimestamp(timestamp, exception_state);
+  String error_message;
+  if (!delegate_->SetRtpTimestamp(timestamp, error_message)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot setTimestamp: " + error_message);
+  }
 }
 
 String RTCEncodedAudioFrame::toString() const {

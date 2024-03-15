@@ -11344,6 +11344,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4895" label="BadgeSetWithoutNotificationPermissionInWorker"/>
   <int value="4896" label="QuirksModeCursorHand"/>
   <int value="4897" label="TrustedTypesCreatePolicyWithEmptyName"/>
+  <int value="4898" label="V8RTCEncodedAudioFrame_Constructor"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

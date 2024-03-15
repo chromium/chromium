@@ -30,6 +30,12 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static RTCEncodedAudioFrame* Create(RTCEncodedAudioFrame* original_frame,
+                                      ExceptionState& exception_state);
+  static RTCEncodedAudioFrame* Create(
+      RTCEncodedAudioFrame* original_frame,
+      RTCEncodedAudioFrameMetadata* new_metadata,
+      ExceptionState& exception_state);
   explicit RTCEncodedAudioFrame(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame);
   explicit RTCEncodedAudioFrame(
@@ -41,6 +47,8 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   std::optional<uint16_t> sequenceNumber() const;
   DOMArrayBuffer* data() const;
   RTCEncodedAudioFrameMetadata* getMetadata() const;
+  bool SetMetadata(const RTCEncodedAudioFrameMetadata* metadata,
+                   String& error_message);
   void setMetadata(RTCEncodedAudioFrameMetadata* metadata,
                    ExceptionState& exception_state);
   void setData(DOMArrayBuffer*);

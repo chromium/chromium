@@ -56,15 +56,15 @@ void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {
   }
 }
 
-void RTCEncodedAudioFrameDelegate::SetRtpTimestamp(
-    uint32_t timestamp,
-    ExceptionState& exception_state) {
+bool RTCEncodedAudioFrameDelegate::SetRtpTimestamp(uint32_t timestamp,
+                                                   String& error_message) {
   base::AutoLock lock(lock_);
   if (webrtc_frame_) {
     webrtc_frame_->SetRTPTimestamp(timestamp);
+    return true;
   } else {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Underlying webrtc frame doesn't exist.");
+    error_message = "Underlying webrtc frame doesn't exist.";
+    return false;
   }
 }
 
@@ -111,6 +111,9 @@ RTCEncodedAudioFrameDelegate::PassWebRtcFrame() {
 std::unique_ptr<webrtc::TransformableAudioFrameInterface>
 RTCEncodedAudioFrameDelegate::CloneWebRtcFrame() {
   base::AutoLock lock(lock_);
+  if (!webrtc_frame_) {
+    return nullptr;
+  }
   return webrtc::CloneAudioFrame(webrtc_frame_.get());
 }
 
