@@ -2624,6 +2624,15 @@ void CSSParserImpl::ConsumeDeclarationList(
             context_->Count(WebFeature::kCSSDeclarationAfterNestedRule);
           }
           break;
+        } else if (stream.UncheckedPeek().GetType() == kSemicolonToken) {
+          // As an optimization, we avoid the restart below (retrying as a
+          // nested style rule) if we ended on a kSemicolonToken, as this
+          // situation can't produce a valid rule.
+          stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+          if (!stream.AtEnd()) {
+            stream.UncheckedConsume();  // kSemicolonToken
+          }
+          break;
         }
         // Retry as nested rule.
         stream.Restore(state);
