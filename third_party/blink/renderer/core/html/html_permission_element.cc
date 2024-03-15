@@ -53,6 +53,7 @@ namespace {
 
 const base::TimeDelta kDefaultDisableTimeout = base::Milliseconds(500);
 constexpr FontSelectionValue kMinimumFontWeight = FontSelectionValue(200);
+const float kMaximumWordSpacingToFontSizeRatio = 0.5;
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -377,6 +378,16 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
     builder.SetFontDescription(*new_font_description);
   }
 
+  if (builder.GetFontDescription().WordSpacing() >
+      kMaximumWordSpacingToFontSizeRatio * builder.FontSize()) {
+    builder.SetWordSpacing(builder.FontSize() *
+                           kMaximumWordSpacingToFontSizeRatio);
+  }
+
+  if (builder.GetFontDescription().WordSpacing() < 0) {
+    builder.SetWordSpacing(0);
+  }
+
   // TODO(crbug.com/1462930): Validate here that the 'background-color' and
   // 'color' properties pass accessibility checks (and are at 100% alpha).
 
@@ -386,8 +397,6 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
   // that it's not too big.
 
   // TODO(crbug.com/1462930): Set text direction (ltr\rtl) based on language.
-
-  // TODO(crbug.com/1462930): Set word-spacing so it's at most 5px.
 
   // TODO(crbug.com/1462930): Ensure font-size at least as large as the
   // equivalent of 'small'.
