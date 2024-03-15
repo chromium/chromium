@@ -190,13 +190,11 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
   UserSelectableTypeSet selected_types = sync_user_settings->GetSelectedTypes();
   // History and Tabs require a separate opt-in.
   // Apps, Extensions, Themes and SavedTabGroups are not supported in
-  // transport mode. Compare is not currently supported in transport
-  // mode but will be b/328800459.
+  // transport mode.
   UserSelectableTypeSet expected_disabled_types = {
-      UserSelectableType::kCompare,       UserSelectableType::kHistory,
-      UserSelectableType::kTabs,          UserSelectableType::kApps,
-      UserSelectableType::kExtensions,    UserSelectableType::kThemes,
-      UserSelectableType::kSavedTabGroups};
+      UserSelectableType::kHistory, UserSelectableType::kTabs,
+      UserSelectableType::kApps,    UserSelectableType::kExtensions,
+      UserSelectableType::kThemes,  UserSelectableType::kSavedTabGroups};
   if (!base::FeatureList::IsEnabled(kSyncSharedTabGroupDataInTransportMode)) {
     expected_disabled_types.Put(UserSelectableType::kSharedTabGroupData);
   }
