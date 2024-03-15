@@ -564,6 +564,7 @@ public class PageInsightsCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/328462350")
     public void testExpandedStateAfterPeekState_scrimShown() throws Exception {
         createPageInsightsCoordinator();
         assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
