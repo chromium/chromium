@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "ui/color/color_provider_source_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display_observer.h"
 
@@ -34,10 +35,10 @@ class WallpaperView;
 
 // This class manages widget-based wallpapers.
 // WallpaperWidgetController is owned by RootWindowController.
-// Exported for tests.
 class ASH_EXPORT WallpaperWidgetController
     : public ui::ImplicitAnimationObserver,
-      public display::DisplayObserver {
+      public display::DisplayObserver,
+      public ui::ColorProviderSourceObserver {
  public:
   explicit WallpaperWidgetController(aura::Window* root_window);
 
@@ -53,13 +54,14 @@ class ASH_EXPORT WallpaperWidgetController
     return wallpaper_underlay_layer_.get();
   }
 
-  // Initialize the widget. `locked` determines if the wallpaper should be
+  // Initializes the widget. `locked` determines if the wallpaper should be
   // created for the locked state.
   void Init(bool locked);
 
   views::Widget* GetWidget();
 
-  // Whether a wallpaper change is in progress, i.e. |animating_widget_| exists.
+  // Returns true if wallpaper change is in progress, i.e. `animating_widget_`
+  // exists.
   bool IsAnimating() const;
 
   // If an animating wallpaper change is in progress, it ends the animation and
@@ -92,6 +94,9 @@ class ASH_EXPORT WallpaperWidgetController
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
+  // ui::ColorProviderSourceObserver:
+  void OnColorProviderChanged() override;
+
   ui::LayerTreeOwner* old_layer_tree_owner_for_testing() {
     return old_layer_tree_owner_.get();
   }
@@ -120,7 +125,8 @@ class ASH_EXPORT WallpaperWidgetController
   RAW_PTR_EXCLUSION WallpaperView* wallpaper_view_ = nullptr;
 
   // A solid-color layer stacked below the clipped `wallpaper_view_`
-  // layer and above the `shield_view_` if exists.
+  // layer. Note that it can't be stacked at bottom since the `shield_view_` may
+  // exist.
   std::unique_ptr<ui::Layer> wallpaper_underlay_layer_;
 
   // Callbacks to be run when the |animating_widget_| stops animating and gets

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/style/color_util.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ui/aura/window.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -24,7 +25,9 @@
 namespace ash {
 
 WallpaperWidgetController::WallpaperWidgetController(aura::Window* root_window)
-    : root_window_(root_window) {}
+    : root_window_(root_window) {
+  Observe(ColorUtil::GetColorProviderSourceForWindow(root_window_));
+}
 
 WallpaperWidgetController::~WallpaperWidgetController() {
   widget_->CloseNow();
@@ -126,10 +129,19 @@ void WallpaperWidgetController::OnDisplayMetricsChanged(
   wallpaper_underlay_layer_->SetBounds(root_window_->GetBoundsInScreen());
 }
 
+void WallpaperWidgetController::OnColorProviderChanged() {
+  if (wallpaper_underlay_layer_) {
+    wallpaper_underlay_layer_->SetColor(
+        GetColorProviderSource()->GetColorProvider()->GetColor(
+            cros_tokens::kCrosSysSystemBase));
+  }
+}
+
 void WallpaperWidgetController::CreateWallpaperUnderlayLayer() {
   if (!features::IsForestFeatureEnabled()) {
     return;
   }
+
   wallpaper_underlay_layer_ =
       std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   wallpaper_underlay_layer_->SetName("WallpaperUnderlayLayer");
@@ -139,11 +151,7 @@ void WallpaperWidgetController::CreateWallpaperUnderlayLayer() {
   wallpaper_view_layer_parent->StackBelow(wallpaper_underlay_layer_.get(),
                                           wallpaper_view_layer);
   wallpaper_underlay_layer_->SetBounds(root_window_->GetBoundsInScreen());
-
-  // TODO(http://b/327663905): Implement on theme change for the
-  // `wallpaper_underlay_layer_`.
-  wallpaper_underlay_layer_->SetColor(GetWidget()->GetColorProvider()->GetColor(
-      cros_tokens::kCrosSysSystemBase));
+  OnColorProviderChanged();
 
   // The `wallpaper_underlay_layer_` should be invisible by default. This
   // prevents the compositor from unnecessarily considering it during occlusion
