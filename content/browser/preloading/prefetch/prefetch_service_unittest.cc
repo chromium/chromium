@@ -2890,7 +2890,14 @@ TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
   ExpectServingMetricsSuccess();
 }
 
-TEST_F(PrefetchServiceTest, PrefetchNotEnabled) {
+class PrefetchServiceRedirectsDisabledTest : public PrefetchServiceTest {
+ public:
+  void InitScopedFeatureList() override {
+    scoped_feature_list_.InitAndDisableFeature(features::kPrefetchRedirects);
+  }
+};
+
+TEST_F(PrefetchServiceRedirectsDisabledTest, PrefetchNotEnabled) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
