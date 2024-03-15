@@ -54,18 +54,24 @@ source_set("ash") {
 
 source_set("unit_tests") {
   sources = [
+    "keyboard_capability_unittest.cc",
     "keyboard_device_id_event_rewriter_unittest.cc",
     "keyboard_info_metrics_unittest.cc",
   ]
 
   deps = [
     ":ash",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//device/udev_linux:test_support",
     "//testing/gtest",
     "//ui/events",
+    "//ui/events/ash/mojom",
     "//ui/events/devices",
     "//ui/events/devices:test_support",
+    "//ui/events/ozone/evdev:event_device_info",
+    "//ui/events/ozone/evdev:event_device_info_test_utils",
   ]
   testonly = true
 }
