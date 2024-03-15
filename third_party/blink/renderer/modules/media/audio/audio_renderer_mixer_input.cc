@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/audio_renderer_mixer_input.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 
 #include <cmath>
 
@@ -10,27 +10,22 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/audio_renderer_mixer.h"
-#include "media/base/audio_renderer_mixer_pool.h"
+#include "media/audio/audio_device_description.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_pool.h"
 
-namespace media {
+namespace blink {
 
 constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(5);
 
-// TODO(dalecurtis): Merge with AudioDeviceDescription::IsDefaultDevice() once
-// that file has been moved to media/base.
-bool IsDefaultDevice(const std::string& device_id) {
-  return device_id.empty() || device_id == "default";
-}
-
 AudioRendererMixerInput::AudioRendererMixerInput(
     AudioRendererMixerPool* mixer_pool,
-    const base::UnguessableToken& owner_token,
-    const std::string& device_id,
-    AudioLatency::Type latency)
+    const LocalFrameToken& source_frame_token,
+    std::string_view device_id,
+    media::AudioLatency::Type latency)
     : mixer_pool_(mixer_pool),
-      owner_token_(owner_token),
+      source_frame_token_(source_frame_token),
       device_id_(device_id),
       latency_(latency) {
   DCHECK(mixer_pool_);
@@ -43,8 +38,9 @@ AudioRendererMixerInput::~AudioRendererMixerInput() {
 
   DCHECK(!started_);
   DCHECK(!mixer_);
-  if (sink_)
+  if (sink_) {
     sink_->Stop();
+  }
 
   // Because GetOutputDeviceInfoAsync() and SwitchOutputDevice() both use
   // base::RetainedRef, it should be impossible to get here with these set.
@@ -53,7 +49,7 @@ AudioRendererMixerInput::~AudioRendererMixerInput() {
 }
 
 void AudioRendererMixerInput::Initialize(
-    const AudioParameters& params,
+    const media::AudioParameters& params,
     AudioRendererSink::RenderCallback* callback) {
   DCHECK(!started_);
   DCHECK(!mixer_);
@@ -68,8 +64,9 @@ void AudioRendererMixerInput::Initialize(
   params_ = params;
   callback_ = callback;
 
-  total_fade_in_frames_ = AudioTimestampHelper::TimeToFrames(
-      kFadeInDuration, params_.sample_rate());
+  total_fade_in_frames_ =
+      static_cast<int>(media::AudioTimestampHelper::TimeToFrames(
+          kFadeInDuration, params_.sample_rate()));
 }
 
 void AudioRendererMixerInput::Start() {
@@ -79,11 +76,11 @@ void AudioRendererMixerInput::Start() {
 
   DCHECK(sink_);
   DCHECK(device_info_);
-  DCHECK_EQ(device_info_->device_status(), OUTPUT_DEVICE_STATUS_OK);
+  DCHECK_EQ(device_info_->device_status(), media::OUTPUT_DEVICE_STATUS_OK);
 
   started_ = true;
-  mixer_ = mixer_pool_->GetMixer(owner_token_, params_, latency_, *device_info_,
-                                 std::move(sink_));
+  mixer_ = mixer_pool_->GetMixer(source_frame_token_, params_, latency_,
+                                 *device_info_, std::move(sink_));
 
   // Note: OnRenderError() may be called immediately after this call returns.
   mixer_->AddErrorCallback(this);
@@ -104,8 +101,9 @@ void AudioRendererMixerInput::Stop() {
 }
 
 void AudioRendererMixerInput::Play() {
-  if (playing_ || !mixer_)
+  if (playing_ || !mixer_) {
     return;
+  }
 
   // Fading in the first few frames avoids an audible pop.
   remaining_fade_in_frames_ = total_fade_in_frames_;
@@ -115,8 +113,9 @@ void AudioRendererMixerInput::Play() {
 }
 
 void AudioRendererMixerInput::Pause() {
-  if (!playing_ || !mixer_)
+  if (!playing_ || !mixer_) {
     return;
+  }
 
   mixer_->RemoveMixerInput(params_, this);
   playing_ = false;
@@ -132,9 +131,9 @@ bool AudioRendererMixerInput::SetVolume(double volume) {
   return true;
 }
 
-OutputDeviceInfo AudioRendererMixerInput::GetOutputDeviceInfo() {
+media::OutputDeviceInfo AudioRendererMixerInput::GetOutputDeviceInfo() {
   NOTREACHED();  // The blocking API is intentionally not supported.
-  return OutputDeviceInfo();
+  return media::OutputDeviceInfo();
 }
 
 void AudioRendererMixerInput::GetOutputDeviceInfoAsync(
@@ -155,13 +154,13 @@ void AudioRendererMixerInput::GetOutputDeviceInfoAsync(
 
   godia_in_progress_ = true;
 
-  // We may have |device_info_|, but a Stop() has been called since if we don't
-  // have a |sink_| or a |mixer_|, so request the information again in case it
+  // We may have `device_info_`, but a Stop() has been called since if we don't
+  // have a `sink_` or a `mixer_`, so request the information again in case it
   // has changed (which may occur due to browser side device changes).
   device_info_.reset();
 
   // If we don't have a sink yet start the process of getting one.
-  sink_ = mixer_pool_->GetSink(owner_token_, device_id_);
+  sink_ = mixer_pool_->GetSink(source_frame_token_, device_id_);
 
   // Retain a ref to this sink to ensure it is not destructed while this occurs.
   // The callback is guaranteed to execute on this thread, so there are no
@@ -181,14 +180,16 @@ bool AudioRendererMixerInput::CurrentThreadIsRenderingThread() {
 
 void AudioRendererMixerInput::SwitchOutputDevice(
     const std::string& device_id,
-    OutputDeviceStatusCB callback) {
+    media::OutputDeviceStatusCB callback) {
   // If a GODIA() call is in progress, defer until it's complete.
   if (godia_in_progress_) {
     DCHECK(!switch_output_device_in_progress_);
 
     // Abort any previous device switch which may be pending.
-    if (pending_switch_cb_)
-      std::move(pending_switch_cb_).Run(OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+    if (pending_switch_cb_) {
+      std::move(pending_switch_cb_)
+          .Run(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+    }
 
     pending_device_id_ = device_id;
     pending_switch_cb_ = std::move(callback);
@@ -198,8 +199,9 @@ void AudioRendererMixerInput::SwitchOutputDevice(
   // Some pages send "default" instead of the spec compliant empty string for
   // the default device. Short circuit these here to avoid busy work.
   if (device_id == device_id_ ||
-      (IsDefaultDevice(device_id_) && IsDefaultDevice(device_id))) {
-    std::move(callback).Run(OUTPUT_DEVICE_STATUS_OK);
+      (media::AudioDeviceDescription::IsDefaultDevice(device_id_) &&
+       media::AudioDeviceDescription::IsDefaultDevice(device_id))) {
+    std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_OK);
     return;
   }
 
@@ -208,7 +210,7 @@ void AudioRendererMixerInput::SwitchOutputDevice(
   // Request a new sink using the new device id. This process may fail, so to
   // avoid interrupting working audio, don't set any class variables until we
   // know it's a success.
-  auto new_sink = mixer_pool_->GetSink(owner_token_, device_id);
+  auto new_sink = mixer_pool_->GetSink(source_frame_token_, device_id);
 
   // Retain a ref to this sink to ensure it is not destructed while this occurs.
   // The callback is guaranteed to execute on this thread, so there are no
@@ -219,12 +221,12 @@ void AudioRendererMixerInput::SwitchOutputDevice(
 }
 
 double AudioRendererMixerInput::ProvideInput(
-    AudioBus* audio_bus,
+    media::AudioBus* audio_bus,
     uint32_t frames_delayed,
-    const AudioGlitchInfo& glitch_info) {
+    const media::AudioGlitchInfo& glitch_info) {
   TRACE_EVENT0("audio", "AudioRendererMixerInput::ProvideInput");
-  const base::TimeDelta delay =
-      AudioTimestampHelper::FramesToTime(frames_delayed, params_.sample_rate());
+  const base::TimeDelta delay = media::AudioTimestampHelper::FramesToTime(
+      frames_delayed, params_.sample_rate());
 
   int frames_filled =
       callback_->Render(delay, base::TimeTicks::Now(), glitch_info, audio_bus);
@@ -249,8 +251,9 @@ double AudioRendererMixerInput::ProvideInput(
     for (int ch = 0; ch < audio_bus->channels(); ++ch) {
       float* data = audio_bus->channel(ch);
 
-      for (int i = 0; i < frames; ++i)
+      for (int i = 0; i < frames; ++i) {
         data[i] *= static_cast<float>(start_volume + i) / total_fade_in_frames_;
+      }
     }
 
     remaining_fade_in_frames_ -= frames;
@@ -258,7 +261,7 @@ double AudioRendererMixerInput::ProvideInput(
     DCHECK_GE(remaining_fade_in_frames_, 0);
   }
 
-  // We're reading |volume_| from the audio device thread and must avoid racing
+  // We're reading `volume_` from the audio device thread and must avoid racing
   // with the main/media thread calls to SetVolume(). See thread safety comment
   // in the header file.
   {
@@ -273,7 +276,7 @@ void AudioRendererMixerInput::OnRenderError() {
 
 void AudioRendererMixerInput::OnDeviceInfoReceived(
     OutputDeviceInfoCB info_cb,
-    OutputDeviceInfo device_info) {
+    media::OutputDeviceInfo device_info) {
   DCHECK(godia_in_progress_);
   godia_in_progress_ = false;
 
@@ -283,26 +286,28 @@ void AudioRendererMixerInput::OnDeviceInfoReceived(
   // Complete any pending SwitchOutputDevice() if needed. We don't post this to
   // ensure we don't reorder calls relative to what the page is expecting. I.e.,
   // if we post we could end up with Switch(1) -> Switch(2) ending on Switch(1).
-  if (!pending_switch_cb_)
+  if (!pending_switch_cb_) {
     return;
+  }
   SwitchOutputDevice(std::move(pending_device_id_),
                      std::move(pending_switch_cb_));
 }
 
 void AudioRendererMixerInput::OnDeviceSwitchReady(
-    OutputDeviceStatusCB switch_cb,
-    scoped_refptr<AudioRendererSink> sink,
-    OutputDeviceInfo device_info) {
+    media::OutputDeviceStatusCB switch_cb,
+    scoped_refptr<media::AudioRendererSink> sink,
+    media::OutputDeviceInfo device_info) {
   DCHECK(switch_output_device_in_progress_);
   switch_output_device_in_progress_ = false;
 
-  if (device_info.device_status() != OUTPUT_DEVICE_STATUS_OK) {
+  if (device_info.device_status() != media::OUTPUT_DEVICE_STATUS_OK) {
     sink->Stop();
     std::move(switch_cb).Run(device_info.device_status());
 
     // Start any pending device info request.
-    if (pending_device_info_cb_)
+    if (pending_device_info_cb_) {
       GetOutputDeviceInfoAsync(std::move(pending_device_info_cb_));
+    }
 
     return;
   }
@@ -311,8 +316,9 @@ void AudioRendererMixerInput::OnDeviceSwitchReady(
   const bool is_playing = playing_;
 
   // This may occur if Start() hasn't yet been called.
-  if (sink_)
+  if (sink_) {
     sink_->Stop();
+  }
 
   sink_ = std::move(sink);
   device_info_ = device_info;
@@ -321,15 +327,17 @@ void AudioRendererMixerInput::OnDeviceSwitchReady(
   Stop();
   if (has_mixer) {
     Start();
-    if (is_playing)
+    if (is_playing) {
       Play();
+    }
   }
 
   std::move(switch_cb).Run(device_info.device_status());
 
   // Start any pending device info request.
-  if (pending_device_info_cb_)
+  if (pending_device_info_cb_) {
     GetOutputDeviceInfoAsync(std::move(pending_device_info_cb_));
+  }
 }
 
-}  // namespace media
+}  // namespace blink

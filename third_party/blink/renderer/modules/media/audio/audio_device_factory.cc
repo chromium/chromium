@@ -18,11 +18,11 @@
 #include "build/chromeos_buildflags.h"
 #include "media/audio/audio_input_device.h"
 #include "media/audio/audio_output_device.h"
-#include "media/base/audio_renderer_mixer_input.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_input_ipc_factory.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_output_ipc_factory.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -78,8 +78,9 @@ bool IsMixable(blink::WebAudioDeviceSourceType source_type) {
 
 // static
 AudioDeviceFactory* AudioDeviceFactory::GetInstance() {
-  if (g_factory_override)
+  if (g_factory_override) {
     return g_factory_override;
+  }
 
   static base::NoDestructor<AudioDeviceFactory> g_default_factory(
       /*override_default=*/false);
@@ -124,8 +125,9 @@ AudioDeviceFactory::NewAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
-  if (IsMixable(source_type))
+  if (IsMixable(source_type)) {
     return NewMixableSink(source_type, frame_token, params);
+  }
 
   return NewFinalAudioRendererSink(frame_token, params,
                                    GetDefaultAuthTimeout());
@@ -136,8 +138,9 @@ AudioDeviceFactory::NewSwitchableAudioRendererSink(
     blink::WebAudioDeviceSourceType source_type,
     const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
-  if (IsMixable(source_type))
+  if (IsMixable(source_type)) {
     return NewMixableSink(source_type, frame_token, params);
+  }
 
   // AudioOutputDevice is not RestartableAudioRendererSink, so we can't return
   // anything for those who wants to create an unmixable sink.

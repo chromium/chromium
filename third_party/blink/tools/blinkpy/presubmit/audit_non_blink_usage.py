@@ -1361,16 +1361,21 @@ _CONFIG = [
             # TODO(https://crbug.com/787252): Remove most of the entries below,
             # once the directory is fully Onion soup'ed.
             'base::Bind.*',
-            'base::Unretained',
-            'base::NoDestructor',
-            'base::flat_map',
             'base::EraseIf',
+            'base::flat_map',
+            'base::flat_set',
+            'base::NoDestructor',
+            'base::RetainedRef',
             'base::ScopedPlatformFile',
+            'base::Unretained',
             'mojo::WrapCallbackWithDefaultInvokeIfNotRun',
 
             # TODO(https://crrev.com/787252): Consider allowlisting fidl::*
             # usage more broadly in Blink.
             'fidl::InterfaceHandle',
+        ],
+        'inclass_allowed': [
+            'base::SequencedTaskRunner::GetCurrentDefault'
         ]
     },
     {

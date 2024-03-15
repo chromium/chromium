@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_AUDIO_RENDERER_MIXER_POOL_H_
-#define MEDIA_BASE_AUDIO_RENDERER_MIXER_POOL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_POOL_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_POOL_H_
 
 #include <string>
 
 #include "media/base/audio_latency.h"
 #include "media/base/output_device_info.h"
-
-namespace base {
-class UnguessableToken;
-}  // namespace base
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_common.h"
 
 namespace media {
 class AudioParameters;
-class AudioRendererMixer;
 class AudioRendererSink;
+}  // namespace media
+
+namespace blink {
+class AudioRendererMixer;
 
 // Provides AudioRendererMixer instances for shared usage.
 // Thread safe.
-class MEDIA_EXPORT AudioRendererMixerPool {
+class BLINK_MODULES_EXPORT AudioRendererMixerPool {
  public:
   AudioRendererMixerPool() = default;
 
@@ -34,16 +35,16 @@ class MEDIA_EXPORT AudioRendererMixerPool {
   // is guaranteed to be valid (at least) until it's rereleased by a call to
   // ReturnMixer().
   //
-  // Ownership of |sink| must be passed to GetMixer(), it will be stopped and
+  // Ownership of `sink` must be passed to GetMixer(), it will be stopped and
   // discard if an existing mixer can be reused. Clients must have called
-  // GetOutputDeviceInfoAsync() on |sink| to get |sink_info|, and it must have
+  // GetOutputDeviceInfoAsync() on `sink` to get `sink_info`, and it must have
   // a device_status() == OUTPUT_DEVICE_STATUS_OK.
   virtual AudioRendererMixer* GetMixer(
-      const base::UnguessableToken& owner_token,
-      const AudioParameters& input_params,
-      AudioLatency::Type latency,
-      const OutputDeviceInfo& sink_info,
-      scoped_refptr<AudioRendererSink> sink) = 0;
+      const LocalFrameToken& source_frame_token,
+      const media::AudioParameters& input_params,
+      media::AudioLatency::Type latency,
+      const media::OutputDeviceInfo& sink_info,
+      scoped_refptr<media::AudioRendererSink> sink) = 0;
 
   // Returns mixer back to the pool, must be called when the mixer is not needed
   // any more to avoid memory leakage.
@@ -51,11 +52,11 @@ class MEDIA_EXPORT AudioRendererMixerPool {
 
   // Returns an AudioRendererSink for use with GetMixer(). Inputs must call this
   // to get a sink to use with a subsequent GetMixer()
-  virtual scoped_refptr<AudioRendererSink> GetSink(
-      const base::UnguessableToken& owner_token,
-      const std::string& device_id) = 0;
+  virtual scoped_refptr<media::AudioRendererSink> GetSink(
+      const LocalFrameToken& source_frame_token,
+      std::string_view device_id) = 0;
 };
 
-}  // namespace media
+}  // namespace blink
 
-#endif  // MEDIA_BASE_AUDIO_RENDERER_MIXER_POOL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_POOL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/audio_renderer_mixer.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer.h"
 
 #include <cmath>
 
@@ -10,21 +10,22 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/audio_renderer_mixer_input.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 
-namespace media {
+namespace blink {
 
 constexpr base::TimeDelta kPauseDelay = base::Seconds(10);
 
-AudioRendererMixer::AudioRendererMixer(const AudioParameters& output_params,
-                                       scoped_refptr<AudioRendererSink> sink)
+AudioRendererMixer::AudioRendererMixer(
+    const media::AudioParameters& output_params,
+    scoped_refptr<media::AudioRendererSink> sink)
     : output_params_(output_params),
       audio_sink_(std::move(sink)),
       aggregate_converter_(output_params, output_params, true),
       pause_delay_(kPauseDelay),
       last_play_time_(base::TimeTicks::Now()),
-      // Initialize |playing_| to true since Start() results in an auto-play.
+      // Initialize `playing_` to true since Start() results in an auto-play.
       playing_(true) {
   DCHECK(audio_sink_);
 
@@ -45,8 +46,9 @@ AudioRendererMixer::~AudioRendererMixer() {
   DCHECK(error_callbacks_.empty());
 }
 
-void AudioRendererMixer::AddMixerInput(const AudioParameters& input_params,
-                                       AudioConverter::InputCallback* input) {
+void AudioRendererMixer::AddMixerInput(
+    const media::AudioParameters& input_params,
+    media::AudioConverter::InputCallback* input) {
   base::AutoLock auto_lock(lock_);
   if (!playing_) {
     playing_ = true;
@@ -60,13 +62,13 @@ void AudioRendererMixer::AddMixerInput(const AudioParameters& input_params,
   } else {
     auto converter = converters_.find(input_sample_rate);
     if (converter == converters_.end()) {
-      std::pair<AudioConvertersMap::iterator, bool> result =
-          converters_.insert(std::make_pair(
-              input_sample_rate, std::make_unique<LoopbackAudioConverter>(
-                                     // We expect all InputCallbacks to be
-                                     // capable of handling arbitrary buffer
-                                     // size requests, disabling FIFO.
-                                     input_params, output_params_, true)));
+      std::pair<AudioConvertersMap::iterator, bool> result = converters_.insert(
+          std::make_pair(input_sample_rate,
+                         std::make_unique<media::LoopbackAudioConverter>(
+                             // We expect all InputCallbacks to be
+                             // capable of handling arbitrary buffer
+                             // size requests, disabling FIFO.
+                             input_params, output_params_, true)));
       converter = result.first;
 
       // Add newly-created resampler as an input to the aggregate mixer.
@@ -77,8 +79,8 @@ void AudioRendererMixer::AddMixerInput(const AudioParameters& input_params,
 }
 
 void AudioRendererMixer::RemoveMixerInput(
-    const AudioParameters& input_params,
-    AudioConverter::InputCallback* input) {
+    const media::AudioParameters& input_params,
+    media::AudioConverter::InputCallback* input) {
   base::AutoLock auto_lock(lock_);
 
   int input_sample_rate = input_params.sample_rate();
@@ -122,8 +124,8 @@ bool AudioRendererMixer::HasSinkError() {
 
 int AudioRendererMixer::Render(base::TimeDelta delay,
                                base::TimeTicks delay_timestamp,
-                               const AudioGlitchInfo& glitch_info,
-                               AudioBus* audio_bus) {
+                               const media::AudioGlitchInfo& glitch_info,
+                               media::AudioBus* audio_bus) {
   TRACE_EVENT0("audio", "AudioRendererMixer::Render");
   base::AutoLock auto_lock(lock_);
 
@@ -140,11 +142,13 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
 
   // Since AudioConverter uses uint32_t for delay calculations, we must drop
   // negative delay values (which are incorrect anyways).
-  if (delay.is_negative())
+  if (delay.is_negative()) {
     delay = base::TimeDelta();
+  }
 
   uint32_t frames_delayed =
-      AudioTimestampHelper::TimeToFrames(delay, output_params_.sample_rate());
+      base::saturated_cast<uint32_t>(media::AudioTimestampHelper::TimeToFrames(
+          delay, output_params_.sample_rate()));
   aggregate_converter_.ConvertWithInfo(frames_delayed, glitch_info, audio_bus);
   return audio_bus->frames();
 }
@@ -158,4 +162,4 @@ void AudioRendererMixer::OnRenderError() {
   }
 }
 
-}  // namespace media
+}  // namespace blink

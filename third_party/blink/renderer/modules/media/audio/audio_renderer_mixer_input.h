@@ -5,16 +5,16 @@
 // THREAD SAFETY
 //
 // This class is generally not thread safe. Callers should ensure thread safety.
-// For instance, the |sink_lock_| in WebAudioSourceProvider synchronizes access
+// For instance, the `sink_lock_` in WebAudioSourceProvider synchronizes access
 // to this object across the main thread (for WebAudio APIs) and the
 // media thread (for HTMLMediaElement APIs).
 //
-// The one exception is protection for |volume_| via |volume_lock_|. This lock
+// The one exception is protection for `volume_` via `volume_lock_`. This lock
 // prevents races between SetVolume() (called on any thread) and ProvideInput
 // (called on audio device thread). See http://crbug.com/588992.
 
-#ifndef MEDIA_BASE_AUDIO_RENDERER_MIXER_INPUT_H_
-#define MEDIA_BASE_AUDIO_RENDERER_MIXER_INPUT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_INPUT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_INPUT_H_
 
 #include <string>
 
@@ -26,20 +26,22 @@
 #include "media/base/audio_converter.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/platform/web_common.h"
 
-namespace media {
+namespace blink {
 
 class AudioRendererMixerPool;
 class AudioRendererMixer;
 
-class MEDIA_EXPORT AudioRendererMixerInput
-    : public SwitchableAudioRendererSink,
-      public AudioConverter::InputCallback {
+class BLINK_MODULES_EXPORT AudioRendererMixerInput
+    : public media::SwitchableAudioRendererSink,
+      public media::AudioConverter::InputCallback {
  public:
   AudioRendererMixerInput(AudioRendererMixerPool* mixer_pool,
-                          const base::UnguessableToken& owner_token,
-                          const std::string& device_id,
-                          AudioLatency::Type latency);
+                          const LocalFrameToken& source_frame_token,
+                          std::string_view device_id,
+                          media::AudioLatency::Type latency);
 
   AudioRendererMixerInput(const AudioRendererMixerInput&) = delete;
   AudioRendererMixerInput& operator=(const AudioRendererMixerInput&) = delete;
@@ -51,14 +53,14 @@ class MEDIA_EXPORT AudioRendererMixerInput
   void Pause() override;
   void Flush() override;
   bool SetVolume(double volume) override;
-  OutputDeviceInfo GetOutputDeviceInfo() override;
+  media::OutputDeviceInfo GetOutputDeviceInfo() override;
   void GetOutputDeviceInfoAsync(OutputDeviceInfoCB info_cb) override;
 
   bool IsOptimizedForHardwareParameters() override;
-  void Initialize(const AudioParameters& params,
-                  AudioRendererSink::RenderCallback* renderer) override;
+  void Initialize(const media::AudioParameters& params,
+                  media::AudioRendererSink::RenderCallback* renderer) override;
   void SwitchOutputDevice(const std::string& device_id,
-                          OutputDeviceStatusCB callback) override;
+                          media::OutputDeviceStatusCB callback) override;
   // This is expected to be called on the audio rendering thread. The caller
   // must ensure that this input has been added to a mixer before calling the
   // function, and that it is not removed from the mixer before this function
@@ -77,7 +79,7 @@ class MEDIA_EXPORT AudioRendererMixerInput
   // Pool to obtain mixers from / return them to.
   const raw_ptr<AudioRendererMixerPool> mixer_pool_;
 
-  // Protect |volume_|, accessed by separate threads in ProvideInput() and
+  // Protect `volume_`, accessed by separate threads in ProvideInput() and
   // SetVolume().
   base::Lock volume_lock_;
 
@@ -86,39 +88,39 @@ class MEDIA_EXPORT AudioRendererMixerInput
   double volume_ GUARDED_BY(volume_lock_) = 1.0;
 
   scoped_refptr<AudioRendererSink> sink_;
-  std::optional<OutputDeviceInfo> device_info_;
+  std::optional<media::OutputDeviceInfo> device_info_;
 
   // AudioConverter::InputCallback implementation.
-  double ProvideInput(AudioBus* audio_bus,
+  double ProvideInput(media::AudioBus* audio_bus,
                       uint32_t frames_delayed,
-                      const AudioGlitchInfo& glitch_info) override;
+                      const media::AudioGlitchInfo& glitch_info) override;
 
   void OnDeviceInfoReceived(OutputDeviceInfoCB info_cb,
-                            OutputDeviceInfo device_info);
+                            media::OutputDeviceInfo device_info);
 
   // Method to help handle device changes. Must be static to ensure we can still
-  // execute the |switch_cb| even if the pipeline is destructed. Restarts (if
-  // necessary) Start() and Play() state with a new |sink| and |device_info|.
+  // execute the `switch_cb` even if the pipeline is destructed. Restarts (if
+  // necessary) Start() and Play() state with a new `sink` and `device_info`.
   //
-  // |switch_cb| is the callback given to the SwitchOutputDevice() call.
-  // |sink| is a fresh sink which should be used if device info is good.
-  // |device_info| is the OutputDeviceInfo for |sink| after
+  // `switch_cb` is the callback given to the SwitchOutputDevice() call.
+  // `sink` is a fresh sink which should be used if device info is good.
+  // `device_info` is the OutputDeviceInfo for `sink` after
   // GetOutputDeviceInfoAsync() completes.
-  void OnDeviceSwitchReady(OutputDeviceStatusCB switch_cb,
-                           scoped_refptr<AudioRendererSink> sink,
-                           OutputDeviceInfo device_info);
+  void OnDeviceSwitchReady(media::OutputDeviceStatusCB switch_cb,
+                           scoped_refptr<media::AudioRendererSink> sink,
+                           media::OutputDeviceInfo device_info);
 
   // AudioParameters received during Initialize().
-  AudioParameters params_;
+  media::AudioParameters params_;
 
   // Linearly fades in the input volume during the first ProvideInput() calls,
   // avoiding audible pops.
   int total_fade_in_frames_;
   int remaining_fade_in_frames_ = 0;
 
-  const base::UnguessableToken owner_token_;
+  const LocalFrameToken source_frame_token_;
   std::string device_id_;  // ID of hardware device to use
-  const AudioLatency::Type latency_;
+  const media::AudioLatency::Type latency_;
 
   // AudioRendererMixer obtained from mixer pool during Initialize(),
   // guaranteed to live (at least) until it is returned to the pool.
@@ -143,9 +145,9 @@ class MEDIA_EXPORT AudioRendererMixerInput
   // progress. SwitchOutputDevice() will be invoked again with these values once
   // the OnDeviceInfoReceived() from the GODIA() call completes.
   std::string pending_device_id_;
-  OutputDeviceStatusCB pending_switch_cb_;
+  media::OutputDeviceStatusCB pending_switch_cb_;
 };
 
-}  // namespace media
+}  // namespace blink
 
-#endif  // MEDIA_BASE_AUDIO_RENDERER_MIXER_INPUT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_AUDIO_AUDIO_RENDERER_MIXER_INPUT_H_
