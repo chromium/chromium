@@ -12,6 +12,8 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
@@ -590,7 +592,17 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
   const base::TimeTicks measurement_interval_end = base::TimeTicks::Now();
   CHECK(!measurement_interval_start.is_null());
   CHECK(!measurement_interval_end.is_null());
-  CHECK_LE(process_node->GetLaunchTime(), measurement_interval_start);
+  // TODO(https://crbug.com/326201232): Turn this back into a CHECK or remove it
+  // after figuring out why it's being hit in production sometimes.
+  if (process_node->GetLaunchTime() > measurement_interval_start) {
+    SCOPED_CRASH_KEY_NUMBER(
+        "CPUMeasurement", "process_start",
+        (process_node->GetLaunchTime() - base::TimeTicks()).InNanoseconds());
+    SCOPED_CRASH_KEY_NUMBER(
+        "CPUMeasurement", "interval_start",
+        (measurement_interval_start - base::TimeTicks()).InNanoseconds());
+    base::debug::DumpWithoutCrashing();
+  }
   if (measurement_interval_start == measurement_interval_end) {
     // No time has passed to measure.
     return;
