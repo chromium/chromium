@@ -47,8 +47,8 @@ void DownloadManagerMediator::SetIdentityManager(
   identity_manager_ = identity_manager;
   if (identity_manager_) {
     identity_manager_->AddObserver(this);
+    UpdateConsumer();
   }
-  UpdateConsumer();
 }
 
 void DownloadManagerMediator::SetDriveService(

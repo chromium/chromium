@@ -766,7 +766,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   if (_multipleDestinationsAvailable) {
     downloadButtonConfiguration.attributedTitle = CreateActionButtonTitle(
         l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_SAVE_ELLIPSIS));
-    _openInDriveButton.accessibilityLabel = l10n_util::GetNSString(
+    self.downloadButton.accessibilityLabel = l10n_util::GetNSString(
         IDS_IOS_DOWNLOAD_MANAGER_SAVE_ACCESSIBILITY_LABEL);
 
     self.downloadButton.accessibilityIdentifier =
