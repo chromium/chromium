@@ -1760,6 +1760,18 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // result fits the available space.
   bool has_try_options = iter.HasPositionTryOptions();
   std::optional<OffsetInfo> offset_info;
+
+  // Ths spec says:
+  //
+  // "
+  // Implementations may choose to impose an implementation-defined limit on the
+  // length of position options lists, to limit the amount of excess layout work
+  // that may be required. This limit must be at least five.
+  // "
+  //
+  // We use 6 here because the first attempt is without anything from the
+  // position options list applied.
+  unsigned attempts_left = 6;
   do {
     NonOverflowingScrollRange non_overflowing_range;
     // Do @position-try placement decisions on the *base style* to avoid
@@ -1777,7 +1789,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
         offset_info = std::nullopt;
       }
     }
-  } while (!offset_info && iter.MoveToNextStyle());
+  } while (!offset_info && --attempts_left != 0 && iter.MoveToNextStyle());
 
   if (!offset_info) {
     // None of the options worked out. Fall back to style without any options
