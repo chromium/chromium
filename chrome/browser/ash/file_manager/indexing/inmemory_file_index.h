@@ -125,6 +125,12 @@ class InmemoryFileIndex : public FileIndex {
   // A map from field name posting list.
   std::map<std::string, PostingLists> posting_namespace_;
 
+  // A global map from term ID to all FileInfo IDs associated with the term.
+  // This additional posting list is to give us the ability to search for match
+  // regardless of the field name used (i.e., do "global" search, or search for
+  // "anything" that has been associated with some term).
+  PostingLists global_posting_lists_;
+
   // A map from FileInfo ID to term IDs that are stored for a given file.
   typedef std::map<int64_t, std::set<int64_t>> TermLists;
 

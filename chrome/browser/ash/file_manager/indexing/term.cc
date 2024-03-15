@@ -9,10 +9,7 @@
 namespace file_manager {
 
 Term::Term(const std::string& field, const std::u16string& text)
-    : field_(field), text_(base::UTF16ToUTF8((text))) {
-  // TODO(b:327535200): Fix escaping of ':'.
-  value_ = field + ":" + text_;
-}
+    : field_(field), text_(base::UTF16ToUTF8((text))) {}
 
 Term::~Term() = default;
 

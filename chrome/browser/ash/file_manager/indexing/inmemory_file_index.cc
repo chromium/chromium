@@ -33,14 +33,7 @@ OpResults InmemoryFileIndex::RemoveFile(const GURL& url) {
       continue;
     }
     for (int64_t term_id : term_it->second) {
-      auto field_it = posting_namespace_.find(field_name);
-      if (field_it == posting_namespace_.end()) {
-        continue;
-      }
-      PostingLists& posting_lists = field_it->second;
-      auto posting_it = posting_lists.find(term_id);
-      DCHECK(posting_it != posting_lists.end());
-      posting_it->second.erase(url_id);
+      RemoveFromPostingList(field_name, term_id, url_id);
     }
     term_lists.erase(term_it);
   }
@@ -148,18 +141,31 @@ void InmemoryFileIndex::AddToPostingList(const std::string& field_name,
   } else {
     it->second.insert(url_id);
   }
+  // Add to the default posting list.
+  it = global_posting_lists_.find(term_id);
+  if (it == global_posting_lists_.end()) {
+    std::set<int64_t> fresh_set{url_id};
+    global_posting_lists_.emplace(std::make_pair(term_id, fresh_set));
+  } else {
+    it->second.insert(url_id);
+  }
 }
 
 void InmemoryFileIndex::RemoveFromPostingList(const std::string& field_name,
                                               int64_t term_id,
                                               int64_t url_id) {
   auto namespace_it = posting_namespace_.find(field_name);
-  if (namespace_it == posting_namespace_.end()) {
-    return;
+  if (namespace_it != posting_namespace_.end()) {
+    PostingLists& posting_lists = namespace_it->second;
+    auto it = posting_lists.find(term_id);
+    if (it != posting_lists.end()) {
+      it->second.erase(url_id);
+    }
   }
-  PostingLists& posting_lists = namespace_it->second;
-  auto it = posting_lists.find(term_id);
-  if (it != posting_lists.end()) {
+  // Remove from the default posting list, which contains associations between
+  // term IDs and URL IDs regardless of the field name.
+  auto it = global_posting_lists_.find(term_id);
+  if (it != global_posting_lists_.end()) {
     it->second.erase(url_id);
   }
 }
@@ -244,13 +250,22 @@ std::vector<FileInfo> InmemoryFileIndex::Search(const Query& query) {
     if (term_id < 0) {
       return {};
     }
-    auto field_it = posting_namespace_.find(term.field());
-    if (field_it == posting_namespace_.end()) {
-      return {};
+    const PostingLists* posting_lists;
+    if (term.field().empty()) {
+      // Global search: this is the case of the user entering a query such as
+      // "tax starred". We cannot tell if they mean "label:tax AND
+      // label:starred" or "label:starred AND content:tax", etc. Unqualified
+      // terms (those with empty field names) are searched in the global index.
+      posting_lists = &global_posting_lists_;
+    } else {
+      auto field_it = posting_namespace_.find(term.field());
+      if (field_it == posting_namespace_.end()) {
+        return {};
+      }
+      posting_lists = &field_it->second;
     }
-    PostingLists& posting_lists = field_it->second;
-    auto ith_term_match = posting_lists.find(term_id);
-    if (ith_term_match == posting_lists.end()) {
+    auto ith_term_match = posting_lists->find(term_id);
+    if (ith_term_match == posting_lists->end()) {
       return {};
     }
     if (first) {

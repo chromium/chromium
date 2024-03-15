@@ -25,12 +25,10 @@ class Term {
 
   const std::string& field() const { return field_; }
   const std::string& text_bytes() const { return text_; }
-  const std::string& value() const { return value_; }
 
  private:
   std::string field_;
   std::string text_;
-  std::string value_;
 };
 
 }  // namespace file_manager

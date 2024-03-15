@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -202,6 +203,45 @@ TEST_F(FileIndexServiceTest, FieldSeparator) {
               testing::ElementsAre(foo_info));
   EXPECT_THAT(index_service_->Search(Query({colon_in_text})),
               testing::ElementsAre(bar_info));
+}
+
+TEST_F(FileIndexServiceTest, GlobalSearch) {
+  // Setup: two files, one marked with the label:starred, the other with
+  // content:starred. This simulates the case where identical tokens, "starred"
+  // came from two different sources (labeling, and file content).
+  const std::u16string text = u"starred";
+  Term label_term("label", text);
+  Term content_term("content", text);
+  FileInfo labeled_info(MakeLocalURL("foo.txt"), 1024, base::Time());
+  FileInfo content_info(MakeLocalURL("bar.txt"), 1024, base::Time());
+
+  EXPECT_EQ(index_service_->UpdateFile({label_term}, labeled_info),
+            OpResults::kSuccess);
+  EXPECT_EQ(index_service_->UpdateFile({content_term}, content_info),
+            OpResults::kSuccess);
+
+  // Searching with empty field name means global space search.
+  EXPECT_THAT(index_service_->Search(Query({Term("", text)})),
+              testing::ElementsAre(labeled_info, content_info));
+  // Searching with field name, gives us unique results.
+  EXPECT_THAT(index_service_->Search(Query({label_term})),
+              testing::ElementsAre(labeled_info));
+  EXPECT_THAT(index_service_->Search(Query({content_term})),
+              testing::ElementsAre(content_info));
+}
+
+TEST_F(FileIndexServiceTest, RemoveFile) {
+  // Empty remove.
+  FileInfo foo_info(MakeLocalURL("foo.txt"), 1024, base::Time());
+  EXPECT_EQ(index_service_->RemoveFile(foo_info.file_url), OpResults::kSuccess);
+  // Add foo_info to the index.
+  EXPECT_EQ(index_service_->UpdateFile({starred_}, foo_info),
+            OpResults::kSuccess);
+  EXPECT_THAT(index_service_->Search(Query({starred_})),
+              testing::ElementsAre(foo_info));
+  EXPECT_EQ(index_service_->RemoveFile(foo_info.file_url), OpResults::kSuccess);
+  EXPECT_THAT(index_service_->Search(Query({starred_})),
+              testing::ElementsAre());
 }
 
 }  // namespace
