@@ -1339,18 +1339,19 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (!IsOperationAllowed(*storage_partition_,
-                          ContentBrowserClient::AttributionReportingOperation::
-                              kSourceVerboseDebugReport,
-                          /*rfh=*/nullptr,
-                          &*source.common_info().source_origin(),
-                          /*destination_origin=*/nullptr,
-                          &*source.common_info().reporting_origin())) {
-    return;
-  }
+  const auto is_operation_allowed = [&]() {
+    return IsOperationAllowed(
+        *storage_partition_,
+        ContentBrowserClient::AttributionReportingOperation::
+            kSourceVerboseDebugReport,
+        /*rfh=*/nullptr, &*source.common_info().source_origin(),
+        /*destination_origin=*/nullptr,
+        &*source.common_info().reporting_origin());
+  };
 
   if (std::optional<AttributionDebugReport> debug_report =
-          AttributionDebugReport::Create(source, is_debug_cookie_set, result)) {
+          AttributionDebugReport::Create(source, is_operation_allowed,
+                                         is_debug_cookie_set, result)) {
     report_sender_->SendReport(
         std::move(*debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
@@ -1366,19 +1367,19 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (!IsOperationAllowed(*storage_partition_,
-                          ContentBrowserClient::AttributionReportingOperation::
-                              kTriggerVerboseDebugReport,
-                          /*rfh=*/nullptr,
-                          /*source_origin=*/nullptr,
-                          &*trigger.destination_origin(),
-                          &*trigger.reporting_origin())) {
-    return;
-  }
+  const auto is_operation_allowed = [&]() {
+    return IsOperationAllowed(
+        *storage_partition_,
+        ContentBrowserClient::AttributionReportingOperation::
+            kTriggerVerboseDebugReport,
+        /*rfh=*/nullptr,
+        /*source_origin=*/nullptr, &*trigger.destination_origin(),
+        &*trigger.reporting_origin());
+  };
 
   if (std::optional<AttributionDebugReport> debug_report =
-          AttributionDebugReport::Create(trigger, is_debug_cookie_set,
-                                         result)) {
+          AttributionDebugReport::Create(trigger, is_operation_allowed,
+                                         is_debug_cookie_set, result)) {
     report_sender_->SendReport(
         std::move(*debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
@@ -1662,16 +1663,18 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReports(
       break;
   }
 
+  const auto is_operation_allowed =
+      [&](const url::Origin& registration_origin) {
+        return IsOperationAllowed(*storage_partition_, operation,
+                                  /*rfh=*/nullptr, source_origin,
+                                  destination_origin,
+                                  /*reporting_origin=*/&registration_origin);
+      };
+
   for (size_t i = 0; i < registration.registration_items.size(); ++i) {
-    const auto registration_origin =
-        url::Origin::Create(registration.registration_items[i].url);
-    if (!IsOperationAllowed(*storage_partition_, operation,
-                            /*rfh=*/nullptr, source_origin, destination_origin,
-                            /*reporting_origin=*/&registration_origin)) {
-      continue;
-    }
     if (std::optional<AttributionDebugReport> debug_report =
-            AttributionDebugReport::Create(registration, /*item_index=*/i)) {
+            AttributionDebugReport::Create(registration, /*item_index=*/i,
+                                           is_operation_allowed)) {
       report_sender_->SendReport(
           std::move(*debug_report),
           base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,
@@ -1717,17 +1720,19 @@ void AttributionManagerImpl::ReportRegistrationHeaderError(
     return;
   }
 
-  if (!GetContentClient()->browser()->IsAttributionReportingAllowedForContext(
-          storage_partition_->browser_context(),
-          RenderFrameHost::FromID(render_frame_id), *context_origin,
-          *reporting_origin)) {
-    return;
-  }
+  const auto is_operation_allowed = [&](const url::Origin& reporting_origin) {
+    return GetContentClient()
+        ->browser()
+        ->IsAttributionReportingAllowedForContext(
+            storage_partition_->browser_context(),
+            RenderFrameHost::FromID(render_frame_id), *context_origin,
+            reporting_origin);
+  };
 
   if (std::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(std::move(reporting_origin), error,
-                                         context_origin,
-                                         is_within_fenced_frame)) {
+                                         context_origin, is_within_fenced_frame,
+                                         is_operation_allowed)) {
     report_sender_->SendReport(
         std::move(*debug_report),
         base::BindOnce(&AttributionManagerImpl::NotifyDebugReportSent,

@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -455,10 +456,11 @@ GURL AttributionDebugReport::ReportUrl() const {
 // static
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StorableSource& source,
+    base::FunctionRef<bool()> is_operation_allowed,
     bool is_debug_cookie_set,
     const StoreSourceResult& result) {
   if (!source.registration().debug_reporting ||
-      source.is_within_fenced_frame()) {
+      source.is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
 
@@ -491,10 +493,11 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 // static
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const AttributionTrigger& trigger,
+    base::FunctionRef<bool()> is_operation_allowed,
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
   if (!trigger.registration().debug_reporting ||
-      trigger.is_within_fenced_frame()) {
+      trigger.is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
 
@@ -534,7 +537,8 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 // static
 std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const OsRegistration& registration,
-    size_t item_index) {
+    size_t item_index,
+    base::FunctionRef<bool(const url::Origin&)> is_operation_allowed) {
   CHECK_LT(item_index, registration.registration_items.size());
   const auto& registration_item = registration.registration_items[item_index];
   if (!registration_item.debug_reporting ||
@@ -544,7 +548,8 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
 
   auto registration_origin =
       attribution_reporting::SuitableOrigin::Create(registration_item.url);
-  if (!registration_origin.has_value()) {
+  if (!registration_origin.has_value() ||
+      !is_operation_allowed(*registration_origin)) {
     return std::nullopt;
   }
 
@@ -576,13 +581,14 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     attribution_reporting::SuitableOrigin reporting_origin,
     const attribution_reporting::RegistrationHeaderError& error,
     const attribution_reporting::SuitableOrigin& context_origin,
-    bool is_within_fenced_frame) {
+    bool is_within_fenced_frame,
+    base::FunctionRef<bool(const url::Origin&)> is_operation_allowed) {
   if (is_within_fenced_frame) {
     return std::nullopt;
   }
 
   std::string_view header_type = GetHeaderName(error.header_type);
-  if (header_type.empty()) {
+  if (header_type.empty() || !is_operation_allowed(*reporting_origin)) {
     return std::nullopt;
   }
 

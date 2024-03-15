@@ -56,14 +56,36 @@ AttributionReport DefaultAggregatableReport() {
       .BuildAggregatableAttribution();
 }
 
+bool OperationAllowed() {
+  return true;
+}
+
+bool OperationProhibited() {
+  return false;
+}
+
 TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
   EXPECT_FALSE(AttributionDebugReport::Create(
-      SourceBuilder().Build(),
+      SourceBuilder().Build(), &OperationAllowed,
       /*is_debug_cookie_set=*/false,
       StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
-      TriggerBuilder().Build(),
+      TriggerBuilder().Build(), &OperationAllowed,
+      /*is_debug_cookie_set=*/true,
+      CreateReportResult(/*trigger_time=*/base::Time::Now(),
+                         EventLevelResult::kNoMatchingImpressions,
+                         AggregatableResult::kNoMatchingImpressions)));
+}
+
+TEST(AttributionDebugReportTest, OperationProhibited_NoReportReturned) {
+  EXPECT_FALSE(AttributionDebugReport::Create(
+      SourceBuilder().SetDebugReporting(true).Build(), &OperationProhibited,
+      /*is_debug_cookie_set=*/false,
+      StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
+
+  EXPECT_FALSE(AttributionDebugReport::Create(
+      TriggerBuilder().SetDebugReporting(true).Build(), &OperationProhibited,
       /*is_debug_cookie_set=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
                          EventLevelResult::kNoMatchingImpressions,
@@ -73,7 +95,7 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
 TEST(AttributionDebugReportTest,
      SourceDestinationLimitError_ValidReportReturned) {
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
-      SourceBuilder().SetDebugReporting(true).Build(),
+      SourceBuilder().SetDebugReporting(true).Build(), &OperationAllowed,
       /*is_debug_cookie_set=*/false,
       StoreSourceResult::InsufficientUniqueDestinationCapacity(3));
   ASSERT_TRUE(report);
@@ -102,6 +124,7 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
           .SetDebugReporting(true)
           .SetIsWithinFencedFrame(true)
           .Build(),
+      &OperationAllowed,
       /*is_debug_cookie_set=*/false,
       StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
 
@@ -110,6 +133,7 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
           .SetDebugReporting(true)
           .SetIsWithinFencedFrame(true)
           .Build(),
+      &OperationAllowed,
       /*is_debug_cookie_set=*/true,
       CreateReportResult(/*trigger_time=*/base::Time::Now(),
                          EventLevelResult::kNoMatchingImpressions,
@@ -280,7 +304,8 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                                              .SetDebugReporting(true)
                                              .SetDebugKey(test_case.debug_key)
                                              .Build(),
-                                         is_debug_cookie_set, test_case.result);
+                                         &OperationAllowed, is_debug_cookie_set,
+                                         test_case.result);
 
       const char* expected_report_body =
           is_debug_cookie_set ? test_case.expected_report_body_with_cookie
@@ -304,6 +329,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                     net::SchemefulSite::Deserialize("https://d.test"),
                 })
                 .Build(),
+            &OperationAllowed,
             /*is_debug_cookie_set=*/true,
             StoreSourceResult::SuccessNoised(
                 /*min_fake_report_time=*/std::nullopt));
@@ -403,7 +429,7 @@ TEST(AttributionDebugReportTest, TriggerDebugging) {
         std::optional<AttributionDebugReport> report =
             AttributionDebugReport::Create(
                 TriggerBuilder().SetDebugReporting(true).Build(),
-                is_trigger_debug_cookie_set,
+                &OperationAllowed, is_trigger_debug_cookie_set,
                 CreateReportResult(
                     /*trigger_time=*/base::Time::Now(),
                     test_case.event_level_result, test_case.aggregatable_result,
@@ -710,7 +736,7 @@ TEST(AttributionDebugReportTest, EventLevelAttributionDebugging) {
                     .SetDebugReporting(true)
                     .SetDebugKey(test_case.trigger_debug_key)
                     .Build(),
-                is_trigger_debug_cookie_set,
+                &OperationAllowed, is_trigger_debug_cookie_set,
                 CreateReportResult(
                     /*trigger_time=*/base::Time::Now(), test_case.result,
                     AggregatableResult::kNotRegistered,
@@ -916,7 +942,7 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
                     .SetDebugReporting(true)
                     .SetDebugKey(test_case.trigger_debug_key)
                     .Build(),
-                is_trigger_debug_cookie_set,
+                &OperationAllowed, is_trigger_debug_cookie_set,
                 CreateReportResult(
                     /*trigger_time=*/base::Time::Now(),
                     EventLevelResult::kSuccess, test_case.result,
@@ -944,9 +970,16 @@ TEST(AttributionDebugReportTest, AggregatableAttributionDebugging) {
 }
 
 TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
+  const auto operation_allowed = [](const url::Origin&) { return true; };
+  const auto operation_allowed_if_not_registration_origin =
+      [](const url::Origin& origin) {
+        return origin != url::Origin::Create(GURL("https://c.test"));
+      };
+
   const struct {
     const char* description;
     OsRegistration registration;
+    base::FunctionRef<bool(const url::Origin&)> is_operation_allowed;
     const char* expected_body;
   } kTestCases[] = {
       {
@@ -960,6 +993,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*render_frame_id=*/GlobalRenderFrameHostId(),
               {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
                ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
+          operation_allowed,
           R"json([{
             "body": {
               "context_site": "https://b.test",
@@ -978,6 +1012,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*render_frame_id=*/GlobalRenderFrameHostId(),
               {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
                ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
+          operation_allowed,
           R"json([{
             "body": {
               "context_site": "https://b.test",
@@ -996,6 +1031,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*render_frame_id=*/GlobalRenderFrameHostId(),
               {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
                ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
+          operation_allowed,
           nullptr,
       },
       {
@@ -1008,6 +1044,7 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*render_frame_id=*/GlobalRenderFrameHostId(),
               {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
                ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
+          operation_allowed,
           nullptr,
       },
       {
@@ -1020,6 +1057,20 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*render_frame_id=*/GlobalRenderFrameHostId(),
               {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
                ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
+          operation_allowed,
+          nullptr,
+      },
+      {
+          "operation_prohibited",
+          OsRegistration(
+              {OsRegistrationItem(GURL("https://c.test/x"),
+                                  /*debug_reporting=*/true)},
+              /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
+              /*input_event=*/std::nullopt, /*is_within_fenced_frame=*/false,
+              /*render_frame_id=*/GlobalRenderFrameHostId(),
+              {ContentBrowserClient::AttributionReportingOsReportType::kWeb,
+               ContentBrowserClient::AttributionReportingOsReportType::kWeb}),
+          operation_allowed_if_not_registration_origin,
           nullptr,
       },
   };
@@ -1027,7 +1078,8 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
   for (const auto& test_case : kTestCases) {
     std::optional<AttributionDebugReport> report =
         AttributionDebugReport::Create(test_case.registration,
-                                       /*item_index=*/0);
+                                       /*item_index=*/0,
+                                       test_case.is_operation_allowed);
     EXPECT_EQ(report.has_value(), test_case.expected_body != nullptr)
         << test_case.description;
     if (test_case.expected_body) {
@@ -1039,17 +1091,26 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
 }
 
 TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
+  const auto context_origin = *SuitableOrigin::Deserialize("https://c.test");
+
+  const auto operation_allowed = [](const url::Origin&) { return true; };
+
+  const auto operation_allowed_if_not_reporting_origin =
+      [&](const url::Origin& origin) { return origin != reporting_origin; };
+
   const struct {
-    const char* description;
+    const char* name;
     RegistrationHeaderType type;
-    bool is_within_fenced_frame;
+    bool is_within_fenced_frame = false;
+    base::FunctionRef<bool(const url::Origin&)> is_operation_allowed =
+        operation_allowed;
     const char* expected_body;
   } kTestCases[] = {
       {
-          "source",
-          RegistrationHeaderType::kSource,
-          false,
-          R"json([{
+          .name = "source",
+          .type = RegistrationHeaderType::kSource,
+          .expected_body = R"json([{
             "body": {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-Source",
@@ -1059,10 +1120,9 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
           }])json",
       },
       {
-          "trigger",
-          RegistrationHeaderType::kTrigger,
-          false,
-          R"json([{
+          .name = "trigger",
+          .type = RegistrationHeaderType::kTrigger,
+          .expected_body = R"json([{
             "body": {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-Trigger",
@@ -1072,10 +1132,9 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
           }])json",
       },
       {
-          "os_source",
-          RegistrationHeaderType::kOsSource,
-          false,
-          R"json([{
+          .name = "os_source",
+          .type = RegistrationHeaderType::kOsSource,
+          .expected_body = R"json([{
             "body": {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-OS-Source",
@@ -1085,10 +1144,9 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
           }])json",
       },
       {
-          "os_trigger",
-          RegistrationHeaderType::kOsTrigger,
-          false,
-          R"json([{
+          .name = "os_trigger",
+          .type = RegistrationHeaderType::kOsTrigger,
+          .expected_body = R"json([{
             "body": {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-OS-Trigger",
@@ -1098,24 +1156,28 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
           }])json",
       },
       {
-          "within_fenced_frame",
-          RegistrationHeaderType::kSource,
-          true,
-          nullptr,
+          .name = "within_fenced_frame",
+          .type = RegistrationHeaderType::kSource,
+          .is_within_fenced_frame = true,
+          .expected_body = nullptr,
+      },
+      {
+          .name = "operation_prohibited",
+          .type = RegistrationHeaderType::kSource,
+          .is_operation_allowed = operation_allowed_if_not_reporting_origin,
+          .expected_body = nullptr,
       },
   };
 
-  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
-  const auto context_origin = *SuitableOrigin::Deserialize("https://c.test");
-
   for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);
+    SCOPED_TRACE(test_case.name);
     std::optional<AttributionDebugReport> report =
         AttributionDebugReport::Create(
             reporting_origin,
             RegistrationHeaderError(test_case.type,
                                     /*header_value=*/"!!!"),
-            context_origin, test_case.is_within_fenced_frame);
+            context_origin, test_case.is_within_fenced_frame,
+            test_case.is_operation_allowed);
     EXPECT_EQ(report.has_value(), test_case.expected_body != nullptr);
     if (test_case.expected_body) {
       EXPECT_EQ(report->ReportBody(),
