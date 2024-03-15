@@ -346,7 +346,7 @@ class LoginPromptBrowserTest
       LoginHandler* handler =
           LoginHandler::GetAllLoginHandlersForTest().front();
       content::TestNavigationObserver reload_observer(contents);
-      handler->CancelAuth();
+      handler->CancelAuth(/*notify_others=*/true);
       reload_observer.Wait();
       EXPECT_EQ(expected_hostname, contents->GetVisibleURL().host());
     }
@@ -774,7 +774,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestCancelAuth_Manual) {
   ASSERT_TRUE(handler);
   content::TestNavigationObserver reload_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  handler->CancelAuth();
+  handler->CancelAuth(/*notify_others=*/true);
   auth_cancelled_waiter.Wait();
   reload_observer.Wait();
   EXPECT_TRUE(LoginHandler::GetAllLoginHandlersForTest().empty());
@@ -911,7 +911,7 @@ IN_PROC_BROWSER_TEST_P(MultiRealmLoginPromptBrowserTest,
                        MultipleRealmCancellation) {
   RunTest([this](LoginHandler* handler) {
     auto waiter = CreateAuthCancelledObserver();
-    handler->CancelAuth();
+    handler->CancelAuth(/*notify_others=*/true);
     waiter.Wait();
   });
 
@@ -961,7 +961,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, NoLoginPromptForFavicon) {
           LoginHandler::GetAllLoginHandlersForTest().front();
 
       ASSERT_TRUE(handler);
-      handler->CancelAuth();
+      handler->CancelAuth(/*notify_others=*/true);
       auth_cancelled_waiter.Wait();
     }
   }
@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
           LoginHandler::GetAllLoginHandlersForTest().front();
 
       ASSERT_TRUE(handler);
-      handler->CancelAuth();
+      handler->CancelAuth(/*notify_others=*/true);
       auth_cancelled_waiter.Wait();
     }
   }
@@ -1069,7 +1069,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
           LoginHandler::GetAllLoginHandlersForTest().front();
 
       ASSERT_TRUE(handler);
-      handler->CancelAuth();
+      handler->CancelAuth(/*notify_others=*/true);
       auth_cancelled_waiter.Wait();
     }
   }
@@ -1141,7 +1141,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
       // main frame's url, not the iframe's.
       EXPECT_EQ(kNewHost, contents->GetVisibleURL().host());
 
-      handler->CancelAuth();
+      handler->CancelAuth(/*notify_others=*/true);
       auth_cancelled_waiter.Wait();
     }
   }
@@ -1235,12 +1235,58 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, CancelRedundantAuths) {
 
   // Cancel auth in one of the tabs.
   LoginHandler* handler_1 = LoginHandler::GetAllLoginHandlersForTest().front();
-  handler_1->CancelAuth();
+  handler_1->CancelAuth(/*notify_others=*/true);
 
   // Both tabs should cancel auth.
   EXPECT_EQ(2, browser_client_->auth_needed_count);
   EXPECT_EQ(0, browser_client_->auth_supplied_count);
   EXPECT_EQ(2, browser_client_->auth_cancelled_count);
+}
+
+IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, CancelAuthWithoutNotify) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Get NavigationController for tab 1.
+  content::WebContents* contents_1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Open a new tab.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+
+  // Get NavigationController for tab 2.
+  content::WebContents* contents_2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(contents_1, contents_2);
+
+  // Open different auth urls in each tab.
+  {
+    auto auth_needed_waiter = CreateAuthNeededObserver();
+    contents_1->OpenURL(OpenURLParams(
+        embedded_test_server()->GetURL("/auth-basic/1"), content::Referrer(),
+        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+    auth_needed_waiter.Wait();
+  }
+
+  {
+    auto auth_needed_waiter = CreateAuthNeededObserver();
+    contents_2->OpenURL(OpenURLParams(
+        embedded_test_server()->GetURL("/auth-basic/2"), content::Referrer(),
+        WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false));
+    auth_needed_waiter.Wait();
+  }
+
+  ASSERT_EQ(2U, LoginHandler::GetAllLoginHandlersForTest().size());
+
+  // Cancel auth in one of the tabs without notifying other tabs.
+  LoginHandler* handler_1 = LoginHandler::GetAllLoginHandlersForTest().front();
+  handler_1->CancelAuth(/*notify_others=*/false);
+
+  // Second tab shouldn't cancel auth.
+  EXPECT_EQ(2, browser_client_->auth_needed_count);
+  EXPECT_EQ(0, browser_client_->auth_supplied_count);
+  EXPECT_EQ(1, browser_client_->auth_cancelled_count);
 }
 
 IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
@@ -1422,7 +1468,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   auto auth_cancelled_waiter = CreateAuthCancelledObserver();
   LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
 
-  handler->CancelAuth();
+  handler->CancelAuth(/*notify_others=*/true);
   auth_cancelled_waiter.Wait();
 
   content::WaitForLoadStop(
@@ -1665,7 +1711,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
 
   // Cancel auth dialog for www.b.com.
   LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
-  handler->CancelAuth();
+  handler->CancelAuth(/*notify_others=*/true);
   EXPECT_EQ("www.b.com", contents->GetVisibleURL().host());
 }
 
@@ -1710,7 +1756,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
     // Cancel the auth prompt, which triggers a reload.
     LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
     content::TestNavigationObserver reload_observer(contents);
-    handler->CancelAuth();
+    handler->CancelAuth(/*notify_others=*/true);
     reload_observer.Wait();
     EXPECT_EQ("127.0.0.1", contents->GetVisibleURL().host());
     EXPECT_EQ(auth_url, contents->GetLastCommittedURL());
@@ -1966,7 +2012,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
   // Cancel the prompt and check that another prompt is not shown.
   auto auth_cancelled_waiter = CreateAuthCancelledObserver();
   LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
-  handler->CancelAuth();
+  handler->CancelAuth(/*notify_others=*/true);
   auth_cancelled_waiter.Wait();
   subframe_observer.Wait();
   EXPECT_EQ(0u, LoginHandler::GetAllLoginHandlersForTest().size());
@@ -2067,7 +2113,7 @@ class LoginProxyBrowserTest : public ProxyBrowserTest,
       LoginHandler* handler =
           LoginHandler::GetAllLoginHandlersForTest().front();
       content::TestNavigationObserver reload_observer(contents);
-      handler->CancelAuth();
+      handler->CancelAuth(/*notify_others=*/true);
       auth_cancelled_waiter.Wait();
       reload_observer.Wait();
       if (https) {
@@ -2291,7 +2337,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, BasicAuthWithServiceWorker) {
     // a reload.
     LoginHandler* handler = LoginHandler::GetAllLoginHandlersForTest().front();
     content::TestNavigationObserver reload_observer(web_contents);
-    handler->CancelAuth();
+    handler->CancelAuth(/*notify_others=*/true);
     reload_observer.Wait();
     const std::u16string kExpectedTitle =
         u"Denied: Missing Authorization Header";

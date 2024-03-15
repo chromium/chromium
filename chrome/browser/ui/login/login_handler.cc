@@ -157,13 +157,16 @@ void LoginHandler::SetAuth(const std::u16string& username,
   std::move(callback).Run(net::AuthCredentials(username, password));
 }
 
-void LoginHandler::CancelAuth() {
+void LoginHandler::CancelAuth(bool notify_others) {
   if (WasAuthHandled())
     return;
 
   LoginAuthRequiredCallback callback = std::move(auth_required_callback_);
 
-  NotifyAuthCancelled();
+  if (notify_others) {
+    NotifyAuthCancelled();
+  }
+
   CloseContents();
   std::move(callback).Run(std::nullopt);
 }
@@ -257,7 +260,7 @@ void LoginHandler::OtherHandlerFinished(bool supplied,
   if (supplied) {
     SetAuth(username, password);
   } else {
-    CancelAuth();
+    CancelAuth(/*notify_others=*/true);
   }
 }
 
@@ -408,6 +411,7 @@ void LoginHandler::BuildViewAndNotify(
     // re-entrancy into the calling code.
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&LoginHandler::CancelAuth, weak_factory_.GetWeakPtr()));
+        base::BindOnce(&LoginHandler::CancelAuth, weak_factory_.GetWeakPtr(),
+                       /*notify_others=*/false));
   }
 }

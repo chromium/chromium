@@ -110,7 +110,7 @@ class LoginHandlerViews : public LoginHandler {
           [](Dialog* dialog) {
             if (!dialog->handler_)
               return;
-            dialog->handler_->CancelAuth();
+            dialog->handler_->CancelAuth(/*notify_others=*/true);
           },
           base::Unretained(this)));
       SetModalType(ui::MODAL_TYPE_CHILD);
@@ -146,7 +146,7 @@ class LoginHandlerViews : public LoginHandler {
       // Reference is no longer valid.
       widget_ = nullptr;
       if (handler_)
-        handler_->CancelAuth();
+        handler_->CancelAuth(/*notify_others=*/true);
     }
 
     views::View* GetInitiallyFocusedView() override {

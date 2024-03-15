@@ -125,5 +125,5 @@ void ChromeHttpAuthHandler::SetAuthSync(const std::u16string& username,
 }
 
 void ChromeHttpAuthHandler::CancelAuthSync() {
-  observer_->CancelAuth();
+  observer_->CancelAuth(/*notify_others=*/true);
 }
