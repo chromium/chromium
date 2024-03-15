@@ -44,8 +44,9 @@ class ScoreNormalizerTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
-  PersistentProto<ScoreNormalizerProto> GetProto() {
-    return PersistentProto<ScoreNormalizerProto>(GetPath(), base::Seconds(0));
+  ash::PersistentProto<ScoreNormalizerProto> GetProto() {
+    return ash::PersistentProto<ScoreNormalizerProto>(GetPath(),
+                                                      base::Seconds(0));
   }
 
   ScoreNormalizer::Params TestingParams(size_t bins = 4) {

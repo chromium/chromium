@@ -42,7 +42,7 @@ std::string ProviderToString(ProviderType provider) {
 
 ScoreNormalizingRanker::ScoreNormalizingRanker(
     ScoreNormalizer::Params params,
-    PersistentProto<ScoreNormalizerProto> proto)
+    ash::PersistentProto<ScoreNormalizerProto> proto)
     : normalizer_(std::move(proto), params) {}
 
 ScoreNormalizingRanker::~ScoreNormalizingRanker() {}

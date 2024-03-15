@@ -44,7 +44,7 @@ class MrfuResultRanker : public Ranker {
 class MrfuCategoryRanker : public Ranker {
  public:
   MrfuCategoryRanker(MrfuCache::Params params,
-                     PersistentProto<MrfuCacheProto> proto);
+                     ash::PersistentProto<MrfuCacheProto> proto);
   ~MrfuCategoryRanker() override;
 
   // Ranker:

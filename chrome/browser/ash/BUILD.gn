@@ -5233,7 +5233,6 @@ source_set("unit_tests") {
     "app_list/search/util/keyword_cache_unittest.cc",
     "app_list/search/util/manatee_unittest.cc",
     "app_list/search/util/mrfu_cache_unittest.cc",
-    "app_list/search/util/persistent_proto_unittest.cc",
     "app_list/search/util/score_normalizer_unittest.cc",
     "app_list/test/app_list_syncable_service_test_base.cc",
     "app_list/test/app_list_syncable_service_test_base.h",

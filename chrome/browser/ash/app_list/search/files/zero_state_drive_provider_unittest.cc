@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/files/zero_state_drive_provider.h"
 
+#include "ash/utility/persistent_proto.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -13,7 +14,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
-#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
@@ -40,8 +40,8 @@ class TestFileSuggestKeyedService : public ash::FileSuggestKeyedService {
                                        const base::FilePath& proto_path)
       : FileSuggestKeyedService(
             profile,
-            PersistentProto<RemovedResultsProto>(proto_path,
-                                                 base::TimeDelta())) {}
+            ash::PersistentProto<RemovedResultsProto>(proto_path,
+                                                      base::TimeDelta())) {}
   TestFileSuggestKeyedService(const TestFileSuggestKeyedService&) = delete;
   TestFileSuggestKeyedService& operator=(TestFileSuggestKeyedService&) = delete;
   ~TestFileSuggestKeyedService() override = default;

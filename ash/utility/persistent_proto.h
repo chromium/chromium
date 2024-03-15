@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_UTIL_PERSISTENT_PROTO_H_
-#define CHROME_BROWSER_ASH_APP_LIST_SEARCH_UTIL_PERSISTENT_PROTO_H_
+#ifndef ASH_UTILITY_PERSISTENT_PROTO_H_
+#define ASH_UTILITY_PERSISTENT_PROTO_H_
 
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "ash/ash_export.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,7 +26,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 
-namespace app_list {
+namespace ash {
 
 namespace internal {
 
@@ -74,7 +75,8 @@ std::pair<ReadStatus, std::unique_ptr<T>> Read(const base::FilePath& filepath) {
 }
 
 // Writes `proto_str` to the file specified by `filepath`.
-WriteStatus Write(const base::FilePath& filepath, std::string_view proto_str);
+WriteStatus ASH_EXPORT Write(const base::FilePath& filepath,
+                             std::string_view proto_str);
 
 }  // namespace internal
 
@@ -94,7 +96,7 @@ WriteStatus Write(const base::FilePath& filepath, std::string_view proto_str);
 // 2. `StartWrite()` writes to disk as soon as the task scheduler allows.
 // Registered write callbacks are executed whenever a write operation finishes.
 template <class T>
-class PersistentProto {
+class ASH_EXPORT PersistentProto {
  public:
   using InitCallback = base::OnceClosure;
   using WriteCallback = base::RepeatingCallback<void(/*success=*/bool)>;
@@ -301,6 +303,6 @@ class PersistentProto {
   base::WeakPtrFactory<PersistentProto> weak_factory_{this};
 };
 
-}  // namespace app_list
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_UTIL_PERSISTENT_PROTO_H_
+#endif  // ASH_UTILITY_PERSISTENT_PROTO_H_

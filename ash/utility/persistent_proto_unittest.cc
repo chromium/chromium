@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
+#include "ash/utility/persistent_proto.h"
 
 #include <string>
 
@@ -12,10 +12,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_list/search/util/persistent_proto_test.pb.h"
+#include "ash/utility/persistent_proto_test.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list::test {
+namespace ash {
 namespace {
 
 // Populate |proto| with some test data.
@@ -252,4 +252,4 @@ TEST_F(PersistentProtoTest, QueueWrites) {
   EXPECT_EQ(write_count_, 1);
 }
 
-}  // namespace app_list::test
+}  // namespace ash

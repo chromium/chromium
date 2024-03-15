@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/utility/persistent_proto.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/app_list/search/util/ftrl_optimizer.pb.h"
-#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 
 namespace app_list {
 
@@ -60,7 +60,7 @@ class FtrlOptimizer {
     size_t num_experts = 0;
   };
 
-  using Proto = PersistentProto<FtrlOptimizerProto>;
+  using Proto = ash::PersistentProto<FtrlOptimizerProto>;
 
   FtrlOptimizer(FtrlOptimizer::Proto, const Params& params);
   ~FtrlOptimizer();
@@ -90,7 +90,7 @@ class FtrlOptimizer {
   // and the scores are always in the same order of experts.
   std::map<std::string, std::vector<double>> last_expert_scores_;
 
-  PersistentProto<FtrlOptimizerProto> proto_;
+  ash::PersistentProto<FtrlOptimizerProto> proto_;
 };
 
 }  // namespace app_list

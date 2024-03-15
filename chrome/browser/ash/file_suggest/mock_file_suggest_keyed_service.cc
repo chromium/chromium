@@ -16,15 +16,15 @@ std::unique_ptr<KeyedService>
 MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService(
     const base::FilePath& proto_path,
     content::BrowserContext* context) {
-  app_list::PersistentProto<app_list::RemovedResultsProto> proto(
-      proto_path, base::TimeDelta());
+  PersistentProto<app_list::RemovedResultsProto> proto(proto_path,
+                                                       base::TimeDelta());
   return std::make_unique<MockFileSuggestKeyedService>(
       Profile::FromBrowserContext(context), std::move(proto));
 }
 
 MockFileSuggestKeyedService::MockFileSuggestKeyedService(
     Profile* profile,
-    app_list::PersistentProto<app_list::RemovedResultsProto> proto)
+    PersistentProto<app_list::RemovedResultsProto> proto)
     : FileSuggestKeyedService(profile, std::move(proto)) {
   ON_CALL(*this, RemoveSuggestionsAndNotify)
       .WillByDefault(

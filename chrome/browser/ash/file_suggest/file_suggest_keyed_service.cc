@@ -22,7 +22,7 @@ using SuggestResults = std::vector<FileSuggestData>;
 
 FileSuggestKeyedService::FileSuggestKeyedService(
     Profile* profile,
-    app_list::PersistentProto<app_list::RemovedResultsProto> proto)
+    PersistentProto<app_list::RemovedResultsProto> proto)
     : profile_(profile), proto_(std::move(proto)) {
   DCHECK(profile_);
 
@@ -138,7 +138,7 @@ void FileSuggestKeyedService::RemoveSuggestionBySearchResultAndNotify(
         search_result.id}});
 }
 
-app_list::PersistentProto<app_list::RemovedResultsProto>*
+PersistentProto<app_list::RemovedResultsProto>*
 FileSuggestKeyedService::GetProto(
     base::PassKey<app_list::RemovedResultsRanker>) {
   return &proto_;

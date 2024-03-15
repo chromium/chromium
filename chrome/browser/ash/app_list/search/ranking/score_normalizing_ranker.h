@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SCORE_NORMALIZING_RANKER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SCORE_NORMALIZING_RANKER_H_
 
+#include "ash/utility/persistent_proto.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
-#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 #include "chrome/browser/ash/app_list/search/util/score_normalizer.h"
 
 namespace app_list {
@@ -26,7 +26,7 @@ class ScoreNormalizerProto;
 class ScoreNormalizingRanker : public Ranker {
  public:
   ScoreNormalizingRanker(ScoreNormalizer::Params params,
-                         PersistentProto<ScoreNormalizerProto> proto);
+                         ash::PersistentProto<ScoreNormalizerProto> proto);
   ~ScoreNormalizingRanker() override;
 
   ScoreNormalizingRanker(const ScoreNormalizingRanker&) = delete;

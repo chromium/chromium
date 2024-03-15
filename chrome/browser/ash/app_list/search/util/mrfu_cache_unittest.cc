@@ -33,8 +33,8 @@ class MrfuCacheTest : public testing::Test {
 
   base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
 
-  PersistentProto<MrfuCacheProto> GetProto() {
-    return PersistentProto<MrfuCacheProto>(GetPath(), base::Seconds(0));
+  ash::PersistentProto<MrfuCacheProto> GetProto() {
+    return ash::PersistentProto<MrfuCacheProto>(GetPath(), base::Seconds(0));
   }
 
   MrfuCache::Params TestingParams(float half_life = 10.0f,

@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package app_list;
+package ash;
 
 // A proto used with the PersistentProto class in unit tests.
 message TestProto {

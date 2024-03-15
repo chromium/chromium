@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
+#include "ash/utility/persistent_proto.h"
 
-namespace app_list::internal {
+namespace ash::internal {
 
 WriteStatus Write(const base::FilePath& filepath, std::string_view proto_str) {
   if (const base::FilePath directory = filepath.DirName();
@@ -22,4 +22,4 @@ WriteStatus Write(const base::FilePath& filepath, std::string_view proto_str) {
   return WriteStatus::kOk;
 }
 
-}  // namespace app_list::internal
+}  // namespace ash::internal

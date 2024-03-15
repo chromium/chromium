@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_REMOVED_RESULTS_RANKER_H_
 
+#include "ash/utility/persistent_proto.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -12,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
-#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 
 class Profile;
 
@@ -59,7 +59,7 @@ class RemovedResultsRanker : public Ranker {
 
   // TODO(https://crbug.com/1368833): after this issue gets fixed, the ranker
   // should own a proto that contains only non-file result ids.
-  const raw_ptr<PersistentProto<RemovedResultsProto>> proto_;
+  const raw_ptr<ash::PersistentProto<RemovedResultsProto>> proto_;
 
   base::CallbackListSubscription on_init_subscription_;
 
