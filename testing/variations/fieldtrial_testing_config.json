@@ -20239,7 +20239,10 @@
                     ],
                     "hardware_classes": [
                         "brya",
-                        "rex"
+                        "nissa",
+                        "rex",
+                        "skyrim",
+                        "volteer"
                     ]
                 }
             ]
