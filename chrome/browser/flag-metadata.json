@@ -3154,6 +3154,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-keyboard-backlight-control-in-settings",
+    "owners": [ "dpad@chromium.org", "longbowei@google.com", "cros-peripherals@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-keyboard-backlight-toggle",
     "owners": [ "rtinkoff@chromium.org" ],
     "expiry_milestone": 105

@@ -8979,6 +8979,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-keyboard-backlight-control-in-settings",
+     flag_descriptions::kEnableKeyboardBacklightControlInSettingsName,
+     flag_descriptions::kEnableKeyboardBacklightControlInSettingsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kEnableKeyboardBacklightControlInSettings)},
     {"enable-keyboard-backlight-toggle",
      flag_descriptions::kEnableKeyboardBacklightToggleName,
      flag_descriptions::kEnableKeyboardBacklightToggleDescription, kOsCrOS,

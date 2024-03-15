@@ -22625,6 +22625,8 @@ from previous Chrome versions.
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="798803191" label="ShareToGoogleCollections:disabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
+  <int value="801838630"
+      label="EnableKeyboardBacklightControlInSettings:enabled"/>
   <int value="801865174" label="NetworkServiceInProcess2:enabled"/>
   <int value="802463708" label="WebViewSurfaceControl:enabled"/>
   <int value="802588165"
@@ -23064,6 +23066,8 @@ from previous Chrome versions.
   <int value="1012916096" label="AutocorrectToggle:enabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
   <int value="1012997760" label="OmniboxExpandedStateSuggestIcons:disabled"/>
+  <int value="1013656454"
+      label="EnableKeyboardBacklightControlInSettings:disabled"/>
   <int value="1013734783" label="WebViewXRequestedWithHeader:disabled"/>
   <int value="1015895665" label="drop-sync-credential:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>

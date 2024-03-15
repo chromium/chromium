@@ -6330,6 +6330,11 @@ const char kEnableInputEventLoggingDescription[] =
     "will be included in feedback reports and system logs, so DO NOT ENTER "
     "SENSITIVE INFORMATION with this flag enabled.";
 
+const char kEnableKeyboardBacklightControlInSettingsName[] =
+    "Enable Keyboard Backlight Control In Settings.";
+const char kEnableKeyboardBacklightControlInSettingsDescription[] =
+    "Enable control of keyboard backlight directly from ChromeOS Settings";
+
 const char kEnableKeyboardBacklightToggleName[] =
     "Enable Keyboard Backlight Toggle.";
 const char kEnableKeyboardBacklightToggleDescription[] =

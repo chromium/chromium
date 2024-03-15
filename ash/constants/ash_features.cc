@@ -797,6 +797,11 @@ BASE_FEATURE(kEnableHostnameSetting,
              "EnableHostnameSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables keyboard backlight control in settings.
+BASE_FEATURE(kEnableKeyboardBacklightControlInSettings,
+             "EnableKeyboardBacklightControlInSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables keyboard backlight toggle.
 BASE_FEATURE(kEnableKeyboardBacklightToggle,
              "EnableKeyboardBacklightToggle",
@@ -3758,6 +3763,11 @@ bool IsJellyEnabledForShortcutCustomization() {
 
 bool IsKerberosRememberPasswordByDefaultEnabled() {
   return base::FeatureList::IsEnabled(kKerberosRememberPasswordByDefault);
+}
+
+bool IsKeyboardBacklightControlInSettingsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kEnableKeyboardBacklightControlInSettings);
 }
 
 bool IsKeyboardBacklightToggleEnabled() {

@@ -3636,6 +3636,9 @@ extern const char kEnableGoogleAssistantAecDescription[];
 extern const char kEnableInputEventLoggingName[];
 extern const char kEnableInputEventLoggingDescription[];
 
+extern const char kEnableKeyboardBacklightControlInSettingsName[];
+extern const char kEnableKeyboardBacklightControlInSettingsDescription[];
+
 extern const char kEnableKeyboardBacklightToggleName[];
 extern const char kEnableKeyboardBacklightToggleDescription[];
 
