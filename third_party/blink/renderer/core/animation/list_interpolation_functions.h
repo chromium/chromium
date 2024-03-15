@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_LIST_INTERPOLATION_FUNCTIONS_H_
 
 #include <memory>
+#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -35,8 +36,8 @@ class CORE_EXPORT ListInterpolationFunctions {
   };
 
   using MergeSingleItemConversionsCallback =
-      base::RepeatingCallback<PairwiseInterpolationValue(InterpolationValue&&,
-                                                         InterpolationValue&&)>;
+      base::FunctionRef<PairwiseInterpolationValue(InterpolationValue&&,
+                                                   InterpolationValue&&)>;
 
   static PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,
@@ -51,16 +52,16 @@ class CORE_EXPORT ListInterpolationFunctions {
                           EqualNonInterpolableValuesCallback);
 
   using InterpolableValuesAreCompatibleCallback =
-      base::RepeatingCallback<bool(const InterpolableValue*,
-                                   const InterpolableValue*)>;
+      base::FunctionRef<bool(const InterpolableValue*,
+                             const InterpolableValue*)>;
   using NonInterpolableValuesAreCompatibleCallback =
-      base::RepeatingCallback<bool(const NonInterpolableValue*,
-                                   const NonInterpolableValue*)>;
+      base::FunctionRef<bool(const NonInterpolableValue*,
+                             const NonInterpolableValue*)>;
   using CompositeItemCallback =
-      base::RepeatingCallback<void(UnderlyingValue&,
-                                   double underlying_fraction,
-                                   const InterpolableValue&,
-                                   const NonInterpolableValue*)>;
+      base::FunctionRef<void(UnderlyingValue&,
+                             double underlying_fraction,
+                             const InterpolableValue&,
+                             const NonInterpolableValue*)>;
   static void Composite(UnderlyingValueOwner&,
                         double underlying_fraction,
                         const InterpolationType&,

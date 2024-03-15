@@ -3245,15 +3245,12 @@ void Animation::commitStyles(ExceptionState& exception_state) {
 
   AnimationUtils::ForEachInterpolatedPropertyValue(
       target, animation_properties, interpolations_map,
-      WTF::BindRepeating(
-          [](CSSStyleDeclaration* inline_style, Element* target,
-             PropertyHandle property, const CSSValue* value) {
-            inline_style->setProperty(
-                target->GetExecutionContext(),
-                property.GetCSSPropertyName().ToAtomicString(),
-                value->CssText(), "", ASSERT_NO_EXCEPTION);
-          },
-          WrapWeakPersistent(inline_style), WrapWeakPersistent(target)));
+      [inline_style, target](PropertyHandle property, const CSSValue* value) {
+        inline_style->setProperty(
+            target->GetExecutionContext(),
+            property.GetCSSPropertyName().ToAtomicString(), value->CssText(),
+            "", ASSERT_NO_EXCEPTION);
+      });
 }
 
 bool Animation::IsInDisplayLockedSubtree() {

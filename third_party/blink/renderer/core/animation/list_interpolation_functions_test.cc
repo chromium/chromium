@@ -163,7 +163,7 @@ TEST(ListInterpolationFunctionsTest, EqualMergeSinglesSameLengths) {
   auto pairwise = ListInterpolationFunctions::MaybeMergeSingles(
       std::move(list1), std::move(list2),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(MaybeMergeSingles));
+      MaybeMergeSingles);
 
   EXPECT_TRUE(pairwise);
 }
@@ -176,7 +176,7 @@ TEST(ListInterpolationFunctionsTest, EqualMergeSinglesDifferentLengths) {
   auto pairwise = ListInterpolationFunctions::MaybeMergeSingles(
       std::move(list1), std::move(list2),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(MaybeMergeSingles));
+      MaybeMergeSingles);
 
   EXPECT_FALSE(pairwise);
 }
@@ -189,7 +189,7 @@ TEST(ListInterpolationFunctionsTest, EqualMergeSinglesIncompatibleValues) {
   auto pairwise = ListInterpolationFunctions::MaybeMergeSingles(
       std::move(list1), std::move(list2),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(MaybeMergeSingles));
+      MaybeMergeSingles);
 
   EXPECT_FALSE(pairwise);
 }
@@ -202,7 +202,7 @@ TEST(ListInterpolationFunctionsTest, EqualMergeSinglesIncompatibleNullptrs) {
   auto pairwise = ListInterpolationFunctions::MaybeMergeSingles(
       std::move(list1), std::move(list2),
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(MaybeMergeSingles));
+      MaybeMergeSingles);
 
   EXPECT_FALSE(pairwise);
 }
@@ -220,10 +220,8 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeSameLengths) {
   ListInterpolationFunctions::Composite(
       owner, 1.0, interpolation_type, list2,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(
-          ListInterpolationFunctions::InterpolableValuesKnownCompatible),
-      WTF::BindRepeating(NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(Composite));
+      ListInterpolationFunctions::InterpolableValuesKnownCompatible,
+      NonInterpolableValuesAreCompatible, Composite);
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
@@ -249,10 +247,8 @@ TEST(ListInterpolationFunctionsTest, EqualCompositeDifferentLengths) {
   ListInterpolationFunctions::Composite(
       owner, 1.0, interpolation_type, list2,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(
-          ListInterpolationFunctions::InterpolableValuesKnownCompatible),
-      WTF::BindRepeating(NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(Composite));
+      ListInterpolationFunctions::InterpolableValuesKnownCompatible,
+      NonInterpolableValuesAreCompatible, Composite);
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
@@ -280,10 +276,11 @@ TEST(ListInterpolationFunctionsTest,
   ListInterpolationFunctions::Composite(
       owner, 1.0, interpolation_type, list2,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(&InterpolableValuesCompatibilityHelper::AreCompatible,
-                         WTF::Unretained(&compatibility_helper)),
-      WTF::BindRepeating(NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(Composite));
+      [&compatibility_helper](const InterpolableValue* a,
+                              const InterpolableValue* b) {
+        return compatibility_helper.AreCompatible(a, b);
+      },
+      NonInterpolableValuesAreCompatible, Composite);
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 
@@ -309,10 +306,8 @@ TEST(ListInterpolationFunctionsTest,
   ListInterpolationFunctions::Composite(
       owner, 1.0, interpolation_type, list2,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(
-          ListInterpolationFunctions::InterpolableValuesKnownCompatible),
-      WTF::BindRepeating(NonInterpolableValuesAreCompatible),
-      WTF::BindRepeating(Composite));
+      ListInterpolationFunctions::InterpolableValuesKnownCompatible,
+      NonInterpolableValuesAreCompatible, Composite);
 
   const auto& result = To<InterpolableList>(*owner.Value().interpolable_value);
 

@@ -386,10 +386,8 @@ void CSSBorderImageLengthBoxInterpolationType::Composite(
   ListInterpolationFunctions::Composite(
       underlying_value_owner, underlying_fraction, *this, value,
       ListInterpolationFunctions::LengthMatchingStrategy::kEqual,
-      WTF::BindRepeating(
-          ListInterpolationFunctions::InterpolableValuesKnownCompatible),
-      WTF::BindRepeating(NonInterpolableSidesAreCompatible),
-      WTF::BindRepeating(CompositeSide));
+      ListInterpolationFunctions::InterpolableValuesKnownCompatible,
+      NonInterpolableSidesAreCompatible, CompositeSide);
 }
 
 void CSSBorderImageLengthBoxInterpolationType::ApplyStandardPropertyValue(
