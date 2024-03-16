@@ -52,7 +52,8 @@ class GraphImpl final : public WebNNGraphImpl {
   static void CreateAndBuild(scoped_refptr<CommandQueue> command_queue,
                              ComPtr<IDMLDevice> dml_device,
                              mojom::GraphInfoPtr graph_info,
-                             mojom::WebNNContext::CreateGraphCallback callback);
+                             mojom::WebNNContext::CreateGraphCallback callback,
+                             bool pass_dml_execution_disable_meta_commands);
 
   GraphImpl(const GraphImpl&) = delete;
   GraphImpl& operator=(const GraphImpl&) = delete;
@@ -176,7 +177,8 @@ class GraphImpl final : public WebNNGraphImpl {
   // this method should run on a background thread rather than the current GPU
   // main thread to avoid blocking.
   static ComPtr<IDMLCompiledOperator> CompileOnBackgroundThread(
-      GraphBuilder graph_builder);
+      GraphBuilder graph_builder,
+      bool pass_dml_execution_disable_meta_commands);
 
   // After the CompileOnBackgroundThread task is completed on a background
   // thread, the OnCompilationComplete method should run back on the GPU main

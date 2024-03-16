@@ -85,9 +85,9 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
 
 WebNNContextProviderImpl::WebNNContextProviderImpl(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    bool is_gpu_supported)
+    gpu::GpuFeatureInfo gpu_feature_info)
     : shared_context_state_(std::move(shared_context_state)),
-      is_gpu_supported_(is_gpu_supported) {}
+      gpu_feature_info_(std::move(gpu_feature_info)) {}
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() = default;
 
@@ -95,11 +95,11 @@ WebNNContextProviderImpl::~WebNNContextProviderImpl() = default;
 void WebNNContextProviderImpl::Create(
     mojo::PendingReceiver<WebNNContextProvider> receiver,
     scoped_refptr<gpu::SharedContextState> shared_context_state,
-    bool is_gpu_supported) {
+    gpu::GpuFeatureInfo gpu_feature_info) {
   CHECK_NE(shared_context_state, nullptr);
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       std::make_unique<WebNNContextProviderImpl>(
-          std::move(shared_context_state), is_gpu_supported),
+          std::move(shared_context_state), std::move(gpu_feature_info)),
       std::move(receiver));
 }
 
@@ -108,9 +108,18 @@ void WebNNContextProviderImpl::CreateForTesting(
     mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
     bool is_gpu_supported) {
   CHECK_IS_TEST();
+
+  gpu::GpuFeatureInfo gpu_feature_info;
+  for (auto& status : gpu_feature_info.status_values) {
+    status = gpu::GpuFeatureStatus::kGpuFeatureStatusDisabled;
+  }
+  gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] =
+      is_gpu_supported ? gpu::kGpuFeatureStatusEnabled
+                       : gpu::kGpuFeatureStatusBlocklisted;
+
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       std::make_unique<WebNNContextProviderImpl>(
-          /*shared_context_state=*/nullptr, is_gpu_supported),
+          /*shared_context_state=*/nullptr, std::move(gpu_feature_info)),
       std::move(receiver));
 }
 
@@ -143,7 +152,9 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   std::move(callback).Run(
       mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #elif BUILDFLAG(IS_WIN)
-  if (!is_gpu_supported_) {
+  DCHECK(gpu_feature_info_.IsInitialized());
+  if (gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] !=
+      gpu::kGpuFeatureStatusEnabled) {
     std::move(callback).Run(ToError<mojom::CreateContextResult>(
         mojom::Error::Code::kNotSupportedError,
         "WebNN is not compatible with GPU."));
@@ -175,7 +186,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // The receiver bound to WebNNContextImpl.
   impls_.push_back(base::WrapUnique<WebNNContextImpl>(new dml::ContextImpl(
       std::move(adapter), blink_remote.InitWithNewPipeAndPassReceiver(), this,
-      std::move(command_recorder))));
+      std::move(command_recorder), gpu_feature_info_)));
   std::move(callback).Run(
       mojom::CreateContextResult::NewContextRemote(std::move(blink_remote)));
 #elif BUILDFLAG(IS_MAC)

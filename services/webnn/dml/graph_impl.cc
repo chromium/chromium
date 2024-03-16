@@ -2829,9 +2829,14 @@ GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
 GraphImpl::~GraphImpl() = default;
 
 ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
-    GraphBuilder graph_builder) {
+    GraphBuilder graph_builder,
+    const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImpl::CompileOnBackgroundThread");
-  return graph_builder.Compile(DML_EXECUTION_FLAG_NONE);
+  DML_EXECUTION_FLAGS flags = DML_EXECUTION_FLAG_NONE;
+  if (pass_dml_execution_disable_meta_commands) {
+    flags |= DML_EXECUTION_FLAG_DISABLE_META_COMMANDS;
+  }
+  return graph_builder.Compile(flags);
 }
 
 // static
@@ -3082,7 +3087,8 @@ void GraphImpl::CreateAndBuild(
     scoped_refptr<CommandQueue> command_queue,
     ComPtr<IDMLDevice> dml_device,
     mojom::GraphInfoPtr graph_info,
-    mojom::WebNNContext::CreateGraphCallback callback) {
+    mojom::WebNNContext::CreateGraphCallback callback,
+    const bool pass_dml_execution_disable_meta_commands) {
   TRACE_EVENT0("gpu", "dml::GraphImpl::CreateAndBuild");
   // `CommandRecorder` would keep reference of command queue and DML device.
   std::unique_ptr<CommandRecorder> command_recorder =
@@ -3436,7 +3442,8 @@ void GraphImpl::CreateAndBuild(
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&GraphImpl::CompileOnBackgroundThread,
-                     std::move(graph_builder)),
+                     std::move(graph_builder),
+                     pass_dml_execution_disable_meta_commands),
       base::BindOnce(&GraphImpl::OnCompilationComplete, std::move(callback),
                      std::move(command_recorder),
                      std::move(graph_info->constant_id_to_buffer_map),

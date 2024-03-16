@@ -60,6 +60,7 @@ component("webnn_service") {
     "//base",
     "//components/ml/webnn",
     "//gpu/command_buffer/service:gles2",
+    "//gpu/config",
     "//mojo/public/cpp/bindings",
     "//services/webnn/public/mojom",
   ]
