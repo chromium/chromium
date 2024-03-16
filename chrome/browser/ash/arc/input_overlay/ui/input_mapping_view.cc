@@ -56,22 +56,16 @@ InputMappingView::~InputMappingView() {
 }
 
 void InputMappingView::SetDisplayMode(const DisplayMode mode) {
-  DCHECK(mode != DisplayMode::kEducation);
-  if (current_display_mode_ == mode || mode == DisplayMode::kMenu ||
-      mode == DisplayMode::kPreMenu) {
+  if (current_display_mode_ == mode ||
+      (mode != DisplayMode::kEdit && mode != DisplayMode::kView)) {
     return;
   }
-  switch (mode) {
-    case DisplayMode::kView:
-      SetBackground(nullptr);
-      break;
-    case DisplayMode::kEdit:
-      SortChildren();
-      SetBackground(views::CreateSolidBackground(kEditModeBgColor));
-      break;
-    default:
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
-      break;
+
+  if (mode == DisplayMode::kView) {
+    SetBackground(nullptr);
+  } else {
+    SortChildren();
+    SetBackground(views::CreateSolidBackground(kEditModeBgColor));
   }
 
   for (views::View* view : children()) {
