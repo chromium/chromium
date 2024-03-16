@@ -14,13 +14,11 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "ui/display/display_features.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
@@ -126,38 +124,6 @@ std::string GetEventPropertyByKey(const std::string& key,
   return std::string(it->second);
 }
 
-ControllerConfigParams* FindConfigParamsForConnector(
-    std::vector<ControllerConfigParams>& config_list,
-    uint32_t connector_id) {
-  for (auto& config : config_list) {
-    if (config.connector == connector_id) {
-      return &config;
-    }
-  }
-  return nullptr;
-}
-
-std::string ConfigRequestToString(
-    const std::vector<display::DisplayConfigurationParams>& config_requests) {
-  std::string signature;
-  for (const auto& config : config_requests) {
-    if (config.id <= 0) {
-      LOG(WARNING) << __func__
-                   << ": potentially invalid display ID: " << config.id;
-    }
-
-    signature +=
-        base::NumberToString(config.id) + ":" + config.origin.ToString() + ":" +
-        (config.mode.has_value() ? (*config.mode)->ToString() : "Disabled") +
-        ":" + (config.enable_vrr ? "vrr" : "no_vrr") + ";";
-  }
-  if (signature.empty()) {
-    LOG(WARNING) << __func__ << ": empty return value with request of size: "
-                 << config_requests.size();
-  }
-  return signature;
-}
-
 }  // namespace
 
 DrmGpuDisplayManager::DrmGpuDisplayManager(ScreenManager* screen_manager,
@@ -173,8 +139,6 @@ void DrmGpuDisplayManager::SetDisplaysConfiguredCallback(
 }
 
 MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
-  successful_test_config_params_.clear();
-
   std::vector<std::unique_ptr<DrmDisplay>> old_displays;
   old_displays.swap(displays_);
   std::vector<DrmDisplayParams> displays_to_create;
@@ -198,8 +162,6 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
         drm->plane_manager()->ResetConnectorsCacheAndGetValidIds(
             drm->GetResources());
 
-    // TODO: b/327011965 - Move assigning CRTCs to connectors from
-    // RefreshNativeDisplays() to before test modeset.
     // Create new DisplaySnapshots and resolve display ID collisions.
     auto display_infos = GetDisplayInfosAndUpdateCrtcs(*drm);
 
@@ -368,66 +330,44 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
 bool DrmGpuDisplayManager::ConfigureDisplays(
     const std::vector<display::DisplayConfigurationParams>& config_requests,
     display::ModesetFlags modeset_flags) {
-  const bool is_commit =
-      modeset_flags.Has(display::ModesetFlag::kCommitModeset);
   std::vector<ControllerConfigParams> controllers_to_configure;
-  if (is_commit) {
-    controllers_to_configure = GetLatestModesetTestConfig(config_requests);
-  }
+  for (const auto& config : config_requests) {
+    int64_t display_id = config.id;
+    DrmDisplay* display = FindDisplay(display_id);
+    if (!display) {
+      LOG(WARNING) << __func__ << ": there is no display with ID "
+                   << display_id;
+      return false;
+    }
 
-  if (controllers_to_configure.empty()) {
-    for (const auto& config : config_requests) {
-      int64_t display_id = config.id;
-      DrmDisplay* display = FindDisplay(display_id);
-      if (!display) {
-        LOG(WARNING) << __func__ << ": there is no display with ID "
-                     << display_id;
+    std::unique_ptr<drmModeModeInfo> mode_ptr =
+        config.mode ? std::make_unique<drmModeModeInfo>() : nullptr;
+    if (config.mode) {
+      if (!FindModeForDisplay(mode_ptr.get(), *config.mode.value(),
+                              display->modes(), displays_)) {
         return false;
       }
-
-      std::unique_ptr<drmModeModeInfo> mode_ptr =
-          config.mode ? std::make_unique<drmModeModeInfo>() : nullptr;
-      if (config.mode) {
-        if (!FindModeForDisplay(mode_ptr.get(), *config.mode.value(),
-                                display->modes(), displays_)) {
-          return false;
-        }
-      }
-
-      scoped_refptr<DrmDevice> drm = display->drm();
-      ControllerConfigParams params(display->display_id(), drm, display->crtc(),
-                                    display->connector(), config.origin,
-                                    std::move(mode_ptr), config.enable_vrr,
-                                    display->base_connector_id());
-      controllers_to_configure.push_back(std::move(params));
     }
+
+    scoped_refptr<DrmDevice> drm = display->drm();
+    ControllerConfigParams params(display->display_id(), drm, display->crtc(),
+                                  display->connector(), config.origin,
+                                  std::move(mode_ptr), config.enable_vrr,
+                                  display->base_connector_id());
+    controllers_to_configure.push_back(std::move(params));
   }
 
   bool config_success = screen_manager_->ConfigureDisplayControllers(
       controllers_to_configure, modeset_flags);
 
-  // Only attempt to fallback on using different CRTC-connector pairings if
-  // hardware mirroring is disabled as hardware mirroring has multiple
-  // connectors assigned to one CRTC, and the fallback assumes 1:1 pairing.
-  const bool should_try_test_fallback =
-      !is_commit && !config_success &&
-      !display::features::IsHardwareMirrorModeEnabled();
-  if (should_try_test_fallback) {
-    config_success = RetryTestConfigureDisplaysWithAlternateCrtcs(
-        config_requests, controllers_to_configure);
-  }
-
   if (displays_configured_callback_)
     displays_configured_callback_.Run();
 
-  if (is_commit) {
-    successful_test_config_params_.clear();
-
-    if (config_success) {
-      for (const auto& controller : controllers_to_configure) {
-        FindDisplay(controller.display_id)->SetOrigin(controller.origin);
-      }
-    }
+  const bool is_commit =
+      modeset_flags.Has(display::ModesetFlag::kCommitModeset);
+  if (is_commit && config_success) {
+    for (const auto& controller : controllers_to_configure)
+      FindDisplay(controller.display_id)->SetOrigin(controller.origin);
   }
 
   return config_success;
@@ -575,17 +515,6 @@ DrmDisplay* DrmGpuDisplayManager::FindDisplay(int64_t display_id) const {
   return nullptr;
 }
 
-DrmDisplay* DrmGpuDisplayManager::FindDisplayByConnectorId(
-    uint32_t connector_id) const {
-  for (const auto& display : displays_) {
-    if (display->connector() == connector_id) {
-      return display.get();
-    }
-  }
-
-  return nullptr;
-}
-
 void DrmGpuDisplayManager::NotifyScreenManager(
     const std::vector<std::unique_ptr<DrmDisplay>>& new_displays,
     const std::vector<std::unique_ptr<DrmDisplay>>& old_displays) const {
@@ -607,180 +536,6 @@ void DrmGpuDisplayManager::NotifyScreenManager(
           new_display->drm(), new_display->crtc(), new_display->connector());
     }
   }
-}
-
-// TODO: b/327015722 - Move test modeset fallback with alternate CRTCs
-// from DrmGpuDisplayManager to ScreenManager.
-// The kernel can sometimes silently reallocate the resources of one CRTC to
-// another, making the other ineffective. One such case is when i915's Bigjoiner
-// takes the underlying pipe of a secondary CRTC for high bandwidth displays
-// (DP 2.1+). Attempting modeset with a stolen CRTC will result in failure. The
-// only way for userspace to overcome a stolen CRTC is to dynamically assign
-// other CRTC configurations via test modesets.
-bool DrmGpuDisplayManager::RetryTestConfigureDisplaysWithAlternateCrtcs(
-    const std::vector<display::DisplayConfigurationParams>& config_requests,
-    const std::vector<ControllerConfigParams>& controllers_to_configure) {
-  // Separate individual params of |controllers_to_configure| into multiple
-  // std::vector<ControllerConfigParams> by their DrmDevice.
-  base::flat_map<scoped_refptr<DrmDevice>, std::vector<ControllerConfigParams>>
-      drm_device_controllers_to_configure;
-  for (const auto& config : controllers_to_configure) {
-    scoped_refptr<DrmDevice> drm = config.drm;
-    drm_device_controllers_to_configure[drm].emplace_back(config);
-  }
-
-  // For each DrmDevice, try test modeset with all possible CRTC-connector
-  // combinations. Use the first successful one.
-  bool fallback_successful_for_all_devices = true;
-  std::vector<ControllerConfigParams> successful_config_list;
-  for (auto& [drm, configs_list] : drm_device_controllers_to_configure) {
-    std::vector<CrtcConnectorPairs> crtc_connector_permutations =
-        GetAllCrtcConnectorPermutations(*drm, configs_list);
-
-    VLOG(1) << "Number of possible fallback CRTC-connector permutations: "
-            << crtc_connector_permutations.size();
-
-    bool has_successful_permutation = false;
-    for (const auto& permutation : crtc_connector_permutations) {
-      // Set up the display abstractions according to the current |permutation|.
-      for (const auto& crtc_connector_pair : permutation) {
-        uint32_t crtc_id = crtc_connector_pair.crtc_id;
-        uint32_t connector_id = crtc_connector_pair.connector_id;
-
-        ControllerConfigParams* param =
-            FindConfigParamsForConnector(configs_list, connector_id);
-        if (!param) {
-          LOG(ERROR) << __func__
-                     << ": Could not find ControllerConfigParams for connector "
-                        "with ID: "
-                     << connector_id;
-          continue;
-        }
-        param->crtc = crtc_id;
-      }
-
-      if (!UpdateDisplaysWithNewCrtcs(configs_list)) {
-        continue;
-      }
-
-      if (screen_manager_->ConfigureDisplayControllers(
-              configs_list, {display::ModesetFlag::kTestModeset})) {
-        has_successful_permutation = true;
-        for (auto& config : configs_list) {
-          successful_config_list.push_back(config);
-        }
-        // No need to try other permutations for the device if one is
-        // successful.
-        break;
-      }
-    }
-
-    fallback_successful_for_all_devices &= has_successful_permutation;
-    if (!fallback_successful_for_all_devices) {
-      LOG(WARNING) << __func__
-                   << ": No successful CRTC-connector pairing permutation "
-                      "found or DRM device: "
-                   << drm->device_path().value();
-
-      // TODO: b/329078793 - Stop reverting to the original config once
-      // pageflips are deferred/skipped during configuration.
-      // Revert ozone abstractions back to the original CRTC-controller pairings
-      // before the fallback attempt. The original CRTC-connector pairings are
-      // usually stable across display changes, and has better chances for a
-      // successful pageflip if one manages to happen between
-      // ConfigureDisplays() calls.
-      if (!UpdateDisplaysWithNewCrtcs(controllers_to_configure)) {
-        LOG(ERROR)
-            << __func__
-            << ": Failed to revert to the original CRTC-conector pairings.";
-      }
-      return false;
-    }
-  }
-
-  if (fallback_successful_for_all_devices) {
-    const std::string config_reques_string =
-        ConfigRequestToString(config_requests);
-    successful_test_config_params_.insert(
-        {config_reques_string, successful_config_list});
-  }
-
-  // TODO: b/329078793 - Stop reverting to the original config once
-  // pageflips are deferred/skipped during configuration.
-  // Revert ozone abstractions back to the original CRTC-controller pairings
-  // before the fallback attempt. The original CRTC-connector pairings are
-  // usually stable across display changes, and has better chances for a
-  // successful pageflip if one manages to happen between
-  // ConfigureDisplays() calls.
-  if (!UpdateDisplaysWithNewCrtcs(controllers_to_configure)) {
-    LOG(ERROR) << __func__
-               << ": Failed to revert to the original CRTC-conector pairings.";
-  }
-
-  return fallback_successful_for_all_devices;
-}
-
-bool DrmGpuDisplayManager::UpdateDisplaysWithNewCrtcs(
-    const std::vector<ControllerConfigParams>& controllers_to_configure) {
-  base::flat_map<scoped_refptr<DrmDevice>, std::vector<ControllerConfigParams>>
-      drm_device_to_configs;
-  for (const auto& config : controllers_to_configure) {
-    scoped_refptr<DrmDevice> drm = config.drm;
-    drm_device_to_configs[drm].emplace_back(config);
-  }
-
-  // TODO: b/327015722 - handle ReplaceDisplayControllersCrtcs() inside
-  // ScreenManager.
-  std::vector<std::pair<DrmDisplay*, uint32_t /*new_crtc_id*/>>
-      display_to_new_crtcs_pairs;
-  for (const auto& [drm, config_list] : drm_device_to_configs) {
-    ConnectorCrtcMap current_connector_to_crtc_pairings;
-    ConnectorCrtcMap new_connector_to_crtc_pairings;
-    for (const auto& config_param : controllers_to_configure) {
-      const uint32_t connector_id = config_param.connector;
-      DrmDisplay* display = FindDisplayByConnectorId(connector_id);
-      if (!display) {
-        LOG(DFATAL) << "DrmDisplay with connector ID " << connector_id
-                    << " not found.";
-        return false;
-      }
-
-      display_to_new_crtcs_pairs.push_back({display, config_param.crtc});
-      current_connector_to_crtc_pairings[connector_id] = display->crtc();
-      new_connector_to_crtc_pairings[connector_id] = config_param.crtc;
-    }
-
-    if (!screen_manager_->ReplaceDisplayControllersCrtcs(
-            drm, current_connector_to_crtc_pairings,
-            new_connector_to_crtc_pairings)) {
-      return false;
-    }
-  }
-
-  for (auto& [display, crtc_id] : display_to_new_crtcs_pairs) {
-    display->set_crtc(crtc_id);
-  }
-
-  return true;
-}
-
-std::vector<ControllerConfigParams>
-DrmGpuDisplayManager::GetLatestModesetTestConfig(
-    const std::vector<display::DisplayConfigurationParams>& config_requests) {
-  const std::string config_reques_string =
-      ConfigRequestToString(config_requests);
-  const auto& config_param_it =
-      successful_test_config_params_.find(config_reques_string);
-
-  if (config_param_it == successful_test_config_params_.end()) {
-    return {};
-  }
-
-  if (!UpdateDisplaysWithNewCrtcs(config_param_it->second)) {
-    LOG(ERROR) << __func__ << ": Unable to restore CRTC-connector pairings.";
-  }
-
-  return config_param_it->second;
 }
 
 }  // namespace ui

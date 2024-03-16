@@ -17,6 +17,23 @@
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_atomic.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
 
+// Private types defined in libdrm. Define them here so we can peek at the
+// commit and ensure the expected state has been set correctly.
+struct drmModeAtomicReqItem {
+  uint32_t object_id;
+  uint32_t property_id;
+  uint64_t value;
+  uint32_t cursor;
+};
+
+typedef drmModeAtomicReqItem* drmModeAtomicReqItemPtr;
+
+struct _drmModeAtomicReq {
+  uint32_t cursor;
+  uint32_t size_items;
+  drmModeAtomicReqItemPtr items;
+};
+
 namespace ui {
 
 namespace {
