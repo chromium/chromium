@@ -201,6 +201,9 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // Queue holding surfaces in display order.
   std::queue<scoped_refptr<StatelessDecodeSurface>> display_queue_;
 
+  // Prevent nested resolution changes by tracking when one is occurring.
+  bool resolution_changing_ = false;
+
   // Weak factories associated with the main thread
   // (|decoder_sequence_checker_|).
   base::WeakPtrFactory<V4L2StatelessVideoDecoder> weak_ptr_factory_for_events_;

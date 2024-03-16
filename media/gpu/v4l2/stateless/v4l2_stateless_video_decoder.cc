@@ -161,6 +161,8 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   aspect_ratio_ = config.aspect_ratio();
 
+  resolution_changing_ = false;
+
   output_cb_ = std::move(output_cb);
   std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
@@ -261,6 +263,8 @@ void V4L2StatelessVideoDecoder::ContinueApplyResolutionChange() {
   const VideoCodec codec =
       VideoCodecProfileToVideoCodec(decoder_->GetProfile());
   input_queue_ = InputQueue::Create(device_, codec, decoder_->GetPicSize());
+
+  resolution_changing_ = false;
 
   if (input_queue_ && input_queue_->PrepareBuffers(kInputBuffers) &&
       input_queue_->StartStreaming()) {
@@ -674,6 +678,11 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
   DVLOGF(5);
   DCHECK(decoder_);
 
+  // Prevent further processing of encoded chunks until the resolution change
+  // event is done.
+  if (resolution_changing_) {
+    return;
+  }
   // Further processing of the |decode_request_queue_| needs to be held up until
   // a resolution change has completed. During resolution change the queues are
   // torn down. If processing was allowed to continue before the flush has
@@ -690,6 +699,7 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
       case AcceleratedVideoDecoder::kConfigChange:
         DVLOGF(3) << "AcceleratedVideoDecoder::kConfigChange";
         {
+          resolution_changing_ = true;
           auto config_change_cb =
               base::BindPostTaskToCurrentDefault(base::BindOnce(
                   &V4L2StatelessVideoDecoder::PrepareChangeResolution,
