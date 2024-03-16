@@ -281,7 +281,13 @@ ManifestBuilder& ManifestBuilder::AddPermissionsPolicy(
 }
 
 ManifestBuilder& ManifestBuilder::AddIcon(std::string_view resource_path) {
-  icon_paths_.push_back(std::string(resource_path));
+  icon_paths_.emplace_back(resource_path);
+  return *this;
+}
+
+ManifestBuilder& ManifestBuilder::AddProtocolHandler(std::string_view protocol,
+                                                     std::string_view url) {
+  protocol_handlers_.emplace_back(std::string(protocol), std::string(url));
   return *this;
 }
 
@@ -322,6 +328,14 @@ std::string ManifestBuilder::ToJson() const {
   }
   json.Set("icons", std::move(icons));
 
+  base::Value::List protocol_handlers;
+  for (const auto& protocol_handler : protocol_handlers_) {
+    protocol_handlers.Append(base::Value::Dict()
+                                 .Set("protocol", protocol_handler.first)
+                                 .Set("url", protocol_handler.second));
+  }
+  json.Set("protocol_handlers", std::move(protocol_handlers));
+
   return base::WriteJsonWithOptions(json, base::OPTIONS_PRETTY_PRINT).value();
 }
 
@@ -343,6 +357,14 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     icon.type = u"image/png";
     icon.sizes.push_back(gfx::Size(256, 256));
     manifest->icons.push_back(icon);
+  }
+
+  for (const auto& protocol_handler_pair : protocol_handlers_) {
+    blink::mojom::ManifestProtocolHandlerPtr protocol_handler =
+        blink::mojom::ManifestProtocolHandler::New(
+            base::UTF8ToUTF16(protocol_handler_pair.first),
+            GURL(protocol_handler_pair.second));
+    manifest->protocol_handlers.push_back(std::move(protocol_handler));
   }
 
   // Permissions policy isn't included here as it's not needed by anything

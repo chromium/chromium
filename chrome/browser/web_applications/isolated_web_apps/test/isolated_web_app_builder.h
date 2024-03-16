@@ -74,8 +74,10 @@ class ManifestBuilder {
   ManifestBuilder& AddPermissionsPolicy(std::string_view name,
                                         std::vector<std::string> value);
   ManifestBuilder& AddIcon(std::string_view resource_path);
+  ManifestBuilder& AddProtocolHandler(std::string_view protocol,
+                                      std::string_view url);
 
-  // TODO: Other manifest fields like file_handlers, protocol_handlers,
+  // TODO: Other manifest fields like file_handlers,
   // share_target as needed by tests.
 
   const std::string& start_url() const;
@@ -91,6 +93,7 @@ class ManifestBuilder {
   std::string start_url_;
   std::map<std::string, std::vector<std::string>> permissions_policy_;
   std::vector<std::string> icon_paths_;
+  std::vector<std::pair<std::string, std::string>> protocol_handlers_;
 };
 
 class BundledIsolatedWebApp {
