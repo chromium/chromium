@@ -9,7 +9,7 @@ Example Command:
 
 Example Output:
     Summary
-    gn args: target_os="android" use_goma=true incremental_install=true
+    gn args: target_os="android" use_remoteexec=true incremental_install=true
     gn gen: 6.7s
     chrome_java_nosig: 36.1s avg (35.9s, 36.3s)
     chrome_java_sig: 38.9s avg (38.8s, 39.1s)
@@ -74,10 +74,8 @@ _SUPPORTED_EMULATORS = {
 _GN_ARGS = [
     'target_os="android"',
     'incremental_install=true',
+    'use_remoteexec=true',
 ]
-
-_GOMA_GN_ARG = 'use_goma=true'
-_RECLIENT_GN_ARG = 'use_remoteexec=true'
 
 _TARGETS = {
     'bundle': 'monochrome_public_bundle',
@@ -474,9 +472,6 @@ def main():
                         help='Specify this to override the default target.')
     parser.add_argument('-j',
                         help='Pass -j to use ninja instead of autoninja.')
-    parser.add_argument('--use-reclient',
-                        action='store_true',
-                        help='Allow bots use reclient instead of goma.')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -510,11 +505,6 @@ def main():
         # to building and installing on an emulator. It is likely that devs are
         # mostly using emulator builds so this is more valuable to track.
         gn_args.append('target_cpu="x86"')
-
-    if args.use_reclient:
-        gn_args.append(_RECLIENT_GN_ARG)
-    else:
-        gn_args.append(_GOMA_GN_ARG)
 
     if args.target:
         target = args.target
