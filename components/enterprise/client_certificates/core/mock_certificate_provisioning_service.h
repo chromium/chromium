@@ -18,10 +18,10 @@ class MockCertificateProvisioningService
   MockCertificateProvisioningService();
   ~MockCertificateProvisioningService() override;
 
-  MOCK_METHOD(std::optional<ClientIdentity>,
+  MOCK_METHOD(void,
               GetManagedIdentity,
-              (),
-              (const, override));
+              (GetManagedIdentityCallback),
+              (override));
   MOCK_METHOD(Status, GetCurrentStatus, (), (const, override));
 };
 

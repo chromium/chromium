@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/upload_client_error.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -23,6 +24,9 @@ class KeyUploadClient;
 // certificate).
 class CertificateProvisioningService : public KeyedService {
  public:
+  using GetManagedIdentityCallback =
+      base::OnceCallback<void(std::optional<ClientIdentity>)>;
+
   // Status that can be used to view the current provisioning state and
   // loaded identity.
   struct Status {
@@ -53,12 +57,14 @@ class CertificateProvisioningService : public KeyedService {
       CertificateStore* certificate_store,
       std::unique_ptr<KeyUploadClient> upload_client);
 
-  // Returns the managed identity if it has been successfully loaded and
-  // the policies for its usage are enabled as well. Otherwise, returns
-  // std::nullopt.
-  virtual std::optional<ClientIdentity> GetManagedIdentity() const = 0;
+  // Will invoke `callback` with the managed identity once it has been
+  // successfully loaded and the policies for its usage are enabled as well.
+  // Otherwise, run it with std::nullopt. If the identity failed to load for
+  // some reason, subsequent calls will retry loading it.
+  virtual void GetManagedIdentity(GetManagedIdentityCallback callback) = 0;
 
-  // Returns metadata about the current status of the service.
+  // Returns metadata about the current status of the service, mainly for
+  // debugging purposes.
   virtual Status GetCurrentStatus() const = 0;
 };
 
