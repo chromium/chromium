@@ -116,9 +116,9 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
     CreateWorkletCallback callback) {
-  // A document can only create multiple worklets with `kSharedStorageAPIM123`
+  // A document can only create multiple worklets with `kSharedStorageAPIM124`
   // enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM124)) {
     if (create_worklet_called_) {
       // This could indicate a compromised renderer, so let's terminate it.
       receiver_.ReportBadMessage("Attempted to create multiple worklets.");
@@ -131,8 +131,8 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
   create_worklet_called_ = true;
 
   // A document can only create cross-origin worklets with
-  // `kSharedStorageAPIM123` enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123) &&
+  // `kSharedStorageAPIM124` enabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM124) &&
       !render_frame_host().GetLastCommittedOrigin().IsSameOriginWith(
           script_source_url)) {
     // This could indicate a compromised renderer, so let's terminate it.

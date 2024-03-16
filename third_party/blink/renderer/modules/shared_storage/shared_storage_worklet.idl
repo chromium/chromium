@@ -15,7 +15,7 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
   ] Promise<undefined> addModule(USVString moduleURL, optional WorkletOptions options = {});
 
   [
-    RuntimeEnabled=SharedStorageAPIM123,
+    RuntimeEnabled=SharedStorageAPIM124,
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException,
@@ -25,7 +25,7 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
                                  optional SharedStorageRunOperationMethodOptions options);
 
   [
-    RuntimeEnabled=SharedStorageAPIM123,
+    RuntimeEnabled=SharedStorageAPIM124,
     Exposed=Window,
     CallWith=ScriptState,
     RaisesException,

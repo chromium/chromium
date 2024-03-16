@@ -73,9 +73,9 @@ void SharedStorageWorkletHostManager::CreateWorkletHost(
   auto worklet_hosts_it =
       attached_shared_storage_worklet_hosts_.find(document_service);
 
-  // A document can only create multiple worklets with `kSharedStorageAPIM123`
+  // A document can only create multiple worklets with `kSharedStorageAPIM124`
   // enabled.
-  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM124)) {
     CHECK(worklet_hosts_it == attached_shared_storage_worklet_hosts_.end());
   }
 
