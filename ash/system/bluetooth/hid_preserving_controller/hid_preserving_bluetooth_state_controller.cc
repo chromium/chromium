@@ -90,15 +90,26 @@ HidPreservingBluetoothStateController::GetBluetoothDeviceNamesIfOnlyHids() {
       ui::DeviceDataManager::GetInstance();
 
   DisableBluetoothDialogController::DeviceNamesList bluetooth_devices;
-  if (device_data_manager->GetTouchscreenDevices().size() > 0 ||
-      device_data_manager->GetPointingStickDevices().size() > 0 ||
-      device_data_manager->GetTouchpadDevices().size() > 0) {
+
+  const int touchscreen_count =
+      device_data_manager->GetTouchscreenDevices().size();
+  const int pointing_stick_count =
+      device_data_manager->GetPointingStickDevices().size();
+  const int touchpad_count = device_data_manager->GetTouchpadDevices().size();
+
+  if (touchscreen_count > 0 || pointing_stick_count > 0 || touchpad_count > 0) {
+    BLUETOOTH_LOG(DEBUG) << "Touchscreen count: " << touchscreen_count
+                         << ", Touchpad count: " << touchpad_count
+                         << ", Pointing stick count: " << pointing_stick_count;
     return bluetooth_devices;
   }
 
   for (const auto& keyboard : device_data_manager->GetKeyboardDevices()) {
     // A non-Bluetooth HID is connected, return an empty list.
     if (keyboard.type != ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH) {
+      BLUETOOTH_LOG(DEBUG) << "Non-Bluetooth keyboard found: " << keyboard.name
+                           << " Type: " << keyboard.type;
+      ;
       return DisableBluetoothDialogController::DeviceNamesList();
     }
     bluetooth_devices.push_back(keyboard.name);
@@ -107,6 +118,8 @@ HidPreservingBluetoothStateController::GetBluetoothDeviceNamesIfOnlyHids() {
   for (const auto& mice : device_data_manager->GetMouseDevices()) {
     // A non-Bluetooth HID is connected, return an empty list.
     if (mice.type != ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH) {
+      BLUETOOTH_LOG(DEBUG) << "Non-Bluetooth mouse found: " << mice.name
+                           << ", Type: " << mice.type;
       return DisableBluetoothDialogController::DeviceNamesList();
     }
     bluetooth_devices.push_back(mice.name);
