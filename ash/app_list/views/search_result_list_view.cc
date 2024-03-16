@@ -298,8 +298,7 @@ int SearchResultListView::DoUpdate() {
   if (notifier) {
     std::vector<AppListNotifier::Result> notifier_results;
     for (const auto* result : displayed_results)
-      notifier_results.emplace_back(result->id(), result->metrics_type(),
-                                    result->continue_file_suggestion_type());
+      notifier_results.emplace_back(result->id(), result->metrics_type());
     notifier->NotifyResultsUpdated(
         list_type_ == SearchResultListType::kAnswerCard
             ? SearchResultDisplayType::kAnswerCard

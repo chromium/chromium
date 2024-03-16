@@ -10,11 +10,14 @@
 
 #include "base/time/time.h"
 
-namespace ash {
-enum class FileSuggestionJustificationType;
-}  // namespace ash
-
 namespace app_list {
+
+enum class JustificationType {
+  kViewed,
+  kModified,
+  kModifiedByCurrentUser,
+  kShared,
+};
 
 // Returns a justification string for file suggestions. The justification string
 // describes the action that prompted the file to be suggested to the user.
@@ -26,7 +29,7 @@ namespace app_list {
 // if the user name is not relevant for the action, or not known (in which case
 // the justification will show a fallback string without user name).
 std::optional<std::u16string> GetJustificationString(
-    ash::FileSuggestionJustificationType type,
+    JustificationType type,
     const base::Time& timestamp,
     const std::string& user_name);
 

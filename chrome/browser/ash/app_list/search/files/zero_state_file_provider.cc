@@ -119,25 +119,6 @@ void ZeroStateFileProvider::SetSearchResults(
           ash::AppListSearchResultType::kZeroStateFile,
           ash::SearchResultDisplayType::kContinue, score, std::u16string(),
           FileResult::Type::kFile, profile_);
-      switch (results[i].justification_type) {
-        case ash::FileSuggestionJustificationType::kUnknown:
-          NOTREACHED();
-          break;
-        case ash::FileSuggestionJustificationType::kViewed:
-          result->SetContinueFileSuggestionType(
-              ash::ContinueFileSuggestionType::kViewedFile);
-          break;
-        case ash::FileSuggestionJustificationType::kModified:
-          NOTREACHED();
-          break;
-        case ash::FileSuggestionJustificationType::kModifiedByCurrentUser:
-          result->SetContinueFileSuggestionType(
-              ash::ContinueFileSuggestionType::kModifiedByCurrentUserFile);
-          break;
-        case ash::FileSuggestionJustificationType::kShared:
-          NOTREACHED();
-          break;
-      }
       new_results.push_back(std::move(result));
     }
   }

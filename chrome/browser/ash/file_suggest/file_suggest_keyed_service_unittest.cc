@@ -137,7 +137,6 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
     for (size_t index = 0; index < count; ++index) {
       suggested_file_paths.push_back(mount_point->CreateArbitraryFile());
       suggestions.emplace_back(type, suggested_file_paths.back(),
-                               ash::FileSuggestionJustificationType::kUnknown,
                                /*new_prediction_reason=*/std::nullopt,
                                /*timestamp=*/std::nullopt,
                                /*secondary_timestamp=*/std::nullopt,

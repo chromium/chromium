@@ -9,7 +9,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
@@ -72,14 +71,14 @@ std::optional<std::u16string> GetOpenStringFromTime(const base::Time& time) {
   }
 }
 
-std::u16string GetActionString(ash::FileSuggestionJustificationType type,
+std::u16string GetActionString(JustificationType type,
                                const std::string& user_name) {
   switch (type) {
-    case ash::FileSuggestionJustificationType::kViewed: {
+    case JustificationType::kViewed: {
       return l10n_util::GetStringUTF16(
           IDS_FILE_SUGGESTION_JUSTIFICATION_YOU_VIEWED_ACTION);
     }
-    case ash::FileSuggestionJustificationType::kModified: {
+    case JustificationType::kModified: {
       if (user_name.empty()) {
         return l10n_util::GetStringUTF16(
             IDS_FILE_SUGGESTION_JUSTIFICATION_GENERIC_MODIFIED_ACTION);
@@ -88,11 +87,11 @@ std::u16string GetActionString(ash::FileSuggestionJustificationType type,
           IDS_FILE_SUGGESTION_JUSTIFICATION_USER_MODIFIED_ACTION,
           base::UTF8ToUTF16(user_name));
     }
-    case ash::FileSuggestionJustificationType::kModifiedByCurrentUser: {
+    case JustificationType::kModifiedByCurrentUser: {
       return l10n_util::GetStringUTF16(
           IDS_FILE_SUGGESTION_JUSTIFICATION_YOU_MODIFIED_ACTION);
     }
-    case ash::FileSuggestionJustificationType::kShared: {
+    case JustificationType::kShared: {
       if (user_name.empty()) {
         return l10n_util::GetStringUTF16(
             IDS_FILE_SUGGESTION_JUSTIFICATION_GENERIC_SHARED_ACTION);
@@ -101,16 +100,13 @@ std::u16string GetActionString(ash::FileSuggestionJustificationType type,
           IDS_FILE_SUGGESTION_JUSTIFICATION_USER_SHARED_ACTION,
           base::UTF8ToUTF16(user_name));
     }
-    case ash::FileSuggestionJustificationType::kUnknown: {
-      return u"";
-    }
   }
 }
 
 }  // namespace
 
 std::optional<std::u16string> GetJustificationString(
-    ash::FileSuggestionJustificationType type,
+    JustificationType type,
     const base::Time& timestamp,
     const std::string& user_name) {
   if (ash::features::IsLauncherContinueSectionWithRecentsEnabled()) {
@@ -119,13 +115,12 @@ std::optional<std::u16string> GetJustificationString(
                                       GetTimeString(timestamp));
   }
   switch (type) {
-    case ash::FileSuggestionJustificationType::kViewed:
+    case JustificationType::kViewed:
       return GetOpenStringFromTime(timestamp);
-    case ash::FileSuggestionJustificationType::kModified:
-    case ash::FileSuggestionJustificationType::kModifiedByCurrentUser:
+    case JustificationType::kModified:
+    case JustificationType::kModifiedByCurrentUser:
       return GetEditStringFromTime(timestamp);
-    case ash::FileSuggestionJustificationType::kShared:
-    case ash::FileSuggestionJustificationType::kUnknown:
+    case JustificationType::kShared:
       return std::nullopt;
   }
 }

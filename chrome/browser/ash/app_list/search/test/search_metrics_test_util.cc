@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ash/app_list/search/test/search_metrics_test_util.h"
 
-#include <optional>
-
 namespace app_list::test {
 
 Result CreateFakeResult(Type type, const std::string& id) {
-  return Result(id, type, std::nullopt);
+  return Result(id, type);
 }
 
 }  // namespace app_list::test

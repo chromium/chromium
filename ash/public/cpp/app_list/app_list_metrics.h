@@ -193,31 +193,6 @@ enum SearchResultType {
   SEARCH_RESULT_TYPE_BOUNDARY
 };
 
-// Sub-types defined for zero state file/drive suggestions that indicate
-// the reason the file result was suggested.
-// Used for metrics - assigned values should not change.
-enum class ContinueFileSuggestionType {
-  // For zero state drive suggestions - file suggested because the user
-  // viewed it recently.
-  kViewedDrive = 0,
-  // For zero state drive suggestions - file suggested because it was
-  // recently modified (usually by another user).
-  kModifiedDrive = 1,
-  // For zero state drive suggestions - file suggested because the user
-  // modified it recently.
-  kModifiedByCurrentUserDrive = 2,
-  // For zero state drive suggestions - file suggested because it was recently
-  // shared with the user.
-  kSharedWithUserDrive = 3,
-  // For zero state local file suggestions - file suggested because the user
-  // viewed it recently.
-  kViewedFile = 4,
-  // For zero state local file suggestions - file suggested because the user
-  // modified it recently.
-  kModifiedByCurrentUserFile = 5,
-  kMax = kModifiedByCurrentUserFile,
-};
-
 ASH_PUBLIC_EXPORT std::string SearchSessionConclusionToString(
     SearchSessionConclusion conclusion);
 

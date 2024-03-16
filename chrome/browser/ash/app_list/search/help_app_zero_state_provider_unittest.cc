@@ -120,7 +120,7 @@ TEST_F(HelpAppZeroStateProviderTest,
   app_list_notifier()->NotifyResultsUpdated(
       ash::SearchResultDisplayType::kContinue,
       {ash::AppListNotifier::Result(kReleaseNotesResultId,
-                                    ash::HELP_APP_UPDATES, std::nullopt)});
+                                    ash::HELP_APP_UPDATES)});
   EXPECT_FALSE(app_list_notifier()->FireImpressionTimerForTesting(
       ash::AppListNotifier::Location::kContinue));
 

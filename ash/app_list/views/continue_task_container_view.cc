@@ -309,8 +309,7 @@ void ContinueTaskContainerView::Update() {
   if (notifier) {
     std::vector<AppListNotifier::Result> notifier_results;
     for (const auto* task : tasks)
-      notifier_results.emplace_back(task->id(), task->metrics_type(),
-                                    task->continue_file_suggestion_type());
+      notifier_results.emplace_back(task->id(), task->metrics_type());
     notifier->NotifyResultsUpdated(SearchResultDisplayType::kContinue,
                                    notifier_results);
   }

@@ -939,37 +939,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Apps.AppList.Search.Continue.FileSuggestionType.{SearchAction}"
-    enum="AppListContinueFileSuggestionType" expires_after="2024-07-31">
-  <owner>tbarzic@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    Tracks launches, impressions, abandons, and ignores for search result sub
-    types in the launcher continue section. These metrics are all emitted once
-    for each unique displayed search result sub type, for results that have a
-    subtype defined.
-
-    For example, if we show the user three recently modified drive files and two
-    recently viewed drive files, and the user clicks a recently modified drive
-    file, then we would record: one impression for each of recently modified
-    drive file and recently viewed drive file, one launch for recently modified
-    drive file, and one abandon for recently viewed drive file.
-
-    Launch. Emitted after an impression, if the user launches a result.
-
-    Abandon. Emitted after an impression, if the user closes the launcher or
-    moves to a different view.
-
-    Ignore. Emitted after an impression, if the user then launched a different
-    result.
-
-    Impression. Emitted if either a) a set of results is displayed for 2 seconds
-    or b) the user interacted with a result, eg. by clicking it.
-  </summary>
-  <token key="SearchAction" variants="SearchAction"/>
-</histogram>
-
 <histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
     expires_after="2024-09-14">
   <owner>dgrebenyuk@google.com</owner>

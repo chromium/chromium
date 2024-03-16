@@ -353,13 +353,11 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider) {
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
-           FileSuggestionJustificationType::kUnknown,
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt},
           {FileSuggestionType::kDriveFile, file_path_2,
-           FileSuggestionJustificationType::kUnknown,
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,

@@ -39,25 +39,6 @@ enum class FileSuggestionType {
   kLocalFile,
 };
 
-// The reason the file is suggested.
-enum class FileSuggestionJustificationType {
-  // Used only for deprecated suggestions from drive's ItemSuggest API, for
-  // which the exact justification type is obscured.
-  kUnknown,
-
-  // The user recently viewed the file.
-  kViewed,
-
-  // The file was recently modified, usually by another user.
-  kModified,
-
-  // The file was recently modified by the current user.
-  kModifiedByCurrentUser,
-
-  // The file was shared with the current user.
-  kShared,
-};
-
 // Returns the max amount of time from now that a file was modified or viewed to
 // be available as a file suggestion.
 base::TimeDelta GetMaxFileSuggestionRecency();
@@ -71,7 +52,6 @@ double ToTimestampBasedScore(const FileSuggestData& suggestion_data,
 struct FileSuggestData {
   FileSuggestData(FileSuggestionType new_type,
                   const base::FilePath& new_file_path,
-                  FileSuggestionJustificationType justification_type,
                   const std::optional<std::u16string>& new_prediction_reason,
                   const std::optional<base::Time>& timestamp,
                   const std::optional<base::Time>& secondary_timestamp,
@@ -89,8 +69,6 @@ struct FileSuggestData {
 
   // The suggestion id. Calculated from `type` and `file_path`.
   std::string id;
-
-  FileSuggestionJustificationType justification_type;
 
   // The reason why the file is suggested.
   std::optional<std::u16string> prediction_reason;
