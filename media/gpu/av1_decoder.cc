@@ -279,19 +279,6 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       current_frame_header_ = parser_->frame_header();
       // Detects if a new coded video sequence is starting.
       if (parser_->sequence_header_changed()) {
-        // TODO(b/171853869): Remove this check once libgav1::ObuParser does
-        // this check.
-        if (current_frame_header_->frame_type != libgav1::kFrameKey ||
-            !current_frame_header_->show_frame ||
-            current_frame_header_->show_existing_frame ||
-            current_frame_->temporal_id() != 0) {
-          // Section 7.5.
-          DVLOG(1)
-              << "The first frame successive to sequence header OBU must be a "
-              << "keyframe with show_frame=1, show_existing_frame=0 and "
-              << "temporal_id=0";
-          return kDecodeError;
-        }
         if (IsSpatialLayerDecoding(
                 parser_->sequence_header()
                     .operating_point_idc[kDefaultOperatingPoint])) {
