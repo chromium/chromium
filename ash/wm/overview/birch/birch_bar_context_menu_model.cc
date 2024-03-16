@@ -14,7 +14,6 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/menu/menu_types.h"
-#include "ui/views/vector_icons.h"
 
 namespace ash {
 
@@ -80,7 +79,8 @@ void BirchBarContextMenuModel::AddChipMenuItems() {
   sub_menu_model_ = std::make_unique<BirchBarContextMenuModel>(
       delegate(), Type::kExpandedBarMenu);
   AddItemWithIcon(base::to_underlying(CommandId::kHideSuggestion),
-                  u"Hide this suggestion", CreateIcon(views::kCloseIcon));
+                  u"Hide this suggestion",
+                  CreateIcon(kSystemTrayDoNotDisturbIcon));
   AddItemWithIcon(base::to_underlying(CommandId::kHideDriveSuggestions),
                   u"Hide all Google Drive suggestions",
                   CreateIcon(kForbidIcon));
