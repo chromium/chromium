@@ -449,7 +449,6 @@
 <translation id="13392265090583506">無障礙設定</translation>
 <translation id="1340527397989195812">使用「檔案」應用程式備份裝置上的媒體。</translation>
 <translation id="1341701348342335220">太厲害了！</translation>
-<translation id="1341871421050612057">無法與 <ph name="USERNAME" /> 同步</translation>
 <translation id="1342886103232377846">如要檢查密碼是否外洩，請前往 Google 密碼管理工具</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住這部 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
@@ -5857,7 +5856,6 @@
 <translation id="5499476581866658341">你現在可以查看手機近期的相片和媒體</translation>
 <translation id="549957179819296104">新圖示</translation>
 <translation id="5500168250243071806">在你登入後，<ph name="BEGIN_LINK_SEARCH" />搜尋記錄<ph name="END_LINK_SEARCH" />和<ph name="BEGIN_LINK_GOOGLE" />其他形式的活動<ph name="END_LINK_GOOGLE" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
-<translation id="5500516288673745630">設定 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="5500709606820808700">今天已執行安全檢查</translation>
 <translation id="5501322521654567960">靠左對齊側邊面板</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{無法從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
@@ -7815,7 +7813,6 @@
 <translation id="7049293980323620022">要保留檔案嗎？</translation>
 <translation id="7049524156282610342">瀏覽資料 - <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">無效的無線基地台設定</translation>
-<translation id="7052237160939977163">傳送效能追蹤資料</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7055152154916055070">已禁止重新導向：</translation>
 <translation id="7055451306017383754">某個應用程式正在使用這個資料夾，因此無法取消分享。系統會在下次關閉 Parallels Desktop 時取消分享這個資料夾。</translation>

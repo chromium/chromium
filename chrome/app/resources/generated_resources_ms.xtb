@@ -451,7 +451,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sandarkan media dari peranti menggunakan apl Fail.</translation>
 <translation id="1341701348342335220">Bagus!</translation>
-<translation id="1341871421050612057">Tidak dapat melakukan penyegerakan dengan <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Untuk menyemak kata laluan yang terjejas, akses Google Password Manager</translation>
 <translation id="1343865611738742294">Beri Linux kebenaran apl untuk mengakses peranti USB. Linux tidak akan mengingat peranti USB selepas peranti itu dialih keluar.</translation>
 <translation id="1343920184519992513">Teruskan dari tempat anda berhenti dan buka set halaman tertentu</translation>
@@ -5874,7 +5873,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5499476581866658341">Kini anda dapat melihat foto dan media terbaharu telefon anda</translation>
 <translation id="549957179819296104">Ikon baharu</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Sejarah carian<ph name="END_LINK_SEARCH" /> dan <ph name="BEGIN_LINK_GOOGLE" />bentuk aktiviti lain<ph name="END_LINK_GOOGLE" /> mungkin disimpan dalam Google Account anda semasa anda dilog masuk. Anda boleh memadamkan data tersebut pada bila-bila masa.</translation>
-<translation id="5500516288673745630">Tetapkan kata laluan <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Semakan keselamatan dijalankan hari ini</translation>
 <translation id="5501322521654567960">Panel sisi yang dijajarkan ke kiri</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Gagal untuk menerima <ph name="ATTACHMENTS" /> daripada <ph name="DEVICE_NAME" />}other{Gagal untuk menerima <ph name="ATTACHMENTS" /> daripada <ph name="DEVICE_NAME" />}}</translation>
@@ -7836,7 +7834,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7049293980323620022">Simpan fail?</translation>
 <translation id="7049524156282610342">Data semakan imbas <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Konfigurasi tempat liputan tidak sah</translation>
-<translation id="7052237160939977163">Hantar data surih prestasi</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7055152154916055070">Ubah hala disekat:</translation>
 <translation id="7055451306017383754">Tidak dapat menyahkongsi kerana terdapat aplikasi yang menggunakan folder ini. Folder ini akan dinyahkongsi apabila Parallels Desktop ditutup selepas ini.</translation>

@@ -5364,15 +5364,6 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 <translation id="5420245232720940848">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten uit, waardoor de apparaatmogelijkheden worden beperkt</translation>
 <translation id="5420673997623782432">Toegang tot geolocatie van systeem blokkeren voor alle clients</translation>
 <translation id="5420774177427557782">Bepaalt of VM's die deze configuratie gebruiken, kunnen worden geïnstalleerd en uitgevoerd (<ph name="INSTALL_ALLOWED" />), kunnen worden uitgevoerd maar niet geïnstalleerd (<ph name="RUN_ALLOWED" />) of niet kunnen worden uitgevoerd (<ph name="BLOCKED" />). Houd er rekening mee dat voor het installeren van een VM ook de sleutel installer_image_x86_64 moet worden ingesteld. Als je een configuratie verwijdert, wordt deze impliciet ingesteld op <ph name="BLOCKED" /> om te voorkomen dat VM's zonder beleid kunnen worden uitgevoerd.</translation>
-<translation id="5421670928124029853">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
-
-0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. De standaardwaarde is 0.
-
-2 = Zet de functie uit.
-
-De functies van DevTools van generatieve AI zijn onder andere:
-
-- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.</translation>
 <translation id="5422643441807528365"><ph name="PLUGIN_VM_NAME" />-licentiecode</translation>
 <translation id="5423197884968724595">Naam van Android WebView-beperking:</translation>
 <translation id="5424147596523390018">Alle kleurmodi toestaan</translation>

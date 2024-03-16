@@ -97,6 +97,7 @@
 <translation id="1437543266176261764"><ph name="APP_NAME" /> තුළ ධාවනය වෙයි</translation>
 <translation id="1448440926884431741">Bookmarks තුළ ඔබගේ හඹා ගිය නිෂ්පාදන සංවිධානය කරන්න</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> බෙදා ගත නොහැක</translation>
+<translation id="1462833127986525564">ඔබට එකිනෙකාගෙන් දත්ත භාවිතයෙන් ඔබේ අත්දැකීම පුද්ගලායනය කිරීමට අවශ්‍ය නම් Chrome සහ අනෙකුත් Google සේවා සම්බන්ධ කරන්න</translation>
 <translation id="1466383950273130737">Chrome හි භාෂාව තෝරන්න</translation>
 <translation id="1477626028522505441">සේවාදායකයේ දෝෂ නිසා <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
 <translation id="148482509007564431">පිටුසන් සුරැකීම් ප්‍රවාහය</translation>
@@ -179,6 +180,7 @@
 <translation id="197288927597451399">තබාගන්න</translation>
 <translation id="1973912524893600642">දත්ත තබා ගන්න</translation>
 <translation id="1974060860693918893">උසස් කළ</translation>
+<translation id="1974251558382034745">වෙබ් ඉතිහාසය</translation>
 <translation id="1984417487208496350">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
 <translation id="1986685561493779662">නම දැනටමත් පවතී</translation>
 <translation id="1995884366040846621">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබගේ නම, ඉ-තැපැල් ලිපිනය සහ පැතිකඩ පින්තූරය මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියෙහි <ph name="BEGIN_LINK1" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_LINK1" /> බලන්න.</translation>
@@ -401,6 +403,7 @@
 <translation id="3098745985164956033">ඔබ සඳහා විස්තර වැඩි දියුණු කිරීම සඳහා සමහර පින්තූර Google වෙත යවනු ලැබේ</translation>
 <translation id="3114507951000454849">අද දවසේ <ph name="NEWS_ICON" /> පුවත් කියවන්න</translation>
 <translation id="3123734510202723619">නිවේදන</translation>
+<translation id="3146775326699342508">ඔබේ වෙනත් උපාංගවලින් ඔබේ පිටුසන් සහ තවත් ඒවා ලබා ගැනීමට පුරන්න</translation>
 <translation id="314939179385989105">Chrome හි මුල් පිටුව</translation>
 <translation id="3158667104057012316">හස්තීය අනුපිළිවෙල අනුව වර්ග කිරීම</translation>
 <translation id="3166827708714933426">ටැබ සහ කවුළු කෙටි මං</translation>
@@ -858,7 +861,6 @@
 <translation id="557018954714092179">නව ෆෝල්ඩරය තනන්න</translation>
 <translation id="5578795271662203820">මෙම රූපය සඳහා <ph name="SEARCH_ENGINE" /> සොයන්න</translation>
 <translation id="5581519193887989363">ඔබට සැමවිට <ph name="BEGIN_LINK1" />සැකසීම්<ph name="END_LINK1" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
-<translation id="558429399979870715">ඔබට ඔවුන් එකිනෙකා සමග දත්ත බෙදා ගැනීමට අවශ්‍ය නම් Chrome සහ අනෙකුත් Google සේවා සම්බන්ධ කරන්න</translation>
 <translation id="5590372121997663538">මෙම පරිගණකය මතක තබා ගන්න</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="5599455543593328020">අප්‍රසිද්ධ ප්‍රකාරය</translation>
@@ -1297,7 +1299,6 @@
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7665369617277396874">ගිණුම එක් කරන්න</translation>
 <translation id="766587987807204883">ඔබ නොබැඳිව සිටින විට පවා ඔබට කියවිය හැකි ලිපි මෙහි දිස් වෙති</translation>
-<translation id="7670101447063278728">මුරපද <ph name="USERNAME" /> වෙත සුරකින ලදි.</translation>
 <translation id="7682724950699840886">පහත ඉඟි උත්සාහ කරන්න: ඔබේ උපාංගයේ ප්‍රමාණවත් ඉඩක් ඇති බවට වග බලා ගෙන, නැවත නිර්යාත කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="7686086654630106285">අඩවි-යෝජිත දැන්වීම් පිළිබඳ වැඩිදුර</translation>
 <translation id="768618399695552958">ඔබ පිවිසෙන සමහර පිටු පූර්ව පූරණය කර ඇත. Google අඩවියකින් සම්බන්ධ කළ විට පිටු Google සේවාදායක හරහා පූර්ව පූරණය කළ හැකිය.</translation>
@@ -1441,7 +1442,6 @@
 <translation id="8310344678080805313">සම්මත ටැබ</translation>
 <translation id="831192587911042850">ඔබ අනුගමනය කරන වෙබ් අඩවි ලැයිස්තුවට වත්මන් වෙබ් අඩවිය එක් කරයි.</translation>
 <translation id="8333340769932050274">ඔබට අඩවි සමග බෙදා ගැනීමට අවශ්‍ය නැති මාතෘකා අවහිර කළ හැක. Chrome සති 4කට වඩා පැරණි ඔබේ මාතෘකා ස්වයංව ද මකා දමයි. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">ඔබට එය ඔබේ Google ගිණුමේ වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් වෙත එක් කිරීමට අවශ්‍ය නම් Chrome ඉතිහාසය ඇතුළත් කරන්න</translation>
 <translation id="834313815369870491">කිසි විටක අඩවි පරිවර්තනය නොකරන්න</translation>
 <translation id="8348430946834215779">හැකි සෑම විට ම HTTPS භාවිතා කර එයට සහාය නොදක්වන අඩවි පූරණය කිරීමට පෙර අනතුරු අඟවන්න</translation>
 <translation id="8354977102499939946">ඔබගේ කටහඬ සමගින් ඉක්මනින් සොයන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, සැකසීම් වෙත යන්න.</translation>

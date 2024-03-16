@@ -448,7 +448,6 @@
 <translation id="13392265090583506">भिजिबिलिटी</translation>
 <translation id="1340527397989195812">फाइलहरु एप प्रयोग गरेर उपकरणबाट मिडिया ब्याकअप गर्नुहोस्।</translation>
 <translation id="1341701348342335220">राम्रोसँग सम्पन्न गरियो!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> प्रयोग गरी सिंक गर्न सकिएन</translation>
 <translation id="1342886103232377846">ह्याक वा चोरी भएका पासवर्डहरू हेर्न Google पासवर्ड म्यानेजरमा जानुहोस्</translation>
 <translation id="1343865611738742294">Linux का एपलाई USB यन्त्रहरूमाथि पहुँच राख्न दिनुहोस्। कुनै USB यन्त्र हटाएपछि Linux ले उक्त यन्त्र सम्झने छैन।</translation>
 <translation id="1343920184519992513">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस् र आफूले चाहेका विशेष पेजहरू खोल्नुहोस्</translation>
@@ -5872,7 +5871,6 @@
 <translation id="5499476581866658341">तपाईं अब आफ्नो फोनका हालसालैका फोटो तथा मिडिया हेर्न सक्नुहुन्छ</translation>
 <translation id="549957179819296104">नयाँ आइकन</translation>
 <translation id="5500168250243071806">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK_SEARCH" />खोजको इतिहास<ph name="END_LINK_SEARCH" /> र <ph name="BEGIN_LINK_GOOGLE" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK_GOOGLE" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> को पासवर्ड सेट गर्नुहोस्</translation>
 <translation id="5500709606820808700">आज सुरक्षा जाँच गरिएको थियो</translation>
 <translation id="5501322521654567960">बायाँतिर एलाइन गरिएको साइड प्यानल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गर्न सकिएन}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गर्न सकिएन}}</translation>
@@ -7842,7 +7840,6 @@
 <translation id="7049293980323620022">फाइल राख्ने हो?</translation>
 <translation id="7049524156282610342">ब्राउजिङ डेटा <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">हटस्पटसम्बन्धी अवैध कन्फिगुरेसन</translation>
-<translation id="7052237160939977163">प्रदर्शन ट्रेस लगत पठाउनुहोस्</translation>
 <translation id="7053983685419859001">रोक्नुहोस्</translation>
 <translation id="7055152154916055070">रिडिरेक्ट नामक सुविधामाथि रोक लगाइयो:</translation>
 <translation id="7055451306017383754">कुनै एप्लिकेसनले यो फोल्डर प्रयोग गरिरहेका कारण यसलाई अनसेयर गर्न सकिएन। अर्को पटक Parallels Desktop सट डाउन हुँदा यो फोल्डर अनसेयर गरिने छ।</translation>

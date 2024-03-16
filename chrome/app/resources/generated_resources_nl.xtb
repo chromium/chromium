@@ -449,7 +449,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Back-ups van media op het apparaat maken via de app Bestanden.</translation>
 <translation id="1341701348342335220">Goed bezig!</translation>
-<translation id="1341871421050612057">Kan niet synchroniseren met <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Ga naar Google Wachtwoordmanager om te checken op gehackte wachtwoorden</translation>
 <translation id="1343865611738742294">Geef Linux-apps rechten tot USB-apparaten. Linux onthoudt een USB-apparaat niet nadat dit is verwijderd.</translation>
 <translation id="1343920184519992513">Ga verder waar je gebleven was en open een specifieke set pagina's.</translation>
@@ -5856,7 +5855,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5499476581866658341">Je kunt nu de recente foto's en media van je telefoon bekijken</translation>
 <translation id="549957179819296104">Nieuw icoon</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Zoekgeschiedenis<ph name="END_LINK_SEARCH" /> en <ph name="BEGIN_LINK_GOOGLE" />andere vormen van activiteit<ph name="END_LINK_GOOGLE" /> kunnen worden opgeslagen op je Google-account als je bent ingelogd. Je kunt ze wanneer je wilt verwijderen.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" />-wachtwoord instellen</translation>
 <translation id="5500709606820808700">Veiligheidscheck is vandaag uitgevoerd</translation>
 <translation id="5501322521654567960">Links uitgelijnd zijvenster</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}other{Kan <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> niet ontvangen}}</translation>
@@ -7813,7 +7811,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7049293980323620022">Bestand behouden?</translation>
 <translation id="7049524156282610342">Browsegegevens <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ongeldige hotspotconfiguratie</translation>
-<translation id="7052237160939977163">Gegevens over het bijhouden van prestaties verzenden</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7055152154916055070">Omleiding geblokkeerd:</translation>
 <translation id="7055451306017383754">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Parallels Desktop weer wordt uitgezet.</translation>

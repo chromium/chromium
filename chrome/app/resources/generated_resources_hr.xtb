@@ -452,7 +452,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="13392265090583506">Pristupačnost</translation>
 <translation id="1340527397989195812">Napravite sigurnosnu kopiju medija s uređaja pomoću aplikacije Datoteke.</translation>
 <translation id="1341701348342335220">Odlično obavljeno!</translation>
-<translation id="1341871421050612057">Nije moguće sinkronizirati s računom <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Da biste provjerili jesu li zaporke ugrožene, otvorite Google upravitelj zaporki</translation>
 <translation id="1343865611738742294">Dajte Linux aplikacijama dopuštenje za pristup USB uređajima. Linux neće zapamtiti USB uređaj nakon njegovog uklanjanja.</translation>
 <translation id="1343920184519992513">Nastavite tamo gdje ste stali i otvorite određeni skup stranica</translation>
@@ -5878,7 +5877,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5499476581866658341">Sada možete pregledati nedavne fotografije i medije telefona</translation>
 <translation id="549957179819296104">Nova ikona</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Povijest pretraživanja<ph name="END_LINK_SEARCH" /> i <ph name="BEGIN_LINK_GOOGLE" />drugi oblici aktivnosti<ph name="END_LINK_GOOGLE" /> mogu se spremati na vaš Google račun kad ste prijavljeni. Uvijek ih možete izbrisati.</translation>
-<translation id="5500516288673745630">Postavite zaporku za <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Sigurnosna provjera izvršena je danas</translation>
 <translation id="5501322521654567960">Bočna ploča s lijevim poravnanjem</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Primanje s uređaja <ph name="DEVICE_NAME" /> nije uspjelo za <ph name="ATTACHMENTS" />}one{Primanje s uređaja <ph name="DEVICE_NAME" /> nije uspjelo za <ph name="ATTACHMENTS" />}few{Primanje s uređaja <ph name="DEVICE_NAME" /> nije uspjelo za <ph name="ATTACHMENTS" />}other{Primanje s uređaja <ph name="DEVICE_NAME" /> nije uspjelo za <ph name="ATTACHMENTS" />}}</translation>
@@ -7850,7 +7848,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7049293980323620022">Želite li zadržati datoteku?</translation>
 <translation id="7049524156282610342">Podaci o pregledavanju <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Konfiguracija žarišne točke nije važeća</translation>
-<translation id="7052237160939977163">Šalji podatke o praćenju izvedbe</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7055152154916055070">Preusmjeravanje je blokirano:</translation>
 <translation id="7055451306017383754">Prestanak dijeljenja nije bio moguć jer jedna aplikacija koristi tu mapu. Dijeljenje mape prestat će kad se Parallels Desktop isključi.</translation>

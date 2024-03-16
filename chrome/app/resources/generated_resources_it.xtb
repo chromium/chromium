@@ -449,7 +449,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="13392265090583506">Impostazioni di accessibilità</translation>
 <translation id="1340527397989195812">Importa elementi multimediali dal dispositivo utilizzando l'app File.</translation>
 <translation id="1341701348342335220">Ottimo lavoro.</translation>
-<translation id="1341871421050612057">Impossibile sincronizzare con <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Per controllare la presenza di password compromesse, vai a Gestore delle password di Google</translation>
 <translation id="1343865611738742294">Concedi alle app Linux l'autorizzazione ad accedere ai dispositivi USB. Dopo la rimozione di un dispositivo USB, Linux non manterrà memorizzato il dispositivo.</translation>
 <translation id="1343920184519992513">Continua dal punto in cui avevi interrotto e apri un insieme di pagine specifiche</translation>
@@ -5858,7 +5857,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5499476581866658341">Ora puoi visualizzare le foto recenti e i contenuti multimediali del tuo telefono</translation>
 <translation id="549957179819296104">Nuova icona</translation>
 <translation id="5500168250243071806">La <ph name="BEGIN_LINK_SEARCH" />cronologia delle ricerche<ph name="END_LINK_SEARCH" /> e <ph name="BEGIN_LINK_GOOGLE" />altri tipi di attività<ph name="END_LINK_GOOGLE" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
-<translation id="5500516288673745630">Imposta la password per <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Il controllo di sicurezza è stato eseguito oggi</translation>
 <translation id="5501322521654567960">Riquadro laterale allineato a sinistra</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Impossibile ricevere <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}other{Impossibile ricevere <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}}</translation>
@@ -7817,7 +7815,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7049293980323620022">Conservare il file?</translation>
 <translation id="7049524156282610342">Dati di navigazione di: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configurazione hotspot non valida</translation>
-<translation id="7052237160939977163">Invia dati di rilevamento del rendimento</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7055152154916055070">Reindirizzamento bloccato:</translation>
 <translation id="7055451306017383754">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata quando verrà arrestato Parallels Desktop.</translation>

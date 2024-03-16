@@ -5432,15 +5432,6 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite.</translation
 <translation id="5420245232720940848">Viene disattivato il tunneling PCIe per i dispositivi periferici Thunderbolt/USB4, limitando così le capacità dei dispositivi</translation>
 <translation id="5420673997623782432">Blocca l'accesso alla geolocalizzazione del sistema per tutti i client</translation>
 <translation id="5420774177427557782">Consente di stabilire se le VM che utilizzano questa configurazione possono essere installate ed eseguite (<ph name="INSTALL_ALLOWED" />), eseguite ma non installate (<ph name="RUN_ALLOWED" />) o se non possono essere eseguite (<ph name="BLOCKED" />). Tieni presente che per installare una VM è necessario impostare anche la chiave installer_image_x86_64. Se una configurazione viene rimossa completamente, viene impostato in modo implicito il valore <ph name="BLOCKED" />, che impedisce l'esecuzione delle VM senza un criterio.</translation>
-<translation id="5421670928124029853">Queste funzionalità nei DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di IA generativa per fornire ulteriori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di IA generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di IA. 0 è il valore predefinito.
-
-2 = Disattiva la funzionalità.
-
-Le funzionalità di IA generativa di DevTools includono:
-
-- Approfondimenti sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.</translation>
 <translation id="5422643441807528365">Codice licenza <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nome della limitazione di Android WebView:</translation>
 <translation id="5424147596523390018">Consenti tutte le modalità a colori</translation>

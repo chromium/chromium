@@ -450,7 +450,6 @@
 <translation id="13392265090583506">ઍક્સેસિબિલિટી</translation>
 <translation id="1340527397989195812">Files ઍપનો ઉપયોગ કરીને ડિવાઇસથી મીડિયાનો બૅકઅપ લો.</translation>
 <translation id="1341701348342335220">સરસ રીતે પૂર્ણ કર્યું!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> સાથે સિંક કરી શકાતું નથી</translation>
 <translation id="1342886103232377846">ચેડાં કરાયેલા પાસવર્ડ ચેક કરવા માટે, Google Password Manager પર જાઓ</translation>
 <translation id="1343865611738742294">Linux ઍપ પરવાનગીને USB ડિવાઇસ ઍક્સેસ કરવાની પરવાનગી આપો. USB ડિવાઇસ કાઢી નાખવામાં આવે પછી Linux તેને યાદ રાખશે નહીં.</translation>
 <translation id="1343920184519992513">તમે જ્યાંથી છોડ્યું હોય, ત્યાંથી ફરી શરૂ કરો અને કોઈ ચોક્કસ પેજ ખોલો</translation>
@@ -5856,7 +5855,6 @@
 <translation id="5499476581866658341">હવે તમે તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જોઈ શકો છો</translation>
 <translation id="549957179819296104">નવું આઇકન</translation>
 <translation id="5500168250243071806">જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK_SEARCH" />શોધ ઇતિહાસ<ph name="END_LINK_SEARCH" /> અને <ph name="BEGIN_LINK_GOOGLE" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK_GOOGLE" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> પાસવર્ડ સેટ કરો</translation>
 <translation id="5500709606820808700">સલામતી માટે તપાસ આજે કરવામાં આવી</translation>
 <translation id="5501322521654567960">ડાબેથી સંરેખિત બાજુની પૅનલ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}one{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}other{<ph name="DEVICE_NAME" />માંથી <ph name="ATTACHMENTS" /> મેળવવામાં નિષ્ફળ રહ્યાં}}</translation>
@@ -7822,7 +7820,6 @@ USB ડિવાઇસ</translation>
 <translation id="7049293980323620022">ફાઇલ રાખીએ?</translation>
 <translation id="7049524156282610342">બ્રાઉઝિંગ ડેટા <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">હૉટસ્પૉટનું અમાન્ય કન્ફિગ્યુરેશન</translation>
-<translation id="7052237160939977163">પ્રદર્શન ટ્રેસ ડેટા મોકલો</translation>
 <translation id="7053983685419859001">અવરોધિત કરો</translation>
 <translation id="7055152154916055070">રીડાયરેક્ટ કરવાનું બ્લૉક કરવામાં આવ્યું છે:</translation>
 <translation id="7055451306017383754">કોઈ ઍપ્લિકેશન આ ફોલ્ડરનો ઉપયોગ કરી રહી હોવાને કારણે આને અનશેર કરી શકાતું નથી. જ્યારે આગલી વારે Parallels Desktop શટ ડાઉન થશે, ત્યારે ફોલ્ડરને અનશેર કરવામાં આવશે.</translation>
@@ -7857,6 +7854,7 @@ USB ડિવાઇસ</translation>
 <translation id="7078120482318506217">તમામ નેટવર્ક્સ</translation>
 <translation id="708060913198414444">ઑડિઓ સરનામું કૉ&amp;પિ કરો</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" />ને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="7082850163410901674">Mac સિસ્ટમના સેટિંગમાં નોટિફિકેશન બંધ કરવામાં આવ્યા છે</translation>
 <translation id="7083774521940805477">Chromebook માટે Steam (બીટા) તમારી Chromebook પર ઉપલબ્ધ નથી.</translation>
 <translation id="708550780726587276">(કન્ફિગ્યુરેશન થયું નથી)</translation>
 <translation id="7086672505018440886">Chromeની લૉગ ફાઇલોનો આર્કાઇવમાં સમાવેશ કરો.</translation>

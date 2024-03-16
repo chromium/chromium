@@ -452,7 +452,6 @@
 <translation id="13392265090583506">Атайын мүмкүнчүлүктөр</translation>
 <translation id="1340527397989195812">Медиа файлдардын камдык көчүрмөсүн Файлдар колдонмосу аркылуу түзмөгүңүздөн алып сактаңыз.</translation>
 <translation id="1341701348342335220">Абдан жакшы!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> менен шайкештирүүгө болбойт</translation>
 <translation id="1342886103232377846">Уурдалган сырсөздөрдү көрүү үчүн Сырсөздөрдү башкаргычка өтүңүз</translation>
 <translation id="1343865611738742294">Linux колдонмолоруна USB түзмөктөрүн колдонууга уруксат бериңиз. USB түзмөгү өчүрүлгөндөн кийин Linux аны эстеп калбайт.</translation>
 <translation id="1343920184519992513">Токтогон жериңизден улантып, барактардын белгилүү топтомун ачыңыз</translation>
@@ -5891,7 +5890,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5499476581866658341">Телефонуңуздагы соңку сүрөттөрдү жана медианы көрө аласыз</translation>
 <translation id="549957179819296104">Жаңы сүрөтчө</translation>
 <translation id="5500168250243071806">Аккаунтуңузга кирип турсаңыз, <ph name="BEGIN_LINK_SEARCH" />издөө таржымалы<ph name="END_LINK_SEARCH" /> жана <ph name="BEGIN_LINK_GOOGLE" />башка аракеттер<ph name="END_LINK_GOOGLE" /> Google аккаунтуңузга сакталышы мүмкүн. Аларды каалаган убакта жок кылсаңыз болот.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> сырсөзүн коюу</translation>
 <translation id="5500709606820808700">Коопсуздук бүгүн текшерилди</translation>
 <translation id="5501322521654567960">Сол жактагы капталдагы тилке</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> түзмөгүнөн алынбай калды}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> түзмөгүнөн алынбай калды}}</translation>
@@ -7861,7 +7859,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7049293980323620022">Файл сакталсынбы?</translation>
 <translation id="7049524156282610342">Колдонуучунун (<ph name="DISPLAY_NAME" />) серептөө дайындары</translation>
 <translation id="7050037487872780845">Байланыш түйүнүнүн конфигурациясы туура эмес</translation>
-<translation id="7052237160939977163">Иштин майнаптуулугун жогорулатуу дайындарын жөнөтүү</translation>
 <translation id="7053983685419859001">Бөгөттөө</translation>
 <translation id="7055152154916055070">Багыттоо бөгөттөлгөн:</translation>
 <translation id="7055451306017383754">Колдонмо бул папканы пайдаланып жаткандыктан, бөлүшүү токтотулган жок. Parallels Desktop эмки жолу өчүрүлгөндө, бул папканы бөлүшүү токтотулат.</translation>

@@ -5372,15 +5372,6 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
 <translation id="5420245232720940848">Aktiviert PCIe-Tunneling für Thunderbolt/USB4-Peripheriegeräte und schränkt die Gerätefunktion ein</translation>
 <translation id="5420673997623782432">Zugriff auf Standortbestimmung des Systems für alle Clients blockieren</translation>
 <translation id="5420774177427557782">Bestimmt, ob VMs, für die diese Konfiguration verwendet wird, installiert und ausgeführt (<ph name="INSTALL_ALLOWED" />), ausgeführt, aber nicht installiert (<ph name="RUN_ALLOWED" />), oder nicht ausgeführt (<ph name="BLOCKED" />) werden können. Hinweis: Zum Installieren einer VM muss auch der installer_image_x86_64-Schlüssel festgelegt sein. Wenn eine Konfiguration vollständig entfernt wird, wird die Property implizit auf „<ph name="BLOCKED" />“ gesetzt. Dadurch wird verhindert, dass VMs ohne Richtlinie ausgeführt werden.</translation>
-<translation id="5421670928124029853">Bei diesen Funktionen in den Entwicklertools von <ph name="PRODUCT_NAME" /> werden generative KI-Modelle eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein generatives KI-Modell ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI-Modelle zu trainieren oder zu verbessern. „0“ ist der Standardwert.
-
-„2“ = Die Funktion wird deaktiviert.
-
-Zu den generativen KI-Funktionen der Entwicklertools gehören Folgende:
-
-– Console Insights: erklärt Konsolenmeldungen und bietet Vorschläge zum Beheben von Konsolenfehlern</translation>
 <translation id="5422643441807528365">Lizenzschlüssel "<ph name="PLUGIN_VM_NAME" />"</translation>
 <translation id="5423197884968724595">Name der Android WebView-Einschränkung:</translation>
 <translation id="5424147596523390018">Alle Farbmodi zulassen</translation>

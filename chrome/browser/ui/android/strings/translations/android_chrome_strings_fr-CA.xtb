@@ -856,7 +856,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="557018954714092179">Créer un dossier</translation>
 <translation id="5578795271662203820">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Associez Chrome et d'autres services Google si vous souhaitez qu'ils partagent des données entre eux</translation>
 <translation id="5590372121997663538">Mémoriser cet ordinateur</translation>
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5599455543593328020">Mode de navigation privée</translation>
@@ -1294,7 +1293,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7665369617277396874">Ajouter un compte</translation>
 <translation id="766587987807204883">Les articles s'affichent ici, et vous pouvez les lire même lorsque vous êtes hors ligne</translation>
-<translation id="7670101447063278728">Mots de passe enregistrés au compte <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Essayez de suivre les conseils suivants : assurez-vous qu'il y a suffisamment d'espace sur votre appareil et réessayez d'exporter les mots de passe.</translation>
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
 <translation id="768618399695552958">Certaines des pages que vous visitez sont préchargées. Les pages peuvent être préchargées par les serveurs de Google lorsqu'elles sont associées à un site Google.</translation>
@@ -1438,7 +1436,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8310344678080805313">Onglets standard</translation>
 <translation id="831192587911042850">Ajoute le site Web actuel à la liste des sites Web que vous suivez.</translation>
 <translation id="8333340769932050274">Vous pouvez bloquer les sujets que vous ne souhaitez pas partager avec les sites. En outre, Chrome supprime automatiquement vos sujets datant de plus de quatre semaines. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Incluez l'historique de Chrome si vous souhaitez l'ajouter à l'activité sur le Web et dans les applications de votre compte Google</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites suivants</translation>
 <translation id="8348430946834215779">Dans la mesure du possible, utilisez le protocole HTTPS et soyez averti avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="8354977102499939946">Effectuez une recherche rapide à l'aide de commandes vocales. Pour modifier ce raccourci, accédez à Paramètres.</translation>

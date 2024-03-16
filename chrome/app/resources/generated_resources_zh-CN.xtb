@@ -450,7 +450,6 @@
 <translation id="13392265090583506">无障碍设置</translation>
 <translation id="1340527397989195812">使用“文件”应用备份设备上的媒体。</translation>
 <translation id="1341701348342335220">太棒了，全部完成！</translation>
-<translation id="1341871421050612057">无法与 <ph name="USERNAME" /> 同步</translation>
 <translation id="1342886103232377846">若要检查是否存在已泄露的密码，请前往 Google 密码管理工具</translation>
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
@@ -5866,7 +5865,6 @@
 <translation id="5499476581866658341">您现在可以查看手机中的近期照片和媒体</translation>
 <translation id="549957179819296104">新图标</translation>
 <translation id="5500168250243071806">当您登录后，系统可能会将<ph name="BEGIN_LINK_SEARCH" />搜索记录<ph name="END_LINK_SEARCH" />和<ph name="BEGIN_LINK_GOOGLE" />其他形式的活动记录<ph name="END_LINK_GOOGLE" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
-<translation id="5500516288673745630">设置 <ph name="DEVICE_TYPE" /> 密码</translation>
 <translation id="5500709606820808700">今天运行过安全检查</translation>
 <translation id="5501322521654567960">靠左对齐的侧边栏</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{未能收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{未能收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
@@ -7834,7 +7832,6 @@
 <translation id="7049293980323620022">要保留文件吗？</translation>
 <translation id="7049524156282610342"><ph name="DISPLAY_NAME" />的浏览数据</translation>
 <translation id="7050037487872780845">热点配置无效</translation>
-<translation id="7052237160939977163">发送性能跟踪数据</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7055152154916055070">已禁止重定向：</translation>
 <translation id="7055451306017383754">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Parallels Desktop 时停止共享此文件夹。</translation>

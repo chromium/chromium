@@ -856,7 +856,6 @@
 <translation id="557018954714092179">새 폴더 만들기</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="5581519193887989363">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
-<translation id="558429399979870715">Chrome과 기타 Google 서비스가 서로 데이터를 공유하도록 하려면 두 서비스를 연결합니다.</translation>
 <translation id="5590372121997663538">이 컴퓨터 기억하기</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5599455543593328020">시크릿 모드</translation>
@@ -1294,7 +1293,6 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665369617277396874">계정 추가</translation>
 <translation id="766587987807204883">기사가 여기 표시되며 오프라인 상태에서도 읽을 수 있습니다.</translation>
-<translation id="7670101447063278728">비밀번호가 <ph name="USERNAME" />에 저장됨</translation>
 <translation id="7682724950699840886">다음 방법을 시도해 보세요. 기기 저장용량이 충분한지 확인하고 다시 내보내 봅니다.</translation>
 <translation id="7686086654630106285">사이트 추천 광고에 관해 자세히 알아보기</translation>
 <translation id="768618399695552958">방문한 페이지 중 일부가 미리 로드되었습니다. Google 사이트에서 페이지에 연결하는 경우 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
@@ -1438,7 +1436,6 @@
 <translation id="8310344678080805313">일반 탭</translation>
 <translation id="831192587911042850">팔로우하는 웹사이트 목록에 현재 웹사이트를 추가하세요.</translation>
 <translation id="8333340769932050274">사이트와 공유하고 싶지 않은 주제를 차단할 수 있습니다. 또한 Chrome에서는 4주가 지난 주제를 자동으로 삭제합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Google 계정의 웹 및 앱 활동에 Chrome 방문 기록을 추가하려면 Chrome 방문 기록을 포함합니다.</translation>
 <translation id="834313815369870491">사이트 번역 안 함</translation>
 <translation id="8348430946834215779">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="8354977102499939946">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>

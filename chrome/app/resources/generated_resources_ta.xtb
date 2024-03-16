@@ -451,7 +451,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Files ஆப்ஸைப் பயன்படுத்தி சாதனத்திலிருந்து மீடியாவைக் காப்புப்பிரதி எடுக்கவும்.</translation>
 <translation id="1341701348342335220">சிறப்பாக முடித்துவிட்டீர்கள்!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> கணக்கில் ஒத்திசைக்க முடியாது</translation>
 <translation id="1342886103232377846">களவாடப்பட்ட கடவுச்சொற்களைச் சரிபார்க்க, Google Password Managerருக்குச் செல்லவும்</translation>
 <translation id="1343865611738742294">USB சாதனங்களை அணுகுவதற்கான அனுமதியை Linux ஆப்ஸிற்கு வழங்கும். அகற்றப்பட்ட USB சாதனத்தை Linux நினைவில் வைத்திருக்காது.</translation>
 <translation id="1343920184519992513">விட்ட இடத்தில் தொடங்கி, குறிப்பிட்ட பக்கங்களின் தொகுப்பைத் திற</translation>
@@ -5874,7 +5873,6 @@
 <translation id="5499476581866658341">இப்போது, உங்கள் மொபைலில் உள்ள சமீபத்திய படங்கள், மீடியா ஆகியவற்றைப் பார்க்கலாம்</translation>
 <translation id="549957179819296104">புதிய ஐகான்</translation>
 <translation id="5500168250243071806">நீங்கள் உள்நுழைந்திருக்கும்போது, <ph name="BEGIN_LINK_SEARCH" />தேடல் விவரங்களும்<ph name="END_LINK_SEARCH" /> <ph name="BEGIN_LINK_GOOGLE" />பிற வகையான செயல்பாடுகளும்<ph name="END_LINK_GOOGLE" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம். அவற்றை எப்போது வேண்டுமானாலும் நீக்கலாம்.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> கடவுச்சொல்லை அமைத்தல்</translation>
 <translation id="5500709606820808700">பாதுகாப்புச் சரிபார்ப்பு இன்று மேற்கொள்ளப்பட்டது</translation>
 <translation id="5501322521654567960">இடப்புறமாகச் சீரமைக்கப்பட்ட பக்கவாட்டுப் பேனல்</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> ஐப் பெற முடியவில்லை}other{<ph name="DEVICE_NAME" /> சாதனத்திலிருந்து <ph name="ATTACHMENTS" /> ஐப் பெற முடியவில்லை}}</translation>
@@ -7837,7 +7835,6 @@
 <translation id="7049293980323620022">ஃபைலை வைத்திருக்கவா?</translation>
 <translation id="7049524156282610342">உலாவிய தரவு <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">தவறான ஹாட்ஸ்பாட் உள்ளமைவு</translation>
-<translation id="7052237160939977163">செயல்திறன் தடமறிதல் தரவை அனுப்பு</translation>
 <translation id="7053983685419859001">தடு</translation>
 <translation id="7055152154916055070">திசைதிருப்புதல் தடுக்கப்பட்டது:</translation>
 <translation id="7055451306017383754">ஓர் ஆப்ஸ் இந்த ஃபோல்டரைப் பயன்படுத்திக் கொண்டிருப்பதால் பகிர்வை நீக்க முடியவில்லை. அடுத்த முறை Parallels Desktop ஷட் டவுன் செய்யப்படும் போது இந்த ஃபோல்டர் பகிர்வு நீக்கப்படும்.</translation>

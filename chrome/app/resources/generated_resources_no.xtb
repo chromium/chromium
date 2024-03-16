@@ -452,7 +452,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sikkerhetskopiér medier fra enheten ved hjelp av Filer-appen.</translation>
 <translation id="1341701348342335220">Bra jobbet!</translation>
-<translation id="1341871421050612057">Kan ikke synkronisere med <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">For å sjekke om du har passord som er utsatt for sikkerhetsbrudd, gå til Google Passordlagring</translation>
 <translation id="1343865611738742294">Gi Linux-apper tilgang til USB-enheter. Linux husker ikke USB-enheter etter at de er fjernet.</translation>
 <translation id="1343920184519992513">Fortsett der du slapp, og åpne et spesifikt sett med sider</translation>
@@ -5882,7 +5881,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5499476581866658341">Nå kan du se telefonens nylige bilder og medier</translation>
 <translation id="549957179819296104">Nytt ikon</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Søkeloggen<ph name="END_LINK_SEARCH" /> og <ph name="BEGIN_LINK_GOOGLE" />andre typer aktivitet<ph name="END_LINK_GOOGLE" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.</translation>
-<translation id="5500516288673745630">Angi passord for <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Sikkerhetssjekken ble kjørt i dag</translation>
 <translation id="5501322521654567960">Venstrejustert sidepanel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kunne ikke motta <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}other{Kunne ikke motta <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}}</translation>
@@ -7853,7 +7851,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7049293980323620022">Vil du beholde filen?</translation>
 <translation id="7049524156282610342">Nettlesingsdata <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ugyldig konfigurasjon av wifi-sone</translation>
-<translation id="7052237160939977163">Send ytelsessporingsdata</translation>
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7055152154916055070">Viderekoblingen er blokkert:</translation>
 <translation id="7055451306017383754">Kunne ikke avvise delingen, fordi et program bruker denne mappen. Mappedelingen blir avvist neste gang Parallels Desktop avsluttes.</translation>

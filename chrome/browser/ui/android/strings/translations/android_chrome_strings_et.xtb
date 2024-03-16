@@ -856,7 +856,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="557018954714092179">Loo uus kaust</translation>
 <translation id="5578795271662203820">Otsi otsingust <ph name="SEARCH_ENGINE" /> kujutist</translation>
 <translation id="5581519193887989363">Jaotises <ph name="BEGIN_LINK1" />Seaded<ph name="END_LINK1" /> saate igal ajal valida, mida sünkroonida.</translation>
-<translation id="558429399979870715">Linkige Chrome ja teised Google’i teenused, kui soovite, et need jagaksid omavahel andmeid.</translation>
 <translation id="5590372121997663538">Pea see arvuti meeles</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5599455543593328020">Inkognito režiim</translation>
@@ -1294,7 +1293,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7665369617277396874">Konto lisamine</translation>
 <translation id="766587987807204883">Artiklid kuvatakse siin ja saate neid lugeda ka võrguühenduseta</translation>
-<translation id="7670101447063278728">Kontole <ph name="USERNAME" /> salvestatud paroolid.</translation>
 <translation id="7682724950699840886">Järgige neid nõuandeid: veenduge, et seadmes oleks piisavalt ruumi, seejärel proovige uuesti eksportida.</translation>
 <translation id="7686086654630106285">Lisateave saidi soovitatud reklaamide kohta</translation>
 <translation id="768618399695552958">Mõned teie külastatavad lehed on eellaaditud. Kui lehed on lingitud Google'i saidilt, võidakse need eellaadida Google'i serverite kaudu.</translation>
@@ -1438,7 +1436,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8310344678080805313">Tavapärased vahekaardid</translation>
 <translation id="831192587911042850">Lisab praeguse veebisaidi teie jälgitavate veebisaitide loendisse.</translation>
 <translation id="8333340769932050274">Saate blokeerida teemad, mida ei soovi saitidega jagada. Samuti kustutab Chrome automaatselt teemad, mis on vanemad kui 4 nädalat. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Kaasake Chrome’i ajalugu, kui soovite selle lisada oma Google’i konto veebi- ja rakendustegevustesse.</translation>
 <translation id="834313815369870491">Ära kunagi tõlgi järgmisi saite</translation>
 <translation id="8348430946834215779">Kasutage võimalusel alati HTTPS-i ja saate enne HTTPS-i toetuseta saitide laadimist hoiatuse</translation>
 <translation id="8354977102499939946">Otsige kiirelt oma hääle abil. Selle otsetee muutmiseks avage menüü Seaded.</translation>

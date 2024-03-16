@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">CAPS LOCK ഓൺ ആണ്</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> നിർത്തുക. <ph name="CAPTURE_MEDIUM" />, <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">ഗെയിം നിയന്ത്രണങ്ങൾ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="2526581474998477112">വിൻഡോകൾ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="2528111225373402384">ഹോട്ട്സ്പോട്ട് ക്രമീകരണം</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -1263,6 +1264,7 @@
 <translation id="5983567367406220847">നിഷ്‌ക്രിയത്വത്തെ തുടർന്ന്, ഹോട്ട്‌സ്പോട്ട് ഓഫാക്കി.</translation>
 <translation id="598407983968395253">ടെംപ്ലേറ്റ് ഉപയോഗിക്കുക</translation>
 <translation id="598882571027504733">അപ്ഡേറ്റ് നേടാൻ, അറ്റാച്ച് ചെയ്‌ത കീബോഡിനൊപ്പം Chromebook റീസ്‌റ്റാർട്ട് ചെയ്യുക.</translation>
+<translation id="5998374579424866922">ഗെയിം നിയന്ത്രണങ്ങൾ ഓഫാക്കുക</translation>
 <translation id="6000279412553873020">കീകളും ബട്ടണുകളും മറ്റും</translation>
 <translation id="6002122790816966947">നിങ്ങളുടെ ഉപകരണങ്ങൾ</translation>
 <translation id="6012623610530968780">പേജ് <ph name="SELECTED_PAGE" /> / <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1666,6 +1668,7 @@
 <translation id="7607002721634913082">അല്പംനിര്‍ത്തി</translation>
 <translation id="7609951632080598826">കലണ്ടർ കാഴ്‌ച, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ക്യാമറ വീണ്ടും കണക്റ്റ് ചെയ്തു.</translation>
+<translation id="7613620083300976559">ഗെയിം നിയന്ത്രണങ്ങൾ ഓണാക്കുക</translation>
 <translation id="761736749114493194">ക്യാമറാ ഫ്രെയിമിംഗ് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">താഴെ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു</translation>

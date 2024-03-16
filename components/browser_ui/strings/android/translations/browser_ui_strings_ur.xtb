@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">کلپ بورڈ</translation>
 <translation id="2597457036804169544">سائٹس پر گہری تھیم لاگو نہ کریں</translation>
 <translation id="2606760465469169465">خودکار تصدیق کریں</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">‏کسی مخصوص سائٹ کیلئے JavaScript کی اجازت دیں۔</translation>
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">تحفظ یافتہ مواد</translation>
 <translation id="662080504995468778">رکیں</translation>
 <translation id="6653342741369270081">پوری اسکرین سے باہر نکلنے کیلئے پیچھے جائیں بٹن کو دبائیں۔</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{'اس ٹیب کے ساتھ جاری رکھیں' اختیار کو چھپائیں}other{'ان ٹیبز کے ساتھ جاری رکھیں' اختیار کو چھپائیں}}</translation>
 <translation id="6689172468748959065">پروفائل کی تصاویر</translation>
 <translation id="6697925417670533197">فعال ڈاؤن لوڈز</translation>
 <translation id="6722828510648505498">شناختی سروسز سے سائن ان کے پرامپٹس مسدود کریں۔</translation>

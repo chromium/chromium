@@ -452,7 +452,6 @@
 <translation id="13392265090583506">সাধ্য সুবিধাৰ ছেটিংসমূহ</translation>
 <translation id="1340527397989195812">এই ডিভাইচৰ বেক আপ মিডিয়াই Files এপ্‌টো ব্যৱহাৰ কৰি আছে।</translation>
 <translation id="1341701348342335220">সুন্দৰকৈ কৰা হৈছে!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" />ৰ সৈতে ছিংক কৰিব নোৱাৰি</translation>
 <translation id="1342886103232377846">হেক কৰা পাছৱৰ্ড পৰীক্ষা কৰিবলৈ, Google Password Managerলৈ যাওক</translation>
 <translation id="1343865611738742294">Linux এপক ইউএছবি ডিভাইচ এক্সেছ কৰিবলৈ অনুমতি দিয়ক। কোনো ইউএছবি ডিভাইচ আঁতৰোৱাৰ পাছত Linuxএ সেইটো মনত নাৰাখিব।</translation>
 <translation id="1343920184519992513">আপুনি য’ত এৰিছিল তাৰ পৰা অব্যাহত ৰাখক আৰু পৃষ্ঠাৰ এটা নিৰ্দিষ্ট ছেট খোলক</translation>
@@ -5871,7 +5870,6 @@
 <translation id="5499476581866658341">এতিয়া আপুনি আপোনাৰ ফ’নৰ শেহতীয়া ফট’ আৰু মিডিয়া চাব পাৰে</translation>
 <translation id="549957179819296104">নতুন চিহ্ন</translation>
 <translation id="5500168250243071806">আপুনি ছাইন ইন হৈ থকাৰ সময়ত আপোনাৰ Google একাউণ্টত <ph name="BEGIN_LINK_SEARCH" />সন্ধানৰ ইতিহাস<ph name="END_LINK_SEARCH" /> আৰু <ph name="BEGIN_LINK_GOOGLE" />অন্য প্ৰকাৰৰ কাৰ্যকলাপ<ph name="END_LINK_GOOGLE" /> ছেভ কৰা হ’ব পাৰে। আপুনি যিকোনো সময়তে সেইবোৰ মচিব পাৰে।</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" />ৰ পাছৱৰ্ড ছেট কৰক</translation>
 <translation id="5500709606820808700">আজি সুৰক্ষা পৰীক্ষা চলোৱা হৈছে</translation>
 <translation id="5501322521654567960">বাওঁফালে শাৰীবিন্যাস কৰা ছাইডৰ পেনেল</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />ৰ পৰা <ph name="ATTACHMENTS" /> লাভ কৰিব পৰা নগ’ল}one{<ph name="DEVICE_NAME" />ৰ পৰা <ph name="ATTACHMENTS" /> লাভ কৰিব পৰা নগ’ল}other{<ph name="DEVICE_NAME" />ৰ পৰা <ph name="ATTACHMENTS" /> লাভ কৰিব পৰা নগ’ল}}</translation>
@@ -7834,7 +7832,6 @@
 <translation id="7049293980323620022">ফাইলটো ৰাখিবনে?</translation>
 <translation id="7049524156282610342">ব্ৰাউজিং ডেটা <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">হটস্পটৰ অমান্য কনফিগাৰেশ্বন</translation>
-<translation id="7052237160939977163">কাৰ্যদক্ষতাৰ ট্রে'চ ডেটা পঠিয়াওক</translation>
 <translation id="7053983685419859001">অৱৰোধ কৰক</translation>
 <translation id="7055152154916055070">পুনৰ নির্দেশ কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="7055451306017383754">এটা এপ্লিকেশ্বনে এই ফ’ল্ডাৰটো ব্যৱহাৰ কৰি থকা কাৰণে শ্বেয়াৰ কৰাটো বাতিল কৰিব পৰা নগ’ল। পাছৰবাৰ Parallels Desktop বন্ধ হ’লে ফ’ল্ডাৰটো শ্বেয়াৰ কৰাটো বাতিল কৰা হ’ব।</translation>

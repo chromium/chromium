@@ -451,7 +451,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="13392265090583506">Kisegítő lehetőségek</translation>
 <translation id="1340527397989195812">Az eszközön található médiafájlok biztonsági mentése a Fájlok alkalmazással.</translation>
 <translation id="1341701348342335220">Szép munka!</translation>
-<translation id="1341871421050612057">Nem lehet szinkronizálni a következővel: <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Az illetéktelen kézbe került jelszavak előfordulásának ellenőrzéséhez nyissa meg a Google Jelszókezelőt</translation>
 <translation id="1343865611738742294">Engedély megadása a Linux-alkalmazásoknak az USB-eszközökhöz való hozzáférésre. A Linux nem jegyzi meg az USB-eszközt az eszköz eltávolítása után.</translation>
 <translation id="1343920184519992513">Ott folytathatja, ahol abbahagyta, és megnyithatja az oldalak egy adott készletét.</translation>
@@ -5872,7 +5871,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5499476581866658341">Mostantól megtekintheti a telefonon legutóbb megnyitott fotókat és médiatartalmakat</translation>
 <translation id="549957179819296104">Új ikon</translation>
 <translation id="5500168250243071806">Amikor be van jelentkezve, a <ph name="BEGIN_LINK_SEARCH" />keresési előzményeket<ph name="END_LINK_SEARCH" /> és <ph name="BEGIN_LINK_GOOGLE" />más tevékenységformákat<ph name="END_LINK_GOOGLE" /> a rendszer elmentheti a Google-fiókjába. Bármikor törölheti őket.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" />-jelszó beállítása</translation>
 <translation id="5500709606820808700">A biztonsági ellenőrzés ma lefutott</translation>
 <translation id="5501322521654567960">Balra igazított oldalsó panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nem sikerült <ph name="ATTACHMENTS" /> fogadása innen: <ph name="DEVICE_NAME" />}other{Nem sikerült <ph name="ATTACHMENTS" /> fogadása innen: <ph name="DEVICE_NAME" />}}</translation>
@@ -7835,7 +7833,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7049293980323620022">Megtartja a fájlt?</translation>
 <translation id="7049524156282610342">Böngészési adatok – <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Érvénytelen hotspot-konfiguráció</translation>
-<translation id="7052237160939977163">Teljesítménykövetési adatok elküldése</translation>
 <translation id="7053983685419859001">Letiltás</translation>
 <translation id="7055152154916055070">Átirányítás letiltva:</translation>
 <translation id="7055451306017383754">Nem sikerült a megosztás visszavonása, mivel valamelyik alkalmazás használja ezt a mappát. A mappa megosztásának visszavonása a Parallels Desktop következő leállításakor történik majd meg.</translation>

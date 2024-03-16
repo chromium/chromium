@@ -5506,15 +5506,6 @@ Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng đượ
 <translation id="5420245232720940848">Tắt tính năng tạo đường hầm dựa trên PCIe cho các thiết bị ngoại vi Thunderbolt/USB4, các thiết bị ngoại vi sẽ bị hạn chế về hiệu suất hoạt động</translation>
 <translation id="5420673997623782432">Chặn quyền truy cập vào dữ liệu định vị vị trí của hệ thống đối với tất cả máy khách</translation>
 <translation id="5420774177427557782">Kiểm soát xem máy ảo sử dụng cấu hình này có thể được cài đặt và chạy (<ph name="INSTALL_ALLOWED" />), chạy nhưng không được cài đặt (<ph name="RUN_ALLOWED" />) hay không thể chạy (<ph name="BLOCKED" />). Xin lưu ý rằng để cài đặt máy ảo, bạn cũng phải đặt khoá installer_image_x86_64. Việc loại bỏ hoàn toàn một cấu hình sẽ ngầm đặt chế độ cài đặt này thành <ph name="BLOCKED" />, ngăn máy ảo chạy mà không có chính sách.</translation>
-<translation id="5421670928124029853">Các tính năng này trong Công cụ cho nhà phát triển của <ph name="PRODUCT_NAME" /> sử dụng mô hình AI tạo sinh để cung cấp thêm thông tin gỡ lỗi. Để sử dụng các tính năng này, <ph name="PRODUCT_NAME" /> phải thu thập các dữ liệu như thông báo lỗi, dấu vết ngăn xếp, đoạn mã và yêu cầu về mạng, rồi gửi dữ liệu đó đến một máy chủ do Google sở hữu. Máy chủ này chạy một mô hình AI tạo sinh. Dữ liệu gửi đến máy chủ này không bao gồm nội dung phản hồi hoặc thông tin xác thực và tiêu đề cookie trong yêu cầu về mạng.
-
-0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. 0 là giá trị mặc định.
-
-2 = Tắt tính năng này.
-
-Các tính năng AI tạo sinh của Công cụ cho nhà phát triển bao gồm:
-
-– Thông tin chi tiết về bảng điều khiển: giải thích các thông báo trên bảng điều khiển và gợi ý cách khắc phục lỗi trên bảng điều khiển.</translation>
 <translation id="5422643441807528365">Khóa cấp phép <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Tên giới hạn Android WebView:</translation>
 <translation id="5424147596523390018">Cho phép tất cả các chế độ màu</translation>

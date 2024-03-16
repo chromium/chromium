@@ -451,7 +451,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Seadme meediumi varundamine rakendusega Failid.</translation>
 <translation id="1341701348342335220">Hästi tehtud!</translation>
-<translation id="1341871421050612057">Ei saa kasutajaga <ph name="USERNAME" /> sünkroonida</translation>
 <translation id="1342886103232377846">Ohustatud paroolide kontrollimiseks avage Google'i paroolihaldur</translation>
 <translation id="1343865611738742294">Andke Linuxi rakendustele luba USB-seadmetele juurde pääseda. Linux ei mäleta USB-seadet pärast selle eemaldamist.</translation>
 <translation id="1343920184519992513">Jätka sealt, kus pooleli jäin, ja ava konkreetne lehtede kogum</translation>
@@ -5864,7 +5863,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5499476581866658341">Saate nüüd vaadata oma telefoni hiljutisi fotosid ja meediat</translation>
 <translation id="549957179819296104">Uus ikoon</translation>
 <translation id="5500168250243071806">Kui olete sisse logitud, võidakse teie <ph name="BEGIN_LINK_SEARCH" />otsinguajalugu<ph name="END_LINK_SEARCH" /> ja <ph name="BEGIN_LINK_GOOGLE" />muud tegevused<ph name="END_LINK_GOOGLE" /> teie Google'i kontole salvestada. Saate need alati kustutada.</translation>
-<translation id="5500516288673745630">Seadme <ph name="DEVICE_TYPE" /> parooli määramine</translation>
 <translation id="5500709606820808700">Ohutuskontroll tehti täna</translation>
 <translation id="5501322521654567960">Vasakule joondatud külgpaneel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Andmeid (<ph name="ATTACHMENTS" />) ei saanud seadmest <ph name="DEVICE_NAME" /> vastu võtta}other{Andmeid (<ph name="ATTACHMENTS" />) ei saanud seadmest <ph name="DEVICE_NAME" /> vastu võtta}}</translation>
@@ -7826,7 +7824,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7049293980323620022">Kas soovite faili säilitada?</translation>
 <translation id="7049524156282610342">Sirvimisandmed: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Kuumkoha sobimatu seadistus</translation>
-<translation id="7052237160939977163">Saada toimivuse jälgimise andmeid</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
 <translation id="7055152154916055070">Ümbersuunamine blokeeriti:</translation>
 <translation id="7055451306017383754">Jagamist ei saanud lõpetada, kuna rakendus kasutab seda kausta. Kui Parallels Desktop välja lülitatakse, siis kausta jagamine lõpetatakse.</translation>

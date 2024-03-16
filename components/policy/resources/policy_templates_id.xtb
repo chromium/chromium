@@ -5590,15 +5590,6 @@ pintasan berbasis penelusuran akan bertindak sebagai default.</translation>
 <translation id="5420245232720940848">Menonaktifkan tunneling PCIe untuk perangkat periferal Thunderbolt/USB4, yang membatasi kemampuan perangkat tersebut</translation>
 <translation id="5420673997623782432">Blokir akses geolokasi sistem ke semua klien</translation>
 <translation id="5420774177427557782">Mengontrol apakah VM yang menggunakan konfigurasi ini dapat diinstal dan dijalankan (<ph name="INSTALL_ALLOWED" />), dijalankan tetapi tidak diinstal (<ph name="RUN_ALLOWED" />), atau tidak dapat dijalankan (<ph name="BLOCKED" />). Perhatikan bahwa untuk menginstal VM, kunci installer_image_x86_64 juga harus disetel. Menghapus konfigurasi sepenuhnya secara implisit akan menyetelnya ke <ph name="BLOCKED" />, sehingga mencegah VM berjalan tanpa kebijakan.</translation>
-<translation id="5421670928124029853">Fitur di DevTools <ph name="PRODUCT_NAME" /> ini menggunakan model AI generatif untuk memberikan informasi proses debug tambahan. Untuk menggunakan fitur ini, <ph name="PRODUCT_NAME" /> harus mengumpulkan data seperti pesan error, stack trace, cuplikan kode, dan permintaan jaringan, lalu mengirimkannya ke server milik Google, yang menjalankan model AI generatif. Isi respons atau autentikasi dan header cookie dalam permintaan jaringan tidak disertakan dalam data yang dikirim ke server.
-
-Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Nilai 0 adalah nilai defaultnya.
-
-Nilai 2 = Menonaktifkan fitur.
-
-Fitur AI Generatif DevTools mencakup:
-
-- Console Insights: menjelaskan pesan konsol dan menawarkan saran tentang cara memperbaiki error konsol.</translation>
 <translation id="5422643441807528365">Kunci lisensi <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nama batasan Android WebView:</translation>
 <translation id="5424147596523390018">Izinkan semua mode warna</translation>

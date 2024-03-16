@@ -452,7 +452,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Afrita efni tækisins með forritinu Skrár.</translation>
 <translation id="1341701348342335220">Vel gert!</translation>
-<translation id="1341871421050612057">Ekki er hægt að samstilla við <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Opnaðu Google-aðgangsorðastjórnun til að leita að aðgangsorðum í hættu</translation>
 <translation id="1343865611738742294">Veita Linux-forritum heimild til að opna USB-tæki. Linux man ekki eftir USB-tæki þegar það hefur verið fjarlægt.</translation>
 <translation id="1343920184519992513">Haltu áfram þar sem frá var horfið og opnaðu ákveðinn hóp síðna</translation>
@@ -5875,7 +5874,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5499476581866658341">Nú geturðu séð nýlegar myndir og margmiðlunarefni símans</translation>
 <translation id="549957179819296104">Nýtt tákn</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Leitarferill<ph name="END_LINK_SEARCH" /> og <ph name="BEGIN_LINK_GOOGLE" />aðrar aðgerðir<ph name="END_LINK_GOOGLE" /> kunna að vera vistaðar á Google reikningnum þínum ef þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.</translation>
-<translation id="5500516288673745630">Stilla aðgangsorð <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Öryggisathugun var keyrð í dag</translation>
 <translation id="5501322521654567960">Hliðargluggi sem er jafnaður til vinstri</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Ekki tókst að taka við <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}one{Ekki tókst að taka við <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}other{Ekki tókst að taka við <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}}</translation>
@@ -7838,7 +7836,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7049293980323620022">Viltu halda skránni?</translation>
 <translation id="7049524156282610342">Vefskoðunargögn <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ógild stilling fyrir heitan reit</translation>
-<translation id="7052237160939977163">Senda rakningargögn um afköst</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7055152154916055070">Lokað á framsendingu:</translation>
 <translation id="7055451306017383754">Ekki var hægt að hætta að deila vegna þess að forrit er að nota þessa möppu. Hætt verður að deila möppunni næst þegar slökkt er á Parallels Desktop.</translation>

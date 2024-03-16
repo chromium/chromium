@@ -856,7 +856,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="557018954714092179">Crear novo cartafol</translation>
 <translation id="5578795271662203820">Busca esta imaxe en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Sempre podes escoller na <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" /> o contido que queres sincronizar.</translation>
-<translation id="558429399979870715">Vincula Chrome e outros servizos de Google se queres que compartan datos entre si</translation>
 <translation id="5590372121997663538">Memorizar este ordenador</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5599455543593328020">Modo de incógnito</translation>
@@ -1294,7 +1293,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
 <translation id="766587987807204883">Aquí aparecen os artigos e podes lelos mesmo cando esteas sen conexión</translation>
-<translation id="7670101447063278728">Contrasinais gardados en <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Sigue estes consellos: asegúrate de que hai espazo suficiente no dispositivo e proba a exportar os contrasinais de novo.</translation>
 <translation id="7686086654630106285">Máis información sobre os anuncios suxeridos polos sitios</translation>
 <translation id="768618399695552958">Precárganse algunhas das páxinas que visitas. As páxinas poden precargarse a través dos nosos servidores se están vinculadas a un sitio de Google.</translation>
@@ -1438,7 +1436,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8310344678080805313">Pestanas estándar</translation>
 <translation id="831192587911042850">Engade o sitio web actual á lista de sitios web que estás seguindo.</translation>
 <translation id="8333340769932050274">Podes bloquear os temas que non queiras compartir cos sitios. Chrome tamén elimina automaticamente os temas que teñen máis de 4 semanas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Inclúe o historial de Chrome se queres engadilo á opción Actividade web e das aplicacións da túa Conta de Google</translation>
 <translation id="834313815369870491">Sitios que non quero que se traduzan nunca</translation>
 <translation id="8348430946834215779">Usa HTTPS sempre que sexa posible e recibe advertencias antes de cargar sitios que non admitan este protocolo</translation>
 <translation id="8354977102499939946">Fai buscas rapidamente coa voz. Para editar este atallo, vai a Configuración.</translation>

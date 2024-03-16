@@ -450,7 +450,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">የፋይሎች መተግበሪያውን በመጠቀም በመሣሪያው ውስጥ ያለ የማህደረመረጃ ምትኬ ያስቀምጡ።</translation>
 <translation id="1341701348342335220">በጥሩ ሁኔታ ተከናውኗል!</translation>
-<translation id="1341871421050612057">ከ<ph name="USERNAME" /> ጋር ማስመር አልተቻለም</translation>
 <translation id="1342886103232377846">የተጠለፈ የይለፍ ቃላትን ወደ Google የይለፍ ቃል አስተዳዳሪ ይሂዱ</translation>
 <translation id="1343865611738742294">የዩኤስቢ መተግበሪያዎች እንዲደርስባቸው ለ Linux ፈቃድ ይስጡት። ከተወገደ በኋላ Linux የዩኤስቢ መሣሪያውን አያስታውሰውም።</translation>
 <translation id="1343920184519992513">ካቆሙበት ይቀጥሉ እና አንድ የተወሰነ የገጾች ስብስብን ክፈት</translation>
@@ -5865,7 +5864,6 @@
 <translation id="5499476581866658341">አሁን የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ መመልከት ይችላሉ</translation>
 <translation id="549957179819296104">አዲስ አዶ</translation>
 <translation id="5500168250243071806">በመለያ ሲገቡ <ph name="BEGIN_LINK_SEARCH" />የፍለጋ ታሪክ<ph name="END_LINK_SEARCH" /> እና <ph name="BEGIN_LINK_GOOGLE" />ሌሎች የእንቅስቃሴ ዓይነቶች<ph name="END_LINK_GOOGLE" /> በGoogle መለያዎ ውስጥ ሊቀመጡ ይችላሉ። በማንኛውም ጊዜ ሊሰርዟቸው ይችላሉ።</translation>
-<translation id="5500516288673745630">የ<ph name="DEVICE_TYPE" /> የይለፍ ቃል ያቀናብሩ</translation>
 <translation id="5500709606820808700">ዛሬ የደህንነት ፍተሻ ተካሂዷል።</translation>
 <translation id="5501322521654567960">በግራ የተሰለፈ የጎን ፓነል</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> መቀበል አልተሳካም}one{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> መቀበል አልተሳካም}other{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> መቀበል አልተሳካም}}</translation>
@@ -7829,7 +7827,6 @@
 <translation id="7049293980323620022">ፋይል ይቀመጥ?</translation>
 <translation id="7049524156282610342">የአሰሳ ውሂብ <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">ልክ ያልኾነ የመገናኛ ነጥብ ውቅረት</translation>
-<translation id="7052237160939977163">አፈጻጸም መከታተያ ውሂብ ይላኩ</translation>
 <translation id="7053983685419859001">አግድ</translation>
 <translation id="7055152154916055070">አቅጣጫ ማዞር ታግዷል፦</translation>
 <translation id="7055451306017383754">አንድ መተግበሪያ ይህን አቃፊ እየተጠቀመበት ስለሆነ አለማጋራት አልተቻለም። ትይዩዎች ዴስክቶፕ በሚዘጋበት ቀጣዩ ጊዜ ላይ አቃፊው እንዳይጋራ ይደረጋል።</translation>

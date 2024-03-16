@@ -5576,15 +5576,6 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 <translation id="5420245232720940848">Desativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, limitando os recursos dos dispositivos</translation>
 <translation id="5420673997623782432">Bloquear o acesso à geolocalização do sistema para todos os clientes</translation>
 <translation id="5420774177427557782">Controla se as VMs que usam essa configuração podem ser instaladas e executadas (<ph name="INSTALL_ALLOWED" />); executadas, mas não instaladas (<ph name="RUN_ALLOWED" />); ou não podem ser executadas (<ph name="BLOCKED" />). Para instalar uma VM, a chave installer_image_x86_64 também precisa ser definida. A remoção de uma configuração é definida implicitamente como <ph name="BLOCKED" /> para evitar que as VMs sejam executadas sem uma política.</translation>
-<translation id="5421670928124029853">Esses recursos no DevTools do <ph name="PRODUCT_NAME" /> usam modelos de IA generativa para fornecer mais informações de depuração. Para usá-los, o <ph name="PRODUCT_NAME" /> precisa coletar dados, como mensagens de erro, stack traces, snippets de código e solicitações de rede, e enviá-los a um servidor de propriedade do Google, que executa um modelo de IA generativa. O corpo da resposta ou a autenticação e os cabeçalhos de cookie em solicitações de rede não são incluídos nos dados enviados ao servidor.
-
-0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. 0 é o valor padrão.
-
-2 = desativa o recurso.
-
-Os recursos da IA generativa do DevTools incluem:
-
-- Console Insights: explica as mensagens do console e oferece sugestões para corrigir erros.</translation>
 <translation id="5422643441807528365">Chave de licença de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nome de restrição do Android WebView:</translation>
 <translation id="5424147596523390018">Permitir todos os modos de cor</translation>

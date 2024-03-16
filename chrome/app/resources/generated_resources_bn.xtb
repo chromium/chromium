@@ -452,7 +452,6 @@
 <translation id="13392265090583506">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="1340527397989195812">ফাইল অ্যাপ ব্যবহার করে ডিভাইস থেকে মিডিয়া ব্যাক আপ নিন৷</translation>
 <translation id="1341701348342335220">দারুণ হয়েছে!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> ব্যবহার করে সিঙ্ক করা যাচ্ছে না</translation>
 <translation id="1342886103232377846">চুরি হয়ে যাওয়া পাসওয়ার্ড চেক করতে, Google Password Manager-এ যান</translation>
 <translation id="1343865611738742294">ইউএসবি ডিভাইস অ্যাক্সেস করার জন্য Linux অ্যাপকে অনুমতি দিন। ইউএসবি ডিভাইস সরিয়ে নিলে, Linux সেটির তথ্য সেভ করে রাখবে না।</translation>
 <translation id="1343920184519992513">আপনি যেখানে ছেড়ে গিয়েছিলেন সেখান থেকেই আবার শুরু করুন এবং পৃষ্ঠার একটি নির্দিষ্ট সেট খুলুন</translation>
@@ -5876,7 +5875,6 @@
 <translation id="5499476581866658341">আপনি এখন আপনার ফোনের সাম্প্রতিক ফটো এবং মিডিয়া দেখতে পারবেন</translation>
 <translation id="549957179819296104">নতুন আইকন</translation>
 <translation id="5500168250243071806">আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK_SEARCH" />সার্চ ইতিহাস<ph name="END_LINK_SEARCH" /> এবং <ph name="BEGIN_LINK_GOOGLE" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK_GOOGLE" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় সেগুলি মুছে দিতে পারেন।</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" />-এর পাসওয়ার্ড সেট করুন</translation>
 <translation id="5500709606820808700">আজ নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে</translation>
 <translation id="5501322521654567960">বাঁদিক বরাবর অ্যালাইন করা সাইড প্যানেল</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}one{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}other{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> পাওয়া যায়নি}}</translation>
@@ -7842,7 +7840,6 @@
 <translation id="7049293980323620022">ফাইল রাখবেন?</translation>
 <translation id="7049524156282610342">ব্রাউজিং ডেটা <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">হটস্পট কনফিগারেশনটি সঠিক নয়</translation>
-<translation id="7052237160939977163">কার্য-সম্পাদনা ট্রেস ডেটা পাঠান</translation>
 <translation id="7053983685419859001">ব্লক করুন</translation>
 <translation id="7055152154916055070">রিডাইরেক্ট ব্লক করা হয়েছে:</translation>
 <translation id="7055451306017383754">ফোল্ডারটির শেয়ারিং বন্ধ করা যাচ্ছে না, কারণ এখন একটি অ্যাপ্লিকেশন এটি ব্যবহার করছে। পরবর্তী সময়ে Parallels Desktop বন্ধ করা হলে, তবেই ফোল্ডারটির শেয়ারিং বন্ধ করা যাবে।</translation>

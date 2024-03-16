@@ -95,6 +95,7 @@
 <translation id="1175364870820465910">&amp;Одштампај...</translation>
 <translation id="1175393348063009671">Слика (мат)</translation>
 <translation id="1175875016430184367">Троструко спајање на десној страни</translation>
+<translation id="1176123604678140687">Месец истека</translation>
 <translation id="1177548198167638471">Не питај поново</translation>
 <translation id="1177863135347784049">Прилагођено</translation>
 <translation id="1178581264944972037">Паузирај</translation>
@@ -485,6 +486,7 @@
 <translation id="1874224422119691492">Можете да промените да ли ћете користити закључавање екрана за попуњавање лозинки у: <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Фиока за слике</translation>
 <translation id="1875512691959384712">Google упитници</translation>
+<translation id="1876116428946561107">Немате ниједну сачувану адресу. Додајте адресу да бисте је користили у Chrome-у.</translation>
 <translation id="1876399092304384674">Према датуму</translation>
 <translation id="187918866476621466">Отвори почетне странице</translation>
 <translation id="1880901968112404879">Да бисте следећи пут платили брже, сачувајте картицу, шифровани безбедносни кôд и адресу за обрачун на Google налогу</translation>
@@ -615,6 +617,7 @@
 <translation id="2126374524350484896">Апликација за прављење PDF докумената:</translation>
 <translation id="2130448033692577677">Није могуће применити шаблоне које сте навели јер DnsOverHttpsMode смернице нису подешене.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">Приказују се насумичним редоследом. У сваком тренутку можете да промените подразумевану вредност.</translation>
 <translation id="2137891579555018930">Чека се дозвола…</translation>
 <translation id="213826338245044447">Мобилни обележивачи</translation>
 <translation id="2141000681034340397">Измените унос</translation>
@@ -643,6 +646,7 @@
 <translation id="2170417331417184438">Картица је сачувана само на уређају</translation>
 <translation id="2172089022819052306">Поправка и одржавање возила</translation>
 <translation id="2175630235841878061">Фајлови већи од 100 MB нису доступни за преузимање</translation>
+<translation id="2176198174348007293">Користите камере (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Сачувајте адресу на налогу</translation>
 <translation id="2178665390943006934">Дугме Ажурирај Chrome, активирајте га да бисте ажурирали Chrome из подешавања Chrome-а</translation>
 <translation id="2181821976797666341">Смернице</translation>
@@ -1304,6 +1308,7 @@
 <translation id="3507869775212388416">Правни послови</translation>
 <translation id="3507936815618196901">Прави 3D мапу окружења и прати положај камере</translation>
 <translation id="3512163584740124171">Ове смернице су занемарене јер друге смернице из исте групе смерница имају предност.</translation>
+<translation id="351522771072578657">Тренутно сте у менију</translation>
 <translation id="3515972145999192222">Организација је блокирала <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> зато што крши смернице. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Обрада више предмета</translation>
 <translation id="3525130752944427905">10×14 in</translation>
@@ -1364,6 +1369,7 @@
 <translation id="3620239073311576716">Униформе и радна одећа</translation>
 <translation id="36224234498066874">Обриши податке прегледања...</translation>
 <translation id="362276910939193118">Прикажи комплетну историју</translation>
+<translation id="3623041590998910684">Да бисте користили камеру, одобрите Chrome-у приступ у: <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Љубавни филмови</translation>
 <translation id="3624292976554877583">Налепнице (мат)</translation>
 <translation id="3628905806504633297">{0,plural, =1{Смернице администратора не препоручују пренос овог фајла на <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују пренос ових фајлова на <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују пренос ових фајлова на <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују пренос ових фајлова на <ph name="DESTINATION_NAME" />}}</translation>
@@ -2050,6 +2056,7 @@
 <translation id="4958444002117714549">Прошири листу</translation>
 <translation id="4960068118612257147">Можете да унесете промене у Chrome подешавањима приватности са огласима</translation>
 <translation id="4960203958361543136">Одаберите претраживач</translation>
+<translation id="4961708452830821006">Да бисте користили микрофон, одобрите Chrome-у приступ у: <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Пејзажна архитектура</translation>
 <translation id="4967366744630699583">Измени адресу</translation>
 <translation id="4968522289500246572">Ова апликација је дизајнирана за мобилне уређаје и можда неће променити величину на правилан начин. Можда ће имати проблеме или се рестартовати.</translation>
@@ -2967,6 +2974,7 @@
 <translation id="677257480647123231">Безбедност деце на интернету</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">Google менаџер лозинки тражи приступ MacOS Keychain-у</translation>
+<translation id="6782656837469339439">Година истека</translation>
 <translation id="6785990323398321538">Можете да промените претраживач у сваком тренутку у подешавањима Chrome-а.</translation>
 <translation id="6786145470008421571">Коверта 15×23 cm</translation>
 <translation id="67862343314499040">Љубичаста</translation>
@@ -3117,6 +3125,7 @@
 <translation id="7064443976734085921">Компактни аутомобили</translation>
 <translation id="7064851114919012435">Контакт информације</translation>
 <translation id="7067633076996245366">Соул и ритам и блуз</translation>
+<translation id="7070144569727915108">системска подешавања</translation>
 <translation id="70705239631109039">Веза није потпуно безбедна</translation>
 <translation id="7075452647191940183">Захтев је превелик</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3144,6 +3153,7 @@
 <translation id="7111012039238467737">(Важећи)</translation>
 <translation id="7111507312244504964">Преглед и процена вредности имовине</translation>
 <translation id="7112327784801341716">Не видите актуелне податке? Обратите се банци да бисте их ажурирали.</translation>
+<translation id="7116334367957017155">Немате ниједну сачувану адресу. Додајте адресу да бисте је користили у свим Google производима.</translation>
 <translation id="7118618213916969306">Потражите URL у привременој меморији, <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">ТВ драме</translation>
 <translation id="7119371694555167493">Време за копирање је истекло</translation>
@@ -3589,6 +3599,7 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте сазнали више о Chrome функцијама</translation>
 <translation id="7949135979217012031">Програми за заштиту од вируса и малвера</translation>
 <translation id="7950027195171824198">Управљајте подешавањима колачића у подешавањима Chrome-а</translation>
+<translation id="7950440490184876634">Користите микрофоне (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-битни)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Пречица не може да буде празна</translation>
@@ -3748,6 +3759,7 @@
 <translation id="8249296373107784235">Откажи</translation>
 <translation id="824968735947741546">Преводи се <ph name="SOURCE" /> (аутоматски откривено) на <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Ова адреса је тренутно сачувана на овом уређају. Да бисте је користили у свим Google производима, сачувајте је на Google налогу, <ph name="ACCOUNT" />.</translation>
+<translation id="8251493595871259082">Унесите адресу уз мање куцања</translation>
 <translation id="8252991034201168845">Дугме Управљајте подешавањима приступачности, притисните Enter да бисте персонализовали алатке за приступачност у подешавањима Chrome ОС-а</translation>
 <translation id="8253091569723639551">Адреса за обрачун је обавезна</translation>
 <translation id="8257387598443225809">Ова апликација је дизајнирана за мобилне уређаје</translation>
@@ -4136,6 +4148,7 @@
 <translation id="9014705027639070815">Сајтови које посећујете могу да затраже од Chrome-а информације које им помажу да измере учинак огласа. Chrome омогућава сајтовима да прикупљају ограничене типове података, на пример, да ли сте обавили куповину после посете сајту.</translation>
 <translation id="9018120810758822233">Унесите безбедносни кôд за: <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">имејл</translation>
+<translation id="90196294733273307">Приказан је дијалог са подацима о кредитној картици</translation>
 <translation id="9020542370529661692">Ова страница је преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте делили ову картицу дељењем линка, прављењем QR кода, пребацивањем и на друге начине</translation>

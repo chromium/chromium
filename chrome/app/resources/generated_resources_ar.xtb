@@ -453,7 +453,6 @@
 <translation id="13392265090583506">إمكانية الوصول</translation>
 <translation id="1340527397989195812">‏احتفظ بنسخة احتياطية للوسائط من الجهاز باستخدام تطبيق Files.</translation>
 <translation id="1341701348342335220">رائع</translation>
-<translation id="1341871421050612057">يتعذّر تفعيل المزامنة باستخدام <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">‏للتحقّق من كلمات المرور المحتمَل تعرّضها للاختراق، يُرجى الانتقال إلى "مدير كلمات المرور في Google".</translation>
 <translation id="1343865611738742294">‏يمنح Linux أذونات التطبيق للوصول إلى أجهزة USB. لن يتذكر Linux جهاز USB بعد إزالته.</translation>
 <translation id="1343920184519992513">المتابعة من حيث توقفت وفتح مجموعة مُحدَّدة من الصفحات</translation>
@@ -5861,7 +5860,6 @@
 <translation id="5499476581866658341">يمكنك الآن الاطّلاع على أحدث الصور والوسائط المتوفّرة على هاتفك</translation>
 <translation id="549957179819296104">رمز جديد</translation>
 <translation id="5500168250243071806">‏قد يتم حفظ <ph name="BEGIN_LINK_SEARCH" />سجلّ البحث<ph name="END_LINK_SEARCH" /> و<ph name="BEGIN_LINK_GOOGLE" />بيانات الأنشطة الأخرى<ph name="END_LINK_GOOGLE" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.</translation>
-<translation id="5500516288673745630">ضبط كلمة مرور<ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">تم تفعيل ميزة "التحقّق من الأمان" اليوم.</translation>
 <translation id="5501322521654567960">اللوحة الجانبية التي تمت محاذاتها إلى اليسار</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}zero{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}two{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}few{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}many{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}other{تعذّر استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}}</translation>
@@ -7831,7 +7829,6 @@
 <translation id="7049293980323620022">هل تريد الاحتفاظ بالملف؟</translation>
 <translation id="7049524156282610342">بيانات التصفُّح: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">إعدادات نقطة الاتصال غير صالحة.</translation>
-<translation id="7052237160939977163">إرسال بيانات تتبع مستوى الأداء</translation>
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7055152154916055070">تم حظر إعادة توجيه:</translation>
 <translation id="7055451306017383754">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا المجلد. سيتم إلغاء مشاركة المجلد عند إيقاف تشغيل نظام Parallels Desktop.</translation>

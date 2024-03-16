@@ -117,6 +117,7 @@
 <translation id="4195557071150719219">ดูแท็บล่าสุดใน Chromium</translation>
 <translation id="4200712796753248893">ใช้การดำเนินการใน Chromium บน iOS</translation>
 <translation id="420541179527342563">หากต้องการปิดใช้โหมดปิดล็อกใน Chromium ให้ปิดโหมดนี้ใน iPad ของคุณ</translation>
+<translation id="427331839909790668">ลิงก์ Chromium และบริการอื่นๆ ของ Google หากต้องการปรับเปลี่ยนประสบการณ์การใช้งานในแบบของคุณโดยใช้ข้อมูลจากบริการที่ลิงก์ดังกล่าว</translation>
 <translation id="4408912345039114853">เรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4432744876818348753">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="4445228361214254027">องค์กรได้ปิดความสามารถในการใช้และบันทึกข้อมูล Chromium ในบัญชี Google ของคุณ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
@@ -218,6 +219,7 @@
 <translation id="6852799557929001644">เข้าถึงรหัสผ่าน Chromium และอีกมากมายจากแอปอื่นๆ ในอุปกรณ์นี้</translation>
 <translation id="6887138405044152640">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chromium ในอุปกรณ์นั้น</translation>
 <translation id="6911341667534646387">ใช้ข้อมูล Chromium ในบัญชี Google ต่อไป</translation>
+<translation id="7002548535535009764">รวม Chromium ไว้ใน<ph name="FEATURE_NAME_1" />รวมถึง<ph name="FEATURE_NAME_2" /> เพื่อรับประสบการณ์การใช้งานที่ปรับเปลี่ยนให้เหมาะกับคุณที่สุด</translation>
 <translation id="7006920032187763988">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในแอปอื่นๆ บน iPad ได้</translation>
 <translation id="7018284295775193585">อัปเดต Chromium ไม่ได้</translation>
 <translation id="7045244423563602563">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>

@@ -5383,15 +5383,6 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 <translation id="5420245232720940848">Désactive la tunnellisation PCIe pour les périphériques Thunderbolt/USB4, ce qui limitera leur capacité</translation>
 <translation id="5420673997623782432">Bloquer l'accès à la géolocalisation du système pour tous les clients</translation>
 <translation id="5420774177427557782">Détermine si les VM utilisant cette configuration peuvent être installées et exécutées (<ph name="INSTALL_ALLOWED" />), exécutées mais pas installées (<ph name="RUN_ALLOWED" />) ou ne peuvent pas être exécutées (<ph name="BLOCKED" />). Notez que pour installer une VM, la clé installer_image_x86_64 doit également être définie. Si vous supprimez complètement une configuration, elle est implicitement définie sur <ph name="BLOCKED" />, ce qui empêche les VM de s'exécuter sans règle.</translation>
-<translation id="5421670928124029853">Ces fonctionnalités des outils de développement de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour fournir des informations de débogage supplémentaires. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données telles que les messages d'erreur, les traces de la pile, les extraits de code et les requêtes réseau, puis les envoyer à un serveur de Google qui exécute un modèle d'IA générative. Le corps de la réponse ou les en-têtes d'authentification et de cookies dans les requêtes réseau ne sont pas inclus dans les données envoyées au serveur.
-
-0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. "0" est la valeur par défaut.
-
-2 = Désactiver la fonctionnalité.
-
-Les fonctionnalités d'IA générative des outils de développement incluent les suivantes :
-
-- Console Insights : décrit les messages de la console et propose des suggestions pour corriger les erreurs dans la console.</translation>
 <translation id="5422643441807528365">Clé de licence <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="5423197884968724595">Nom de la restriction Android WebView :</translation>
 <translation id="5424147596523390018">Autoriser tous les modes de couleur</translation>

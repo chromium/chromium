@@ -204,6 +204,7 @@
 <translation id="1355301061807280185">Emplois</translation>
 <translation id="1357195169723583938">Qui a utilisé cet appareil récemment, et quand</translation>
 <translation id="1358187717814494928">Créer une feuille de calcul</translation>
+<translation id="1358223345833465883">Votre moteur de recherche dans Chromium</translation>
 <translation id="1359836962251219822">Cuisine et salle à manger</translation>
 <translation id="1360955481084547712">Ouvrez une nouvelle fenêtre en mode de navigation privée pour naviguer de manière privée</translation>
 <translation id="1363819917331173092">Ne pas proposer de traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
@@ -277,6 +278,7 @@
     <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1492194039220927094">Notifications poussées des politiques :</translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
+<translation id="1500286806237135498">Caméras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="1501859676467574491">Afficher les cartes enregistrées dans votre compte Google</translation>
 <translation id="1504042622576912555">Cannelure</translation>
 <translation id="1507202001669085618">&lt;p&gt;Cette erreur s'affiche si vous utilisez un portail Wi-Fi auquel vous devez vous connecter avant de pouvoir aller en ligne.&lt;/p&gt;
@@ -917,6 +919,7 @@
 <translation id="2728127805433021124">Le certificat du serveur a été signé avec un algorithme de signature faible.</translation>
 <translation id="272937284275742856">Validation sécurisée des détails de votre mode de paiement…</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />d'exécuter Connectivity Diagnostics<ph name="END_LINK" /></translation>
+<translation id="2731220418440848219">En savoir plus sur votre moteur de recherche dans Chromium</translation>
 <translation id="2731382536835015353">44 po x 68 po</translation>
 <translation id="2734319753272419592">Laissez Google utiliser vos paniers pour rechercher des rabais personnalisés. Lorsqu'ils sont offerts, les rabais s'affichent automatiquement sur vos paniers.</translation>
 <translation id="273785062888389088">Chauffage, ventilation et climatisation (CVC), et contrôle de l'ambiance</translation>
@@ -2223,6 +2226,7 @@
 <translation id="5316812925700871227">Faire pivoter dans le sens antihoraire</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319366980180850702">Littérature classique</translation>
+<translation id="531996107159483074"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente les fonctionnalités de Chromium<ph name="END_BOLD" />, telles que la recherche à partir de la barre d'adresse et des images sur des pages Web. Une fonctionnalité peut ne pas être proposée si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="5323043727018853753">Contenu intégré autorisé</translation>
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> sur <ph name="NUM_MATCHES" /></translation>
 <translation id="5329858041417644019">Votre navigateur n'est pas géré</translation>
@@ -2617,6 +2621,7 @@
 <translation id="6106989379647458772">Il se peut que la page Web à l'adresse <ph name="PAGE" /> soit temporairement inaccessible ou qu'elle ait été déplacée de façon permanente à une autre adresse Web.</translation>
 <translation id="6107012941649240045">Délivré à</translation>
 <translation id="6107924765192360631">Commencez simplement par quelques mots ou une première ébauche pour obtenir des suggestions de rédaction.</translation>
+<translation id="6108702513636120202">Votre moteur de recherche dans Chromium</translation>
 <translation id="6108849843016142864">Reptiles et amphibiens</translation>
 <translation id="610911394827799129">D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Voir le texte et les images copiés dans le presse-papiers</translation>
@@ -3790,6 +3795,7 @@ Détails supplémentaires :
 <translation id="8316555157357957253">Utiliser maintenant</translation>
 <translation id="8319269383395457801">Ventes résidentielles</translation>
 <translation id="831997045666694187">Soirée</translation>
+<translation id="8321448084834652864">Vous pouvez modifier votre moteur de recherche à tout moment dans les paramètres de Chromium.</translation>
 <translation id="8321476692217554900">Notifications</translation>
 <translation id="8322402665880479974">Lits et têtes de lit</translation>
 <translation id="832567874344484841">Aliments pour le déjeuner</translation>
@@ -4145,6 +4151,7 @@ Détails supplémentaires :
 <translation id="9042827002460091668">Vérifiez votre connexion Internet et réessayez</translation>
 <translation id="9044359186343685026">Utiliser Touch ID</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
+<translation id="9046864189129893978">Microphones (<ph name="MICS_COUNT" />)</translation>
 <translation id="9048035366624198823">Ces actions nécessitent que la politique <ph name="POLICY_NAME" /> soit définie sur <ph name="POLICY_VALUE" /> : <ph name="ACTION_LIST" />.</translation>
 <translation id="9048662076076074925">24 po x 36 po</translation>
 <translation id="9049981332609050619">Vous avez essayé d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat non valide.</translation>
@@ -4258,6 +4265,7 @@ Détails supplémentaires :
 <translation id="961663415146723894">Reliure en bas</translation>
 <translation id="961930410699694996">Emplacement autorisé cette fois</translation>
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses qui prétendent être autre chose que ce qu'elles sont ou qui collectent des données pouvant être utilisées pour effectuer le suivi de votre activité. <ph name="BEGIN_LINK" />Afficher quand même<ph name="END_LINK" /></translation>
+<translation id="963734905955638680">Conformément à la loi de votre région, Chromium vous demande de choisir votre moteur de recherche par défaut. Ces moteurs de recherche sont populaires dans votre région et sont affichés dans un ordre aléatoire.</translation>
 <translation id="963837307749850257">Tous les utilisateurs</translation>
 <translation id="964050462028070434">Gérer les mots de passe et les clés d'accès…</translation>
 <translation id="969892804517981540">Version officielle</translation>

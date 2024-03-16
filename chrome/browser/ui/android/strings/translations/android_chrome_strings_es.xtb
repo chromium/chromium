@@ -97,6 +97,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="1437543266176261764">Se está ejecutando en <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiza los productos que sigues en Marcadores</translation>
 <translation id="1450753235335490080">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1462833127986525564">Vincula Chrome y otros servicios de Google si quieres que personalicen tu experiencia usando los datos de todos ellos</translation>
 <translation id="1466383950273130737">Elegir idioma de Chrome</translation>
 <translation id="1477626028522505441">No se ha podido descargar <ph name="FILE_NAME" /> debido a problemas con el servidor.</translation>
 <translation id="148482509007564431">Flujo para guardar marcador</translation>
@@ -858,7 +859,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="557018954714092179">Crear carpeta nueva</translation>
 <translation id="5578795271662203820">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK1" />ajustes<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Vincula Chrome y otros servicios de Google si quieres que compartan datos entre ellos</translation>
 <translation id="5590372121997663538">Recordar este ordenador</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5599455543593328020">Modo Incógnito</translation>
@@ -1297,7 +1297,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Añadir cuenta</translation>
 <translation id="766587987807204883">Los artículos se muestran aquí y los puedes leer aunque no tengas conexión a Internet</translation>
-<translation id="7670101447063278728">Contraseñas guardadas en <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Prueba los siguientes consejos: deja suficiente espacio en el dispositivo y vuelve a exportar las contraseñas.</translation>
 <translation id="7686086654630106285">Más información sobre anuncios sugeridos por sitios</translation>
 <translation id="768618399695552958">Algunas de las páginas que visitas están precargadas. Es posible que las páginas se precarguen a través de los servidores de Google cuando se enlacen desde un sitio de Google.</translation>
@@ -1441,7 +1440,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8310344678080805313">Pestañas estándar</translation>
 <translation id="831192587911042850">Añade el sitio web actual a la lista de sitios que sigues.</translation>
 <translation id="8333340769932050274">Puedes bloquear los temas que no quieras que se compartan con los sitios. Chrome también elimina automáticamente los temas con una antigüedad superior a 4 semanas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Incluye el historial de Chrome si quieres añadirlo a Actividad en la Web y en Aplicaciones de tu cuenta de Google</translation>
 <translation id="834313815369870491">No traducir sitios nunca</translation>
 <translation id="8348430946834215779">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no sean compatibles con este protocolo</translation>
 <translation id="8354977102499939946">Busca rápidamente con la voz. Para editar esta combinación de teclas, ve a Configuración.</translation>

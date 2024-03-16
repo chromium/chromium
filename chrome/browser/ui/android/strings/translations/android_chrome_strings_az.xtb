@@ -856,7 +856,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="557018954714092179">Yeni qovluq yaradın</translation>
 <translation id="5578795271662203820">Bu şəkil üçün <ph name="SEARCH_ENGINE" /> axtarın</translation>
 <translation id="5581519193887989363">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK1" />ayarlarda<ph name="END_LINK1" /> edə bilərsiniz.</translation>
-<translation id="558429399979870715">Bir-biri ilə data paylaşmalarını istəyirsinizsə, Chrome və digər Google xidmətlərini əlaqələndirin</translation>
 <translation id="5590372121997663538">Bu kompüteri yadda saxlayın</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
 <translation id="5599455543593328020">Anonim rejim</translation>
@@ -1292,7 +1291,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7665369617277396874">Hesab əlavə edin</translation>
 <translation id="766587987807204883">Məqalələr burada görünəcək. Onları oflayn olduqda belə oxuya bilərsiniz</translation>
-<translation id="7670101447063278728">Parollar <ph name="USERNAME" /> hesabında yadda saxlandı.</translation>
 <translation id="7682724950699840886">Aşağıdakıları sınayın: cihazda kifayət qədər yer olduğuna əmin olun və eksport etməyə cəhd edin.</translation>
 <translation id="7686086654630106285">Saytın təklif etdiyi reklamlar haqqında ətraflı</translation>
 <translation id="768618399695552958">Ziyarət etdiyiniz bəzi səhifələr əvvəlcədən yüklənib. Səhifələr Google saytından əlaqələndirildikdə Google serverləri vasitəsilə əvvəlcədən yüklənə bilər.</translation>
@@ -1436,7 +1434,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="8310344678080805313">Standart panellər</translation>
 <translation id="831192587911042850">Cari veb saytı izlədiyiniz veb saytların siyahısına əlavə edir.</translation>
 <translation id="8333340769932050274">Saytlarla paylaşılmasını istəmədiyiniz mövzuları bloklaya bilərsiniz. Chrome həmçinin 4 həftədən köhnə mövzularınızı avtomatik silir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Google Hesabındakı Veb və Tətbiq fəaliyyətinə əlavə etmək istəyirsinizsə, Chrome tarixçəsini daxil edin</translation>
 <translation id="834313815369870491">Saytları heç vaxt tərcümə etməyin</translation>
 <translation id="8348430946834215779">Mümkün olduqda HTTPS istifadə edin və onu dəstəkləməyən saytları yükləməzdən əvvəl xəbərdarlıq alın</translation>
 <translation id="8354977102499939946">Səsinizlə sürətlə axtarın. Bu qısayolu redaktə etmək üçün Ayarlara keçin.</translation>

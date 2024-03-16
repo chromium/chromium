@@ -856,7 +856,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="557018954714092179">Krijo dosje të re</translation>
 <translation id="5578795271662203820">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
 <translation id="5581519193887989363">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK1" />cilësimet<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Lidh Chrome dhe shërbimet e tjera të Google nëse dëshiron që të ndajnë të dhëna me njëra-tjetrën</translation>
 <translation id="5590372121997663538">Kujtoje këtë kompjuter</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5599455543593328020">Modaliteti "i fshehtë"</translation>
@@ -1294,7 +1293,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665369617277396874">Shto një llogari</translation>
 <translation id="766587987807204883">Këtu shfaqen artikujt, të cilët mund t'i lexosh edhe kur je offline</translation>
-<translation id="7670101447063278728">Fjalëkalimet e ruajtura te <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Provoni këshillat e mëposhtme: sigurohu që ka hapësirë ​​të mjaftueshme në pajisjen tënde dhe provo të eksportosh përsëri.</translation>
 <translation id="7686086654630106285">Më shumë rreth reklamave të sugjeruara nga sajtet</translation>
 <translation id="768618399695552958">Disa nga faqet që ti viziton janë të ngarkuara paraprakisht. Faqet mund të ngarkohen paraprakisht nëpërmjet serverëve të Google kur lidhen nga një sajt i Google.</translation>
@@ -1438,7 +1436,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="8310344678080805313">Skedat standarde</translation>
 <translation id="831192587911042850">Shton sajtin aktual të uebit në listën e sajteve të uebit që po ndjek ti.</translation>
 <translation id="8333340769932050274">Mund t'i bllokosh temat që nuk dëshiron të ndahen me sajtet. Chrome gjithashtu i fshin automatikisht temat më të vjetra se 4 javë. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Përfshi historikun e Chrome nëse dëshiron ta shtosh atë tek "Aktiviteti i uebit dhe i aplikacioneve" në "Llogarinë tënde të Google"</translation>
 <translation id="834313815369870491">Mos i përkthe asnjëherë sajtet</translation>
 <translation id="8348430946834215779">Përdor HTTPS kur është e mundur dhe merr paralajmërime para ngarkimit të sajteve që nuk e mbështesin atë</translation>
 <translation id="8354977102499939946">Kërko me shpejtësi me zërin tënd. Për ta modifikuar këtë shkurtore, shko te "Cilësimet".</translation>

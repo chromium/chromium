@@ -179,6 +179,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="197288927597451399">Manter</translation>
 <translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançadas</translation>
+<translation id="1974251558382034745">Histórico da Web</translation>
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1986685561493779662">O nome já existe</translation>
 <translation id="1995884366040846621">Para continuar, o fornecedor <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai partilhar o seu nome, endereço de email e imagem do perfil com este site. Consulte a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> deste site.</translation>
@@ -401,6 +402,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="3098745985164956033">Algumas imagens são enviadas para a Google para melhorar as descrições.</translation>
 <translation id="3114507951000454849">Leia as notícias de hoje <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Anúncios</translation>
+<translation id="3146775326699342508">Inicie sessão para aceder aos marcadores e muito mais dos seus outros dispositivos</translation>
 <translation id="314939179385989105">Página inicial do Chrome</translation>
 <translation id="3158667104057012316">Ordenação manual</translation>
 <translation id="3166827708714933426">Atalhos de separadores e de janelas</translation>
@@ -856,7 +858,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="557018954714092179">Criar nova pasta</translation>
 <translation id="5578795271662203820">Pesquisar a imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK1" />definições<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Associe o Chrome e outros serviços Google se quiser que partilhem dados entre si</translation>
 <translation id="5590372121997663538">Memorizar este computador</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anónima</translation>
@@ -1294,7 +1295,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Adicionar conta</translation>
 <translation id="766587987807204883">Os artigos são apresentados aqui e pode lê-los mesmo quando está offline.</translation>
-<translation id="7670101447063278728">Palavras-passe guardadas em <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Experimente as seguintes sugestões: certifique-se de que existe espaço suficiente no dispositivo e tente exportar novamente.</translation>
 <translation id="7686086654630106285">Mais informações acerca de anúncios sugeridos por sites</translation>
 <translation id="768618399695552958">Algumas das páginas que visita são pré-carregadas. As páginas podem ser pré-carregadas através dos servidores da Google quando contêm links de um site Google.</translation>
@@ -1438,7 +1438,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8310344678080805313">Separadores padrão</translation>
 <translation id="831192587911042850">Adiciona o Website atual à lista de Websites que está a seguir</translation>
 <translation id="8333340769932050274">Pode bloquear os tópicos que não quer partilhar com os sites. O Chrome também elimina automaticamente os tópicos com mais de 4 semanas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Inclua o Histórico do Chrome se quiser adicioná-lo à Atividade da Web e de apps na sua Conta Google</translation>
 <translation id="834313815369870491">Nunca traduzir sites</translation>
 <translation id="8348430946834215779">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não suportam este protocolo</translation>
 <translation id="8354977102499939946">Pesquise com a sua voz rapidamente. Para editar este atalho, aceda às Definições.</translation>

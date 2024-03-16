@@ -452,7 +452,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Sikkerhedskopiér medier fra enheden ved hjælp af appen Filer.</translation>
 <translation id="1341701348342335220">Sådan!</translation>
-<translation id="1341871421050612057">Synkroniseringen med <ph name="USERNAME" /> mislykkedes</translation>
 <translation id="1342886103232377846">Gå til Google Adgangskodeadministrator for at tjekke, om der er kompromitterede adgangskoder</translation>
 <translation id="1343865611738742294">Giv Linux-apps adgang til USB-enheder. Linux husker ikke en USB-enhed, når den er fjernet.</translation>
 <translation id="1343920184519992513">Fortsæt, hvor du slap, og åbn en bestemt række sider</translation>
@@ -5875,7 +5874,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5499476581866658341">Du kan nu se din telefons seneste billeder og medier</translation>
 <translation id="549957179819296104">Nyt ikon</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Søgehistorik<ph name="END_LINK_SEARCH" /> og <ph name="BEGIN_LINK_GOOGLE" />andre former for aktivitet<ph name="END_LINK_GOOGLE" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
-<translation id="5500516288673745630">Angiv adgangskode til <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Sikkerhedstjekket blev udført i dag</translation>
 <translation id="5501322521654567960">Venstrejusteret sidepanel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> kunne ikke hentes fra <ph name="DEVICE_NAME" />}one{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> kunne ikke hentes fra <ph name="DEVICE_NAME" />}}</translation>
@@ -7839,7 +7837,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7049293980323620022">Vil du beholde filen?</translation>
 <translation id="7049524156282610342">Browserdata: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ugyldig konfiguration af hotspot</translation>
-<translation id="7052237160939977163">Send data om ydeevne</translation>
 <translation id="7053983685419859001">Bloker</translation>
 <translation id="7055152154916055070">Omdirigeringen blev blokeret:</translation>
 <translation id="7055451306017383754">Delingen kunne ikke ophæves, fordi mappen stadig anvendes af en app. Delingen af mappen ophæves, næste gang Parallels Desktop lukkes.</translation>

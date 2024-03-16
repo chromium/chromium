@@ -449,7 +449,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Fayllar ilovasi yordamida qurilmadagi mediani zaxiralang.</translation>
 <translation id="1341701348342335220">Barakalla!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> hisobiga sinxronlanmadi</translation>
 <translation id="1342886103232377846">Oshkor etilgan parollarni tekshirish uchun Google Parollar Menejerini oching</translation>
 <translation id="1343865611738742294">Linux ilovalar uchun USB qurilmalarga ruxsat berish. USB qurilma olinganidan keyin Linux uni eslab qolmaydi.</translation>
 <translation id="1343920184519992513">Qolgan joyingizdan davom eting va maxsus sahifalar jamlanmasini oching</translation>
@@ -5861,7 +5860,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5499476581866658341">Endi siz telefoningizdagi oxirgi rasm va multimedia fayllarini koʻra olasiz</translation>
 <translation id="549957179819296104">Yangi belgi</translation>
 <translation id="5500168250243071806">Google hisobingizga kirganingizda <ph name="BEGIN_LINK_SEARCH" />Qidiruv tarixi<ph name="END_LINK_SEARCH" /> va <ph name="BEGIN_LINK_GOOGLE" />boshqa shakldagi harakatlaringiz<ph name="END_LINK_GOOGLE" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> uchun parol oʻrnating</translation>
 <translation id="5500709606820808700">Xavfsizlik tekshiruvi bugun bajarilgan</translation>
 <translation id="5501322521654567960">Chapga tekislangan yon panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilinmadi}other{<ph name="DEVICE_NAME" /> qurilmasidan <ph name="ATTACHMENTS" /> qabul qilinmadi}}</translation>
@@ -7822,7 +7820,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7049293980323620022">Fayl saqlansinmi?</translation>
 <translation id="7049524156282610342">Brauzer tarixi <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Hotspot konfiguratsiyasi xato</translation>
-<translation id="7052237160939977163">Unumdorlik kuzatuvi ma’lumotlarini jo‘natish</translation>
 <translation id="7053983685419859001">Taqiqlash</translation>
 <translation id="7055152154916055070">Yo‘naltirish bloklandi:</translation>
 <translation id="7055451306017383754">Bu jild bandligi sababli umumiy ruxsat bekor qilinmadi. Jildga umumiy ruxsat Parallels Desktop qayta ishga tushganda bekor qilinadi.</translation>

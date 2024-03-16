@@ -453,7 +453,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="13392265090583506">I-A11y</translation>
 <translation id="1340527397989195812">Yenza imidiya isipele kusuka kudivayisi usebenzisa uhlelo lokusebenza lamafayela.</translation>
 <translation id="1341701348342335220">Kwenziwe kahle!</translation>
-<translation id="1341871421050612057">Ayikwazi ukuvumelanisa nge-<ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Ukuze uhlole amaphasiwedi onakalisiwe, iya Kumphathi Wephasiwedi Ye-Google</translation>
 <translation id="1343865611738742294">Nikeza izinhlelo zokusebenza ze-Linux imvume yokufinyelela kumadivayisi e-USB. I-Linux ngeke ize ikhumbule idivayisi ye-USB ngemuva kokuthi isuswe.</translation>
 <translation id="1343920184519992513">Qhubeka lapho ugcine khona futhi uvule isethi ethile yamakhasi</translation>
@@ -5891,7 +5890,6 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="5499476581866658341">Manje usungabuka izithombe zakho zakamuva nemidiya</translation>
 <translation id="549957179819296104">Isithonjana esisha</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Umlando wosesho<ph name="END_LINK_SEARCH" /> kanye <ph name="BEGIN_LINK_GOOGLE" />nezinye izindlela zomsebenzi<ph name="END_LINK_GOOGLE" /> kungase kulondolozwe ku-akhawunti yakho ye-Google lapho ungene ngemvume. Ungakusula noma kunini</translation>
-<translation id="5500516288673745630">Setha iphasiwedi ye-<ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Ukuhlola kokuphepha kusebenze namuhla</translation>
 <translation id="5501322521654567960">Ukuqondanisa ngakwesobunxele iphaneli eseceleni</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Yehlulekile ukuthola i-<ph name="ATTACHMENTS" /> ku-<ph name="DEVICE_NAME" />}one{Yehlulekile ukuthola i-<ph name="ATTACHMENTS" /> ku-<ph name="DEVICE_NAME" />}other{Yehlulekile ukuthola i-<ph name="ATTACHMENTS" /> ku-<ph name="DEVICE_NAME" />}}</translation>
@@ -7864,7 +7862,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7049293980323620022">Gcina ifayela?</translation>
 <translation id="7049524156282610342">Idatha yokubhrawuza <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ukulungiselelwa kwe-hotspot okungavumelekile</translation>
-<translation id="7052237160939977163">Thumela idatha yokulandelela ukusebenza</translation>
 <translation id="7053983685419859001">Vimba</translation>
 <translation id="7055152154916055070">Ukuqondiswa kabusha kuvinjiwe:</translation>
 <translation id="7055451306017383754">Akukwazanga ukuyeka ukwabelana ngoba uhlelo lokusebenza lusebenzisa le folda. Ifolda izoyeka ukwabiwa uma i-Parallels Desktop ilandela ukucishwa.</translation>

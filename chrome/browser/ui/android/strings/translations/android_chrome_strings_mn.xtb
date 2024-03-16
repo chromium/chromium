@@ -856,7 +856,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="557018954714092179">Шинэ фолдер үүсгэх</translation>
 <translation id="5578795271662203820">Энэ зургийг <ph name="SEARCH_ENGINE" />-ээс хайна уу</translation>
 <translation id="5581519193887989363">Та синк хийх зүйлээ хүссэн үедээ <ph name="BEGIN_LINK1" />тохиргооноос<ph name="END_LINK1" /> сонгож болно.</translation>
-<translation id="558429399979870715">Хэрэв та Chrome болон Google-н бусад үйлчилгээг хоорондоо өгөгдөл хуваалцахыг хүсвэл тэдгээрийг холбоно уу</translation>
 <translation id="5590372121997663538">Энэ компьютерыг сануулах</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5599455543593328020">нууцлалын горим</translation>
@@ -1294,7 +1293,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7665369617277396874">Бүртгэл нэмэх</translation>
 <translation id="766587987807204883">Офлайн үедээ ч унших боломжтой нийтлэлүүд энд харагддаг</translation>
-<translation id="7670101447063278728"><ph name="USERNAME" />-д хадгалсан нууц үгнүүд.</translation>
 <translation id="7682724950699840886">Дараах зөвлөмжийг хэрэгжүүлж үзнэ үү: төхөөрөмж дээрээ хангалттай сул зай гаргаад дахин экспорт хийж үзнэ үү.</translation>
 <translation id="7686086654630106285">Сайтаас санал болгож буй зарын талаарх илүү дэлгэрэнгүй</translation>
 <translation id="768618399695552958">Таны зочилдог зарим хуудсыг урьдчилан ачаална. Google-н сайтаас холбосон үед хуудаснуудыг Google-н серверүүдээр урьдчилан ачаалж магадгүй.</translation>
@@ -1438,7 +1436,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8310344678080805313">Стандарт цонхууд</translation>
 <translation id="831192587911042850">Одоогийн веб сайтыг таны дагаж буй веб сайтуудын жагсаалтад нэмнэ.</translation>
 <translation id="8333340769932050274">Та сайтуудтай хуваалцахыг хүсэхгүй байгаа сэдвээ блоклож болно. Chrome нь мөн жагсаалтад 4 долоо хоногоос дээш удсан сэдвүүдийг автоматаар устгадаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Хэрэв та Chrome-н түүхийг Google Бүртгэлийнхээ Веб, аппын үйл ажиллагаанд нэмэхийг хүсвэл үүнийг багтаана уу</translation>
 <translation id="834313815369870491">Сайтуудыг хэзээ ч бүү орчуул</translation>
 <translation id="8348430946834215779">Боломжтой үед HTTPS-г ашиглаж, түүнийг дэмждэггүй сайтуудыг ачаалахаас өмнө сануулга аваарай</translation>
 <translation id="8354977102499939946">Дуу хоолойгоороо шуурхай хайгаарай. Энэ товчлолыг засахын тулд Тохиргоо руу очно уу.</translation>

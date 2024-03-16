@@ -856,7 +856,6 @@
 <translation id="557018954714092179">יצירת תיקייה חדשה</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK1" />ההגדרות<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">‏אפשר לקשר את Chrome לשירותי Google אחרים כדי לאפשר להם לשתף נתונים זה עם זה.</translation>
 <translation id="5590372121997663538">אני רוצה להשאיר את החיבור פעיל במחשב הזה</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5599455543593328020">מצב אנונימי</translation>
@@ -1294,7 +1293,6 @@
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665369617277396874">חשבון חדש</translation>
 <translation id="766587987807204883">כאן יוצגו מאמרים, ואפשר לקרוא אותם גם במצב אונליין</translation>
-<translation id="7670101447063278728">הסיסמאות נשמרו בחשבון <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">אפשר לנסות את הטיפים הבאים: צריך לוודא שיש מספיק מקום פנוי במכשיר ואז לנסות לייצא שוב.</translation>
 <translation id="7686086654630106285">מידע נוסף על הצעות למודעות באתרים</translation>
 <translation id="768618399695552958">‏חלק מהדפים שאליהם עוברים נטענים מראש. דפים יכולים להיטען מראש באמצעות שרתי Google כשיש אליהם קישורים מאתר שנוצר באמצעות Google Sites.</translation>
@@ -1438,7 +1436,6 @@
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
 <translation id="8333340769932050274">‏ניתן לחסום נושאים כדי שלא ישותפו עם אתרים. בנוסף, Chrome מוחק באופן אוטומטי נושאים שנוספו לפני יותר מ-4 שבועות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">‏אפשר לכלול את ההיסטוריה ב-Chrome אם ברצונך להוסיף אותה ל'פעילות באינטרנט ובאפליקציות' בחשבון Google שלך.</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="8354977102499939946">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>

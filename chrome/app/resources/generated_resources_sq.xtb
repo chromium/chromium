@@ -449,7 +449,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="13392265090583506">Qasshmëria</translation>
 <translation id="1340527397989195812">Rezervo median nga pajisja duke përdorur aplikacionin "Skedarët".</translation>
 <translation id="1341701348342335220">Shumë mirë!</translation>
-<translation id="1341871421050612057">Nuk mund të sinkronizohet me <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Për të kontrolluar për fjalëkalimet e komprometuara, shko te "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="1343865611738742294">Jepu autorizim aplikacioneve të Linux që të kenë qasje në pajisjet USB. Linux nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
 <translation id="1343920184519992513">Vazhdo aty ku e ke lënë dhe hap një grup specifik faqesh</translation>
@@ -5856,7 +5855,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5499476581866658341">Tani mund të shikosh mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="549957179819296104">Ikonë e re</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Historiku i kërkimeve<ph name="END_LINK_SEARCH" /> dhe <ph name="BEGIN_LINK_GOOGLE" />forma të tjera aktiviteti<ph name="END_LINK_GOOGLE" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
-<translation id="5500516288673745630">Cakto fjalëkalimin për <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Kontrolli i sigurisë u ekzekutua sot</translation>
 <translation id="5501322521654567960">Paneli anësor i bashkërenditur majtas</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Marrja nga <ph name="DEVICE_NAME" /> dështoi: <ph name="ATTACHMENTS" />}other{Marrja nga <ph name="DEVICE_NAME" /> dështoi: <ph name="ATTACHMENTS" />}}</translation>
@@ -7817,7 +7815,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7049293980323620022">Të mbahet skedari?</translation>
 <translation id="7049524156282610342">Të dhënat e shfletimit: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Konfigurimi i zonës së qasje për internet është i pavlefshëm</translation>
-<translation id="7052237160939977163">Dërgo të dhënat e gjurmimit të performancës</translation>
 <translation id="7053983685419859001">Bllokoje</translation>
 <translation id="7055152154916055070">Ridrejtimi u bllokua:</translation>
 <translation id="7055451306017383754">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Parallels Desktop të ndalojë punën më pas.</translation>

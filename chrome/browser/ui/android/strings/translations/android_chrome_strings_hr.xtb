@@ -97,6 +97,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1437543266176261764">Izvodi se u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Praćene proizvode organizirajte u mapi Oznake</translation>
 <translation id="1450753235335490080">Nije moguće dijeliti <ph name="CONTENT_TYPE" /></translation>
+<translation id="1462833127986525564">Povežite Chrome i druge Googleove usluge ako želite da personaliziraju vaš doživljaj međusobno dijeleći podatke</translation>
 <translation id="1466383950273130737">Odaberite jezik Chromea</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog poteškoća s poslužiteljem.</translation>
 <translation id="148482509007564431">Tijek spremanja oznake</translation>
@@ -858,7 +859,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="557018954714092179">Izradi novu mapu</translation>
 <translation id="5578795271662203820">Potraži sliku na usluzi <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Uvijek možete odabrati u <ph name="BEGIN_LINK1" />postavkama<ph name="END_LINK1" /> što će se sinkronizirati.</translation>
-<translation id="558429399979870715">Povežite Chrome i ostale Googleove usluge ako želite da međusobno dijele podatke</translation>
 <translation id="5590372121997663538">Zapamti ovo računalo</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5599455543593328020">Anonimni način</translation>
@@ -1297,7 +1297,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7665369617277396874">Dodaj račun</translation>
 <translation id="766587987807204883">Ovdje će se prikazivati članci koje možete čitati i offline</translation>
-<translation id="7670101447063278728">Zaporke su spremljene na račun <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Pokušajte napraviti sljedeće: provjerite ima li dovoljno prostora na uređaju i pokušajte ponoviti izvoz.</translation>
 <translation id="7686086654630106285">Više o oglasima koje predlaže web-lokacija</translation>
 <translation id="768618399695552958">Neke od stranica koje posjećujete predučitane su. Stranice na koje vodi veza s Googleove web-lokacije mogu se predučitati putem Googleovih poslužitelja.</translation>
@@ -1441,7 +1440,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8310344678080805313">Standardne kartice</translation>
 <translation id="831192587911042850">Dodaje trenutačnu web-lokaciju na popis web-lokacija koje pratite.</translation>
 <translation id="8333340769932050274">Možete blokirati teme za koje ne želite da se dijele s web-lokacijama. Chrome također automatski briše vaše teme starije od četiri tjedna. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Uključite povijest na Chromeu ako je želite dodati u aktivnost na webu i u aplikacijama na svojem Google računu</translation>
 <translation id="834313815369870491">Nikad ne prevodi web-lokacije</translation>
 <translation id="8348430946834215779">Upotrebljavajte HTTPS kad god je to moguće i primajte upozorenja prije učitavanja web-lokacija koje ga ne podržavaju</translation>
 <translation id="8354977102499939946">Brzo pretražujte glasovno. Da biste uredili prečac, otvorite Postavke.</translation>

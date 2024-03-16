@@ -97,6 +97,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="1437543266176261764">Koristi <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizujte proizvode koje pratite u Obeleživačima</translation>
 <translation id="1450753235335490080">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1462833127986525564">Povežite Chrome i druge Google usluge ako želite da personalizuju vaš doživljaj tako što međusobno dele podatke</translation>
 <translation id="1466383950273130737">Izaberite jezik za Chrome</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema na serveru.</translation>
 <translation id="148482509007564431">Tok čuvanja obeleživača</translation>
@@ -447,6 +448,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="3407392651057365886">Više stranica se predučitava. Stranice mogu da budu predučitane preko Google servera kada to traže drugi sajtovi.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
 <translation id="3421726884497337397">Izaberite kada ćete blokirati kolačiće trećih strana</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Pre # s}one{Pre # s}few{Pre # s}other{Pre # s}}</translation>
 <translation id="3428747202529429621">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni</translation>
 <translation id="3430670036890315772">Ako isključite zaključavanje profila, uklonićete sačuvane informacije</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
@@ -845,6 +847,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5515439363601853141">Otključajte da biste pregledali lozinku</translation>
 <translation id="5517095782334947753">Imate obeleživače, lozinke i ostala podešavanja iz <ph name="FROM_ACCOUNT" /> naloga.</translation>
 <translation id="5524843473235508879">Preusmeravanje je blokirano.</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Pre # min}one{Pre # min}few{Pre # min}other{Pre # min}}</translation>
 <translation id="5548606607480005320">Bezbednosna provera</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je ona objavljena onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>
 <translation id="5555525474779371165">Odaberite zaštitu pomoću Bezbednog pregledanja</translation>
@@ -856,7 +859,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="557018954714092179">Napravi novi folder</translation>
 <translation id="5578795271662203820">Potraži ovu sliku na <ph name="SEARCH_ENGINE" />-u</translation>
 <translation id="5581519193887989363">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK1" />podešavanjima<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Povežite Chrome i druge Google usluge ako želite da međusobno dele podatke</translation>
 <translation id="5590372121997663538">Zapamti ovaj računar</translation>
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="5599455543593328020">Režim bez arhiviranja</translation>
@@ -971,6 +973,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="6138832295072039549">Promenite podešavanja sajta ovde</translation>
 <translation id="6140709049082532940">Napredna zaštita:</translation>
 <translation id="6140912465461743537">Zemlja/regija</translation>
+<translation id="6142183503755612900">Uvek možete da promenite podrazumevanu vrednost u podešavanjima</translation>
 <translation id="6150320133806434356">Obeleživač je sačuvan</translation>
 <translation id="6150706324143004339">Da biste koristili i čuvali Chrome podatke na Google nalogu, ažurirajte Chrome</translation>
 <translation id="6154478581116148741">Uključite zaključavanje ekrana u Podešavanjima da biste izvezli lozinke sa uređaja</translation>
@@ -1294,7 +1297,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7665369617277396874">Dodajte nalog</translation>
 <translation id="766587987807204883">Ovde se pojavljuju članci, koje možete da čitate čak i kada ste oflajn</translation>
-<translation id="7670101447063278728">Lozinke su sačuvane na nalogu <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Isprobajte sledeće savete: proverite da li na uređaju ima dovoljno prostora, pa probajte da ponovo izvezete lozinke.</translation>
 <translation id="7686086654630106285">Više o oglasima koje predlažu sajtovi</translation>
 <translation id="768618399695552958">Neke od stranice koje posećujete su predučitane. Stranice mogu da budu predučitane preko Google servera kada do njih vodi link sa Google sajta.</translation>
@@ -1438,7 +1440,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8310344678080805313">Standardne kartice</translation>
 <translation id="831192587911042850">Dodaje aktuelni veb-sajt na listu veb-sajtova koje pratite.</translation>
 <translation id="8333340769932050274">Možete da blokirate teme koje ne želite da delite sa sajtovima. Chrome takođe automatski briše teme starije od 4 nedelje. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Uvrstite istoriju Chrome-a ako želite da je dodate u aktivnosti na vebu i u aplikacijama na Google nalogu</translation>
 <translation id="834313815369870491">Nikad ne prevodi sajtove</translation>
 <translation id="8348430946834215779">Koristite HTTPS kad god je to moguće i dobijajte upozorenje pre učitavanja sajtova koji ga ne podržavaju</translation>
 <translation id="8354977102499939946">Brzo pretražujte pomoću glasa. Da biste izmenili ovu prečicu, idite u Podešavanja.</translation>

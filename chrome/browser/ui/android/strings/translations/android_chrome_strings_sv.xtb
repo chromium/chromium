@@ -857,7 +857,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="557018954714092179">Skapa ny mapp</translation>
 <translation id="5578795271662203820">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="5581519193887989363">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK1" />inställningarna<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Länka Chrome och andra tjänster från Google om du vill att de ska dela data med varandra</translation>
 <translation id="5590372121997663538">Kom ihåg den här datorn</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
@@ -1295,7 +1294,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665369617277396874">Lägg till konto</translation>
 <translation id="766587987807204883">Artiklar som du kan läsa även när du är offline visas här</translation>
-<translation id="7670101447063278728">Lösenorden har sparats i <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Testa följande: kontrollera att det finns tillräckligt mycket utrymme på enheten, gör om exporten.</translation>
 <translation id="7686086654630106285">Mer om föreslagna annonser på webbplatser</translation>
 <translation id="768618399695552958">Vissa av sidorna du besöker läser in i förväg. Sidor kan läsas in i förväg via Googles servrar när de länkas från en Google-webbplats.</translation>
@@ -1439,7 +1437,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8310344678080805313">Standardflikar</translation>
 <translation id="831192587911042850">Lägger till den aktuella webbplatsen i listan med webbplatser du följer.</translation>
 <translation id="8333340769932050274">Du kan blockera ämnen som du inte vill dela med webbplatser. I Chrome raderas även ämnen som är äldre än fyra veckor automatiskt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Inkludera Chrome-historik om du vill lägga till den i webb- och appaktiviteten i Google-kontot</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8348430946834215779">Använd HTTPS när det är möjligt och få en varning innan webbplatser som saknar stöd för HTTPS läses in</translation>
 <translation id="8354977102499939946">Gör en röstsökning snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>

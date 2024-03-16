@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">คลิปบอร์ด</translation>
 <translation id="2597457036804169544">ไม่ใช้ธีมมืดกับเว็บไซต์ต่างๆ</translation>
 <translation id="2606760465469169465">การยืนยันอัตโนมัติ</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">อนุญาต JavaScript สำหรับเว็บไซต์ใดเว็บไซต์หนึ่ง</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2677748264148917807">ออก</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">เนื้อหาที่ได้รับความคุ้มครอง</translation>
 <translation id="662080504995468778">อยู่ต่อ</translation>
 <translation id="6653342741369270081">กดปุ่มย้อนกลับเพื่อออกจากโหมดเต็มหน้าจอ</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{ซ่อน "ดำเนินการต่อโดยใช้แท็บนี้"}other{ซ่อน "ดำเนินการต่อโดยใช้แท็บเหล่านี้"}}</translation>
 <translation id="6689172468748959065">รูปโปรไฟล์</translation>
 <translation id="6697925417670533197">การดาวน์โหลดที่ทำงานอยู่</translation>
 <translation id="6722828510648505498">บล็อกข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตน</translation>

@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3492882532495507361">Un bureau <ph name="OFFICE_STYLE" /> avec tons <ph name="OFFICE_COLOR" /></translation>
+<translation id="3493187369049186498">C'est votre Chromebook qui mesure les données. Ces mesures peuvent différer des données du fournisseur.</translation>
 <translation id="3502426834823382181">afficher toutes les applications</translation>
 <translation id="3510890413042482857">Envoyer des <ph name="BEGIN_LINK1" />données de suivi des performances<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">Le nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
 <translation id="3877066159641251281">Écouter la traduction</translation>
 <translation id="3885327323343477505">Changer l'écran de veille</translation>
+<translation id="3889914174935857450">Date de réinitialisation</translation>
 <translation id="391412459402535266">Impossible de tester l'appareil. Passer en mode ordinateur portable pour tester.</translation>
 <translation id="3916998944874125962">faire une capture d'écran</translation>
 <translation id="3923184630988645767">Utilisation de données</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Aucun numériseur n'a été trouvé</translation>
 <translation id="6232017090690406397">Pile</translation>
+<translation id="6234024205316847054">Afficher la structure</translation>
 <translation id="6235460611964961764">Réinitialiser manuellement l'utilisation de données</translation>
 <translation id="6243280677745499710">Fond d'écran actuel</translation>
 <translation id="6250316632541035980">œufs et bacon</translation>
@@ -1005,6 +1008,7 @@
 <translation id="7107255225945990211">Choisir parmi les illustrations exclusives à <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Entrée</translation>
 <translation id="7119389851461848805">marche</translation>
+<translation id="7129287270910503851">Votre utilisation de données sera réinitialisée chaque mois ce jour-là</translation>
 <translation id="7130438335435247835">Nom du point d'accès (NPA)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
 <translation id="7135814714616751706">Recherchez des raccourcis</translation>
@@ -1243,6 +1247,7 @@
 <translation id="8508640263392900755">Détails de l'APN</translation>
 <translation id="8522687886059337719">Vous avez maintenant accès aux nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /> et à l'<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />écran de veille<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Propulsé par l'IA de Google</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>

@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Ugrađena tastatura</translation>
 <translation id="6417265370957905582">Google pomoćnik</translation>
 <translation id="6423239382391657905">Otvorena VPN</translation>
+<translation id="6438073885402882007">Ovo omogućava sistemskim uslugama sa dozvolom da koriste lokaciju. Lokacija može da koristi izvore kao što su WiFi, mobilne mreže i senzori da bi se lakše odredila lokacija uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otvorite podešavanja naloga</translation>
 <translation id="6462978824459367242">Dugme Dodaj naziv pristupne tačke je sada omogućeno</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6647510110698214773">Algoritam šifrovanja</translation>
 <translation id="6650062777702288430">Prekidač za kana/alfanumeričke znakove</translation>
+<translation id="6657240842932274095">Želite da dozvolite sistemskim uslugama da koriste lokaciju?</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6659594942844771486">Kartica</translation>
 <translation id="66621959568103627">koralnoroze</translation>

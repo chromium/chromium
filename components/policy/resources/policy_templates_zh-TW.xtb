@@ -5281,13 +5281,6 @@
 <translation id="5420245232720940848">為 Thunderbolt/USB4 周邊裝置停用 PCIe 通道，限制裝置功能</translation>
 <translation id="5420673997623782432">禁止所有用戶端存取系統地理位置</translation>
 <translation id="5420774177427557782">控制使用這項設定的 VM 是可安裝並執行 (<ph name="INSTALL_ALLOWED" />)、可執行但不允許安裝 (<ph name="RUN_ALLOWED" />)，或不允許執行 (<ph name="BLOCKED" />)。請注意，如要安裝 VM，必須同時設定 installer_image_x86_64 金鑰。如果完全移除設定，系統會以隱含方式將這個 VM 設為「<ph name="BLOCKED" />」，進而導致 VM 無法在沒有政策的情況下執行。</translation>
-<translation id="5421670928124029853"><ph name="PRODUCT_NAME" /> 開發人員工具中的多項功能採用生成式 AI 模型，可提供額外偵錯資訊。如要使用這些功能，<ph name="PRODUCT_NAME" /> 必須收集錯誤訊息、堆疊追蹤、程式碼片段和網路要求等資料，並傳送至負責執行生成式 AI 模型的 Google 伺服器。傳送至伺服器的資料不包含網路要求中的回應內文、驗證和 Cookie 標頭。
-
-0 = 為使用者啟用這項功能，並將相關資料傳送給 Google，協助訓練或改善 AI 模型。0 為預設值。2 = 停用這項功能。
-
-開發人員工具生成式 AI 功能包括：
-
-- Console Insights：說明控制台訊息，並提供控制台錯誤的修正方式建議。</translation>
 <translation id="5422643441807528365"><ph name="PLUGIN_VM_NAME" /> 授權金鑰</translation>
 <translation id="5423197884968724595">Android WebView 限制名稱：</translation>
 <translation id="5424147596523390018">允許所有色彩模式</translation>

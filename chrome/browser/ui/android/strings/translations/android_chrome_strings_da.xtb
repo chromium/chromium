@@ -856,7 +856,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="557018954714092179">Opret ny mappe</translation>
 <translation id="5578795271662203820">Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK1" />indstillingerne<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Tilknyt Chrome og andre Google-tjenester, hvis du vil have, at de skal kunne dele data med hinanden</translation>
 <translation id="5590372121997663538">Husk denne computer</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5599455543593328020">Inkognitotilstand</translation>
@@ -1294,7 +1293,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7665369617277396874">Tilføj konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan læse, selv når du er offline</translation>
-<translation id="7670101447063278728">Adgangskoderne er gemt på <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Prøv følgende tips: Sørg for, at der er nok ledig plads på din enhed, og prøv at eksportere igen.</translation>
 <translation id="7686086654630106285">Mere om foreslåede annoncer fra websites</translation>
 <translation id="768618399695552958">Nogle af de sider, du besøger, forudindlæses. Nogle sider forudindlæses muligvis via Google-servere, når de er linket fra et Google-website.</translation>
@@ -1438,7 +1436,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8310344678080805313">Standardfaner</translation>
 <translation id="831192587911042850">Føjer det aktuelle website til den liste over websites, du følger.</translation>
 <translation id="8333340769932050274">Du kan blokere de emner, som du ikke vil have skal deles med websites. Chrome sletter også automatisk dine emner, som er mere end 4 uger gamle. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Medtag Chrome-historik, hvis du vil føje den til Web- og appaktivitet på din Google-konto</translation>
 <translation id="834313815369870491">Oversæt aldrig websites</translation>
 <translation id="8348430946834215779">Brug HTTPS, når det er muligt, og bliv advaret før indlæsning af websites, der ikke understøtter HTTPS</translation>
 <translation id="8354977102499939946">Søg hurtigt med din stemme. Gå til Indstillinger for at redigere denne genvej.</translation>

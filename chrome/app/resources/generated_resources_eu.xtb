@@ -449,7 +449,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="13392265090583506">Erabilerraztasun-ezarpenak</translation>
 <translation id="1340527397989195812">Egin gailuko baliabideen babeskopiak Fitxategiak aplikazioa erabilita.</translation>
 <translation id="1341701348342335220">Bikain!</translation>
-<translation id="1341871421050612057">Ezin da sinkronizatu <ph name="USERNAME" /> kontuarekin</translation>
 <translation id="1342886103232377846">Pasahitzen bat arriskuan dagoen egiaztatzeko, joan Google-ren Pasahitz-kudeatzailea zerbitzura</translation>
 <translation id="1343865611738742294">Eman USB bidezko gailua erabiltzeko baimena Linux-eko aplikazioei. USB bidezko gailu bat kendu ondoren, Linux-ek ez du gogoratuko.</translation>
 <translation id="1343920184519992513">Jarraitu utzi zenuen tokitik eta ireki orri sorta jakin bat</translation>
@@ -5858,7 +5857,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5499476581866658341">Orain, telefonoko azken argazki eta multimedia-edukiak ikus ditzakezu</translation>
 <translation id="549957179819296104">Ikono berria</translation>
 <translation id="5500168250243071806">Litekeena da <ph name="BEGIN_LINK_SEARCH" />bilaketa-historia<ph name="END_LINK_SEARCH" /> eta <ph name="BEGIN_LINK_GOOGLE" />beste jarduera batzuk<ph name="END_LINK_GOOGLE" /> Google-ko kontuan gordetzea saioa hasita daukazun bitartean. Nahi duzunean ezaba ditzakezu.</translation>
-<translation id="5500516288673745630">Ezarri <ph name="DEVICE_TYPE" /> gailuko pasahitza</translation>
 <translation id="5500709606820808700">Gaur egin da segurtasun-egiaztapena</translation>
 <translation id="5501322521654567960">Ezkerrean lerrokatutako alboko panela</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Ezin izan da jaso <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> gailutik}other{Ezin izan dira jaso <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> gailutik}}</translation>
@@ -7816,7 +7814,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7049293980323620022">Fitxategia gorde nahi duzu?</translation>
 <translation id="7049524156282610342">Arakatze-datuak (<ph name="DISPLAY_NAME" />)</translation>
 <translation id="7050037487872780845">Wifi-gunearen konfigurazioak ez du balio</translation>
-<translation id="7052237160939977163">Bidali errendimenduaren jarraipena egiteko datuak</translation>
 <translation id="7053983685419859001">Blokeatu</translation>
 <translation id="7055152154916055070">Birbideratze hau blokeatu da:</translation>
 <translation id="7055451306017383754">Ezin izan da kendu partekatzeko aukera, aplikazio bat ari delako karpeta hau erabiltzen. Parallels Desktop ixten den hurrengoan utziko zaio karpeta partekatzeari.</translation>

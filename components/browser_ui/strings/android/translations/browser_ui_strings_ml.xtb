@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
 <translation id="2597457036804169544">സൈറ്റുകൾക്ക് ഡാർക്ക് തീം ബാധകമാക്കരുത്</translation>
 <translation id="2606760465469169465">സ്വയമേവ പരിശോധിച്ചുറപ്പിക്കൽ</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">ഒരു നിർദ്ദിഷ്‌ട സൈറ്റിന് വേണ്ടി JavaScript അനുവദിക്കുക.</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
 <translation id="2677748264148917807">ഉപേക്ഷിക്കുക</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">പരിരക്ഷിത ഉള്ളടക്കം</translation>
 <translation id="662080504995468778">തുടരുക</translation>
 <translation id="6653342741369270081">പൂർണ്ണ സ്ക്രീനിൽനിന്ന് പുറത്തുകടക്കാൻ മടങ്ങുക ബട്ടണിൽ അമർത്തുക.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{'ഈ ടാബിൽ തുടരുക' മറയ്ക്കുക}other{'ഈ ടാബുകളിൽ തുടരുക' മറയ്ക്കുക}}</translation>
 <translation id="6689172468748959065">പ്രൊഫൈൽ ഫോട്ടോകൾ</translation>
 <translation id="6697925417670533197">സജീവ ഡൗൺലോഡുകൾ</translation>
 <translation id="6722828510648505498">ഐഡന്റിറ്റി സേവനങ്ങളിൽ നിന്നുള്ള സൈൻ ഇൻ നിർദ്ദേശങ്ങൾ ബ്ലോക്ക് ചെയ്യുക.</translation>

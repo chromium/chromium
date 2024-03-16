@@ -452,7 +452,6 @@
 <translation id="13392265090583506">دسترس‌پذیری</translation>
 <translation id="1340527397989195812">‏با استفاده از برنامه Files از رسانه‌ دستگاه پشتیبان بگیرید.</translation>
 <translation id="1341701348342335220">بسیار عالی!</translation>
-<translation id="1341871421050612057">نمی‌توان با <ph name="USERNAME" /> همگام‌سازی کرد</translation>
 <translation id="1342886103232377846">‏برای بررسی گذرواژه‌های لورفته، به «مدیر گذرواژه Google» بروید</translation>
 <translation id="1343865611738742294">‏ارائه مجوز به برنامه‌های Linux برای دسترسی به دستگاه‌های USB. Linux بعد از برداشتن دستگاه USB، آن را به خاطر نمی‌سپارد.</translation>
 <translation id="1343920184519992513">کار را از همان‌جایی که رها کردید ادامه دهید و مجموعه صفحات خاصی را باز کنید</translation>
@@ -5871,7 +5870,6 @@
 <translation id="5499476581866658341">اکنون می‌توانید عکس‌ها و رسانه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="549957179819296104">نماد جدید</translation>
 <translation id="5500168250243071806">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK_SEARCH" />سابقه جستجو<ph name="END_LINK_SEARCH" /> و <ph name="BEGIN_LINK_GOOGLE" />انواع دیگر فعالیت<ph name="END_LINK_GOOGLE" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
-<translation id="5500516288673745630">تنظیم گذرواژه <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">بررسی ایمنی امروز اجرا شد</translation>
 <translation id="5501322521654567960">پانل کناری ترازشده به‌چپ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}one{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}other{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}}</translation>
@@ -7835,7 +7833,6 @@
 <translation id="7049293980323620022">فایل حفظ شود؟</translation>
 <translation id="7049524156282610342">داده‌های مرور <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">پیکربندی نقطه اتصال نامعتبر است</translation>
-<translation id="7052237160939977163">ارسال داده‌های ردیابی عملکرد</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7055152154916055070">هدایت کردن مسدود شده است:</translation>
 <translation id="7055451306017383754">‏لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعد که Parallels Desktop خاموش شود، پوشه لغو هم‌رسانی می‌شود.</translation>

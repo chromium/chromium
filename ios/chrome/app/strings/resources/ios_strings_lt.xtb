@@ -7,7 +7,6 @@
 <translation id="1025514696883950875">{COUNT,plural, =1{Išsaugoti slaptažodį paskyroje}one{Išsaugoti slaptažodžius paskyroje}few{Išsaugoti slaptažodžius paskyroje}many{Išsaugoti slaptažodžius paskyroje}other{Išsaugoti slaptažodžius paskyroje}}</translation>
 <translation id="1035980983510608210">Uždarius visus skirtukus, taip pat bus uždaryti prisegti skirtukai.</translation>
 <translation id="1036017604683756002">UPS</translation>
-<translation id="1036348656032585052">Išjungti</translation>
 <translation id="1043592663436934089">Būsite atjungti, o naršymo duomenys bus ištrinti</translation>
 <translation id="1044891598689252897">Svetainės veiks įprastai</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -1065,6 +1064,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6383719166112032471">Atidaryti vietą…</translation>
 <translation id="6387994324662817823">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkytuvėje tik šiame įrenginyje.</translation>
 <translation id="6389470377220713856">Vardas kortel.</translation>
+<translation id="6404422529625928907">Atidaryti „Google“ diske</translation>
 <translation id="6406506848690869874">Sinchronizavimas</translation>
 <translation id="6410390304316730527">Saugaus naršymo funkcija apsaugo jus nuo atakų vykdytojų, kurie gali bandyti apgaule priversti jus atlikti pavojingus veiksmus, pvz., įdiegti kenkėjišką programinę įrangą ar atskleisti asmens informaciją (pvz., slaptažodžius, telefono numerius ar kredito kortelių duomenis). Jei ją išjungsite, būkite atsargūs naršydami nežinomose ar nepatikimose svetainėse.</translation>
 <translation id="6410883413783534063">Atidarykite skirtukus ir vienu metu lankykitės skirtinguose puslapiuose</translation>
@@ -1447,6 +1447,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8299417921174340354">Jei norite naudoti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="8299613349954694191">Norėdami naršyti žiniatinklį privačiai, atidarykite inkognito skirtuką.</translation>
 <translation id="8311853334103696030">Slėpti parinktį „Stebėti kainą“</translation>
+<translation id="8313645224014086262">Išsaugoti failą</translation>
 <translation id="8319076807703933069">Nauja paieška</translation>
 <translation id="8328777765163860529">Uždaryti viską</translation>
 <translation id="8343993175958086504">Sukurkite atsarginę turinio kopiją ir naudokite ją bet kuriame įrenginyje.</translation>
@@ -1560,6 +1561,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8868471676553493380">{count,plural, =1{{count} skirtukas}one{{count} skirtukas}few{{count} skirtukai}many{{count} skirtuko}other{{count} skirtukų}}</translation>
 <translation id="8870413625673593573">Neseniai uždaryta</translation>
 <translation id="8876882697946675716">Įrenginių sinchronizavimas</translation>
+<translation id="8879604564928138696">Dukart palieskite, kad išbandytumėte</translation>
 <translation id="8879984884633913185">Slėpti parinktį „Išvalyti naršymo duomenis“</translation>
 <translation id="8881801611828450202">Ieškoti „<ph name="SEARCH_ENGINE" />“ šio vaizdo</translation>
 <translation id="8898822736010347272">„Google“ siunčiami kai kurių lankomų puslapių URL, ribota sistemos informacija ir kai kurių puslapių turinys, kad būtų galima aptikti naujas grėsmes ir apsaugoti visus žiniatinklio naudotojus.</translation>

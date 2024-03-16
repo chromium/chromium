@@ -452,7 +452,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Mag-back up ng media mula sa device gamit ang Files app.</translation>
 <translation id="1341701348342335220">Mahusay!</translation>
-<translation id="1341871421050612057">Hindi makapag-sync sa <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Para tingnan kung may mga nakompromisong password, pumunta sa Google Password Manager</translation>
 <translation id="1343865611738742294">Bugyan ang mga Linux app ng pahintulot na i-access ang mga USB device. Hindi maaalala ng Linux ang isang USB device pagkatapos itong alisin.</translation>
 <translation id="1343920184519992513">Magpatuloy kung saan ka huminto at magbukas ng partikular na hanay ng mga page</translation>
@@ -5875,7 +5874,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5499476581866658341">Puwede mo nang tingnan ang mga pinakabagong larawan at media ng iyong telepono</translation>
 <translation id="549957179819296104">Bagong icon</translation>
 <translation id="5500168250243071806">Posibleng ma-save ang <ph name="BEGIN_LINK_SEARCH" />history ng paghahanap<ph name="END_LINK_SEARCH" /> at <ph name="BEGIN_LINK_GOOGLE" />iba pang anyo ng aktibidad<ph name="END_LINK_GOOGLE" /> sa iyong Google Account kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
-<translation id="5500516288673745630">Itakda ang password ng <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Nagpatakbo ng pag-check sa kaligtasan ngayong araw</translation>
 <translation id="5501322521654567960">Ang panel sa gilid na naka-align sa kaliwa</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Hindi natanggap ang <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}one{Hindi natanggap ang <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}other{Hindi natanggap ang <ph name="ATTACHMENTS" /> mula sa <ph name="DEVICE_NAME" />}}</translation>
@@ -7839,7 +7837,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7049293980323620022">Gusto mo bang panatilihin ang file?</translation>
 <translation id="7049524156282610342">Data mula sa pag-browse ni <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Invalid na configuration ng hotspot</translation>
-<translation id="7052237160939977163">Ipadala ang data ng pagte-trace sa pagganap</translation>
 <translation id="7053983685419859001">I-block</translation>
 <translation id="7055152154916055070">Na-block ang pag-redirect:</translation>
 <translation id="7055451306017383754">Hindi ma-unshare dahil ginagamit ng isang application ang folder na ito. Maa-unshare ang folder kapag na-shutdown ang Parallels Desktop.</translation>

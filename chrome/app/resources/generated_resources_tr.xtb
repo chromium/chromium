@@ -449,7 +449,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Dosyalar uygulamasını kullanarak cihazdaki medyayı yedekleyin.</translation>
 <translation id="1341701348342335220">Tebrikler!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> ile senkronize edilemiyor</translation>
 <translation id="1342886103232377846">Sızdırılmış şifre olup olmadığını kontrol etmek için Google Şifre Yöneticisi'ne gidin</translation>
 <translation id="1343865611738742294">Linux uygulamalarına USB cihazlarına erişim izni verin. Linux, kaldırılan USB cihazları daha sonra hatırlamaz.</translation>
 <translation id="1343920184519992513">Kaldığım yerden devam et ve belirli bir sayfa grubunu aç</translation>
@@ -5856,7 +5855,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5499476581866658341">Artık telefonunuzdaki son fotoğrafları ve medya içeriklerini görüntüleyebilirsiniz</translation>
 <translation id="549957179819296104">Yeni simge</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Arama geçmişi<ph name="END_LINK_SEARCH" /> ve <ph name="BEGIN_LINK_GOOGLE" />diğer etkinlik biçimleri<ph name="END_LINK_GOOGLE" />, oturum açtığınızda Google Hesabınıza kaydedilebilir. Bunları istediğiniz zaman silebilirsiniz.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> şifresi belirle</translation>
 <translation id="5500709606820808700">Güvenlik kontrolü bugün çalıştırıldı</translation>
 <translation id="5501322521654567960">Sola hizalı yan panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihazdan alınamadı}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> adlı cihazdan alınamadı}}</translation>
@@ -7819,7 +7817,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7049293980323620022">Dosya tutulsun mu?</translation>
 <translation id="7049524156282610342"><ph name="DISPLAY_NAME" /> tarama verileri</translation>
 <translation id="7050037487872780845">Geçersiz hotspot yapılandırması</translation>
-<translation id="7052237160939977163">Performans izleme verilerini gönder</translation>
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7055152154916055070">Yönlendirme engellendi:</translation>
 <translation id="7055451306017383754">Bir uygulama bu klasörü kullandığından paylaşım kaldırılamadı. Parallels Desktop kapatıldığında klasörün paylaşımı kaldırılacak.</translation>

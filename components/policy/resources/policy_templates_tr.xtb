@@ -5482,14 +5482,6 @@ arama tabanlı kısayollar varsayılan davranışı gerçekleştirir.</translati
 <translation id="5420245232720940848">Thunderbolt/USB4 çevre birimleri için PCle tünellemeyi etkinleştirir, cihaz işlevlerini sınırlandırır</translation>
 <translation id="5420673997623782432">Tüm istemcilerin sistem coğrafi konum erişimini engelle</translation>
 <translation id="5420774177427557782">Bu yapılandırmayı kullanan sanal makinelerin yüklenip çalıştırılması (<ph name="INSTALL_ALLOWED" />), çalıştırılıp yüklenememesi (<ph name="RUN_ALLOWED" />) veya çalıştırılmaması (<ph name="BLOCKED" />) işlemlerini kontrol eder. Sanal makine yüklemek için installer_image_x86_64 anahtarının da ayarlanması gerektiğini unutmayın. Bir yapılandırmanın tamamen kaldırılması, bu işlemi dolaylı yoldan <ph name="BLOCKED" /> olarak ayarlayarak sanal makinelerin politika olmadan çalışmasını engeller.</translation>
-<translation id="5421670928124029853"><ph name="PRODUCT_NAME" /> ürününün geliştirici araçlarında bulunan bu özellikler, ilave hata ayıklama bilgileri sağlamak için üretken yapay zeka modellerini kullanır. Bu özellikleri kullanmak için <ph name="PRODUCT_NAME" /> ürününün hata mesajı, yığın izleme (stack trace), kod snippet'i ve ağ istekleri gibi verileri toplayıp Google'ın sahip olduğu ve üretken yapay zeka modeli kullanan bir sunucuya göndermesi gerekir. Ağ isteklerindeki yanıt gövdesi veya kimlik doğrulama ve çerez başlıkları, sunucuya gönderilen verilere dahil edilmez.
-
-0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. 0 varsayılan değerdir.
-
-2 = Özelliği devre dışı bırakın.
-
-Aşağıdakiler Geliştirici Araçları üretken yapay zeka özellikleri arasındadır:
-- Konsol Analizleri: Konsol mesajlarını açıklar ve konsol hatalarının düzeltilmesine yönelik öneriler sunar.</translation>
 <translation id="5422643441807528365"><ph name="PLUGIN_VM_NAME" /> lisans anahtarı</translation>
 <translation id="5423197884968724595">Android Web Görünümü kısıtlama adı:</translation>
 <translation id="5424147596523390018">Tüm renk modlarına izin ver</translation>

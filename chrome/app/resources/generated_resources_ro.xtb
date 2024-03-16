@@ -450,7 +450,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Fă backup conținutului media de pe dispozitiv folosind aplicația Fișiere.</translation>
 <translation id="1341701348342335220">Bravo!</translation>
-<translation id="1341871421050612057">Nu se poate sincroniza cu <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Pentru a verifica dacă există parole compromise, accesează Managerul de parole Google</translation>
 <translation id="1343865611738742294">Permite aplicațiilor Linux să acceseze dispozitivele USB. Linux nu va păstra un dispozitiv USB după ce este eliminat.</translation>
 <translation id="1343920184519992513">Continuă de unde ai rămas și deschide un anumit set de pagini</translation>
@@ -5859,7 +5858,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5499476581866658341">Acum poți vedea fotografiile și conținutul media recent de pe telefon</translation>
 <translation id="549957179819296104">Pictogramă nouă</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Istoricul căutărilor<ph name="END_LINK_SEARCH" /> și <ph name="BEGIN_LINK_GOOGLE" />alte tipuri de activități<ph name="END_LINK_GOOGLE" /> pot fi salvate în Contul Google dacă te-ai conectat. Le poți șterge oricând.</translation>
-<translation id="5500516288673745630">Setează parola pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Verificarea de siguranță a rulat astăzi</translation>
 <translation id="5501322521654567960">Panou lateral aliniat la stânga</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nu s-a primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}few{Nu s-au primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}other{Nu s-au primit <ph name="ATTACHMENTS" /> de la <ph name="DEVICE_NAME" />}}</translation>
@@ -7823,7 +7821,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7049293980323620022">Păstrezi fișierul?</translation>
 <translation id="7049524156282610342">Date de navigare pentru <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configurația hotspotului nu este validă</translation>
-<translation id="7052237160939977163">Trimiteți datele privind urmărirea performanței</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7055152154916055070">Redirecționarea a fost blocată:</translation>
 <translation id="7055451306017383754">Distribuirea nu s-a putut anula, deoarece o aplicație folosește acest dosar. Distribuirea dosarului va fi anulată la următoarea închidere a aplicației Parallels Desktop.</translation>

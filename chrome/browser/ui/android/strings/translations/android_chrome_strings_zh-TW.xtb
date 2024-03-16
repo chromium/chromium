@@ -854,7 +854,6 @@
 <translation id="557018954714092179">建立新資料夾</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5581519193887989363">你隨時可以在<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />中選擇要同步處理的資料。</translation>
-<translation id="558429399979870715">連結 Chrome 和其他 Google 服務，即可讓這些服務與彼此共用資料</translation>
 <translation id="5590372121997663538">記住這部電腦</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5599455543593328020">無痕模式</translation>
@@ -1292,7 +1291,6 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665369617277396874">新增帳戶</translation>
 <translation id="766587987807204883">文章會顯示在這裡，並可供離線閱讀</translation>
-<translation id="7670101447063278728">密碼已儲存到 <ph name="USERNAME" />。</translation>
 <translation id="7682724950699840886">請嘗試按照下列提示操作：確認你的裝置上有足夠空間，然後嘗試重新匯出。</translation>
 <translation id="7686086654630106285">進一步瞭解網站建議廣告</translation>
 <translation id="768618399695552958">系統會預先載入你要造訪的部分網頁。當你從 Google 網站連到這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
@@ -1436,7 +1434,6 @@
 <translation id="8310344678080805313">標準分頁</translation>
 <translation id="831192587911042850">將目前的網站加到你追蹤的網站清單中。</translation>
 <translation id="8333340769932050274">你可以封鎖不想與網站分享的主題，Chrome 也會自動刪除 4 週以前的主題。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">納入 Chrome 歷史記錄，即可將其加到 Google 帳戶的「網路和應用程式活動」中</translation>
 <translation id="834313815369870491">一律不翻譯的網站</translation>
 <translation id="8348430946834215779">盡可能使用 HTTPS，並在載入不支援該通訊協定的網站前發出警告</translation>
 <translation id="8354977102499939946">快速透過語音進行搜尋。如要編輯這個捷徑，請前往 [設定]。</translation>

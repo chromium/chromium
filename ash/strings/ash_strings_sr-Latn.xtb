@@ -364,6 +364,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2509468283778169019">CAPS LOCK je uključen</translation>
 <translation id="2514415433888497495">Zaustavi <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">Izmenite kontrole igre</translation>
 <translation id="2526581474998477112">Otključaj prozore</translation>
 <translation id="2528111225373402384">Podešavanja hotspota</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -1264,6 +1265,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5983567367406220847">Hotspot je isključen zbog neaktivnosti.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastasturom.</translation>
+<translation id="5998374579424866922">Isključite kontrole igara</translation>
 <translation id="6000279412553873020">Tasteri, dugmad i drugo</translation>
 <translation id="6002122790816966947">Uređaji</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stranica od <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1667,6 +1669,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7609951632080598826">Prikaz kalendara, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera je ponovo povezana.</translation>
+<translation id="7613620083300976559">Uključite kontrole za igre</translation>
 <translation id="761736749114493194">Uključite uokvirivanje kamere. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Kamera je uklopljena u donji levi ugao</translation>

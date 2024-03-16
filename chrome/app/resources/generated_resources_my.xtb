@@ -451,7 +451,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">ဖိုင်များ ဆိုသည့် အက်ပ် အားသုံးပြီး စက်ပစ္စည်းမှ မီဒီယာကို Back up လုပ်ပါ</translation>
 <translation id="1341701348342335220">ကောင်းစွာပြီးသွားပြီ။</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> ဖြင့် စင့်ခ်လုပ်၍ မရပါ</translation>
 <translation id="1342886103232377846">ကျိုးပေါက်ထားသည့် စကားဝှက်များကို စစ်ရန် Google Password Manager သို့သွားပါ</translation>
 <translation id="1343865611738742294">USB စက်ပစ္စည်းများကို Linux အက်ပ်များအား အသုံးပြုခွင့်ပေးပါ။ USB စက်ပစ္စည်းကို ဖယ်ရှားလိုက်ပါက Linux က ၎င်းကို မှတ်ထားတော့မည်မဟုတ်ပါ။</translation>
 <translation id="1343920184519992513">သင်ထားခဲ့သည့်နေရာမှ ပြန်စရန်နှင့် သီးသန့်စာမျက်နှာအုပ်စုတစ်ခု ဖွင့်ရန်</translation>
@@ -5872,7 +5871,6 @@
 <translation id="5499476581866658341">သင့်ဖုန်း၏ လတ်တလောဓာတ်ပုံနှင့် မီဒီယာများကို ယခု ကြည့်နိုင်ပြီ</translation>
 <translation id="549957179819296104">သင်္ကေတ အသစ်</translation>
 <translation id="5500168250243071806">သင်လက်မှတ်ထိုးဝင်သောအခါ <ph name="BEGIN_LINK_SEARCH" />ရှာဖွေမှတ်တမ်း<ph name="END_LINK_SEARCH" /> နှင့် <ph name="BEGIN_LINK_GOOGLE" />အခြားပုံစံသော လုပ်ဆောင်ချက်<ph name="END_LINK_GOOGLE" /> တို့ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်။ ၎င်းတို့ကို အချိန်မရွေး ဖျက်နိုင်သည်။</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> စကားဝှက် သတ်မှတ်ပါ</translation>
 <translation id="5500709606820808700">ယနေ့ လုံခြုံရေး စစ်ဆေးထားသည်</translation>
 <translation id="5501322521654567960">ဘယ်ဘက်ညှိထားသော ဘေးအကန့်</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> မှ <ph name="ATTACHMENTS" /> ခု မရယူနိုင်ပါ}other{<ph name="DEVICE_NAME" /> မှ <ph name="ATTACHMENTS" /> ခု မရယူနိုင်ပါ}}</translation>
@@ -7831,7 +7829,6 @@
 <translation id="7049293980323620022">ဖိုင်ကို သိမ်းလိုသလား။</translation>
 <translation id="7049524156282610342">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">ဟော့စပေါ့ စီစဉ်သတ်မှတ်ချက် မမှန်ကန်ပါ</translation>
-<translation id="7052237160939977163">စွမ်းဆောင်ရည် လမ်းကြောင်းလိုက်ခြင်း အချက်လက် ပို့</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7055152154916055070">တစ်ဆင့်ပြန်ညွှန်ခြင်းကို ပိတ်ထားသည်−</translation>
 <translation id="7055451306017383754">အပလီကေးရှင်းက ဤဖိုင်တွဲကို အသုံးပြုနေသဖြင့် မျှဝေမှု မလုပ်၍မရပါ။ နောင်တွင် Parallels Desktop ပိတ်လိုက်သည့်အခါ ဖိုင်တွဲကို မျှဝေမှု မလုပ်တော့ပါ။</translation>

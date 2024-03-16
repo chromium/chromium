@@ -451,7 +451,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="13392265090583506">Tillgänglighet</translation>
 <translation id="1340527397989195812">Säkerhetskopiera media från enheten med appen Filer.</translation>
 <translation id="1341701348342335220">Bra jobbat!</translation>
-<translation id="1341871421050612057">Det gick inte att synkronisera med <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Öppna Google Lösenordshantering för att kontrollera om det finns utsatta lösenord</translation>
 <translation id="1343865611738742294">Ge Linux-appar åtkomstbehörighet till USB-enheter. När en USB-enhet tas bort sparas ingen information om den i Linux.</translation>
 <translation id="1343920184519992513">Fortsätt där du slutade och öppna en viss uppsättning sidor</translation>
@@ -5874,7 +5873,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5499476581866658341">Nu kan du se de senaste bilderna och mediefilerna från telefonen</translation>
 <translation id="549957179819296104">Ny ikon</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Sökhistorik<ph name="END_LINK_SEARCH" /> och <ph name="BEGIN_LINK_GOOGLE" />annan aktivitet<ph name="END_LINK_GOOGLE" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
-<translation id="5500516288673745630">Ange lösenord för <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Säkerhetskontrollen kördes i dag</translation>
 <translation id="5501322521654567960">Vänsterställd sidopanel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Mottagningen av <ph name="ATTACHMENTS" /> från <ph name="DEVICE_NAME" /> misslyckades}other{Mottagningen av <ph name="ATTACHMENTS" /> från <ph name="DEVICE_NAME" /> misslyckades}}</translation>
@@ -7836,7 +7834,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7049293980323620022">Vill du behålla filen?</translation>
 <translation id="7049524156282610342">Webbinformation för <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ogiltig surfzonskonfiguration</translation>
-<translation id="7052237160939977163">Skicka data från resultatspårning</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7055152154916055070">Omdirigeringen blockerades:</translation>
 <translation id="7055451306017383754">Det gick inte att sluta dela eftersom ett program använder den här mappen. Mappen slutar delas nästa gång Parallels Desktop stängs av.</translation>

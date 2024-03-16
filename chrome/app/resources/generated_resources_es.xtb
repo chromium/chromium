@@ -450,7 +450,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="13392265090583506">Ajustes de accesibilidad</translation>
 <translation id="1340527397989195812">Realiza una copia de seguridad de los archivos multimedia desde el dispositivo con la aplicación Archivos.</translation>
 <translation id="1341701348342335220">¡Bien hecho!</translation>
-<translation id="1341871421050612057">No se puede sincronizar con <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Para comprobar si hay contraseñas vulneradas, ve al Gestor de contraseñas de Google</translation>
 <translation id="1343865611738742294">Da permiso a las aplicaciones de Linux para acceder a los dispositivos USB. Linux no recordará el dispositivo USB después de retirarlo.</translation>
 <translation id="1343920184519992513">Seguir por donde lo dejaste y abrir un conjunto concreto de páginas</translation>
@@ -5875,7 +5874,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5499476581866658341">Ahora puedes consultar el contenido multimedia y las fotos recientes de tu teléfono</translation>
 <translation id="549957179819296104">Icono nuevo</translation>
 <translation id="5500168250243071806">Es posible que el <ph name="BEGIN_LINK_SEARCH" />historial de búsqueda<ph name="END_LINK_SEARCH" /> y <ph name="BEGIN_LINK_GOOGLE" />otras formas de actividad<ph name="END_LINK_GOOGLE" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlos cuando quieras.</translation>
-<translation id="5500516288673745630">Definir contraseña de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">La comprobación de seguridad se ha ejecutado hoy</translation>
 <translation id="5501322521654567960">Panel lateral alineado a la izquierda</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{No se han podido recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{No se han podido recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
@@ -7846,7 +7844,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7049293980323620022">¿Quieres conservar el archivo?</translation>
 <translation id="7049524156282610342">Datos de navegación <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configuración de punto de acceso no válida</translation>
-<translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055152154916055070">Redirección bloqueada:</translation>
 <translation id="7055451306017383754">No se ha podido dejar de compartir esta carpeta porque una aplicación está usándola. La carpeta dejará de compartirse la próxima vez que se apague Parallels Desktop.</translation>

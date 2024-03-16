@@ -449,7 +449,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="13392265090583506">Accessibilitat</translation>
 <translation id="1340527397989195812">Feu una còpia de seguretat dels fitxers multimèdia del dispositiu mitjançant l'aplicació Fitxers.</translation>
 <translation id="1341701348342335220">Ben fet!</translation>
-<translation id="1341871421050612057">No es pot sincronitzar amb <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Per comprovar si hi ha contrasenyes en perill, ves al gestor de contrasenyes de Google</translation>
 <translation id="1343865611738742294">Concedeix permís a les aplicacions de Linux per accedir als dispositius USB. Linux no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="1343920184519992513">Continua des d'on ho vas deixar i obre un conjunt de pàgines específic</translation>
@@ -5858,7 +5857,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5499476581866658341">Ara pots veure els fitxers multimèdia i les fotos recents del telèfon</translation>
 <translation id="549957179819296104">Icona nova</translation>
 <translation id="5500168250243071806">És possible que l'<ph name="BEGIN_LINK_SEARCH" />historial de cerques<ph name="END_LINK_SEARCH" /> i <ph name="BEGIN_LINK_GOOGLE" />altres tipus d'activitats<ph name="END_LINK_GOOGLE" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
-<translation id="5500516288673745630">Defineix la contrasenya del dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5500709606820808700">S'ha executat una comprovació de seguretat avui</translation>
 <translation id="5501322521654567960">Tauler lateral alineat a l'esquerra</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{No s'ha pogut rebre el contingut següent del dispositiu <ph name="DEVICE_NAME" />: <ph name="ATTACHMENTS" />}other{No s'ha pogut rebre el contingut següent del dispositiu <ph name="DEVICE_NAME" />: <ph name="ATTACHMENTS" />}}</translation>
@@ -7818,7 +7816,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7049293980323620022">Vols desar el fitxer?</translation>
 <translation id="7049524156282610342">Dades de navegació de <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">La configuració del punt d'accés Wi‐Fi no és vàlida</translation>
-<translation id="7052237160939977163">Envia dades de traça del rendiment</translation>
 <translation id="7053983685419859001">Bloqueja</translation>
 <translation id="7055152154916055070">S'ha bloquejat la redirecció:</translation>
 <translation id="7055451306017383754">No s'ha pogut deixar de compartir aquesta carpeta perquè una aplicació l'està utilitzant. Es deixarà de compartir la propera vegada que Parallels Desktop s'apagui.</translation>

@@ -450,7 +450,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="13392265090583506">Paramètres d'accessibilité</translation>
 <translation id="1340527397989195812">Sauvegardez du contenu multimédia en provenance de l'appareil à l'aide de l'application Fichiers.</translation>
 <translation id="1341701348342335220">Félicitations !</translation>
-<translation id="1341871421050612057">Synchronisation avec <ph name="USERNAME" /> impossible</translation>
 <translation id="1342886103232377846">Pour vérifier les mots de passe compromis, accédez au Gestionnaire de mots de passe de Google</translation>
 <translation id="1343865611738742294">Autoriser les applications Linux à accéder aux périphériques USB. Dès qu'un périphérique est déconnecté, il est effacé de la mémoire de Linux.</translation>
 <translation id="1343920184519992513">Reprendre là où vous en étiez et ouvrir un ensemble de pages spécifiques</translation>
@@ -5859,7 +5858,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5499476581866658341">Vous pouvez désormais afficher les photos et contenus multimédias récents de votre téléphone</translation>
 <translation id="549957179819296104">Nouvelle icône</translation>
 <translation id="5500168250243071806">L'<ph name="BEGIN_LINK_SEARCH" />historique des recherches<ph name="END_LINK_SEARCH" /> et d'<ph name="BEGIN_LINK_GOOGLE" />autres formes d'activité<ph name="END_LINK_GOOGLE" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
-<translation id="5500516288673745630">Définir le mot de passe du <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Contrôle de sécurité effectué aujourd'hui</translation>
 <translation id="5501322521654567960">Panneau latéral aligné à gauche</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}one{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}other{Échec de la réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}}</translation>
@@ -7824,7 +7822,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7049293980323620022">Conserver le fichier ?</translation>
 <translation id="7049524156282610342">Données de navigation de <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configuration de point d'accès non valide</translation>
-<translation id="7052237160939977163">Envoyer des informations relatives au suivi des performances</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7055152154916055070">Redirection bloquée :</translation>
 <translation id="7055451306017383754">Impossible d'annuler le partage, car une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Parallels Desktop.</translation>
@@ -7859,6 +7856,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7078120482318506217">Tous les réseaux</translation>
 <translation id="708060913198414444">C&amp;opier l'adresse audio</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> est géré par votre administrateur</translation>
+<translation id="7082850163410901674">Les notifications sont désactivées dans les réglages système Mac</translation>
 <translation id="7083774521940805477">Steam pour Chromebook (bêta) n'est pas disponible sur votre Chromebook.</translation>
 <translation id="708550780726587276">(non configuré)</translation>
 <translation id="7086672505018440886">Ajouter des fichiers journaux Chrome dans l'archive.</translation>

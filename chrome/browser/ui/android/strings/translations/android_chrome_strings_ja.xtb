@@ -857,7 +857,6 @@
 <translation id="557018954714092179">新規フォルダを作成</translation>
 <translation id="5578795271662203820">この画像を <ph name="SEARCH_ENGINE" /> で検索</translation>
 <translation id="5581519193887989363">同期する項目はいつでも [<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />] で選択できます。</translation>
-<translation id="558429399979870715">Chrome と他の Google サービスをリンクすると、Chrome と各サービスの間でデータが共有されます</translation>
 <translation id="5590372121997663538">このパソコンの情報を保持する</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5599455543593328020">シークレット モード</translation>
@@ -1295,7 +1294,6 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665369617277396874">アカウントを追加</translation>
 <translation id="766587987807204883">記事がここに表示されます。これらの記事はオフラインでも読むことができます</translation>
-<translation id="7670101447063278728">パスワードを <ph name="USERNAME" /> に保存しました。</translation>
 <translation id="7682724950699840886">推奨される対策: デバイスに十分な空き容量があることを確認し、再度エクスポートを試します。</translation>
 <translation id="7686086654630106285">ウェブサイトによる広告提案の詳細</translation>
 <translation id="768618399695552958">アクセスしたページの一部はプリロードされます。ページが Google サイトからリンクされている場合、Google サーバーを介してプリロードされる可能性があります。</translation>
@@ -1440,7 +1438,6 @@
 <translation id="8310344678080805313">標準のタブ</translation>
 <translation id="831192587911042850">現在のウェブサイトを、フォローしているウェブサイトのリストに追加します。</translation>
 <translation id="8333340769932050274">ユーザーはウェブサイトと共有したくないトピックをブロックできます。また、4 週間以上経過したトピックは自動削除されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Chrome 履歴を含めると、Google アカウントの [ウェブとアプリのアクティビティ] に Chrome 履歴が追加されます</translation>
 <translation id="834313815369870491">翻訳しないサイト</translation>
 <translation id="8348430946834215779">可能な限り HTTPS を使用し、HTTPS をサポートしていないサイトは読み込む前に警告を表示します</translation>
 <translation id="8354977102499939946">音声ですばやく検索します。このショートカットは [設定] で編集できます。</translation>

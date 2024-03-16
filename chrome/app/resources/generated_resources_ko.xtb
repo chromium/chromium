@@ -451,7 +451,6 @@
 <translation id="13392265090583506">접근성</translation>
 <translation id="1340527397989195812">파일 앱을 사용하여 기기의 미디어를 백업합니다.</translation>
 <translation id="1341701348342335220">수고하셨습니다</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> 계정과 동기화할 수 없음</translation>
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
 <translation id="1343865611738742294">Linux 앱에 USB 기기 액세스 권한을 부여합니다. Linux는 삭제된 USB 기기를 기억하지 않습니다.</translation>
 <translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
@@ -5874,7 +5873,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5499476581866658341">이제 휴대전화의 최근 사진과 미디어를 확인할 수 있습니다.</translation>
 <translation id="549957179819296104">새로운 아이콘</translation>
 <translation id="5500168250243071806">로그인할 경우 <ph name="BEGIN_LINK_SEARCH" />검색 기록<ph name="END_LINK_SEARCH" /> 및 <ph name="BEGIN_LINK_GOOGLE" />다른 활동 형식<ph name="END_LINK_GOOGLE" />이 Google 계정에 저장될 수 있습니다. 이러한 데이터는 언제든지 삭제할 수 있습니다.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> 비밀번호 설정</translation>
 <translation id="5500709606820808700">안전 확인이 오늘 실행됨</translation>
 <translation id="5501322521654567960">왼쪽 정렬 측면 패널</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 실패}}</translation>
@@ -7836,7 +7834,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7049293980323620022">파일을 보관하시겠습니까?</translation>
 <translation id="7049524156282610342">인터넷 사용 기록 <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">핫스팟 구성이 잘못됨</translation>
-<translation id="7052237160939977163">성능 추적 데이터 전송</translation>
 <translation id="7053983685419859001">차단</translation>
 <translation id="7055152154916055070">다음 주소로의 리디렉션이 차단됨:</translation>
 <translation id="7055451306017383754">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 Parallels Desktop이 종료되면 폴더 공유가 취소됩니다.</translation>

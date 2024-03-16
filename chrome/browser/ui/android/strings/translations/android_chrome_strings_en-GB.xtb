@@ -856,7 +856,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="557018954714092179">Create new folder</translation>
 <translation id="5578795271662203820">Search <ph name="SEARCH_ENGINE" /> for this image</translation>
 <translation id="5581519193887989363">You can always choose what to sync in <ph name="BEGIN_LINK1" />settings<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Link Chrome and other Google services if you want them to share data with each other</translation>
 <translation id="5590372121997663538">Remember this computer</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
@@ -1294,7 +1293,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665369617277396874">Add account</translation>
 <translation id="766587987807204883">Articles appear here, which you can read even when you're offline</translation>
-<translation id="7670101447063278728">Passwords saved to <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Try the following tips: make sure that there is enough space on your device; try to export again.</translation>
 <translation id="7686086654630106285">More about site-suggested ads</translation>
 <translation id="768618399695552958">Some of the pages that you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site.</translation>
@@ -1438,7 +1436,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8310344678080805313">Standard tabs</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
 <translation id="8333340769932050274">You can block topics that you don't want to be shared with sites. Chrome also auto-deletes your topics that are older than four weeks. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Include Chrome history if you want to add it to the Web &amp; App Activity in your Google Account</translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>
 <translation id="8354977102499939946">Quickly search with your voice. To edit this shortcut, go to Settings.</translation>

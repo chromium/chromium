@@ -856,7 +856,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="557018954714092179">Neuen Ordner erstellen</translation>
 <translation id="5578795271662203820">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
 <translation id="5581519193887989363">Du kannst in den <ph name="BEGIN_LINK1" />Einstellungen<ph name="END_LINK1" /> auswählen, was du synchronisieren möchtest.</translation>
-<translation id="558429399979870715">Du kannst Chrome und andere Google-Dienste verknüpfen, wenn du möchtest, dass sie Daten untereinander austauschen</translation>
 <translation id="5590372121997663538">Diesen Computer merken</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
@@ -1294,7 +1293,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7665369617277396874">Konto hinzufügen</translation>
 <translation id="766587987807204883">Artikel erscheinen hier und können auch gelesen werden, wenn du offline bist</translation>
-<translation id="7670101447063278728">In <ph name="USERNAME" /> gespeicherte Passwörter.</translation>
 <translation id="7682724950699840886">Probiere folgende Tipps aus: Sorge dafür, dass auf deinem Gerät ausreichend Speicherplatz vorhanden ist, und wiederhole den Export.</translation>
 <translation id="7686086654630106285">Weitere Informationen zu Werbung, die von Websites vorgeschlagen wird</translation>
 <translation id="768618399695552958">Einige der Seiten, die du besuchst, werden vorab geladen. Diese Seiten werden über Google-Server geladen, wenn sie von einer Google Sites-Website verlinkt sind.</translation>
@@ -1438,7 +1436,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8310344678080805313">Standard-Tabs</translation>
 <translation id="831192587911042850">Fügt die aktuell geöffnete Website der Liste mit Websites hinzu, denen du folgst.</translation>
 <translation id="8333340769932050274">Du kannst Themen blockieren, die nicht mit Websites geteilt werden sollen. Themen, die älter als 4 Wochen sind, werden von Chrome automatisch gelöscht. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Du kannst den Chrome-Verlauf miteinschließen, wenn du ihn den Web- &amp; App-Aktivitäten in deinem Google-Konto hinzufügen möchtest</translation>
 <translation id="834313815369870491">Websites nie übersetzen</translation>
 <translation id="8348430946834215779">Nach Möglichkeit HTTPS verwenden und warnen, bevor Websites geladen werden, die das Protokoll nicht unterstützen</translation>
 <translation id="8354977102499939946">Schnelle Sprachsuche verwenden. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>

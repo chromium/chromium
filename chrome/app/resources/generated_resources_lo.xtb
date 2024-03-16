@@ -451,7 +451,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">ສໍາຮອງ​ມີ​ເດຍ​ຈາກ​ອຸ​ປະ​ກອນ​ດ້ວຍ​ການ​ໃຊ້​ແອັບ​ໄຟ​ລ໌.</translation>
 <translation id="1341701348342335220">ທ່ານເຮັດໄດ້ດີຫຼາຍ!</translation>
-<translation id="1341871421050612057">ບໍ່ສາມາດຊິ້ງກັບ <ph name="USERNAME" /> ໄດ້</translation>
 <translation id="1342886103232377846">ເພື່ອກວດເບິ່ງລະຫັດຜ່ານທີ່ຖືກລະເມີດ, ໃຫ້ໄປທີ່ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="1343865611738742294">ອະນຸຍາດໃຫ້ແອັບ Linux ເຂົ້າເຖິງອຸປະກອນ USB. Linux ຈະບໍ່ຈື່ອຸປະກອນ USB ຫຼັງຈາກທີ່ລຶບມັນອອກແລ້ວ.</translation>
 <translation id="1343920184519992513">ສືບຕໍ່ໜ້າເວັບທີ່ທ່ານເບິ່ງຄ້າງໄວ້ ແລະ ເປີດຊຸດໜ້າເວັບສະເພາະໃດໜຶ່ງ</translation>
@@ -5872,7 +5871,6 @@
 <translation id="5499476581866658341">ຕອນນີ້ທ່ານສາມາດເບິ່ງຮູບພາບ ແລະ ມີເດຍຫຼ້າສຸດຂອງໂທລະສັບທ່ານໄດ້ແລ້ວ</translation>
 <translation id="549957179819296104">ໄອຄອນໃໝ່</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />ປະ​ຫວັດ​ການ​ຊອກຫາ<ph name="END_LINK_SEARCH" /> ແລະ <ph name="BEGIN_LINK_GOOGLE" />ການເຄື່ອນໄຫວຮູບແບບອື່ນໆ<ph name="END_LINK_GOOGLE" /> ອາດຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານເມື່ອທ່ານເຂົ້າສູ່ລະບົບ. ທ່ານສາມາດລຶບພວກມັນຕອນໃດກໍໄດ້.</translation>
-<translation id="5500516288673745630">ຕັ້ງລະຫັດຜ່ານ <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">ດຳເນີນການກວດສອບຄວາມປອດໄພໃນມື້ນີ້</translation>
 <translation id="5501322521654567960">ແຜງຄວບຄຸມດ້ານຂ້າງຈັດຕຳແໜ່ງໄວ້ຊ້າຍ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{ຮັບ <ph name="ATTACHMENTS" /> ຈາກ <ph name="DEVICE_NAME" /> ບໍ່ສຳເລັດ}other{ຮັບ <ph name="ATTACHMENTS" /> ຈາກ <ph name="DEVICE_NAME" /> ບໍ່ສຳເລັດ}}</translation>
@@ -7833,7 +7831,6 @@
 <translation id="7049293980323620022">ເກັບໄຟລ໌ໄວ້ບໍ?</translation>
 <translation id="7049524156282610342">ຂໍ້ມູນການທ່ອງເວັບຂອງ <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">ການຕັ້ງຄ່າຮັອດສະປອດບໍ່ຖືກຕ້ອງ</translation>
-<translation id="7052237160939977163">ສົ່ງ​ຂໍ້​ມູນຕິດຕາມການ​ປະ​ຕິ​ບັດ</translation>
 <translation id="7053983685419859001">ບລັອກ</translation>
 <translation id="7055152154916055070">ບລັອກການປ່ຽນເສັ້ນທາງແລ້ວ:</translation>
 <translation id="7055451306017383754">ບໍ່ສາມາດເຊົາແບ່ງປັນໄດ້ເພາະວ່າແອັບພລິເຄຊັນກຳລັງໃຊ້ໂຟນເດີນີ້ຢູ່. ລະບົບຈະເຊົາແບ່ງປັນໂຟນເດີເມື່ອປິດ Parallels Desktop ໃນຄັ້ງຕໍ່ໄປ.</translation>

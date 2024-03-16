@@ -451,7 +451,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Varmuuskopioi mediatiedostot laitteelta Tiedostot-sovelluksen avulla.</translation>
 <translation id="1341701348342335220">Hyvin tehty!</translation>
-<translation id="1341871421050612057">Synkronointi ei onnistu: <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Siirry Google Salasanoihin ja tarkista vaarantuneet salasanat</translation>
 <translation id="1343865611738742294">Anna Linux-sovelluksille USB-laitteiden käyttöoikeus. Linux ei muista USB-laitetta, kun se on poistettu.</translation>
 <translation id="1343920184519992513">Jatka siitä, mihin jäit, ja avaa tietyt sivut</translation>
@@ -5870,7 +5869,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5499476581866658341">Voit nyt nähdä puhelimen viimeaikaiset kuvat ja median</translation>
 <translation id="549957179819296104">Uusi kuvake</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Hakuhistoriaa<ph name="END_LINK_SEARCH" /> ja <ph name="BEGIN_LINK_GOOGLE" />muita toimintoja<ph name="END_LINK_GOOGLE" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa niitä koska vain.</translation>
-<translation id="5500516288673745630">Aseta salasana (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5500709606820808700">Turvatarkistus tehtiin tänään</translation>
 <translation id="5501322521654567960">Vasemmalle tasattu sivupaneeli</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> jonka <ph name="DEVICE_NAME" /> lähetti ei tullut perille}other{<ph name="DEVICE_NAME" /> lähetti <ph name="ATTACHMENTS" />, mutta lähetys epäonnistui}}</translation>
@@ -7832,7 +7830,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7049293980323620022">Pidetäänkö tiedosto?</translation>
 <translation id="7049524156282610342">Selausdata (<ph name="DISPLAY_NAME" />)</translation>
 <translation id="7050037487872780845">Virheellinen hotspotin määritys</translation>
-<translation id="7052237160939977163">Lähetä tehokkuuden tarkkailutietoja</translation>
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7055152154916055070">Uudelleenohjaus estetty:</translation>
 <translation id="7055451306017383754">Jakamista ei voitu peruuttaa, koska sovellus käyttää tätä kansiota. Kansion jakaminen perutaan seuraavan kerran, kun Parallels Desktop sammutetaan.</translation>

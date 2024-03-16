@@ -449,7 +449,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="13392265090583506">Accesibilidade</translation>
 <translation id="1340527397989195812">Realiza unha copia de seguranza dos medios desde o dispositivo a través da aplicación Ficheiros.</translation>
 <translation id="1341701348342335220">Bo traballo!</translation>
-<translation id="1341871421050612057">Non se puido sincronizar con <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Para comprobar os contrasinais vulnerados, vai ao xestor de contrasinais de Google</translation>
 <translation id="1343865611738742294">Concédelle permiso ás aplicacións de Linux para acceder a dispositivos USB. Linux non recordará un dispositivo USB unha vez que se quite.</translation>
 <translation id="1343920184519992513">Retomar a actividade onde a deixaches e abrir un conxunto de páxinas específico</translation>
@@ -5860,7 +5859,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5499476581866658341">Xa podes acceder ao contido multimedia e ás fotos recentes do teu teléfono</translation>
 <translation id="549957179819296104">Icona nova</translation>
 <translation id="5500168250243071806">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google o <ph name="BEGIN_LINK_SEARCH" />historial de busca<ph name="END_LINK_SEARCH" /> e <ph name="BEGIN_LINK_GOOGLE" />outros datos da túa actividade<ph name="END_LINK_GOOGLE" />. Podes eliminalos en calquera momento.</translation>
-<translation id="5500516288673745630">Definir o contrasinal para o <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">A Comprobación de seguranza executouse hoxe</translation>
 <translation id="5501322521654567960">Panel lateral aliñado á esquerda</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Produciuse un erro ao recibir <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}other{Produciuse un erro ao recibir <ph name="ATTACHMENTS" /> deste dispositivo: <ph name="DEVICE_NAME" />}}</translation>
@@ -6673,7 +6671,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="614890671148262506">Permitir sempre as notificacións deste sitio</translation>
 <translation id="6149015141270619212">Non se pode establecer conexión con Internet</translation>
 <translation id="6149791593592044995">Usar colocación moderna para as marcas de ton</translation>
-<translation id="6150116777338468525">Calidade do audio</translation>
+<translation id="6150116777338468525">Calidade de audio</translation>
 <translation id="6150278227694566734">Algúns contactos</translation>
 <translation id="6150961653851236686">Este é o idioma ao que se traducen as páxinas</translation>
 <translation id="6151323131516309312">Preme <ph name="SEARCH_KEY" /> para buscar <ph name="SITE_NAME" /></translation>
@@ -7818,7 +7816,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7049293980323620022">Queres conservar o ficheiro?</translation>
 <translation id="7049524156282610342">Datos de navegación (<ph name="DISPLAY_NAME" />)</translation>
 <translation id="7050037487872780845">A configuración da zona wifi non é válida</translation>
-<translation id="7052237160939977163">Enviar datos de seguimento de rendemento</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055152154916055070">Bloqueouse unha redirección:</translation>
 <translation id="7055451306017383754">Non se puido deixar de compartir este cartafol porque había unha aplicación usándoo. O cartafol deixará de compartirse cando Parallels Desktop se apague.</translation>

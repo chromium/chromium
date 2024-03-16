@@ -449,7 +449,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Файлдар қолданбасын пайдаланып құрылғыдағы мультимедианың сақтық көшірмесін жасаңыз.</translation>
 <translation id="1341701348342335220">Дұрыс!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> деген пайдаланушымен синхрондау мүмкін емес</translation>
 <translation id="1342886103232377846">Құпия сөздердің ұрланған-ұрланбағанын тексеру үшін Google Password Manager-ге өтіңіз.</translation>
 <translation id="1343865611738742294">Linux қолданбаларына USB құрылғыларына кіруге рұқсат ету. Linux жүйесі ажыратылған USB құрылғысын есте сақтамайды.</translation>
 <translation id="1343920184519992513">Тоқтаған жерден жалғастыру және арнайы беттер жинағын ашу</translation>
@@ -5855,7 +5854,6 @@
 <translation id="5499476581866658341">Енді телефондағы соңғы фотосуреттер мен медиафайлдарды көре аласыз</translation>
 <translation id="549957179819296104">Жаңа белгіше</translation>
 <translation id="5500168250243071806">Аккаунтқа кірген кезде, <ph name="BEGIN_LINK_SEARCH" />Іздеу тарихы<ph name="END_LINK_SEARCH" /> мен <ph name="BEGIN_LINK_GOOGLE" />әрекеттің басқа үлгілері<ph name="END_LINK_GOOGLE" /> Google аккаунтыңызға сақталуы мүмкін. Оларды кез келген уақытта жоя аласыз.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> құпия сөзін орнату</translation>
 <translation id="5500709606820808700">Қауіпсіздік тексерісі бүгін қолданылды.</translation>
 <translation id="5501322521654567960">Сол жақ бүйірлік панель</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынбады.}other{<ph name="DEVICE_NAME" /> құрылғысынан <ph name="ATTACHMENTS" /> алынбады.}}</translation>
@@ -7813,7 +7811,6 @@
 <translation id="7049293980323620022">Файл сақталсын ба?</translation>
 <translation id="7049524156282610342">Браузерді пайдалану деректері (<ph name="DISPLAY_NAME" />)</translation>
 <translation id="7050037487872780845">Хотспот конфигурациясы жарамсыз</translation>
-<translation id="7052237160939977163">Өнімділікті бақылау деректерін жіберу</translation>
 <translation id="7053983685419859001">Блоктау</translation>
 <translation id="7055152154916055070">Бағыттау функциясына тыйым салынды.</translation>
 <translation id="7055451306017383754">Бөлісуден бас тарту мүмкін емес, себебі бұл қалтаны қолданба пайдаланып жатыр. Parallels Desktop өшкен соң ғана, қалтаны бөлісуден бас тартылады.</translation>

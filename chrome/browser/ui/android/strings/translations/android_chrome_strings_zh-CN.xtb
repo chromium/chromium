@@ -95,6 +95,7 @@
 <translation id="1437543266176261764">正在“<ph name="APP_NAME" />”应用内运行</translation>
 <translation id="1448440926884431741">在“书签”页面中整理您跟踪的商品</translation>
 <translation id="1450753235335490080">无法分享<ph name="CONTENT_TYPE" /></translation>
+<translation id="1462833127986525564">如果您想让 Chrome 和其他 Google 服务利用彼此的数据为您提供个性化体验，请关联这些服务</translation>
 <translation id="1466383950273130737">选择要让 Chrome 采用的语言</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
 <translation id="148482509007564431">书签保存流程</translation>
@@ -856,7 +857,6 @@
 <translation id="557018954714092179">新建文件夹</translation>
 <translation id="5578795271662203820">在<ph name="SEARCH_ENGINE" />中搜索此图片</translation>
 <translation id="5581519193887989363">您始终可在<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />中选择要同步的内容。</translation>
-<translation id="558429399979870715">如果您想让 Chrome 和其他 Google 服务相互分享数据，请关联这些服务</translation>
 <translation id="5590372121997663538">记住这台计算机</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5599455543593328020">无痕模式</translation>
@@ -1295,7 +1295,6 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665369617277396874">添加账号</translation>
 <translation id="766587987807204883">报道会显示在此处，即使在离线状态下也可以阅读</translation>
-<translation id="7670101447063278728">密码已保存到 <ph name="USERNAME" /> 中。</translation>
 <translation id="7682724950699840886">请尝试按以下提示操作：确保您的设备上有足够的空间，然后重新尝试导出。</translation>
 <translation id="7686086654630106285">详细了解网站建议的广告</translation>
 <translation id="768618399695552958">在您访问的网页中，有一些是预加载的网页。从 Google 网站链接到的网页可能会通过 Google 服务器预加载。</translation>
@@ -1439,7 +1438,6 @@
 <translation id="8310344678080805313">标准标签页</translation>
 <translation id="831192587911042850">将当前网站添加到您关注的网站的列表中。</translation>
 <translation id="8333340769932050274">您可以屏蔽不想与网站分享的主题。Chrome 还会自动删除保留时长超过 4 周的主题。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">若要将 Chrome 历史记录添加到您 Google 账号的“网络与应用活动记录”中，请包括此类记录</translation>
 <translation id="834313815369870491">一律不翻译网站</translation>
 <translation id="8348430946834215779">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告</translation>
 <translation id="8354977102499939946">使用语音快速搜索。若要修改该快捷方式，请前往“设置”部分。</translation>

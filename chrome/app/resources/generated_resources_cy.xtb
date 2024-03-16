@@ -455,7 +455,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Gwneud copïau wrth gefn o gyfryngau o'r ddyfais gan ddefnyddio'r ap Files.</translation>
 <translation id="1341701348342335220">Da iawn!</translation>
-<translation id="1341871421050612057">Methu â chysoni â <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">I wirio am gyfrineiriau sydd wedi'u darganfod, ewch i Reolwr Cyfrineiriau Google</translation>
 <translation id="1343865611738742294">Rhowch ganiatâd i apiau Linux gael mynediad at ddyfeisiau USB. Ni fydd Linux yn cofio dyfais USB ar ôl ei dynnu.</translation>
 <translation id="1343920184519992513">Parhau lle y gwnaethoch adael ac agor set penodol o dudalennau</translation>
@@ -5877,7 +5876,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5499476581866658341">Gallwch bellach weld lluniau a chyfryngau diweddar eich ffôn</translation>
 <translation id="549957179819296104">Eicon newydd</translation>
 <translation id="5500168250243071806">Gall <ph name="BEGIN_LINK_SEARCH" />Hanes chwilio<ph name="END_LINK_SEARCH" /> a <ph name="BEGIN_LINK_GOOGLE" />mathau eraill o weithgarwch<ph name="END_LINK_GOOGLE" /> gael eu cadw i'ch Cyfrif Google pan fyddwch wedi mewngofnodi. Gallwch eu dileu ar unrhyw adeg.</translation>
-<translation id="5500516288673745630">Gosod cyfrinair <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Wedi rhedeg gwiriad diogelwch heddiw</translation>
 <translation id="5501322521654567960">Panel ochr sydd wedi'i alinio i'r chwith</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Wedi methu â chael <ph name="ATTACHMENTS" /> gan <ph name="DEVICE_NAME" />}zero{Wedi methu â chael <ph name="ATTACHMENTS" /> gan <ph name="DEVICE_NAME" />}two{Wedi methu â chael <ph name="ATTACHMENTS" /> gan <ph name="DEVICE_NAME" />}few{Wedi methu â chael <ph name="ATTACHMENTS" /> gan <ph name="DEVICE_NAME" />}many{Wedi methu â chael <ph name="ATTACHMENTS" /> gan <ph name="DEVICE_NAME" />}other{Wedi methu â chael <ph name="ATTACHMENTS" /> gan <ph name="DEVICE_NAME" />}}</translation>
@@ -7846,7 +7844,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7049293980323620022">Cadw'r ffeil?</translation>
 <translation id="7049524156282610342">Data pori <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ffurfweddiad poethfan annilys</translation>
-<translation id="7052237160939977163">Anfon data olrhain perfformiad</translation>
 <translation id="7053983685419859001">Rhwystro</translation>
 <translation id="7055152154916055070">Mae ailgyfeirio wedi'i rwystro:</translation>
 <translation id="7055451306017383754">Methu â dadrannu oherwydd bod ap yn defnyddio'r ffolder hon. Bydd y ffolder yn cael ei dadrannu pan fydd Parallels Desktop yn cael ei gau nesaf.</translation>

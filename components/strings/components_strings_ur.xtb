@@ -96,6 +96,7 @@
 <translation id="1175364870820465910">&amp;پرنٹ کریں…</translation>
 <translation id="1175393348063009671">تصویر (مَیٹ)</translation>
 <translation id="1175875016430184367">دائیں طرف تین سٹیپل</translation>
+<translation id="1176123604678140687">میعاد ختم ہونے کا ماہ</translation>
 <translation id="1177548198167638471">دوبارہ نہ پوچھیں</translation>
 <translation id="1177863135347784049">حسب ضرورت</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
@@ -486,6 +487,7 @@
 <translation id="1874224422119691492">آپ تبدیل کر سکتے ہیں کہ آیا آپ <ph name="SETTINGS" /> میں پاس ورڈز درج کرنے کے لیے اپنا اسکرین لاک استعمال کرتے ہیں</translation>
 <translation id="1875025161375567525">تصویری ٹرے</translation>
 <translation id="1875512691959384712">Google Forms</translation>
+<translation id="1876116428946561107">‏آپ نے کوئی بھی پتہ محفوظ نہیں کیا ہے۔ Chrome میں استعمال کرنے کے لیے ایک پتہ شامل کریں۔</translation>
 <translation id="1876399092304384674">تاریخ کے لحاظ سے</translation>
 <translation id="187918866476621466">ابتدائی صفحات کھولیں</translation>
 <translation id="1880901968112404879">‏اگلی بار تیزی سے ادائیگی کرنے کے لیے، اپنا کارڈ، مرموز کردہ سیکیورٹی کوڈ اور بلنگ پتہ اپنے Google اکاؤنٹ میں محفوظ کریں</translation>
@@ -616,6 +618,7 @@
 <translation id="2126374524350484896">‏PDF پروڈیوسر:</translation>
 <translation id="2130448033692577677">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی سیٹ نہ ہونے کی وجہ سے لاگو نہ ہو۔</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">ان کو بے ترتیب آرڈر میں دکھایا گیا ہے۔ آپ کسی بھی وقت اپنے ڈیفالٹ سرچ انجن کو تبدیل کر سکتے ہیں۔</translation>
 <translation id="2137891579555018930">اجازت کا انتظار ہے...</translation>
 <translation id="213826338245044447">موبائل بُک مارکس</translation>
 <translation id="2141000681034340397">اپنے ان پٹ میں ترمیم کریں</translation>
@@ -644,6 +647,7 @@
 <translation id="2170417331417184438">کارڈ صرف آلہ میں محفوظ کیا گیا ہے</translation>
 <translation id="2172089022819052306">گاڑیوں کی مرمت اور دیکھ بھال</translation>
 <translation id="2175630235841878061">‏100MB سے زیادہ کی فائلز ڈاؤن لوڈ کے لیے دستیاب نہیں ہیں</translation>
+<translation id="2176198174348007293">اپنے کیمرے کا استعمال کریں (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">اکاؤنٹ میں پتہ محفوظ کریں</translation>
 <translation id="2178665390943006934">‏Chrome اپ ڈیٹ کریں بٹن، اپنی Chrome کی ترتیبات سے Chrome کو اپ ڈیٹ کرنے کے لیے فعال کریں</translation>
 <translation id="2181821976797666341">پالیسیاں</translation>
@@ -1306,6 +1310,7 @@
 <translation id="3507869775212388416">قانونی جابز</translation>
 <translation id="3507936815618196901">‏اپنے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کریں</translation>
 <translation id="3512163584740124171">اسی پالیسی گروپ کی طرف سے آنے والی دوسری پالیسی میں ایک اعلی ترجیح ہونے کی وجہ سے یہ پالیسی نظر انداز کی جاتی ہے۔</translation>
+<translation id="351522771072578657">آپ فی الحال مینو پر ہیں</translation>
 <translation id="3515972145999192222">آپ کی تنظیم نے <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> کو مسدود کر دیا ہے کیونکہ اس سے پالیسی کی خلاف ورزی ہوتی ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">متعدد آبجیکٹس کو ہینڈل کرنا</translation>
 <translation id="3525130752944427905">‏‎10 x 14 انچ</translation>
@@ -1366,6 +1371,7 @@
 <translation id="3620239073311576716">یونیفارم اور کام پر پہننے کا لباس</translation>
 <translation id="36224234498066874">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="362276910939193118">پوری سرگزشت دکھائیں</translation>
+<translation id="3623041590998910684">‏اپنے کیمرے کا استعمال کرنے کے لیے، <ph name="LINK" /> میں جا کر Chrome کو رسائی فراہم کریں۔</translation>
 <translation id="3623398832322170566">رومانوی موویز</translation>
 <translation id="3624292976554877583">لیبلز (مَیٹ)</translation>
 <translation id="3628905806504633297">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں منتقل کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں منتقل کرنے کی تجویز نہیں کرتی ہے}}</translation>
@@ -2052,6 +2058,7 @@
 <translation id="4958444002117714549">فہرست پھیلائیں</translation>
 <translation id="4960068118612257147">‏آپ Chrome کی اشتہار کی رازداری کی ترتیبات میں تبدیلیاں کر سکتے ہیں</translation>
 <translation id="4960203958361543136">اپنے سرچ انجن کا انتخاب کریں</translation>
+<translation id="4961708452830821006">‏اپنے مائیکروفون کا استعمال کرنے کے لیے، <ph name="LINK" /> میں جا کر Chrome کو رسائی فراہم کریں۔</translation>
 <translation id="4963413887558778009">لینڈ اسکیپ ڈیزائن</translation>
 <translation id="4967366744630699583">پتے میں ترمیم کریں</translation>
 <translation id="4968522289500246572">یہ ایپ موبائل کیلئے ڈیزائن کی گئی ہے اور ممکن ہے کہ اس کا سائز صحیح طریقے سے تبدیل نہ ہو۔ اس کو استعمال کرنے میں مسائل کا سامنا ہو سکتا ہے یا ری اسٹارٹ کرنا پڑ سکتی ہے۔</translation>
@@ -2971,6 +2978,7 @@
 <translation id="677257480647123231">انٹرنیٹ پر بچوں کی حفاظت</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">‏Google پاس ورڈ مینیجر کو MacOS Keychain تک رسائی درکار ہے</translation>
+<translation id="6782656837469339439">میعاد ختم ہونے کا سال</translation>
 <translation id="6785990323398321538">‏آپ Chrome کی ترتیبات میں کسی بھی وقت اپنا سرچ انجن تبدیل کر سکتے ہیں۔</translation>
 <translation id="6786145470008421571">‏‎6 x 9 انچ لفافہ</translation>
 <translation id="67862343314499040">وائلیٹ</translation>
@@ -3121,6 +3129,7 @@
 <translation id="7064443976734085921">چھوٹی کاریں</translation>
 <translation id="7064851114919012435">رابطہ کی معلومات</translation>
 <translation id="7067633076996245366">‏سول اور R&amp;B</translation>
+<translation id="7070144569727915108">سسٹم کی ترتیبات</translation>
 <translation id="70705239631109039">آپ کا کنکشن مکمل طور پر محفوظ نہیں ہے</translation>
 <translation id="7075452647191940183">درخواست کافی بڑی ہے</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3148,6 +3157,7 @@
 <translation id="7111012039238467737">(درست)</translation>
 <translation id="7111507312244504964">املاک کے معائنے اور تخمینے</translation>
 <translation id="7112327784801341716">آپ کی موجودہ معلومات نظر نہیں آ رہی ہے؟ اپنے بینک سے رابطہ کر کے اسے اپ ڈیٹ کریں۔</translation>
+<translation id="7116334367957017155">‏آپ نے کوئی بھی پتہ محفوظ نہیں کیا ہے۔ سبھی Google پروڈکٹس پر استعمال کرنے کے لیے ایک پتہ شامل کریں۔</translation>
 <translation id="7118618213916969306">‏کلپ بورڈ URL تلاش کریں، <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">‏TV ڈرامے</translation>
 <translation id="7119371694555167493">کاپی کرنے کا وقت ختم ہو گیا</translation>
@@ -3593,6 +3603,7 @@
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی خصوصیات کے بارے میں جاننے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="7949135979217012031">اینٹی وائرس اور میلوئیر</translation>
 <translation id="7950027195171824198">‏Chrome ترتیبات میں اپنی کوکی کی ترجیحات کا نظم کریں</translation>
+<translation id="7950440490184876634">اپنے مائیکروفون کا استعمال کریں (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 بٹ)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">شارٹ کٹ خالی نہیں ہو سکتا</translation>
@@ -3752,6 +3763,7 @@
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (خودکار طور پر شناخت کردہ) کا <ph name="TARGET" /> میں ترجمہ کیا جا رہا ہے</translation>
 <translation id="8250094606476360498">‏یہ پتہ فی الحال اس آلے میں محفوظ ہے۔ اسے تمام Google پروڈکٹس میں استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں محفوظ کریں۔</translation>
+<translation id="8251493595871259082">زیادہ ٹائپ کیے بغیر اپنا پتہ پُر کریں</translation>
 <translation id="8252991034201168845">‏ایکسیسبیلٹی کی ترتیبات کے بٹن کا نظم کریں ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے Enter دبائیں</translation>
 <translation id="8253091569723639551">بلنگ پتہ درکار ہے</translation>
 <translation id="8257387598443225809">یہ ایپ موبائل کے لیے بنائی گئی ہے</translation>
@@ -4139,6 +4151,7 @@
 <translation id="9014705027639070815">‏آپ کی ملاحظہ کی جانے والی سائٹس اپنے اشتہارات کی کارکردگی کی پیمائش میں مدد کے لیے Chrome سے معلومات طلب کر سکتی ہیں۔ Chrome سائٹس کو ڈیٹا کی محدود اقسام جمع کرنے کی اجازت دیتا ہے، جیسے کہ آیا آپ نے کسی سائٹ پر جانے کے بعد کوئی خریداری کی ہے۔</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> کے لئے اپنا سیکیورٹی کوڈ درج کریں</translation>
 <translation id="901834265349196618">ای میل</translation>
+<translation id="90196294733273307">کریڈٹ کارڈ کی تفصیلات پر مشتمل ایک ڈائیلاگ دکھایا گیا</translation>
 <translation id="9020542370529661692">اس صفحہ کا <ph name="TARGET_LANGUAGE" /> میں ترجمہ کر دیا گیا ہے</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859">‏<ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />، لنک کا اشتراک، QR کوڈ تخلیق، کاسٹ اور بہت کچھ کر کے اس ٹیب کا اشتراک کرنے کیلئے ٹیب پھر Enter دبائیں</translation>

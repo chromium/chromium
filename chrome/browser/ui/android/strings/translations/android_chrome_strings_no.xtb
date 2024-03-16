@@ -97,6 +97,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1437543266176261764">Kjører i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organiser sporede produkter i Bokmerker</translation>
 <translation id="1450753235335490080">Kan ikke dele <ph name="CONTENT_TYPE" /></translation>
+<translation id="1462833127986525564">Knytt sammen Chrome og andre Google-tjenester hvis du vil at de skal gi deg en personlig tilpasset opplevelse ved bruk av data fra hverandre</translation>
 <translation id="1466383950273130737">Velg språk for Chrome</translation>
 <translation id="1477626028522505441">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av tjenerproblemer.</translation>
 <translation id="148482509007564431">Flyt for lagring av bokmerke</translation>
@@ -858,7 +859,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="557018954714092179">Opprett en ny mappe</translation>
 <translation id="5578795271662203820">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK1" />innstillingene<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Knytt sammen Chrome og andre Google-tjenester hvis du vil at de skal dele data med hverandre</translation>
 <translation id="5590372121997663538">Husk denne datamaskinen</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
@@ -1297,7 +1297,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665369617277396874">Legg til konto</translation>
 <translation id="766587987807204883">Her vises artikler, som du kan lese selv om du er uten nett</translation>
-<translation id="7670101447063278728">Passord som er lagret i <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
 <translation id="7686086654630106285">Mer om annonser som foreslås på nettstedet</translation>
 <translation id="768618399695552958">Noen av sidene du besøker, er forhåndslastede. Sider kan bli forhåndslastet via Googles tjenere når de er linket på Google-nettsteder.</translation>
@@ -1441,7 +1440,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8310344678080805313">Standardfaner</translation>
 <translation id="831192587911042850">Legger til det nåværende nettstedet på listen over nettsteder du følger.</translation>
 <translation id="8333340769932050274">Du kan blokkere emner du ikke vil dele med nettsteder. Chrome utfører automatisk sletting av emner som er eldre enn fire uker. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Inkluder Chrome-loggen hvis du vil legge den til i Nett- og appaktivitet i Google-kontoen din</translation>
 <translation id="834313815369870491">Oversett aldri nettsteder</translation>
 <translation id="8348430946834215779">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette</translation>
 <translation id="8354977102499939946">Søk raskt med stemmen din. For å redigere denne snarveien, gå til Innstillinger.</translation>

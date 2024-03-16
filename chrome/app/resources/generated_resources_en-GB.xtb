@@ -451,7 +451,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Back up media from the device using the Files app.</translation>
 <translation id="1341701348342335220">Nicely done!</translation>
-<translation id="1341871421050612057">Can't sync with <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">To check for compromised passwords, go to Google Password Manager</translation>
 <translation id="1343865611738742294">Give Linux apps permission to access USB devices. Linux won't remember a USB device after it's removed.</translation>
 <translation id="1343920184519992513">Continue from where you left off and open a specific set of pages</translation>
@@ -5874,7 +5873,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5499476581866658341">You can now view your phone's recent photos and media</translation>
 <translation id="549957179819296104">New icon</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Search history<ph name="END_LINK_SEARCH" /> and <ph name="BEGIN_LINK_GOOGLE" />other forms of activity<ph name="END_LINK_GOOGLE" /> may be saved in your Google Account when you're signed in. You can delete them at any time.</translation>
-<translation id="5500516288673745630">Set <ph name="DEVICE_TYPE" /> password</translation>
 <translation id="5500709606820808700">Safety check ran today</translation>
 <translation id="5501322521654567960">Left-aligned side panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}}</translation>
@@ -7836,7 +7834,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7049293980323620022">Keep file?</translation>
 <translation id="7049524156282610342">Browsing data <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Invalid hotspot configuration</translation>
-<translation id="7052237160939977163">Send performance trace data</translation>
 <translation id="7053983685419859001">Block</translation>
 <translation id="7055152154916055070">Redirect blocked:</translation>
 <translation id="7055451306017383754">Couldn't unshare because an application is using this folder. The folder will be unshared when Parallels Desktop is next shut down.</translation>

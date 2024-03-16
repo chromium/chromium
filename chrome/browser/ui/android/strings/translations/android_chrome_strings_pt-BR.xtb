@@ -857,7 +857,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="557018954714092179">Criar pasta</translation>
 <translation id="5578795271662203820">Pesquisar imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Nas <ph name="BEGIN_LINK1" />configurações<ph name="END_LINK1" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
-<translation id="558429399979870715">Vincule o Chrome e outros Serviços do Google para que eles compartilhem dados entre si</translation>
 <translation id="5590372121997663538">Lembrar deste computador</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anônima</translation>
@@ -1295,7 +1294,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Adicionar conta</translation>
 <translation id="766587987807204883">Os artigos são exibidos aqui e podem ser lidos até quando você está off-line</translation>
-<translation id="7670101447063278728">Senhas salvas na conta <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Experimente as seguintes dicas: verifique se há espaço suficiente no dispositivo e tente exportar novamente.</translation>
 <translation id="7686086654630106285">Mais informações sobre anúncios sugeridos por sites</translation>
 <translation id="768618399695552958">Algumas das páginas que você visita serão pré-carregadas. As páginas podem ser pré-carregadas por servidores do Google quando o link for de um site do Google.</translation>
@@ -1439,7 +1437,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8310344678080805313">Guias padrão</translation>
 <translation id="831192587911042850">Adiciona o site atual à lista de sites que você está seguindo.</translation>
 <translation id="8333340769932050274">Você pode bloquear temas que não quer compartilhar com sites. O Chrome também exclui automaticamente os temas que estão na lista há mais de quatro semanas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Inclua o histórico do Chrome se quiser adicioná-lo à Atividade na Web e de apps na sua Conta do Google</translation>
 <translation id="834313815369870491">Nunca traduzir estes sites</translation>
 <translation id="8348430946834215779">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não têm suporte a esse protocolo</translation>
 <translation id="8354977102499939946">Pesquisar rapidamente usando sua voz. Para editar esse atalho, acesse as Configurações.</translation>

@@ -454,7 +454,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="13392265090583506">Funkcije za ljudi s posebnimi potrebami</translation>
 <translation id="1340527397989195812">Varnostno kopiranje predstavnosti v napravi z aplikacijo Datoteke.</translation>
 <translation id="1341701348342335220">Dobro ste opravili.</translation>
-<translation id="1341871421050612057">Ni mogoče sinhronizirati z uporabnikom <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Če želite preveriti, ali so gesla ogrožena, odprite Googlovega upravitelja gesel</translation>
 <translation id="1343865611738742294">Omogočanje, da aplikacije za Linux dostopajo do naprav USB. Linux si ne zapomni naprave USB, ko jo odstranite.</translation>
 <translation id="1343920184519992513">Nadaljuj prejšnjo sejo in odprti določen nabor strani</translation>
@@ -5877,7 +5876,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5499476581866658341">Zdaj si lahko ogledate nedavne fotografije in predstavnost telefona</translation>
 <translation id="549957179819296104">Nova ikona</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Zgodovina iskanja<ph name="END_LINK_SEARCH" /> in <ph name="BEGIN_LINK_GOOGLE" />druge oblike dejavnosti<ph name="END_LINK_GOOGLE" /> se morda shranjujejo v računu Google, ko ste prijavljeni. Izbrišete jih lahko kadar koli.</translation>
-<translation id="5500516288673745630">Nastavitev gesla za <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Varnostno preverjanje je bilo izvedeno danes</translation>
 <translation id="5501322521654567960">Levo poravnano stransko podokno</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}one{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}two{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}few{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}other{Prejemanje prilog (<ph name="ATTACHMENTS" />) iz naprave <ph name="DEVICE_NAME" /> ni bilo uspešno}}</translation>
@@ -7847,7 +7845,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7049293980323620022">Želite obdržati datoteko?</translation>
 <translation id="7049524156282610342">Podatki brskanja <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Neveljavna konfiguracija dostopne točke.</translation>
-<translation id="7052237160939977163">Pošlji podatke za sledenje učinkovitosti delovanja</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7055152154916055070">Preusmeritev je preprečena:</translation>
 <translation id="7055451306017383754">Skupne rabe mape ni bilo mogoče preklicati, ker jo uporablja določena aplikacija. Skupna raba mape bo preklicana ob naslednji zaustavitvi programa Parallels Desktop.</translation>

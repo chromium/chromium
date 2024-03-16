@@ -449,7 +449,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">ფაილების აპლიკაციის გამოყენებით მოწყობილობიდან მედია მასალების სათადარიგო შენახვა.</translation>
 <translation id="1341701348342335220">შესანიშნავია!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" />-ით სინქრონიზაცია ვერ მოხერხდება</translation>
 <translation id="1342886103232377846">გატეხილი პაროლების შესამოწმებლად გადადით Google პაროლების მმართველზე</translation>
 <translation id="1343865611738742294">Linux აპებისთვის USB მოწყობილობებზე წვდომის დაშვება. Linux არ დაიმახსოვრებს USB-მოწყობილობას მისი ამოღების შემდეგ.</translation>
 <translation id="1343920184519992513">გააგრძელეთ იქიდან, სადაც შეჩერდით, და გახსენით გვერდების კონკრეტული წყობა</translation>
@@ -5858,7 +5857,6 @@
 <translation id="5499476581866658341">ამიერიდან შეგიძლიათ ნახოთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები და მედიაფაილები</translation>
 <translation id="549957179819296104">ახალი ხატულა</translation>
 <translation id="5500168250243071806">თქვენს Google ანგარიშში შეიძლება ინახებოდეს <ph name="BEGIN_LINK_SEARCH" />ძიების ისტორია<ph name="END_LINK_SEARCH" /> და <ph name="BEGIN_LINK_GOOGLE" />სხვა ტიპის აქტივობა<ph name="END_LINK_GOOGLE" />, როცა შესული ხართ სისტემაში. აღნიშნულის წაშლა ნებისმიერ დროს შეგიძლიათ.</translation>
-<translation id="5500516288673745630">დააყენეთ <ph name="DEVICE_TYPE" />-ის პაროლი</translation>
 <translation id="5500709606820808700">უსაფრთხოების შემოწმება შესრულდა დღეს</translation>
 <translation id="5501322521654567960">მარცხნივი სწორების გვერდითა პანელი</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" />-დან ვერ მიიღეთ}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" />-დან ვერ მიიღეთ}}</translation>
@@ -7819,7 +7817,6 @@
 <translation id="7049293980323620022">გსურთ ფაილის შენარჩუნება?</translation>
 <translation id="7049524156282610342">დათვალიერების მონაცემები (<ph name="DISPLAY_NAME" />)</translation>
 <translation id="7050037487872780845">უსადენო ქსელის კონფიგურაცია არასწორია</translation>
-<translation id="7052237160939977163">ეფექტურობის ტრასირების მონაცემების გაგზავნა</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7055152154916055070">გადამისამართება დაიბლოკა:</translation>
 <translation id="7055451306017383754">გაზიარების გაუქმება ვერ მოხერხდა, ვინაიდან ამ საქაღალდეს ერთ-ერთი აპლიკაცია იყენებს. ამ საქაღალდის გაზიარება გაუქმდება Parallels Desktop-ის მომდევნო გათიშვისას.</translation>

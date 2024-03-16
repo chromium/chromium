@@ -856,7 +856,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="557018954714092179">Luo uusi kansio</translation>
 <translation id="5578795271662203820">Etsi tätä kuvaa palvelusta <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK1" />asetuksissa<ph name="END_LINK1" />.</translation>
-<translation id="558429399979870715">Linkitä Chrome ja muut Googlen palvelut, jos haluat niiden jakavan dataa toisilleen</translation>
 <translation id="5590372121997663538">Muista tämä tietokone</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5599455543593328020">Incognito-tila</translation>
@@ -1294,7 +1293,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7665369617277396874">Lisää tili</translation>
 <translation id="766587987807204883">Tässä näet artikkelit, jotka voit lukea myös offline-tilassa</translation>
-<translation id="7670101447063278728">Tänne tallennetut salasanat: <ph name="USERNAME" /></translation>
 <translation id="7682724950699840886">Kokeile seuraavia keinoja: varmista, että laitteellasi on tarpeeksi tilaa, yritä viedä uudelleen.</translation>
 <translation id="7686086654630106285">Lisätietoja sivuston ehdottamista mainoksista</translation>
 <translation id="768618399695552958">Jotkin avaamistasi sivuista ovat esiladattuja. Sivut on mahdollisesti esiladattu Googlen palvelimien kautta, kun niihin on linkitetty Googlen sivustolta.</translation>
@@ -1438,7 +1436,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8310344678080805313">Tavalliset välilehdet</translation>
 <translation id="831192587911042850">Lisää nykyisen verkkosivuston seuraamiesi sivustojen luetteloon.</translation>
 <translation id="8333340769932050274">Voit estää aiheet, joita et halua jakaa sivustoille. Chrome myös poistaa yli neljä viikkoa vanhat aiheet automaattisesti. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Sisällytä Chrome-historia, jos haluat lisätä sen Google-tilisi verkko- ja sovellustoimintaan</translation>
 <translation id="834313815369870491">Älä koskaan käännä näitä sivustoja</translation>
 <translation id="8348430946834215779">Käytä HTTPS:ää aina kun mahdollista. Saat varoituksen ennen sellaisten sivustojen lataamista, jotka eivät tue sitä.</translation>
 <translation id="8354977102499939946">Hae nopeasti äänikomennoilla. Voit muokata pikakuvaketta asetuksista.</translation>

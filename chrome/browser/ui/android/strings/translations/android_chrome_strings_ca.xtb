@@ -856,7 +856,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="557018954714092179">Crea una carpeta</translation>
 <translation id="5578795271662203820">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Sempre pots anar a la <ph name="BEGIN_LINK1" />configuració<ph name="END_LINK1" /> per decidir què vols sincronitzar.</translation>
-<translation id="558429399979870715">Enllaça Chrome i altres serveis de Google si vols que comparteixin dades entre si</translation>
 <translation id="5590372121997663538">Recorda aquest ordinador</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5599455543593328020">Mode d'incògnit</translation>
@@ -1294,7 +1293,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7665369617277396874">Afegeix un compte</translation>
 <translation id="766587987807204883">Els articles es mostren aquí i els pots llegir fins i tot sense connexió</translation>
-<translation id="7670101447063278728">S'han desat les contrasenyes a <ph name="USERNAME" />.</translation>
 <translation id="7682724950699840886">Segueix aquests consells: comprova que hi hagi prou espai al dispositiu i prova d'exportar les contrasenyes de nou.</translation>
 <translation id="7686086654630106285">Més informació sobre els anuncis suggerits per llocs web</translation>
 <translation id="768618399695552958">Algunes de les pàgines que visites estan precarregades. És possible que les pàgines es precarreguin a través dels servidors de Google quan s'enllacin des d'un lloc web de Google.</translation>
@@ -1438,7 +1436,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8310344678080805313">Pestanyes estàndard</translation>
 <translation id="831192587911042850">Afegeix el lloc web actual a la llista de llocs web que segueixes.</translation>
 <translation id="8333340769932050274">Pots bloquejar els temes que no vulguis que es comparteixin amb els llocs web. Chrome també suprimeix automàticament els temes que tenen més de 4 setmanes. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="8336984817750547763">Inclou l'historial de Chrome si vols afegir-lo a Activitat al web i en aplicacions al teu Compte de Google</translation>
 <translation id="834313815369870491">No tradueixis mai els llocs web</translation>
 <translation id="8348430946834215779">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol</translation>
 <translation id="8354977102499939946">Cerca ràpidament amb la veu. Per editar aquesta drecera, ves a Configuració.</translation>

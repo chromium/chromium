@@ -856,7 +856,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="557018954714092179">Új mappa létrehozása</translation>
 <translation id="5578795271662203820">A kép keresése a(z) <ph name="SEARCH_ENGINE" /> keresővel</translation>
 <translation id="5581519193887989363">A <ph name="BEGIN_LINK1" />beállítások<ph name="END_LINK1" /> között bármikor módosíthatja a szinkronizálni kívánt elemeket.</translation>
-<translation id="558429399979870715">Kapcsolja össze a Chrome-ot a többi Google-szolgáltatással, ha azt szeretné, hogy megosszanak egymással adatokat.</translation>
 <translation id="5590372121997663538">A számítógép megjegyzése</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5599455543593328020">Inkognitó mód</translation>
@@ -1294,7 +1293,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7665369617277396874">Fiók hozzáadása</translation>
 <translation id="766587987807204883">Itt jelennek meg a cikkek, amelyeket offline állapotban is olvashat</translation>
-<translation id="7670101447063278728">A(z) <ph name="USERNAME" /> fiókba mentett jelszavak</translation>
 <translation id="7682724950699840886">Próbálkozzon a következő tippekkel: Győződjön meg arról, hogy elegendő tárhely áll rendelkezésre az eszközön, majd próbálja újra az exportálást.</translation>
 <translation id="7686086654630106285">További információ a webhelyek által javasolt hirdetésekről</translation>
 <translation id="768618399695552958">Az Ön által felkeresett oldalak némelyikét előre betölti a rendszer. Az oldalakat előre betöltheti a rendszer a Google szerverein keresztül, ha Google-webhellyel vannak összekapcsolva.</translation>
@@ -1438,7 +1436,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8310344678080805313">Szabványos lapok</translation>
 <translation id="831192587911042850">Hozzáadja a jelenlegi webhelyet az Ön által követett webhelyeket tartalmazó listához.</translation>
 <translation id="8333340769932050274">Letilthatja azokat a témákat, amelyeket nem szeretne a webhelyekkel megosztani. A Chrome a négy hétnél régebbi témákat is automatikusan törli. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
-<translation id="8336984817750547763">Vegye fel a Chrome-előzményeket, ha hozzá szeretné adni őket Google-fiókja Internetes és alkalmazástevékenységek funkciójához.</translation>
 <translation id="834313815369870491">Sosem fordított webhelyek</translation>
 <translation id="8348430946834215779">HTTPS használata, amikor csak lehetséges, és figyelmeztetés megjelenítése a protokollt nem támogató webhelyek betöltése előtt.</translation>
 <translation id="8354977102499939946">Gyorsan végezhet hangalapú keresést. A gyorsparancs szerkesztéséhez lépjen a Beállításokhoz.</translation>

@@ -451,7 +451,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Cadangkan media dari perangkat menggunakan aplikasi File.</translation>
 <translation id="1341701348342335220">Selamat!</translation>
-<translation id="1341871421050612057">Sinkronisasi tidak dapat digunakan dengan <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Untuk memeriksa sandi yang telah dibobol, buka Pengelola Sandi Google</translation>
 <translation id="1343865611738742294">Berikan izin aplikasi ke Linux untuk mengakses perangkat USB. Linux tidak akan mengingat perangkat USB setelah perangkat tersebut dilepas.</translation>
 <translation id="1343920184519992513">Lanjutkan dari halaman terakhir yang dibuka dan buka rangkaian halaman tertentu</translation>
@@ -5874,7 +5873,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5499476581866658341">Anda kini dapat melihat foto dan media terbaru ponsel Anda</translation>
 <translation id="549957179819296104">Ikon baru</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Histori penelusuran<ph name="END_LINK_SEARCH" /> dan <ph name="BEGIN_LINK_GOOGLE" />bentuk aktivitas lainnya<ph name="END_LINK_GOOGLE" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
-<translation id="5500516288673745630">Setel sandi <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Pemeriksaan keamanan berjalan hari ini</translation>
 <translation id="5501322521654567960">Panel samping rata kiri</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Gagal menerima <ph name="ATTACHMENTS" /> dari <ph name="DEVICE_NAME" />}other{Gagal menerima <ph name="ATTACHMENTS" /> dari <ph name="DEVICE_NAME" />}}</translation>
@@ -7836,7 +7834,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7049293980323620022">Simpan file?</translation>
 <translation id="7049524156282610342">Data penjelajahan <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Konfigurasi hotspot tidak valid</translation>
-<translation id="7052237160939977163">Mengirim data pelacakan kinerja</translation>
 <translation id="7053983685419859001">Blokir</translation>
 <translation id="7055152154916055070">Pengalihan diblokir:</translation>
 <translation id="7055451306017383754">Tidak dapat membatalkan berbagi karena ada aplikasi yang menggunakan folder ini. Berbagi folder akan dibatalkan saat berikutnya Parallels Desktop dimatikan.</translation>

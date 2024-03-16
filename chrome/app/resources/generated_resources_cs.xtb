@@ -451,7 +451,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="13392265090583506">Přístupnost</translation>
 <translation id="1340527397989195812">Zálohujte média ze zařízení pomocí aplikace Soubory.</translation>
 <translation id="1341701348342335220">Výborně!</translation>
-<translation id="1341871421050612057">Účet <ph name="USERNAME" /> nelze synchronizovat</translation>
 <translation id="1342886103232377846">Pokud chcete zkontrolovat, zda nedošlo k prolomení hesel, přejděte do Správce hesel Google</translation>
 <translation id="1343865611738742294">Udělte linuxovým aplikacím oprávnění k používání zařízení USB. Po odebrání si Linux nebude zařízení USB pamatovat.</translation>
 <translation id="1343920184519992513">Pokračujte, kde jste skončili, a otevírejte vybrané stránky</translation>
@@ -5859,7 +5858,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5499476581866658341">Nyní můžete zobrazit nedávné fotky a média v telefonu</translation>
 <translation id="549957179819296104">Nová ikona</translation>
 <translation id="5500168250243071806">Když jste přihlášeni, mohou se <ph name="BEGIN_LINK_SEARCH" />historie vyhledávání<ph name="END_LINK_SEARCH" /> a <ph name="BEGIN_LINK_GOOGLE" />další typy aktivity<ph name="END_LINK_GOOGLE" /> ukládat do vašeho účtu Google. Můžete je kdykoli smazat.</translation>
-<translation id="5500516288673745630">Nastavit heslo zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Bezpečnostní kontrola proběhla dnes</translation>
 <translation id="5501322521654567960">Panel na levé straně</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Přijetí dat (<ph name="ATTACHMENTS" />) ze zařízení <ph name="DEVICE_NAME" /> se nezdařilo}few{Přijetí dat (<ph name="ATTACHMENTS" />) ze zařízení <ph name="DEVICE_NAME" /> se nezdařilo}many{Přijetí dat (<ph name="ATTACHMENTS" />) ze zařízení <ph name="DEVICE_NAME" /> se nezdařilo}other{Přijetí dat (<ph name="ATTACHMENTS" />) ze zařízení <ph name="DEVICE_NAME" /> se nezdařilo}}</translation>
@@ -7822,7 +7820,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7049293980323620022">Ponechat soubor?</translation>
 <translation id="7049524156282610342">Údaje o prohlížení <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Neplatná konfigurace hotspotu</translation>
-<translation id="7052237160939977163">Odesílat údaje sledování výkonu</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7055152154916055070">Bylo zablokováno přesměrování:</translation>
 <translation id="7055451306017383754">Sdílení se nepodařilo zrušit, protože tuto složku používá nějaká aplikace. Sdílení složky bude zrušeno při příštím vypnutí systému Parallels Desktop.</translation>
@@ -7857,6 +7854,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7078120482318506217">Všechny sítě</translation>
 <translation id="708060913198414444">K&amp;opírovat adresu zvukového souboru</translation>
 <translation id="7082568314107259011">Síť <ph name="NETWORK_NAME" /> je spravována administrátorem</translation>
+<translation id="7082850163410901674">Oznámení jsou v nastavení systému Mac vypnutá</translation>
 <translation id="7083774521940805477">Steam pro Chromebook (beta) na vašem Chromebooku není k dispozici.</translation>
 <translation id="708550780726587276">(nenakonfigurováno)</translation>
 <translation id="7086672505018440886">Zahrnout do archivu soubory protokolů Chromu.</translation>

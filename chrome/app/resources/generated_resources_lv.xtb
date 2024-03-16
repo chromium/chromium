@@ -451,7 +451,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="13392265090583506">Pieejamības iestatījumi</translation>
 <translation id="1340527397989195812">Dublējiet multividi no savas ierīces, izmantojot lietotni “Faili”.</translation>
 <translation id="1341701348342335220">Lieliski!</translation>
-<translation id="1341871421050612057">Nevar sinhronizēt ar kontu <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Lai pārbaudītu, vai neviena parole nav uzlauzta, pārejiet uz Google paroļu pārvaldnieku.</translation>
 <translation id="1343865611738742294">Piešķiriet Linux lietotnēm atļauju piekļūt USB ierīcēm. Pēc USB ierīces noņemšanas operētājsistēmā Linux netiks saglabāti šīs ierīces dati.</translation>
 <translation id="1343920184519992513">Atsākt darbu no vietas, kur to beidzāt, un atvērt konkrētu lapu kopu</translation>
@@ -5860,7 +5859,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5499476581866658341">Tagad varat skatīt tālruņa jaunākos fotoattēlus un multivides saturu.</translation>
 <translation id="549957179819296104">Jaunā ikona</translation>
 <translation id="5500168250243071806">Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK_SEARCH" />meklēšanas vēsturi<ph name="END_LINK_SEARCH" /> un <ph name="BEGIN_LINK_GOOGLE" />cita veida darbības<ph name="END_LINK_GOOGLE" />. Jebkurā laikā varat tās izdzēst.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> paroles iestatīšana</translation>
 <translation id="5500709606820808700">Drošības pārbaude tika izpildīta šodien</translation>
 <translation id="5501322521654567960">Sānu panelis kreisajā pusē</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Neizdevās saņemt saturu (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}zero{Neizdevās saņemt saturu (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}one{Neizdevās saņemt saturu (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}other{Neizdevās saņemt saturu (<ph name="ATTACHMENTS" />) no ierīces <ph name="DEVICE_NAME" />}}</translation>
@@ -7823,7 +7821,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7049293980323620022">Vai paturēt failu?</translation>
 <translation id="7049524156282610342">Pārlūkošanas dati: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Nederīga tīklāja konfigurācija</translation>
-<translation id="7052237160939977163">Sūtīt veiktspējas izsekošanas datus</translation>
 <translation id="7053983685419859001">Bloķēt</translation>
 <translation id="7055152154916055070">Novirzīšana ir bloķēta:</translation>
 <translation id="7055451306017383754">Nevarēja atsaukt kopīgošanu, jo šo mapi izmanto lietojumprogramma. Mapes kopīgošana tiks atsaukta nākamajā reizē, kad tiks pārtraukta Parallels Desktop darbība.</translation>

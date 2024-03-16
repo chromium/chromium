@@ -447,7 +447,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Fayllar tətbiqini istifadə etməklə medianı cihazdan yedəkləyin.</translation>
 <translation id="1341701348342335220">Hazırdır!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> ilə sinxronizasiya mümkün deyil</translation>
 <translation id="1342886103232377846">Oğurlanmış parolları yoxlamaq üçün Google Parol Menecerinə keçin</translation>
 <translation id="1343865611738742294">USB cihazlarına daxil olmaq üçün Linux tətbiqlərinə giriş icazəsi verin. Linux USB cihazı silindikdən sonra onu yadda saxlamayacaq.</translation>
 <translation id="1343920184519992513">Qaldığınız yerdən davam edin və xüsusi səhifələr dəstini açın</translation>
@@ -5855,7 +5854,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5499476581866658341">İndi telefonunuzun son fotolarına və mediasına baxa bilərsiniz</translation>
 <translation id="549957179819296104">Yeni işarə</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Axtarış tarixçəsi<ph name="END_LINK_SEARCH" /> və <ph name="BEGIN_LINK_GOOGLE" />digər fəaliyyət formaları<ph name="END_LINK_GOOGLE" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. İstənilən zaman onları silə bilərsiniz.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> parolu ayarlayın</translation>
 <translation id="5500709606820808700">Təhlükəsizlik yoxlanışı bu gün icra olunub</translation>
 <translation id="5501322521654567960">Sol yan panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> cihazından <ph name="ATTACHMENTS" /> almaq alınmadı}other{<ph name="DEVICE_NAME" /> cihazından <ph name="ATTACHMENTS" /> almaq alınmadı}}</translation>
@@ -7814,7 +7812,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7049293980323620022">Fayl saxlanılsın?</translation>
 <translation id="7049524156282610342">Baxış datası: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Yanlış hotspot konfiqurasiyası</translation>
-<translation id="7052237160939977163">Performans izləmə datasını göndərin</translation>
 <translation id="7053983685419859001">Bloklayın</translation>
 <translation id="7055152154916055070">Yönləndirmə blok edildi:</translation>
 <translation id="7055451306017383754">Tətbiq bu qovluqdan istifadə etdiyi üçün paylaşımı silmək mümkün olmadı. Parallels Desktop növbəti dəfə bağlandıqda qovluğun paylaşımı silinəcək.</translation>

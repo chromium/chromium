@@ -449,7 +449,6 @@
 <translation id="13392265090583506">ユーザー補助設定</translation>
 <translation id="1340527397989195812">ファイルアプリを使用してデバイスからメディアをバックアップします。</translation>
 <translation id="1341701348342335220">おつかれさまでした！</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> と同期できません</translation>
 <translation id="1342886103232377846">Google パスワード マネージャーに移動して、不正使用されたパスワードを確認してください。</translation>
 <translation id="1343865611738742294">Linux アプリに USB デバイスへのアクセスを許可します。USB デバイスを取り外した後は、Linux にデバイスのデータは残りません。</translation>
 <translation id="1343920184519992513">前回中断したところから再開して、特定のページを開く</translation>
@@ -5848,7 +5847,6 @@
 <translation id="5499476581866658341">スマートフォンの最近の写真やメディアを表示できるようになりました</translation>
 <translation id="549957179819296104">アイコンが新しくなりました</translation>
 <translation id="5500168250243071806">ログイン中は Google アカウントに<ph name="BEGIN_LINK_SEARCH" />検索履歴<ph name="END_LINK_SEARCH" />や<ph name="BEGIN_LINK_GOOGLE" />その他のアクティビティ<ph name="END_LINK_GOOGLE" />が保存される可能性があります。これらのデータはいつでも削除できます。</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> のパスワードを設定</translation>
 <translation id="5500709606820808700">安全チェックを今日実行しました</translation>
 <translation id="5501322521654567960">左揃えのサイドパネル</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受け取れませんでした}}</translation>
@@ -7808,7 +7806,6 @@
 <translation id="7049293980323620022">ファイルを保存しますか？</translation>
 <translation id="7049524156282610342">閲覧データ <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">無効なアクセス ポイント設定</translation>
-<translation id="7052237160939977163">パフォーマンス追跡データを送信する</translation>
 <translation id="7053983685419859001">ブロック</translation>
 <translation id="7055152154916055070">リダイレクトがブロックされました</translation>
 <translation id="7055451306017383754">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Parallels Desktop をシャットダウンするときに、フォルダの共有を停止します。</translation>

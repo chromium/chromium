@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">‏CAPS LOCK آن ہے</translation>
 <translation id="2514415433888497495">اسٹاپ <ph name="CAPTURE_MEDIUM" />۔ <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ہے</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">گیم کنٹرولز میں ترمیم کریں</translation>
 <translation id="2526581474998477112">ونڈوز غیر مقفل کریں</translation>
 <translation id="2528111225373402384">ہاٹ اسپاٹ کی ترتیبات</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -1263,6 +1264,7 @@
 <translation id="5983567367406220847">غیرفعالیت کی وجہ سے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔</translation>
 <translation id="598407983968395253">تمثیل استعمال کریں</translation>
 <translation id="598882571027504733">‏اپ ڈیٹ حاصل کرنے کیلئے، منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
+<translation id="5998374579424866922">گیم کنٹرولز آف کریں</translation>
 <translation id="6000279412553873020">کلیدیں، بٹنز، اور مزید بہت کچھ</translation>
 <translation id="6002122790816966947">آپ کے آلات</translation>
 <translation id="6012623610530968780">صفحہ <ph name="TOTAL_PAGE_NUM" /> کا <ph name="SELECTED_PAGE" /></translation>
@@ -1664,6 +1666,7 @@
 <translation id="7607002721634913082">موقوف</translation>
 <translation id="7609951632080598826">کیلنڈر کا منظر، <ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">کیمرا دوبارہ منسلک ہو گیا۔</translation>
+<translation id="7613620083300976559">گیم کنٹرولز آن کریں</translation>
 <translation id="761736749114493194">کیمرا فریمنگ کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">F °<ph name="TEMPERATURE_F" /></translation>
 <translation id="7634648064048557203">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے</translation>

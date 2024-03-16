@@ -453,7 +453,6 @@
 <translation id="13392265090583506">נגישות</translation>
 <translation id="1340527397989195812">‏גיבוי המדיה מהמכשיר באמצעות אפליקציית Files.</translation>
 <translation id="1341701348342335220">כל הכבוד!</translation>
-<translation id="1341871421050612057">לא ניתן לסנכרן עם <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">‏כדי לבדוק אם יש סיסמאות שנחשפו, צריך לעבור למנהל הסיסמאות של Google</translation>
 <translation id="1343865611738742294">‏הענקת הרשאה לאפליקציות Linux לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של Linux.</translation>
 <translation id="1343920184519992513">להמשיך מהמקום שבו הפסקת ולפתוח קבוצת דפים מסוימת</translation>
@@ -5875,7 +5874,6 @@
 <translation id="5499476581866658341">עכשיו יש לך אפשרות לראות את המדיה והתמונות האחרונות שבטלפון</translation>
 <translation id="549957179819296104">הסמל החדש</translation>
 <translation id="5500168250243071806">‏<ph name="BEGIN_LINK_SEARCH" />היסטוריית החיפושים<ph name="END_LINK_SEARCH" /> ו<ph name="BEGIN_LINK_GOOGLE" />סוגי פעילות אחרים<ph name="END_LINK_GOOGLE" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
-<translation id="5500516288673745630">הגדרת הסיסמה של <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">בדיקת הבטיחות פעלה היום</translation>
 <translation id="5501322521654567960">החלונית הצדדית משמאל</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{לא ניתן היה לקבל <ph name="ATTACHMENTS" /> מהמכשיר <ph name="DEVICE_NAME" />}one{לא ניתן היה לקבל <ph name="ATTACHMENTS" /> מהמכשיר <ph name="DEVICE_NAME" />}two{לא ניתן היה לקבל <ph name="ATTACHMENTS" /> מהמכשיר <ph name="DEVICE_NAME" />}other{לא ניתן היה לקבל <ph name="ATTACHMENTS" /> מהמכשיר <ph name="DEVICE_NAME" />}}</translation>
@@ -7841,7 +7839,6 @@
 <translation id="7049293980323620022">להשאיר את הקובץ?</translation>
 <translation id="7049524156282610342">נתוני הגלישה <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">הגדרה לא תקינה של נקודה לשיתוף אינטרנט</translation>
-<translation id="7052237160939977163">שליחת נתוני מעקב אחר ביצועים</translation>
 <translation id="7053983685419859001">חסימה</translation>
 <translation id="7055152154916055070">הפניה אוטומטית נחסמה:</translation>
 <translation id="7055451306017383754">‏לא ניתן לבטל את השיתוף כי אפליקציה משתמשת בתיקייה הזו. שיתוף התיקייה הזו יבוטל בכיבוי הבא של Parallels Desktop.</translation>

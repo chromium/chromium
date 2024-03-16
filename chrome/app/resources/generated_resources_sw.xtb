@@ -451,7 +451,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="13392265090583506">Ufikivu</translation>
 <translation id="1340527397989195812">Hifadhi nakala rudufu ya maudhui kutoka kwenye kifaa ukitumia programu ya Faili.</translation>
 <translation id="1341701348342335220">Vizuri sana!</translation>
-<translation id="1341871421050612057">Huwezi kusawazisha ukitumia <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Ili ukague manenosiri yaliyoathiriwa, nenda kwenye Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="1343865611738742294">Zipe programu za Linux ruhusa ya kufikia vifaa vya USB. Linux haitakumbuka kifaa cha USB baada ya kukiondoa.</translation>
 <translation id="1343920184519992513">Endelea pale ulipoishia na ufungue kurasa kadhaa mahususi.</translation>
@@ -5869,7 +5868,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5499476581866658341">Sasa unaweza kuangalia picha na maudhui ya hivi karibuni ya simu yako</translation>
 <translation id="549957179819296104">Aikoni mpya</translation>
 <translation id="5500168250243071806">Huenda <ph name="BEGIN_LINK_SEARCH" />Historia ya mambo uliyotafuta<ph name="END_LINK_SEARCH" /> na <ph name="BEGIN_LINK_GOOGLE" />aina nyingine za shughuli<ph name="END_LINK_GOOGLE" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.</translation>
-<translation id="5500516288673745630">Weka nenosiri la <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Angalizo la usalama limetekelezwa leo</translation>
 <translation id="5501322521654567960">Kidirisha cha pembeni kilichopangiliwa kushoto</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Imeshindwa kupokea <ph name="ATTACHMENTS" /> kutoka kwenye <ph name="DEVICE_NAME" />}other{Imeshindwa kupokea <ph name="ATTACHMENTS" /> kutoka kwenye <ph name="DEVICE_NAME" />}}</translation>
@@ -7831,7 +7829,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7049293980323620022">Ungependa kuhifadhi faili?</translation>
 <translation id="7049524156282610342">Data ya kuvinjari ya <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Mipangilio isiyo sahihi ya mtandao pepe</translation>
-<translation id="7052237160939977163">Tuma data ya ufuatiliaji wa utendaji</translation>
 <translation id="7053983685419859001">Zuia</translation>
 <translation id="7055152154916055070">Imezuiwa kuelekeza kwingine:</translation>
 <translation id="7055451306017383754">Imeshindwa kughairi kushiriki kwa sababu kuna programu inayotumia folda hii. Itaghairi kushiriki folda wakati programu ya Parallels Desktop itafungwa tena.</translation>

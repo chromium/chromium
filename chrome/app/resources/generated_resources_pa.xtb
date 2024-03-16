@@ -452,7 +452,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Files ਐਪ ਵਰਤਦੇ ਹੋਏ ਡੀਵਾਈਸ ਤੋਂ ਮੀਡੀਆ ਦਾ ਬੈਕਅੱਪ ਲਓ।</translation>
 <translation id="1341701348342335220">ਸ਼ਾਬਾਸ਼!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> ਨਾਲ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1342886103232377846">ਛੇੜਛਾੜ ਵਾਲੇ ਪਾਸਵਰਡਾਂ ਦਾ ਜਾਂਚ ਕਰਨ ਲਈ, Google Password Manager 'ਤੇ ਜਾਓ</translation>
 <translation id="1343865611738742294">USB ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ Linux ਐਪਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ। Linux ਕਿਸੇ USB ਡੀਵਾਈਸ ਨੂੰ ਹਟਾਉਣ ਤੋਂ ਬਾਅਦ ਉਸਨੂੰ ਯਾਦ ਨਹੀਂ ਰੱਖੇਗਾ।</translation>
 <translation id="1343920184519992513">ਉੱਥੋਂ ਜਾਰੀ ਰੱਖੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਅਤੇ ਪੰਨਿਆਂ ਦਾ ਖਾਸ ਸੈੱਟ ਖੋਲ੍ਹੋ</translation>
@@ -5876,7 +5875,6 @@
 <translation id="5499476581866658341">ਤੁਸੀਂ ਹੁਣ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਮੀਡੀਆ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="549957179819296104">ਨਵਾਂ ਪ੍ਰਤੀਕ</translation>
 <translation id="5500168250243071806">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_SEARCH" />ਖੋਜ ਇਤਿਹਾਸ<ph name="END_LINK_SEARCH" /> ਅਤੇ <ph name="BEGIN_LINK_GOOGLE" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK_GOOGLE" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> ਪਾਸਵਰਡ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="5500709606820808700">ਸੁਰੱਖਿਆ ਜਾਂਚ ਅੱਜ ਚਲਾਈ ਗਈ</translation>
 <translation id="5501322521654567960">ਖੱਬੇ ਪਾਸੇ ਇਕਸਾਰ ਕੀਤਾ ਸਾਈਡ ਪੈਨਲ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ}one{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ}other{<ph name="DEVICE_NAME" /> ਤੋਂ <ph name="ATTACHMENTS" /> ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ}}</translation>
@@ -7840,7 +7838,6 @@
 <translation id="7049293980323620022">ਕੀ ਫ਼ਾਈਲ ਰੱਖਣੀ ਹੈ?</translation>
 <translation id="7049524156282610342">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">ਅਵੈਧ ਹੌਟਸਪੌਟ ਸੰਰੂਪਣ</translation>
-<translation id="7052237160939977163">ਪ੍ਰਦਰਸ਼ਨ ਟ੍ਰੇਸ ਡਾਟਾ ਭੇਜੋ</translation>
 <translation id="7053983685419859001">ਬਲੌਕ ਕਰੋ</translation>
 <translation id="7055152154916055070">ਇਸ ਰੀਡਾਇਰੈਕਟ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ:</translation>
 <translation id="7055451306017383754">ਸਾਂਝਾਕਰਨ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਐਪਲੀਕੇਸ਼ਨ ਇਸ ਫੋਲਡਰ ਨੂੰ ਵਰਤ ਰਹੀ ਹੈ। ਅਗਲੀ ਵਾਰ Parallels Desktop ਬੰਦ ਹੋਣ 'ਤੇ ਫੋਲਡਰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>

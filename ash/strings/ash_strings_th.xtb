@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">Caps Lock เปิดอยู่</translation>
 <translation id="2514415433888497495">หยุด<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">แก้ไขการควบคุมเกม</translation>
 <translation id="2526581474998477112">ปลดล็อกหน้าต่าง</translation>
 <translation id="2528111225373402384">การตั้งค่าฮอตสปอต</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -1258,6 +1259,7 @@
 <translation id="5983567367406220847">ปิดฮอตสปอตแล้วเนื่องจากไม่มีการใช้งาน</translation>
 <translation id="598407983968395253">ใช้เทมเพลต</translation>
 <translation id="598882571027504733">หากต้องการรับอัปเดต ให้รีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
+<translation id="5998374579424866922">ปิดการควบคุมเกม</translation>
 <translation id="6000279412553873020">แป้น ปุ่ม และอื่นๆ</translation>
 <translation id="6002122790816966947">อุปกรณ์ของคุณ</translation>
 <translation id="6012623610530968780">หน้า <ph name="SELECTED_PAGE" /> จาก <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1660,6 +1662,7 @@
 <translation id="7607002721634913082">หยุดชั่วคราว</translation>
 <translation id="7609951632080598826">มุมมองปฏิทิน <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">เชื่อมต่อกล้องอีกครั้งแล้ว</translation>
+<translation id="7613620083300976559">เปิดการควบคุมเกม</translation>
 <translation id="761736749114493194">เปิด/ปิดการจัดเฟรมกล้อง <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">จัดกล้องพอดีกับมุมขวาล่างแล้ว</translation>

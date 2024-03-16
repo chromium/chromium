@@ -452,7 +452,6 @@
 <translation id="13392265090583506">सुलभता सेटिंग</translation>
 <translation id="1340527397989195812">फ़ाइल ऐप्लिकेशन का उपयोग करके डिवाइस से मीडिया का बैक अप लें.</translation>
 <translation id="1341701348342335220">बढ़िया काम!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> के साथ सिंक नहीं किया जा सकता</translation>
 <translation id="1342886103232377846">यह देखने के लिए कि पासवर्ड हैक या चोरी तो नहीं हुए हैं, Google Password Manager पर जाएं</translation>
 <translation id="1343865611738742294">Linux के ऐप्लिकेशन को यूएसबी डिवाइस ऐक्सेस करने की अनुमति दें. यूएसबी डिवाइस को हटाने के बाद Linux उसे याद नहीं रखेगा.</translation>
 <translation id="1343920184519992513">जहां आपने छोड़ा था वहीं से जारी रखें और पेजों के एक खास सेट को खोलें</translation>
@@ -5874,7 +5873,6 @@
 <translation id="5499476581866658341">अब आपके पास अपने फ़ोन में मौजूद हाल की फ़ोटो और मीडिया देखने का विकल्प है</translation>
 <translation id="549957179819296104">नया आइकॉन</translation>
 <translation id="5500168250243071806">हो सकता है कि आपके साइन इन होने पर, <ph name="BEGIN_LINK_SEARCH" />खोज इतिहास<ph name="END_LINK_SEARCH" /> और <ph name="BEGIN_LINK_GOOGLE" />अन्य तरह की गतिविधियां<ph name="END_LINK_GOOGLE" /> आपके Google खाते में सेव हो जाएं. उन्हें किसी भी समय मिटाया जा सकता है.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> का पासवर्ड सेट करें</translation>
 <translation id="5500709606820808700">आज सुरक्षा जांच हुई है</translation>
 <translation id="5501322521654567960">बाईं ओर अलाइन साइड पैनल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> नहीं पा सके}}</translation>
@@ -7838,7 +7836,6 @@
 <translation id="7049293980323620022">फ़ाइल रखें?</translation>
 <translation id="7049524156282610342">ब्राउज़िंग डेटा <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">हॉटस्पॉट का कॉन्फ़िगरेशन गलत है</translation>
-<translation id="7052237160939977163">निष्पादन ट्रेस डेटा भेजें</translation>
 <translation id="7053983685419859001">ब्लॉक करें</translation>
 <translation id="7055152154916055070">रीडायरेक्ट ब्लॉक किया गया:</translation>
 <translation id="7055451306017383754">शेयर करना बंद नहीं किया जा सका, क्योंकि एक ऐप्लिकेशन इस फ़ोल्डर का इस्तेमाल कर रहा है. जब Parallels Desktop अगली बार बंद होगा, तब इस फ़ोल्डर को शेयर करना बंद कर दिया जाएगा.</translation>

@@ -454,7 +454,6 @@
 <translation id="13392265090583506">Доступність</translation>
 <translation id="1340527397989195812">Створити резервну копію медіа-вмісту з пристрою за допомогою додатка Файли.</translation>
 <translation id="1341701348342335220">Чудова робота!</translation>
-<translation id="1341871421050612057">Не вдалося виконати синхронізацію в обліковому записі <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Щоб перевірити, чи немає у вас зламаних паролів, перейдіть у Google Менеджер паролів</translation>
 <translation id="1343865611738742294">Надайте додаткам Linux доступ до пристроїв USB. Linux не зберігатиме дані про пристрій USB після його вилучення.</translation>
 <translation id="1343920184519992513">Продовжувати з місця зупинки та відкривати певний набір сторінок</translation>
@@ -5877,7 +5876,6 @@
 <translation id="5499476581866658341">Тепер ви можете переглядати нещодавні фотографії та медіафайли з телефона</translation>
 <translation id="549957179819296104">Новий значок</translation>
 <translation id="5500168250243071806">Коли ви входите в обліковий запис Google, у ньому можуть зберігатись <ph name="BEGIN_LINK_SEARCH" />Історія пошуку<ph name="END_LINK_SEARCH" /> та <ph name="BEGIN_LINK_GOOGLE" />дані про інші дії<ph name="END_LINK_GOOGLE" />. Ви можете будь-коли видалити їх.</translation>
-<translation id="5500516288673745630">Установіть пароль для пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Перевірку безпеки виконано сьогодні</translation>
 <translation id="5501322521654567960">Бічна панель зліва</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}one{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}few{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}many{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}other{Не вдалось отримати <ph name="ATTACHMENTS" /> з пристрою <ph name="DEVICE_NAME" />}}</translation>
@@ -7842,7 +7840,6 @@
 <translation id="7049293980323620022">Завантажити файл?</translation>
 <translation id="7049524156282610342">Дані вебперегляду користувача <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Недійсна конфігурація точки доступу</translation>
-<translation id="7052237160939977163">Надсилати дані відстеження ефективності</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7055152154916055070">Переадресацію заблоковано:</translation>
 <translation id="7055451306017383754">Не вдалося закрити доступ, оскільки цю папку використовує додаток. Доступ до неї буде закрито після завершення роботи Parallels Desktop.</translation>

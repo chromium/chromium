@@ -451,7 +451,6 @@
 <translation id="13392265090583506">Настройки за достъпност</translation>
 <translation id="1340527397989195812">Създаване на резервно копие на носителя от устройството с помощта на приложението Файлове.</translation>
 <translation id="1341701348342335220">Браво!</translation>
-<translation id="1341871421050612057">Синхронизирането с(ъс) <ph name="USERNAME" /> не е възможно</translation>
 <translation id="1342886103232377846">За да проверите за компрометирани пароли, отворете Google Мениджър на пароли</translation>
 <translation id="1343865611738742294">Разрешаване на приложенията за Linux да осъществяват достъп до USB устройства. Linux няма да запомни дадено USB устройство, след като бъде премахнато.</translation>
 <translation id="1343920184519992513">Продължаване оттам, откъдето сте прекъснали, и отваряне на определен набор от страници</translation>
@@ -5871,7 +5870,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5499476581866658341">Вече можете да преглеждате скорошните снимки и мултимедийни файлове, които имате на телефона си</translation>
 <translation id="549957179819296104">Нова икона</translation>
 <translation id="5500168250243071806">Възможно е <ph name="BEGIN_LINK_SEARCH" />историята на търсенията<ph name="END_LINK_SEARCH" /> и <ph name="BEGIN_LINK_GOOGLE" />други видове активност<ph name="END_LINK_GOOGLE" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
-<translation id="5500516288673745630">Задаване на парола за <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Проверката на безопасността бе изпълнена днес</translation>
 <translation id="5501322521654567960">Подравнен вляво страничен панел</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Получаването на <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" /> не бе успешно}other{Получаването на <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" /> не бе успешно}}</translation>
@@ -7834,7 +7832,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7049293980323620022">Да се запази ли файлът?</translation>
 <translation id="7049524156282610342">Данни за сърфирането: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Невалидна конфигурация на точката за достъп</translation>
-<translation id="7052237160939977163">Да се изпратят данните от проследяването на ефективността</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7055152154916055070">Блокирано бе пренасочване:</translation>
 <translation id="7055451306017383754">Прекратяването на споделянето не бе успешно, защото тази папка се използва от приложение. Споделянето ѝ ще бъде прекратено при следващото изключване на Parallels Desktop.</translation>

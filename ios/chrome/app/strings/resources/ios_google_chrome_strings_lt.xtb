@@ -22,6 +22,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="1436059927646026729">Atidaryti naujausią skirtuką naršyklėje „Chrome“</translation>
 <translation id="1449241544691504574">Žymių pridėjimas prie „Chrome“</translation>
 <translation id="1462727070346936664">Prisijunkite, kad išnaudotumėte visas „Chrome“ galimybes.</translation>
+<translation id="1462833127986525564">Susiekite „Chrome“ ir kitas „Google“ paslaugas, jei norite, kad jos suasmenintų jums teikiamas funkcijas pagal skirtingų paslaugų duomenis</translation>
 <translation id="1491435845014430217">Įjunkite parinktį „Užrakinti inkognito skirtukus uždarius „Chrome“.</translation>
 <translation id="1493827051843127077">Nustatykite „Chrome“ kaip numatytąjį nustatymą, kad būtų sinchronizuojami skirtukai, slaptažodžiai ir mokėjimo informacija visuose įrenginiuose</translation>
 <translation id="1504372625950710826">„Chrome“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
@@ -142,6 +143,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4834499902900503484">Kai esate prisijungę prie „Chrome“, išsaugoti slaptažodžiai pateikiami „Google“ paskyroje. Jei norite išjungti, <ph name="BEGIN_LINK" />eikite į nustatymus<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Nepalaikoma „Chrome“ beta versijoje</translation>
 <translation id="4840404732697892756">„Google“ slaptažodžių tvarkyklė gali patikrinti slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
+<translation id="4856636171409137183">Jei norite išnaudoti visus suasmenintų funkcijų pranašumus, įtraukite „Chrome“ į „<ph name="FEATURE_NAME_1" />“ ir „<ph name="FEATURE_NAME_2" />“</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{„Chrome“ gali padėti stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="4903674399067644695">Šioje kortelėje pateikiami pasiūlymai, kaip išnaudoti visas „Chrome“ galimybes.</translation>
 <translation id="49200511069271369">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios jungiatės, ir tai, kaip galima naudoti „Chrome“. Administratorius gali nustatyti arba apriboti tam tikras funkcijas.</translation>

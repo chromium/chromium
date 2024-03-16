@@ -361,6 +361,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2499445554382787206">Menu do perfil do espaço de trabalho. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
 <translation id="2504454902900101003">Ignorar configuração da visualização das fotos, dos conteúdos multimédia e das notificações do telemóvel</translation>
+<translation id="2505378917951323738">Não foi possível editar a tarefa. Tente novamente quando estiver online.</translation>
 <translation id="2509468283778169019">CAPS LOCK está ativado</translation>
 <translation id="2514415433888497495">Parar <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir ao concluir</translation>
 <translation id="3726171378575546917">A app <ph name="UNAVAILABLE_APPS_ONE" />, a app <ph name="UNAVAILABLE_APPS_TWO" /> e mais <ph name="UNAVAILABLE_APPS_COUNT" /> apps não se encontram neste dispositivo.</translation>
+<translation id="3727231512028252576">Não foi possível carregar os itens. Tente novamente quando estiver online.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3738664582935948253">Já pode apresentar cliques e atalhos de teclado nas gravações de ecrã</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
@@ -911,6 +913,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
 <translation id="4644727592819780893">A região é demasiado pequena para se ajustar à câmara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendação de aplicação</translation>
+<translation id="4649019912155580914">Editado por si</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Caixa de verificação selecionada.</translation>
 <translation id="4657775630156561295">A sugestão seguinte irá ser removida permanentemente do histórico de sugestões da sua conta:
 
@@ -1434,6 +1437,7 @@ Nova instalação</translation>
 <translation id="6643169293433369663">Anular ordenação por nome</translation>
 <translation id="6649641931981131786">Ajuste a câmara para ficar no centro do ecrã.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quer confirmar a sua identidade</translation>
+<translation id="6650742588569439432">Não foi possível carregar os itens.</translation>
 <translation id="6650933572246256093">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Introduza esta chave nesse dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="666343722268997814">Abrir o menu de de contexto referente ao item realçado</translation>
@@ -1684,6 +1688,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7672095158465655885">Ligação estabelecida a <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Colar o conteúdo da área de transferência como texto simples</translation>
 <translation id="7684531502177797067">Entrada da câmara definida como <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Aberto por si</translation>
 <translation id="7689817529363080918">Isto permite o acesso ao microfone para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e todas as apps e Websites com a autorização do microfone</translation>
 <translation id="7704000866383261579">Refazer a última ação</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1784,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8000066093800657092">Sem rede</translation>
 <translation id="8001755249288974029">Selecionar o texto do cursor até ao início da linha</translation>
 <translation id="8004512796067398576">Aumentar</translation>
+<translation id="8015361438441228492">Não foi possível editar a tarefa.</translation>
 <translation id="8026334261755873520">Limpar dados de navegação</translation>
 <translation id="802782383769312836">Espaço de trabalho anterior: <ph name="DESK_NAME" />. Espaço de trabalho <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Falha na ligação à zona Wi-Fi</translation>
@@ -1903,6 +1909,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8551588720239073785">Definições de data e hora</translation>
 <translation id="8553395910833293175">Já atribuído a todos os espaços de trabalho.</translation>
 <translation id="8555757996376137129">Remover espaço de trabalho atual</translation>
+<translation id="8559845965695780508">Editado por <ph name="USER" /></translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> recomenda que atualize o dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Aqui estão algumas sugestões para experimentar</translation>
 <translation id="857201607579416096">O menu foi movido para o canto inferior direito do ecrã.</translation>

@@ -451,7 +451,6 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Files अ‍ॅप वापरून डिव्हाइसवरील मीडियाचा बॅकअप घ्या.</translation>
 <translation id="1341701348342335220">चांगल्या प्रकारे पूर्ण केले आहे!</translation>
-<translation id="1341871421050612057"><ph name="USERNAME" /> या खात्यासह सिंक करू शकत नाही</translation>
 <translation id="1342886103232377846">धोक्यात असलेले पासवर्ड तपासण्यासाठी, Google Password Manager वर जा</translation>
 <translation id="1343865611738742294">USB डिव्हाइस ॲक्सेस करण्यासाठी Linux ला परवानगी द्या. USB डिव्हाइस काढून टाकल्यानंतर Linux ते लक्षात ठेवणार नाही.</translation>
 <translation id="1343920184519992513">तुम्ही सोडले होते तेथून पुढे सुरू ठेवा आणि पेजचा विशिष्ट संच उघडा</translation>
@@ -5871,7 +5870,6 @@
 <translation id="5499476581866658341">तुम्ही आता तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पाहू शकता</translation>
 <translation id="549957179819296104">नवीन आयकन</translation>
 <translation id="5500168250243071806">तुम्ही साइन इन केलेले असते तेव्हा, तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK_SEARCH" />शोध इतिहास<ph name="END_LINK_SEARCH" /> आणि <ph name="BEGIN_LINK_GOOGLE" />इतर प्रकारची ॲक्टिव्हिटी<ph name="END_LINK_GOOGLE" /> सेव्ह केली जाऊ शकते. तुम्ही ती कधीही हटवू शकता.</translation>
-<translation id="5500516288673745630"><ph name="DEVICE_TYPE" /> पासवर्ड सेट करा</translation>
 <translation id="5500709606820808700">सुरक्षा तपासणी आज रन केली गेली</translation>
 <translation id="5501322521654567960">डाव्या बाजूला अलाइन केलेले साइ़ड पॅनल</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> कडून <ph name="ATTACHMENTS" /> मिळवता आला नाही}other{<ph name="DEVICE_NAME" /> कडून <ph name="ATTACHMENTS" /> मिळवता आले नाहीत}}</translation>
@@ -7834,7 +7832,6 @@
 <translation id="7049293980323620022">फाईल ठेवायची?</translation>
 <translation id="7049524156282610342">ब्राउझिंग डेटा <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">चुकीचे हॉटस्पॉट कॉन्फिगरेशन</translation>
-<translation id="7052237160939977163">कार्यप्रदर्शन ट्रेस डेटा पाठवा</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7055152154916055070">रीडिरेक्ट ब्लॉक केले:</translation>
 <translation id="7055451306017383754">एक अ‍ॅप्लिकेशन हे फोल्डर वापरत असल्यामुळे ते अनशेअर करता आले नाही. पुढे Parallels Desktop बंद केल्यावर फोल्डर अनशेअर केले जाईल.</translation>

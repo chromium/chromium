@@ -451,7 +451,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Rugsteun media van die toestel af met die lêerprogram.</translation>
 <translation id="1341701348342335220">Mooi so!</translation>
-<translation id="1341871421050612057">Kan nie met <ph name="USERNAME" /> sinkroniseer nie</translation>
 <translation id="1342886103232377846">Gaan na Google Wagwoordbestuurder om gekompromitteerde wagwoorde na te gaan</translation>
 <translation id="1343865611738742294">Gee Linux-programme toestemming om toegang tot USB-toestelle te kry. Linux sal nie 'n USB-toestel onthou nadat dit verwyder is nie.</translation>
 <translation id="1343920184519992513">Gaan voort waar jy opgehou het en maak 'n spesifieke stel bladsye oop</translation>
@@ -5874,7 +5873,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5499476581866658341">Jy kan nou jou foon se onlangse foto's en media bekyk</translation>
 <translation id="549957179819296104">Nuwe ikoon</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Soekgeskiedenis<ph name="END_LINK_SEARCH" /> en <ph name="BEGIN_LINK_GOOGLE" />ander soorte aktiwiteit<ph name="END_LINK_GOOGLE" /> sal dalk in jou Google-rekening gestoor word wanneer jy aangemeld is. Jy kan hulle enige tyd uitvee.</translation>
-<translation id="5500516288673745630">Stel <ph name="DEVICE_TYPE" />-wagwoord</translation>
 <translation id="5500709606820808700">Veiligheidskontrole het vandag plaasgevind</translation>
 <translation id="5501322521654567960">Linksbelynde kantpaneel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Kon nie <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> af ontvang nie}other{Kon nie <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> af ontvang nie}}</translation>
@@ -7836,7 +7834,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7049293980323620022">Hou lêer?</translation>
 <translation id="7049524156282610342">Blaaierdata <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ongeldige warmkolopstelling</translation>
-<translation id="7052237160939977163">Stuur prestasienasporingdata</translation>
 <translation id="7053983685419859001">Blokkeer</translation>
 <translation id="7055152154916055070">Herleiding is geblokkeer:</translation>
 <translation id="7055451306017383754">Kon nie ontdeel nie want 'n program gebruik tans hierdie vouer. Die vouer sal ontdeel word wanneer Parallels Dekstop weer afgeskakel word.</translation>

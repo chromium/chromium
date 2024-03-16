@@ -453,7 +453,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="13392265090583506">Ustawienia ułatwień dostępu</translation>
 <translation id="1340527397989195812">Wykonaj kopię zapasową multimediów zapisanych na urządzeniu, używając aplikacji Pliki.</translation>
 <translation id="1341701348342335220">Dobra robota!</translation>
-<translation id="1341871421050612057">Nie udało się zsynchronizować z kontem <ph name="USERNAME" /></translation>
 <translation id="1342886103232377846">Aby sprawdzić, czy jakieś hasła nie zostały przejęte, otwórz Menedżera haseł Google</translation>
 <translation id="1343865611738742294">Przyznaj aplikacjom na Linuksa dostęp do urządzeń USB. Linux nie będzie pamiętać urządzenia USB po jego odłączeniu.</translation>
 <translation id="1343920184519992513">Kontynuuj od tego samego miejsca i otwórz konkretny zestaw stron</translation>
@@ -5862,7 +5861,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5499476581866658341">Możesz teraz wyświetlać najnowsze zdjęcia i pliki multimedialne z telefonu</translation>
 <translation id="549957179819296104">Nowa ikona</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Historia wyszukiwania<ph name="END_LINK_SEARCH" /> i <ph name="BEGIN_LINK_GOOGLE" />inne formy aktywności<ph name="END_LINK_GOOGLE" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
-<translation id="5500516288673745630">Ustaw hasło urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Kontrola zabezpieczeń została wykonana dzisiaj</translation>
 <translation id="5501322521654567960">Lewy panel boczny</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}few{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}many{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}other{Nie udało się odebrać danych (<ph name="ATTACHMENTS" />) z urządzenia <ph name="DEVICE_NAME" />}}</translation>
@@ -7837,7 +7835,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7049293980323620022">Zachować plik?</translation>
 <translation id="7049524156282610342">Dane przeglądania, <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Nieprawidłowa konfiguracja hotspota</translation>
-<translation id="7052237160939977163">Wyślij dane śledzenia wydajności</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7055152154916055070">Zablokowano przekierowanie:</translation>
 <translation id="7055451306017383754">Nie udało się cofnąć udostępniania, ponieważ tego folderu używa aplikacja. Folder przestanie być udostępniany po zamknięciu Parallels Desktop.</translation>

@@ -452,7 +452,6 @@
 <translation id="13392265090583506">Даступнасць</translation>
 <translation id="1340527397989195812">Стварыце рэзервовыя копіі файлаў мультымедыя з прылады з дапамогай праграмы "Файлы".</translation>
 <translation id="1341701348342335220">Выдатна!</translation>
-<translation id="1341871421050612057">Ва ўліковым запісе <ph name="USERNAME" /> выкарыстоўваць сінхранізацыю нельга</translation>
 <translation id="1342886103232377846">Каб праверыць наяўнасць раскрытых пароляў, перайдзіце ў Менеджар пароляў Google</translation>
 <translation id="1343865611738742294">Даць праграмам Linux доступ да прылад USB. Linux будзе забываць выдаленыя прылады USB.</translation>
 <translation id="1343920184519992513">Працягваць з месца, на якім вы спыніліся, і адкрываць пэўны набор старонак</translation>
@@ -5857,7 +5856,6 @@
 <translation id="5499476581866658341">Цяпер вы можаце праглядаць нядаўнія медыяфайлы і фота з тэлефона</translation>
 <translation id="549957179819296104">Новы значок</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Гісторыя пошуку<ph name="END_LINK_SEARCH" /> і <ph name="BEGIN_LINK_GOOGLE" />іншыя дзеянні<ph name="END_LINK_GOOGLE" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Іх можна выдаліць у любы час.</translation>
-<translation id="5500516288673745630">Задайце пароль для прылады <ph name="DEVICE_TYPE" /></translation>
 <translation id="5500709606820808700">Праверка бяспекі выконвалася сёння</translation>
 <translation id="5501322521654567960">Бакавая панэль злева</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}one{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}few{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}many{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}other{Не ўдалося атрымаць даныя (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}}</translation>
@@ -7822,7 +7820,6 @@
 <translation id="7049293980323620022">Захаваць файл?</translation>
 <translation id="7049524156282610342">Даныя пра работу ў браўзеры: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Няправільная канфігурацыя хот-спота</translation>
-<translation id="7052237160939977163">Адпраўляць даныя трасіроўкі прадукцыйнасці</translation>
 <translation id="7053983685419859001">Заблакіраваць</translation>
 <translation id="7055152154916055070">Перанакіраванне заблакіравана:</translation>
 <translation id="7055451306017383754">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага завяршэння працы Parallels Desktop.</translation>
