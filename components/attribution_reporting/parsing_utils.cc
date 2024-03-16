@@ -183,7 +183,9 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
   }
 }
 
-base::expected<uint32_t, ParseError> ParseUint32(const base::Value& value) {
+base::expected<uint32_t, mojom::SourceRegistrationError> ParseUint32(
+    const base::Value& value,
+    const mojom::SourceRegistrationError error) {
   // We use `base::Value::GetIfDouble()`, which coerces if the value is an
   // integer, because not all `uint32_t` can be represented by 32-bit `int`.
   // We use `std::modf` to check that the fractional part of the `double` is 0.
@@ -198,7 +200,7 @@ base::expected<uint32_t, ParseError> ParseUint32(const base::Value& value) {
   if (double int_part;
       !double_value.has_value() || std::modf(*double_value, &int_part) != 0 ||
       !base::IsValueInRangeForNumericType<uint32_t>(*double_value)) {
-    return base::unexpected(ParseError());
+    return base::unexpected(error);
   }
 
   return static_cast<uint32_t>(*double_value);

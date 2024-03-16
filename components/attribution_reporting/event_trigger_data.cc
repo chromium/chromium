@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/check_op.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -23,7 +22,6 @@ namespace {
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 constexpr char kTriggerData[] = "trigger_data";
-constexpr char kValue[] = "value";
 
 }  // namespace
 
@@ -79,33 +77,6 @@ base::Value::Dict EventTriggerData::ToJson() const {
   SerializeDeduplicationKey(dict, dedup_key);
 
   return dict;
-}
-
-// static
-base::expected<EventTriggerValue, mojom::TriggerRegistrationError>
-EventTriggerValue::Parse(const base::Value::Dict& dict) {
-  const base::Value* v = dict.Find(kValue);
-  if (!v) {
-    return EventTriggerValue();
-  }
-
-  ASSIGN_OR_RETURN(uint32_t value, ParseUint32(*v), [](ParseError) {
-    return TriggerRegistrationError::kEventValueInvalid;
-  });
-
-  if (value == 0) {
-    return base::unexpected(TriggerRegistrationError::kEventValueInvalid);
-  }
-
-  return EventTriggerValue(value);
-}
-
-EventTriggerValue::EventTriggerValue(uint32_t value) : value_(value) {
-  CHECK_GT(value_, 0u);
-}
-
-void EventTriggerValue::Serialize(base::Value::Dict& dict) const {
-  dict.Set(kValue, Uint32ToJson(value_));
 }
 
 }  // namespace attribution_reporting
