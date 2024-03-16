@@ -144,8 +144,15 @@ void CreateSerializedMessageObject(uint32_t name,
   DCHECK(base::IsValueInRangeForNumericType<uint32_t>(total_size));
   DCHECK(!handles ||
          base::IsValueInRangeForNumericType<uint32_t>(handles->size()));
+
+  if (estimated_payload_size > payload_size) {
+    rv = MojoReserveMessageCapacity(
+        handle->value(), static_cast<uint32_t>(total_allocation_size), nullptr);
+    DCHECK_EQ(MOJO_RESULT_OK, rv);
+  }
+
   rv = MojoAppendMessageData(
-      handle->value(), static_cast<uint32_t>(total_allocation_size),
+      handle->value(), static_cast<uint32_t>(total_size),
       handles ? reinterpret_cast<MojoHandle*>(handles->data()) : nullptr,
       handles ? static_cast<uint32_t>(handles->size()) : 0, nullptr, &buffer,
       &buffer_size);

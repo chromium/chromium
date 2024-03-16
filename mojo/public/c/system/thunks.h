@@ -65,6 +65,9 @@ struct MojoSystemThunks2 {
   MojoResult (*SerializeMessage)(
       MojoMessageHandle message,
       const struct MojoSerializeMessageOptions* options);
+  MojoResult (*ReserveMessageCapacity)(MojoMessageHandle message,
+                                       uint32_t payload_buffer_size,
+                                       uint32_t* buffer_size);
   MojoResult (*AppendMessageData)(
       MojoMessageHandle message,
       uint32_t additional_payload_size,
@@ -276,6 +279,9 @@ struct MojoSystemThunks {
   MojoResult (*SerializeMessage)(
       MojoMessageHandle message,
       const struct MojoSerializeMessageOptions* options);
+  MojoResult (*ReserveMessageCapacity)(MojoMessageHandle message,
+                                       uint32_t payload_buffer_size,
+                                       uint32_t* buffer_size);
   MojoResult (*AppendMessageData)(
       MojoMessageHandle message,
       uint32_t additional_payload_size,

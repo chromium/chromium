@@ -382,6 +382,28 @@ MojoResult Core::SerializeMessage(MojoMessageHandle message_handle,
       ->SerializeIfNecessary();
 }
 
+MojoResult Core::ReserveMessageCapacity(MojoMessageHandle message_handle,
+                                        uint32_t payload_buffer_size,
+                                        uint32_t* buffer_size) {
+  if (!message_handle) {
+    return MOJO_RESULT_INVALID_ARGUMENT;
+  }
+
+  RequestContext request_context;
+  auto* message = reinterpret_cast<ports::UserMessageEvent*>(message_handle)
+                      ->GetMessage<UserMessageImpl>();
+  MojoResult rv = message->ReserveCapacity(payload_buffer_size);
+  if (rv != MOJO_RESULT_OK) {
+    return rv;
+  }
+
+  if (buffer_size) {
+    *buffer_size =
+        base::checked_cast<uint32_t>(message->user_payload_capacity());
+  }
+  return MOJO_RESULT_OK;
+}
+
 MojoResult Core::AppendMessageData(MojoMessageHandle message_handle,
                                    uint32_t additional_payload_size,
                                    const MojoHandle* handles,

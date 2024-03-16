@@ -23,6 +23,11 @@
 namespace mojo {
 namespace core {
 
+// The minimum amount of memory to allocate for a new serialized message buffer.
+// This should be sufficiently large such that most serialized messages do not
+// incur any reallocations as they're expanded to full size.
+inline constexpr uint32_t kMinimumPayloadBufferSize = 128;
+
 // UserMessageImpl is the sole implementation of ports::UserMessage used to
 // attach message data to any ports::UserMessageEvent.
 //
@@ -123,6 +128,7 @@ class MOJO_SYSTEM_IMPL_EXPORT UserMessageImpl : public ports::UserMessage {
   MojoResult SetContext(uintptr_t context,
                         MojoMessageContextSerializer serializer,
                         MojoMessageContextDestructor destructor);
+  MojoResult ReserveCapacity(uint32_t payload_buffer_size);
   MojoResult AppendData(uint32_t additional_payload_size,
                         const MojoHandle* handles,
                         uint32_t num_handles);

@@ -53,6 +53,8 @@ struct alignas(8) Header {
   MessageType type;
 };
 
+static_assert(sizeof(Header) == kNodeChannelHeaderSize);
+
 static_assert(IsAlignedForChannelMessage(sizeof(Header)),
               "Invalid header size.");
 
