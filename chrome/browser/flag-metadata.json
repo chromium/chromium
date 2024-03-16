@@ -2969,7 +2969,7 @@
   {
     "name": "enable-gamepad-multitouch",
     "owners": [ "mattreynolds@chromium.org", "deviceapi-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 150
   },
   {
     "name": "enable-gamepad-trigger-rumble",
