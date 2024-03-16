@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -323,6 +324,11 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                         this,
                         getTabModelSelector().isIncognitoSelected(),
                         getIntentDataProvider().getClientPackageName());
+                CustomTabHistoryIPHController historyIPH =
+                        mBaseCustomTabRootUiCoordinator.getHistoryIPHController();
+                if (historyIPH != null) {
+                    historyIPH.notifyUserEngaged();
+                }
             }
             return true;
         }

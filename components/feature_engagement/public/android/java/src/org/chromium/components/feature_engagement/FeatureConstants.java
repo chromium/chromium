@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE,
+    FeatureConstants.CCT_HISTORY_FEATURE,
     FeatureConstants.CCT_MINIMIZED_FEATURE,
     FeatureConstants.DOWNLOAD_PAGE_FEATURE,
     FeatureConstants.DOWNLOAD_PAGE_SCREENSHOT_FEATURE,
@@ -119,6 +120,7 @@ public @interface FeatureConstants {
     String AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE = "IPH_AutoDarkUserEducationMessage";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE =
             "IPH_AutoDarkUserEducationMessageOptIn";
+    String CCT_HISTORY_FEATURE = "IPH_CCTHistory";
     String CCT_MINIMIZED_FEATURE = "IPH_CCTMinimized";
     String CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT = "IPH_ContextualPageActions_QuietVariant";
     String CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP = "IPH_ContextualPageActions_ActionChip";

@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTa
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTabObserver;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
@@ -109,6 +110,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private @Nullable BrandingController mBrandingController;
 
     private @Nullable DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
+    private @Nullable CustomTabHistoryIPHController mCustomTabHistoryIPHController;
     private @Nullable ReadAloudIPHController mReadAloudIPHController;
 
     private @Nullable PageInsightsCoordinator mPageInsightsCoordinator;
@@ -367,6 +369,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         return coordinator.getBottomSheetController();
     }
 
+    public CustomTabHistoryIPHController getHistoryIPHController() {
+        return mCustomTabHistoryIPHController;
+    }
+
     private void maybeCreatePageInsightsComponent() {
         if (!isPageInsightsHubEnabled() || mPageInsightsCoordinator != null) return;
 
@@ -525,6 +531,14 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     public void onPostInflationStartup() {
         super.onPostInflationStartup();
         mCustomTabHeightStrategy.onPostInflationStartup();
+        if (ChromeFeatureList.sAppSpecificHistory.isEnabled() && mAppMenuCoordinator != null) {
+            mCustomTabHistoryIPHController =
+                    new CustomTabHistoryIPHController(
+                            mActivity,
+                            mActivityTabProvider,
+                            mProfileSupplier,
+                            mAppMenuCoordinator.getAppMenuHandler());
+        }
     }
 
     @Override
@@ -598,11 +612,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mPageInsightsCoordinator.destroy();
             mPageInsightsCoordinator = null;
         }
+
+        if (mCustomTabHistoryIPHController != null) {
+            mCustomTabHistoryIPHController.destroy();
+            mCustomTabHistoryIPHController = null;
+        }
     }
 
     /**
-     * Delegates changing the background color to the {@link CustomTabHeightStrategy}.
-     * Returns {@code true} if any action were taken, {@code false} if not.
+     * Delegates changing the background color to the {@link CustomTabHeightStrategy}. Returns
+     * {@code true} if any action were taken, {@code false} if not.
      */
     public boolean changeBackgroundColorForResizing() {
         if (mCustomTabHeightStrategy == null) return false;

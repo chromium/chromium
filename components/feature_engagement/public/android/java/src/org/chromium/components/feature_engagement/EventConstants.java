@@ -28,6 +28,9 @@ public final class EventConstants {
     /** The user clicked the minimize button on the toolbar. */
     public static final String CCT_MINIMIZE_BUTTON_CLICKED = "cct_minimize_button_clicked";
 
+    /** The user clicked the history item on the menu in the custom tab toolbar. */
+    public static final String CCT_HISTORY_MENU_ITEM_CLICKED = "cct_history_menu_item_clicked";
+
     /** User performed a web search for a query by choosing the Web Search option on the popup menu. */
     public static final String WEB_SEARCH_PERFORMED = "web_search_performed";
 

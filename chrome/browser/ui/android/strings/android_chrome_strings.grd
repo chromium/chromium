@@ -3617,6 +3617,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_CUSTOM_TAB_SIDE_SHEET_MINIMIZE" desc="The accesibility text for minimize button in side-sheet custom tab.">
         Collapse to side view
       </message>
+      <message name="IDS_CUSTOM_TAB_HISTORY_IPH_BUBBLE_TEXT" desc="The message on the text bubble shown to educate the user about history in CCTs.">
+        View your web history here
+      </message>
       <message name="IDS_CUSTOM_TAB_MINIMIZE" desc="The accessibility text for minimize button for custom tabs.">
         Minimize tab
       </message>
