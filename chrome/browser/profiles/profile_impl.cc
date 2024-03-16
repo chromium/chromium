@@ -434,6 +434,7 @@ void ProfileImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPdfAnnotationsEnabled, true);
 #endif
   registry->RegisterStringPref(prefs::kCustomProfileLabel, std::string());
+  registry->RegisterIntegerPref(prefs::kProfileLabelPreset, 0);
 }
 
 ProfileImpl::ProfileImpl(

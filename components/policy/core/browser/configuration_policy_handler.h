@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"
@@ -239,7 +240,15 @@ class POLICY_EXPORT SimplePolicyHandler : public TypeCheckingPolicyHandler {
 // effect.
 class POLICY_EXPORT PolicyWithDependencyHandler : public NamedPolicyHandler {
  public:
+  enum class DependencyRequirement {
+    kPolicySet,
+    kPolicySetWithValue,
+    kPolicyUnsetOrSetWithvalue
+  };
+
   PolicyWithDependencyHandler(const char* required_policy_name,
+                              DependencyRequirement dependency_requirement,
+                              base::Value expected_dependency_value,
                               std::unique_ptr<NamedPolicyHandler> handler);
   PolicyWithDependencyHandler(const PolicyWithDependencyHandler&) = delete;
   PolicyWithDependencyHandler& operator=(const PolicyWithDependencyHandler&) =
@@ -262,6 +271,8 @@ class POLICY_EXPORT PolicyWithDependencyHandler : public NamedPolicyHandler {
 
  private:
   const char* required_policy_name_;
+  DependencyRequirement dependency_requirement_;
+  base::Value expected_dependency_value_;
   std::unique_ptr<NamedPolicyHandler> handler_;
 };
 

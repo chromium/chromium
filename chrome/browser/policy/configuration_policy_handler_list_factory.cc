@@ -2549,6 +2549,18 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           policy::SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<URLPolicyHandler>(
       key::kEnterpriseLogoUrl, prefs::kEnterpriseLogoUrl));
+
+  handlers->AddHandler(std::make_unique<PolicyWithDependencyHandler>(
+      key::kCustomProfileLabel,
+      PolicyWithDependencyHandler::DependencyRequirement::
+          kPolicyUnsetOrSetWithvalue,
+      base::Value(""),
+      std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+          key::kProfileLabel, prefs::kProfileLabelPreset, chrome_schema,
+          SchemaOnErrorStrategy::SCHEMA_STRICT,
+          SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED)));
+
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   handlers->AddHandler(
       std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema));

@@ -971,6 +971,14 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     provider_.UpdateChromePolicy(policies);
   }
 
+  void SetPolicyLabelType(AvatarToolbarButton::ProfileLabelType label_type) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kProfileLabel, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(label_type), nullptr);
+    provider_.UpdateChromePolicy(policies);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         true /* is_initialization_complete_return */,
@@ -1033,6 +1041,29 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   WaitTwiceShowTextDuration();
   // Work label is still expected as it should be permanent.
   EXPECT_EQ(avatar_button->GetText(), work_label);
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       WorkBrowserShowsBadgeWithLabelPresets) {
+  auto* prefs = browser()->profile()->GetPrefs();
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      browser()->profile(), true);
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+
+  // Work label
+  SetPolicyLabelType(AvatarToolbarButton::ProfileLabelType::kWork);
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK));
+  prefs->SetString(prefs::kCustomProfileLabel, "Custom Label");
+  EXPECT_EQ(avatar_button->GetText(), u"Custom Label");
+
+  // School label
+  prefs->ClearPref(prefs::kCustomProfileLabel);
+  SetPolicyLabelType(AvatarToolbarButton::ProfileLabelType::kSchool);
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SCHOOL));
+  prefs->SetString(prefs::kCustomProfileLabel, "Custom Label");
+  EXPECT_EQ(avatar_button->GetText(), u"Custom Label");
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,

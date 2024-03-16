@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -383,9 +384,13 @@ void SimplePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
 PolicyWithDependencyHandler::PolicyWithDependencyHandler(
     const char* required_policy_name,
+    DependencyRequirement dependency_requirement,
+    base::Value expected_dependency_value,
     std::unique_ptr<NamedPolicyHandler> handler)
     : NamedPolicyHandler(handler->policy_name()),
       required_policy_name_(required_policy_name),
+      dependency_requirement_(std::move(dependency_requirement)),
+      expected_dependency_value_(std::move(expected_dependency_value)),
       handler_(std::move(handler)) {}
 
 PolicyWithDependencyHandler::~PolicyWithDependencyHandler() = default;
@@ -395,13 +400,40 @@ bool PolicyWithDependencyHandler::CheckPolicySettings(const PolicyMap& policies,
   // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
   const base::Value* required_value =
       policies.GetValueUnsafe(required_policy_name_);
-  if (!required_value) {
-    if (errors) {
-      errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
-                       required_policy_name_);
-    }
-    return false;
+  const base::Value* value = policies.GetValueUnsafe(handler_->policy_name());
+  if (value) {
   }
+  switch (dependency_requirement_) {
+    case DependencyRequirement::kPolicyUnsetOrSetWithvalue:
+      if (!required_value) {
+        return handler_->CheckPolicySettings(policies, errors);
+      }
+      [[fallthrough]];
+    case DependencyRequirement::kPolicySetWithValue:
+      if (expected_dependency_value_ != *required_value) {
+        std::string value_str;
+        JSONStringValueSerializer serializer(&value_str);
+        CHECK(serializer.Serialize(expected_dependency_value_));
+        if (errors) {
+          errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR,
+                           required_policy_name_, value_str);
+        }
+        return false;
+      }
+      break;
+    case DependencyRequirement::kPolicySet:
+      if (!required_value) {
+        if (errors) {
+          errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
+                           required_policy_name_);
+        }
+        return false;
+      }
+      break;
+    default:
+      NOTREACHED() << "Unsupported dependency requirement";
+  }
+
   return handler_->CheckPolicySettings(policies, errors);
 }
 

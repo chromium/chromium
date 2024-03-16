@@ -1237,6 +1237,7 @@ policies:
   1236: OrcaEnabled
   1237: EnterpriseLogoUrl
   1238: CustomProfileLabel
+  1239: ProfileLabel
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -4051,7 +4051,10 @@ inline constexpr char kToolbarAvatarLabelSettings[] =
 inline constexpr char kEnterpriseLogoUrl[] = "enterprise_logo.url";
 
 // String value of the custom label of a managed profile.
-inline constexpr char kCustomProfileLabel[] = "profile.custom_label";
+inline constexpr char kCustomProfileLabel[] = "profile.label.custom_value";
+
+// IntegerValue of the custom label preset of a managed profile.
+inline constexpr char kProfileLabelPreset[] = "profile.label.preset";
 
 }  // namespace prefs
 
