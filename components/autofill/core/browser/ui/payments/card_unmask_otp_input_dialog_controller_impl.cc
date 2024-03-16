@@ -193,6 +193,13 @@ CardUnmaskOtpInputDialogControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+#if BUILDFLAG(IS_IOS)
+base::WeakPtr<CardUnmaskOtpInputDialogControllerImpl>
+CardUnmaskOtpInputDialogControllerImpl::GetImplWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+#endif
+
 void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
     OtpUnmaskResult otp_unmask_result) {
   if (!dialog_view_) {

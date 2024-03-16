@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_OTP_INPUT_DIALOG_CONSUMER_H_
+#define IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_OTP_INPUT_DIALOG_CONSUMER_H_
+
+#import <Foundation/Foundation.h>
+
+@class OtpInputDialogContent;
+
+// The consumer interface that takes data from the mediator.
+@protocol OtpInputDialogConsumer <NSObject>
+
+// Set the Autofill OTP input dialog content data.
+- (void)setContent:(OtpInputDialogContent*)content;
+
+// Update the dialog to show pending state.
+- (void)showPendingState;
+
+// Update the dialog to show the invalid state. This invalid state is shown if
+// the user submits an incorrect or expired OTP.
+- (void)showInvalidState:(NSString*)invalidLabelText;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_AUTHENTICATION_OTP_INPUT_DIALOG_CONSUMER_H_

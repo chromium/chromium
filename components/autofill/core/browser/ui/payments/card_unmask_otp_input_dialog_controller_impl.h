@@ -55,6 +55,10 @@ class CardUnmaskOtpInputDialogControllerImpl
   std::u16string GetConfirmationMessage() const override;
   base::WeakPtr<CardUnmaskOtpInputDialogController> GetWeakPtr() override;
 
+#if BUILDFLAG(IS_IOS)
+  base::WeakPtr<CardUnmaskOtpInputDialogControllerImpl> GetImplWeakPtr();
+#endif
+
 #if defined(UNIT_TEST)
   base::WeakPtr<CardUnmaskOtpInputDialogView> GetDialogViewForTesting() {
     return dialog_view_;
