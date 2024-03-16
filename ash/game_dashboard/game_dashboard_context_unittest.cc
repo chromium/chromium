@@ -268,6 +268,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         Shell::Get()->session_controller()->GetActivePrefService();
     ASSERT_TRUE(active_user_prefs_);
     SetShowWelcomeDialog(false);
+    SetShowToolbar(false);
     GetContext()->AddPostTargetHandler(&post_target_event_capturer_);
   }
 
@@ -309,18 +310,27 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
   }
 
+  // Sets the `pref` boolean preference with `value`.
+  // NOTE: This function should be called before CreateGameWindow() is called.
+  void SetBooleanPref(const std::string& pref, bool value) {
+    CHECK(!game_window_) << "\"" << pref
+                         << "\" should be changed before "
+                            "creating the window. To set this param, call this "
+                            "function before CreateGameWindow() is called.";
+    active_user_prefs_->SetBoolean(pref, value);
+    ASSERT_EQ(active_user_prefs_->GetBoolean(pref), value);
+  }
+
   // Sets whether the welcome dialog should be displayed when a game window
-  // opens, which is determiend by the `show_dialog` param.
+  // opens, which is determined by the `show_dialog` param.
   void SetShowWelcomeDialog(bool show_dialog) {
-    CHECK(!game_window_)
-        << "The show welcome dialog param should be changed before "
-           "creating the window. To set this param, call this "
-           "function before CreateGameWindow() is called.";
-    active_user_prefs_->SetBoolean(prefs::kGameDashboardShowWelcomeDialog,
-                                   show_dialog);
-    ASSERT_EQ(
-        active_user_prefs_->GetBoolean(prefs::kGameDashboardShowWelcomeDialog),
-        show_dialog);
+    SetBooleanPref(prefs::kGameDashboardShowWelcomeDialog, show_dialog);
+  }
+
+  // Sets whether the toolbar should be displayed when a game window opens,
+  // which is determined by the `show_toolbar` param.
+  void SetShowToolbar(bool show_toolbar) {
+    SetBooleanPref(prefs::kGameDashboardShowToolbar, show_toolbar);
   }
 
   // If `is_arc_window` is true, this function creates the window as an ARC
@@ -2350,5 +2360,73 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(/*is_arc_game_=*/testing::Bool(),
                      /*should_start_from_main_menu_=*/testing::Bool(),
                      /*should_stop_from_main_menu_=*/testing::Bool()));
+
+// -----------------------------------------------------------------------------
+// GameDashboardUIStartupSequenceTest:
+// Test fixture to verify the toolbar and welcome dialog startup sequence when
+// opening a game window. This fixture runs through all combinations of whether
+// the toolbar and welcome dialog should be shown or not.
+class GameDashboardUIStartupSequenceTest
+    : public GameDashboardContextTest,
+      public testing::WithParamInterface<
+          std::tuple</*show_toolbar=*/bool,
+                     /*show_welcome_dialog=*/bool>> {
+ public:
+  GameDashboardUIStartupSequenceTest()
+      : should_show_toolbar_(std::get<0>(GetParam())),
+        should_show_welcome_dialog_(std::get<1>(GetParam())) {}
+  ~GameDashboardUIStartupSequenceTest() override = default;
+
+  void SetUp() override {
+    GameDashboardContextTest::SetUp();
+    SetShowWelcomeDialog(should_show_welcome_dialog_);
+    SetShowToolbar(should_show_toolbar_);
+    CreateGameWindow(/*is_arc_window=*/true,
+                     /*set_arc_game_controls_flags_prop=*/true);
+  }
+
+  void VerifyToolbarVisibility(bool visible) {
+    if (visible) {
+      ASSERT_TRUE(test_api_->GetToolbarWidget());
+    } else {
+      ASSERT_FALSE(test_api_->GetToolbarWidget());
+    }
+  }
+
+  void VerifyWelcomeDialogVisibility(bool visible) {
+    if (visible) {
+      ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+    } else {
+      ASSERT_FALSE(test_api_->GetWelcomeDialogWidget());
+    }
+  }
+
+ protected:
+  const bool should_show_toolbar_;
+  const bool should_show_welcome_dialog_;
+};
+
+// GameDashboardUIStartupSequenceTest Tests
+// -----------------------------------------------------------------------
+// Verifies the toolbar is visible after the welcome dialog is dismissed.
+TEST_P(GameDashboardUIStartupSequenceTest, ToolbarAndShowWelcomeDialogStartup) {
+  if (should_show_welcome_dialog_) {
+    // Verify the welcome dialog is visible and the toolbar is not visible.
+    VerifyWelcomeDialogVisibility(/*visible=*/true);
+    VerifyToolbarVisibility(/*visible=*/false);
+
+    // Advance by 4 seconds to dismiss the welcome dialog.
+    task_environment()->FastForwardBy(base::Seconds(4));
+  }
+
+  VerifyWelcomeDialogVisibility(/*visible=*/false);
+  VerifyToolbarVisibility(/*visible=*/should_show_toolbar_);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GameDashboardUIStartupSequenceTest,
+    testing::Combine(/*should_show_toolbar_=*/testing::Bool(),
+                     /*should_show_welcome_dialog_=*/testing::Bool()));
 
 }  // namespace ash

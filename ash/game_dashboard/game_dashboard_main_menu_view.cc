@@ -577,6 +577,7 @@ void GameDashboardMainMenuView::UpdateRecordingDuration(
 
 void GameDashboardMainMenuView::OnToolbarTilePressed() {
   bool toolbar_visible = context_->ToggleToolbar();
+  game_dashboard_utils::SetShowToolbar(toolbar_visible);
   toolbar_tile_->SetSubLabel(
       toolbar_visible
           ? l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_VISIBLE_STATUS)

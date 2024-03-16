@@ -760,7 +760,6 @@ TEST_F(GameDashboardCaptureModeTest, NoDimmingOfGameDashboardWidgets) {
       game_dashboard_menu_widget->GetNativeWindow()));
 
   // Finally, the toolbar widget should also not be dimmed.
-  context_test_api.OpenTheToolbar();
   auto* game_dashboard_toolbar_widget = context_test_api.GetToolbarWidget();
   ASSERT_TRUE(game_dashboard_toolbar_widget);
   EXPECT_FALSE(recording_watcher->IsWindowDimmedForTesting(
@@ -784,11 +783,6 @@ TEST_F(GameDashboardCaptureModeTest, AvoidToolbarAndCameraPreviewIntersection) {
   GameDashboardContextTestApi context_test_api{
       GameDashboardController::Get()->GetGameDashboardContext(game_window()),
       GetEventGenerator()};
-
-  // Open the game dashboard menu, and then the toolbar.
-  context_test_api.OpenTheMainMenu();
-  context_test_api.OpenTheToolbar();
-  context_test_api.CloseTheMainMenu();
 
   auto* game_dashboard_toolbar_widget = context_test_api.GetToolbarWidget();
   ASSERT_TRUE(game_dashboard_toolbar_widget);

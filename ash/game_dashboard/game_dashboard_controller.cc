@@ -60,6 +60,7 @@ bool GameDashboardController::ReadyForAccelerator(aura::Window* window) {
 void GameDashboardController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGameDashboardShowWelcomeDialog, true);
+  registry->RegisterBooleanPref(prefs::kGameDashboardShowToolbar, true);
 }
 
 GameDashboardController::GameDashboardController(

@@ -63,6 +63,13 @@ bool ShouldShowWelcomeDialog();
 // the new value specified in `show_dialog`.
 void SetShowWelcomeDialog(bool show_dialog);
 
+// Checks whether the toolbar should be displayed.
+bool ShouldShowToolbar();
+
+// Updates the `PrefService` preference for showing the toolbar with the new
+// value specified in `show_toolbar`.
+void SetShowToolbar(bool show_toolbar);
+
 }  // namespace ash::game_dashboard_utils
 
 #endif  // ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_

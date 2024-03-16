@@ -175,6 +175,10 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // it transfers from the previous location.
   void AnimateToolbarWidgetBoundsChange(const gfx::Rect& target_screen_bounds);
 
+  // Shows the Game Dashboard toolbar if `prefs::kGameDashboardShowToolbar` is
+  // true.
+  void MaybeShowToolbar();
+
   // Repeating timer callback that notifies `main_menu_view_` of the video
   // recording session duration.
   void OnUpdateRecordingTimer();
@@ -182,6 +186,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Closes and deletes the Game Dashboard welcome dialog once it's no longer
   // needed.
   void CloseWelcomeDialogIfAny();
+
+  // Callback when the `GameDashboardWelcomeDialog`'s timer has completed.
+  void OnWelcomeDialogTimerCompleted();
 
   // Resets the `main_menu_view_`, removes the cursor handler, and updates the
   // `game_dashboard_button_` UI.

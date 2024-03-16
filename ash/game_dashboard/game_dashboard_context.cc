@@ -447,6 +447,7 @@ void GameDashboardContext::MaybeShowWelcomeDialog() {
   // If the welcome dialog should not be shown, or the Game Dashboard feature is
   // disabled, do not show the welcome dialog.
   if (!show_welcome_dialog_ || !game_dashboard_utils::ShouldEnableFeatures()) {
+    MaybeShowToolbar();
     return;
   }
 
@@ -461,8 +462,9 @@ void GameDashboardContext::MaybeShowWelcomeDialog() {
   welcome_dialog_widget_->AddObserver(this);
   MaybeUpdateWelcomeDialogBounds();
   welcome_dialog_widget_->Show();
-  welcome_dialog_view->StartTimer(base::BindRepeating(
-      &GameDashboardContext::CloseWelcomeDialogIfAny, base::Unretained(this)));
+  welcome_dialog_view->StartTimer(
+      base::BindOnce(&GameDashboardContext::OnWelcomeDialogTimerCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GameDashboardContext::MaybeUpdateWelcomeDialogBounds() {
@@ -562,6 +564,15 @@ void GameDashboardContext::AnimateToolbarWidgetBoundsChange(
       .SetTransform(layer, gfx::Transform(), gfx::Tween::ACCEL_0_80_DECEL_80);
 }
 
+void GameDashboardContext::MaybeShowToolbar() {
+  if (game_dashboard_utils::ShouldShowToolbar() && !toolbar_widget_ &&
+      !display::Screen::GetScreen()->InTabletMode()) {
+    // Show the toolbar, if it's not already showing.
+    ToggleToolbar();
+    DCHECK(toolbar_widget_);
+  }
+}
+
 void GameDashboardContext::OnUpdateRecordingTimer() {
   DCHECK(!recording_start_time_.is_null());
   const base::TimeDelta delta = base::Time::Now() - recording_start_time_;
@@ -588,6 +599,11 @@ void GameDashboardContext::CloseWelcomeDialogIfAny() {
     welcome_dialog_widget_->RemoveObserver(this);
     welcome_dialog_widget_.reset();
   }
+}
+
+void GameDashboardContext::OnWelcomeDialogTimerCompleted() {
+  CloseWelcomeDialogIfAny();
+  MaybeShowToolbar();
 }
 
 void GameDashboardContext::UpdateOnMainMenuClosed() {

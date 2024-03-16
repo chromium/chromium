@@ -126,4 +126,20 @@ void SetShowWelcomeDialog(bool show_dialog) {
   prefs->SetBoolean(prefs::kGameDashboardShowWelcomeDialog, show_dialog);
 }
 
+bool ShouldShowToolbar() {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(prefs) << "A valid PrefService is needed to determine whether to show "
+                   "the toolbar.";
+  return prefs->GetBoolean(prefs::kGameDashboardShowToolbar);
+}
+
+void SetShowToolbar(bool show_toolbar) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(prefs) << "A valid PrefService is needed to update the show toolbar "
+                   "param.";
+  prefs->SetBoolean(prefs::kGameDashboardShowToolbar, show_toolbar);
+}
+
 }  // namespace ash::game_dashboard_utils

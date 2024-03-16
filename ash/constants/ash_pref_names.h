@@ -2081,6 +2081,10 @@ inline constexpr char kRestoreAppsAndPagesPrefName[] =
 inline constexpr char kGameDashboardShowWelcomeDialog[] =
     "ash.game_dashboard.show_welcome_dialog";
 
+// A boolean pref of whether the Game Dashboard should show the toolbar.
+inline constexpr char kGameDashboardShowToolbar[] =
+    "ash.game_dashboard.show_toolbar";
+
 // An integer pref indicating the system's software scanning mode. Options:
 // (0) Never, (1) Always, (2) Only when charging.
 static constexpr char kSoftwareScanningEnabled[] =
