@@ -12,6 +12,12 @@
 
 namespace blink {
 
+namespace {
+inline bool IsHangingSpace(UChar c) {
+  return c == kSpaceCharacter || Character::IsOtherSpaceSeparator(c);
+}
+}  // namespace
+
 void LineInfo::Trace(Visitor* visitor) const {
   visitor->Trace(results_);
   visitor->Trace(items_data_);
@@ -214,33 +220,8 @@ void LineInfo::UpdateTextAlign() {
     allow_hang_for_alignment_ = true;
 
     if (HasTrailingSpaces()) {
-      bool should_hang;
-      bool hang_is_conditional = false;
-      switch (line_style_->GetWhiteSpaceCollapse()) {
-        case WhiteSpaceCollapse::kCollapse:
-        case WhiteSpaceCollapse::kPreserveBreaks:
-          should_hang = true;
-          break;
-        case WhiteSpaceCollapse::kPreserve:
-          should_hang = line_style_->ShouldWrapLine();
-          hang_is_conditional = HasForcedBreak() || IsLastLine();
-          break;
-        case WhiteSpaceCollapse::kBreakSpaces:
-          should_hang = false;
-      }
-
-      if (should_hang) {
-        hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
-
-        // Conditional hang: only the part of the trailing spaces that overflow
-        // the line actually hang.
-        // https://drafts.csswg.org/css-text-4/#conditionally-hang
-        if (hang_is_conditional) {
-          hang_width_ = std::min(hang_width_, Width() - available_width_)
-                            .ClampNegativeToZero();
-        }
-        return;
-      }
+      hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
+      return;
     }
 
     hang_width_ = LayoutUnit();
@@ -283,53 +264,104 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
            item.Type() != InlineItem::kOutOfFlowPositioned &&
            item.Type() != InlineItem::kBidiControl);
 
-    if (item.Type() == InlineItem::kControl ||
-        item_result.has_only_pre_wrap_trailing_spaces) {
-      trailing_spaces_width += item_result.inline_size;
-      continue;
-    }
+    LayoutUnit trailing_item_width;
+    bool will_continue = false;
 
-    // The last text item may contain trailing spaces if this is a last line,
-    // has a forced break, or is 'white-space: pre'.
     unsigned end_offset = item_result.EndOffset();
     DCHECK(end_offset);
-    if (item.Type() == InlineItem::kText) {
+
+    if (item.Type() == InlineItem::kControl ||
+        item_result.has_only_pre_wrap_trailing_spaces) {
+      trailing_item_width = item_result.inline_size;
+      will_continue = true;
+    } else if (item.Type() == InlineItem::kText) {
+      // The last text item may contain trailing spaces if this is a last line,
+      // has a forced break, or is 'white-space: pre'.
+
       if (!item_result.Length()) {
+        DCHECK(!item_result.inline_size);
         continue;  // Skip empty items. See `LineBreaker::HandleEmptyText`.
       }
       const String& text = items_data_->text_content;
-      if (end_offset && text[end_offset - 1] == kSpaceCharacter) {
+      if (end_offset && IsHangingSpace(text[end_offset - 1])) {
         do {
           --end_offset;
         } while (end_offset > item_result.StartOffset() &&
-                 text[end_offset - 1] == kSpaceCharacter);
+                 IsHangingSpace(text[end_offset - 1]));
 
         // If all characters in this item_result are spaces, check next item.
         if (end_offset == item_result.StartOffset()) {
-          trailing_spaces_width += item_result.inline_size;
-          continue;
+          trailing_item_width = item_result.inline_size;
+          will_continue = true;
+        } else {
+          // To compute the accurate width, we need to reshape if |end_offset|
+          // is not safe-to-break. We avoid reshaping in this case because the
+          // cost is high and the difference is subtle for the purpose of this
+          // function.
+          // TODO(kojii): Compute this without |CreateShapeResult|.
+          DCHECK_EQ(item.Direction(), BaseDirection());
+          ShapeResult* shape_result =
+              item_result.shape_result->CreateShapeResult();
+          float end_position = shape_result->PositionForOffset(
+              end_offset - shape_result->StartIndex());
+          if (IsRtl(BaseDirection())) {
+            trailing_item_width = LayoutUnit(end_position);
+          } else {
+            trailing_item_width =
+                LayoutUnit(shape_result->Width() - end_position);
+          }
         }
-
-        // To compute the accurate width, we need to reshape if |end_offset| is
-        // not safe-to-break. We avoid reshaping in this case because the cost
-        // is high and the difference is subtle for the purpose of this
-        // function.
-        // TODO(kojii): Compute this without |CreateShapeResult|.
-        DCHECK_EQ(item.Direction(), BaseDirection());
-        ShapeResult* shape_result =
-            item_result.shape_result->CreateShapeResult();
-        float end_position = shape_result->PositionForOffset(
-            end_offset - shape_result->StartIndex());
-        if (IsRtl(BaseDirection()))
-          trailing_spaces_width += end_position;
-        else
-          trailing_spaces_width += shape_result->Width() - end_position;
       }
     }
 
-    if (end_offset_out)
-      *end_offset_out = end_offset;
-    return trailing_spaces_width;
+    if (trailing_item_width &&
+        RuntimeEnabledFeatures::
+            HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
+      switch (item.Style()->GetWhiteSpaceCollapse()) {
+        case WhiteSpaceCollapse::kCollapse:
+        case WhiteSpaceCollapse::kPreserveBreaks:
+          trailing_spaces_width += trailing_item_width;
+          break;
+        case WhiteSpaceCollapse::kPreserve:
+          if (item.Style()->ShouldWrapLine()) {
+            if (!trailing_spaces_width && (HasForcedBreak() || IsLastLine())) {
+              // Conditional hang: only the part of the trailing spaces that
+              // overflow the line actually hang.
+              // https://drafts.csswg.org/css-text-4/#conditionally-hang
+              LayoutUnit item_end = width_ - trailing_spaces_width;
+              LayoutUnit actual_hang_width =
+                  std::min(trailing_item_width, item_end - available_width_)
+                      .ClampNegativeToZero();
+              if (actual_hang_width != trailing_item_width) {
+                will_continue = false;
+              }
+              trailing_spaces_width += actual_hang_width;
+            } else {
+              trailing_spaces_width += trailing_item_width;
+            }
+            break;
+          }
+          // Cases with text-wrap other than nowrap fall are handled just like
+          // break-spaces.
+          [[fallthrough]];
+        case WhiteSpaceCollapse::kBreakSpaces:
+          // We don't hang.
+          if (will_continue) {
+            // TODO(abotella): Does this check out for RTL?
+            end_offset = item.EndOffset();
+            will_continue = false;
+          }
+      }
+    } else {
+      trailing_spaces_width += trailing_item_width;
+    }
+
+    if (!will_continue) {
+      if (end_offset_out) {
+        *end_offset_out = end_offset;
+      }
+      return trailing_spaces_width;
+    }
   }
 
   // An empty line, or only trailing spaces.
