@@ -2620,6 +2620,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/view-transition-on-navigation/wpt_internal/view-transition-on-navigation/hide-before-reveal.html [ Timeout ]
 crbug.com/626703 [ Win11 ] external/wpt/css/css-grid/grid-fragmentation-between-rows-001-print.tentative.html [ Failure ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/css/css-grid/grid-fragmentation-between-rows-001-print.tentative.html [ Failure Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/css/css-grid/grid-fragmentation-between-rows-001-print.tentative.html [ Failure ]

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] AnimationTimeline interface: operation play(optional AnimationEffect?)
   assert_own_property: interface prototype object missing non-static operation expected property "play" missing
 [FAIL] AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type
@@ -8,6 +8,10 @@ Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "play" not found in prototype chain
 [FAIL] AnimationTimeline interface: calling play(optional AnimationEffect?) on document.timeline with too few arguments must throw TypeError
   assert_inherits: property "play" not found in prototype chain
+[FAIL] Animation interface: attribute progress
+  assert_true: The prototype object must have a property "progress" expected true got false
+[FAIL] Animation interface: new Animation() must inherit property "progress" with the proper type
+  assert_inherits: property "progress" not found in prototype chain
 [FAIL] AnimationEffect interface: attribute parent
   assert_true: The prototype object must have a property "parent" expected true got false
 [FAIL] AnimationEffect interface: attribute previousSibling

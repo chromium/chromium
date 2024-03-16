@@ -559,35 +559,35 @@
     },
     "css-anchor-position": {
      "anchor-scroll-composited-scrolling-001-crash.html": [
-      "005a27393a23b8efc70b2f52bd3c1f479d36b70c",
+      "4dd9bad60eae27737e7b69739dc8f6629204c8bb",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-composited-scrolling-002-crash.html": [
-      "83ce1468252532d4ddc3c8b5bb31bf1b9fcef9cf",
+      "80dabbb6661e56aa9450574d3c545668946bda09",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-composited-scrolling-003-crash.html": [
-      "594c844bfb5c7e374c19029ca02e84453ba5357a",
+      "f46d902ffee7ce2867a1d422d25973bca7dc6dc6",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-composited-scrolling-004-crash.html": [
-      "226a1b099c3b120d4450dda13a6f0dffeacbf9ac",
+      "ee5ad2f41ae3a7b99f65c38de00e03595c380e9f",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-composited-scrolling-005-crash.html": [
-      "639e2e064a79bfecac4eb131a4f3726e3d9bab3c",
+      "c5e44a79e797316249fa46e1e870e26ca9a13a5e",
       [
        null,
        {}
@@ -15425,6 +15425,15 @@
       ]
      }
     }
+   },
+   "document-picture-in-picture": {
+    "hide-return-to-opener-button-manual.https.html": [
+     "17cd6657ddae58350638f02813f736ed5b10597e",
+     [
+      null,
+      {}
+     ]
+    ]
    },
    "editing": {
     "manual": {
@@ -70145,34 +70154,8 @@
        {}
       ]
      ],
-     "anchor-default-001.html": [
-      "1700a84aa8814e0f6e0533125803609fa6568535",
-      [
-       null,
-       [
-        [
-         "/css/css-anchor-position/anchor-default-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "anchor-default-002.html": [
-      "c0a962ad3679a7b96f906e6a213f2aeb74f10a97",
-      [
-       null,
-       [
-        [
-         "/css/css-anchor-position/anchor-default-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "anchor-position-circular.html": [
-      "8efbeb09e2030487f7f3fcd077fb53550a57dc94",
+      "85fca57421cb1380b8b83c1fe778cefb1e14ce79",
       [
        null,
        [
@@ -70185,7 +70168,7 @@
       ]
      ],
      "anchor-position-top-layer-001.html": [
-      "055459551b8c94cf884ca4ea5266e6c590e29cbc",
+      "a8513bb74ca02918d8cdc274669d583f450a2318",
       [
        null,
        [
@@ -70198,7 +70181,7 @@
       ]
      ],
      "anchor-position-top-layer-002.html": [
-      "a87a9d7eedd8995e7eba1753e26cfe4addbcd0c5",
+      "9ce0b8e5f9fe50bc6d38829ae7f43f98a40256cf",
       [
        null,
        [
@@ -70211,7 +70194,7 @@
       ]
      ],
      "anchor-position-top-layer-003.html": [
-      "96d5219c5ce5500d5a44f6c64e27a71587b43fba",
+      "3bc815af0cab70a754f7f353e496715e147812bd",
       [
        null,
        [
@@ -70224,7 +70207,7 @@
       ]
      ],
      "anchor-position-top-layer-004.html": [
-      "c986e3f98d3c7146cb1dea40351e562b33f0178d",
+      "ad0a7b8b32f278d8a2f57a9e60e2bca6a0e1cf1f",
       [
        null,
        [
@@ -70237,7 +70220,7 @@
       ]
      ],
      "anchor-position-top-layer-005.html": [
-      "cf39c77736738d571e5350730eb4f86afcfa5063",
+      "51aa482aee52eb3766caef80380c854e94866de3",
       [
        null,
        [
@@ -70250,7 +70233,7 @@
       ]
      ],
      "anchor-position-top-layer-006.html": [
-      "c13284b854843faf3a7a756c45dca9b6e374cc82",
+      "a3b9e63c06b59b9f308fd221c8619fda18ef65ac",
       [
        null,
        [
@@ -70263,7 +70246,7 @@
       ]
      ],
      "anchor-scroll-001.html": [
-      "8609795c8a6d0207aeb0d5f840f6d820c7cd9025",
+      "b9dfc56e2effe4d9e9c6d48002dd052ae64f6b4e",
       [
        null,
        [
@@ -70276,7 +70259,7 @@
       ]
      ],
      "anchor-scroll-chained-001.tentative.html": [
-      "60ad128022640e06c1eb751c7b6fbeadc27f959b",
+      "1235f8fad4388cc4486e6871d614d732aba12472",
       [
        null,
        [
@@ -70289,7 +70272,7 @@
       ]
      ],
      "anchor-scroll-chained-002.tentative.html": [
-      "e180c5646826b223fe579a22fbb7826076f51c17",
+      "9c60799e0bb40f4fed1d9e19e0091aae3d410bdb",
       [
        null,
        [
@@ -70302,7 +70285,7 @@
       ]
      ],
      "anchor-scroll-chained-003.tentative.html": [
-      "8912fcb699403583adc681f1fe01632769726577",
+      "b441c92bf15f4f5a3917132cfd959e3244dfa52b",
       [
        null,
        [
@@ -70315,7 +70298,7 @@
       ]
      ],
      "anchor-scroll-chained-004.tentative.html": [
-      "5834eb1f4cb2df427d99267765beff672c108e29",
+      "f1765a9870f37e7f752f8cc9274319bbbe661bad",
       [
        null,
        [
@@ -70328,7 +70311,7 @@
       ]
      ],
      "anchor-scroll-chained-fallback.tentative.html": [
-      "4000eb54a5db61d5aa29c2c6a49f30c455751b7e",
+      "d2300da818291fbf7f6f35c5e78c99b1231a5003",
       [
        null,
        [
@@ -70341,7 +70324,7 @@
       ]
      ],
      "anchor-scroll-composited-scrolling-006.html": [
-      "6e57accc457f9fd341af6c3eead652f77c8e3e05",
+      "49c6dc780c785f7dcf52aadd0d536c55ee72c2c4",
       [
        null,
        [
@@ -70354,7 +70337,7 @@
       ]
      ],
      "anchor-scroll-fixedpos-002.html": [
-      "5b2aa2dd50ba52048097bc1dd5afcb4a91f06ff3",
+      "1a05d8b93a1049616592cd09e656eb2bf102ecf0",
       [
        null,
        [
@@ -70367,7 +70350,7 @@
       ]
      ],
      "anchor-scroll-fixedpos.html": [
-      "a32ef3f7c497a6bd403109bb776e4efc15f2cfa2",
+      "7923ed789de055a8d7a7e1b99a549f022499832d",
       [
        null,
        [
@@ -70380,7 +70363,7 @@
       ]
      ],
      "anchor-scroll-nested.html": [
-      "557f748c02988b6f230aedce8b1dad7d154b5df6",
+      "291fe0d7103fa310f48a4ea3a3963b98ccdea361",
       [
        null,
        [
@@ -70393,7 +70376,7 @@
       ]
      ],
      "anchor-scroll-to-sticky-001.html": [
-      "abab944751ed2d98fd3e7b4515e0499b0f3e8148",
+      "a6c3b0572533a2cb689ce23655f0b16ff47ea3b9",
       [
        null,
        [
@@ -70406,7 +70389,7 @@
       ]
      ],
      "anchor-scroll-to-sticky-002.html": [
-      "357421ecf1b36123703a83929c5edd38e3a65601",
+      "e2d91fe4dd69664f9504cd6ba93d33e40617ee14",
       [
        null,
        [
@@ -70419,7 +70402,7 @@
       ]
      ],
      "anchor-scroll-to-sticky-003.html": [
-      "0e770044913669c995ef4e4ea0fb1df646f9b4c1",
+      "b40f5cc8d519f023176c803ad1cf9e475f6153d9",
       [
        null,
        [
@@ -70432,7 +70415,7 @@
       ]
      ],
      "anchor-scroll-to-sticky-004.html": [
-      "f7878ae8df8d198f111bd3fb7241b2a6a1b2b881",
+      "30325ce1e0fa146af4f082481f90569dda2dff19",
       [
        null,
        [
@@ -70445,7 +70428,7 @@
       ]
      ],
      "anchor-scroll-update-001.html": [
-      "f11797edadb669cfe870988f9f2ae02d0c74e032",
+      "aa49fbcc6db54a74e6899ff8b1c2fb7a03d851ab",
       [
        null,
        [
@@ -70458,7 +70441,7 @@
       ]
      ],
      "anchor-scroll-update-002.html": [
-      "19447952b0be25d0407d0e4dea43795dcd0570dc",
+      "5695db2a1cded6d3f56f6fd259dd5939833a57ca",
       [
        null,
        [
@@ -70471,7 +70454,7 @@
       ]
      ],
      "anchor-scroll-update-003.html": [
-      "57a524c483fd2fd7308620263b09f0a28bc95e59",
+      "2e1532badfac6983d1727b19f4d597b1be54b171",
       [
        null,
        [
@@ -70484,7 +70467,7 @@
       ]
      ],
      "anchor-scroll-update-004.html": [
-      "d20a7b660a69428755a33b8c3cb47585a7594bf8",
+      "87138fb2d92a8da80e19c2c6a546de2f75b9c6fe",
       [
        null,
        [
@@ -70497,7 +70480,7 @@
       ]
      ],
      "anchor-scroll-update-005.html": [
-      "c2e7248c80c5ede1ac79384bfc42b51bae649b36",
+      "37874bba5528a1c3b9345801bdfd7cedd463759c",
       [
        null,
        [
@@ -70510,7 +70493,7 @@
       ]
      ],
      "anchor-scroll-update-006.html": [
-      "2535c68f78738bae0f8f8e87cbb24ce8d0a35606",
+      "81defee7cf4c3d8a0dfa03391b4d52becbb585db",
       [
        null,
        [
@@ -70523,7 +70506,7 @@
       ]
      ],
      "anchor-scroll-update-007.html": [
-      "4859f01d66084e5356d1e737224797f55b17fce5",
+      "33050348c4d2908f080868cce0d08311352a6eb2",
       [
        null,
        [
@@ -70536,7 +70519,7 @@
       ]
      ],
      "anchor-scroll-vlr.html": [
-      "00406c825e924bca5c5dd30d452fde1fc3fcc92a",
+      "76186f9cad7daa74a3e9faa31db12df5d020979d",
       [
        null,
        [
@@ -70549,7 +70532,7 @@
       ]
      ],
      "anchor-scroll-vrl.html": [
-      "2432d72899343f2aa3d95b05a0918080980ef077",
+      "13ea8b37abdd702de8e45cae81de0d29cc400430",
       [
        null,
        [
@@ -70562,7 +70545,7 @@
       ]
      ],
      "inset-area-abs-inline-container.html": [
-      "52344614f0b31a57d470ab773420295e53f1cb49",
+      "3b8b25b3af095340b5a16ef0c59c2eb129135c6a",
       [
        null,
        [
@@ -70575,12 +70558,38 @@
       ]
      ],
      "inset-area-inline-container.html": [
-      "91c9b09735118e0d351af9531a91dd590ea4fde9",
+      "08aa1b921d3033c804c06824b863f229f2e19fdf",
       [
        null,
        [
         [
          "/css/css-anchor-position/inset-area-inline-container-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "position-anchor-001.html": [
+      "d927b6b902c97a565725d33874db9ce8055ea703",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-anchor-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "position-anchor-002.html": [
+      "d55338e1e9725db3cc1edf98c04c9388cc7dc6f5",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-anchor-ref.html",
          "=="
         ]
        ],
@@ -271872,21 +271881,6 @@
        }
       }
      },
-     "permission-element": {
-      "bounded-css-properties-reference.tentative.html": [
-       "85bf3071f83cddad502d1a2191de8fa9cdb20e1f",
-       [
-        null,
-        [
-         [
-          "/html/semantics/permission-element/bounded-css-properties-reference-expected.html",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ]
-     },
      "popovers": {
       "popover-anchor-change-display.tentative.html": [
        "435929a6c1b05adc811fe8df029f2a30e2e79cf3",
@@ -271902,7 +271896,7 @@
        ]
       ],
       "popover-anchor-display.tentative.html": [
-       "d50dd6c857b24f5e75e979d6356151e5cf7b65c8",
+       "bddc44006dfba675982454f55807c8af39b5a983",
        [
         null,
         [
@@ -271928,7 +271922,7 @@
        ]
       ],
       "popover-anchor-scroll-display.tentative.html": [
-       "7ed6cf1adf8d11ce5ab121340879ea95dd170991",
+       "2c6b0bafb942bb30c618e58de98dd032e38904f0",
        [
         null,
         [
@@ -292745,6 +292739,10 @@
        "126f911a58c80a62de06b6062cdb4488549471b9",
        []
       ],
+      "accounts_check_same_site_strict.py": [
+       "a6f385feac1ccf0885b44c43a0d0e737e4c308f6",
+       []
+      ],
       "client_metadata.py": [
        "72ddcc5cd62569fa280adcab9490e84b851e6780",
        []
@@ -292799,6 +292797,10 @@
       ],
       "manifest.py": [
        "a40fc100eee697ed7dcd451626409af18606442e",
+       []
+      ],
+      "manifest_check_same_site_strict.json": [
+       "d7304159834804c417f498acebc45f59e588dcbb",
        []
       ],
       "manifest_id_assertion_endpoint_returns_error.json": [
@@ -292866,7 +292868,7 @@
        []
       ],
       "request-params-check.py": [
-       "b774496d5dab3e9bbce92f94cb0dc27128b909d4",
+       "6c610e6e201dd157de1338546fd6970a946e5fb6",
        []
       ],
       "resolve.html": [
@@ -292891,6 +292893,10 @@
       ],
       "token.py": [
        "7ec81c390a9ea116e0a1809e08159a1d1c40e5a1",
+       []
+      ],
+      "token_check_same_site_strict.py": [
+       "8a4b3a234bdb99f38354f706d740b823ccc6e785",
        []
       ],
       "token_with_account_id.py": [
@@ -292923,7 +292929,7 @@
       ]
      },
      "fedcm-helper.sub.js": [
-      "765b3cc48a90198c8bd053eab039cd0e1f5ba768",
+      "25fdb0995c1a2b9dfde35a3dd1d90f780b6064d1",
       []
      ],
      "fedcm-iframe-level2.html": [
@@ -292987,7 +292993,7 @@
       []
      ],
      "set_cookie.headers": [
-      "b19ff933a6f5854923bdaf378e91d5fa63e341b0",
+      "4226ff4c9975cccb5ea799b769a6e797eea12b8b",
       []
      ]
     }
@@ -299884,10 +299890,6 @@
       "40ccc2b044b3da3be44582522d99e5a138b6f354",
       []
      ],
-     "anchor-default-ref.html": [
-      "4d7de12447c8297b8f0fc04338d80a028a3e9798",
-      []
-     ],
      "anchor-name-multicol-003-expected.txt": [
       "6ac93ee7a49bb2d31902ed9afdc0f4f4bd432f09",
       []
@@ -299906,6 +299908,10 @@
      ],
      "inset-area-inline-container-ref.html": [
       "ecf54f1a9ac2d756cb78f4d2c0690c1ac8b65916",
+      []
+     ],
+     "position-anchor-ref.html": [
+      "4d7de12447c8297b8f0fc04338d80a028a3e9798",
       []
      ],
      "property-interpolations-expected.txt": [
@@ -366804,12 +366810,6 @@
        ]
       }
      },
-     "permission-element": {
-      "bounded-css-properties-reference-expected.html": [
-       "248f4969f448e80acb1cb7f406e507a2ff4c038b",
-       []
-      ]
-     },
      "popovers": {
       "DIR_METADATA": [
        "643fadf00993764164f913173d081f0fb781ebbb",
@@ -372268,7 +372268,7 @@
      []
     ],
     "css-view-transitions-2.idl": [
-     "89e57e251b1783e2d5c3641cfbf9861adcf87487",
+     "d1e4eeb11e581d8f63b99fe5e08c83801aba16e8",
      []
     ],
     "css-view-transitions.idl": [
@@ -372308,7 +372308,7 @@
      []
     ],
     "document-picture-in-picture.idl": [
-     "f54f437a9365a7f8540fb1bb1c42a3c9118cbf57",
+     "888855b38f2d0d4881974b7f7a6703ca674e4847",
      []
     ],
     "dom.idl": [
@@ -372420,7 +372420,7 @@
      []
     ],
     "html.idl": [
-     "7211231980f6d71e04bd0f33ac415b86c7440c00",
+     "d2caf12b5bf6046c3a03869178066be97b074757",
      []
     ],
     "idle-detection.idl": [
@@ -372491,8 +372491,12 @@
      "10e2e1f012e92139a1f6cdfe3bf4f4d7e52474d1",
      []
     ],
+    "long-animation-frames.idl": [
+     "79a42ca8f0a5a853712062db8ef55a025f6476db",
+     []
+    ],
     "longtasks.idl": [
-     "e5b6ece16a1c373905f1b8a8561b1dc402704311",
+     "3717469fd09ac2c7cba97585d5c4afee4d101b98",
      []
     ],
     "magnetometer.idl": [
@@ -372540,7 +372544,7 @@
      []
     ],
     "mediacapture-streams.idl": [
-     "373f0c328d93d5ca2699c68a523860f69debe1f9",
+     "f2ca21389e921ff29e5c5cb5ccc96278a00d6777",
      []
     ],
     "mediacapture-transform.idl": [
@@ -372568,7 +372572,7 @@
      []
     ],
     "navigation-timing.idl": [
-     "355950160e336d9c1331816f2b2f72cb5ff6e4c5",
+     "b381b486e1978fa771268d13694fabf5d9529378",
      []
     ],
     "netinfo.idl": [
@@ -372636,7 +372640,7 @@
      []
     ],
     "permissions.idl": [
-     "fbcb674e5618af1e96b9044cbd0b29ef82d06c14",
+     "62c2e3ad76f0ebe99b46b3ea4aa6ec6451bdad31",
      []
     ],
     "picture-in-picture.idl": [
@@ -372828,11 +372832,11 @@
      []
     ],
     "turtledove.idl": [
-     "8a2d7bb594f56d163acbc0cd88605857f1c608ca",
+     "87aec6e6bca8e178d54f7f867f3d5f9dea50b1d7",
      []
     ],
     "ua-client-hints.idl": [
-     "6a40e1bdc4bae6dddcb649d7f146fb6aba74b516",
+     "5d44b0dd80a1997674daa7972a3ce3e5d8a7a04c",
      []
     ],
     "uievents.idl": [
@@ -372880,7 +372884,7 @@
      []
     ],
     "web-animations-2.idl": [
-     "f9f68a0d49a5ba71ade7e4a62546020d3adc22c5",
+     "4c3af535149ec218d0ed99c59dee90e14ec4d5ab",
      []
     ],
     "web-animations.idl": [
@@ -372952,7 +372956,7 @@
      []
     ],
     "webcodecs.idl": [
-     "48d89d0b47783dbd59b1fe6a6d920909bd7d8551",
+     "aa823aa52dfe94540bcd7d295af33f405d6e16d9",
      []
     ],
     "webcrypto-secure-curves.idl": [
@@ -372988,7 +372992,7 @@
      []
     ],
     "webnn.idl": [
-     "50ee64b185ab933d95b20731daf7cf1d04a10f74",
+     "0b8ea7cb3440a2b016643669bb976a11c0c095a5",
      []
     ],
     "webrtc-encoded-transform.idl": [
@@ -373796,7 +373800,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "db85b36f9dcc831238f52dac204840a402061749",
+     "a2cf6ba9fc6656ad8b4c08d13cab818e7d78b22f",
      []
     ],
     "resources": {
@@ -390520,7 +390524,7 @@
      ]
     },
     "idlharness.window-expected.txt": [
-     "ce969c5afbe5f63195d75624a798340d97619a0d",
+     "8d5353eb14a8101bfa5dc79707481ba5526dd12e",
      []
     ],
     "interfaces": {
@@ -434613,6 +434617,15 @@
      ]
     ],
     "fedcm-authz": {
+     "fedcm-continue-on-disallowed.https.html": [
+      "fcda3a3dd591c694d341f5a04fa42ce667ea1ad6",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "fedcm-continue-on.https.html": [
       "3ce1f51e370535791961bf984d1f6ffc77b3ffbf",
       [
@@ -435035,6 +435048,17 @@
       }
      ]
     ],
+    "fedcm-same-site-none": {
+     "fedcm-same-site-none.https.html": [
+      "77ecdaff9fe36e3bb4606798e9f69b4708cd2856",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ]
+    },
     "fedcm-store.https.html": [
      "d1e6ef464c4f3eb8e2d4118d1a5e2dc498410e05",
      [
@@ -436972,42 +436996,28 @@
       ]
      ],
      "anchor-center-htb-htb.html": [
-      "7012208044af1c3ce7bafdfddfedf4f0c103e2cd",
+      "20abb2ed096c934bb47447d64d5b717012f8ef47",
       [
        null,
        {}
       ]
      ],
      "anchor-center-htb-vrl.html": [
-      "584424d306fb54fcd62302e61734c0da0dec8ac2",
+      "099d9cd15b43ae33024fc1fb659563bb5141baa2",
       [
        null,
        {}
       ]
      ],
      "anchor-center-vrl-htb.html": [
-      "c7ee2302626eb8fad64aaa54768b231f18b98dd3",
+      "3e4f485cec3d730ecbadb695fc214269f2e101ea",
       [
        null,
        {}
       ]
      ],
      "anchor-center-vrl-vrl.html": [
-      "d314dc7f2fc696d2baf661e29b65da22a1aad028",
-      [
-       null,
-       {}
-      ]
-     ],
-     "anchor-default-003.html": [
-      "00c20324344d0d888aace7f5414ba7e5354af786",
-      [
-       null,
-       {}
-      ]
-     ],
-     "anchor-default-basics.html": [
-      "783cb539cc39bc68040b74fc9ac28c1bf2be38df",
+      "fe40c731419c42ff286e24d653082220358cf137",
       [
        null,
        {}
@@ -437028,7 +437038,7 @@
       ]
      ],
      "anchor-getComputedStyle-003.html": [
-      "da9ec4a1451ad9f47290b9ef268a69b22d5ca928",
+      "fc384ab4cdf749e5dcbc16fbe0f3403360234ef9",
       [
        null,
        {}
@@ -437126,14 +437136,14 @@
       ]
      ],
      "anchor-name-style-contained-dynamic.html": [
-      "50cec96f366ada5a2afee57444f560f936c77ea4",
+      "1413fe9d772b67e4cd59b923e81b99fe8f7ac4eb",
       [
        null,
        {}
       ]
      ],
      "anchor-name-style-contained.html": [
-      "a5295758891e4e29353e3e1942c547b7d5c92ea5",
+      "b88afe4107dd573aa7a2ec1b03e7501a7196948f",
       [
        null,
        {}
@@ -437364,126 +437374,126 @@
       ]
      ],
      "anchor-scroll-002.html": [
-      "8ef6f500a1f2fbc562def420ac79ca9939d50f03",
+      "2c51e6a1a3ab74ff7963c5e77f0ec8dcc0d1f408",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-003.html": [
-      "c1b31c0becf286b0b155578f29c6b7e9a6cd9e1e",
+      "6c0dd08355c47152b281e07b759a9b4c513af180",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-004.html": [
-      "d08279118d9e9ca848fd9fb9e6e56fc77ade42ff",
+      "c0e0afb23f143e157b163cd28af96db62496b457",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-005.html": [
-      "a9a7d24d2b9ccd9af9a9771f66c7a3da433a1efa",
+      "f8f26b719f07c2d38324f3e1b7e0287e2b7ffd51",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-006.html": [
-      "2ffd026b55296f105e37141646f12d999cd56d5b",
+      "9c8a8c0ac2fe3cdb8942cbe08dc6a97591a5dc30",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-007.html": [
-      "ec519106190c7cebe095a2dc4396cfe94486fb61",
+      "7e288d713f6b6f71e765398c894a966b4a0ed212",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-js-expose.html": [
-      "1ef44d03c2202dfc053f27c0e12e2a397634267e",
+      "3b3f1a06086ae85d2fa1944cc1c2beb41935656b",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-001.html": [
-      "b696ae0060c544390ed2b26e6f4071af53afd6b6",
+      "3130018e73d921fb7d742fc1e7591672c4130488",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-002.html": [
-      "3b84124705c58514d66d437c19113a76848d19eb",
+      "52bbcd62fc1931e3e3ed9d81cebc12e39d1411be",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-003.html": [
-      "dd9fdc92c2e7b93b3254f1a19097fb422a7f3da8",
+      "b89a574d768edf3b13e7ac90d51aecddec553380",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-004.html": [
-      "0aab60b7a81c247d1a2621f5e3d04e71b1b44693",
+      "bf0bee972deadd0c45f037c0fc455cda2923623c",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-005.html": [
-      "e2dac13abd745dfa1a60804dc3ff77bbae492f66",
+      "197a9e4f79c2a89fb8d4d3e1e8f7239ae696cd4c",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-006.html": [
-      "1f9004de54f717d66091f5fb0965dac24ac15f3b",
+      "132c45c89c75d69030db21539c7d84a996fa6c42",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-007.html": [
-      "32b7f641732662c7cc4bc132a52401cf2210e281",
+      "a02bd35a669a920272ab8f05c199d0e831a5e58f",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-008.html": [
-      "99f180bb46338deb32640d2143a24b9a99d508ad",
+      "2deddd587ef2a52a0548cf6498f2393e5f351e10",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-009.html": [
-      "0267d1987be687fd04031c895df486d108d0f628",
+      "0d7d6b077fc734b72283c87c383d85f54c34573b",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-010.html": [
-      "133649c720f0a8f80741fcabfcec27a2d7b344a2",
+      "21f32ad068e64d6231c42f56ec172b83a309eac6",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-011.html": [
-      "005a4ee728cbf6566f9a32b1626b04324c42c36f",
+      "5de84610105129ca6b86c0c83bd64a85bdde1b68",
       [
        null,
        {}
@@ -437560,7 +437570,7 @@
       ]
      ],
      "at-position-try-cssom.html": [
-      "d4a1f4fa24c04bfb1be8fab64ad33ec035a44dd3",
+      "dc248f4e511e66c20a384cbe23b407fb576ccb19",
       [
        null,
        {}
@@ -437595,7 +437605,7 @@
       ]
      ],
      "inset-area-basic.html": [
-      "4a636355583d4a41d168f5128b67ce5451fc112f",
+      "bf5daefe9abe701e632bc70c40289a60046b8ac2",
       [
        null,
        {}
@@ -437630,7 +437640,7 @@
       ]
      ],
      "inset-area-wm-dir.html": [
-      "5268cba7e5ec5dfbd1b0d0b675bb94c19fee3cdd",
+      "c475810a1975c10936903dea0d7b39c9f0c7196f",
       [
        null,
        {}
@@ -437673,36 +437683,50 @@
        ]
       ]
      },
+     "position-anchor-003.html": [
+      "6117027e22029cdef83e9c01190af1fbb90c75ac",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-anchor-basics.html": [
+      "f9fe9dd6f8f1ad73076536ca00e8ea5ddc37df25",
+      [
+       null,
+       {}
+      ]
+     ],
      "position-fallback-bounds-001.html": [
-      "ebd1e78fb9a86fd595a4607fa7285f5734ce5726",
+      "f379b691e0bf1b345fd5e2622dc47a5b81bdbc3d",
       [
        null,
        {}
       ]
      ],
      "position-fallback-bounds-002.html": [
-      "159484ad33b366c09e5d2c404660e8d3f4ad9617",
+      "960a530b97b1967f8493000826a631a69115b547",
       [
        null,
        {}
       ]
      ],
      "position-fallback-bounds-003.html": [
-      "9da7bf9ccd774b28aaa5dc83dd7d8a3f6b458902",
+      "1bee43b36161205b3ebd1cc33c2d2dc347c5674c",
       [
        null,
        {}
       ]
      ],
      "position-fallback-bounds-004.html": [
-      "eeee710e0fa242eafea6f1957e84c86958fec256",
+      "15bdf11327617b0fe8140ba67dd6f1cb2eb207e8",
       [
        null,
        {}
       ]
      ],
      "position-fallback-bounds-005.html": [
-      "fecd4328a5996b5cd6c30e186b0343043a3642b9",
+      "d1e9fd7f51e8b38769a6d54423d51da913c0f89e",
       [
        null,
        {}
@@ -437807,7 +437831,7 @@
       ]
      ],
      "property-interpolations.html": [
-      "878f46375b7505df39034580154c0491e0cee365",
+      "1b8621a21300d7574f22e69746f46394ba479cbf",
       [
        null,
        {}
@@ -468820,6 +468844,16 @@
       [
        null,
        {}
+      ]
+     ],
+     "transition-in-hidden-page.html": [
+      "af8050eb77905ec6c37a490db0ff17b09a6e5deb",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
       ]
      ],
      "transition-skipped-after-animation-started.html": [
@@ -568856,10 +568890,10 @@
          {}
         ]
        ],
-       "sandbox-top-navigation-child-cross-origin.tentative.sub.window.js": [
-        "95d53e1fe3297f3f07011dc4f29597515cd95135",
+       "sandbox-top-navigation-child-cross-origin-delivered.tentative.sub.window.js": [
+        "8074314557559387f23bde880fb1a298272b033a",
         [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-cross-origin.tentative.sub.window.html",
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-cross-origin-delivered.tentative.sub.window.html",
          {
           "script_metadata": [
            [
@@ -568898,10 +568932,52 @@
          }
         ]
        ],
-       "sandbox-top-navigation-child.tentative.sub.window.js": [
-        "1d5ea93830a6fcbf86c197fa45de3f6a029cb285",
+       "sandbox-top-navigation-child-cross-origin-frame.tentative.sub.window.js": [
+        "a2191b352aad0d241b84ea2f0526c7b5abdc1082",
         [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child.tentative.sub.window.html",
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-cross-origin-frame.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with cross origin & user activated child frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-child-delivered-both.tentative.sub.window.js": [
+        "540cc338c9394111888d99f4ae341d200e265089",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-delivered-both.tentative.sub.window.html",
          {
           "script_metadata": [
            [
@@ -568940,8 +569016,218 @@
          }
         ]
        ],
+       "sandbox-top-navigation-child-delivered.tentative.sub.window.js": [
+        "c020513012092799071aaf6580949ddb6bc1c865",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-delivered.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with child frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-child-frame-both.tentative.sub.window.js": [
+        "ff7d2eb5847102473f6455a8cfaf7c5e3264235a",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-frame-both.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with child frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-child-frame.tentative.sub.window.js": [
+        "35abc554b6144ebcdbcb3bc7ce73a8be37d2fc55",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-frame.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with child frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-child-unsandboxed.tentative.sub.window.js": [
+        "c2d78b6dd54b802d71642b7147c12180cd10c9f9",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-unsandboxed.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with child frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-cross-origin-escalate.tentative.sub.window.js": [
+        "c394699d85dc0729392aeffcda648d8d5eeb002f",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-cross-origin-escalate.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with frames that try to give themselves top-nav permission"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "sandbox-top-navigation-cross-site.tentative.sub.window.js": [
-        "26db4eeaca556347fa955cb859a6b60087bcc551",
+        "cacc5bd983e159fe711871d6a9ead8ea8de65e8c",
         [
          "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-cross-site.tentative.sub.window.html",
          {
@@ -568986,10 +569272,10 @@
          }
         ]
        ],
-       "sandbox-top-navigation-escalate-privileges.tentative.sub.window.js": [
-        "2ea0ba606e46ad345f88633ac3243b6109fb11db",
+       "sandbox-top-navigation-grandchild-allow-same-origin.tentative.sub.window.js": [
+        "2be6cd66a7d23f1c360a2296385b4793df33ee97",
         [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html",
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-allow-same-origin.tentative.sub.window.html",
          {
           "script_metadata": [
            [
@@ -569028,10 +569314,52 @@
          }
         ]
        ],
-       "sandbox-top-navigation-grandchild.tentative.sub.window.js": [
-        "326c1dd54a5b1b30439d82635a38cef1baa57e5a",
+       "sandbox-top-navigation-grandchild-frame-allow-top.tentative.sub.window.js": [
+        "43ca5eb404fb601f72ded2c615ccef04fdb12c0f",
         [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild.tentative.sub.window.html",
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-frame-allow-top.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with frames that try to give themselves top-nav permission"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-grandchild-sandboxed-cross-origin-parent.tentative.sub.window.js": [
+        "8833ad42bbebd886e71b771cfbd2d9769c755772",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-sandboxed-cross-origin-parent.tentative.sub.window.html",
          {
           "script_metadata": [
            [
@@ -569070,10 +569398,358 @@
          }
         ]
        ],
-       "sandbox-top-navigation-user-activation.tentative.sub.window.js": [
-        "5079c8ad144608d04a4a755088097230553bb44d",
+       "sandbox-top-navigation-grandchild-sandboxed-escalate.tentative.sub.window.js": [
+        "448925144aa1136a1d417ce7589e03d730d71022",
         [
-         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-user-activation.tentative.sub.window.html",
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-sandboxed-escalate.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with frames that try to give themselves top-nav permission"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-grandchild-sandboxed.tentative.sub.window.js": [
+        "a4b43a7b1f1033411d763b19c3327fa50e0960b8",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-sandboxed.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with grandchild frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-grandchild-unsandboxed-cross-origin-parent.tentative.sub.window.js": [
+        "5abbb9c30c812fc74bfe07da2a475309e8352ba8",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-unsandboxed-cross-origin-parent.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with grandchild frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-grandchild-unsandboxed-inherit.tentative.sub.window.js": [
+        "a31c56b935399f6e68bb6c2aa002d76a24e3b5fb",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-unsandboxed-inherit.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with frames that try to give themselves top-nav permission"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-grandchild-unsandboxed.tentative.sub.window.js": [
+        "7fe80dfa1b294b07056fba4203b121b1e980eade",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild-unsandboxed.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with grandchild frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-same-site-no-activation.tentative.sub.window.js": [
+        "03350e76e24074b323201ac3f81390e4a50a9eba",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-same-site-no-activation.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with cross origin & user activated child frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-actions.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-same-site.tentative.sub.window.js": [
+        "0ee6b8edcc49908d0881e6191106be5051af0666",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-same-site.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with cross origin & user activated child frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-actions.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-user-activation-no-sticky.tentative.sub.window.js": [
+        "c62155ce30d302d9c11e17e7992bff44364681b4",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-user-activation-no-sticky.tentative.sub.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Top-level navigation tests with cross origin & user activated child frames"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-actions.js"
+           ],
+           [
+            "script",
+            "/resources/testdriver-vendor.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ],
+           [
+            "script",
+            "./resources/sandbox-top-navigation-helper.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "sandbox-top-navigation-user-activation-sticky.tentative.sub.window.js": [
+        "e62fbdfb220420cab2040ea1014254a3e852a278",
+        [
+         "html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-user-activation-sticky.tentative.sub.window.html",
          {
           "script_metadata": [
            [
@@ -573792,29 +574468,29 @@
       }
      },
      "permission-element": {
-      "bounded-css-properties.tentative.html": [
-       "1cd3f735945afbd1627c19e2cbc27782c934f0ee",
+      "bounded-css-properties.html": [
+       "98c3d70e98bbe4df28ca765f4e8db3016d8a2974",
        [
         null,
         {}
        ]
       ],
-      "invalid-css-properties.tentative.html": [
-       "334280c83bdf9919626ddaf64adc522f2ca51f8d",
+      "invalid-css-properties.html": [
+       "c7186563f0ae6d8c2c2a8ab2b1d2dcd6c5c9283d",
        [
         null,
         {}
        ]
       ],
-      "negative-offset-and-margin.tentative.html": [
-       "de622bbb3e87d15c66d260467ca5133d4a80526e",
+      "negative-offset-and-margin.html": [
+       "97290bb4df3c1ea7c310cd775d6cfec6635287a4",
        [
         null,
         {}
        ]
       ],
-      "no-end-tag-no-contents.tentative.html": [
-       "bea3d7102caf7dc97122dee600373899e1ca414e",
+      "no-end-tag-no-contents.html": [
+       "5fcce1421b6cd2abed01ab95c381aa7d29708e98",
        [
         null,
         {}
@@ -711361,14 +712037,14 @@
         ]
        ],
        "new_tab.py": [
-        "f6cacf3c3586bc2962e67be4cacf3fbbc838216d",
+        "53810e7fb627bba03c33cfcdb8c3beec8f9c8951",
         [
          null,
          {}
         ]
        ],
        "new_window.py": [
-        "d47dacdc083a45f30895f9b59cd58eadcf5bac0e",
+        "cc10d2fb867158c04da9dcdc3185b34f07f017b8",
         [
          null,
          {}
