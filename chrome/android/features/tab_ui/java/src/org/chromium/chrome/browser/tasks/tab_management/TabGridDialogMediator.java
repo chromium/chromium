@@ -702,7 +702,7 @@ public class TabGridDialogMediator
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
         return TabGridDialogMenuCoordinator.getTabGridDialogMenuOnClickListener(
-                mToolbarMenuCallback);
+                mToolbarMenuCallback, mModel.get(TabGridDialogProperties.IS_INCOGNITO));
     }
 
     private View.OnClickListener getShareBarClickListener() {

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
+import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
@@ -23,6 +24,7 @@ import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuItemViewBinder;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -41,21 +43,26 @@ public class TabGridDialogMenuCoordinator {
 
     /**
      * Creates a {@link View.OnClickListener} that creates the menu and shows it when clicked.
-     * @param onItemClicked  The clicked listener callback that handles clicks on menu items.
+     *
+     * @param onItemClicked The clicked listener callback that handles clicks on menu items.
+     * @param isIncognito Whether the current tab group model filter is in an incognito state.
      * @return A {@link View.OnClickListener} for the button that opens up the menu.
      */
     static View.OnClickListener getTabGridDialogMenuOnClickListener(
-            Callback<Integer> onItemClicked) {
+            Callback<Integer> onItemClicked, boolean isIncognito) {
         return view -> {
             Context context = view.getContext();
             TabGridDialogMenuCoordinator menu =
-                    new TabGridDialogMenuCoordinator(context, view, onItemClicked);
+                    new TabGridDialogMenuCoordinator(context, view, onItemClicked, isIncognito);
             menu.display();
         };
     }
 
     private TabGridDialogMenuCoordinator(
-            Context context, View anchorView, Callback<Integer> onItemClicked) {
+            Context context,
+            View anchorView,
+            Callback<Integer> onItemClicked,
+            boolean isIncognito) {
         mContext = context;
         mOnItemClickedCallback = onItemClicked;
         mComponentCallbacks =
@@ -74,12 +81,12 @@ public class TabGridDialogMenuCoordinator {
         final View contentView =
                 LayoutInflater.from(context)
                         .inflate(R.layout.tab_switcher_action_menu_layout, null);
-        setupMenu(contentView, anchorView);
+        setupMenu(contentView, anchorView, isIncognito);
     }
 
-    private void setupMenu(View contentView, View anchorView) {
+    private void setupMenu(View contentView, View anchorView, boolean isIncognito) {
         ListView listView = contentView.findViewById(R.id.tab_switcher_action_menu_list);
-        ModelList modelList = buildMenuItems();
+        ModelList modelList = buildMenuItems(isIncognito);
         ModelListAdapter adapter =
                 new ModelListAdapter(modelList) {
                     @Override
@@ -104,11 +111,14 @@ public class TabGridDialogMenuCoordinator {
         View decorView = ((Activity) contentView.getContext()).getWindow().getDecorView();
         ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
 
+        final @DrawableRes int bgDrawableId =
+                isIncognito ? R.drawable.menu_bg_tinted_on_dark_bg : R.drawable.menu_bg_tinted;
+
         mMenuWindow =
                 new AnchoredPopupWindow(
                         mContext,
                         decorView,
-                        AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_tinted),
+                        AppCompatResources.getDrawable(mContext, bgDrawableId),
                         contentView,
                         rectProvider);
         mMenuWindow.setFocusable(true);
@@ -135,23 +145,29 @@ public class TabGridDialogMenuCoordinator {
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
-    private ModelList buildMenuItems() {
+    private ModelList buildMenuItems(boolean isIncognito) {
         ModelList itemList = new ModelList();
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.menu_select_tabs, R.id.select_tabs, 0, true));
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
+                        R.string.menu_select_tabs,
+                        R.id.select_tabs,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
         itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
                         R.string.tab_grid_dialog_toolbar_edit_group_name,
                         R.id.edit_group_name,
-                        0,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
                         true));
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
             itemList.add(
-                    BrowserUiListMenuUtils.buildMenuListItem(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoText(
                             R.string.tab_grid_dialog_toolbar_edit_group_color,
                             R.id.edit_group_color,
-                            0,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            isIncognito,
                             true));
         }
         return itemList;

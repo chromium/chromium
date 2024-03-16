@@ -169,6 +169,36 @@ public class BrowserUiListMenuUtils {
      *
      * @param titleId The text on the menu item.
      * @param menuId Id of the menu item.
+     * @param textAppearanceStyle The appearance of the text in the menu item in incognito mode.
+     * @param isIncognito Whether the current menu item will be displayed in incognito mode.
+     * @param enabled Whether or not this menu item should be enabled.
+     * @return ListItem Representing an item with text or icon.
+     */
+    @NonNull
+    public static ListItem buildMenuListItemWithIncognitoText(
+            @StringRes int titleId,
+            @IdRes int menuId,
+            @StyleRes int textAppearanceStyle,
+            boolean isIncognito,
+            boolean enabled) {
+        PropertyModel.Builder builder =
+                getListItemPropertyBuilder()
+                        .with(ListMenuItemProperties.TITLE_ID, titleId)
+                        .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
+                        .with(ListMenuItemProperties.ENABLED, enabled);
+
+        if (isIncognito) {
+            builder.with(ListMenuItemProperties.TEXT_APPEARANCE_ID, textAppearanceStyle);
+        }
+        return new MVCListAdapter.ListItem(ListMenuItemType.MENU_ITEM, builder.build());
+    }
+
+    /**
+     * Helper function to build a list menu item. Pass 0 for attributes that aren't applicable to
+     * the menu item (e.g. if there is no icon or text).
+     *
+     * @param titleId The text on the menu item.
+     * @param menuId Id of the menu item.
      * @param endIconId The icon on the end of the menu item. Pass 0 for no icon.
      * @param enabled Whether or not this menu item should be enabled.
      * @return ListItem Representing an item with text or icon.
