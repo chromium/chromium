@@ -108,8 +108,13 @@ SplitViewController* split_view_controller() {
   return SplitViewController::Get(Shell::GetPrimaryRootWindow());
 }
 
+// TODO(sophiewen): Consider separating into two functions.
 SplitViewDivider* split_view_divider() {
-  return split_view_controller()->split_view_divider();
+  if (!IsSnapGroupEnabledInClamshellMode()) {
+    return split_view_controller()->split_view_divider();
+  }
+  auto* top_snap_group = SnapGroupController::Get()->GetTopmostSnapGroup();
+  return top_snap_group ? top_snap_group->split_view_divider() : nullptr;
 }
 
 gfx::Rect split_view_divider_bounds_in_screen() {
@@ -173,7 +178,7 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(
   gfx::Rect expected_grid_bounds = work_area_bounds();
   expected_grid_bounds.Subtract(window->GetBoundsInScreen());
 
-  if (split_view_divider()->divider_widget()) {
+  if (split_view_divider() && split_view_divider()->divider_widget()) {
     expected_grid_bounds.Subtract(split_view_divider_bounds_in_screen());
   }
 
@@ -259,9 +264,8 @@ void DragGroupItemToPoint(OverviewItemBase* item,
   }
 }
 
-// Returns true if the union bounds of `w1`, `w2` and the split view
-// divider (if exists) equal to the bounds of the work area and false
-// otherwise.
+// Returns true if the union bounds of `w1`, `w2` and the divider (if exists)
+// equal to the bounds of the work area and false otherwise.
 bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1, aura::Window* w2) {
   gfx::Rect union_bounds;
   union_bounds.Union(w1->GetBoundsInScreen());
@@ -271,6 +275,19 @@ bool UnionBoundsEqualToWorkAreaBounds(aura::Window* w1, aura::Window* w2) {
                                   : gfx::Rect();
   union_bounds.Union(divider_bounds);
   return union_bounds == work_area_bounds();
+}
+
+// TODO(sophiewen): Refactor this from WindowRestoreControllerTest.
+void VerifyStackingOrder(
+    aura::Window* parent,
+    const std::vector<raw_ptr<aura::Window, VectorExperimental>>&
+        expected_windows) {
+  auto children = parent->children();
+  EXPECT_EQ(children.size(), expected_windows.size());
+
+  for (size_t i = 0; i < children.size(); ++i) {
+    EXPECT_EQ(children[i], expected_windows[i]);
+  }
 }
 
 }  // namespace
@@ -1931,10 +1948,10 @@ class SnapGroupTest : public FasterSplitScreenTest {
     VerifySplitViewOverviewSession(window1);
 
     // When the first window is snapped, it takes exactly half the width.
-    gfx::Rect expected_bounds(work_area_bounds());
+    gfx::Rect expected_bounds_in_screen(work_area_bounds());
     gfx::Rect left_bounds, right_bounds;
-    expected_bounds.SplitVertically(&left_bounds, &right_bounds);
-    EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
+    expected_bounds_in_screen.SplitVertically(&left_bounds, &right_bounds);
+    EXPECT_EQ(left_bounds, window_util::GetTargetScreenBounds(window1));
 
     // The `window2` gets selected in the overview will be snapped to the
     // non-occupied snap position and the overview session will end.
@@ -1952,7 +1969,6 @@ class SnapGroupTest : public FasterSplitScreenTest {
 
     // The split view divider will show on two windows snapped.
     EXPECT_TRUE(split_view_divider()->divider_widget());
-
     EXPECT_EQ(chromeos::kDefaultSnapRatio,
               *WindowState::Get(window1)->snap_ratio());
     EXPECT_EQ(chromeos::kDefaultSnapRatio,
@@ -1965,8 +1981,10 @@ class SnapGroupTest : public FasterSplitScreenTest {
     right_bounds.set_x(right_bounds.x() + divider_bounds.width() / 2);
     right_bounds.set_width(right_bounds.width() - divider_bounds.width() / 2);
 
-    EXPECT_EQ(left_bounds.width(), window1->GetBoundsInScreen().width());
-    EXPECT_EQ(right_bounds.width(), window2->GetBoundsInScreen().width());
+    EXPECT_EQ(left_bounds.width(),
+              window_util::GetTargetScreenBounds(window1).width());
+    EXPECT_EQ(right_bounds.width(),
+              window_util::GetTargetScreenBounds(window2).width());
   }
 
   void CompleteWindowCycling() {
@@ -2226,7 +2244,7 @@ TEST_F(SnapGroupTest, SnapRatioTest) {
       hover_location + gfx::Vector2d(-work_area_bounds().width() / 6, 0);
   split_view_divider()->ResizeWithDivider(end_point);
   split_view_divider()->EndResizeWithDivider(end_point);
-  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
               WindowState::Get(w1.get())->snap_ratio().value(),
               /*abs_error=*/0.1);
@@ -2250,7 +2268,7 @@ TEST_F(SnapGroupTest, ResizeWithSplitViewDividerToArbitraryLocations) {
     split_view_divider()->StartResizeWithDivider(hover_location);
     split_view_divider()->ResizeWithDivider(hover_location +
                                             gfx::Vector2d(distance_delta, 0));
-    EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+    EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 
     // TODO(michelefan): Consolidate the bounds update / calculation with the
     // existence of divider between clamshell and tablet mode. Change
@@ -2333,7 +2351,7 @@ TEST_F(SnapGroupTest, AutomaticallyCreateGroupOnTwoWindowsSnappedInClamshell) {
   EXPECT_TRUE(window_util::IsStackedBelow(w3.get(), w1.get()));
 
   w1.reset();
-  EXPECT_FALSE(split_view_divider()->divider_widget());
+  EXPECT_FALSE(split_view_divider());
   EXPECT_TRUE(snap_groups.empty());
   EXPECT_TRUE(window_to_snap_group_map.empty());
 }
@@ -2480,6 +2498,7 @@ TEST_F(SnapGroupTest, OverviewEnterExitBasic) {
   EXPECT_EQ(WindowStateType::kSecondarySnapped,
             WindowState::Get(w2.get())->GetStateType());
   EXPECT_TRUE(split_view_divider()->divider_widget());
+  EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get()));
 }
 
 // Tests that partial overview is shown on the other side of the screen on one
@@ -2663,7 +2682,7 @@ TEST_F(SnapGroupTest, ReflectSnapRatioInOverviewGroupItem) {
   const auto end_point = hover_location + drag_delta;
   split_view_divider()->ResizeWithDivider(end_point);
   split_view_divider()->EndResizeWithDivider(end_point);
-  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_NEAR(chromeos::kOneThirdSnapRatio,
               WindowState::Get(w1.get())->snap_ratio().value(),
               /*abs_error=*/0.01);
@@ -3409,7 +3428,7 @@ TEST_F(SnapGroupTest, SplitViewDividerEnlargedHitArea) {
   const auto move_vector = -gfx::Vector2d(50, 0);
   event_generator->MoveMouseTo(hover_location + move_vector);
   event_generator->ReleaseLeftButton();
-  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
   EXPECT_EQ(split_view_divider_bounds_in_screen().CenterPoint(),
             cached_divider_center_point + move_vector);
 }
@@ -3868,7 +3887,11 @@ TEST_F(SnapGroupTest, ClamshellTabletTransitionWithOneSnapGroup) {
   EXPECT_TRUE(split_view_divider()->divider_widget());
 
   SwitchToTabletMode();
-  EXPECT_TRUE(split_view_divider()->divider_widget());
+  EXPECT_TRUE(split_view_controller()->split_view_divider()->divider_widget());
+  // The snap group and therefore divider is removed in tablet mode.
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_FALSE(
+      snap_group_controller->GetSnapGroupForGivenWindow(window1.get()));
   auto observed_windows = split_view_divider()->observed_windows();
   EXPECT_EQ(window1.get(), observed_windows.front());
   EXPECT_EQ(window2.get(), observed_windows.back());
@@ -4049,6 +4072,53 @@ TEST_F(SnapGroupTest, CursorUpdateTest) {
                                    ->GetBoundsInScreen()
                                    .CenterPoint());
   EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
+}
+
+// Tests the basic functionalities of multiple snap groups.
+TEST_F(SnapGroupTest, MultipleSnapGroups) {
+  // Use non-zero test duration to simulate a real device with animations.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create the 1st snap group.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  auto* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  auto* snap_group1 =
+      snap_group_controller->GetSnapGroupForGivenWindow(w2.get());
+  auto* split_view_divider1 = snap_group1->split_view_divider();
+
+  // Minimize the 1st group so we can create a new group.
+  snap_group_controller->MinimizeTopMostSnapGroup();
+
+  // Create a 2nd group using a different snap ratio from `group1`.
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  std::unique_ptr<aura::Window> w4(CreateAppWindow());
+  ash::SnapOneTestWindow(w3.get(), WindowStateType::kPrimarySnapped,
+                         chromeos::kTwoThirdSnapRatio);
+  WaitForOverviewEnterAnimation();
+  ClickOverviewItem(GetEventGenerator(), w4.get());
+  WaitForOverviewExitAnimation();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w4.get()));
+  auto* snap_group2 =
+      snap_group_controller->GetSnapGroupForGivenWindow(w3.get());
+  auto* split_view_divider2 = snap_group2->split_view_divider();
+  EXPECT_EQ(2u, snap_group_controller->snap_groups_for_testing().size());
+  EXPECT_NE(split_view_divider1, split_view_divider2);
+  aura::Window* divider1 =
+      split_view_divider1->divider_widget()->GetNativeWindow();
+  aura::Window* divider2 =
+      split_view_divider2->divider_widget()->GetNativeWindow();
+  auto* desk_container = desks_util::GetActiveDeskContainerForRoot(
+      Shell::Get()->GetPrimaryRootWindow());
+  // The order from bottom to top. For each group, the order is
+  // `second_mru_window`, `mru_window`, `divider`.
+  VerifyStackingOrder(desk_container, {w1.get(), w2.get(), divider1, w3.get(),
+                                       w4.get(), divider2});
+
+  // TODO(sophiewen): Test the bounds after restoring both groups.
 }
 
 // -----------------------------------------------------------------------------

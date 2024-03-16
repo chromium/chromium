@@ -351,6 +351,7 @@ void TabletModeWindowManager::OnSplitViewStateChanged(
     case SplitViewController::EndReason::kWindowDragStarted:
     case SplitViewController::EndReason::kExitTabletMode:
     case SplitViewController::EndReason::kDesksChange:
+    case SplitViewController::EndReason::kSnapGroups:
       // For the case of kHomeLauncherPressed, the home launcher will minimize
       // the snapped windows after ending splitview, so avoid maximizing them
       // here. For the case of kActiveUserChanged, the snapped windows will be

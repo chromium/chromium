@@ -533,20 +533,12 @@ SplitViewController::SplitViewController(aura::Window* root_window)
       split_view_metrics_controller_(
           std::make_unique<SplitViewMetricsController>(this)) {
   Shell::Get()->accessibility_controller()->AddObserver(this);
-
-  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
-    snap_group_controller->AddObserver(this);
-  }
 }
 
 SplitViewController::~SplitViewController() {
   if (AccessibilityController* a11y_controller =
           Shell::Get()->accessibility_controller()) {
     a11y_controller->RemoveObserver(this);
-  }
-
-  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
-    snap_group_controller->RemoveObserver(this);
   }
 
   // Needed in case `this` is destroyed due to a root window being removed,
@@ -1140,19 +1132,6 @@ void SplitViewController::RemoveObserver(SplitViewObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SplitViewController::MaybeDetachWindow(aura::Window* dragged_window) {
-  // If one of the windows in the snap group is dragged, it may result in
-  // ending split view and some post processings to be done such as removing
-  // snap group and split view divider.
-  if (auto* snap_group_controller = SnapGroupController::Get();
-      snap_group_controller &&
-      snap_group_controller->GetSnapGroupForGivenWindow(dragged_window) &&
-      !IsResizingWithDivider()) {
-    OnSnappedWindowDetached(dragged_window,
-                            WindowDetachedReason::kWindowDragged);
-  }
-}
-
 void SplitViewController::OnWindowPropertyChanged(aura::Window* window,
                                                   const void* key,
                                                   intptr_t old) {
@@ -1389,19 +1368,7 @@ void SplitViewController::OnOverviewModeEnding(
 
 void SplitViewController::OnOverviewModeEnded() {
   DCHECK(InSplitViewMode());
-  RefreshSnapGroup();
-
-  auto two_windows_in_snap_group = [&]() -> bool {
-    SnapGroupController* snap_group_controller = SnapGroupController::Get();
-    return primary_window_ && secondary_window_ && snap_group_controller &&
-           snap_group_controller->AreWindowsInSnapGroup(primary_window_,
-                                                        secondary_window_);
-  };
-
-  // TODO(michelefan | sophiewen): Call `EndSplitView()` after the snap group is
-  // created when the divider is owned by snap group is done. Currently it will
-  // reset the divider if split view ends now.
-  if (InClamshellSplitViewMode() && !two_windows_in_snap_group()) {
+  if (InClamshellSplitViewMode()) {
     EndSplitView();
   }
 }
@@ -1476,6 +1443,13 @@ void SplitViewController::OnDisplayMetricsChanged(
   if (IsDividerAnimating()) {
     StopAndShoveAnimatedDivider();
     EndResizeWithDividerImpl();
+  }
+
+  // If we ended split view in `EndSplitViewAfterResizingAtEdgeIfAppropriate()`,
+  // no need to update the divider position.
+  // TODO(b/329325825): Consider refactoring clamshell display change here.
+  if (!InTabletSplitViewMode()) {
+    return;
   }
 
   if ((metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION) ||
@@ -1628,21 +1602,6 @@ void SplitViewController::OnWindowActivated(ActivationReason reason,
   }
 }
 
-void SplitViewController::OnSnapGroupCreated() {
-  CHECK(IsSnapGroupEnabledInClamshellMode());
-  RefreshSplitViewDividerInClamshell();
-}
-
-void SplitViewController::OnSnapGroupRemoved(SnapGroup* snap_group) {
-  CHECK(Shell::Get()->snap_group_controller());
-  split_view_divider_.CloseDividerWidget();
-
-  if (snap_group->window1() == primary_window_ &&
-      snap_group->window2() == secondary_window_) {
-    EndSplitView(EndReason::kNormal);
-  }
-}
-
 void SplitViewController::StartResizeWithDivider(
     const gfx::Point& location_in_screen) {
   base::RecordAction(base::UserMetricsAction("SplitView_ResizeWindows"));
@@ -1690,7 +1649,7 @@ void SplitViewController::UpdateResizeWithDivider(
   SetWindowsTransformDuringResizing();
 }
 
-void SplitViewController::EndResizeWithDivider(
+bool SplitViewController::EndResizeWithDivider(
     const gfx::Point& location_in_screen) {
   NotifyDividerPositionChanged();
 
@@ -1714,14 +1673,13 @@ void SplitViewController::EndResizeWithDivider(
   // TODO(b/298515283): Separate Snap Group and tablet resize.
   if (divider_position == target_divider_position ||
       IsSnapGroupEnabledInClamshellMode()) {
-    EndResizeWithDividerImpl();
-    EndSplitViewAfterResizingAtEdgeIfAppropriate();
-  } else {
+    return true;
+  }
     divider_snap_animation_ = std::make_unique<DividerSnapAnimation>(
         this, divider_position, target_divider_position,
         base::Milliseconds(300), gfx::Tween::EASE_IN);
     divider_snap_animation_->Show();
-  }
+    return false;
 }
 
 void SplitViewController::OnResizeEnding() {
@@ -1738,6 +1696,10 @@ void SplitViewController::OnResizeEnding() {
   resize_timer_.Stop();
   presentation_time_recorder_.reset();
   RestoreWindowsTransformAfterResizing();
+}
+
+void SplitViewController::OnResizeEnded() {
+  EndSplitViewAfterResizingAtEdgeIfAppropriate();
 }
 
 void SplitViewController::SwapWindows() {
@@ -1891,7 +1853,8 @@ void SplitViewController::UpdateStateAndNotifyObservers() {
   // observers that split view mode started. Likewise, when |state_| is
   // |State::kNoSnap|, it indicates to observers that split view mode
   // ended.
-  DCHECK(previous_state != State::kNoSnap || state_ != State::kNoSnap);
+  DCHECK(previous_state != State::kNoSnap || state_ != State::kNoSnap ||
+         end_reason_ == EndReason::kSnapGroups);
   for (auto& observer : observers_) {
     observer.OnSplitViewStateChanged(previous_state, state_);
   }
@@ -1914,37 +1877,24 @@ void SplitViewController::NotifyWindowSwapped() {
     observer.OnSplitViewWindowSwapped();
 }
 
-void SplitViewController::RefreshSnapGroup() {
-  if (state_ == State::kBothSnapped && IsSnapGroupEnabledInClamshellMode()) {
+bool SplitViewController::MaybeCreateSnapGroup() {
+  // TODO(b/329893720): Clean up this function.
+  if (primary_window_ && secondary_window_ &&
+      IsSnapGroupEnabledInClamshellMode()) {
     SnapGroupController* snap_group_controller = SnapGroupController::Get();
     // TODO(b/286963080): Move this to SnapGroupController.
     if (!snap_group_controller->AreWindowsInSnapGroup(primary_window_,
-                                                      secondary_window_)) {
-      snap_group_controller->AddSnapGroup(primary_window_, secondary_window_);
+                                                      secondary_window_) &&
+        snap_group_controller->AddSnapGroup(primary_window_,
+                                            secondary_window_)) {
+      // Ending split view will call `UpdateStateAndNotifyObservers()` that
+      // state is now `kNoSnap` and end overview in
+      // `OverviewGrid::OnSplitViewStateChanged()`.
+      EndSplitView(EndReason::kSnapGroups);
+      return true;
     }
-
-    RefreshSplitViewDividerInClamshell();
   }
-}
-
-  // TODO(b/309856199): Move this function to `SnapGroup`.
-void SplitViewController::RefreshSplitViewDividerInClamshell() {
-  if (split_view_divider_.divider_widget()) {
-    // Don't recreate the divider if it's already created, which may happen
-    // during tablet <-> clamshell transition. Needed since we still create
-    // the divider in `SplitViewController`, will be removed in b/309856199.
-    return;
-  }
-
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  CHECK(snap_group_controller);
-  CHECK(primary_window_ && secondary_window_);
-
-  // The divider will show for all snap groups in clamshell, we should take the
-  // divider width into consideration.
-  split_view_divider_.ShowFor(
-      GetEquivalentDividerPosition(primary_window_,
-                                   /*account_for_divider_width=*/true));
+  return false;
 }
 
 void SplitViewController::UpdateBlackScrim(
@@ -2167,7 +2117,13 @@ void SplitViewController::StopSnapAnimation() {
 }
 
 bool SplitViewController::ShouldEndSplitViewAfterResizingAtEdge() {
-  DCHECK(InTabletSplitViewMode() || IsSnapGroupEnabledInClamshellMode());
+  if (!InTabletSplitViewMode()) {
+    // `SplitViewDivider::CleanUpWindowResizing()` may be called after a display
+    // change, after which we have ended split view.
+    // TODO(sophiewen): Only call `SplitViewDivider::CleanUpWindowResizing()` if
+    // we actually ended resizing.
+    return false;
+  }
   const int divider_position = GetDividerPosition();
   return divider_position == 0 ||
          divider_position == GetDividerPositionUpperLimit(root_window_);
@@ -2213,8 +2169,15 @@ void SplitViewController::OnWindowSnapped(
     std::optional<chromeos::WindowStateType> previous_state,
     WindowSnapActionSource snap_action_source) {
   RestoreTransformIfApplicable(window);
+
+  // We must add snap group and end split view before updating state. If
+  // `MaybeCreateSnapGroup()` is true, we have ended split view so no need to
+  // update state and notify observers again.
+  if (MaybeCreateSnapGroup()) {
+    return;
+  }
+
   UpdateStateAndNotifyObservers();
-  RefreshSnapGroup();
 
   // If the snapped window was removed from overview and was the active window
   // before entering overview, it should be the active window after snapping in

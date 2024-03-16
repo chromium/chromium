@@ -243,13 +243,22 @@ void SplitViewDivider::EndResizeWithDivider(
   // LayoutDividerController will transform and update the window and divider
   // bounds in `EndResizeWithDivider()`.
   UpdateDividerPosition(modified_location_in_screen);
-  controller_->EndResizeWithDivider(modified_location_in_screen);
+
+  // If the delegate is done with resizing, finish resizing and clean up.
+  // Otherwise it will be called later, in
+  // `DividerSnapAnimation::AnimationEnded()`.
+  if (controller_->EndResizeWithDivider(modified_location_in_screen)) {
+    CleanUpWindowResizing();
+  }
 }
 
 void SplitViewDivider::CleanUpWindowResizing() {
   is_resizing_with_divider_ = false;
+  // Always call `OnResizeEnding()` since `CleanUpWindowResizing()` may be after
+  // an animation and we need to restore the window transforms.
   controller_->OnResizeEnding();
   FinishWindowResizing();
+  controller_->OnResizeEnded();
 }
 
 void SplitViewDivider::DoSpawningAnimation(int spawning_position) {

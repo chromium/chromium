@@ -97,6 +97,7 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   void RestoreTopmostSnapGroup();
 
   // OverviewObserver:
+  void OnOverviewModeStarting() override;
   void OnOverviewModeEnded() override;
 
   // display::DisplayObserver:
@@ -125,6 +126,9 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
 
   // Restore the snap state of the windows in the given `snap_group`.
   void RestoreSnapState(SnapGroup* snap_group);
+
+  // Called when the display tablet state is changed.
+  void OnTabletModeStarted();
 
   // Contains all the `SnapGroup`(s), we will have one `SnapGroup` globally for
   // the first iteration but will have multiple in the future iteration.

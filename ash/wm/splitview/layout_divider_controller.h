@@ -26,11 +26,18 @@ class LayoutDividerController {
   virtual void StartResizeWithDivider(const gfx::Point& location_in_screen) = 0;
   virtual void UpdateResizeWithDivider(
       const gfx::Point& location_in_screen) = 0;
-  virtual void EndResizeWithDivider(const gfx::Point& location_in_screen) = 0;
+
+  // Returns true if the delegate is finished with resizing and can hand back
+  // resizing work to `SplitViewDivider`, otherwise returns false, e.g. if the
+  // divider is performing a snap animation.
+  virtual bool EndResizeWithDivider(const gfx::Point& location_in_screen) = 0;
 
   // Called when the divider is about to end resizing by finishing window
   // resizing and cleaning up drag details.
   virtual void OnResizeEnding() = 0;
+
+  // Called when the divider has finished cleaning up window resizing.
+  virtual void OnResizeEnded() = 0;
 
   // Swaps the window(s). If in tablet mode, it is triggered by `kDoubleTap`
   // with only one window snapped, the window will be snapped to the other

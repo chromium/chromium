@@ -239,6 +239,9 @@ bool IsInFasterSplitScreenSetupSession(const aura::Window* window);
 // show the desk bar or save desk buttons.
 bool IsInFasterSplitScreenSetupSession();
 
+// Returns the target bounds of `window` in screen coordinates.
+ASH_EXPORT gfx::Rect GetTargetScreenBounds(aura::Window* window);
+
 }  // namespace ash::window_util
 
 #endif  // ASH_WM_WINDOW_UTIL_H_

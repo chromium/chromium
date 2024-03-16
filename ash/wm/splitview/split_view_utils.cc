@@ -21,6 +21,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -938,8 +939,9 @@ bool CanStartSplitViewOverviewSessionInClamshell(
 
   // If `SnapGroups` is not enabled and the topmost window (excluding
   // `window` itself) is snapped on the opposite side, don't start partial
-  // overview.
-  if (!SnapGroupController::Get() && IsAnotherWindowSnappedOppositeOf(window)) {
+  // overview. Note even if a `SnapGroup` is created and visible, we will snap
+  // on top of the existing group.
+  if (IsAnotherWindowSnappedOppositeOf(window)) {
     return false;
   }
 
@@ -958,6 +960,19 @@ int GetWindowComponentForResize(aura::Window* window) {
   // TODO(b/288356322): Update the component for vertical splitview.
   return state_type == chromeos::WindowStateType::kPrimarySnapped ? HTRIGHT
                                                                   : HTLEFT;
+}
+
+bool ShouldConsiderDivider(aura::Window* window) {
+  if (IsSnapGroupEnabledInClamshellMode()) {
+    if (auto* snap_group =
+            SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
+      return snap_group->split_view_divider()->divider_widget();
+    }
+  }
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(window->GetRootWindow());
+  return split_view_controller->InSplitViewMode() &&
+         split_view_controller->split_view_divider()->divider_widget();
 }
 
 ASH_EXPORT std::string BuildWindowLayoutCompleteOnSessionExitHistogram() {

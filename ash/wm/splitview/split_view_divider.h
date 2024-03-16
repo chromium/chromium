@@ -55,6 +55,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
       bool is_dragging);
 
   views::Widget* divider_widget() { return divider_widget_; }
+
+  int divider_position() const { return divider_position_; }
+
   bool is_resizing_with_divider() const { return is_resizing_with_divider_; }
   const aura::Window::Windows& observed_windows() const {
     return observed_windows_;

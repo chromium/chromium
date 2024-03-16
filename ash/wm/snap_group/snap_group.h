@@ -5,6 +5,8 @@
 #ifndef ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 #define ASH_WM_SNAP_GROUP_SNAP_GROUP_H_
 
+#include "ash/wm/splitview/layout_divider_controller.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
@@ -17,7 +19,9 @@ namespace ash {
 
 // Observes changes in the windows of the SnapGroup and manages the windows
 // accordingly.
-class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
+class SnapGroup : public aura::WindowObserver,
+                  public WindowStateObserver,
+                  public LayoutDividerController {
  public:
   SnapGroup(aura::Window* window1, aura::Window* window2);
   SnapGroup(const SnapGroup&) = delete;
@@ -26,6 +30,10 @@ class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
 
   aura::Window* window1() const { return window1_; }
   aura::Window* window2() const { return window2_; }
+  SplitViewDivider* split_view_divider() { return &split_view_divider_; }
+
+  void HideDivider();
+  void ShowDivider();
 
   // Returns the topmost window in the snap group.
   aura::Window* GetTopMostWindowInGroup() const;
@@ -33,16 +41,29 @@ class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
   // Minimizes the windows in the snap group.
   void MinimizeWindows();
 
-  // Swaps the windows in the snap group.
-  void SwapWindows();
-
   // aura::WindowObserver:
   // TODO: Implement `OnWindowParentChanged`.
   void OnWindowDestroying(aura::Window* window) override;
 
   // WindowStateObserver:
+  // TODO(b/329890936): See if we need to detach window here.
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   chromeos::WindowStateType old_type) override;
+
+  // LayoutDividerController:
+  void StartResizeWithDivider(const gfx::Point& location_in_screen) override;
+  void UpdateResizeWithDivider(const gfx::Point& location_in_screen) override;
+  bool EndResizeWithDivider(const gfx::Point& location_in_screen) override;
+  void OnResizeEnding() override;
+  void OnResizeEnded() override;
+  void SwapWindows() override;
+  gfx::Rect GetSnappedWindowBoundsInScreen(
+      SnapPosition snap_position,
+      aura::Window* window_for_minimum_size,
+      float snap_ratio) const override;
+  aura::Window::Windows GetLayoutWindows() const override;
+  SnapPosition GetPositionOfSnappedWindow(
+      const aura::Window* window) const override;
 
  private:
   friend class SnapGroupController;
@@ -57,6 +78,15 @@ class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
   // expands the bounds of both windows in snap group when `on_snap_group_added`
   // is false, i.e. on snap group removed.
   void RefreshWindowBoundsInSnapGroup(bool on_snap_group_added);
+
+  // Updates the bounds of both windows during divider resizing.
+  void UpdateSnappedBoundsDuringResize();
+
+  // Split view divider which is a black bar stretching from one edge of the
+  // screen to the other, containing a small white drag bar in the middle. As
+  // the user presses on it and drags it horizontally or vertically, the windows
+  // will be resized either horizontally or vertically accordingly.
+  SplitViewDivider split_view_divider_;
 
   // True while we are updating the windows during a swap.
   bool is_swapping_ = false;

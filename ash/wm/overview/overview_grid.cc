@@ -2513,15 +2513,17 @@ void OverviewGrid::OnSplitViewStateChanged(
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window_);
+  const auto end_reason = split_view_controller->end_reason();
   const bool unsnappable_window_activated =
       state == SplitViewController::State::kNoSnap &&
-      split_view_controller->end_reason() ==
-          SplitViewController::EndReason::kUnsnappableWindowActivated;
+      end_reason == SplitViewController::EndReason::kUnsnappableWindowActivated;
 
-  // If two windows were snapped to both sides of the screen or an unsnappable
-  // window was just activated, or we're in single split mode in clamshell mode
-  // and there is no window in overview, end overview mode and bail out.
+  // If two windows were snapped to both sides of the screen and/or we ended
+  // split view by adding a Snap Group, or an unsnappable window was just
+  // activated, or we're in single split mode in clamshell mode and there is no
+  // window in overview, end overview mode and bail out.
   if (state == SplitViewController::State::kBothSnapped ||
+      end_reason == SplitViewController::EndReason::kSnapGroups ||
       unsnappable_window_activated ||
       (split_view_controller->InClamshellSplitViewMode() &&
        overview_session_->IsEmpty())) {

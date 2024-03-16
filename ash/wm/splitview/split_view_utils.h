@@ -277,11 +277,17 @@ bool CanStartSplitViewOverviewSessionInClamshell(
 // Returns true if the snap group is enabled in clamshell mode. The
 // `split_view_divider_` will show to indicate that the two windows are in a
 // snap-group state.
-bool IsSnapGroupEnabledInClamshellMode();
+ASH_EXPORT bool IsSnapGroupEnabledInClamshellMode();
 
 // Gets the expected window component for a window in split view, depending on
 // current screen orientation for resizing purpose.
 int GetWindowComponentForResize(aura::Window* window);
+
+// Returns true if the split view divider exits which should be taken into
+// consideration when calculating the snap ratio.
+// TODO(b/329326366): Remove this API and have clients call
+// `UpdateSnappedBounds()` directly.
+bool ShouldConsiderDivider(aura::Window* window);
 
 // Builds the full histogram that records whether the window layout completes on
 // `SplitViewOverviewSession` exit. The full histogram is shown in the example

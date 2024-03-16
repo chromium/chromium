@@ -799,4 +799,10 @@ bool IsInFasterSplitScreenSetupSession() {
   return false;
 }
 
+gfx::Rect GetTargetScreenBounds(aura::Window* window) {
+  gfx::Rect bounds_in_screen(window->GetTargetBounds());
+  wm::ConvertRectToScreen(window->parent(), &bounds_in_screen);
+  return bounds_in_screen;
+}
+
 }  // namespace ash::window_util

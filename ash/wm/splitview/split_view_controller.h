@@ -92,7 +92,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                                        public AccessibilityObserver,
                                        public ash::KeyboardControllerObserver,
                                        public wm::ActivationChangeObserver,
-                                       public SnapGroupController::Observer,
                                        public LayoutDividerController {
  public:
   // Why splitview was ended.
@@ -109,6 +108,8 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     // Splitview is being ended due to the `root_window_` is destroyed and the
     // SplitViewController is being destroyed.
     kRootWindowDestroyed,
+    // Splitview is being ended due to a Snap Group being added.
+    kSnapGroups,
   };
 
   // The behaviors of split view are very different when in tablet mode and in
@@ -312,10 +313,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void AddObserver(SplitViewObserver* observer);
   void RemoveObserver(SplitViewObserver* observer);
 
-  // Conditionally detach `window` from the splitview, if one of the windows in
-  // a snap group is dragged without using the `split_view_divider_`.
-  void MaybeDetachWindow(aura::Window* dragged_window);
-
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
@@ -356,15 +353,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  // SnapGroupController::Observer:
-  void OnSnapGroupCreated() override;
-  void OnSnapGroupRemoved(SnapGroup* snap_group) override;
-
   // LayoutDividerController:
   void StartResizeWithDivider(const gfx::Point& location_in_screen) override;
   void UpdateResizeWithDivider(const gfx::Point& location_in_screen) override;
-  void EndResizeWithDivider(const gfx::Point& location_in_screen) override;
+  bool EndResizeWithDivider(const gfx::Point& location_in_screen) override;
   void OnResizeEnding() override;
+  void OnResizeEnded() override;
   void SwapWindows() override;
   gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
@@ -414,15 +408,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Notifies observers that the windows are swappped.
   void NotifyWindowSwapped();
 
-  // Creates a snap group and its associated `split_view_divider_` for two
-  // eligible windows. Or just refreshes the `split_view_divider_` when
-  // restoring the snap group.
-  void RefreshSnapGroup();
-
-  // Creates the `split_view_divider_` for snap group, adjusts its stacking
-  // order, updates the windows bounds and notifies the divider position
-  // changes.
-  void RefreshSplitViewDividerInClamshell();
+  // Creates a snap group and ends split view. Returns true if a snap group was
+  // created, false otherwise.
+  bool MaybeCreateSnapGroup();
 
   // Updates the black scrim layer's bounds and opacity while dragging the
   // divider. The opacity increases as the split divider gets closer to the edge
