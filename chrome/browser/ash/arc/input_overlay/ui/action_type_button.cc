@@ -90,6 +90,7 @@ void ActionTypeButton::RefreshColors() {
 }
 
 void ActionTypeButton::Layout(PassKey) {
+  LayoutSuperclass<Button>(this);
   SizeToPreferredSize();
   gfx::Rect local_bounds = GetLocalBounds();
   gfx::Rect local_content_bounds(local_bounds);
