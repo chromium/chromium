@@ -109,6 +109,8 @@ void ConversationNotificationView::UpdateWithNotification(
 
   actions_view_->UpdateWithNotification(notification);
   actions_view_->SetExpanded(expanded_);
+  title_->SetText(notification.title());
+  app_name_view_->SetText(notification.display_source());
 
   if (notification.items().empty()) {
     return;

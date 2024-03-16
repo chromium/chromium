@@ -54,7 +54,7 @@ class ConversationNotificationViewTest : public AshTestBase {
     buttons.push_back(reply_button);
     rich_data.buttons = buttons;
     return std::make_unique<message_center::Notification>(
-        message_center::NOTIFICATION_TYPE_SIMPLE, "id", u"title",
+        message_center::NOTIFICATION_TYPE_CONVERSATION, "id", u"title",
         u"test message", ui::ImageModel(), /*display_source=*/u"TestApp",
         GURL(), message_center::NotifierId(), rich_data, /*delegate=*/nullptr);
   }
@@ -90,6 +90,10 @@ class ConversationNotificationViewTest : public AshTestBase {
   const std::u16string& display_source() const {
     return notification_->display_source();
   }
+
+  views::Label* title() { return notification_view_->title_; }
+
+  views::Label* app_name() { return notification_view_->app_name_view_; }
 
  private:
   raw_ptr<ConversationNotificationView> notification_view_;
@@ -170,4 +174,19 @@ TEST_F(ConversationNotificationViewTest, ActionsViewToggleExpandVisibility) {
   EXPECT_TRUE(app_name_divider()->GetVisible());
   EXPECT_EQ(display_source(), app_name_view()->GetText());
 }
+
+TEST_F(ConversationNotificationViewTest, UpdateTitleAndAppName) {
+  std::unique_ptr<message_center::Notification> notification =
+      CreateConversationNotification();
+  const std::u16string& expected_title = u"new title";
+  const std::u16string& expected_app_name = u"new app name";
+  notification->set_title(expected_title);
+  notification->set_display_source(expected_app_name);
+
+  notification_view()->UpdateWithNotification(*notification);
+
+  EXPECT_EQ(expected_title, title()->GetText());
+  EXPECT_EQ(expected_app_name, app_name()->GetText());
+}
+
 }  // namespace ash
