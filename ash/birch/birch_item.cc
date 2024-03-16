@@ -138,8 +138,6 @@ void BirchCalendarItem::PerformSecondaryAction() {
 }
 
 void BirchCalendarItem::LoadIcon(LoadIconCallback callback) const {
-  // TODO(jamescook): Once we have birch UI to show the icon, verify that
-  // FromVectorIcon() doesn't require a color.
   std::move(callback).Run(ui::ImageModel::FromVectorIcon(kCalendarEventIcon));
 }
 
