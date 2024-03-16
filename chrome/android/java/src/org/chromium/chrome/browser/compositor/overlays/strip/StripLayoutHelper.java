@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
@@ -233,6 +234,7 @@ public class StripLayoutHelper
     private long mHoverStartTime;
     private float mHoverStartOffset;
     private boolean mHoveringOverGroup;
+    private boolean mMovingGroup;
 
     // Tab switch efficiency
     private Long mTabScrollStartTime;
@@ -792,10 +794,29 @@ public class StripLayoutHelper
 
     /**
      * Sets the {@link TabGroupModelFilter} that will access the internal tab group state.
+     *
      * @param tabGroupModelFilter The {@link TabGroupModelFilter}.
      */
     public void setTabGroupModelFilter(TabGroupModelFilter tabGroupModelFilter) {
         mTabGroupModelFilter = tabGroupModelFilter;
+        mTabGroupModelFilter.addTabGroupObserver(
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void willMoveTabGroup(int tabModelOldIndex, int tabModelNewIndex) {
+                        mMovingGroup = true;
+                    }
+
+                    @Override
+                    public void didMoveTabGroup(
+                            Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
+                        mMovingGroup = false;
+                    }
+
+                    @Override
+                    public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+                        rebuildStripViews();
+                    }
+                });
         rebuildStripViews();
     }
 
@@ -2196,6 +2217,7 @@ public class StripLayoutHelper
         } else {
             copyTabs();
         }
+        mUpdateHost.requestUpdate();
     }
 
     private int getTabGroupCount() {
@@ -3592,7 +3614,14 @@ public class StripLayoutHelper
 
         // 4. Swap the tabs.
         moveElement(mStripTabs, index, newIndex);
-        rebuildStripViews();
+        if (!mMovingGroup) {
+            // When tab groups are moved, each tab is moved one-by-one. During this process, the
+            // invariant that tab groups must be contiguous is temporarily broken, so we suppress
+            // rebuilding until the entire group is moved. See https://crbug.com/329318567.
+            // TODO(crbug.com/329335086): Investigate reordering (with #moveElement) instead of
+            // rebuilding here.
+            rebuildStripViews();
+        }
     }
 
     private void handleReorderAutoScrolling(long time) {

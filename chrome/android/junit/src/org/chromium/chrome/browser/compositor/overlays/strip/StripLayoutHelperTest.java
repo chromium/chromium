@@ -2263,7 +2263,7 @@ public class StripLayoutHelperTest {
                 "Tab strip should match tab model.",
                 expectedNumTabs,
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length);
-        verify(mUpdateHost, times(2)).requestUpdate();
+        verify(mUpdateHost, times(5)).requestUpdate();
     }
 
     @Test

@@ -144,6 +144,7 @@ public class TabGroupModelFilterUnitTest {
 
     private TabGroupModelFilter mTabGroupModelFilter;
     private InOrder mTabModelInOrder;
+    private InOrder mModelAndObserverInOrder;
 
     private Tab prepareTab(int tabId, int rootId, @Nullable Token tabGroupId, int parentTabId) {
         Tab tab = mock(Tab.class);
@@ -339,6 +340,8 @@ public class TabGroupModelFilterUnitTest {
         ContextUtils.initApplicationContextForTests(mContext);
         when(mSharedPreferencesTitle.getString(anyString(), any())).thenReturn(TAB_TITLE);
         when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(INVALID_COLOR_ID);
+
+        mModelAndObserverInOrder = inOrder(mTabModel, mTabGroupModelFilterObserver);
     }
 
     @Before
@@ -1283,9 +1286,14 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.moveRelatedTabs(mTab2.getId(), startIndex + 1);
 
-        verify(mTabModel).moveTab(mTab2.getId(), startIndex + 1);
-        verify(mTabModel).moveTab(mTab3.getId(), startIndex + 1);
-        verify(mTabGroupModelFilterObserver).didMoveTabGroup(mTab3, POSITION3 - 1, startIndex);
+        mModelAndObserverInOrder
+                .verify(mTabGroupModelFilterObserver)
+                .willMoveTabGroup(POSITION2, startIndex + 1);
+        mModelAndObserverInOrder.verify(mTabModel).moveTab(mTab2.getId(), startIndex + 1);
+        mModelAndObserverInOrder.verify(mTabModel).moveTab(mTab3.getId(), startIndex + 1);
+        mModelAndObserverInOrder
+                .verify(mTabGroupModelFilterObserver)
+                .didMoveTabGroup(mTab3, POSITION3 - 1, startIndex);
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
     }
 
@@ -1297,9 +1305,14 @@ public class TabGroupModelFilterUnitTest {
 
         mTabGroupModelFilter.moveRelatedTabs(mTab5.getId(), startIndex + 1);
 
-        verify(mTabModel).moveTab(mTab5.getId(), startIndex + 1);
-        verify(mTabModel).moveTab(mTab6.getId(), startIndex + 2);
-        verify(mTabGroupModelFilterObserver).didMoveTabGroup(mTab6, POSITION6, startIndex + 2);
+        mModelAndObserverInOrder
+                .verify(mTabGroupModelFilterObserver)
+                .willMoveTabGroup(POSITION5, startIndex + 1);
+        mModelAndObserverInOrder.verify(mTabModel).moveTab(mTab5.getId(), startIndex + 1);
+        mModelAndObserverInOrder.verify(mTabModel).moveTab(mTab6.getId(), startIndex + 2);
+        mModelAndObserverInOrder
+                .verify(mTabGroupModelFilterObserver)
+                .didMoveTabGroup(mTab6, POSITION6, startIndex + 2);
         assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
     }
 

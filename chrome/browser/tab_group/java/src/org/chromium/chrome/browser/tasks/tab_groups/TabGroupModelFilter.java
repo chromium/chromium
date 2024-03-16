@@ -101,6 +101,10 @@ public class TabGroupModelFilter extends TabModelFilter {
             return;
         }
 
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            observer.willMoveTabGroup(curIndex, newIndex);
+        }
+
         int offset = 0;
         for (Tab tab : tabs) {
             if (tabModel.indexOf(tab) == -1) {
