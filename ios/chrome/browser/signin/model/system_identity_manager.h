@@ -156,7 +156,7 @@ class SystemIdentityManager {
   virtual DismissViewCallback PresentLinkedServicesSettingsDetailsController(
       id<SystemIdentity> identity,
       UIViewController* view_controller,
-      bool animated);
+      bool animated) = 0;
 
   // Creates a new SystemIdentityInteractionManager instance.
   virtual id<SystemIdentityInteractionManager> CreateInteractionManager() = 0;
