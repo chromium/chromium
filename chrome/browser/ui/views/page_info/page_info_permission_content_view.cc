@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
@@ -270,10 +271,9 @@ void PageInfoPermissionContentView::OnAudioDevicesChanged(
     const std::optional<std::vector<media::AudioDeviceDescription>>&
         device_infos) {
   if (type_ == ContentSettingsType::MEDIASTREAM_MIC && device_infos) {
-    title_->SetText(l10n_util::GetStringFUTF16(
+    SetTitleTextAndTooltip(
         IDS_SITE_SETTINGS_TYPE_MIC_WITH_COUNT,
-        base::NumberToString16(
-            media_effects::GetRealAudioDeviceCount(device_infos.value()))));
+        media_effects::GetRealAudioDeviceNames(device_infos.value()));
   }
 }
 
@@ -281,10 +281,19 @@ void PageInfoPermissionContentView::OnVideoDevicesChanged(
     const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
         device_infos) {
   if (type_ == ContentSettingsType::MEDIASTREAM_CAMERA && device_infos) {
-    title_->SetText(l10n_util::GetStringFUTF16(
+    SetTitleTextAndTooltip(
         IDS_SITE_SETTINGS_TYPE_CAMERA_WITH_COUNT,
-        base::NumberToString16(device_infos->size())));
+        media_effects::GetRealVideoDeviceNames(device_infos.value()));
   }
+}
+
+void PageInfoPermissionContentView::SetTitleTextAndTooltip(
+    int message_id,
+    const std::vector<std::string>& device_names) {
+  title_->SetText(l10n_util::GetStringFUTF16(
+      message_id, base::NumberToString16(device_names.size())));
+  title_->SetTooltipText(
+      base::UTF8ToUTF16(base::JoinString(device_names, "\n")));
 }
 #endif
 

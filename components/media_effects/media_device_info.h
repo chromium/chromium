@@ -18,9 +18,14 @@ namespace media_effects {
 std::optional<std::string> GetRealDefaultDeviceId(
     const std::vector<media::AudioDeviceDescription>& infos);
 
-// Returns the real number of mics by excluding virtual devices such as default.
-size_t GetRealAudioDeviceCount(
+// Returns a list of the real mics names by excluding virtual devices such as
+// default.
+std::vector<std::string> GetRealAudioDeviceNames(
     const std::vector<media::AudioDeviceDescription>& infos);
+
+// Returns a list of the cameras names.
+std::vector<std::string> GetRealVideoDeviceNames(
+    const std::vector<media::VideoCaptureDeviceInfo>& infos);
 
 // This class manages a cache of device infos for currently connected audio and
 // video capture devices. It is similar to `MediaCaptureDevicesImpl` from

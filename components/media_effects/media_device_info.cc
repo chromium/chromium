@@ -26,17 +26,26 @@ std::optional<std::string> GetRealDefaultDeviceId(
   return std::nullopt;
 }
 
-size_t GetRealAudioDeviceCount(
+std::vector<std::string> GetRealAudioDeviceNames(
     const std::vector<media::AudioDeviceDescription>& infos) {
-  size_t device_count = 0;
+  std::vector<std::string> real_names;
   for (const auto& info : infos) {
     if (!media::AudioDeviceDescription::IsDefaultDevice(info.unique_id) &&
         !media::AudioDeviceDescription::IsCommunicationsDevice(
             info.unique_id)) {
-      ++device_count;
+      real_names.push_back(info.device_name);
     }
   }
-  return device_count;
+  return real_names;
+}
+
+std::vector<std::string> GetRealVideoDeviceNames(
+    const std::vector<media::VideoCaptureDeviceInfo>& infos) {
+  std::vector<std::string> names;
+  for (const auto& info : infos) {
+    names.push_back(info.descriptor.GetNameAndModel());
+  }
+  return names;
 }
 
 MediaDeviceInfo::MediaDeviceInfo() {

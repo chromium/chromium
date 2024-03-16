@@ -18,8 +18,9 @@
 
 namespace {
 
-using media_effects::GetRealAudioDeviceCount;
+using media_effects::GetRealAudioDeviceNames;
 using media_effects::GetRealDefaultDeviceId;
+using media_effects::GetRealVideoDeviceNames;
 
 media::AudioDeviceDescription GetAudioDeviceDescription(size_t index) {
   return media::AudioDeviceDescription{
@@ -236,27 +237,48 @@ TEST_F(MediaDeviceInfoTest, Observers) {
 TEST(MediaDeviceInfoTestGeneral, DefaultAudioDeviceHandling) {
   std::vector<media::AudioDeviceDescription> infos;
   EXPECT_EQ(GetRealDefaultDeviceId(infos), std::nullopt);
-  EXPECT_EQ(GetRealAudioDeviceCount(infos), 0u);
+  EXPECT_EQ(GetRealAudioDeviceNames(infos).size(), 0u);
 
   infos.push_back(GetAudioDeviceDescription(0));
   infos.push_back(GetAudioDeviceDescription(1));
   infos.push_back(GetAudioDeviceDescription(2));
   EXPECT_EQ(GetRealDefaultDeviceId(infos), std::nullopt);
-  EXPECT_EQ(GetRealAudioDeviceCount(infos), 3u);
+  EXPECT_THAT(GetRealAudioDeviceNames(infos),
+              testing::ElementsAre(infos[0].device_name, infos[1].device_name,
+                                   infos[2].device_name));
 
   infos.front().is_system_default = true;
   EXPECT_EQ(GetRealDefaultDeviceId(infos), infos.front().unique_id);
-  EXPECT_EQ(GetRealAudioDeviceCount(infos), 3u);
+  EXPECT_THAT(GetRealAudioDeviceNames(infos),
+              testing::ElementsAre(infos[0].device_name, infos[1].device_name,
+                                   infos[2].device_name));
 
   infos.front().unique_id = media::AudioDeviceDescription::kDefaultDeviceId;
   EXPECT_EQ(GetRealDefaultDeviceId(infos), std::nullopt);
-  EXPECT_EQ(GetRealAudioDeviceCount(infos), 2u);
+  EXPECT_THAT(GetRealAudioDeviceNames(infos),
+              testing::ElementsAre(infos[1].device_name, infos[2].device_name));
 
   infos[1].is_system_default = true;
   EXPECT_EQ(GetRealDefaultDeviceId(infos), infos[1].unique_id);
-  EXPECT_EQ(GetRealAudioDeviceCount(infos), 2u);
+  EXPECT_THAT(GetRealAudioDeviceNames(infos),
+              testing::ElementsAre(infos[1].device_name, infos[2].device_name));
 
   infos[2].unique_id = media::AudioDeviceDescription::kCommunicationsDeviceId;
   EXPECT_EQ(GetRealDefaultDeviceId(infos), infos[1].unique_id);
-  EXPECT_EQ(GetRealAudioDeviceCount(infos), 1u);
+  EXPECT_THAT(GetRealAudioDeviceNames(infos),
+              testing::ElementsAre(infos[1].device_name));
+}
+
+TEST(MediaDeviceInfoTestGeneral, GetVideoDeviceNames) {
+  std::vector<media::VideoCaptureDeviceInfo> infos;
+  EXPECT_EQ(GetRealVideoDeviceNames(infos).size(), 0u);
+
+  infos.emplace_back(GetVideoCaptureDeviceDescriptor(0));
+  infos.emplace_back(GetVideoCaptureDeviceDescriptor(1));
+  infos.emplace_back(GetVideoCaptureDeviceDescriptor(2));
+
+  EXPECT_THAT(GetRealVideoDeviceNames(infos),
+              testing::ElementsAre(infos[0].descriptor.GetNameAndModel(),
+                                   infos[1].descriptor.GetNameAndModel(),
+                                   infos[2].descriptor.GetNameAndModel()));
 }

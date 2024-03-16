@@ -86,6 +86,8 @@ class PageInfoPermissionContentView
   void OnVideoDevicesChanged(
       const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
           device_infos) override;
+  void SetTitleTextAndTooltip(int message_id,
+                              const std::vector<std::string>& device_names);
 #endif
 
   // Adds Media (Camera or Mic) live preview feeds.

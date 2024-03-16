@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_effects/media_device_info.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
@@ -316,21 +317,36 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
 void PermissionPromptBubbleOneOriginView::OnAudioDevicesChanged(
     const std::optional<std::vector<media::AudioDeviceDescription>>&
         device_infos) {
-  if (mic_permission_label_ && device_infos) {
-    mic_permission_label_->SetText(l10n_util::GetStringFUTF16(
-        IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
-        base::NumberToString16(
-            media_effects::GetRealAudioDeviceCount(device_infos.value()))));
+  if (!mic_permission_label_ || !device_infos) {
+    return;
   }
+
+  const auto real_device_names =
+      media_effects::GetRealAudioDeviceNames(device_infos.value());
+
+  mic_permission_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
+      base::NumberToString16(real_device_names.size())));
+
+  mic_permission_label_->SetTooltipText(
+      base::UTF8ToUTF16(base::JoinString(real_device_names, "\n")));
 }
 
 void PermissionPromptBubbleOneOriginView::OnVideoDevicesChanged(
     const std::optional<std::vector<media::VideoCaptureDeviceInfo>>&
         device_infos) {
-  if (camera_permission_label_ && device_infos) {
-    camera_permission_label_->SetText(l10n_util::GetStringFUTF16(
-        IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
-        base::NumberToString16(device_infos->size())));
+  if (!camera_permission_label_ || !device_infos) {
+    return;
   }
+
+  const auto real_device_names =
+      media_effects::GetRealVideoDeviceNames(device_infos.value());
+
+  camera_permission_label_->SetText(l10n_util::GetStringFUTF16(
+      IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT_WITH_COUNT,
+      base::NumberToString16(real_device_names.size())));
+
+  camera_permission_label_->SetTooltipText(
+      base::UTF8ToUTF16(base::JoinString(real_device_names, "\n")));
 }
 #endif
