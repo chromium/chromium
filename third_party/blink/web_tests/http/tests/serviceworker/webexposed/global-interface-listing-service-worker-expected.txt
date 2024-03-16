@@ -1270,6 +1270,7 @@ interface NotificationEvent : ExtendableEvent
     getter reply
     method constructor
 interface Observable
+    static method from
     attribute @@toStringTag
     method constructor
     method drop

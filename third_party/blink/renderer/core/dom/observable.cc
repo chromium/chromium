@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/observable.h"
 
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mapper.h"
@@ -206,6 +207,165 @@ class OperatorForEachInternalObserver final
   Member<AbortController> controller_;
   Member<V8Visitor> callback_;
   Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+};
+
+// This delegate is used by the `Observer#from()` operator, in the case where
+// the given `any` value is a `Promise`. It simply utilizes the promise's
+// then/catch handlers to pipe the corresponding fulfilled/rejection value to
+// the Observable in a one-shot manner.
+class OperatorFromPromiseSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  explicit OperatorFromPromiseSubscribeDelegate(ScriptPromise promise)
+      : promise_(promise) {}
+
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    ScriptFunction* on_fulfilled = MakeGarbageCollected<ScriptFunction>(
+        script_state,
+        MakeGarbageCollected<ObservablePromiseResolverFunction>(
+            subscriber,
+            ObservablePromiseResolverFunction::ResolveType::kFulfill));
+    ScriptFunction* on_rejected = MakeGarbageCollected<ScriptFunction>(
+        script_state,
+        MakeGarbageCollected<ObservablePromiseResolverFunction>(
+            subscriber,
+            ObservablePromiseResolverFunction::ResolveType::kReject));
+    promise_.Then(on_fulfilled, on_rejected);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(promise_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class ObservablePromiseResolverFunction final
+      : public ScriptFunction::Callable {
+   public:
+    enum class ResolveType { kFulfill, kReject };
+
+    ObservablePromiseResolverFunction(Subscriber* subscriber, ResolveType type)
+        : subscriber_(subscriber), type_(type) {
+      CHECK(subscriber_);
+    }
+
+    ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+      if (type_ == ResolveType::kFulfill) {
+        subscriber_->next(value);
+        subscriber_->complete(script_state);
+      } else {
+        subscriber_->error(script_state, value);
+      }
+
+      return ScriptValue();
+    }
+
+    void Trace(Visitor* visitor) const final {
+      visitor->Trace(subscriber_);
+
+      ScriptFunction::Callable::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> subscriber_;
+    ResolveType type_;
+  };
+
+  ScriptPromise promise_;
+};
+
+// This delegate is used by the `Observer#from()` operator, in the case where
+// the given `any` value is an iterable. In that case, we store the iterable in
+// `this` delegate, and upon subscription, synchronously push to the subscriber
+// all of the iterable's values.
+class OperatorFromIterableSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  // Upon construction of `this`, we know that `iterable` is a valid object that
+  // implements the iterable prototcol, however:
+  //   1. We don't assert that here, because it has script-observable
+  //      consequences that shouldn't be invoked just for assertion/sanity
+  //      purposes.
+  //   2. In `OnSubscribe()` we still have to confirm that fact, because in
+  //      between the constructor and `OnSubscribe()` running, that could have
+  //      changed.
+  OperatorFromIterableSubscribeDelegate(
+      ScriptValue iterable,
+      const ExceptionContext& exception_context)
+      : iterable_(iterable), exception_context_(exception_context) {}
+
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    ExceptionState exception_state(script_state->GetIsolate(),
+                                   exception_context_);
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    v8::Local<v8::Value> v8_value = iterable_.V8Value();
+    // `Observable::from()` already checks that `iterable_` is a JS object, so
+    // we can safely convert it here.
+    CHECK(v8_value->IsObject());
+    v8::Local<v8::Object> v8_iterable = v8_value.As<v8::Object>();
+    v8::Isolate* isolate = script_state->GetIsolate();
+
+    // This invokes script, so we have to check if there was an exception. In
+    // all of the exception-throwing cases in this method, we always catch the
+    // exception, clear it, and report it properly through `subscriber`.
+    ScriptIterator iterator = ScriptIterator::FromIterable(
+        script_state->GetIsolate(), v8_iterable, exception_state);
+    if (exception_state.HadException()) {
+      v8::Local<v8::Value> v8_exception = exception_state.GetException();
+      exception_state.ClearException();
+      subscriber->error(script_state, ScriptValue(isolate, v8_exception));
+      return;
+    }
+
+    if (!iterator.IsNull()) {
+      while (iterator.Next(execution_context, exception_state)) {
+        CHECK(!exception_state.HadException());
+
+        v8::Local<v8::Value> value = iterator.GetValue().ToLocalChecked();
+        subscriber->next(ScriptValue(isolate, value));
+      }
+    }
+
+    // If any call to `ScriptIterator::Next()` above throws an error, then the
+    // loop will break, and we'll need to catch any exceptions here and properly
+    // report the error to the `subscriber`.
+    if (exception_state.HadException()) {
+      v8::Local<v8::Value> v8_exception = exception_state.GetException();
+      exception_state.ClearException();
+      subscriber->error(script_state, ScriptValue(isolate, v8_exception));
+      return;
+    }
+
+    subscriber->complete(script_state);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(iterable_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  // The iterable that `this` synchronously pushes values from, for the
+  // subscription that `this` represents.
+  //
+  // TODO(crbug.com/40282760): Right now we convert `iterable_` to an iterator
+  // twice:
+  //   1. In `Observable::from()`, to check if the value is an iterable / can be
+  //      converted to an Observable.
+  //   2. In `this`'s `OnSubscribe()` method, when re-converting to an iterable
+  //      to actually perform iteration.
+  //
+  // This is an unfortunate artifact of `ScriptIterator` being
+  // `STACK_ALLOCATED()` and not being able to be stored as a member on
+  // garbage-collected classes, like `this`, after its initial test conversion.
+  // This has script-observable consequences (i.e., `[Symbol.iterator]()` gets
+  // invoked twice) captured by web platform tests. We should really consider
+  // making `ScriptIterator` non-`STACK_ALLOCATED()` so that it can be stored
+  // here directly, and have more reasonable script-observable consequences.
+  ScriptValue iterable_;
+  ExceptionContext exception_context_;
 };
 
 class OperatorDropSubscribeDelegate final
@@ -777,6 +937,76 @@ void Observable::SubscribeInternal(
     subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
                                                 try_catch.Exception()));
   }
+}
+
+// static
+Observable* Observable::from(ScriptState* script_state,
+                             ScriptValue value,
+                             ExceptionState& exception_state) {
+  v8::Local<v8::Value> v8_value = value.V8Value();
+
+  // 1. Try to convert to an Observable.
+  if (Observable* converted = NativeValueTraits<Observable>::NativeValue(
+          script_state->GetIsolate(), v8_value, exception_state)) {
+    return converted;
+  }
+
+  // In the failed conversion case, the native bindings layer throws an
+  // exception to indicate the conversion cannot be done. This is not an
+  // exception thrown by web author code, it's a native exception that only
+  // signals conversion failure, so we must (and can safely) swallow it and let
+  // other conversion attempts below continue.
+  exception_state.ClearException();
+
+  // 2. Try to convert to an AsyncIterable.
+  // TODO(crbug.com/40282760): There doesn't seem to be bindings support for
+  // async iterables in the same way that there is for iterables. Reach out to
+  // the bindings team and implement this conversion with their guidance.
+
+  // 3. Try to convert to an Iterable.
+  //
+  // Because an array is an object, arrays will be converted into iterables here
+  // using the iterable protocol. This means that if an array defines a custom
+  // @@iterator, it will be used here instead of deferring to "regular array
+  // iteration". This seems natural, but is inconsistent with what
+  // `NativeValueTraits` does in some cases.
+  // See:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h;l=1167-1174;drc=f4a00cc248dd2dc8ec8759fb51620d47b5114090.
+  if (v8_value->IsObject()) {
+    v8::Local<v8::Object> v8_obj = v8_value.As<v8::Object>();
+    ScriptIterator script_iterator = ScriptIterator::FromIterable(
+        script_state->GetIsolate(), v8_obj, exception_state);
+
+    // If attempting to convert to a `ScriptIterator` throws an exception, let
+    // the exception stand and do not construct an `Observable`.
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+
+    // Even if there is no exception, it is possible that the value simply does
+    // not implement the iterator protocol, and therefore is not iterable. In
+    // that case, the `ScriptIterator` will be "null" and we must do nothing and
+    // move on to the next conversion type.
+    if (!script_iterator.IsNull()) {
+      return MakeGarbageCollected<Observable>(
+          ExecutionContext::From(script_state),
+          MakeGarbageCollected<OperatorFromIterableSubscribeDelegate>(
+              value, exception_state.GetContext()));
+    }
+  }
+
+  // 4. Try to convert to a Promise.
+  if (v8_value->IsPromise()) {
+    ScriptPromise promise(script_state, v8_value);
+    return MakeGarbageCollected<Observable>(
+        ExecutionContext::From(script_state),
+        MakeGarbageCollected<OperatorFromPromiseSubscribeDelegate>(promise));
+  }
+
+  exception_state.ThrowTypeError(
+      "Cannot convert value to an Observable. Input value must be an "
+      "Observable, async iterable, iterable, or Promise.");
+  return nullptr;
 }
 
 Observable* Observable::takeUntil(ScriptState*, Observable* notifier) {

@@ -6817,6 +6817,7 @@ interface OTPCredential : Credential
     getter code
     method constructor
 interface Observable
+    static method from
     attribute @@toStringTag
     method constructor
     method drop

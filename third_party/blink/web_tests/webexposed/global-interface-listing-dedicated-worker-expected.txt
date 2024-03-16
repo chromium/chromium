@@ -1446,6 +1446,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onerror
 [Worker]     setter onshow
 [Worker] interface Observable
+[Worker]     static method from
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method drop

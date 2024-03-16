@@ -54,6 +54,10 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
                  V8UnionObserverOrObserverCallback*,
                  SubscribeOptions*);
 
+  static Observable* from(ScriptState* script_state,
+                          ScriptValue value,
+                          ExceptionState& exception_state);
+
   // Observable-returning operators. See
   // https://wicg.github.io/observable/#observable-returning-operators.
   Observable* takeUntil(ScriptState*, Observable*);
