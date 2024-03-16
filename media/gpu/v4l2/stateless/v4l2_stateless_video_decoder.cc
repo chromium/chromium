@@ -600,6 +600,8 @@ void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
       << "The surfaces are queued as the buffer is submitted. They are "
          "expected to be dequeued in order.";
 
+  last_frame_id_dequeued_ = buffer.GetTimeAsFrameID();
+
   // References that this frame holds can be removed once the frame is done
   // decoding.
   surface->ClearReferenceSurfaces();
@@ -639,8 +641,6 @@ void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
   if (output_queue_) {
     output_queue_->QueueBufferByFrameID(frame_id);
   }
-
-  last_frame_id_dequeued_ = frame_id;
 
   if (flush_cb_ && (last_frame_id_generated_ == last_frame_id_dequeued_)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
