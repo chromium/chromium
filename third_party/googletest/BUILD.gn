@@ -28,6 +28,12 @@ config("gtest_config") {
 
     # Prevents gtest from including both <tr1/tuple> and <tuple>.
     "GTEST_HAS_TR1_TUPLE=0",
+
+    # Use Abseil, but without flags support: Abseil flags uses the
+    # `FastTypeId<T>()` pattern internally, which is known to be broken in
+    # subtle ways in the component build.
+    "GTEST_HAS_ABSL",
+    "GTEST_NO_ABSL_FLAGS",
   ]
 
   # Gtest headers need to be able to find themselves.
@@ -125,7 +131,9 @@ source_set("gtest") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   defines = []
-  deps = [ "//third_party/abseil-cpp:absl" ]
+
+  # googletest only needs `absl`, but this makes gn check happier.
+  deps = [ "//third_party/abseil-cpp:absl_full" ]
   public_deps = [ "//third_party/re2" ]
   if (is_nacl || !build_with_chromium) {
     defines += [ "GTEST_DISABLE_PRINT_STACK_TRACE" ]
@@ -182,8 +190,10 @@ source_set("gmock") {
     "src/googlemock/src/gmock.cc",
   ]
 
-  public_deps = [ ":gtest" ]
+  # googlemock only needs `absl`, but this makes gn check happier.
+  deps = [ "//third_party/abseil-cpp:absl_full" ]
 
+  public_deps = [ ":gtest" ]
   public_configs = [ ":gmock_config" ]
 }
 
