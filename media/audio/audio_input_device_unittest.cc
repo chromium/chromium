@@ -147,6 +147,7 @@ class AudioInputDeviceTest
         (capture_time_ - base::TimeTicks()).InMicroseconds();
     buffer->params.glitch_duration_us = glitch_info_.duration.InMicroseconds();
     buffer->params.glitch_count = glitch_info_.count;
+    buffer->params.key_pressed = false;
   }
 
   base::MappedReadOnlyRegion shared_memory_;
