@@ -18,6 +18,7 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/float/float_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -1551,6 +1552,9 @@ TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
 TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  // This test checks the window animation state, but not interested in the
+  // animation by the education.
+  FloatTestApi::ScopedTuckEducationDisabler scoped_tuck_education_disabler;
 
   auto* const float_controller = Shell::Get()->float_controller();
 
@@ -1583,11 +1587,13 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
 
   event_generator->GestureScrollSequence(start, start + offset,
                                          base::Milliseconds(10), /*steps=*/1);
+  EXPECT_TRUE(window()->layer()->GetAnimator()->is_animating());
 
   // Bounds change should be blocked while animating.
   const auto start_bounds = window()->GetBoundsInScreen();
+  const gfx::Rect client_requested_bounds(0, 0, 256, 256);
   state()->set_bounds_locally(true);
-  widget()->SetBounds(gfx::Rect(0, 0, 256, 256));
+  widget()->SetBounds(client_requested_bounds);
   state()->set_bounds_locally(false);
   EXPECT_EQ(window()->GetBoundsInScreen(), start_bounds);
 
@@ -1595,6 +1601,14 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
   ShellTestApi().WaitForWindowFinishAnimating(window());
   EXPECT_FALSE(window()->IsVisible());
   EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window()));
+  EXPECT_FALSE(window()->layer()->GetAnimator()->is_animating());
+
+  // Bounds change should be blocked while tucked.
+  const auto tucked_bounds = window()->GetBoundsInScreen();
+  state()->set_bounds_locally(true);
+  widget()->SetBounds(client_requested_bounds);
+  state()->set_bounds_locally(false);
+  EXPECT_EQ(window()->GetBoundsInScreen(), tucked_bounds);
 
   // Test untucking.
   float_controller->MaybeUntuckFloatedWindowForTablet(window());
@@ -1603,6 +1617,12 @@ TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
   EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window()));
   EXPECT_EQ(FloatController::GetFloatWindowTabletBounds(window()),
             delegate()->requested_bounds());
+
+  // Bounds change should NOT be blocked after untucked.
+  state()->set_bounds_locally(true);
+  widget()->SetBounds(client_requested_bounds);
+  state()->set_bounds_locally(false);
+  EXPECT_EQ(window()->GetBoundsInScreen(), client_requested_bounds);
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {

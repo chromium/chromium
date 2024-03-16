@@ -291,7 +291,10 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
       float_start_time_ = base::TimeTicks::Now();
 
     if (display::Screen::GetScreen()->InTabletMode() &&
-        TabletModeTuckEducation::CanActivateTuckEducation()) {
+        TabletModeTuckEducation::CanActivateTuckEducation() &&
+        !Shell::Get()
+             ->float_controller()
+             ->disable_tuck_education_for_testing_) {
       tuck_education_ =
           std::make_unique<TabletModeTuckEducation>(floated_window);
     }

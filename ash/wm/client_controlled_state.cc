@@ -202,10 +202,18 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
       const auto* set_bounds_event = event->AsSetBoundsWMEvent();
       const gfx::Rect& bounds = set_bounds_event->requested_bounds();
       if (set_bounds_locally_) {
-        // Don’t preempt on-going animation (e.g. tucking) for floated windows.
-        if (window_state->IsFloated() && window->layer() &&
-            window->layer()->GetAnimator()->is_animating()) {
-          return;
+        if (window_state->IsFloated()) {
+          // Don’t preempt on-going animation (e.g. tucking) for floated
+          // windows.
+          if (window->layer() &&
+              window->layer()->GetAnimator()->is_animating()) {
+            return;
+          }
+          // Don't move the tucked window. It's fully controlled by ash now.
+          if (Shell::Get()->float_controller()->IsFloatedWindowTuckedForTablet(
+                  window)) {
+            return;
+          }
         }
 
         switch (next_bounds_change_animation_type_) {
