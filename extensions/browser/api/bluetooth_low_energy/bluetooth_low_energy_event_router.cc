@@ -341,7 +341,7 @@ void BluetoothLowEnergyEventRouter::Connect(bool persistent,
     return;
   }
 
-  const ExtensionId extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   const std::string connect_id = extension_id + device_address;
 
   if (connecting_devices_.count(connect_id) != 0) {
@@ -388,7 +388,7 @@ void BluetoothLowEnergyEventRouter::Disconnect(
     return;
   }
 
-  const ExtensionId extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
 
   BluetoothLowEnergyConnection* conn =
       FindConnection(extension_id, device_address);
@@ -699,7 +699,7 @@ void BluetoothLowEnergyEventRouter::StartCharacteristicNotifications(
     return;
   }
 
-  const ExtensionId extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   const std::string session_id = extension_id + instance_id;
 
   if (pending_session_calls_.count(session_id) != 0) {
@@ -759,7 +759,7 @@ void BluetoothLowEnergyEventRouter::StopCharacteristicNotifications(
     return;
   }
 
-  const ExtensionId extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
 
   BluetoothLowEnergyNotifySession* session =
       FindNotifySession(extension_id, instance_id);

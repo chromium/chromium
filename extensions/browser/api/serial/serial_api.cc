@@ -176,7 +176,7 @@ void SerialConnectFunction::FinishConnect(
     connection->SetConnectionErrorHandler(base::BindOnce(
         [](scoped_refptr<ApiResourceManager<SerialConnection>::ApiResourceData>
                connections,
-           ExtensionId extension_id, int api_resource_id) {
+           const ExtensionId& extension_id, int api_resource_id) {
           connections->Remove(extension_id, api_resource_id);
         },
         manager->data_, extension_->id(), id));
