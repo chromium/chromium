@@ -599,9 +599,8 @@ std::optional<LacrosSelection> DetermineLacrosSelection() {
 
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel) {
   // We default to the Dev component for UNKNOWN channels.
-  // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
-  static const auto kChannelToComponentInfoMap =
-      base::MakeFixedFlatMapNonConsteval<Channel, const ComponentInfo*>({
+  static constexpr auto kChannelToComponentInfoMap =
+      base::MakeFixedFlatMap<Channel, const ComponentInfo*>({
           {Channel::UNKNOWN, &kLacrosDogfoodDevInfo},
           {Channel::CANARY, &kLacrosDogfoodCanaryInfo},
           {Channel::DEV, &kLacrosDogfoodDevInfo},
