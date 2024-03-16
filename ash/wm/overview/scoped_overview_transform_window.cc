@@ -105,36 +105,6 @@ class UndoPropertyObserver : public ui::ImplicitAnimationObserver,
   raw_ptr<aura::Window> window_;
 };
 
-// Returns the rounded corners to be applied on the transformed window based on
-// whether the given `window` belongs to a group or not.
-gfx::RoundedCornersF GetRoundedCornersForTransformWindow(aura::Window* window,
-                                                         float scale) {
-  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
-  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
-    if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      return window == snap_group->window1()
-                 ? gfx::RoundedCornersF(
-                       /*upper_left=*/0,
-                       /*upper_right=*/0, /*lower_right=*/0,
-                       /*lower_left=*/
-                       corner_radius / scale)
-                 : gfx::RoundedCornersF(
-                       /*upper_left=*/0,
-                       /*upper_right=*/0,
-                       /*lower_right=*/
-                       corner_radius / scale,
-                       /*lower_left=*/0);
-    }
-  }
-
-  return gfx::RoundedCornersF(
-      /*upper_left=*/0,
-      /*upper_right=*/0,
-      /*lower_right=*/corner_radius / scale,
-      /*lower_left=*/corner_radius / scale);
-}
-
 }  // namespace
 
 class ScopedOverviewTransformWindow::LayerCachingAndFilteringObserver
@@ -592,17 +562,17 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
 
   const float scale = layer->transform().To2dScale().x();
   layer->SetRoundedCornerRadius(
-      has_rounding ? GetRoundedCornersForTransformWindow(window_, scale)
+      has_rounding ? window_util::GetMiniWindowRoundedCorners(
+                         window(), /*include_header_rounding=*/false, scale)
                    : gfx::RoundedCornersF(0));
 
   if (!chromeos::features::IsRoundedWindowsEnabled()) {
     return;
   }
 
-  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
   gfx::RRectF rounded_contents_bounds(
-      contents_bounds,
-      gfx::RoundedCornersF(0, 0, corner_radius, corner_radius));
+      contents_bounds, window_util::GetMiniWindowRoundedCorners(
+                           window(), /*include_header_rounding=*/false));
 
   // Synchronizing the rounded corners of a window and its transient hierarchy
   // against `contents_bounds` yields two outcomes:

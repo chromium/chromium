@@ -64,6 +64,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -175,6 +176,40 @@ int GetMiniWindowRoundedCornerRadius() {
   return chromeos::features::IsRoundedWindowsEnabled()
              ? chromeos::features::RoundedWindowsRadius()
              : kWindowMiniViewCornerRadius;
+}
+
+gfx::RoundedCornersF GetMiniWindowRoundedCorners(const aura::Window* window,
+                                                 bool include_header_rounding,
+                                                 std::optional<float> scale) {
+  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
+  const float scaled_corner_radius = corner_radius / scale.value_or(1.0f);
+
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      return window == snap_group->window1()
+                 ? gfx::RoundedCornersF(
+                       /*upper_left=*/include_header_rounding
+                           ? scaled_corner_radius
+                           : 0,
+                       /*upper_right=*/0, /*lower_right=*/0,
+                       /*lower_left=*/
+                       scaled_corner_radius)
+                 : gfx::RoundedCornersF(
+                       /*upper_left=*/0,
+                       /*upper_right=*/
+                       include_header_rounding ? scaled_corner_radius : 0,
+                       /*lower_right=*/
+                       scaled_corner_radius,
+                       /*lower_left=*/0);
+    }
+  }
+
+  return gfx::RoundedCornersF(
+      /*upper_left=*/include_header_rounding ? scaled_corner_radius : 0,
+      /*upper_right=*/include_header_rounding ? scaled_corner_radius : 0,
+      /*lower_right=*/scaled_corner_radius,
+      /*lower_left=*/scaled_corner_radius);
 }
 
 aura::Window* GetActiveWindow() {

@@ -122,8 +122,6 @@ void WindowCycleItemView::Layout(PassKey) {
         layer(), /*restore_tree=*/false);
   }
 
-  const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
-
   // In order to draw the final result without requiring the rendering of
   // surfaces, the rounded corners bounds of the layer tree, that is rooted at
   // WindowCycleItemView, are synchronized.
@@ -135,7 +133,8 @@ void WindowCycleItemView::Layout(PassKey) {
   layer_tree_synchronizer_->SynchronizeRoundedCorners(
       layer(),
       gfx::RRectF(gfx::RectF(preview_max_bounds),
-                  gfx::RoundedCornersF(0, 0, corner_radius, corner_radius)));
+                  window_util::GetMiniWindowRoundedCorners(
+                      source_window(), /*include_header_rounding=*/false)));
 }
 
 gfx::Size WindowCycleItemView::CalculatePreferredSize() const {
