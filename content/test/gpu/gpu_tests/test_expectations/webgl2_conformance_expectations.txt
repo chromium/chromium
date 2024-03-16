@@ -561,7 +561,7 @@ crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional
 crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/1487266 [ amd-0x679e angle-metal monterey passthrough release ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ Failure ]
 
-crbug.com/328100306 [ sonoma amd ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
+crbug.com/328100306 [ angle-metal graphite-enabled intel-0x3e9b sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 ## SkiaGraphite on Metal AMD ##
 
@@ -765,7 +765,7 @@ crbug.com/982292 [ mac nvidia angle-opengl passthrough ] deqp/functional/gles3/i
 ## Mesa issues ##
 
 # Driver tag doesn't work on the passthrough command decoder because the detected driver version is ANGLE's version.
-crbug.com/1081978 [ linux intel angle-opengl passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Failure ]
+crbug.com/1081978 [ angle-opengl intel-0x9bc5 linux passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Failure ]
 
 ## Linux NVIDIA ##
 
