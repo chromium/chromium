@@ -12,6 +12,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
+#include "ash/game_dashboard/game_dashboard_button_reveal_controller.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
@@ -25,6 +26,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/window_state.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
@@ -105,6 +107,7 @@ GameDashboardContext::GameDashboardContext(aura::Window* game_window)
       app_id_(*game_window->GetProperty(kAppIDKey)),
       toolbar_snap_location_(ToolbarSnapLocation::kTopRight) {
   DCHECK(game_window_);
+  window_state_observation_.Observe(WindowState::Get(game_window_));
   show_welcome_dialog_ = game_dashboard_utils::ShouldShowWelcomeDialog();
   CreateAndAddGameDashboardButtonWidget();
   // ARC windows handle displaying the welcome dialog once the
@@ -115,6 +118,7 @@ GameDashboardContext::GameDashboardContext(aura::Window* game_window)
 }
 
 GameDashboardContext::~GameDashboardContext() {
+  window_state_observation_.Reset();
   game_dashboard_button_->RemoveObserver(this);
   if (main_menu_widget_) {
     main_menu_widget_->CloseNow();
@@ -132,7 +136,7 @@ void GameDashboardContext::EnableFeatures(
     GameDashboardMainMenuToggleMethod main_menu_toggle_method) {
   DCHECK(game_dashboard_button_);
   if (enable) {
-    game_dashboard_button_widget_->Show();
+    SetGameDashboardButtonVisibility(/*visible=*/true);
     if (toolbar_widget_) {
       toolbar_widget_->Show();
     }
@@ -150,7 +154,7 @@ void GameDashboardContext::EnableFeatures(
     if (main_menu_widget_) {
       CloseMainMenu(main_menu_toggle_method);
     }
-    game_dashboard_button_widget_->Hide();
+    SetGameDashboardButtonVisibility(/*visible=*/false);
   }
 }
 
@@ -201,12 +205,15 @@ void GameDashboardContext::UpdateForGameControlsFlags() {
 }
 
 void GameDashboardContext::ToggleMainMenuByAccelerator() {
+  SetGameDashboardButtonVisibility(/*visible=*/true);
   ToggleMainMenu(GameDashboardMainMenuToggleMethod::kSearchPlusG);
 }
 
 void GameDashboardContext::ToggleMainMenu(
     GameDashboardMainMenuToggleMethod toggle_method) {
   if (!main_menu_widget_) {
+    // If opened, close the welcome dialog, before opening the main menu.
+    CloseWelcomeDialogIfAny();
     auto widget_delegate = std::make_unique<GameDashboardMainMenuView>(this);
     DCHECK(!main_menu_view_);
     main_menu_view_ = widget_delegate.get();
@@ -339,6 +346,25 @@ void GameDashboardContext::OnVideoFileFinalized() {
   OnRecordingEnded();
 }
 
+void GameDashboardContext::SetGameDashboardButtonVisibility(bool visible) {
+  if (visible && !game_dashboard_button_widget_->IsVisible() &&
+      !display::Screen::GetScreen()->InTabletMode()) {
+    // Show the Game Dashboard button if it's not visible.
+    // When the top edge timer fires, it's going to try to show the Game
+    // Dashboard button. Because this is already showing the button, stop
+    // the top edge timer.
+    if (game_dashboard_button_reveal_controller_) {
+      game_dashboard_button_reveal_controller_->StopTopEdgeTimer();
+    }
+    game_dashboard_button_widget_->Show();
+  } else if (!visible && game_dashboard_button_widget_->IsVisible() &&
+             !IsMainMenuOpen()) {
+    // Hide the Game Dashboard button if its visible and the main menu is
+    // closed.
+    game_dashboard_button_widget_->Hide();
+  }
+}
+
 void GameDashboardContext::OnViewPreferredSizeChanged(
     views::View* observed_view) {
   CHECK_EQ(game_dashboard_button_, observed_view);
@@ -380,6 +406,26 @@ void GameDashboardContext::OnWidgetDestroyed(views::Widget* widget) {
   }
 }
 
+void GameDashboardContext::OnPreWindowStateTypeChange(
+    WindowState* window_state,
+    chromeos::WindowStateType old_type) {
+  // Hide the Game Dashboard button before the window switches to fullscreen.
+  if (window_state->IsFullscreen()) {
+    SetGameDashboardButtonVisibility(/*visible=*/false);
+    game_dashboard_button_reveal_controller_ =
+        std::make_unique<GameDashboardButtonRevealController>(this);
+  }
+}
+
+void GameDashboardContext::OnPostWindowStateTypeChange(
+    WindowState* window_state,
+    chromeos::WindowStateType old_type) {
+  if (!window_state->IsFullscreen()) {
+    game_dashboard_button_reveal_controller_.reset();
+    SetGameDashboardButtonVisibility(/*visible=*/true);
+  }
+}
+
 void GameDashboardContext::AddCursorHandler() {
   DCHECK(!main_menu_cursor_handler_);
   main_menu_cursor_handler_ =
@@ -411,7 +457,7 @@ void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
       wm::GetTransientParent(game_dashboard_button_widget_->GetNativeWindow()));
   UpdateGameDashboardButtonWidgetBounds();
   if (game_dashboard_utils::ShouldEnableFeatures()) {
-    game_dashboard_button_widget_->Show();
+    SetGameDashboardButtonVisibility(/*visible=*/true);
   }
 }
 
@@ -421,23 +467,21 @@ void GameDashboardContext::UpdateGameDashboardButtonWidgetBounds() {
       game_dashboard_button_widget_->GetContentsView()->GetPreferredSize();
   gfx::Point origin = game_window_->GetBoundsInScreen().top_center();
 
-  auto* frame_header = chromeos::FrameHeader::Get(
-      views::Widget::GetWidgetForNativeWindow(game_window_));
-  if (!frame_header) {
-    VLOG(1) << "No frame header found. Not updating main menu widget bounds.";
+  const int frame_header_height =
+      game_dashboard_utils::GetFrameHeaderHeight(game_window_);
+  if (frame_header_height == 0) {
+    VLOG(1) << "No frame header height. Not updating main menu widget bounds.";
     return;
   }
   // Position the button in the top center of the `FrameHeader`.
   origin.set_x(origin.x() - preferred_size.width() / 2);
   origin.set_y(origin.y() + kGameDashboardButtonVerticalPaddingDp);
-  preferred_size.set_height(frame_header->GetHeaderHeight() -
+  preferred_size.set_height(frame_header_height -
                             2 * kGameDashboardButtonVerticalPaddingDp);
   game_dashboard_button_widget_->SetBounds(gfx::Rect(origin, preferred_size));
 }
 
 void GameDashboardContext::OnGameDashboardButtonPressed() {
-  // TODO(b/273640775): Add metrics to know when the Game Dashboard button was
-  // physically pressed.
   // Close the welcome dialog if it's open when a user opens the main menu view.
   CloseWelcomeDialogIfAny();
   ToggleMainMenu(GameDashboardMainMenuToggleMethod::kGameDashboardButton);
@@ -475,7 +519,8 @@ void GameDashboardContext::MaybeUpdateWelcomeDialogBounds() {
   const gfx::Rect game_bounds = game_window_->GetBoundsInScreen();
   const gfx::Size preferred_size =
       welcome_dialog_widget_->GetContentsView()->GetPreferredSize();
-  const int frame_header_height = GetFrameHeaderHeight();
+  const int frame_header_height =
+      game_dashboard_utils::GetFrameHeaderHeight(game_window_);
   int origin_x;
 
   if (game_bounds.width() > kMaxCenteredWelcomeDialogWidth) {
@@ -499,7 +544,8 @@ const gfx::Rect GameDashboardContext::CalculateToolbarWidgetBounds() {
   const gfx::Rect game_bounds = game_window_->GetBoundsInScreen();
   const gfx::Size preferred_size =
       toolbar_widget_->GetContentsView()->GetPreferredSize();
-  const int frame_header_height = GetFrameHeaderHeight();
+  const int frame_header_height =
+      game_dashboard_utils::GetFrameHeaderHeight(game_window_);
   gfx::Point origin;
 
   switch (toolbar_snap_location_) {
@@ -532,14 +578,6 @@ const gfx::Rect GameDashboardContext::CalculateToolbarWidgetBounds() {
   }
 
   return gfx::Rect(origin, preferred_size);
-}
-
-int GameDashboardContext::GetFrameHeaderHeight() const {
-  auto* frame_header = chromeos::FrameHeader::Get(
-      views::Widget::GetWidgetForNativeWindow(game_window_));
-  return (frame_header && frame_header->view()->GetVisible())
-             ? frame_header->GetHeaderHeight()
-             : 0;
 }
 
 void GameDashboardContext::AnimateToolbarWidgetBoundsChange(

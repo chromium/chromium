@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
@@ -40,11 +41,12 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/window_state_util.h"
 #include "base/check.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "extensions/common/constants.h"
@@ -274,7 +276,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
   void TearDown() override {
     active_user_prefs_ = nullptr;
-    frame_header_ = nullptr;
     GetContext()->RemovePostTargetHandler(&post_target_event_capturer_);
     CloseGameWindow();
     GameDashboardTestBase::TearDown();
@@ -283,6 +284,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   void CloseGameWindow() {
     game_window_.reset();
     test_api_.reset();
+    frame_header_height_ = 0;
   }
 
   const gfx::Rect app_bounds() const { return app_bounds_; }
@@ -352,8 +354,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     test_api_ = std::make_unique<GameDashboardContextTestApi>(
         context, GetEventGenerator());
     ASSERT_TRUE(test_api_);
-    frame_header_ = chromeos::FrameHeader::Get(
-        views::Widget::GetWidgetForNativeWindow(game_window_.get()));
+    frame_header_height_ =
+        game_dashboard_utils::GetFrameHeaderHeight(game_window_.get());
+    DCHECK_GT(frame_header_height_, 0);
 
     if (is_arc_window && set_arc_game_controls_flags_prop) {
       // Initially, Game Controls is not available.
@@ -691,8 +694,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   }
 
   std::unique_ptr<aura::Window> game_window_;
-  raw_ptr<chromeos::FrameHeader, DanglingUntriaged> frame_header_;
   std::unique_ptr<GameDashboardContextTestApi> test_api_;
+  int frame_header_height_ = 0;
   // Post-target handler that captures the last mouse event.
   EventCapturer post_target_event_capturer_;
 
@@ -1188,7 +1191,7 @@ TEST_F(GameDashboardContextTest, MainMenuCursorHandlerEventLocation) {
       test_api_->GetGameDashboardButton()->GetBoundsInScreen().x();
   gfx::Point new_mouse_location =
       gfx::Point((window_bounds.x() + gd_button_bounds_x) / 2,
-                 window_bounds.y() + frame_header_->GetHeaderHeight() / 2);
+                 window_bounds.y() + frame_header_height_ / 2);
   event_generator->MoveMouseTo(new_mouse_location);
 
   // Verify the mouse event was not consumed by
@@ -1210,6 +1213,122 @@ TEST_F(GameDashboardContextTest, MainMenuCursorHandlerEventLocation) {
   post_target_event_capturer_.Reset();
   event_generator->MoveMouseTo(new_mouse_location);
   ASSERT_FALSE(post_target_event_capturer_.last_mouse_event());
+}
+
+TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen) {
+  // Create an ARC game window.
+  SetAppBounds(gfx::Rect(50, 50, 800, 700));
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true);
+
+  AcceleratorControllerImpl* controller =
+      Shell::Get()->accelerator_controller();
+  ui::Accelerator gd_accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+  auto* window_state = WindowState::Get(game_window_.get());
+  auto* button_widget = test_api_->GetGameDashboardButtonWidget();
+  CHECK(button_widget);
+
+  // Initial state.
+  ASSERT_FALSE(window_state->IsFullscreen());
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  // Switch to fullscreen and verify Game Dashboard button widget is visible.
+  ToggleFullScreen(window_state, /*delegate=*/nullptr);
+  ASSERT_TRUE(window_state->IsFullscreen());
+  ASSERT_FALSE(button_widget->IsVisible());
+
+  // Open the Game Dashboard menu with the accelerator and verify the game
+  // dashboard button widget is visible.
+  ASSERT_TRUE(controller->Process(gd_accelerator));
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  // Close the Game Dashboard menu with the accelerator and verify the game
+  // dashboard button widget is still visible.
+  ASSERT_TRUE(controller->Process(gd_accelerator));
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  // Move the mouse to the center of the game window and verify the game
+  // dashboard button widget is not visible.
+  GetEventGenerator()->MoveMouseTo(
+      game_window_->GetBoundsInScreen().CenterPoint());
+  ASSERT_FALSE(button_widget->IsVisible());
+
+  // Exit fullscreen and verify Game Dashboard button widget is visible.
+  ToggleFullScreen(window_state, /*delegate=*/nullptr);
+  ASSERT_FALSE(window_state->IsFullscreen());
+  ASSERT_TRUE(button_widget->IsVisible());
+}
+
+TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
+  // Create an ARC game window.
+  SetAppBounds(gfx::Rect(50, 50, 800, 700));
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true);
+
+  AcceleratorControllerImpl* controller =
+      Shell::Get()->accelerator_controller();
+  ui::Accelerator gd_accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
+  auto* window_state = WindowState::Get(game_window_.get());
+  auto* button_widget = test_api_->GetGameDashboardButtonWidget();
+  CHECK(button_widget);
+
+  // Initial state.
+  ASSERT_FALSE(window_state->IsFullscreen());
+  ASSERT_TRUE(button_widget->IsVisible());
+  GetEventGenerator()->MoveMouseTo(
+      game_window_->GetBoundsInScreen().CenterPoint());
+
+  // Open the main menu using the accelerator
+  ASSERT_TRUE(controller->Process(gd_accelerator));
+
+  // Switch to fullscreen and verify Game Dashboard button widget is visible.
+  ToggleFullScreen(window_state, /*delegate=*/nullptr);
+  ASSERT_TRUE(window_state->IsFullscreen());
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  // Close the main menu using the accelerator and verify the Game Dashboard
+  // button widget is visible.
+  ASSERT_TRUE(controller->Process(gd_accelerator));
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  // Move the mouse slightly and verify the Game Dashboard button widget is not
+  // visible.
+  GetEventGenerator()->MoveMouseBy(/*x=*/1, /*y=*/1);
+  ASSERT_FALSE(button_widget->IsVisible());
+}
+
+TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
+  // Create an ARC game window.
+  SetAppBounds(gfx::Rect(50, 50, 800, 700));
+  CreateGameWindow(/*is_arc_window=*/true,
+                   /*set_arc_game_controls_flags_prop=*/true);
+
+  auto* event_generator = GetEventGenerator();
+  auto app_bounds = game_window_->GetBoundsInScreen();
+  auto* window_state = WindowState::Get(game_window_.get());
+  views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
+  CHECK(button_widget);
+
+  // Set initial state to fullscreen and verify Game Dashboard button widget is
+  // not visible.
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonRevealController());
+  ToggleFullScreen(window_state, /*delegate=*/nullptr);
+  ASSERT_TRUE(window_state->IsFullscreen());
+  ASSERT_FALSE(button_widget->IsVisible());
+  ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());
+
+  // Move mouse to top edge of window.
+  event_generator->MoveMouseTo(app_bounds.top_center());
+  base::OneShotTimer& top_edge_hover_timer =
+      test_api_->GetRevealControllerTopEdgeHoverTimer();
+  ASSERT_TRUE(top_edge_hover_timer.IsRunning());
+  top_edge_hover_timer.FireNow();
+  ASSERT_TRUE(button_widget->IsVisible());
+
+  // Move mouse to the center of the app, and verify Game Dashboard button
+  // widget is not visible.
+  event_generator->MoveMouseTo(app_bounds.CenterPoint());
+  ASSERT_FALSE(button_widget->IsVisible());
 }
 
 // -----------------------------------------------------------------------------
@@ -1266,7 +1385,7 @@ TEST_P(GameTypeGameDashboardContextTest,
        GameDashboardButtonWidget_InitialLocation) {
   const gfx::Point expected_button_center_point(
       game_window_->GetBoundsInScreen().top_center().x(),
-      app_bounds().y() + frame_header_->GetHeaderHeight() / 2);
+      app_bounds().y() + frame_header_height_ / 2);
   EXPECT_EQ(expected_button_center_point,
             test_api_->GetGameDashboardButtonWidget()
                 ->GetNativeWindow()
@@ -1722,7 +1841,6 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
   auto toolbar_bounds = native_window->GetBoundsInScreen();
   const auto toolbar_size =
       test_api_->GetToolbarWidget()->GetContentsView()->GetPreferredSize();
-  const int frame_header_height = frame_header_->GetHeaderHeight();
   EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
             ToolbarSnapLocation::kTopRight);
   EXPECT_EQ(toolbar_bounds.x(), game_bounds.right() -
@@ -1730,7 +1848,7 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
                                     toolbar_size.width());
   EXPECT_EQ(toolbar_bounds.y(), game_bounds.y() +
                                     game_dashboard::kToolbarEdgePadding +
-                                    frame_header_height);
+                                    frame_header_height_);
 
   // Move toolbar to top left quadrant and verify toolbar placement.
   DragToolbarToPoint(Movement::kMouse, {window_center_point.x() - x_offset,
@@ -1741,7 +1859,7 @@ TEST_P(GameTypeGameDashboardContextTest, VerifyToolbarPlacementInQuadrants) {
             game_bounds.x() + game_dashboard::kToolbarEdgePadding);
   EXPECT_EQ(toolbar_bounds.y(), game_bounds.y() +
                                     game_dashboard::kToolbarEdgePadding +
-                                    frame_header_height);
+                                    frame_header_height_);
 
   // Move toolbar to bottom right quadrant and verify toolbar placement.
   DragToolbarToPoint(Movement::kMouse, {window_center_point.x() + x_offset,

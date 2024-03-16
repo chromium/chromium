@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/game_dashboard/game_dashboard_metrics.h"
+#include "ash/wm/window_state_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -27,14 +28,16 @@ class Widget;
 namespace ash {
 
 class GameDashboardButton;
-class GameDashboardMainMenuView;
+class GameDashboardButtonRevealController;
 class GameDashboardMainMenuCursorHandler;
+class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
 
 // This class manages Game Dashboard related UI for a given `aura::Window`, and
 // its instance is managed by the `GameDashboardController`.
 class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
-                                        public views::WidgetObserver {
+                                        public views::WidgetObserver,
+                                        public WindowStateObserver {
  public:
   // Indicator for the 4 quadrants that the toolbar is able to be placed.
   enum class ToolbarSnapLocation {
@@ -66,6 +69,14 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   ToolbarSnapLocation toolbar_snap_location() const {
     return toolbar_snap_location_;
   }
+
+  void set_recording_from_main_menu(bool from_main_menu) {
+    recording_from_main_menu_ = from_main_menu;
+  }
+
+  // Returns true if the main menu is opened. `main_menu_widget_` is created
+  // only when the main menu is opened, otherwise it's null.
+  bool IsMainMenuOpen() const { return main_menu_widget_.get(); }
 
   const std::u16string& GetRecordingDuration() const;
 
@@ -124,15 +135,20 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // point a new recording is allowed to be started.
   void OnVideoFileFinalized();
 
+  // Controls the Game Dashboard Button visibility.
+  void SetGameDashboardButtonVisibility(bool visible);
+
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
 
-  void set_recording_from_main_menu(bool from_main_menu) {
-    recording_from_main_menu_ = from_main_menu;
-  }
+  // WindowStateObserver:
+  void OnPreWindowStateTypeChange(WindowState* window_state,
+                                  chromeos::WindowStateType old_type) override;
+  void OnPostWindowStateTypeChange(WindowState* window_state,
+                                   chromeos::WindowStateType old_type) override;
 
  private:
   friend class GameDashboardContextTestApi;
@@ -168,9 +184,6 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // `toolbar_snap_location_` value.
   const gfx::Rect CalculateToolbarWidgetBounds();
 
-  // Calculates the height of the app's frame header.
-  int GetFrameHeaderHeight() const;
-
   // Updates the toolbar widget's bounds and location utilizing an animation as
   // it transfers from the previous location.
   void AnimateToolbarWidgetBoundsChange(const gfx::Rect& target_screen_bounds);
@@ -200,6 +213,12 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   // Game Dashboard button widget for the Game Dashboard.
   std::unique_ptr<views::Widget> game_dashboard_button_widget_;
+
+  // Delegate responsible for determining when to show/hide the Game Dashboard
+  // button when `game_window_` is in fullscreen. This a temporary scoped
+  // object that is around while `game_window_` is fullscreen.
+  std::unique_ptr<GameDashboardButtonRevealController>
+      game_dashboard_button_reveal_controller_;
 
   // Expanded main menu for the Game Dashboard, which displays the main menu and
   // the settings view.
@@ -249,6 +268,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // false if the recording starts from the toolbar. It is null if the recording
   // is started from somewhere else.
   std::optional<bool> recording_from_main_menu_;
+
+  base::ScopedObservation<WindowState, WindowStateObserver>
+      window_state_observation_{this};
 
   base::WeakPtrFactory<GameDashboardContext> weak_ptr_factory_{this};
 };

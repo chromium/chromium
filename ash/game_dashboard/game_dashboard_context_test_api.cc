@@ -8,6 +8,7 @@
 
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
+#include "ash/game_dashboard/game_dashboard_button_reveal_controller.h"
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
@@ -64,6 +65,18 @@ views::Label* GameDashboardContextTestApi::GetGameDashboardButtonTitle() const {
   auto* game_dashboard_button = GetGameDashboardButton();
   CHECK(game_dashboard_button);
   return game_dashboard_button->title_view_;
+}
+
+GameDashboardButtonRevealController*
+GameDashboardContextTestApi::GetGameDashboardButtonRevealController() const {
+  return context_->game_dashboard_button_reveal_controller_.get();
+}
+
+base::OneShotTimer&
+GameDashboardContextTestApi::GetRevealControllerTopEdgeHoverTimer() const {
+  auto* reveal_controller = GetGameDashboardButtonRevealController();
+  CHECK(reveal_controller);
+  return reveal_controller->top_edge_hover_timer_;
 }
 
 views::Widget* GameDashboardContextTestApi::GetMainMenuWidget() {

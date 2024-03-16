@@ -12,6 +12,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "chromeos/ui/frame/frame_header.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -140,6 +141,15 @@ void SetShowToolbar(bool show_toolbar) {
   DCHECK(prefs) << "A valid PrefService is needed to update the show toolbar "
                    "param.";
   prefs->SetBoolean(prefs::kGameDashboardShowToolbar, show_toolbar);
+}
+
+int GetFrameHeaderHeight(aura::Window* window) {
+  CHECK(window);
+  auto* frame_header = chromeos::FrameHeader::Get(
+      views::Widget::GetWidgetForNativeWindow(window));
+  return (frame_header && frame_header->view()->GetVisible())
+             ? frame_header->GetHeaderHeight()
+             : 0;
 }
 
 }  // namespace ash::game_dashboard_utils

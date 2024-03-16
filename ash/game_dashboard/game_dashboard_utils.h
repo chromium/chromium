@@ -70,6 +70,10 @@ bool ShouldShowToolbar();
 // value specified in `show_toolbar`.
 void SetShowToolbar(bool show_toolbar);
 
+// Calculates the height of the `window`'s frame header. Returns 0 if the frame
+// header is not found or when the header is invisible.
+ASH_EXPORT int GetFrameHeaderHeight(aura::Window* window);
+
 }  // namespace ash::game_dashboard_utils
 
 #endif  // ASH_GAME_DASHBOARD_GAME_DASHBOARD_UTILS_H_

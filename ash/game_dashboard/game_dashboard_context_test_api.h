@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 
 namespace base {
+class OneShotTimer;
 class RepeatingTimer;
 }  // namespace base
 
@@ -32,6 +33,7 @@ namespace ash {
 class AnchoredNudge;
 class FeatureTile;
 class GameDashboardButton;
+class GameDashboardButtonRevealController;
 class GameDashboardMainMenuCursorHandler;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
@@ -58,6 +60,9 @@ class GameDashboardContextTestApi {
   views::Widget* GetGameDashboardButtonWidget() const;
   GameDashboardButton* GetGameDashboardButton() const;
   views::Label* GetGameDashboardButtonTitle() const;
+  GameDashboardButtonRevealController* GetGameDashboardButtonRevealController()
+      const;
+  base::OneShotTimer& GetRevealControllerTopEdgeHoverTimer() const;
 
   // Returns the main menu widget and all its views.
   views::Widget* GetMainMenuWidget();
