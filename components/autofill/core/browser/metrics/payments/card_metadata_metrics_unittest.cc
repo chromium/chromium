@@ -320,9 +320,6 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   base::HistogramTester histogram_tester;
 
   // Simulate filling the card.
-  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
-  DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
-                             PopupItemId::kCreditCardEntry);
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields.back(),
       *personal_data().GetCreditCardByGUID(kCardGuid),
