@@ -1334,33 +1334,29 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationStarted(
 
   MaybeStartNavigation(navigation_id);
 
-  // When background registrations are enabled, we don't use a data host. The
-  // registrations will be received via `NotifyBackgroundRegistration...`.
-  if (!BackgroundRegistrationsEnabled()) {
-    // A navigation-associated interface is used for
-    // `blink::mojom::ConversionHost` and an `AssociatedReceiver` is used on the
-    // browser side, therefore it's guaranteed that
-    // `AttributionHost::RegisterNavigationHost()` is called before
-    // `AttributionHost::DidStartNavigation()`.
-    if (auto it = navigation_data_host_map_.find(attribution_src_token);
-        it != navigation_data_host_map_.end()) {
-      // We defer trigger registrations until background registrations complete;
-      // when the navigation data host disconnects.
-      auto [__, inserted] =
-          ongoing_background_datahost_registrations_.emplace(navigation_id);
-      DCHECK(inserted);
+  // A navigation-associated interface is used for
+  // `blink::mojom::ConversionHost` and an `AssociatedReceiver` is used on the
+  // browser side, therefore it's guaranteed that
+  // `AttributionHost::RegisterNavigationHost()` is called before
+  // `AttributionHost::DidStartNavigation()`.
+  if (auto it = navigation_data_host_map_.find(attribution_src_token);
+      it != navigation_data_host_map_.end()) {
+    // We defer trigger registrations until background registrations complete;
+    // when the navigation data host disconnects.
+    auto [__, inserted] =
+        ongoing_background_datahost_registrations_.emplace(navigation_id);
+    DCHECK(inserted);
 
-      receivers_.Add(this, std::move(it->second),
-                     RegistrationContext(
-                         suitable_context, RegistrationEligibility::kSource,
-                         /*devtools_request_id=*/std::nullopt, navigation_id,
-                         RegistrationMethod::kNavBackgroundBlink));
+    receivers_.Add(
+        this, std::move(it->second),
+        RegistrationContext(suitable_context, RegistrationEligibility::kSource,
+                            /*devtools_request_id=*/std::nullopt, navigation_id,
+                            RegistrationMethod::kNavBackgroundBlink));
 
-      navigation_data_host_map_.erase(it);
-      RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
-    } else {
-      RecordNavigationDataHostStatus(NavigationDataHostStatus::kNotFound);
-    }
+    navigation_data_host_map_.erase(it);
+    RecordNavigationDataHostStatus(NavigationDataHostStatus::kProcessed);
+  } else {
+    RecordNavigationDataHostStatus(NavigationDataHostStatus::kNotFound);
   }
 
   if (auto waiting_ids_it =
@@ -2050,8 +2046,8 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(
   {
     std::vector<attribution_reporting::OsRegistrationItem> registration_items;
     if (result.has_value()) {
-          registration_items =
-              attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
+      registration_items =
+          attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
     }
 
     if (!registration_items.empty()) {
