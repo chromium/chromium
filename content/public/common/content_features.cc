@@ -781,16 +781,9 @@ BASE_FEATURE(kPushSubscriptionChangeEvent,
 // When enabled, queues navigations instead of cancelling the previous
 // navigation if the previous navigation is already waiting for commit.
 // See https://crbug.com/838348 and https://crbug.com/1220337.
-// Disable by default on Android for now because we haven't experimented
-// on Android WebView stable yet.
 BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
              "QueueNavigationsWhileWaitingForCommit",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, sends SubresourceResponseStarted IPC only when the user has
 // allowed any HTTPS-related warning exceptions. From field data, (see
