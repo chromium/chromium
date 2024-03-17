@@ -111,7 +111,6 @@ crbug.com/41488897 [ android android-pixel-6 passthrough graphite-enabled ] Expe
 crbug.com/1382332 [ chromeos chromeos-board-amd64-generic cros-chrome target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-nexus-5x android angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
-crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
