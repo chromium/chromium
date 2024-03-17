@@ -168,6 +168,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Returns the absolute path for the user's Linux Files.
   virtual base::FilePath GetLinuxFilesPath() const = 0;
 
+  // Gets the OneDrive mount point. Returns empty if OneDrive is not mounted.
+  virtual base::FilePath GetOneDriveMountPointPath() const = 0;
+
   // Returns the path to save files if policy set by admin.
   virtual PolicyCapturePath GetPolicyCapturePath() const = 0;
 

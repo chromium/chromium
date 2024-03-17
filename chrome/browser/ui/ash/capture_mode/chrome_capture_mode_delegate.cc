@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/ash/capture_mode/recording_overlay_view_impl.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -245,6 +246,12 @@ base::FilePath ChromeCaptureModeDelegate::GetAndroidFilesPath() const {
 base::FilePath ChromeCaptureModeDelegate::GetLinuxFilesPath() const {
   return file_manager::util::GetCrostiniMountDirectory(
       ProfileManager::GetActiveUserProfile());
+}
+
+base::FilePath ChromeCaptureModeDelegate::GetOneDriveMountPointPath() const {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  return profile ? ash::cloud_upload::GetODFSFuseboxMount(profile)
+                 : base::FilePath();
 }
 
 ChromeCaptureModeDelegate::PolicyCapturePath

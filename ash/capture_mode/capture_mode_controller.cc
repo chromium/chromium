@@ -909,6 +909,11 @@ bool CaptureModeController::IsLinuxFilesPath(const base::FilePath& path) const {
   return path == delegate_->GetLinuxFilesPath();
 }
 
+bool CaptureModeController::IsRootOneDriveFilesPath(
+    const base::FilePath& path) const {
+  return path == delegate_->GetOneDriveMountPointPath();
+}
+
 aura::Window* CaptureModeController::GetOnCaptureSurfaceWidgetParentWindow()
     const {
   // Trying to get camera preview's parent from `video_recording_watcher_` first
@@ -2266,7 +2271,15 @@ CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
     if (drive_root_path.IsParent(dir_path))
       return CaptureModeSaveToLocation::kDriveFolder;
   }
-  // TODO(b/323146997): Add cases for OneDrive.
+  base::FilePath one_drive_mount_path = delegate_->GetOneDriveMountPointPath();
+  if (!one_drive_mount_path.empty()) {
+    if (dir_path == one_drive_mount_path) {
+      return CaptureModeSaveToLocation::kOneDrive;
+    }
+    if (one_drive_mount_path.IsParent(dir_path)) {
+      return CaptureModeSaveToLocation::kOneDriveFolder;
+    }
+  }
   return CaptureModeSaveToLocation::kCustomizedFolder;
 }
 

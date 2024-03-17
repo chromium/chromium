@@ -295,6 +295,9 @@ void CaptureModeSettingsView::OnCaptureFolderMayHaveChanged() {
   } else if (controller->IsLinuxFilesPath(custom_path)) {
     folder_name =
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_LINUX_FILES);
+  } else if (controller->IsRootOneDriveFilesPath(custom_path)) {
+    folder_name =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_ONE_DRIVE);
   }
 
   save_to_menu_group_->AddOrUpdateExistingOption(

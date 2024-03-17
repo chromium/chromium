@@ -108,7 +108,9 @@ enum class CaptureModeSaveToLocation {
   kDrive,
   kDriveFolder,
   kCustomizedFolder,
-  kMaxValue = kCustomizedFolder,
+  kOneDrive,
+  kOneDriveFolder,
+  kMaxValue = kOneDriveFolder,
 };
 
 // Enumeration of reasons for which the capture folder is switched to default

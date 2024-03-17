@@ -293,6 +293,10 @@ class ASH_EXPORT CaptureModeController
   // otherwise.
   bool IsLinuxFilesPath(const base::FilePath& path) const;
 
+  // Returns true if the given `path` is the root folder of OneDrive, false
+  // otherwise.
+  bool IsRootOneDriveFilesPath(const base::FilePath& path) const;
+
   // Returns the current parent window for the on-capture-surface widgets such
   // as `CaptureModeCameraController::camera_preview_widget_` and
   // `CaptureModeDemoToolsController::key_combo_widget_`.

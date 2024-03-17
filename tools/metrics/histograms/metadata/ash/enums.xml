@@ -457,6 +457,8 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="1" label="Root drive folder"/>
   <int value="2" label="Customized folder in drive"/>
   <int value="3" label="Local customized folder"/>
+  <int value="4" label="Root OneDrive folder"/>
+  <int value="5" label="Customized folder in OneDrive"/>
 </enum>
 
 <enum name="CaptureModeSwitchToDefaultReason">

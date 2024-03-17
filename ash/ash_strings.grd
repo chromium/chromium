@@ -6332,6 +6332,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO_LINUX_FILES" desc="The label of the menu item button for selecting the root of the Linux Files path to store the captured images and videos.">
         Linux files
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO_ONE_DRIVE" desc="The label of the menu item button for selecting the root of the OneDrive path to store the captured images and videos.">
+        OneDrive
+      </message>
       <message name="IDS_ASH_GAME_CAPTURE_START_RECORDING_BUTTON" desc="The label of the start recording button inside the game capture bar.">
         Start recording
       </message>

@@ -39,6 +39,8 @@ TestCaptureModeDelegate::TestCaptureModeDelegate()
   DCHECK(created_dir);
   created_dir = fake_linux_files_path_.CreateUniqueTempDir();
   DCHECK(created_dir);
+  created_dir = fake_one_drive_mount_path_.CreateUniqueTempDir();
+  DCHECK(created_dir);
 }
 
 TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
@@ -177,9 +179,13 @@ base::FilePath TestCaptureModeDelegate::GetLinuxFilesPath() const {
   return fake_linux_files_path_.GetPath();
 }
 
+base::FilePath TestCaptureModeDelegate::GetOneDriveMountPointPath() const {
+  return fake_one_drive_mount_path_.GetPath();
+}
+
 TestCaptureModeDelegate::PolicyCapturePath
 TestCaptureModeDelegate::GetPolicyCapturePath() const {
-  return {base::FilePath(), CapturePathEnforcement::kNone};
+  return policy_capture_path_;
 }
 
 std::unique_ptr<RecordingOverlayView>

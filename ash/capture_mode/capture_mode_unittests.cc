@@ -33,6 +33,7 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/capture_mode/video_recording_watcher.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -2714,6 +2715,13 @@ TEST_P(CaptureModeSaveFileTest, CaptureModeSaveToLocationMetric) {
   test_delegate->GetDriveFsMountPointPath(&mount_point_path);
   const auto root_drive_folder = mount_point_path.Append("root");
   const base::FilePath non_root_drive_folder = CreateFolderOnDriveFS("test");
+  const base::FilePath onedrive_root =
+      test_delegate->GetOneDriveMountPointPath();
+  const base::FilePath onedrive_folder = onedrive_root.Append("test");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateDirectory(onedrive_folder));
+  }
   struct {
     base::FilePath set_save_file_folder;
     CaptureModeSaveToLocation save_location;
@@ -2722,6 +2730,8 @@ TEST_P(CaptureModeSaveFileTest, CaptureModeSaveToLocationMetric) {
       {custom_folder, CaptureModeSaveToLocation::kCustomizedFolder},
       {root_drive_folder, CaptureModeSaveToLocation::kDrive},
       {non_root_drive_folder, CaptureModeSaveToLocation::kDriveFolder},
+      {onedrive_root, CaptureModeSaveToLocation::kOneDrive},
+      {onedrive_folder, CaptureModeSaveToLocation::kOneDriveFolder},
   };
   for (auto test_case : kTestCases) {
     histogram_tester.ExpectBucketCount(histogram_name, test_case.save_location,
@@ -7293,6 +7303,74 @@ TEST_F(CaptureModeSettingsTest, KeyboardNavigationForAddingCustomFolderOption) {
   EXPECT_EQ(FocusGroup::kSettingsClose,
             session_test_api.GetCurrentFocusGroup());
   EXPECT_EQ(0u, session_test_api.GetCurrentFocusIndex());
+}
+
+// Tests the folder selection settings when it's recommended by policy.
+TEST_F(CaptureModeSettingsTest, FolderRecommendedByPolicy) {
+  auto* controller = StartImageRegionCapture();
+
+  // Set the pref to recommended values.
+  const base::FilePath custom_folder(
+      CreateCustomFolderInUserDownloadsPath("test"));
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_policy_capture_path(
+      {custom_folder,
+       CaptureModeDelegate::CapturePathEnforcement::kRecommended});
+
+  // Open settings.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  std::unique_ptr<CaptureModeSettingsTestApi> test_api =
+      std::make_unique<CaptureModeSettingsTestApi>();
+  WaitForSettingsMenuToBeRefreshed();
+
+  // Custom folder is set, but Downloads option and select folder is enabled.
+  EXPECT_FALSE(controller->IsCustomFolderManagedByPolicy());
+  CaptureModeMenuGroup* save_to_menu_group = test_api->GetSaveToMenuGroup();
+  EXPECT_FALSE(save_to_menu_group->IsManagedByPolicy());
+
+  EXPECT_TRUE(test_api->GetCustomFolderOptionIfAny()->GetEnabled());
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+
+  EXPECT_TRUE(test_api->GetDefaultDownloadsOption()->GetEnabled());
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+
+  EXPECT_TRUE(test_api->GetSelectFolderMenuItem()->GetEnabled());
+}
+
+// Tests the folder selection settings when it's enforced by policy.
+TEST_F(CaptureModeSettingsTest, FolderSetByPolicy) {
+  auto* controller = StartImageRegionCapture();
+
+  // Set the pref to managed values.
+  const base::FilePath custom_folder(
+      CreateCustomFolderInUserDownloadsPath("test"));
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_policy_capture_path(
+      {custom_folder, CaptureModeDelegate::CapturePathEnforcement::kManaged});
+
+  // Open settings.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  std::unique_ptr<CaptureModeSettingsTestApi> test_api =
+      std::make_unique<CaptureModeSettingsTestApi>();
+  WaitForSettingsMenuToBeRefreshed();
+
+  // Custom folder is set, but Downloads option and select folder are not
+  // enabled.
+  EXPECT_TRUE(controller->IsCustomFolderManagedByPolicy());
+  CaptureModeMenuGroup* save_to_menu_group = test_api->GetSaveToMenuGroup();
+  EXPECT_TRUE(save_to_menu_group->IsManagedByPolicy());
+
+  EXPECT_TRUE(test_api->GetCustomFolderOptionIfAny()->GetEnabled());
+  EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kCustomFolder));
+
+  EXPECT_FALSE(test_api->GetDefaultDownloadsOption()->GetEnabled());
+  EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+
+  EXPECT_FALSE(test_api->GetSelectFolderMenuItem()->GetEnabled());
 }
 
 // -----------------------------------------------------------------------------
