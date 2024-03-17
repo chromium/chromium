@@ -34429,7 +34429,8 @@ should be able to be added at any place in this file.
   <owner>chrome-privacy-controls@google.com</owner>
   <description>
     Recorded when the user clicks the &quot;Linked Google Services&quot; link
-    row in the &quot;Personalize Google Settings&quot; page. Only on Android.
+    row in the &quot;Personalize Google Settings&quot; page. Only on Android and
+    iOS.
   </description>
 </action>
 
@@ -34438,7 +34439,7 @@ should be able to be added at any place in this file.
   <owner>chrome-privacy-controls@google.com</owner>
   <description>
     Recorded when the user clicks the &quot;Personalize Google Services&quot;
-    link row in the account settings page. Only on Android.
+    link row in the account settings page. Only on Android and iOS.
   </description>
 </action>
 

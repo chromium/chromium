@@ -384,6 +384,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)openPersonalizeGoogleServices {
   CHECK(!_personalizeGoogleServicesCoordinator);
 
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_AccountSettings_PersonalizeGoogleServicesClicked"));
+
   _personalizeGoogleServicesCoordinator = [[PersonalizeGoogleServicesCoordinator
       alloc]
       initWithBaseNavigationController:self.navigationControllerForChildPages
