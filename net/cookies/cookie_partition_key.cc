@@ -12,6 +12,8 @@
 #include "base/types/optional_util.h"
 #include "net/cookies/cookie_constants.h"
 
+namespace net {
+
 namespace {
 
 base::unexpected<std::string> WarnAndCreateUnexpected(
@@ -21,8 +23,6 @@ base::unexpected<std::string> WarnAndCreateUnexpected(
 }
 
 }  // namespace
-
-namespace net {
 
 CookiePartitionKey::SerializedCookiePartitionKey::SerializedCookiePartitionKey(
     const std::string& site)
