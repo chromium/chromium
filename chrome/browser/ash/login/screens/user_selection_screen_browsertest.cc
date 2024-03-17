@@ -263,8 +263,7 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
   test::OobeJS().ExpectVisiblePath(kErrorMessageOfflineSigninLink);
 }
 
-// Disabled due to high flake rate; see https://crbug.com/1406789.
-class DISABLED_DarkLightEnabledTest : public LoginManagerTest {
+class DarkLightEnabledTest : public LoginManagerTest {
  protected:
   void StartLogin(const AccountId& account_id) {
     LoginDisplayHost::default_host()
@@ -287,7 +286,7 @@ class DISABLED_DarkLightEnabledTest : public LoginManagerTest {
 };
 
 // OOBE + login of the first user.
-IN_PROC_BROWSER_TEST_F(DISABLED_DarkLightEnabledTest, PRE_PRE_OobeLogin) {
+IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_PRE_OobeLogin) {
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
@@ -305,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_DarkLightEnabledTest, PRE_PRE_OobeLogin) {
 }
 
 // "Add person" flow.
-IN_PROC_BROWSER_TEST_F(DISABLED_DarkLightEnabledTest, PRE_OobeLogin) {
+IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
   // Oobe is hidden - prefs of the focused user are applied.
   EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
@@ -343,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_DarkLightEnabledTest, PRE_OobeLogin) {
 }
 
 // Test focusing different pods.
-IN_PROC_BROWSER_TEST_F(DISABLED_DarkLightEnabledTest, OobeLogin) {
+IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, OobeLogin) {
   ASSERT_EQ(LoginScreenTestApi::GetFocusedUser(), user2);
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());
