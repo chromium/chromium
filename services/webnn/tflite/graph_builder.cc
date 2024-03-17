@@ -322,6 +322,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeElu(*op.get_elu()));
       break;
     }
+    case mojom::Operation::Tag::kGemm: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeGemm(*op.get_gemm()));
+      break;
+    }
     case mojom::Operation::Tag::kHardSwish:
       operator_offset = SerializeHardSwish(*op.get_hard_swish());
       break;
@@ -369,8 +373,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("expand is not implemented");
     case mojom::Operation::Tag::kGather:
       return base::unexpected("gather is not implemented");
-    case mojom::Operation::Tag::kGemm:
-      return base::unexpected("gemm is not implemented");
     case mojom::Operation::Tag::kGru:
       return base::unexpected("gru is not implemented");
     case mojom::Operation::Tag::kHardSigmoid:
@@ -902,6 +904,75 @@ auto GraphBuilder::SerializeElu(const mojom::Elu& elu)
   }
   return SerializeUnaryOperation(::tflite::BuiltinOperator_ELU,
                                  elu.input_operand_id, elu.output_operand_id);
+}
+
+auto GraphBuilder::SerializeGemm(const mojom::Gemm& gemm)
+    -> base::expected<OperatorOffset, std::string> {
+  // Check for unsupported inputs.
+  const mojom::Operand& output_operand = GetOperand(gemm.output_operand_id);
+  CHECK_EQ(output_operand.dimensions.size(), 2u);
+  const uint32_t output_channels = output_operand.dimensions[1];
+  if (gemm.c_operand_id.has_value()) {
+    // The TFLite fully connected operator only supports a 1-D bias tensor with
+    // `output_channels` dimensions.
+    const mojom::Operand& bias_operand = GetOperand(*gemm.c_operand_id);
+    if (bias_operand.dimensions.size() != 1u ||
+        bias_operand.dimensions[0] != output_channels) {
+      // TODO(crbug.com/328652105): Support the bias with other dimensions by
+      // element-wise addition operator.
+      return base::unexpected(base::StringPrintf(
+          "The dimensions of bias must be [%u].", output_channels));
+    }
+  }
+  if (gemm.alpha != 1.0f) {
+    // TODO(crbug.com/328652105): Support alpha by using element-wise
+    // multiplication operator.
+    return base::unexpected("gemm doesn't support alpha option.");
+  }
+  if (gemm.beta != 1.0f) {
+    // TODO(crbug.com/328652105): Support beta by using element-wise
+    // multiplication operator.
+    return base::unexpected("gemm doesn't support beta option.");
+  }
+  if (gemm.a_transpose) {
+    // TODO(crbug.com/328652105): Support aTranspose by using transpose
+    // operator.
+    return base::unexpected("gemm doesn't support aTranspose option.");
+  }
+
+  // The WebNN Gemm follows the expression `alpha * A * B + beta * C`, where
+  // A is a 2-D tensor with shape [M, K], B is a 2-D tensor with shape [K,
+  // N] by default options, but Tflite Fully Connected's input and filter
+  // shapes are [batch, input_channels] and [output_channels,
+  // input_channels], so the Transpose operator need to be inserted before
+  // Gemm When bTranspose option is false.
+  std::optional<int32_t> transposed_filter_index;
+  const uint32_t filter_operand_id = gemm.b_operand_id;
+  const int32_t filter_index = operand_to_index_map_.at(filter_operand_id);
+  if (!gemm.b_transpose) {
+    const mojom::Operand& filter_operand = GetOperand(filter_operand_id);
+    CHECK_EQ(filter_operand.dimensions.size(), 2u);
+
+    const std::array<uint32_t, 2> permutation = {1u, 0u};
+    transposed_filter_index =
+        InsertTransposeOperation(filter_operand, filter_index, permutation);
+  }
+
+  std::vector<int32_t> op_inputs = {operand_to_index_map_.at(gemm.a_operand_id),
+                                    transposed_filter_index.has_value()
+                                        ? *transposed_filter_index
+                                        : filter_index};
+  if (gemm.c_operand_id.has_value()) {
+    op_inputs.push_back(operand_to_index_map_.at(*gemm.c_operand_id));
+  }
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_FULLY_CONNECTED);
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(gemm.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
 }
 
 auto GraphBuilder::SerializeHardSwish(const mojom::HardSwish& hard_swish)
