@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_GENERIC_FONT_FAMILY_SETTINGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_GENERIC_FONT_FAMILY_SETTINGS_H_
 
+#include "base/feature_list.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -41,6 +42,8 @@
 #include <unicode/uscript.h>
 
 namespace blink {
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kGenericFontSettingCache);
 
 class PLATFORM_EXPORT GenericFontFamilySettings {
   DISALLOW_NEW();
@@ -86,8 +89,17 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
   void SetGenericFontFamilyMap(ScriptFontFamilyMap&,
                                const AtomicString&,
                                UScriptCode);
+
+  // Warning: Calling this method might result in a synchronous IPC call, which
+  // waits until the browser process to load a font and blocks the current
+  // thread.
   const AtomicString& GenericFontFamilyForScript(const ScriptFontFamilyMap&,
                                                  UScriptCode) const;
+
+  // Returns true if the first available font of `new_family` could be different
+  // from `old_first_available_family`.
+  bool ShouldUpdateFontFamily(const AtomicString& old_first_available_family,
+                              const AtomicString& new_family) const;
 
   ScriptFontFamilyMap standard_font_family_map_;
   ScriptFontFamilyMap serif_font_family_map_;
@@ -96,6 +108,13 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
   ScriptFontFamilyMap cursive_font_family_map_;
   ScriptFontFamilyMap fantasy_font_family_map_;
   ScriptFontFamilyMap math_font_family_map_;
+
+  // For the given font families, caches the first available font. If none of
+  // them is available, the value will be the first font of the given
+  // families. To save memory, the key should contain more than one font, in
+  // the format of ",font1, font2, ...".
+  mutable HashMap<AtomicString, AtomicString>
+      first_available_font_for_families_;
 };
 
 }  // namespace blink
