@@ -12,5 +12,5 @@ declare_args() {
 
   # This build flag enables WebNN to access hardware acceleration using TFLite
   # via the ModelLoader mojo interface.
-  build_webnn_with_tflite_model_loader = is_chromeos
+  build_webnn_with_tflite_model_loader = false
 }
