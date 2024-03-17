@@ -410,6 +410,14 @@ class AutofillAgent : public content::RenderFrameObserver,
   void BatchSelectOrSelectListOptionChange(FieldRendererId element_id);
   void BatchDataListOptionChange(FieldRendererId element_id);
 
+  // TODO(b/40281981): Remove.
+  std::optional<FormData>& provisionally_saved_form() {
+    return form_tracker_->provisionally_saved_form();
+  }
+  const std::optional<FormData>& provisionally_saved_form() const {
+    return form_tracker_->provisionally_saved_form();
+  }
+
   // Stores immutable configuration this agent was created with. It contains
   // features and settings that are available for the lifetime of this class.
   const Config config_;
@@ -438,14 +446,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   mojom::FormActionType last_action_type_ = mojom::FormActionType::kFill;
 
   // Last form which was interacted with by the user.
-  struct {
-    FormRef form_id;
-
-    // Used if `form_id` or a formless form can't be converted to FormData at
-    // the time of form submission (e.g. because they have been removed from the
-    // DOM).
-    std::optional<FormData> saved_state;
-  } last_interacted_;
+  FormRef last_interacted_form_;
 
   // When dealing with an unowned form, we keep track of the unowned fields
   // the user has modified so we can determine when submission occurs.

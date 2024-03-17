@@ -129,6 +129,11 @@ class FormTracker : public content::RenderFrameObserver,
   // by PWM.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
 
+  // TODO(b/40281981): Remove.
+  std::optional<FormData>& provisionally_saved_form() {
+    return last_interacted_.saved_state;
+  }
+
  private:
   friend class FormTrackerTestApi;
 
@@ -191,8 +196,13 @@ class FormTracker : public content::RenderFrameObserver,
   const UserGestureRequired user_gesture_required_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-  FormRef last_interacted_form_;
-  FieldRef last_interacted_formless_element_;
+  struct {
+    FormRef form;
+    FieldRef formless_element;
+    // Used when a FormData version of the last interacted form is needed if
+    // we'd like to avoid extracting using `form`.
+    std::optional<FormData> saved_state;
+  } last_interacted_;
 
   // TODO(crbug.com/1483242): Remove.
   raw_ptr<blink::WebFormElementObserver> form_element_observer_ = nullptr;
