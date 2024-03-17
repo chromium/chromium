@@ -698,7 +698,9 @@ class AutofillProfileSyncUtilTest
     test_clock_.SetNow(kJune2017);
     features_.InitWithFeatures(
         {features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseBRAddressModel,
          features::kAutofillUseINAddressModel,
+         features::kAutofillUseMXAddressModel,
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForAddressOverflow,
          features::kAutofillEnableSupportForBetweenStreets,

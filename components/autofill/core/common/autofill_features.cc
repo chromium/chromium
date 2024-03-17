@@ -359,16 +359,24 @@ BASE_FEATURE(kAutofillUseI18nAddressModel,
              "AutofillUseI18nAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using the a custom address model for Germany, overriding the legacy
-// one.
+// Enables using a custom address model for Brazil, overriding the legacy one.
+BASE_FEATURE(kAutofillUseBRAddressModel,
+             "AutofillUseBRAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables using a custom address model for Germany, overriding the legacy one.
 BASE_FEATURE(kAutofillUseDEAddressModel,
              "AutofillUseDEAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using the a custom address model for India, overriding the legacy
-// one.
+// Enables using a custom address model for India, overriding the legacy one.
 BASE_FEATURE(kAutofillUseINAddressModel,
              "AutofillUseINAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables using a custom address model for Mexico, overriding the legacy one.
+BASE_FEATURE(kAutofillUseMXAddressModel,
+             "AutofillUseMXAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Autofill will issues votes for EMAIL_ADDRESS field types on

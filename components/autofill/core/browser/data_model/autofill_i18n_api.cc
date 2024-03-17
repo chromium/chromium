@@ -373,6 +373,11 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
+  if (country_code == AddressCountryCode("BR") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseBRAddressModel)) {
+    return false;
+  }
+
   if (country_code == AddressCountryCode("DE") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseDEAddressModel)) {
     return false;
@@ -380,6 +385,11 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
 
   if (country_code == AddressCountryCode("IN") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    return false;
+  }
+
+  if (country_code == AddressCountryCode("MX") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseMXAddressModel)) {
     return false;
   }
 

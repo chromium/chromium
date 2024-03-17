@@ -1360,7 +1360,9 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kAutofillUseI18nAddressModel,
+       features::kAutofillUseBRAddressModel,
        features::kAutofillUseINAddressModel,
+       features::kAutofillUseMXAddressModel,
        features::kAutofillEnableSupportForLandmark,
        features::kAutofillEnableSupportForBetweenStreets,
        features::kAutofillEnableSupportForAdminLevel2,
@@ -1524,7 +1526,8 @@ TEST(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
 TEST(AutofillProfileTest, SetRawInfoWorksForLandmark) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kAutofillEnableSupportForLandmark,
-                                 features::kAutofillUseI18nAddressModel},
+                                 features::kAutofillUseI18nAddressModel,
+                                 features::kAutofillUseMXAddressModel},
                                 {});
 
   AutofillProfile profile(AddressCountryCode("MX"));
@@ -1537,7 +1540,8 @@ TEST(AutofillProfileTest, SetRawInfoWorksForBetweenStreets) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kAutofillEnableSupportForBetweenStreets,
-       features::kAutofillUseI18nAddressModel},
+       features::kAutofillUseI18nAddressModel,
+       features::kAutofillUseMXAddressModel},
       {});
   AutofillProfile profile(AddressCountryCode("MX"));
 

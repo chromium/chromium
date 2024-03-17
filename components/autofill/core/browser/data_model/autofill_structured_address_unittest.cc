@@ -931,16 +931,16 @@ class AutofillI18nStructuredAddress : public testing::Test {
  public:
   AutofillI18nStructuredAddress() {
     features_.InitWithFeatures(
-        {
-            features::kAutofillEnableSupportForLandmark,
-            features::kAutofillEnableSupportForBetweenStreets,
-            features::kAutofillEnableSupportForAdminLevel2,
-            features::kAutofillEnableSupportForApartmentNumbers,
-            features::kAutofillEnableSupportForAddressOverflow,
-            features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
-            features::kAutofillEnableSupportForAddressOverflowAndLandmark,
-            features::kAutofillUseI18nAddressModel,
-        },
+        {features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForBetweenStreets,
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForApartmentNumbers,
+         features::kAutofillEnableSupportForAddressOverflow,
+         features::kAutofillEnableSupportForBetweenStreetsOrLandmark,
+         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+         features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseBRAddressModel,
+         features::kAutofillUseMXAddressModel},
         {});
   }
 

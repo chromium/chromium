@@ -527,7 +527,9 @@ class ContactInfoSyncUtilTest
   ContactInfoSyncUtilTest() {
     features_.InitWithFeatures(
         {features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseBRAddressModel,
          features::kAutofillUseINAddressModel,
+         features::kAutofillUseMXAddressModel,
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAddressOverflow,

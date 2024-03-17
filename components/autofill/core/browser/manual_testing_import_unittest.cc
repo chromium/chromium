@@ -321,8 +321,13 @@ TEST_F(ManualTestingImportTest,
 
 class ManualTestingImportTesti18n : public ManualTestingImportTest {
  public:
-  base::test::ScopedFeatureList features_{
-      features::kAutofillUseI18nAddressModel};
+  ManualTestingImportTesti18n() {
+    features_.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                features::kAutofillUseBRAddressModel,
+                                features::kAutofillUseMXAddressModel},
+                               {});
+  }
+  base::test::ScopedFeatureList features_;
 };
 
 // Tests that i18n profiles are converted correctly.

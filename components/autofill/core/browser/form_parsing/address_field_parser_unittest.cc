@@ -19,7 +19,12 @@ class AddressFieldParserTest
     : public FormFieldParserTestBase,
       public ::testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  AddressFieldParserTest() : FormFieldParserTestBase(GetParam()) {}
+  AddressFieldParserTest() : FormFieldParserTestBase(GetParam()) {
+    default_features.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                       features::kAutofillUseBRAddressModel,
+                                       features::kAutofillUseINAddressModel},
+                                      {});
+  }
   AddressFieldParserTest(const AddressFieldParserTest&) = delete;
   AddressFieldParserTest& operator=(const AddressFieldParserTest&) = delete;
 
@@ -29,8 +34,7 @@ class AddressFieldParserTest
     return AddressFieldParser::Parse(context, scanner);
   }
 
-  base::test::ScopedFeatureList default_features{
-      features::kAutofillUseI18nAddressModel};
+  base::test::ScopedFeatureList default_features;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -165,8 +169,9 @@ TEST_P(AddressFieldParserTest, ParseLandmark) {
 TEST_P(AddressFieldParserTest, ParseBetweenStreets) {
   // TODO(crbug.com/1441904): Remove once launched.
   base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableSupportForBetweenStreets);
+  enabled.InitWithFeatures({features::kAutofillEnableSupportForBetweenStreets,
+                            features::kAutofillUseMXAddressModel},
+                           {});
 
   AddTextFormFieldData("entre-calles", "Entre calles",
                        ADDRESS_HOME_BETWEEN_STREETS);
@@ -177,8 +182,10 @@ TEST_P(AddressFieldParserTest, ParseBetweenStreets) {
 // Tests that multiple between streets field are correctly classified.
 TEST_P(AddressFieldParserTest, ParseBetweenStreetsLines) {
   // TODO(crbug.com/1441904): Remove once launched.
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableSupportForBetweenStreets};
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures({features::kAutofillEnableSupportForBetweenStreets,
+                            features::kAutofillUseMXAddressModel},
+                           {});
 
   std::vector<std::pair<std::pair<std::string, std::string>,
                         std::pair<std::string, std::string>>>
@@ -206,7 +213,9 @@ TEST_P(AddressFieldParserTest, ParseBetweenStreetsLines) {
 TEST_P(AddressFieldParserTest, ParseAdminLevel2) {
   // TODO(crbug.com/1441904): Remove once launched.
   base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(features::kAutofillEnableSupportForAdminLevel2);
+  enabled.InitWithFeatures({features::kAutofillEnableSupportForAdminLevel2,
+                            features::kAutofillUseMXAddressModel},
+                           {});
 
   AddTextFormFieldData("municipio", "Municipio", ADDRESS_HOME_ADMIN_LEVEL2);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("MX"),
@@ -216,8 +225,10 @@ TEST_P(AddressFieldParserTest, ParseAdminLevel2) {
 // Tests that overflow field is correctly classified.
 TEST_P(AddressFieldParserTest, ParseOverflow) {
   // TODO(crbug.com/1441904): Remove once launched.
-  base::test::ScopedFeatureList enabled(
-      features::kAutofillEnableSupportForAddressOverflow);
+  base::test::ScopedFeatureList enabled;
+  enabled.InitWithFeatures({features::kAutofillEnableSupportForAddressOverflow,
+                            features::kAutofillUseBRAddressModel},
+                           {});
 
   AddTextFormFieldData("complemento", "Complemento", ADDRESS_HOME_OVERFLOW);
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("BR"),
@@ -231,7 +242,8 @@ TEST_P(AddressFieldParserTest, ParseOverflowAndLandmark) {
   features.InitWithFeatures(
       /*enabled_features=*/
       {features::kAutofillEnableSupportForAddressOverflow,
-       features::kAutofillEnableSupportForAddressOverflowAndLandmark},
+       features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+       features::kAutofillUseBRAddressModel},
       /*disabled_features=*/{});
 
   AddTextFormFieldData("additional_info", "Complemento e ponto de referência",
@@ -292,6 +304,7 @@ TEST_P(AddressFieldParserTest,
           features::kAutofillEnableSupportForLandmark,
           features::kAutofillEnableSupportForBetweenStreets,
           features::kAutofillEnableSupportForAdminLevel2,
+          features::kAutofillUseMXAddressModel,
       },
       {});
 

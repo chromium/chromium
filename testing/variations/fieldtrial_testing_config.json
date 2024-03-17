@@ -2001,7 +2001,9 @@
                         "AutofillEnableSupportForLandmark",
                         "AutofillLocalHeuristicsOverrides",
                         "AutofillPreferLabelsInSomeCountries",
-                        "AutofillUseI18nAddressModel"
+                        "AutofillUseBRAddressModel",
+                        "AutofillUseI18nAddressModel",
+                        "AutofillUseMXAddressModel"
                     ]
                 }
             ]

@@ -294,8 +294,17 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_I18N_ADDRESS_MODEL,
                 "When enabled, Autofill uses the i18n version of the address model."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_BR_ADDRESS_MODEL,
+                "When enabled, Autofill uses a custom address model for Brazil."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_DE_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Germany."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_IN_ADDRESS_MODEL,
+                "When enabled, Autofill uses a custom address model for India."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_MX_ADDRESS_MODEL,
+                "When enabled, Autofill uses a custom address model for Mexico."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DEFAULT_TO_CITY_AND_NUMBER,
                 "When enabled, Autofill heuristics will prioritize filling phone numbers in "

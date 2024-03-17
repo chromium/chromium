@@ -521,6 +521,8 @@ class FormDataImporterTest : public testing::Test {
   FormDataImporterTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillUseI18nAddressModel,
+         features::kAutofillUseBRAddressModel,
+         features::kAutofillUseMXAddressModel,
          features::kAutofillEnableDependentLocalityParsing,
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillEnableSupportForLandmark,
