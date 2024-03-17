@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> અઠવાડિયા પહેલાં બનાવ્યું}one{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}other{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}}</translation>
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> વર્ષ પહેલાં બનાવ્યું}one{<ph name="NUM_YEARS_MANY" /> વર્ષ પહેલાં બનાવ્યું}other{<ph name="NUM_YEARS_MANY" /> વર્ષ પહેલાં બનાવ્યું}}</translation>
 <translation id="1155815720264022949">જૂનું ટૅબ બંધ કરવા માગો છો?</translation>
 <translation id="1197088940767939838">નારંગી</translation>
 <translation id="1215127405478249895">ટૅબ રિવ્યૂ કરો</translation>
 <translation id="125153950246128346">અન્ય ટૅબ જોવા માટે ટૅપ કરો</translation>
 <translation id="1322824555808364080">લોકોને આમંત્રિત કરો</translation>
 <translation id="1326271443836399892">ગોઠવણીને વ્યવસ્થિત કરવા માટેના વર્તમાન સેટિંગનો રિવ્યૂ કરો.</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> મિનિટ પહેલાં બનાવ્યું}one{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં બનાવ્યું}other{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં બનાવ્યું}}</translation>
 <translation id="1499635324672558517">બધી છૂપી ટૅબ બંધ કરીએ?</translation>
 <translation id="1555130319947370107">વાદળી</translation>
 <translation id="161042844686301425">સ્યાન</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">ગ્રૂપ બનાવો</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> કલાક પહેલાં બનાવ્યું}one{<ph name="NUM_HOURS_MANY" /> કલાક પહેલાં બનાવ્યું}other{<ph name="NUM_HOURS_MANY" /> કલાક પહેલાં બનાવ્યું}}</translation>
 <translation id="2801787514987684416">સ્ટોરની માહિતી જોઈએ?</translation>
 <translation id="2928243913527329289">Google | આ સ્ટોર વિશે</translation>
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ટૅબનું ગ્રૂપ બનાવો}one{ટૅબનું ગ્રૂપ બનાવો}other{ટૅબનું ગ્રૂપ બનાવો}}</translation>
 <translation id="3996880007329611795">નોટિફિકેશન મેળવો</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> દિવસ પહેલાં બનાવ્યું}one{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં બનાવ્યું}other{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં બનાવ્યું}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4212246570487010370">બ્રાઉઝ કરવાનું ચાલુ રાખો</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="427987768447457592">ટૅબનું નવું ગ્રૂપ</translation>
 <translation id="4648718555153979859">તમારા ટૅબ અહીં એકસાથે ગ્રૂપ કરવામાં આવ્યા છે</translation>
+<translation id="4686942373615810936">હમણાં જ બનાવ્યું</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ)}one{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}}</translation>
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="4870911314065352661">શું બધી ટૅબ બંધ કરીએ?</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">નવું ફોલ્ડર - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
 <translation id="8730999928494395583">આ ડિવાઇસમાંથી આ છૂપા ટૅબમાંની તમારી પ્રવૃત્તિ કાઢી નાખવામાં આવશે</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> મહિના પહેલાં બનાવ્યું}one{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં બનાવ્યું}other{<ph name="NUM_MONTHS_MANY" /> મહિના પહેલાં બનાવ્યું}}</translation>
 <translation id="8820741577754260431">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="9090098097337832354">આ સ્ટોર વિશેની માહિતી બતાવવાની બંધ કરી છે</translation>

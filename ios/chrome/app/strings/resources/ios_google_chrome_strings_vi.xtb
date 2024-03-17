@@ -22,6 +22,7 @@
 <translation id="1436059927646026729">Mở thẻ mà tôi mở gần đây nhất trong Chrome</translation>
 <translation id="1449241544691504574">Thêm dấu trang vào Chrome</translation>
 <translation id="1462727070346936664">Đăng nhập để khai thác tối đa Chrome.</translation>
+<translation id="1462833127986525564">Liên kết Chrome và các dịch vụ khác của Google nếu bạn muốn các dịch vụ này sử dụng dữ liệu của nhau để mang lại trải nghiệm phù hợp với bạn hơn.</translation>
 <translation id="1491435845014430217">Bật chế độ "Khoá các thẻ Ẩn danh khi bạn đóng Chrome".</translation>
 <translation id="1493827051843127077">Hãy đặt Chrome làm trình duyệt mặc định để đồng bộ hóa các thẻ, mật khẩu và thông tin thanh toán trên mọi thiết bị của bạn</translation>
 <translation id="1504372625950710826">Chrome không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử kiểm tra kết nối Internet.</translation>
@@ -142,6 +143,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4834499902900503484">Khi bạn đăng nhập vào Chrome, mật khẩu mà bạn lưu sẽ có trong Tài khoản Google của bạn. Để tắt tính năng này, hãy <ph name="BEGIN_LINK" />vào phần cài đặt<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Chưa hỗ trợ trên Chrome phiên bản thử nghiệm</translation>
 <translation id="4840404732697892756">Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn đăng nhập bằng Tài khoản Google.</translation>
+<translation id="4856636171409137183">Để có trải nghiệm phù hợp với nhu cầu cá nhân nhất, hãy thêm Chrome vào <ph name="FEATURE_NAME_1" /> và <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome có thể giúp bạn theo dõi gói hàng này trên trang Thẻ mới.}other{Chrome có thể giúp bạn theo dõi các gói hàng này trên trang Thẻ mới.}}</translation>
 <translation id="4903674399067644695">Thẻ này hiển thị cho bạn các nội dung đề xuất về cách khai thác tối đa Chrome.</translation>
 <translation id="49200511069271369">Tổ chức <ph name="DOMAIN" /> của bạn quản lý tài khoản mà bạn hiện đang đăng nhập và cách bạn sử dụng Chrome. Quản trị viên có thể thiết lập hoặc hạn chế một số tính năng.</translation>

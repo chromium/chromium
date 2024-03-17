@@ -2179,6 +2179,7 @@ Những nguồn gốc không được chính sách hay chế độ cài đặt c
       Chính sách này áp dụng cho màn hình đăng nhập. Vui lòng xem cả chính sách <ph name="SITE_PER_PROCESS_POLICY_NAME" /> áp dụng cho phiên người dùng. Bạn nên đặt cả hai chính sách về cùng một giá trị. Nếu các giá trị không khớp nhau, thì có thể xảy ra tình trạng chậm trễ khi vào một phiên người dùng mặc dù đang áp dụng giá trị do chính sách người dùng chỉ định.
       </translation>
 <translation id="2697717608663878828">Bật thử nghiệm ClientHello được mã hoá của TLS (Bảo mật tầng truyền tải)</translation>
+<translation id="2697818835890656951">Nhãn hồ sơ tuỳ chỉnh</translation>
 <translation id="2699836109975228367">Bật chế độ đơn âm trên màn hình đăng nhập</translation>
 <translation id="2702023190395322609">Bật tính năng đề xuất nội dung nghe nhìn</translation>
 <translation id="2702682139813393777">Buộc Máy chủ nhắn tin gốc của Windows khởi chạy thông qua cmd.exe</translation>
@@ -3538,6 +3539,9 @@ Hãy truy cập https://wicg.github.io/private-network-access/ để biết các
 
       Lưu ý: Đối với các thiết bị được quản lý <ph name="MS_AD_NAME" />, chính sách này hỗ trợ việc mở rộng <ph name="MACHINE_NAME_VARIABLE" /> sang tên máy <ph name="MS_AD_NAME" /> hoặc một chuỗi con của biến đó. Ví dụ: nếu tên máy là <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> sẽ được thay bằng 4 ký tự bắt đầu sau vị trí thứ 6, nói cách khác là sẽ được thay bằng <ph name="MACHINE_NAME_PART_EXAMPLE" />. Vị trí này dựa trên mốc 0.</translation>
 <translation id="377044054160169374">Thực thi can thiệp trải nghiệm lạm dụng</translation>
+<translation id="3771860261556084445">Chính sách này kiểm soát việc thêm một nhãn tuỳ chỉnh dùng để nhận dạng một hồ sơ đã đăng nhập. Nhãn này sẽ xuất hiện ở nhiều vị trí để giúp người dùng xác định hồ sơ, chẳng hạn như bên cạnh biểu tượng hồ sơ trên thanh công cụ.
+Nhãn này cũng được dùng làm tên mặc định cho hồ sơ mới tạo và người dùng có thể sửa đổi nếu muốn.
+Nếu bạn không đặt chính sách này mà vẫn cần hiển thị nhãn thì nhãn mặc định là "Cơ quan" hoặc "Trường học" sẽ được sử dụng.</translation>
 <translation id="3778689139323007309">Thực hiện quá trình kiểm tra trạng thái thu hồi đối của các chứng chỉ máy chủ đã xác thực thành công, được ký theo chứng chỉ CA đã cài đặt trên máy</translation>
 <translation id="3780152581321609624">Bao gồm cổng không chuẩn trong  Kerberos SPN</translation>
 <translation id="3788662722837364290">Cài đặt quản lý nguồn khi người dùng không sử dụng</translation>
@@ -6748,6 +6752,16 @@ Những nguồn gốc không được chính sách hay chế độ cài đặt c
 <translation id="6374945506685352202">Danh sách chặn các loại cài đặt tiện ích</translation>
 <translation id="6376540107659524656">Tắt SSH trong Ứng dụng hệ thống thiết bị đầu cuối</translation>
 <translation id="6376659517206731212">Có thể bắt buộc</translation>
+<translation id="637677821295115289">Đặt thư mục lưu Nội dung ghi màn hình (cả ảnh chụp màn hình và bản ghi màn hình).
+Nếu bạn đặt chính sách này thành Recommended (Khuyến nghị) thì giá trị này sẽ được sử dụng theo mặc định nhưng người dùng có thể tự thay đổi.
+Nếu không, người dùng sẽ không thể thay đổi giá trị này và nội dung ghi màn hình sẽ luôn được lưu vào thư mục đã xác định.
+
+Chính sách này sử dụng cùng một định dạng với chính sách <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />
+Bạn có thể đặt vị trí thành hệ thống tệp trên máy, <ph name="GOOGLE_DRIVE_NAME" /> (có tiền tố là "${google_drive}") hoặc <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (có tiền tố là "${microsoft_onedrive}").
+Nếu bạn đặt chính sách này thành chuỗi trống thì chính sách sẽ buộc lưu trữ nội dung ghi màn hình trong thư mục "Downloads" (Tệp đã tải xuống) trên máy.
+Xem danh sách các biến mà bạn có thể sử dụng (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng thư mục "Downloads" (Tệp đã tải xuống) mặc định để lưu trữ nội dung ghi màn hình và người dùng có thể thay đổi vị trí lưu trữ.</translation>
 <translation id="6377031865393559909">Cho phép người dùng sử dụng các mẫu không gian làm việc</translation>
 <translation id="6378076389057087301">Chỉ định xem hoạt động âm thanh có ảnh hưởng đến việc quản lý nguồn không</translation>
 <translation id="6378393933102834628">Nếu bạn đặt chính sách này thành True, thì lối tắt ứng dụng sẽ hiển thị. Nếu bạn đặt chính sách này thành False, thì lối tắt này sẽ không hiển thị.

@@ -117,6 +117,7 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="4195557071150719219">Xem các thẻ gần đây trên Chromium</translation>
 <translation id="4200712796753248893">Sử dụng Thao tác trên Chromium trên iOS</translation>
 <translation id="420541179527342563">Để vô hiệu hoá Chế độ khoá trong Chromium, hãy tắt chế độ này trên iPad.</translation>
+<translation id="427331839909790668">Liên kết Chromium và các dịch vụ khác của Google nếu bạn muốn các dịch vụ đó sử dụng dữ liệu của nhau để mang lại trải nghiệm phù hợp với bạn hơn.</translation>
 <translation id="4408912345039114853">Chạy quy trình Kiểm tra an toàn trên Chromium</translation>
 <translation id="4432744876818348753">Đăng nhập để khai thác tối đa Chromium.</translation>
 <translation id="4445228361214254027">Tổ chức của bạn đã tắt tính năng sử dụng và lưu dữ liệu Chromium vào Tài khoản Google. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu vào thiết bị này.</translation>
@@ -218,6 +219,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="6852799557929001644">Truy cập mật khẩu và các dữ liệu khác mà bạn lưu trên Chromium trong các ứng dụng khác trên thiết bị này.</translation>
 <translation id="6887138405044152640">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chromium trên thiết bị đó.</translation>
 <translation id="6911341667534646387">Tiếp tục sử dụng dữ liệu Chromium trong Tài khoản Google của bạn</translation>
+<translation id="7002548535535009764">Để có trải nghiệm phù hợp với nhu cầu cá nhân nhất, hãy thêm Chromium vào <ph name="FEATURE_NAME_1" /> và <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu trong ứng dụng khác trên iPad.</translation>
 <translation id="7018284295775193585">Chromium không thể cập nhật</translation>
 <translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
