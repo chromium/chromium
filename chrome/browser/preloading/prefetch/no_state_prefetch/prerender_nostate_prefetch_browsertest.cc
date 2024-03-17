@@ -1495,7 +1495,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
                        PrerenderSafeBrowsingTopLevel) {
   GURL url = src_server()->GetURL(kPrefetchPage);
   GetFakeSafeBrowsingDatabaseManager()->AddDangerousUrl(
-      url, safe_browsing::SB_THREAT_TYPE_URL_MALWARE);
+      url, safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
 
   std::unique_ptr<TestPrerender> prerender =
       PrefetchFromFile(kPrefetchPage, FINAL_STATUS_SAFE_BROWSING);
@@ -1513,7 +1513,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, ServerRedirect) {
   GURL url = src_server()->GetURL("/prerender/prerender_page.html");
   GetFakeSafeBrowsingDatabaseManager()->AddDangerousUrl(
-      url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
+      url, safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   PrefetchFromURL(src_server()->GetURL(
                       CreateServerRedirect("/prerender/prerender_page.html")),
                   FINAL_STATUS_SAFE_BROWSING, 0);
