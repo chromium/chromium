@@ -3939,17 +3939,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Glanceables.TimeManagement.TotalShowTime" units="ms"
-    expires_after="2024-12-31">
-  <owner>anasalazar@google.com</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    The amount of time that the user kept the glanceables time management bubble
-    open. The time is measured from the moment the glanceables bubble is created
-    until said bubble is destroyed.
-  </summary>
-</histogram>
-
 <histogram
     name="Ash.Glanceables.TimeManagement.{GlanceableBubble}.ChangeListToLoadTime.{Status}"
     units="ms" expires_after="2024-12-31">
@@ -3987,6 +3976,24 @@ chromium-metrics-reviews@google.com.
   <token key="Occurrence">
     <variant name="FirstOcurrence"/>
     <variant name="SubsequentOccurence"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.Glanceables.TimeManagement{GlanceableBubble}.TotalShowTime"
+    units="ms" expires_after="2024-12-31">
+  <owner>anasalazar@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The amount of time that the user kept the glanceables time management bubble
+    open. The time is measured from the moment the glanceables bubble is created
+    until said bubble is destroyed. Recorded when {GlanceableBubble} glanceables
+    bubble is shown.
+  </summary>
+  <token key="GlanceableBubble">
+    <variant name="" summary="either"/>
+    <variant name=".Classroom" summary="Google Classroom"/>
+    <variant name=".Tasks" summary="Google Tasks"/>
   </token>
 </histogram>
 

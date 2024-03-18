@@ -241,6 +241,15 @@ TEST_F(ClassroomBubbleStudentViewTest, RendersComboBoxView) {
   EXPECT_EQ(3u, *combobox_view->GetSelectedIndex());
 }
 
+TEST_F(ClassroomBubbleStudentViewTest, RecordShowTimeHistogramOnClose) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Classroom.TotalShowTime", 0);
+  widget_.reset();
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Classroom.TotalShowTime", 1);
+}
+
 TEST_F(ClassroomBubbleStudentViewTest, ReadsInitialComboBoxViewValueFromPrefs) {
   EXPECT_CALL(classroom_client_, GetCompletedStudentAssignments(_))
       .Times(2)

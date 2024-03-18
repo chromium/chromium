@@ -45,11 +45,15 @@ class ASH_EXPORT GlanceablesTasksViewBase : public GlanceableTrayChildBubble {
   explicit GlanceablesTasksViewBase(bool use_glanceables_container_style);
   GlanceablesTasksViewBase(const GlanceablesTasksViewBase&) = delete;
   GlanceablesTasksViewBase& operator=(const GlanceablesTasksViewBase&) = delete;
-  ~GlanceablesTasksViewBase() override = default;
+  ~GlanceablesTasksViewBase() override;
 
   // Invalidates any pending tasks, or tasks lists requests. Called when the
   // glanceables bubble widget starts closing to avoid unnecessary UI updates.
   virtual void CancelUpdates() = 0;
+
+ private:
+  // Time stamp of when the view was created.
+  const base::Time shown_time_;
 };
 
 // Glanceables view responsible for interacting with Google Tasks.

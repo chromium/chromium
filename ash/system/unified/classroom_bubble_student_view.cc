@@ -105,7 +105,8 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
 
 ClassroomBubbleStudentView::ClassroomBubbleStudentView()
     : ClassroomBubbleBaseView(
-          std::make_unique<ClassroomStudentComboboxModel>()) {
+          std::make_unique<ClassroomStudentComboboxModel>()),
+      shown_time_(base::Time::Now()) {
   combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &ClassroomBubbleStudentView::SelectedAssignmentListChanged,
       base::Unretained(this),
@@ -123,6 +124,8 @@ ClassroomBubbleStudentView::~ClassroomBubbleStudentView() {
   if (first_assignment_list_shown_) {
     RecordStudentSelectedListChangeCount(selected_list_change_count_);
   }
+
+  RecordTotalShowTimeForClassroom(base::Time::Now() - shown_time_);
 }
 
 // static

@@ -174,6 +174,18 @@ void RecordTotalShowTime(base::TimeDelta total_show_time) {
   base::UmaHistogramMediumTimes(kTotalShowTimeHistogram, total_show_time);
 }
 
+void RecordTotalShowTimeForClassroom(base::TimeDelta total_show_time) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({kTimeManagementClassroomPrefix, ".TotalShowTime"}),
+      total_show_time);
+}
+
+void RecordTotalShowTimeForTasks(base::TimeDelta total_show_time) {
+  base::UmaHistogramMediumTimes(
+      base::StrCat({kTimeManagementTaskPrefix, ".TotalShowTime"}),
+      total_show_time);
+}
+
 void RecordClassromInitialLoadTime(bool first_occurrence,
                                    base::TimeDelta load_time) {
   std::string histogram_name =

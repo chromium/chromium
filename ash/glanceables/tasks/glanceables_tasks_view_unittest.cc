@@ -72,8 +72,7 @@ class GlanceablesTasksViewTest : public AshTestBase {
   void TearDown() override {
     // Destroy `widget_` first, before destroying `LayoutProvider` (needed in
     // the `views::Combobox`'s destruction chain).
-    view_ = nullptr;
-    widget_.reset();
+    CloseWidget();
     AshTestBase::TearDown();
   }
 
@@ -92,6 +91,11 @@ class GlanceablesTasksViewTest : public AshTestBase {
     // Recreate the tasks view to update the task views.
     view_ = widget_->SetContentsView(std::make_unique<GlanceablesTasksView>(
         fake_glanceables_tasks_client_->task_lists()));
+  }
+
+  void CloseWidget() {
+    view_ = nullptr;
+    widget_.reset();
   }
 
   Combobox* GetComboBoxView() const {
@@ -161,6 +165,17 @@ class GlanceablesTasksViewTest : public AshTestBase {
 
   const GlanceablesTestNewWindowDelegate new_window_delegate_;
 };
+
+TEST_F(GlanceablesTasksViewTest, RecordShowTimeHistogramOnClose) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.TotalShowTime", 0);
+
+  CloseWidget();
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.TotalShowTime", 1);
+}
 
 TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileLoadingTasks) {
   tasks_client()->set_paused(true);

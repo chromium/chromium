@@ -80,6 +80,10 @@ void RecordLoginToShowTime(base::TimeDelta login_to_show_time);
 
 void RecordTotalShowTime(base::TimeDelta total_show_time);
 
+void RecordTotalShowTimeForClassroom(base::TimeDelta total_show_time);
+
+void RecordTotalShowTimeForTasks(base::TimeDelta total_show_time);
+
 void RecordClassromInitialLoadTime(bool first_occurrence,
                                    base::TimeDelta load_time);
 

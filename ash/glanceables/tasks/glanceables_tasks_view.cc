@@ -171,7 +171,12 @@ END_METADATA
 
 GlanceablesTasksViewBase::GlanceablesTasksViewBase(
     bool use_glanceables_container_style)
-    : GlanceableTrayChildBubble(use_glanceables_container_style) {}
+    : GlanceableTrayChildBubble(use_glanceables_container_style),
+      shown_time_(base::Time::Now()) {}
+
+GlanceablesTasksViewBase::~GlanceablesTasksViewBase() {
+  RecordTotalShowTimeForTasks(base::Time::Now() - shown_time_);
+}
 
 BEGIN_METADATA(GlanceablesTasksViewBase)
 END_METADATA

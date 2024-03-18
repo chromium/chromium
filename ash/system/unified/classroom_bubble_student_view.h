@@ -47,6 +47,9 @@ class ASH_EXPORT ClassroomBubbleStudentView : public ClassroomBubbleBaseView {
   // Handle switching between assignment lists.
   void SelectedAssignmentListChanged(bool initial_update);
 
+  // Time stamp of when the view was created.
+  const base::Time shown_time_;
+
   // The number of times that the selected list has changed during the lifetime
   // of this view.
   int selected_list_change_count_ = 0;
