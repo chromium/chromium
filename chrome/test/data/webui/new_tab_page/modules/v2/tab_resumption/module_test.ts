@@ -7,6 +7,7 @@ import type {DismissModuleInstanceEvent, TabResumptionModuleElement} from 'chrom
 import {tabResumptionDescriptor, TabResumptionProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_resumption.mojom-webui.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -38,6 +39,12 @@ function createSampleTab(
 
 suite('NewTabPageModulesTabResumptionModuleTest', () => {
   let handler: TestMock<PageHandlerRemote>;
+
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      modulesRedesignedEnabled: true,
+    });
+  });
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -127,5 +134,33 @@ suite('NewTabPageModulesTabResumptionModuleTest', () => {
       restoreCallback();
       assertTrue(!!moduleElement);
     });
+
+    test(
+        'Header dismiss button dispatches dismiss module event in pre ' +
+            'redesign launchpad',
+        async () => {
+          loadTimeData.overrideValues({
+            modulesRedesignedEnabled: false,
+          });
+          // Arrange.
+          const moduleElement = await initializeModule(createSampleTabs(1));
+
+          // Assert.
+          assertTrue(!!moduleElement);
+          const headerElement = $$(moduleElement, 'ntp-module-header');
+          assertTrue(!!headerElement);
+          const waitForDismissEvent =
+              eventToPromise('dismiss-module', moduleElement);
+          headerElement!.dispatchEvent(new Event('dismiss-button-click'));
+
+          const dismissEvent: DismissModuleInstanceEvent =
+              await waitForDismissEvent;
+          assertEquals(`Tabs hidden`, dismissEvent.detail.message);
+
+          // Act.
+          const restoreCallback = dismissEvent.detail.restoreCallback!;
+          restoreCallback();
+          assertTrue(!!moduleElement);
+        });
   });
 });
