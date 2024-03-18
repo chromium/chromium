@@ -53,6 +53,10 @@ struct SeaPenTemplateQuery {
 struct SeaPenFeedbackMetadata {
   bool is_positive;
   string log_id;
+
+  // This is the generation seed from the Manta Service to identify a
+  // SeaPenThumbnail.
+  uint32 generation_seed;
 };
 
 // A text or template query for constructing a Manta request.

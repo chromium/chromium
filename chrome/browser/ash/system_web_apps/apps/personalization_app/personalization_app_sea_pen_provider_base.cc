@@ -276,6 +276,9 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
   std::string options_json;
   base::JSONWriter::Write(options, &options_json);
   ai_metadata.Set("template_options", std::move(options_json));
+  ai_metadata.Set(
+      "generation_seed",
+      base::NumberToString(static_cast<int32_t>(metadata->generation_seed)));
 
   base::RecordAction(base::UserMetricsAction("SeaPen_FeedbackPressed"));
   chrome::ShowFeedbackPage(

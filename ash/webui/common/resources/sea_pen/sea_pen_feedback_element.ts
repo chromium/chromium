@@ -8,6 +8,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
+import {SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_feedback_element.html.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 
@@ -32,16 +33,20 @@ export class SeaPenFeedbackElement extends WithSeaPenStore {
         type: String,
         value: FeedbackOption.UNSPECIFIED,
       },
+      thumbnail: {
+        type: Object,
+      },
     };
   }
 
   selectedFeedbackOption: FeedbackOption;
+  thumbnail: SeaPenThumbnail;
 
   private notifySelectedOptionChanged_(isThumbsUp: boolean) {
     this.dispatchEvent(new CustomEvent('selected-feedback-changed', {
       bubbles: true,
       composed: true,
-      detail: {isThumbsUp},
+      detail: {isThumbsUp, thumbnailId: this.thumbnail.id},
     }));
   }
 

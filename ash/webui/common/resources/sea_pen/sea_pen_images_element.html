@@ -203,6 +203,7 @@
           <template is="dom-if" if="[[!thumbnailsLoading_]]">
             <div class="feedback-icon-container">
               <sea-pen-feedback
+                  thumbnail="[[item]]"
                   on-selected-feedback-changed="onSelectedFeedbackChanged_">
               </sea-pen-feedback>
               <div class="feedback-icon-container-shadow-left"></div>
