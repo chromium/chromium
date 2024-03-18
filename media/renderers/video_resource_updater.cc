@@ -841,7 +841,9 @@ VideoResourceUpdater::VideoResourceUpdater(
     int max_resource_size)
     : context_provider_(context_provider),
       shared_bitmap_reporter_(shared_bitmap_reporter),
-      shared_image_interface_(std::move(shared_image_interface)),
+      shared_image_interface_(MediaSharedBitmapConversionEnabled()
+                                  ? std::move(shared_image_interface)
+                                  : nullptr),
       resource_provider_(resource_provider),
       use_stream_video_draw_quad_(use_stream_video_draw_quad),
       use_gpu_memory_buffer_resources_(use_gpu_memory_buffer_resources),
@@ -1106,7 +1108,9 @@ VideoResourceUpdater::PlaneResource* VideoResourceUpdater::AllocateResource(
   const uint32_t plane_resource_id = next_plane_resource_id_++;
 
   if (software_compositor()) {
-    DCHECK_EQ(format, viz::SinglePlaneFormat::kRGBA_8888);
+    DCHECK_EQ(format,
+              (shared_image_interface() ? viz::SinglePlaneFormat::kBGRA_8888
+                                        : viz::SinglePlaneFormat::kRGBA_8888));
 
     all_resources_.push_back(std::make_unique<SoftwarePlaneResource>(
         plane_resource_id, plane_size, color_space, shared_bitmap_reporter_,
@@ -1376,7 +1380,8 @@ viz::SharedImageFormat VideoResourceUpdater::GetSoftwareOutputFormat(
   if (software_compositor() || texture_needs_rgb_conversion_out) {
     output_si_format =
         software_compositor()
-            ? viz::SinglePlaneFormat::kRGBA_8888
+            ? (shared_image_interface() ? viz::SinglePlaneFormat::kBGRA_8888
+                                        : viz::SinglePlaneFormat::kRGBA_8888)
             : PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat();
   }
 
@@ -2118,8 +2123,7 @@ bool VideoResourceUpdater::OnMemoryDump(
 
 scoped_refptr<gpu::ClientSharedImageInterface>
 VideoResourceUpdater::shared_image_interface() const {
-  return MediaSharedBitmapConversionEnabled() ? shared_image_interface_
-                                              : nullptr;
+  return shared_image_interface_;
 }
 
 VideoResourceUpdater::FrameResource::FrameResource() = default;
