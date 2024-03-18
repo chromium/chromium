@@ -625,4 +625,9 @@ BrowserAccessibilityManagerAndroid::GenerateAccessibilityNodeInfoString(
   return wcax->GenerateAccessibilityNodeInfoString(unique_id);
 }
 
+std::vector<std::string>
+BrowserAccessibilityManagerAndroid::GetMetadataForTree() const {
+  return GetTreeData().metadata;
+}
+
 }  // namespace content

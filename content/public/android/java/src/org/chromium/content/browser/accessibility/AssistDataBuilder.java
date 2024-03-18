@@ -5,11 +5,15 @@
 package org.chromium.content.browser.accessibility;
 
 import android.app.assist.AssistStructure.ViewNode;
+import android.os.Bundle;
 import android.view.ViewStructure;
 import android.view.ViewStructure.HtmlInfo;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Basic helper class to build ViewStructure objects for the WebContents in Chrome. The tree is
@@ -21,6 +25,9 @@ import org.jni_zero.JNINamespace;
  */
 @JNINamespace("content")
 public class AssistDataBuilder {
+    private static final String CSS_DISPLAY_BUNDLE_KEY = "display";
+    private static final String METADATA_BUNDLE_KEY = "metadata";
+
     @CalledByNative
     public void populateBaseProperties(ViewStructure node, String className, int childCount) {
         node.setClassName(className);
@@ -70,16 +77,19 @@ public class AssistDataBuilder {
             return;
         }
 
-        htmlBuilder.addAttribute("display", cssDisplay);
+        htmlBuilder.addAttribute(CSS_DISPLAY_BUNDLE_KEY, cssDisplay);
         for (String[] attr : htmlAttributes) {
             htmlBuilder.addAttribute(attr[0], attr[1]);
         }
         node.setHtmlInfo(htmlBuilder.build());
     }
 
-    // Stubbed.
     @CalledByNative
-    public void populateHTMLMetadataProperties(ViewStructure node) {}
+    public void populateHTMLMetadataProperties(ViewStructure node, String[] metadataStrings) {
+        Bundle extras = node.getExtras();
+        extras.putStringArrayList(
+                METADATA_BUNDLE_KEY, new ArrayList<String>(Arrays.asList(metadataStrings)));
+    }
 
     @CalledByNative
     public ViewStructure addChildNode(ViewStructure node, int childIndex) {

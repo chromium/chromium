@@ -1532,17 +1532,12 @@ void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
   ScopedJavaLocalRef<jobject> obj = java_adb_ref_.get(env);
   CHECK(obj);
 
-  // Construct a root manager without a delegate if one does not already exist.
-  // In some situations (e.g. unit tests) the full accessibility engine may
-  // already be running and we do not need to create a new manager.
-  if (!GetRootBrowserAccessibilityManager()) {
-    snapshot_root_manager_ =
-        std::make_unique<BrowserAccessibilityManagerAndroid>(
-            result, GetWeakPtr(), /* delegate= */ nullptr);
-  }
+  // Construct a root manager without a delegate using the snapshot result.
+  snapshot_root_manager_ = std::make_unique<BrowserAccessibilityManagerAndroid>(
+      result, GetWeakPtr(), /* delegate= */ nullptr);
 
   auto* root = static_cast<BrowserAccessibilityAndroid*>(
-      GetRootBrowserAccessibilityManager()->GetBrowserAccessibilityRoot());
+      snapshot_root_manager_->GetBrowserAccessibilityRoot());
   CHECK(root);
 
   // Construct the Java-side tree, use the JNI builder `java_adb_ref_` to
@@ -1552,8 +1547,13 @@ void WebContentsAccessibilityAndroid::ProcessCompletedAccessibilityTreeSnapshot(
                                        /* is_root= */ true);
 
   // Add tree-level (root only) data to Java-side tree (e.g. HTML metadata).
-  Java_AssistDataBuilder_populateHTMLMetadataProperties(env, obj,
-                                                        view_structure_root);
+  const auto& metadata_strings =
+      GetRootBrowserAccessibilityManager()->GetMetadataForTree();
+  if (!metadata_strings.empty()) {
+    Java_AssistDataBuilder_populateHTMLMetadataProperties(
+        env, obj, view_structure_root,
+        base::android::ToJavaArrayOfStrings(env, metadata_strings));
+  }
 
   // We have fulfilled the request for an accessibility tree snapshot, so we can
   // now call the provided Java-side callback to inform original client that the

@@ -127,6 +127,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
+  std::vector<std::string> GetMetadataForTree() const;
+
  private:
   // AXTreeObserver overrides.
   void OnAtomicUpdateFinished(

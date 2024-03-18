@@ -10,17 +10,18 @@ namespace content {
 AccessibilityTreeSnapshotCombiner::AccessibilityTreeSnapshotCombiner(
     base::OnceCallback<void(const ui::AXTreeUpdate&)> callback,
     mojom::SnapshotAccessibilityTreeParamsPtr params)
-    : callback_(std::move(callback)),
-      params_(std::move(params)),
-      weak_ptr_factory_(this) {}
+    : callback_(std::move(callback)), params_(std::move(params)) {}
 
 void AccessibilityTreeSnapshotCombiner::RequestSnapshotOnRenderFrameHost(
     RenderFrameHostImpl* rfhi) {
+  // The callback creates a reference to this, which is needed to keep the
+  // object alive using base::RefCounted. Once all frames have received their
+  // responses from the renderer and run their respective callbacks, all
+  // references to this will be removed and the destructor will be called.
   rfhi->RequestAXTreeSnapshot(
       base::BindOnce(&AccessibilityTreeSnapshotCombiner::
                          ReceiveSnapshotFromRenderFrameHost,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     rfhi->AccessibilityIsRootFrame()),
+                     this, rfhi->AccessibilityIsRootFrame()),
       params_.Clone());
 }
 

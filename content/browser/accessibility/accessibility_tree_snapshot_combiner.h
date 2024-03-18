@@ -42,8 +42,6 @@ class AccessibilityTreeSnapshotCombiner
   ui::AXTreeCombiner combiner_;
   base::OnceCallback<void(const ui::AXTreeUpdate&)> callback_;
   mojom::SnapshotAccessibilityTreeParamsPtr params_;
-
-  base::WeakPtrFactory<AccessibilityTreeSnapshotCombiner> weak_ptr_factory_;
 };
 
 }  // namespace content
