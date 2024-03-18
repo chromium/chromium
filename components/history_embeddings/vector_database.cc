@@ -82,12 +82,18 @@ UrlEmbeddings::UrlEmbeddings(const UrlEmbeddings&) = default;
 UrlEmbeddings& UrlEmbeddings::operator=(UrlEmbeddings&) = default;
 bool UrlEmbeddings::operator==(const UrlEmbeddings&) const = default;
 
-float UrlEmbeddings::BestScoreWith(const Embedding& query) const {
+std::pair<float, size_t> UrlEmbeddings::BestScoreWith(
+    const Embedding& query) const {
+  size_t index = 0;
   float best = std::numeric_limits<float>::min();
-  for (const Embedding& embedding : embeddings) {
-    best = std::max(best, query.ScoreWith(embedding));
+  for (size_t i = 0; i < embeddings.size(); i++) {
+    float score = query.ScoreWith(embeddings[i]);
+    if (score > best) {
+      best = score;
+      index = i;
+    }
   }
-  return best;
+  return {best, index};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -121,9 +127,13 @@ std::vector<ScoredUrl> VectorDatabase::FindNearest(size_t count,
     while (q.size() > count) {
       q.pop();
     }
+    const auto [score, score_index] = item->BestScoreWith(query);
     q.push(ScoredUrl{
         .url_id = item->url_id,
-        .score = item->BestScoreWith(query),
+        .visit_id = item->visit_id,
+        .visit_time = item->visit_time,
+        .score = score,
+        .index = score_index,
     });
   }
 

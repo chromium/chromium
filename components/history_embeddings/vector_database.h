@@ -72,7 +72,8 @@ struct UrlEmbeddings {
   UrlEmbeddings& operator=(UrlEmbeddings&);
   bool operator==(const UrlEmbeddings&) const;
 
-  float BestScoreWith(const Embedding& query) const;
+  // Finds score of embedding nearest to query, and also outputs its index.
+  std::pair<float, size_t> BestScoreWith(const Embedding& query) const;
 
   history::URLID url_id;
   history::VisitID visit_id;
@@ -81,8 +82,21 @@ struct UrlEmbeddings {
 };
 
 struct ScoredUrl {
+  // Basic data about the found URL/visit.
   history::URLID url_id;
+  history::VisitID visit_id;
+  base::Time visit_time;
+
+  // A measure of how closely the query matched the found data.
   float score;
+
+  // Index of the embedding, which also corresponds to the index of the source
+  // passage used to compute the embedding.
+  size_t index;
+
+  // Source passage; may not be populated during search, but kept in this
+  // struct for convenience when passing finished results to service callers.
+  std::string passage;
 };
 
 // This base class decouples storage classes and inverts the dependency so that

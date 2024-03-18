@@ -52,11 +52,18 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
   std::move(callback).Run(std::move(url_passages));
 }
 
+Embedding StubComputeQueryEmbedding(const std::string& query) {
+  // TODO(b/328114635): Synchronous inference to compute vector embedding?
+  Embedding embedding({1.0f, 2.0f, 3.0f, 4.0f});
+  embedding.Normalize();
+  return embedding;
+}
+
 std::vector<Embedding> StubComputePassagesEmbeddings(
     const UrlPassages& url_passages) {
   // TODO(b/328114635): Synchronous inference to compute vector embeddings?
   return std::vector<Embedding>(url_passages.passages.passages_size(),
-                                Embedding({1.0f, 2.0f, 3.0f, 4.0f}));
+                                StubComputeQueryEmbedding(""));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +113,14 @@ void HistoryEmbeddingsService::RetrievePassages(content::RenderFrameHost& host,
           nullptr));
 }
 
+void HistoryEmbeddingsService::Search(std::string query,
+                                      size_t count,
+                                      SearchResultCallback callback) {
+  storage_.AsyncCall(&Storage::Search)
+      .WithArgs(std::move(query), count)
+      .Then(std::move(callback));
+}
+
 void HistoryEmbeddingsService::Shutdown() {
   storage_.Reset();
 }
@@ -129,6 +144,25 @@ void HistoryEmbeddingsService::Storage::ProcessAndStorePassages(
   vector_database.SaveTo(&sql_database);
 
   sql_database.InsertOrReplacePassages(url_passages);
+}
+
+std::vector<ScoredUrl> HistoryEmbeddingsService::Storage::Search(
+    std::string query,
+    size_t count) {
+  std::vector<ScoredUrl> scored_urls =
+      sql_database.FindNearest(count, StubComputeQueryEmbedding(query));
+
+  // Populate source passages.
+  for (ScoredUrl& scored_url : scored_urls) {
+    std::optional<proto::PassagesValue> value =
+        sql_database.GetPassages(scored_url.url_id);
+    if (value &&
+        scored_url.index < static_cast<size_t>(value.value().passages_size())) {
+      scored_url.passage = value.value().passages(scored_url.index);
+    }
+  }
+
+  return scored_urls;
 }
 
 void HistoryEmbeddingsService::OnPassagesRetrieved(PassagesCallback callback,

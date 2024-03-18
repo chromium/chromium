@@ -24,6 +24,7 @@ namespace history_embeddings {
 using PassagesCallback = base::OnceCallback<void(UrlPassages)>;
 using ComputeEmbeddingsCallback =
     base::OnceCallback<std::vector<Embedding>(const UrlPassages&)>;
+using SearchResultCallback = base::OnceCallback<void(std::vector<ScoredUrl>)>;
 
 class HistoryEmbeddingsService : public KeyedService,
                                  public history::HistoryServiceObserver {
@@ -41,6 +42,10 @@ class HistoryEmbeddingsService : public KeyedService,
   // and then given to the callback.
   void RetrievePassages(content::RenderFrameHost& host,
                         PassagesCallback callback);
+
+  // Find top `count` URL visit info entries nearest given `query`. Pass
+  // results to given `callback` when search completes.
+  void Search(std::string query, size_t count, SearchResultCallback callback);
 
   // KeyedService:
   void Shutdown() override;
@@ -62,6 +67,9 @@ class HistoryEmbeddingsService : public KeyedService,
     // embeddings.
     void ProcessAndStorePassages(ComputeEmbeddingsCallback compute_embeddings,
                                  UrlPassages url_passages);
+
+    // Runs search on worker sequence.
+    std::vector<ScoredUrl> Search(std::string query, size_t count);
 
     // A VectorDatabase implementation that holds data in memory.
     VectorDatabaseInMemory vector_database;
