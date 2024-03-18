@@ -32,13 +32,13 @@
 namespace blink {
 
 class CaptureHandleConfig;
+class CropTarget;
 class DisplayMediaStreamOptions;
 class ExceptionState;
 class LocalFrame;
 class Navigator;
 class MediaTrackSupportedConstraints;
-class ScriptPromise;
-class ScriptPromiseResolver;
+class RestrictionTarget;
 class ScriptState;
 class UserMediaStreamConstraints;
 
@@ -90,15 +90,15 @@ class MODULES_EXPORT MediaDevices final
                               const CaptureHandleConfig*,
                               ExceptionState&);
 
-  // Using ProduceSubCaptureTarget(), CropTarget.fromElement() and similar
-  // static functions can communicate with the browser process through
-  // the mojom pipe that `this` owns.
-  // TODO(crbug.com/1332628): Move most of the logic
-  // into sub_capture_target.cc/h, leaving only communication in MediaDevices.
-  ScriptPromise ProduceSubCaptureTarget(ScriptState*,
-                                        Element*,
-                                        ExceptionState&,
-                                        SubCaptureTargetType);
+  // Allow the factory methods for SubCaptureTarget subtypes to communicate
+  // with the browser process through the mojom pipe that `this` owns.
+  // TODO(crbug.com/1332628): Move most of the logic into
+  // sub_capture_target.cc/h, leaving only communication in MediaDevices.
+  ScriptPromiseTyped<CropTarget> ProduceCropTarget(ScriptState*,
+                                                   Element*,
+                                                   ExceptionState&);
+  ScriptPromiseTyped<RestrictionTarget>
+  ProduceRestrictionTarget(ScriptState*, Element*, ExceptionState&);
 
   // EventTarget overrides.
   const AtomicString& InterfaceName() const override;
@@ -160,13 +160,6 @@ class MODULES_EXPORT MediaDevices final
   mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
 
 #if !BUILDFLAG(IS_ANDROID)
-  using ElementToResolverMap =
-      HeapHashMap<Member<Element>, Member<ScriptPromiseResolver>>;
-
-  // Each SubCaptureTarget sub-type has a map that associates Elements
-  // with Promises for the asynchronous production of SubCaptureTargets.
-  ElementToResolverMap& GetResolverMap(SubCaptureTargetType type);
-
   // Manage the window of opportunity that occurs immediately after
   // display-capture starts. The application can call
   // CaptureController.setFocusBehavior() on the microtask where the
@@ -176,12 +169,16 @@ class MODULES_EXPORT MediaDevices final
                                                        CaptureController*);
   void CloseFocusWindowOfOpportunity(const String&, CaptureController*);
 
-  // Callback for receiving a message from the browser process with
+  bool MayProduceSubCaptureTarget(ScriptState* script_state,
+                                  Element* element,
+                                  ExceptionState& exception_state,
+                                  SubCaptureTarget::Type type);
+
+  // Callbacks for receiving a message from the browser process with
   // the base::Token which is backing a SubCaptureTarget (either CropTarget
   // or RestrictionTarget).
-  void ResolveSubCaptureTargetPromise(Element* element,
-                                      SubCaptureTargetType type,
-                                      const WTF::String& id);
+  void ResolveCropTargetPromise(Element* element, const WTF::String& id);
+  void ResolveRestrictionTargetPromise(Element* element, const WTF::String& id);
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -198,6 +195,13 @@ class MODULES_EXPORT MediaDevices final
       enumerate_device_requests_;
 
 #if !BUILDFLAG(IS_ANDROID)
+  using ElementToCropTargetResolverMap =
+      HeapHashMap<Member<Element>,
+                  Member<ScriptPromiseResolverTyped<CropTarget>>>;
+  using ElementToRestrictionTargetResolverMap =
+      HeapHashMap<Member<Element>,
+                  Member<ScriptPromiseResolverTyped<RestrictionTarget>>>;
+
   // 1. When CropTarget.fromElement() is first called for an Element,
   //    it has no CropTarget associated with it, and similarly for
   //    RestrictionTarget.fromElement(). For either of these, we produce
@@ -217,8 +221,8 @@ class MODULES_EXPORT MediaDevices final
   // 4. Later calls to X.fromElement() for this given Element discover that
   //    a token has already been assigned. They immediately return a resolved
   //    Promise with the relevant token.
-  ElementToResolverMap crop_target_resolvers_;
-  ElementToResolverMap restriction_target_resolvers_;
+  ElementToCropTargetResolverMap crop_target_resolvers_;
+  ElementToRestrictionTargetResolverMap restriction_target_resolvers_;
 #endif
 
   bool starting_observation_ = false;
