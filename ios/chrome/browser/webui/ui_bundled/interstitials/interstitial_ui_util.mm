@@ -144,8 +144,9 @@ CreateCaptivePortalBlockingPage(web::WebState* web_state) {
 
 std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
 CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
-  safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+  using enum safe_browsing::SBThreatType;
+
+  safe_browsing::SBThreatType threat_type = SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
   GURL main_frame_url(request_url);
 
@@ -164,16 +165,16 @@ CreateSafeBrowsingBlockingPage(web::WebState* web_state, const GURL& url) {
   if (net::GetValueForKeyInQuery(
           url, kChromeInterstitialSafeBrowsingTypeQueryKey, &type_param)) {
     if (type_param == kChromeInterstitialSafeBrowsingTypeMalwareValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type = SB_THREAT_TYPE_URL_MALWARE;
     } else if (type_param == kChromeInterstitialSafeBrowsingTypePhishingValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+      threat_type = SB_THREAT_TYPE_URL_PHISHING;
     } else if (type_param == kChromeInterstitialSafeBrowsingTypeUnwantedValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+      threat_type = SB_THREAT_TYPE_URL_UNWANTED;
     } else if (type_param ==
                kChromeInterstitialSafeBrowsingTypeClientsidePhishingValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+      threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     } else if (type_param == kChromeInterstitialSafeBrowsingTypeBillingValue) {
-      threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
+      threat_type = SB_THREAT_TYPE_BILLING;
     }
   }
 
