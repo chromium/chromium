@@ -39,9 +39,9 @@ declare -A DISPLAY_RES=(
 [fhd]=1920x1080*1.25
 [wuxga]=1920x1200*1.6
 [qhd]=2560x1440*2
-[qhdp]=3200x1800*2.25
-[f4k]=3840x2160*2.66
-[slate]=3000x2000*2.25
+[qhdp]=3200x1800*2
+[f4k]=3840x2160*2.6666666
+[slate]=3000x2000*2.25225234
 )
 
 # Custom display configs is possible
@@ -58,7 +58,7 @@ declare -A DISPLAY_RES=(
 DISPLAY_CONFIG=${DISPLAY_RES[fhd]}
 
 LACROS_FEATURES=LacrosOnly
-FEATURES=OverviewButton
+FEATURES=
 
 LACROS_ENABLED=false
 
@@ -160,7 +160,7 @@ function start_lacros_chrome {
     -s ${LACROS_SOCK_FILE} \
     ${LACROS_BUILD_DIR}/chrome \
     --user-data-dir=${lacros_user_data_dir} \
-    --enable-ui-devtools --gpu-sandbox-start-early
+    --enable-ui-devtools --gpu-sandbox-start-early --overview-button-for-tests
 }
 
 # Start wayland client binary on ash-chrome
