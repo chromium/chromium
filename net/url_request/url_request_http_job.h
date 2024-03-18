@@ -125,6 +125,11 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
       CookieAccessResultList& excluded_cookies) const;
   void SaveCookiesAndNotifyHeadersComplete(int result);
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // Process the DBSC header, if one exists.
+  void ProcessDeviceBoundSessionsHeader();
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
   // Processes the Strict-Transport-Security header, if one exists.
   void ProcessStrictTransportSecurityHeader();
 

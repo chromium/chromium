@@ -534,4 +534,8 @@ BASE_FEATURE(kReduceIPAddressChangeNotification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
+BASE_FEATURE(kDeviceBoundSessions,
+             "DeviceBoundSessions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

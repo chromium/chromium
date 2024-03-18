@@ -61,6 +61,10 @@ class PersistentReportingAndNelStore;
 class ReportingService;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+class DeviceBoundSessionService;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 // Class that provides application-specific context for URLRequest
 // instances. May only be created by URLRequestContextBuilder.
 // Owns most of its member variables, except a few that may be shared
@@ -207,6 +211,13 @@ class NET_EXPORT URLRequestContext final {
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // May return nullptr if the feature is disabled.
+  DeviceBoundSessionService* device_bound_session_service() const {
+    return device_bound_session_service_.get();
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
   bool enable_brotli() const { return enable_brotli_; }
 
   bool enable_zstd() const { return enable_zstd_; }
@@ -301,6 +312,10 @@ class NET_EXPORT URLRequestContext final {
       std::unique_ptr<TransportSecurityPersister> transport_security_persister);
 
   raw_ptr<NetLog> net_log_ = nullptr;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void set_device_bound_session_service(
+      std::unique_ptr<DeviceBoundSessionService> device_bound_session_service);
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<CertVerifier> cert_verifier_;
@@ -347,6 +362,10 @@ class NET_EXPORT URLRequestContext final {
 
   std::unique_ptr<std::set<raw_ptr<const URLRequest, SetExperimental>>>
       url_requests_;
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  std::unique_ptr<DeviceBoundSessionService> device_bound_session_service_;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // Enables Brotli Content-Encoding support.
   bool enable_brotli_ = false;

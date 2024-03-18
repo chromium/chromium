@@ -521,6 +521,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTruncateBodyToContentLength);
 NET_EXPORT BASE_DECLARE_FEATURE(kReduceIPAddressChangeNotification);
 #endif  // BUILDFLAG(IS_MAC)
 
+// This feature will enable the Device Bound Session Credentials protocol to let
+// the server assert sessions (and cookies) are bound to a specific device.
+NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessions);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

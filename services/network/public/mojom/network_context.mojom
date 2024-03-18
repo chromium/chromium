@@ -598,6 +598,9 @@ struct NetworkContextParams {
   // `cookie_encryption_provider` is called to obtain a valid set of keys for
   // cookie encryption.
   pending_remote<CookieEncryptionProvider>? cookie_encryption_provider;
+
+  // Enables Device Bound Session Credential for this network context.
+  bool device_bound_sessions_enabled = false;
 };
 
 struct NetworkConditions {

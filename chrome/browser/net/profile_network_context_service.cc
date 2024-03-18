@@ -1236,6 +1236,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->enable_ip_protection =
         ipp_config_provider->IsIpProtectionEnabled();
   }
+
+  network_context_params->device_bound_sessions_enabled =
+      base::FeatureList::IsEnabled(net::features::kDeviceBoundSessions);
 }
 
 base::FilePath ProfileNetworkContextService::GetPartitionPath(

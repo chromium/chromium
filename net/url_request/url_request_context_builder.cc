@@ -63,6 +63,10 @@
 #include "base/android/build_info.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/device_bound_session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 namespace net {
 
 URLRequestContextBuilder::HttpCacheParams::HttpCacheParams() = default;
@@ -242,6 +246,13 @@ void URLRequestContextBuilder::SetCreateHttpTransactionFactoryCallback(
   create_http_network_transaction_factory_ =
       std::move(create_http_network_transaction_factory);
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+void URLRequestContextBuilder::set_device_bound_session_service(
+    std::unique_ptr<DeviceBoundSessionService> device_bound_session_service) {
+  device_bound_session_service_ = std::move(device_bound_session_service);
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 void URLRequestContextBuilder::BindToNetwork(
     handles::NetworkHandle network,
@@ -491,6 +502,11 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
         context->reporting_service());
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  context->set_device_bound_session_service(
+      std::move(device_bound_session_service_));
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   HttpNetworkSessionContext network_session_context;
   // Unlike the other fields of HttpNetworkSession::Context,

@@ -1106,6 +1106,8 @@ component("net") {
     sources += [
       "device_bound_sessions/bound_session_registration_fetcher_param.cc",
       "device_bound_sessions/bound_session_registration_fetcher_param.h",
+      "device_bound_sessions/device_bound_session_service.cc",
+      "device_bound_sessions/device_bound_session_service.h",
     ]
   }
 
@@ -3205,7 +3207,11 @@ test("net_unittests") {
   }
 
   if (enable_device_bound_sessions) {
-    sources += [ "device_bound_sessions/bound_session_registration_fetcher_param_unittest.cc" ]
+    sources += [
+      "device_bound_sessions/bound_session_registration_fetcher_param_unittest.cc",
+      "device_bound_sessions/test_util.cc",
+      "device_bound_sessions/test_util.h",
+    ]
   }
 }
 

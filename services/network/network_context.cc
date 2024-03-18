@@ -189,6 +189,10 @@
 #include "base/android/application_status_listener.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/device_bound_session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 namespace network {
 
 namespace {
@@ -2680,6 +2684,13 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (params_->cookie_deprecation_label.has_value()) {
     builder.set_cookie_deprecation_label(*params_->cookie_deprecation_label);
   }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  if (params_->device_bound_sessions_enabled) {
+    builder.set_device_bound_session_service(
+        net::DeviceBoundSessionService::Create());
+  }
+#endif
 
   if (on_url_request_context_builder_configured) {
     std::move(on_url_request_context_builder_configured).Run(&builder);

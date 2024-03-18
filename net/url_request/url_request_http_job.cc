@@ -103,6 +103,11 @@
 #include "net/android/network_library.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/bound_session_registration_fetcher_param.h"
+#include "net/device_bound_sessions/device_bound_session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -523,6 +528,9 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
   }
 
   ProcessStrictTransportSecurityHeader();
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  ProcessDeviceBoundSessionsHeader();
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   // Clear |set_cookie_access_result_list_| after any processing in case
   // SaveCookiesAndNotifyHeadersComplete is called again.
@@ -1054,6 +1062,19 @@ void URLRequestHttpJob::OnSetCookieResult(const CookieOptions& options,
   if (num_cookie_lines_left_ == 0)
     NotifyHeadersComplete();
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+void URLRequestHttpJob::ProcessDeviceBoundSessionsHeader() {
+  std::vector<BoundSessionRegistrationFetcherParam> params =
+      BoundSessionRegistrationFetcherParam::CreateIfValid(request_->url(),
+                                                          GetResponseHeaders());
+  if (auto* service = request_->context()->device_bound_session_service()) {
+    for (const auto& param : params) {
+      service->RegisterBoundSession(param);
+    }
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
   DCHECK(response_info_);

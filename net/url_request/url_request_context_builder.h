@@ -65,6 +65,10 @@ struct ReportingPolicy;
 class PersistentReportingAndNelStore;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+class DeviceBoundSessionService;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 // A URLRequestContextBuilder creates a single URLRequestContext. It provides
 // methods to manage various URLRequestContext components which should be called
 // before creating the Context. Once configuration is complete, calling Build()
@@ -345,6 +349,11 @@ class NET_EXPORT URLRequestContextBuilder {
     cookie_deprecation_label_ = label;
   }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void set_device_bound_session_service(
+      std::unique_ptr<DeviceBoundSessionService> device_bound_session_service);
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
   // Binds the context to `network`. All requests scheduled through the context
   // built by this builder will be sent using `network`. Requests will fail if
   // `network` disconnects. `options` allows to specify the ManagerOptions that
@@ -451,6 +460,9 @@ class NET_EXPORT URLRequestContextBuilder {
   std::unique_ptr<HttpServerProperties> http_server_properties_;
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  std::unique_ptr<DeviceBoundSessionService> device_bound_session_service_;
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   raw_ptr<ClientSocketFactory> client_socket_factory_raw_ = nullptr;
 };

@@ -47,6 +47,10 @@
 #include "net/reporting/reporting_service.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/device_bound_session_service.h"
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 namespace net {
 
 URLRequestContext::URLRequestContext(
@@ -252,5 +256,12 @@ void URLRequestContext::set_transport_security_persister(
     std::unique_ptr<TransportSecurityPersister> transport_security_persister) {
   transport_security_persister_ = std::move(transport_security_persister);
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+void URLRequestContext::set_device_bound_session_service(
+    std::unique_ptr<DeviceBoundSessionService> device_bound_session_service) {
+  device_bound_session_service_ = std::move(device_bound_session_service);
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 }  // namespace net
