@@ -23,6 +23,15 @@ source_set("file_receiver") {
   ]
 }
 
+source_set("pending_file_transfer_queue") {
+  sources = [
+    "pending_file_transfer_queue.cc",
+    "pending_file_transfer_queue.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -46,11 +55,15 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "file_receiver_unittest.cc" ]
+  sources = [
+    "file_receiver_unittest.cc",
+    "pending_file_transfer_queue_unittest.cc",
+  ]
 
   deps = [
     ":constants",
     ":file_receiver",
+    ":pending_file_transfer_queue",
     ":test_support",
     "//base",
     "//base/test:test_support",
