@@ -101,9 +101,11 @@ StreamTexture::StreamTexture(
     mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver,
     scoped_refptr<SharedContextState> context_state)
     : RefCountedLockHelperDrDc(CreateDrDcLockIfNeeded()),
-      texture_owner_(TextureOwner::Create(GetTextureOwnerMode(),
-                                          context_state,
-                                          GetDrDcLock())),
+      texture_owner_(
+          TextureOwner::Create(GetTextureOwnerMode(),
+                               context_state,
+                               GetDrDcLock(),
+                               TextureOwnerCodecType::kStreamTexture)),
       has_pending_frame_(false),
       channel_(channel),
       route_id_(route_id),

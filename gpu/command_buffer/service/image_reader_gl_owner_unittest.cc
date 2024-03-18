@@ -74,7 +74,8 @@ class ImageReaderGLOwnerTest : public testing::Test {
         std::move(texture), SecureMode(), std::move(context_state),
         features::NeedThreadSafeAndroidMedia()
             ? base::MakeRefCounted<gpu::RefCountedLockForTest>()
-            : nullptr);
+            : nullptr,
+        TextureOwnerCodecType::kMediaCodec);
   }
 
   virtual TextureOwner::Mode SecureMode() {

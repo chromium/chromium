@@ -328,6 +328,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.AImageReaderGLOwner.CodecType"
+    enum="TextureOwnerCodecType" expires_after="2024-08-21">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Logs whether we use MediaCodec or MediaPlayer (aka StreamTexture path). This
+    is recorded when AImageReader acquireNextImage or acquireLatestImage is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="Media.AImageReaderGLOwner.HasFence" enum="Boolean"
     expires_after="2024-09-01">
   <owner>vasilyt@chromium.org</owner>

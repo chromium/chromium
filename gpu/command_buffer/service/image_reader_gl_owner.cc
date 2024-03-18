@@ -131,13 +131,15 @@ ImageReaderGLOwner::ImageReaderGLOwner(
     std::unique_ptr<AbstractTextureAndroid> texture,
     Mode mode,
     scoped_refptr<SharedContextState> context_state,
-    scoped_refptr<RefCountedLock> drdc_lock)
+    scoped_refptr<RefCountedLock> drdc_lock,
+    TextureOwnerCodecType type_for_metrics)
     : TextureOwner(false /* binds_texture_on_image_update */,
                    std::move(texture),
                    std::move(context_state)),
       RefCountedLockHelperDrDc(std::move(drdc_lock)),
       context_(gl::GLContext::GetCurrent()),
-      surface_(gl::GLSurface::GetCurrent()) {
+      surface_(gl::GLSurface::GetCurrent()),
+      type_for_metrics_(type_for_metrics) {
   DCHECK(context_);
   DCHECK(surface_);
 
@@ -299,6 +301,9 @@ void ImageReaderGLOwner::UpdateTexImage() {
   }
   base::UmaHistogramSparse("Media.AImageReaderGLOwner.AcquireImageResult",
                            return_code);
+
+  UMA_HISTOGRAM_ENUMERATION("Media.AImageReaderGLOwner.CodecType",
+                            type_for_metrics_);
 
   // TODO(http://crbug.com/846050).
   // Need to add some better error handling if below error occurs. Currently we

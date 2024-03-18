@@ -94,7 +94,8 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   ImageReaderGLOwner(std::unique_ptr<AbstractTextureAndroid> texture,
                      Mode secure_mode,
                      scoped_refptr<SharedContextState> context_state,
-                     scoped_refptr<RefCountedLock> drdc_lock);
+                     scoped_refptr<RefCountedLock> drdc_lock,
+                     TextureOwnerCodecType type_for_metrics);
   ~ImageReaderGLOwner() override;
 
   // Registers and releases a ref on the image. Once the ref-count for an image
@@ -159,6 +160,8 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
 
   // This class is created on gpu main thread.
   THREAD_CHECKER(gpu_main_thread_checker_);
+
+  const TextureOwnerCodecType type_for_metrics_;
 };
 
 }  // namespace gpu

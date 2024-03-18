@@ -1847,6 +1847,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Allowed"/>
 </enum>
 
+<enum name="TextureOwnerCodecType">
+  <int value="0" label="kMediaCodec"/>
+  <int value="1" label="kStreamTexture"/>
+</enum>
+
 <enum name="URLSchemeForHistogram">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kMissing"/>

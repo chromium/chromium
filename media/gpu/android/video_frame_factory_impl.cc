@@ -63,9 +63,9 @@ static void AllocateTextureOwnerOnGpuThread(
     return;
   }
 
-  std::move(init_cb).Run(
-      gpu::TextureOwner::Create(GetTextureOwnerMode(overlay_mode),
-                                shared_context_state, std::move(drdc_lock)));
+  std::move(init_cb).Run(gpu::TextureOwner::Create(
+      GetTextureOwnerMode(overlay_mode), shared_context_state,
+      std::move(drdc_lock), gpu::TextureOwnerCodecType::kMediaCodec));
 }
 
 }  // namespace
