@@ -264,7 +264,10 @@ public class EdgeToEdgeControllerImpl implements EdgeToEdgeController {
                 mEdgeToEdgeOSWrapper.setOnApplyWindowInsetsListener(
                         rootView, mWindowInsetsConsumer);
             }
-        } else {
+        } else if (mSystemInsets != null) {
+            // It's possible for toEdge to change more than once prior to the first time
+            // #handleWindowInsets is called. #handleWindowInsets will call #adjustEdges using
+            // the current mIsActivityToEdge once insets are available.
             adjustEdges(toEdge, viewId, webContents);
         }
     }

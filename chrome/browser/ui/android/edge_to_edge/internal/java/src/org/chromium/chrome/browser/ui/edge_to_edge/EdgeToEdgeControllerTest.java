@@ -89,8 +89,12 @@ public class EdgeToEdgeControllerTest {
         return new Object[] {false, true};
     }
 
+    private static final int TOP_INSET = 113;
+    private static final int BOTTOM_INSET = 59;
+
     @SuppressLint("NewApi")
-    private static final Insets SYSTEM_INSETS = Insets.of(0, 113, 0, 59); // Typical.
+    private static final Insets SYSTEM_INSETS =
+            Insets.of(0, TOP_INSET, 0, BOTTOM_INSET); // Typical.
 
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
@@ -465,6 +469,51 @@ public class EdgeToEdgeControllerTest {
         assertFalse(
                 EdgeToEdgeControllerFactory.isSupportedConfiguration(
                         Robolectric.buildActivity(AppCompatActivity.class).setup().get()));
+    }
+
+    // Regression test for https://crbug.com/329875254.
+    @Test
+    public void testViewportFitAfterListenerSet_ToNormal() {
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        assertFalse("Shouldn't be toEdge.", mEdgeToEdgeControllerImpl.isToEdge());
+
+        // Simulate a viewport fit change to kick off WindowInsetConsumer being hooked up.
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        // Simulate another viewport fit change prior to #handleWindowInsets being called.
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.CONTAIN);
+
+        // Simulate insets being available.
+        assertNotNull(mWindowInsetsListenerCaptor.getValue());
+        mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
+        assertFalse(
+                "Shouldn't be toEdge after toggling viewport-fit.",
+                mEdgeToEdgeControllerImpl.isToEdge());
+        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(BOTTOM_INSET));
+    }
+
+    @Test
+    public void testViewportFitAfterListenerSet_ToEdge() {
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        assertFalse("Shouldn't be toEdge.", mEdgeToEdgeControllerImpl.isToEdge());
+
+        // Simulate a viewport fit change to kick off WindowInsetConsumer being hooked up.
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        // Simulate another viewport fit change prior to #handleWindowInsets being called.
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.CONTAIN);
+        // Go back to edge.
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+
+        // Simulate insets being available.
+        assertNotNull(mWindowInsetsListenerCaptor.getValue());
+        mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
+        assertTrue(
+                "Should be toEdge after toggling viewport-fit.",
+                mEdgeToEdgeControllerImpl.isToEdge());
+        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
     }
 
     void assertToEdgeExpectations() {
