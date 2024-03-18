@@ -118,6 +118,8 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
                              "ContentBrowserTest.MANUAL_RendererCrash");
   new_test.AppendSwitch(switches::kRunManualTestsFlag);
   new_test.AppendSwitch(switches::kSingleProcessTests);
+  // Test needs to capture stderr so force logging to go there.
+  new_test.AppendSwitchASCII(switches::kEnableLogging, "stderr");
 
 #if defined(THREAD_SANITIZER)
   // TSan appears to not be able to report intentional crashes from sandboxed
