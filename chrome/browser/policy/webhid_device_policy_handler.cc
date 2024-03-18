@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -30,7 +31,7 @@ constexpr char kUrlsKey[] = "urls";
 
 WebHidDevicePolicyHandler::WebHidDevicePolicyHandler(
     const char* policy_key,
-    base::StringPiece pref_name,
+    std::string_view pref_name,
     const Schema& chrome_schema)
     : SchemaValidatingPolicyHandler(
           policy_key,

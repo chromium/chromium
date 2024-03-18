@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -58,7 +60,7 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() const {
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
 
-  const std::optional<base::StringPiece> hwclass =
+  const std::optional<std::string_view> hwclass =
       provider->GetMachineStatistic(ash::system::kHardwareClassKey);
   if (!hwclass) {
     LOG(ERROR) << "Failed to get machine information";

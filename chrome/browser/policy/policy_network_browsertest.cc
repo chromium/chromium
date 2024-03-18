@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -70,7 +71,7 @@ class SSLPolicyTest : public PolicyTest {
     return g_browser_process->local_state()->GetBoolean(pref_name);
   }
 
-  LoadResult LoadPage(base::StringPiece path) {
+  LoadResult LoadPage(std::string_view path) {
     return LoadPage(https_server_.GetURL(path));
   }
 
@@ -149,12 +150,12 @@ IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, PostQuantumEnabledPolicy) {
 class ECHPolicyTest : public SSLPolicyTest {
  public:
   // a.test is covered by `CERT_TEST_NAMES`.
-  static constexpr base::StringPiece kHostname = "a.test";
-  static constexpr base::StringPiece kPublicName = "public-name.test";
-  static constexpr base::StringPiece kDohServerHostname = "doh.test";
+  static constexpr std::string_view kHostname = "a.test";
+  static constexpr std::string_view kPublicName = "public-name.test";
+  static constexpr std::string_view kDohServerHostname = "doh.test";
 
-  static constexpr base::StringPiece kECHSuccessTitle = "Negotiated ECH";
-  static constexpr base::StringPiece kECHFailureTitle = "Did not negotiate ECH";
+  static constexpr std::string_view kECHSuccessTitle = "Negotiated ECH";
+  static constexpr std::string_view kECHFailureTitle = "Did not negotiate ECH";
 
   ECHPolicyTest() : ech_server_{net::EmbeddedTestServer::TYPE_HTTPS} {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -218,7 +219,7 @@ class ECHPolicyTest : public SSLPolicyTest {
     return policies;
   }
 
-  GURL GetURL(base::StringPiece path) {
+  GURL GetURL(std::string_view path) {
     return ech_server_.GetURL(kHostname, path);
   }
 

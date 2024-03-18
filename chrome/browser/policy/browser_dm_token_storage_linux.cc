@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/browser_dm_token_storage_linux.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/files/file_util.h"
@@ -15,7 +16,6 @@
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -94,7 +94,7 @@ std::string BrowserDMTokenStorageLinux::InitClientId() {
   const int machine_id_size = 32;
   std::string machine_id;
   machine_id = ReadMachineIdFile();
-  base::StringPiece machine_id_trimmed =
+  std::string_view machine_id_trimmed =
       base::TrimWhitespaceASCII(machine_id, base::TRIM_TRAILING);
   if (machine_id_trimmed.size() != machine_id_size) {
     SYSLOG(ERROR) << "Error: /etc/machine-id contains "
