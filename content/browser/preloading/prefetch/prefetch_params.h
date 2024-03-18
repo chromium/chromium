@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/time/time.h"
+#include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
@@ -106,13 +107,12 @@ int PrefetchCanaryCheckRetries();
 
 // Whether or not |PrefetchService| should block until the head of a prefetch
 // request is received when considering to serve a prefetch for a navigation.
-bool PrefetchShouldBlockUntilHead(
-    blink::mojom::SpeculationEagerness prefetch_eagerness);
+bool PrefetchShouldBlockUntilHead(const PrefetchType& prefetch_type);
 
 // The maximum amount of time to block until the head of a prefetch is received.
 // If the value is zero or less, then a navigation can be blocked indefinitely.
 CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
-    blink::mojom::SpeculationEagerness prefetch_eagerness);
+    const PrefetchType& prefetch_type);
 
 // Gets the histogram suffix to use for the given eagerness parameter.
 CONTENT_EXPORT std::string GetPrefetchEagernessHistogramSuffix(

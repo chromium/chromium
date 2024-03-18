@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/common/content_features.h"
@@ -209,43 +210,54 @@ int PrefetchCanaryCheckRetries() {
       features::kPrefetchUseContentRefactor, "canary_check_retries", 1);
 }
 
-bool PrefetchShouldBlockUntilHead(
-    blink::mojom::SpeculationEagerness prefetch_eagerness) {
-  switch (prefetch_eagerness) {
-    case blink::mojom::SpeculationEagerness::kEager:
-      return base::GetFieldTrialParamByFeatureAsBool(
-          features::kPrefetchUseContentRefactor,
-          "block_until_head_eager_prefetch", true);
-    case blink::mojom::SpeculationEagerness::kModerate:
-      return base::GetFieldTrialParamByFeatureAsBool(
-          features::kPrefetchUseContentRefactor,
-          "block_until_head_moderate_prefetch", true);
-    case blink::mojom::SpeculationEagerness::kConservative:
-      return base::GetFieldTrialParamByFeatureAsBool(
-          features::kPrefetchUseContentRefactor,
-          "block_until_head_conservative_prefetch", true);
+bool PrefetchShouldBlockUntilHead(const PrefetchType& prefetch_type) {
+  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
+    switch (prefetch_type.GetEagerness()) {
+      case blink::mojom::SpeculationEagerness::kEager:
+        return base::GetFieldTrialParamByFeatureAsBool(
+            features::kPrefetchUseContentRefactor,
+            "block_until_head_eager_prefetch", true);
+      case blink::mojom::SpeculationEagerness::kModerate:
+        return base::GetFieldTrialParamByFeatureAsBool(
+            features::kPrefetchUseContentRefactor,
+            "block_until_head_moderate_prefetch", true);
+      case blink::mojom::SpeculationEagerness::kConservative:
+        return base::GetFieldTrialParamByFeatureAsBool(
+            features::kPrefetchUseContentRefactor,
+            "block_until_head_conservative_prefetch", true);
+    }
+  } else {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        features::kPrefetchUseContentRefactor,
+        "block_until_head_embedder_prefetch", true);
   }
 }
 
 base::TimeDelta PrefetchBlockUntilHeadTimeout(
-    blink::mojom::SpeculationEagerness prefetch_eagerness) {
+    const PrefetchType& prefetch_type) {
   int timeout_in_milliseconds = 0;
-  switch (prefetch_eagerness) {
-    case blink::mojom::SpeculationEagerness::kEager:
-      timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
-          features::kPrefetchUseContentRefactor,
-          "block_until_head_timeout_eager_prefetch", 1000);
-      break;
-    case blink::mojom::SpeculationEagerness::kModerate:
-      timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
-          features::kPrefetchUseContentRefactor,
-          "block_until_head_timeout_moderate_prefetch", 0);
-      break;
-    case blink::mojom::SpeculationEagerness::kConservative:
-      timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
-          features::kPrefetchUseContentRefactor,
-          "block_until_head_timeout_conservative_prefetch", 0);
-      break;
+  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
+    switch (prefetch_type.GetEagerness()) {
+      case blink::mojom::SpeculationEagerness::kEager:
+        timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+            features::kPrefetchUseContentRefactor,
+            "block_until_head_timeout_eager_prefetch", 1000);
+        break;
+      case blink::mojom::SpeculationEagerness::kModerate:
+        timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+            features::kPrefetchUseContentRefactor,
+            "block_until_head_timeout_moderate_prefetch", 0);
+        break;
+      case blink::mojom::SpeculationEagerness::kConservative:
+        timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+            features::kPrefetchUseContentRefactor,
+            "block_until_head_timeout_conservative_prefetch", 0);
+        break;
+    }
+  } else {
+    timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
+        features::kPrefetchUseContentRefactor,
+        "block_until_head_timeout_embedder_prefetch", 1000);
   }
   return base::Milliseconds(timeout_in_milliseconds);
 }

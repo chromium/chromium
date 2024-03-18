@@ -1533,8 +1533,8 @@ PrefetchService::HandlePrefetchContainerToServe(
           weak_method_factory_.GetWeakPtr(), key,
           prefetch_match_resolver.GetWeakPtr(), prefetch_container.GetURL(),
           prefetch_container.GetWeakPtr()));
-      base::TimeDelta block_until_head_timeout = PrefetchBlockUntilHeadTimeout(
-          prefetch_container.GetPrefetchType().GetEagerness());
+      base::TimeDelta block_until_head_timeout =
+          PrefetchBlockUntilHeadTimeout(prefetch_container.GetPrefetchType());
       if (block_until_head_timeout.is_positive()) {
         std::unique_ptr<base::OneShotTimer> block_until_head_timer =
             std::make_unique<base::OneShotTimer>();

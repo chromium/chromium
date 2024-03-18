@@ -300,25 +300,37 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
 }
 
 void RecordWasBlockedUntilHeadWhenServingHistogram(
-    const blink::mojom::SpeculationEagerness& eagerness,
+    const PrefetchType& prefetch_type,
     bool blocked_until_head) {
-  base::UmaHistogramBoolean(
-      base::StringPrintf(
-          "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
-          GetPrefetchEagernessHistogramSuffix(eagerness).c_str()),
-      blocked_until_head);
+  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
+    base::UmaHistogramBoolean(
+        base::StringPrintf(
+            "PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.%s",
+            GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
+                .c_str()),
+        blocked_until_head);
+  } else {
+    // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
+    // embedder triggers.
+  }
 }
 
 void RecordBlockUntilHeadDurationHistogram(
-    const blink::mojom::SpeculationEagerness& eagerness,
+    const PrefetchType& prefetch_type,
     const base::TimeDelta& block_until_head_duration,
     bool served) {
-  base::UmaHistogramTimes(
-      base::StringPrintf(
-          "PrefetchProxy.AfterClick.BlockUntilHeadDuration.%s.%s",
-          served ? "Served" : "NotServed",
-          GetPrefetchEagernessHistogramSuffix(eagerness).c_str()),
-      block_until_head_duration);
+  if (IsSpeculationRuleType(prefetch_type.trigger_type())) {
+    base::UmaHistogramTimes(
+        base::StringPrintf(
+            "PrefetchProxy.AfterClick.BlockUntilHeadDuration.%s.%s",
+            served ? "Served" : "NotServed",
+            GetPrefetchEagernessHistogramSuffix(prefetch_type.GetEagerness())
+                .c_str()),
+        block_until_head_duration);
+  } else {
+    // TODO(crbug.com/40946257, crbug.com/40898833): Extend the metrics for
+    // embedder triggers.
+  }
 }
 
 ukm::SourceId GetUkmSourceId(
@@ -1093,7 +1105,7 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
   // streaming URL loader and head/failure/redirect hasn't been received yet.
   if (streaming_loader_ && !redirect_chain_.empty() &&
       redirect_chain_.back()->response_reader_->IsWaitingForResponse() &&
-      PrefetchShouldBlockUntilHead(prefetch_type_.GetEagerness())) {
+      PrefetchShouldBlockUntilHead(prefetch_type_)) {
     return ServableState::kShouldBlockUntilHeadReceived;
   }
 
@@ -1204,7 +1216,7 @@ void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
   // will already be set. Only record in the histogram when the
   // `blocked_until_head_start_time_` is not set yet.
   if (!blocked_until_head_start_time_) {
-    RecordWasBlockedUntilHeadWhenServingHistogram(prefetch_type_.GetEagerness(),
+    RecordWasBlockedUntilHeadWhenServingHistogram(prefetch_type_,
                                                   blocked_until_head);
   }
   if (blocked_until_head) {
@@ -1221,7 +1233,7 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
 
   if (blocked_until_head_start_time_.has_value()) {
     RecordBlockUntilHeadDurationHistogram(
-        prefetch_type_.GetEagerness(),
+        prefetch_type_,
         base::TimeTicks::Now() - blocked_until_head_start_time_.value(),
         served);
   }
