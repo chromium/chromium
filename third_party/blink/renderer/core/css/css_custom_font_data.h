@@ -60,7 +60,6 @@ class CSSCustomFontData final : public CustomFontData {
 
   bool IsLoading() const override { return is_loading_; }
   bool IsLoadingFallback() const override { return true; }
-  void ClearFontFaceSource() override { font_face_source_ = nullptr; }
 
   bool IsPendingDataUrl() const override {
     return font_face_source_ && font_face_source_->IsPendingDataUrl();

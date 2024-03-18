@@ -44,7 +44,6 @@ class PLATFORM_EXPORT CustomFontData : public GarbageCollected<CustomFontData> {
   virtual bool IsLoading() const { return false; }
   virtual bool IsLoadingFallback() const { return false; }
   virtual bool ShouldSkipDrawing() const { return false; }
-  virtual void ClearFontFaceSource() {}
   virtual bool IsPendingDataUrl() const { return false; }
 };
 
