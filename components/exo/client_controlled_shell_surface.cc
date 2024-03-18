@@ -345,6 +345,12 @@ class ClientControlledShellSurface::ScopedDeferWindowStateUpdate {
       : shell_surface_(shell_surface) {
     CHECK(!shell_surface_->scoped_defer_window_state_update_);
     shell_surface_->scoped_defer_window_state_update_ = base::WrapUnique(this);
+    // Do not activate if the widget is initially minimized.
+    if (shell_surface->GetWidget()->IsMinimized()) {
+      can_activate_ =
+          shell_surface->GetWidget()->widget_delegate()->CanActivate();
+      shell_surface->GetWidget()->widget_delegate()->SetCanActivate(false);
+    }
   }
 
   ScopedDeferWindowStateUpdate(const ScopedDeferWindowStateUpdate&) = delete;
@@ -354,6 +360,10 @@ class ClientControlledShellSurface::ScopedDeferWindowStateUpdate {
   ~ScopedDeferWindowStateUpdate() {
     auto self = shell_surface_->scoped_defer_window_state_update_.release();
     DCHECK_EQ(self, this);
+    if (can_activate_.has_value()) {
+      shell_surface_->GetWidget()->widget_delegate()->SetCanActivate(
+          can_activate_.value());
+    }
     if (next_state_) {
       shell_surface_->OnWindowStateChangeEvent(*next_state_, *next_state_);
     }
@@ -366,6 +376,7 @@ class ClientControlledShellSurface::ScopedDeferWindowStateUpdate {
  private:
   raw_ptr<ClientControlledShellSurface> shell_surface_;
   std::optional<chromeos::WindowStateType> next_state_;
+  std::optional<bool> can_activate_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

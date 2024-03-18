@@ -2668,4 +2668,32 @@ TEST_P(ClientControlledShellSurfaceTest, FrameOverlap) {
   EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
 }
 
+TEST_P(ClientControlledShellSurfaceTest, ShowMinimizedNoActivation) {
+  class TestObserver : public SeatObserver {
+   public:
+    // SeatObserver:
+    void OnSurfaceFocused(Surface* gained_focus,
+                          Surface* lost_focus,
+                          bool has_focused_client) override {
+      focused_called_ = true;
+    }
+
+    bool focused_called() const { return focused_called_; }
+
+   private:
+    bool focused_called_ = false;
+  } observer;
+
+  Seat seat;
+  seat.AddObserver(&observer, 1);
+
+  auto shell_surface =
+      test::ShellSurfaceBuilder({300, 200})
+          .SetWindowState(chromeos::WindowStateType::kMinimized)
+          .BuildClientControlledShellSurface();
+  ASSERT_TRUE(shell_surface->GetWidget()->IsMinimized());
+  EXPECT_FALSE(observer.focused_called());
+  seat.RemoveObserver(&observer);
+}
+
 }  // namespace exo
