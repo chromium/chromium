@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_client_factory_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
-#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_content_client.h"
@@ -122,12 +122,15 @@ void DeviceCloudPolicyInitializer::TryToStartConnection() {
     return;
   }
 
-  // Devices that are able to use FRE want to wait for state keys, while others
-  // can proceed immediately.
+  // Currently reven devices don't support server-backed state keys, but they
+  // also don't support FRE/AutoRE so don't block initialization of device
+  // policy on state keys being available on reven.
+  // TODO(b/208705225): Remove this special case when reven supports state keys.
+  const bool allow_init_without_state_keys = ash::switches::IsRevenBranding();
+
   // TODO(b/181140445): If we had a separate state keys upload request to DM
   // Server we could drop the `state_keys_broker_->available()` requirement.
-  if (state_keys_broker_->available() ||
-      !AutoEnrollmentTypeChecker::IsFREEnabled()) {
+  if (allow_init_without_state_keys || state_keys_broker_->available()) {
     StartConnection(CreateClient(enterprise_service_));
   }
 }

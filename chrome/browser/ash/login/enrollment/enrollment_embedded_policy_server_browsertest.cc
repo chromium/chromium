@@ -378,15 +378,18 @@ class InitialEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
 };
 
 // Requesting state keys hangs forever, but that should not matter because we're
-// running on a "no chrome" device.
-class EnrollmentOnNoChrome : public EnrollmentEmbeddedPolicyServerBase {
+// running on reven.
+class EnrollmentOnRevenWithNoStateKeysResponse
+    : public EnrollmentEmbeddedPolicyServerBase {
  public:
-  EnrollmentOnNoChrome() = default;
+  EnrollmentOnRevenWithNoStateKeysResponse() = default;
 
-  EnrollmentOnNoChrome(const EnrollmentOnNoChrome&) = delete;
-  EnrollmentOnNoChrome& operator=(const EnrollmentOnNoChrome&) = delete;
+  EnrollmentOnRevenWithNoStateKeysResponse(
+      const EnrollmentOnRevenWithNoStateKeysResponse&) = delete;
+  EnrollmentOnRevenWithNoStateKeysResponse& operator=(
+      const EnrollmentOnRevenWithNoStateKeysResponse&) = delete;
 
-  ~EnrollmentOnNoChrome() override = default;
+  ~EnrollmentOnRevenWithNoStateKeysResponse() override = default;
 
   // EnrollmentEmbeddedPolicyServerBase:
   void SetUpInProcessBrowserTestFixture() override {
@@ -394,16 +397,22 @@ class EnrollmentOnNoChrome : public EnrollmentEmbeddedPolicyServerBase {
     // Session manager client is initialized by DeviceStateMixin.
     FakeSessionManagerClient::Get()->set_state_keys_handling(
         FakeSessionManagerClient::ServerBackedStateKeysHandling::kNoResponse);
-    // Devices that are marked 'nochrome' do not have Forced Re-Enrollment (FRE)
-    // enabled. If FRE is not enabled, then we don't request and obtain state
-    // keys.
+    // reven devices are also marked 'nochrome' which is important because it
+    // disables Forced Re-Enrollment (FRE). If FRE is enabled, state keys are
+    // required.
     fake_statistics_provider_.SetMachineStatistic(
         system::kFirmwareTypeKey, system::kFirmwareTypeValueNonchrome);
     // When using a fresh ScopedFakeStatisticsProvider we also need to configure
-    // a few entries (serial number, machine model). This can be done for us by
-    // ConfigureFakeStatisticsForZeroTouch().
+    // a few entries (serial number, machine model).
+    // ConfigureFakeStatisticsForZeroTouch does that for us.
     policy_server_.ConfigureFakeStatisticsForZeroTouch(
         &fake_statistics_provider_);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnrollmentEmbeddedPolicyServerBase::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitch(switches::kRevenBranding);
   }
 
  private:
@@ -434,8 +443,9 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, GetDeviceId) {
 
 // The test case is the same as
 // EnrollmentEmbeddedPolicyServerBase.ManualEnrollment but the environment is
-// different (simulates state keys not being available).
-IN_PROC_BROWSER_TEST_F(EnrollmentOnNoChrome, ManualEnrollment) {
+// different (simulate reven board, simulate state keys not being available).
+IN_PROC_BROWSER_TEST_F(EnrollmentOnRevenWithNoStateKeysResponse,
+                       ManualEnrollment) {
   TriggerEnrollmentAndSignInSuccessfully();
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -444,45 +454,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentOnNoChrome, ManualEnrollment) {
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Only run Flex tests on Google branded browsers, since FRE is not enabled
-// otherwise, and state keys are not requested unless FRE is enabled.
-// We prefer this to forcing FRE to always be on, because that code path
-// short circuits the code that will actually run on devices.
-
-// Enrollment on Flex. Flex devices are "no chrome" but support some features
-// like FRE that other "no chrome" devices don't.
-class EnrollmentOnFlex : public EnrollmentOnNoChrome {
- public:
-  EnrollmentOnFlex() = default;
-
-  EnrollmentOnFlex(const EnrollmentOnFlex&) = delete;
-  EnrollmentOnFlex& operator=(const EnrollmentOnFlex&) = delete;
-
-  ~EnrollmentOnFlex() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnrollmentEmbeddedPolicyServerBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kRevenBranding);
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
-        policy::AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-  }
-};
-
-// Simple manual enrollment on Flex.
-IN_PROC_BROWSER_TEST_F(EnrollmentOnFlex, ManualEnrollment) {
-  TriggerEnrollmentAndSignInSuccessfully();
-
-  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  test::OobeJS().ExpectTrue("Oobe.isEnrollmentSuccessfulForTest()");
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
-  EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
-}
-
-#endif  // GOOGLE_CHROME_BRANDING
-
-// The test case is the same as
 // Device policy blocks dev mode and this is not prohibited by a command-line
 // flag.
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
