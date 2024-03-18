@@ -327,9 +327,11 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
 PasswordsPrivateDelegateImpl::~PasswordsPrivateDelegateImpl() {
   saved_passwords_presenter_.RemoveObserver(this);
   install_manager_observation_.Reset();
+#if !BUILDFLAG(IS_WIN)
   if (device_authenticator_) {
     device_authenticator_->Cancel();
   }
+#endif
   device_authenticator_.reset();
 }
 
@@ -1169,11 +1171,20 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
 #else
   CHECK(web_contents);
 
-  // Cancel any ongoing authentication attempt.
+  // Authentication on Windows cannot be canceled.
+  // TODO(crbug.com/1371026): Remove Cancel and instead simply destroy
+  // |device_authenticator_|.
   if (device_authenticator_) {
-    // TODO(crbug.com/1371026): Remove Cancel and instead simply destroy
-    // |device_authenticator_|.
+#if BUILDFLAG(IS_WIN)
+    // `device_authenticator_` lives as long as the authentication is in
+    // progress. Since there is currently no way of canceling authentication
+    // if the new one wants to start, new authentications will be resolved as if
+    // they failed until the pending authentication gets resolved by the user.
+    std::move(callback).Run(false);
+    return;
+#else
     device_authenticator_->Cancel();
+#endif
   }
   device_authenticator_ =
       GetDeviceAuthenticator(web_contents, auth_validity_period);

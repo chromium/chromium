@@ -1498,7 +1498,9 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling));
 }
+#endif
 
+#if BUILDFLAG(IS_MAC)
 // Checks if authentication is triggered.
 TEST_F(PasswordsPrivateDelegateImplTest,
        SwitchBiometricAuthBeforeFillingCancelsLastTry) {
@@ -1518,10 +1520,31 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   // Invoking authentication again will cancel previous request.
   EXPECT_CALL(*biometric_authenticator_ptr, Cancel);
   ExpectAuthentication(delegate, /*successful=*/true);
-
   delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
 }
+#endif
 
+#if BUILDFLAG(IS_WIN)
+// Checks if authentication is triggered.
+TEST_F(PasswordsPrivateDelegateImplTest,
+       SwitchBiometricAuthBeforeFillingDoesntCancelLastTry) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  auto biometric_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  auto* biometric_authenticator_ptr = biometric_authenticator.get();
+
+  auto delegate = CreateDelegate();
+  EXPECT_CALL(*biometric_authenticator_ptr, AuthenticateWithMessage);
+  delegate->SetDeviceAuthenticatorForTesting(
+      std::move(biometric_authenticator));
+
+  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
+
+  // Invoking authentication again should not cancel previous request.
+  EXPECT_CALL(*biometric_authenticator_ptr, Cancel).Times(0);
+  delegate->SwitchBiometricAuthBeforeFillingState(web_contents.get());
+}
 #endif
 
 // TODO(http://crbug.com/1455574) Re-enable.
@@ -1952,6 +1975,7 @@ TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
   std::move(auth_result_callback).Run(true);
 }
 
+#if !BUILDFLAG(IS_WIN)
 TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
        DestroyingDelegateWhileExportOngoing) {
   content::WebContents* web_contents_ptr =
@@ -1976,8 +2000,8 @@ TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
   EXPECT_CALL(*biometric_authenticator_ptr, Cancel);
   delegate.reset();
 }
-
-#endif
+#endif  // !BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
 class PasswordsPrivateDelegateImplFetchFamilyMembersTest
     : public PasswordsPrivateDelegateImplTest {
