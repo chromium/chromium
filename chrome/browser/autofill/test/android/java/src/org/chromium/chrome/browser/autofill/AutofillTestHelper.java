@@ -24,6 +24,7 @@ import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.url.GURL;
 
 import java.util.Calendar;
@@ -468,25 +469,29 @@ public class AutofillTestHelper {
     }
 
     // Sends click event at the center of the `view` with the provided `flags`.
-    public static void singleClickView(View view, int flags) {
+    public static boolean singleClickView(View view, int flags) {
         int[] windowXY = new int[2];
         view.getLocationInWindow(windowXY);
         windowXY[0] += view.getWidth() / 2;
         windowXY[1] += view.getHeight() / 2;
 
+        long downTime = SystemClock.uptimeMillis();
         View rootView = view.getRootView();
-        runOnUiThreadBlocking(
-                () -> {
-                    rootView.dispatchTouchEvent(
-                            getMotionEventWithFlags(
-                                    MotionEvent.ACTION_DOWN, flags, windowXY[0], windowXY[1]));
-                    rootView.dispatchTouchEvent(
-                            getMotionEventWithFlags(
-                                    MotionEvent.ACTION_UP, flags, windowXY[0], windowXY[1]));
-                });
+        if (!TouchCommon.dispatchTouchEvent(
+                rootView,
+                getMotionEventWithFlags(
+                        downTime, MotionEvent.ACTION_DOWN, flags, windowXY[0], windowXY[1]))) {
+            return false;
+        }
+
+        return TouchCommon.dispatchTouchEvent(
+                rootView,
+                getMotionEventWithFlags(
+                        downTime, MotionEvent.ACTION_UP, flags, windowXY[0], windowXY[1]));
     }
 
-    private static MotionEvent getMotionEventWithFlags(int action, int flags, int x, int y) {
+    private static MotionEvent getMotionEventWithFlags(
+            long downTime, int action, int flags, int x, int y) {
         MotionEvent.PointerProperties props = new MotionEvent.PointerProperties();
         props.id = 0;
         MotionEvent.PointerCoords coords = new MotionEvent.PointerCoords();
@@ -495,7 +500,7 @@ public class AutofillTestHelper {
         coords.pressure = 1.0f;
         coords.size = 1.0f;
         return MotionEvent.obtain(
-                /* downTime= */ SystemClock.uptimeMillis(),
+                /* downTime= */ downTime,
                 /* eventTime= */ SystemClock.uptimeMillis(),
                 /* action= */ action,
                 /* pointerCount= */ 1,

@@ -331,10 +331,11 @@ public class TouchCommon {
 
     /**
      * Sends a MotionEvent to the specified view.
+     *
      * @param view The view that should receive the event.
      * @param event The view to be dispatched.
      */
-    private static boolean dispatchTouchEvent(final View view, final MotionEvent event) {
+    public static boolean dispatchTouchEvent(final View view, final MotionEvent event) {
         try {
             return TestThreadUtils.runOnUiThreadBlocking(
                     new Callable<Boolean>() {
