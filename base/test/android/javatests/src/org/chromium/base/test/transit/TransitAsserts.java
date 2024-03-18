@@ -19,22 +19,36 @@ public class TransitAsserts {
      * <p>A different instance of the same subclass {@link TransitStation} does not count; it must
      * be the TransitStation instance returned by the last {@link Trip} transition.
      *
-     * @param expected the TransitStation expected to be the last
-     * @throws AssertionError if the final station is not the same as |expected|
+     * @param expectedStation the TransitStation expected to be the last
+     * @param expectedFacilities the StationFacilities expected to be the active
+     * @throws AssertionError if the final station is not the same as |expected| or any expect
+     *     StationFacility was not active.
      */
-    public static void assertFinalDestination(TransitStation expected) {
+    public static void assertFinalDestination(
+            TransitStation expectedStation, StationFacility... expectedFacilities) {
         TransitStation activeStation = TrafficControl.getActiveStation();
-        if (activeStation != expected) {
+        if (activeStation != expectedStation) {
             raiseAssertion(
                     String.format(
                             "Expected final destination to be %s, but was %s",
-                            expected, activeStation));
+                            expectedStation, activeStation));
         }
-        if (expected.getPhase() != Phase.ACTIVE) {
+        @Phase int phase = expectedStation.getPhase();
+        if (phase != Phase.ACTIVE) {
             raiseAssertion(
                     String.format(
-                            "Station %s expected to be the final one, but it is not ACTIVE",
-                            expected));
+                            "Station %s expected to be the final one and ACTIVE, but it is %s",
+                            expectedStation, ConditionalState.phaseToString(phase)));
+        }
+
+        for (StationFacility facility : expectedFacilities) {
+            phase = facility.getPhase();
+            if (phase != Phase.ACTIVE) {
+                raiseAssertion(
+                        String.format(
+                                "Facility %s expected to be ACTIVE at the end, but it is in %s",
+                                facility, ConditionalState.phaseToString(phase)));
+            }
         }
     }
 
