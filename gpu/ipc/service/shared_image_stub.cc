@@ -509,6 +509,7 @@ void SharedImageStub::OnDestroySharedImage(const Mailbox& mailbox) {
 #if BUILDFLAG(IS_WIN)
 void SharedImageStub::OnCopyToGpuMemoryBuffer(const Mailbox& mailbox,
                                               uint32_t release_id) {
+  TRACE_EVENT0("gpu", "SharedImageStub::OnCopyToGpuMemoryBuffer");
   if (!mailbox.IsSharedImage()) {
     DLOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
                    "non-SharedImage mailbox.";
@@ -584,6 +585,7 @@ void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox,
 void SharedImageStub::OnRegisterDxgiFence(const Mailbox& mailbox,
                                           gfx::DXGIHandleToken dxgi_token,
                                           gfx::GpuFenceHandle fence_handle) {
+  TRACE_EVENT0("gpu", "SharedImageStub::OnRegisterDxgiFence");
   if (!mailbox.IsSharedImage()) {
     LOG(ERROR)
         << "SharedImageStub: Trying to register a fence handle in SharedImage "
@@ -616,6 +618,7 @@ void SharedImageStub::OnRegisterDxgiFence(const Mailbox& mailbox,
 void SharedImageStub::OnUpdateDxgiFence(const Mailbox& mailbox,
                                         gfx::DXGIHandleToken dxgi_token,
                                         uint64_t fence_value) {
+  TRACE_EVENT0("gpu", "SharedImageStub::OnUpdateDxgiFence");
   if (!mailbox.IsSharedImage()) {
     LOG(ERROR)
         << "SharedImageStub: Trying to register a fence handle in SharedImage "
@@ -657,6 +660,7 @@ void SharedImageStub::OnUpdateDxgiFence(const Mailbox& mailbox,
 
 void SharedImageStub::OnUnregisterDxgiFence(const Mailbox& mailbox,
                                             gfx::DXGIHandleToken dxgi_token) {
+  TRACE_EVENT0("gpu", "SharedImageStub::OnUnregisterDxgiFence");
   auto mailbox_fences_it = registered_dxgi_fences_.find(mailbox);
   if (mailbox_fences_it == registered_dxgi_fences_.end()) {
     LOG(ERROR) << "Trying to unregister a fence on shared image with no "
