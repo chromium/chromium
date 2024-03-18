@@ -104,6 +104,14 @@ PrintBackendServiceManager::PrintBackendServiceManager() = default;
 PrintBackendServiceManager::~PrintBackendServiceManager() = default;
 
 // static
+void PrintBackendServiceManager::LaunchPersistentService() {
+  PrintBackendServiceManager& service_mgr = GetInstance();
+  // Registering a query client causes a service to be launched.
+  service_mgr.persistent_service_ = true;
+  std::ignore = service_mgr.RegisterQueryClient();
+}
+
+// static
 std::string PrintBackendServiceManager::ClientTypeToString(
     ClientType client_type) {
   switch (client_type) {
@@ -891,9 +899,13 @@ PrintBackendServiceManager::GetServiceFromBundle(
   return service;
 }
 
-// static
 constexpr base::TimeDelta PrintBackendServiceManager::GetClientTypeIdleTimeout(
-    ClientType client_type) {
+    ClientType client_type) const {
+  if (persistent_service_) {
+    // Intentionally keep service around indefinitely.
+    return base::TimeDelta::Max();
+  }
+
   switch (client_type) {
     case ClientType::kQuery:
       // Want a long timeout so that the service is available across typical

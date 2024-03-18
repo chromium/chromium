@@ -50,6 +50,9 @@
 #include "chrome/browser/printing/print_job_worker_oop.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/printing/printer_query_oop.h"
+#include "chrome/browser/task_manager/task_manager_browsertest_util.h"
+#include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #endif
 
@@ -70,6 +73,11 @@
 // hooked up to make use of `TestPrintingContext` yet.
 #error "ChromeOS not supported here yet"
 #endif
+
+using task_manager::TaskManagerInterface;
+using task_manager::browsertest_util::MatchAnyTab;
+using task_manager::browsertest_util::MatchUtility;
+using task_manager::browsertest_util::WaitForTaskManagerRows;
 
 namespace printing {
 
@@ -277,6 +285,10 @@ GeneratePrintBackendAndPlatformPrintApiVariations(
   return variations;
 }
 
+std::string GetServiceLaunchTimingTestSuffix(
+    const testing::TestParamInfo<bool>& info) {
+  return info.param ? "EarlyStart" : "OnDemand";
+}
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 }  // namespace
@@ -598,6 +610,9 @@ class SystemAccessProcessPrintBrowserTestBase
   // Only of interest when `UseService()` returns true.
   virtual bool SandboxService() = 0;
 
+  // Only applicable when `UseService()` returns true.
+  virtual bool EarlyStartService() { return false; }
+
 #if BUILDFLAG(IS_WIN)
   // Only applicable when `UseService()` returns true.
   virtual bool UseXps() = 0;
@@ -610,7 +625,9 @@ class SystemAccessProcessPrintBrowserTestBase
     if (UseService()) {
       enabled_features.push_back(
           {features::kEnableOopPrintDrivers,
-           {{features::kEnableOopPrintDriversJobPrint.name, "true"},
+           {{features::kEnableOopPrintDriversEarlyStart.name,
+             EarlyStartService() ? "true" : "false"},
+            {features::kEnableOopPrintDriversJobPrint.name, "true"},
             {features::kEnableOopPrintDriversSandbox.name,
              SandboxService() ? "true" : "false"}}});
 #if BUILDFLAG(IS_WIN)
@@ -728,7 +745,7 @@ class SystemAccessProcessPrintBrowserTestBase
 
   void SetUpOnMainThread() override {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-    if (UseService()) {
+    if (UseService() && !EarlyStartService()) {
       print_backend_service_ = PrintBackendServiceTestImpl::LaunchForTesting(
           test_remote_, test_print_backend(), /*sandboxed=*/true);
     }
@@ -1287,6 +1304,39 @@ class SystemAccessProcessPrintBrowserTestBase
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 
+class SystemAccessProcessUnsandboxedEarlyStartServicePrintBrowserTest
+    : public SystemAccessProcessPrintBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  SystemAccessProcessUnsandboxedEarlyStartServicePrintBrowserTest() = default;
+  ~SystemAccessProcessUnsandboxedEarlyStartServicePrintBrowserTest() override =
+      default;
+
+  bool UseService() override { return true; }
+  bool SandboxService() override { return false; }
+  bool EarlyStartService() override { return GetParam(); }
+#if BUILDFLAG(IS_WIN)
+  bool UseXps() override { return false; }
+#endif
+
+  bool DoesPrintBackendServiceTaskExist() {
+    TaskManagerInterface* task_mgr = TaskManagerInterface::GetTaskManager();
+    std::u16string title = MatchUtility(u"Print Backend Service");
+    for (auto task_id : task_mgr->GetTaskIdsList()) {
+      if (title == task_mgr->GetTitle(task_id)) {
+        return true;
+      }
+    }
+    return false;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SystemAccessProcessUnsandboxedEarlyStartServicePrintBrowserTest,
+    /*EarlyStartService=*/testing::Bool(),
+    GetServiceLaunchTimingTestSuffix);
+
 class SystemAccessProcessSandboxedServicePrintBrowserTest
     : public SystemAccessProcessPrintBrowserTestBase,
       public testing::WithParamInterface<PlatformPrintApiVariation> {
@@ -1399,6 +1449,20 @@ INSTANTIATE_TEST_SUITE_P(
          PrintBackendFeatureVariation::kOopSandboxedService,
          PrintBackendFeatureVariation::kOopUnsandboxedService})),
     GetPrintBackendAndPlatformPrintApiTestSuffix);
+
+IN_PROC_BROWSER_TEST_P(
+    SystemAccessProcessUnsandboxedEarlyStartServicePrintBrowserTest,
+    ServiceLaunched) {
+  chrome::ShowTaskManager(browser());
+
+  // Wait for browser to open with a tab.
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+
+  // Now that startup is complete, look through the list of processes in the
+  // Task Manager to see if a Print Backend service has bee started (even
+  // though there has not been any request for printing).
+  CHECK_EQ(DoesPrintBackendServiceTaskExist(), EarlyStartService());
+}
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
                        UpdatePrintSettings) {

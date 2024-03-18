@@ -324,6 +324,11 @@
 #include "chrome/browser/offline_pages/offline_page_info_handler.h"
 #endif
 
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/browser/printing/prefs_util.h"
+#include "chrome/browser/printing/printing_init.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/plugin_prefs.h"
 #endif
@@ -1713,7 +1718,13 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::InitializeProcessForPrinting();
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (printing::ShouldEarlyStartPrintBackendService()) {
+    printing::EarlyStartPrintBackendService();
+  }
 #endif
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
   HandleTestParameters(*base::CommandLine::ForCurrentProcess());
 

@@ -89,6 +89,9 @@ BASE_FEATURE(kEnableOopPrintDrivers,
              "EnableOopPrintDrivers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kEnableOopPrintDriversEarlyStart{
+    &kEnableOopPrintDrivers, "EarlyStart", false};
+
 const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint{
     &kEnableOopPrintDrivers, "JobPrint", true};
 

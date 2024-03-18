@@ -78,6 +78,14 @@ bool ShouldPrintJobOop() {
   return IsOopPrintingEnabled() &&
          features::kEnableOopPrintDriversJobPrint.Get();
 }
+
+bool ShouldEarlyStartPrintBackendService() {
+  return IsOopPrintingEnabled() &&
+#if BUILDFLAG(IS_WIN)
+         features::kEnableOopPrintDriversSingleProcess.Get() &&
+#endif
+         features::kEnableOopPrintDriversEarlyStart.Get();
+}
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 }  // namespace printing

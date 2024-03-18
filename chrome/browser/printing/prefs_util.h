@@ -23,6 +23,10 @@ bool IsOopPrintingEnabled();
 
 // Determine if printing a job should be done out-of-process.
 bool ShouldPrintJobOop();
+
+// Determine if a Print Backend service should be launched early, after the
+// browser has finished its startup.
+bool ShouldEarlyStartPrintBackendService();
 #endif
 
 }  // namespace printing
