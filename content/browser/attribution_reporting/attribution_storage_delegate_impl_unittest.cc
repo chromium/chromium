@@ -80,8 +80,7 @@ TEST(AttributionStorageDelegateImplTest,
                       .GetRandomizedResponse(source.common_info().source_type(),
                                              source.trigger_specs(),
                                              source.max_event_level_reports(),
-                                             source.event_level_epsilon(),
-                                             source.source_time());
+                                             source.event_level_epsilon());
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(result->rate(), 0);
     ASSERT_EQ(result->response(), std::nullopt);
@@ -133,8 +132,7 @@ TEST(AttributionStorageDelegateImplTest,
 
     auto result = delegate->GetRandomizedResponse(
         test_case.source_type, source.trigger_specs(),
-        source.max_event_level_reports(), source.event_level_epsilon(),
-        source.source_time());
+        source.max_event_level_reports(), source.event_level_epsilon());
 
     EXPECT_EQ(result.has_value(), test_case.expected_ok);
   }

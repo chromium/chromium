@@ -157,8 +157,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports,
-      attribution_reporting::EventLevelEpsilon,
-      base::Time source_time) const = 0;
+      attribution_reporting::EventLevelEpsilon) const = 0;
 
   int GetMaxAggregatableReportsPerSource() const;
 

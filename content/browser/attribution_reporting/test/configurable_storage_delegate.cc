@@ -133,8 +133,7 @@ ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::TriggerSpecs&,
     attribution_reporting::MaxEventLevelReports,
-    attribution_reporting::EventLevelEpsilon,
-    base::Time source_time) const {
+    attribution_reporting::EventLevelEpsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (exceeds_channel_capacity_limit_) {
     return base::unexpected(ExceedsChannelCapacityLimit());

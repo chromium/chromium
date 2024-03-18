@@ -607,14 +607,13 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   const base::Time aggregatable_report_window_time =
       source_time + reg.aggregatable_report_window;
 
-  ASSIGN_OR_RETURN(
-      const auto randomized_response_data,
-      delegate_->GetRandomizedResponse(
-          common_info.source_type(), reg.trigger_specs,
-          reg.max_event_level_reports, reg.event_level_epsilon, source_time),
-      [](auto) -> StoreSourceResult {
-        return StoreSourceResult::ExceedsMaxChannelCapacity();
-      });
+  ASSIGN_OR_RETURN(const auto randomized_response_data,
+                   delegate_->GetRandomizedResponse(
+                       common_info.source_type(), reg.trigger_specs,
+                       reg.max_event_level_reports, reg.event_level_epsilon),
+                   [](auto) -> StoreSourceResult {
+                     return StoreSourceResult::ExceedsMaxChannelCapacity();
+                   });
 
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;

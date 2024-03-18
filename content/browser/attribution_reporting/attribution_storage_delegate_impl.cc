@@ -211,8 +211,7 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const attribution_reporting::TriggerSpecs& trigger_specs,
     attribution_reporting::MaxEventLevelReports max_event_level_reports,
-    attribution_reporting::EventLevelEpsilon epsilon,
-    base::Time source_time) const {
+    attribution_reporting::EventLevelEpsilon epsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   attribution_reporting::RandomizedResponseData response =
       attribution_reporting::DoRandomizedResponse(
