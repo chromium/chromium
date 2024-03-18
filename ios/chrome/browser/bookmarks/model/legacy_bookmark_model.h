@@ -51,9 +51,12 @@ class LegacyBookmarkModel : public KeyedService {
 
   // Returns the root node. The 'bookmark bar' node and 'other' node are
   // children of the root node.
-  // TODO(crbug.com/326185948): Remove this API as it is too error-prone during
-  // the migration to single underlying BookmarkModel.
-  const bookmarks::BookmarkNode* root_node() const;
+  // WARNING: avoid exercising this API, in particular if the caller may use
+  // the node to iterate children. This is because the behavior of this function
+  // changes based on whether or not feature
+  // `syncer::kEnableBookmarkFoldersForAccountStorage` is enabled.
+  const bookmarks::BookmarkNode* subtle_root_node_with_unspecified_children()
+      const;
 
   // All public functions below are identical to the functions with the same
   // name in bookmarks::BookmarkModel API or, in some cases, related utility

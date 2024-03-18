@@ -116,7 +116,8 @@ TEST_F(BookmarksHomeViewControllerTest,
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
     const bookmarks::BookmarkNode* rootNode =
-        local_or_syncable_bookmark_model_->root_node();
+        local_or_syncable_bookmark_model_
+            ->subtle_root_node_with_unspecified_children();
     const bookmarks::BookmarkNode* mobileNode =
         local_or_syncable_bookmark_model_->mobile_node();
     AddBookmark(mobileNode, u"foo");  // Ensure there are bookmarks

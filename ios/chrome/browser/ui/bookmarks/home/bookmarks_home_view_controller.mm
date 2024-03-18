@@ -339,7 +339,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                            folderId:&cachedFolderID
                                           modelType:&modelType
                                          topMostRow:&cachedIndexPathRow] ||
-      cachedFolderID == _localOrSyncableBookmarkModel->root_node()->id()) {
+      cachedFolderID == _localOrSyncableBookmarkModel
+                            ->subtle_root_node_with_unspecified_children()
+                            ->id()) {
     return stack;
   }
   base::WeakPtr<LegacyBookmarkModel> folderModel;
@@ -1274,7 +1276,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     return;
   }
   DCHECK(!self.displayedFolderNode);
-  self.displayedFolderNode = _localOrSyncableBookmarkModel->root_node();
+  self.displayedFolderNode = _localOrSyncableBookmarkModel
+                                 ->subtle_root_node_with_unspecified_children();
 
   // If the view hasn't loaded yet, then return early. The eventual call to
   // viewDidLoad will properly initialize the views.  This early return must
@@ -1400,7 +1403,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 }
 
 - (BOOL)isDisplayingBookmarkRoot {
-  return self.displayedFolderNode == _localOrSyncableBookmarkModel->root_node();
+  return self.displayedFolderNode ==
+         _localOrSyncableBookmarkModel
+             ->subtle_root_node_with_unspecified_children();
 }
 
 // Check if any of our controller is presenting. We don't consider when this
@@ -1444,7 +1449,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                         (const bookmarks::BookmarkNode*)node {
   viewController.navigationItem.leftBarButtonItem.action = @selector(back);
   // Disable large titles on every VC but the root controller.
-  if (node != _localOrSyncableBookmarkModel->root_node()) {
+  if (node != _localOrSyncableBookmarkModel
+                  ->subtle_root_node_with_unspecified_children()) {
     viewController.navigationItem.largeTitleDisplayMode =
         UINavigationItemLargeTitleDisplayModeNever;
   }

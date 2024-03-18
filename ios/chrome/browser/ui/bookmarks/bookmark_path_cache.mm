@@ -57,7 +57,8 @@ const int64_t kFolderNone = -1;
   }
 
   // If the cache was at root node, consider it as nothing was cached.
-  if (*folderId == kFolderNone || *folderId == model->root_node()->id()) {
+  if (*folderId == kFolderNone ||
+      *folderId == model->subtle_root_node_with_unspecified_children()->id()) {
     return NO;
   }
 

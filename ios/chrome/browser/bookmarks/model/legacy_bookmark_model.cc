@@ -34,7 +34,8 @@ LegacyBookmarkModel::LegacyBookmarkModel() = default;
 
 LegacyBookmarkModel::~LegacyBookmarkModel() = default;
 
-const bookmarks::BookmarkNode* LegacyBookmarkModel::root_node() const {
+const bookmarks::BookmarkNode*
+LegacyBookmarkModel::subtle_root_node_with_unspecified_children() const {
   return underlying_model()->root_node();
 }
 

@@ -279,8 +279,9 @@ enum class PresentedState {
 }
 
 - (void)presentBookmarks {
-  [self presentBookmarksAtDisplayedFolderNode:_localOrSyncableBookmarkModel
-                                                  ->root_node()
+  [self presentBookmarksAtDisplayedFolderNode:
+            _localOrSyncableBookmarkModel
+                ->subtle_root_node_with_unspecified_children()
                             selectingBookmark:nil];
 
   default_browser::NotifyBookmarkManagerOpened();
@@ -794,7 +795,9 @@ enum class PresentedState {
     // after the model is finished loading.
     self.bookmarkBrowser.displayedFolderNode = displayedFolderNode;
     [self.bookmarkBrowser setExternalBookmark:bookmarkNode];
-    if (displayedFolderNode == _localOrSyncableBookmarkModel->root_node()) {
+    if (displayedFolderNode ==
+        _localOrSyncableBookmarkModel
+            ->subtle_root_node_with_unspecified_children()) {
       replacementViewControllers =
           [self.bookmarkBrowser cachedViewControllerStack];
     }
