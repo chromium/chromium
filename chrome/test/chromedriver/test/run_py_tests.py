@@ -8056,6 +8056,11 @@ if __name__ == '__main__':
       '--replayable',
       help="Don't truncate long strings in the log so that the log can be "
       "replayed.")
+  parser.add_argument(
+      '--failfast',
+      action='store_true',
+      default=False,
+      help='Stop the test run on the first error or failure.')
   parser.add_argument('--chrome', help='Path to a build of the chrome binary')
   parser.add_argument(
       '--filter',
@@ -8224,6 +8229,7 @@ if __name__ == '__main__':
 
   runner = unittest.TextTestRunner(
       stream=sys.stdout, descriptions=False, verbosity=2,
+      failfast=options.failfast,
       resultclass=unittest_util.AddSuccessTextTestResult)
   result = runner.run(test_suite)
   results = [result]
