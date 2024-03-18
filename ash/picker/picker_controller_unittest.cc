@@ -164,14 +164,15 @@ TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
   EXPECT_EQ(input_field.text(), u"abc");
 }
 
-TEST_F(PickerControllerTest, InsertPngResultInsertsIntoInputFieldAfterFocus) {
+TEST_F(PickerControllerTest,
+       InsertClipboardResultInsertsIntoInputFieldAfterFocus) {
   PickerController controller;
   TestPickerClient client(&controller);
   controller.ToggleWidget();
   auto* input_method =
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
-  controller.InsertResultOnNextFocus(PickerSearchResult::Png({1, 2, 3}));
+  controller.InsertResultOnNextFocus(PickerSearchResult::Clipboard({1, 2, 3}));
   controller.widget_for_testing()->CloseNow();
   ui::FakeTextInputClient input_field(
       input_method,

@@ -64,7 +64,7 @@ void PickerClipboardProvider::OnFetchHistory(
       if (!png_opt.has_value() || !item.display_image().has_value()) {
         continue;
       }
-      auto result = PickerSearchResult::Png(*png_opt);
+      auto result = PickerSearchResult::Clipboard(*png_opt);
       auto item_view = std::make_unique<PickerListItemView>(
           base::BindRepeating(select_result_callback_, result));
       item_view->SetPrimaryImage(

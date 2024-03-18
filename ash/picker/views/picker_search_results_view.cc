@@ -227,10 +227,10 @@ void PickerSearchResultsView::AddResultToSection(
                 std::move(select_result_callback), data.emoticon);
             section_view->AddEmoticonItem(std::move(emoticon_item));
           },
-          [&](const PickerSearchResult::PngData& data) {
-            // Do nothing for now. There is no png results for actual search
-            // currently, PngData is only used for clipboard image items in zero
-            // state view.
+          [&](const PickerSearchResult::ClipboardData& data) {
+            // Do nothing for now. There are no clipboard results for actual
+            // search currently, ClipboardData is only used for clipboard
+            // items in zero state view.
           },
           [&, this](const PickerSearchResult::GifData& data) {
             // `base::Unretained` is safe here because `this` will own the gif

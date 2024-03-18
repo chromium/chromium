@@ -47,15 +47,16 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const EmoticonData&) const;
   };
 
-  struct PngData {
+  struct ClipboardData {
+    // TODO: b/329309518 - Use clipboard item IDs.
     std::vector<uint8_t> png;
 
-    PngData(const std::vector<uint8_t>& png);
-    PngData(const PngData&);
-    PngData& operator=(const PngData&);
-    ~PngData();
+    ClipboardData(const std::vector<uint8_t>& png);
+    ClipboardData(const ClipboardData&);
+    ClipboardData& operator=(const ClipboardData&);
+    ~ClipboardData();
 
-    bool operator==(const PngData&) const;
+    bool operator==(const ClipboardData&) const;
   };
 
   struct GifData {
@@ -123,7 +124,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             EmojiData,
                             SymbolData,
                             EmoticonData,
-                            PngData,
+                            ClipboardData,
                             GifData,
                             BrowsingHistoryData,
                             LocalFileData,
@@ -143,7 +144,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   static PickerSearchResult Emoji(std::u16string_view emoji);
   static PickerSearchResult Symbol(std::u16string_view symbol);
   static PickerSearchResult Emoticon(std::u16string_view emoticon);
-  static PickerSearchResult Png(const std::vector<uint8_t>& png);
+  static PickerSearchResult Clipboard(const std::vector<uint8_t>& png);
   static PickerSearchResult Gif(const GURL& preview_url,
                                 const GURL& preview_image_url,
                                 const gfx::Size& preview_dimensions,
