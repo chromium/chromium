@@ -18,6 +18,14 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 let autofillAcrossIframes: boolean = false;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_across_iframes_ios)
 
+// LINT.IfChange(autofill_xhr_submission_detection_ios)
+/**
+ * Enables sending all form removal events to the browser for submission detection.
+ * Corresponds to autofill::feature::AutofillEnableXHRSubmissionDetectionIOS.
+ */
+let autofillXHRSubmissionDetection: boolean = false;
+// LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_xhr_submission_detection_ios)
+
 /**
  * @see autofillAcrossIframes
  */
@@ -32,9 +40,25 @@ function isAutofillAcrossIframesEnabled(): boolean {
   return autofillAcrossIframes;
 }
 
+/**
+ * @see autofillXHRSubmissionDetectionEnabled
+ */
+function setAutofillXHRSubmissionDetection(enabled: boolean): void {
+  autofillXHRSubmissionDetection = enabled;
+}
+
+/**
+ * @see autofillXHRSubmissionDetection
+ */
+function isAutofillXHRSubmissionDetectionEnabled(): boolean {
+  return autofillXHRSubmissionDetection;
+}
+
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWeb.autofill_form_features = {
   setAutofillAcrossIframes,
   isAutofillAcrossIframesEnabled,
+  setAutofillXHRSubmissionDetection,
+  isAutofillXHRSubmissionDetectionEnabled,
 };

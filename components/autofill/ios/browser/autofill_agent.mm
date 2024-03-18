@@ -889,6 +889,10 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       frame, base::FeatureList::IsEnabled(
                  autofill::features::kAutofillAcrossIframesIos));
 
+  FormUtilJavaScriptFeature::GetInstance()->SetAutofillXHRSubmissionDetection(
+      frame, base::FeatureList::IsEnabled(
+                 autofill::features::kAutofillEnableXHRSubmissionDetectionIOS));
+
   if (frame->IsMainFrame()) {
     _popupDelegate.reset();
     _suggestionsAvailableCompletion = nil;

@@ -292,12 +292,14 @@ BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
              "AutofillExtractOnlyNonAdFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// LINT.IfChange(autofill_xhr_submission_detection_ios)
 // If enabled, XHR form submissions are detected on iOS when the last interacted
 // form in a frame is removed. Otherwise only HTTP form submissions are detected
 // on iOS.
 BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
              "AutofillEnableXHRSubmissionDetectionIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_xhr_submission_detection_ios)
 
 // Implements a model that suppresses suggestions after N times the user ignores
 // the popup (i.e. doesn't select a suggestion from the popup).
