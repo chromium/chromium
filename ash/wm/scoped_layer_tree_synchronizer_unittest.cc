@@ -275,6 +275,15 @@ TEST_P(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
       gfx::RoundedCornersF(7, 7, 20, 7);
   EXPECT_EQ(layer_2->rounded_corner_radii(), kUpdatedLayer2Radii);
   EXPECT_EQ(layer_3->rounded_corner_radii(), kLayer3Radii);
+
+  layer_tree_synchronizer->Restore();
+
+  EXPECT_EQ(root->rounded_corner_radii(), kRootLayerRadii);
+  EXPECT_EQ(layer_1->rounded_corner_radii(),
+            restore_layer_tree() ? kLayer1Radii : kUpdatedLayer1Radii);
+  EXPECT_EQ(layer_2->rounded_corner_radii(),
+            restore_layer_tree() ? kLayer2Radii : kUpdatedLayer2Radii);
+  EXPECT_EQ(layer_3->rounded_corner_radii(), kLayer3Radii);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,

@@ -468,7 +468,7 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
   bool subtree_altered = false;
   for (ui::Layer* child : layer->children()) {
     subtree_altered |=
-        SynchronizeLayerTreeRoundedCorners(child, reference_bounds);
+        SynchronizeLayerTreeRoundedCornersImpl(child, reference_bounds);
   }
 
   return subtree_altered || layer_altered;
