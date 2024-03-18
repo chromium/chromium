@@ -1492,31 +1492,9 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   task_environment().FastForwardBy(
       ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
       base::Seconds(1));
-  // Initial capture should be uploaded.
-  EXPECT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
-  // Make second workspace desk.
-  const base::Time second_captured_template_creation_time = base::Time::Now();
-  std::unique_ptr<DeskTemplate> second_captured_floating_workspace_template =
-      MakeTestFloatingWorkspaceDeskTemplate(
-          template_name, second_captured_template_creation_time);
 
-  // Create new restore data different than 1st captured one.
-  std::unique_ptr<app_restore::RestoreData> restore_data =
-      CreateRestoreData(std::vector<int>(11, 1));
-  second_captured_floating_workspace_template->set_desk_restore_data(
-      std::move(restore_data));
-  // Set the 2nd template to be captured.
-  mock_desks_client()->SetCapturedDeskTemplate(
-      std::move(second_captured_floating_workspace_template));
-  // Fast forward by capture interval capture a second time.
-  task_environment().FastForwardBy(
-      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
-      base::Seconds(1));
-  // Second capture should not be uploaded if there were no user activity since
-  // last capture.
-  ASSERT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
-  EXPECT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
-                  ->created_time() != second_captured_template_creation_time);
+  EXPECT_FALSE(
+      floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,
@@ -1640,48 +1618,6 @@ TEST_F(FloatingWorkspaceServiceV2Test, CaptureImmediatelyAfterRestore) {
   EXPECT_EQ(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
                 ->created_time(),
             creation_time);
-}
-
-TEST_F(FloatingWorkspaceServiceV2Test, NoCaptureIfDownloadIsNotDone) {
-  PopulateAppsCache();
-  const std::string template_name = "floating_workspace_template";
-  base::RunLoop loop;
-  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
-      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now()),
-      base::BindLambdaForTesting(
-          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
-              std::unique_ptr<ash::DeskTemplate> new_entry) {
-            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
-                      status);
-            loop.Quit();
-          }));
-  loop.Run();
-
-  CreateFloatingWorkspaceServiceForTesting(profile());
-  auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
-  floating_workspace_service->Init(test_sync_service(),
-                                   fake_desk_sync_service());
-  const std::string captured_template_name =
-      "captured_floating_workspace_template";
-
-  std::unique_ptr<DeskTemplate> floating_workspace_template =
-      MakeTestFloatingWorkspaceDeskTemplate(captured_template_name,
-                                            base::Time::Now());
-  mock_desks_client()->SetCapturedDeskTemplate(
-      std::move(floating_workspace_template));
-  test_sync_service()->SetDownloadStatusFor(
-      {syncer::ModelType::WORKSPACE_DESK},
-      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
-  test_sync_service()->FireStateChanged();
-  user_activity_detector()->set_last_activity_time_for_test(
-      base::TimeTicks::Now() + base::Milliseconds(1));
-  EXPECT_FALSE(mock_desks_client()->restored_desk_template());
-
-  ASSERT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate());
-  EXPECT_TRUE(floating_workspace_service->GetLatestFloatingWorkspaceTemplate()
-                  ->template_name() !=
-              base::UTF8ToUTF16(captured_template_name));
 }
 
 TEST_F(FloatingWorkspaceServiceV2Test,

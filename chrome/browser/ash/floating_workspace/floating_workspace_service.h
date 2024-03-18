@@ -261,13 +261,6 @@ class FloatingWorkspaceService : public KeyedService,
   // connection.
   void OnNetworkStateOrSyncServiceStateChanged();
 
-  // Checks to make sure we should upload the captured floating workspace
-  // template. Upload the captured floating workspace template on two
-  // conditions: 1) If this is the first capture after a template launch or 2)
-  // If the current desk is different and the user has been active since last
-  // capture.
-  bool ShouldUploadFloatingWorkspaceTemplate();
-
   const raw_ptr<Profile> profile_;
 
   const floating_workspace_util::FloatingWorkspaceVersion version_;
