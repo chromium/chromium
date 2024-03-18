@@ -46,9 +46,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
                               std::optional<AuthenticationError>)>;
 
   using AuthSessionStatusCallback =
-      base::OnceCallback<void(AuthSessionStatus status,
-                              base::TimeDelta lifetime,
-                              std::unique_ptr<UserContext>,
+      base::OnceCallback<void(std::unique_ptr<UserContext>,
                               std::optional<AuthenticationError>)>;
   using RecoveryRequestCallback =
       base::OnceCallback<void(std::optional<RecoveryRequest>,

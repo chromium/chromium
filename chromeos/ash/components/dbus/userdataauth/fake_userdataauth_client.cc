@@ -1567,18 +1567,8 @@ void FakeUserDataAuthClient::GetAuthSessionStatus(
                    CryptohomeErrorCode::CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN));
     return;
   }
-  if (!auth_session->second.authenticated) {
-    reply.set_status(
-        ::user_data_auth::AUTH_SESSION_STATUS_FURTHER_FACTOR_REQUIRED);
-    return;
-  }
+
   base::TimeDelta time_left = auth_session->second.lifetime - base::Time::Now();
-  if (time_left.is_negative()) {
-    reply.set_status(
-        ::user_data_auth::AUTH_SESSION_STATUS_INVALID_AUTH_SESSION);
-    return;
-  }
-  reply.set_status(::user_data_auth::AUTH_SESSION_STATUS_AUTHENTICATED);
   reply.mutable_auth_properties()->add_authorized_for(
       auth_session->second.requested_auth_session_intent);
   reply.mutable_auth_properties()->set_seconds_left(time_left.InSeconds());
