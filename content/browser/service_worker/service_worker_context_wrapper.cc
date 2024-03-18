@@ -1709,7 +1709,17 @@ void ServiceWorkerContextWrapper::DidFindRegistrationForWarmUp(
       registration->active_version()->running_status() ==
           blink::EmbeddedWorkerStatus::kRunning) {
     std::move(callback).Run();
-    MaybeProcessPendingWarmUpRequest();
+
+    // This code can be called from `ServiceWorkerVersion::FinishStartWorker`
+    // and `ServiceWorkerVersion::OnTimeoutTimer` just before stopping service
+    // worker. To avoid start warming up the next warm-up candidate,
+    // `MaybeProcessPendingWarmUpRequest` needs to be asynchronously called to
+    // wait for stopping the current service worker. (see: http://b/40874535)
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ServiceWorkerContextWrapper::MaybeProcessPendingWarmUpRequest,
+            this));
     return;
   }
 
@@ -1729,7 +1739,16 @@ void ServiceWorkerContextWrapper::DidWarmUpServiceWorker(
 
   std::move(callback).Run();
 
-  MaybeProcessPendingWarmUpRequest();
+  // This code can be called from `ServiceWorkerVersion::FinishStartWorker` and
+  // `ServiceWorkerVersion::OnTimeoutTimer` just before stopping service worker.
+  // To avoid start warming up the next warm-up candidate,
+  // `MaybeProcessPendingWarmUpRequest` needs to be asynchronously called to
+  // wait for stopping the current service worker. (see: http://b/40874535)
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ServiceWorkerContextWrapper::MaybeProcessPendingWarmUpRequest,
+          this));
 }
 
 ServiceWorkerContextCore* ServiceWorkerContextWrapper::context() {
