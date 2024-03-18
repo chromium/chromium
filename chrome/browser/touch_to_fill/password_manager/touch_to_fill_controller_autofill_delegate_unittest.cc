@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/android/build_info.h"
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -229,12 +228,6 @@ class TouchToFillControllerAutofillTest
     touch_to_fill_controller().set_view(std::move(mock_view));
   }
 
-  void ExpectAndSimulateAuthenticationSuccess(
-      device_reauth::MockDeviceAuthenticator* authenticator_ptr) {
-    EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage)
-        .WillOnce(RunOnceCallback<1>(true));
-  }
-
  private:
   raw_ptr<MockTouchToFillView> mock_view_ = nullptr;
   std::unique_ptr<MockDeviceAuthenticator> authenticator_ =
@@ -258,11 +251,6 @@ class TouchToFillControllerAutofillTest
 };
 
 TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Submit) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto* authenticator_ptr = authenticator();
-    ExpectAndSimulateAuthenticationSuccess(authenticator_ptr);
-  }
-
   auto filler_to_pass = CreateMockFiller();
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
@@ -291,11 +279,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Submit) {
 }
 
 TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Dont_Submit) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto* authenticator_ptr = authenticator();
-    ExpectAndSimulateAuthenticationSuccess(authenticator_ptr);
-  }
-
   auto filler_to_pass = CreateMockFiller();
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
@@ -325,11 +308,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Fill_And_Dont_Submit) {
 
 TEST_F(TouchToFillControllerAutofillTest,
        ShowFillAndShowPasswordMigrationWarning) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto* authenticator_ptr = authenticator();
-    ExpectAndSimulateAuthenticationSuccess(authenticator_ptr);
-  }
-
   scoped_feature_list().Reset();
   scoped_feature_list().InitWithFeatures(
       {password_manager::features::
@@ -365,11 +343,6 @@ TEST_F(TouchToFillControllerAutofillTest,
 }
 
 TEST_F(TouchToFillControllerAutofillTest, Dont_Submit_With_Empty_Username) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto* authenticator_ptr = authenticator();
-    ExpectAndSimulateAuthenticationSuccess(authenticator_ptr);
-  }
-
   UiCredential credentials[] = {
       MakeUiCredential({.username = "", .password = "p4ssw0rd"}),
       MakeUiCredential({.username = "username", .password = "p4ssw0rd"})};
@@ -407,11 +380,6 @@ TEST_F(TouchToFillControllerAutofillTest, Dont_Submit_With_Empty_Username) {
 
 TEST_F(TouchToFillControllerAutofillTest,
        Single_Credential_With_Empty_Username) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto* authenticator_ptr = authenticator();
-    ExpectAndSimulateAuthenticationSuccess(authenticator_ptr);
-  }
-
   auto filler_to_pass = CreateMockFiller();
   UiCredential credentials[] = {
       MakeUiCredential({.username = "", .password = "p4ssw0rd"})};
@@ -442,11 +410,6 @@ TEST_F(TouchToFillControllerAutofillTest,
 }
 
 TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
-  // Auth is required to fill passwords in Android automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP();
-  }
-
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
@@ -506,7 +469,8 @@ TEST_F(TouchToFillControllerAutofillTest,
                                       std::u16string(u"p4ssw0rd")));
 
   ON_CALL(client(), CanUseBiometricAuthForFilling).WillByDefault(Return(true));
-  ExpectAndSimulateAuthenticationSuccess(authenticator_ptr);
+  EXPECT_CALL(*authenticator_ptr, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
@@ -577,11 +541,6 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Insecure_Origin) {
 }
 
 TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto* authenticator_ptr = authenticator();
-    ExpectAndSimulateAuthenticationSuccess(authenticator_ptr);
-  }
-
   // Test multiple credentials with one of them being an Android credential.
   UiCredential credentials[] = {
       MakeUiCredential({
