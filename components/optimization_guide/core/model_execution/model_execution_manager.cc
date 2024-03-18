@@ -90,6 +90,19 @@ void RecordModelExecutionResultHistogram(proto::ModelExecutionFeature feature,
       result);
 }
 
+void NoOpExecuteRemoteFn(
+    proto::ModelExecutionFeature feature,
+    const google::protobuf::MessageLite& request,
+    std::unique_ptr<proto::LogAiDataRequest> log_request,
+    OptimizationGuideModelExecutionResultStreamingCallback callback) {
+  OptimizationGuideModelStreamingExecutionResult streaming_result;
+  streaming_result.response = base::unexpected(
+      OptimizationGuideModelExecutionError::FromModelExecutionError(
+          OptimizationGuideModelExecutionError::ModelExecutionError::
+              kGenericFailure));
+  std::move(callback).Run(std::move(streaming_result));
+}
+
 }  // namespace
 
 using ModelExecutionError =
@@ -241,9 +254,14 @@ std::unique_ptr<OptimizationGuideModelExecutor::Session>
 ModelExecutionManager::StartSession(
     proto::ModelExecutionFeature feature,
     const std::optional<SessionConfigParams>& config_params) {
+  bool disable_server_fallback =
+      config_params && config_params->disable_server_fallback;
   ExecuteRemoteFn execute_fn =
-      base::BindRepeating(&ModelExecutionManager::ExecuteModelWithStreaming,
-                          base::Unretained(this));
+      disable_server_fallback
+          ? base::BindRepeating(&NoOpExecuteRemoteFn)
+          : base::BindRepeating(
+                &ModelExecutionManager::ExecuteModelWithStreaming,
+                base::Unretained(this));
   if (on_device_model_service_controller_) {
     auto session = on_device_model_service_controller_->CreateSession(
         feature, execute_fn, optimization_guide_logger_.get(),
@@ -254,7 +272,7 @@ ModelExecutionManager::StartSession(
     }
   }
 
-  if (config_params && config_params->disable_server_fallback) {
+  if (disable_server_fallback) {
     return nullptr;
   }
 
