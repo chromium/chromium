@@ -55,6 +55,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="kAppDataCorrupted"/>
   <int value="4" label="kAppProviderNotAvailable"/>
   <int value="5" label="kAppTypeNotSupported"/>
+  <int value="6" label="kInstallParametersInvalid"/>
+  <int value="7" label="kAppAlreadyInstalled"/>
 </enum>
 
 <enum name="AppListAppMovingType">

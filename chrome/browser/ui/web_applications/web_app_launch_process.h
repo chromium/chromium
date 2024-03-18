@@ -39,8 +39,8 @@ class WebAppRegistrar;
 // https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
 class WebAppLaunchProcess {
  public:
-  using OpenApplicationCallback = base::RepeatingCallback<content::WebContents*(
-      apps::AppLaunchParams&& params)>;
+  using OpenApplicationCallback =
+      base::RepeatingCallback<void(apps::AppLaunchParams params)>;
 
   WebAppLaunchProcess(const WebAppLaunchProcess&) = delete;
 

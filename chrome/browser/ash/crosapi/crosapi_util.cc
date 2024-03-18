@@ -243,6 +243,12 @@ constexpr std::string_view kAshCapabilities[] = {
     // past M123.
     "crbug/1501057",
 
+    // Support opening installed apps when requesting installation in
+    // AppInstallServiceAsh.
+    // TODO(b/326167458): Remove this capability once Ash and Lacros are both
+    // past M127.
+    "b/326167458",
+
     // Entries added to this list must record the current milestone + 3 with a
     // TODO for removal.
 };

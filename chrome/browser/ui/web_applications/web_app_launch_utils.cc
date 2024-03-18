@@ -782,9 +782,8 @@ void LaunchWebApp(apps::AppLaunchParams params,
     if (lock.registrar().IsInstalled(params.app_id)) {
       container = params.container;
       if (WebAppLaunchProcess::GetOpenApplicationCallbackForTesting()) {
-        web_contents =
-            WebAppLaunchProcess::GetOpenApplicationCallbackForTesting().Run(
-                std::move(params));
+        WebAppLaunchProcess::GetOpenApplicationCallbackForTesting().Run(
+            std::move(params));
       } else {
         web_contents = WebAppLaunchProcess::CreateAndRun(
             profile, lock.registrar(), lock.os_integration_manager(), params);

@@ -47,6 +47,7 @@ class AppInstallServiceAsh : public AppInstallService {
       base::OnceCallback<void(bool success)> callback) override;
 
  private:
+  bool MaybeLaunchApp(const PackageId& package_id);
   void FetchAppInstallData(
       PackageId package_id,
       base::OnceCallback<void(std::optional<AppInstallData>)> data_callback);

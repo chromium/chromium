@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
   base::RunLoop run_loop;
   web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
       base::BindLambdaForTesting(
-          [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
+          [&run_loop](apps::AppLaunchParams params) {
             if (GetParam().crosapi_state ==
                 TestProfileParam::CrosapiParam::kDisabled) {
               EXPECT_EQ(params.override_url,
@@ -732,7 +732,6 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
             EXPECT_TRUE(base::EndsWith(params.launch_files.at(1).MaybeAsASCII(),
                                        "bar.png"));
             run_loop.Quit();
-            return nullptr;
           }));
 
   base::FilePath file1 =

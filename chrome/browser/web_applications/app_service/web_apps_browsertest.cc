@@ -45,14 +45,12 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
 
   base::RunLoop run_loop;
   WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
-      base::BindLambdaForTesting(
-          [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
-            EXPECT_EQ(params.intent->action, apps_util::kIntentActionSend);
-            EXPECT_EQ(*params.intent->mime_type, "text/csv");
-            EXPECT_EQ(params.intent->files.size(), 1U);
-            run_loop.Quit();
-            return nullptr;
-          }));
+      base::BindLambdaForTesting([&run_loop](apps::AppLaunchParams params) {
+        EXPECT_EQ(params.intent->action, apps_util::kIntentActionSend);
+        EXPECT_EQ(*params.intent->mime_type, "text/csv");
+        EXPECT_EQ(params.intent->files.size(), 1U);
+        run_loop.Quit();
+      }));
 
   std::vector<base::FilePath> file_paths(
       {ash::CrosDisksClient::GetArchiveMountPoint().Append("numbers.csv")});
@@ -79,15 +77,12 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
 
   base::RunLoop run_loop;
   WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
-      base::BindLambdaForTesting(
-          [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
-            EXPECT_EQ(params.intent->action,
-                      apps_util::kIntentActionSendMultiple);
-            EXPECT_EQ(*params.intent->mime_type, "*/*");
-            EXPECT_EQ(params.intent->files.size(), 0U);
-            run_loop.Quit();
-            return nullptr;
-          }));
+      base::BindLambdaForTesting([&run_loop](apps::AppLaunchParams params) {
+        EXPECT_EQ(params.intent->action, apps_util::kIntentActionSendMultiple);
+        EXPECT_EQ(*params.intent->mime_type, "*/*");
+        EXPECT_EQ(params.intent->files.size(), 0U);
+        run_loop.Quit();
+      }));
 
   apps::IntentPtr intent = apps_util::CreateShareIntentFromFiles(
       profile, /*file_paths=*/std::vector<base::FilePath>(),

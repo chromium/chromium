@@ -31,6 +31,8 @@ class AppInstallService {
   // communicates with the Almanac app API to retrieve app data, and then
   // prompts the user to proceed with the installation. `callback` is called
   // when the installation completes, whether successful or unsuccessful.
+  // If an app with the same package_id is already installed that app will be
+  // launched instead.
   virtual void InstallApp(AppInstallSurface surface,
                           PackageId package_id,
                           base::OnceClosure callback) = 0;

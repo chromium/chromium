@@ -4,13 +4,16 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/repeating_test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/chromeos/crosapi/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -90,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThottleBrowserTest,
   // Make install prompts auto accept.
   web_app::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/true);
 
-  // Open GIOC URI.
+  // Open install-app URI.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -110,6 +113,28 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThottleBrowserTest,
   // around, there should only be the original about:blank tab and the install
   // page tab.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Test whether already installed apps launch instead of going through the
+  // install flow again.
+  if (crosapi::AshSupportsCapabilities({"b/326167458"})) {
+    // Disable install prompt auto accept.
+    web_app::SetAutoAcceptPWAInstallConfirmationForTesting(
+        /*auto_accept=*/false);
+
+    base::test::RepeatingTestFuture<apps::AppLaunchParams> future;
+    web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
+        future.GetCallback());
+
+    // Open install-app URI again.
+    EXPECT_TRUE(content::ExecJs(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        base::StringPrintf(
+            "window.open('almanac://install-app?package_id=%s');",
+            package_id.ToString().c_str())));
+
+    // This should launch the app instead of triggering installation.
+    EXPECT_EQ(future.Take().app_id, app_id);
+  }
 }
 
 }  // namespace apps
