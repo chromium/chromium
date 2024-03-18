@@ -18616,8 +18616,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "RemoveUPMUnenrollment",
-                        "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration"
+                        "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
+                        "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration"
                     ]
                 }
             ]
