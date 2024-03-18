@@ -4,8 +4,6 @@
 
 #include "components/password_manager/core/common/password_manager_util.h"
 
-#include <string>
-
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -26,6 +24,17 @@ bool IsRendererRecognizedCredentialForm(const autofill::FormData& form) {
                    password_manager::constants::kAutocompleteWebAuthn) !=
                    std::string::npos;
       });
+}
+
+bool CanBeConsideredAsSingleUsername(const std::u16string& name,
+                                     const std::u16string& id,
+                                     const std::u16string& label) {
+  return (name.find(password_manager::constants::kSearch) ==
+          std::u16string::npos) &&
+         (id.find(password_manager::constants::kSearch) ==
+          std::u16string::npos) &&
+         (label.find(password_manager::constants::kSearch) ==
+          std::u16string::npos);
 }
 
 }  // namespace password_manager::util

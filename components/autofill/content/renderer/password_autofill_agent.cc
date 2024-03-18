@@ -808,6 +808,13 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
   static base::NoDestructor<WebString> kName("name");
   std::u16string name_attribute = element.GetAttribute(*kName).Utf16();
   std::u16string id_attribute = element.GetIdAttribute().Utf16();
+  static base::NoDestructor<WebString> kLabel("label");
+  std::u16string label_attribute = element.GetAttribute(*kLabel).Utf16();
+
+  if (!password_manager::util::CanBeConsideredAsSingleUsername(
+          name_attribute, id_attribute, label_attribute)) {
+    return;
+  }
 
   bool is_likely_otp =
       autofill::MatchesRegex<password_manager::constants::kOneTimePwdRe>(

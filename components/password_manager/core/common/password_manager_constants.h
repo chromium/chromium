@@ -63,6 +63,8 @@ inline constexpr char16_t kEmailValueRe[] =
 inline constexpr char16_t kPhoneValueRe[] = u"^[0-9()+-]{6,25}$";
 inline constexpr char16_t kUsernameLikeValueRe[] = u"[A-Za-z0-9_\\-.]{7,30}";
 
+inline constexpr char16_t kSearch[] = u"search";
+
 }  // namespace password_manager::constants
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_CONSTANTS_H_

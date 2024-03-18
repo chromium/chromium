@@ -4772,6 +4772,21 @@ TEST_F(PasswordAutofillAgentTest, ModifyNamelessNonPasswordField) {
   SimulateUserInputChangeForElement(&username_element_, kAliceUsername);
 }
 
+// Tests that user modifying the text field value does not notify the browser if
+// the field is labeled as a search field.
+TEST_F(PasswordAutofillAgentTest, ModifySearchField) {
+  LoadHTML(kSingleUsernameFormHTML);
+  UpdateOnlyUsernameElement();
+  username_element_.SetAttribute("name", "thesearchfield");
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+  FocusFirstInputElement();
+#endif
+  EXPECT_CALL(fake_driver_, UserModifiedNonPasswordField).Times(0);
+  SimulateUserInputChangeForElement(&username_element_, kAliceUsername);
+}
+
 // Tests that user inputs are propagated to the browser properly when a Shadow
 // DOM tree starts between the <form> and <input> tags.
 TEST_F(PasswordAutofillAgentTest,

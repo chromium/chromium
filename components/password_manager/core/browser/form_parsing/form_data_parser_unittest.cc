@@ -2942,6 +2942,16 @@ TEST_F(FormParserTest, SingleUsernamePrediction) {
                    .prediction = {.type = autofill::PASSWORD}},
               },
       },
+      {
+          .description_for_logging = "Field labeled as seach field",
+          .fields =
+              {
+                  {.role = ElementRole::NONE,
+                   .name = u"search_bar",
+                   .form_control_type = FormControlType::kInputText,
+                   .prediction = {.type = autofill::SINGLE_USERNAME}},
+              },
+      },
   });
 }
 

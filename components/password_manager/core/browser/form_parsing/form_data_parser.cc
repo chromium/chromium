@@ -33,6 +33,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_util.h"
 
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
@@ -356,6 +357,11 @@ ProcessedField* FindField(std::vector<ProcessedField>* processed_fields,
   return nullptr;
 }
 
+bool CanBeConsideredAsSingleUsernameField(const FormFieldData* field) {
+  return field && password_manager::util::CanBeConsideredAsSingleUsername(
+                      field->name_attribute, field->id_attribute, field->label);
+}
+
 // Given a `new_password` field tries to find a matching confirmation_password
 // field in `processed_fields` that succeeds `new_password` and has matching
 // interactability and value.
@@ -429,7 +435,8 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
         break;
       case CredentialFieldType::kSingleUsername:
         processed_field = FindField(processed_fields, prediction);
-        if (processed_field) {
+        if (processed_field &&
+            CanBeConsideredAsSingleUsernameField(processed_field->field)) {
           result->username = processed_field->field;
           result->is_single_username = true;
           base::UmaHistogramBoolean(
