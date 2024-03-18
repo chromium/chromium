@@ -7,57 +7,71 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
 namespace autofill::autofill_metrics {
 
 namespace {
 
-// Gets the last `AutofillFillingMethod` logged for a `field`. If the filled was
-// never filled using Autofill, returns `AutofillFillingMethod::kNone`.
+// Gets the last `FillingMethod` logged for a `field`. If the filled was
+// never filled using Autofill, returns `FillingMethod::kNone`.
 // `field_log_events()` returns all log events that were added to a field in
-// chronological order, so in order to know the last `AutofillFillingMethod`
+// chronological order, so in order to know the last `FillingMethod`
 // used for `field` we can look for the latest log event in the array of type
 // `FillFieldLogEvent` that has a its filling method different to
-// `AutofillFillingMethod::kNone`.
-AutofillFillingMethod GetLastFieldAutofillFillingMethod(
-    const AutofillField& field) {
+// `FillingMethod::kNone`.
+FillingMethod GetLastFieldFillingMethod(const AutofillField& field) {
   for (const auto& log_event : base::Reversed(field.field_log_events())) {
-    auto* event = absl::get_if<FillFieldLogEvent>(&log_event);
-    if (event && event->filling_method != AutofillFillingMethod::kNone) {
-      return event->filling_method;
+    if (auto* event = absl::get_if<FillFieldLogEvent>(&log_event)) {
+      switch (event->filling_method) {
+        case FillingMethod::kFullForm:
+          return FillingMethod::kFullForm;
+        case FillingMethod::kGroupFillingName:
+        case FillingMethod::kGroupFillingAddress:
+        case FillingMethod::kGroupFillingEmail:
+        case FillingMethod::kGroupFillingPhoneNumber:
+          // For metric purposes, we do not care about the type of group filling
+          // that was used.
+          return FillingMethod::kGroupFillingAddress;
+        case FillingMethod::kFieldByFieldFilling:
+          return FillingMethod::kFieldByFieldFilling;
+        case FillingMethod::kNone:
+          break;
+      }
     }
   }
-  return AutofillFillingMethod::kNone;
+  return FillingMethod::kNone;
 }
 
 }  // namespace
 
-std::string_view AutofillFillingMethodToStringView(
-    AutofillFillingMethod filling_method) {
+std::string_view FillingMethodToCompactStringView(
+    FillingMethod filling_method) {
   switch (filling_method) {
-    case AutofillFillingMethod::kFullForm:
+    case FillingMethod::kFullForm:
       return "FullForm";
-    case AutofillFillingMethod::kGroupFilling:
+    case FillingMethod::kGroupFillingName:
+    case FillingMethod::kGroupFillingAddress:
+    case FillingMethod::kGroupFillingEmail:
+    case FillingMethod::kGroupFillingPhoneNumber:
       return "GroupFilling";
-    case AutofillFillingMethod::kFieldByFieldFilling:
+    case FillingMethod::kFieldByFieldFilling:
       return "FieldByFieldFilling";
-    case AutofillFillingMethod::kNone:
+    case FillingMethod::kNone:
       return "None";
   }
 }
 
-void AddFillingStatsForAutofillFillingMethod(
+void AddFillingStatsForFillingMethod(
     const AutofillField& field,
-    base::flat_map<AutofillFillingMethod,
-                   autofill_metrics::FormGroupFillingStats>&
+    base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>&
         field_stats_by_filling_method) {
-  const AutofillFillingMethod filling_method =
-      GetLastFieldAutofillFillingMethod(field);
+  const FillingMethod filling_method = GetLastFieldFillingMethod(field);
   auto filling_stats_form_autofill_filling_method_it =
       field_stats_by_filling_method.find(filling_method);
 
-  // If this is not the first field that has a certain `AutofillFillingMethod`,
+  // If this is not the first field that has a certain `FillingMethod`,
   // update the existing entry to include the `field`s `FieldFillingStatus`.
   // Otherwise create a new entry in the map for the field`s filling method and
   // set the `FormGroupFillingStats` for the `field`s `FieldFillingStatus` as
@@ -65,11 +79,10 @@ void AddFillingStatsForAutofillFillingMethod(
   if (filling_stats_form_autofill_filling_method_it !=
       field_stats_by_filling_method.end()) {
     filling_stats_form_autofill_filling_method_it->second.AddFieldFillingStatus(
-        autofill_metrics::GetFieldFillingStatus(field));
+        GetFieldFillingStatus(field));
   } else {
-    autofill_metrics::FormGroupFillingStats filling_method_stats;
-    filling_method_stats.AddFieldFillingStatus(
-        autofill_metrics::GetFieldFillingStatus(field));
+    FormGroupFillingStats filling_method_stats;
+    filling_method_stats.AddFieldFillingStatus(GetFieldFillingStatus(field));
     field_stats_by_filling_method[filling_method] = filling_method_stats;
   }
 }

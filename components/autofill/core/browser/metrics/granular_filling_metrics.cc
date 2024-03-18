@@ -68,7 +68,7 @@ void LogDeleteAddressProfileFromExtendedMenu(bool user_accepted_delete) {
                             user_accepted_delete);
 }
 
-void LogFillingMethodUsed(AutofillFillingMethodMetric filling_method,
+void LogFillingMethodUsed(FillingMethod filling_method,
                           FillingProduct filling_product,
                           bool triggering_field_type_matches_filling_product) {
   base::UmaHistogramEnumeration(

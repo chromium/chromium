@@ -450,7 +450,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
         .was_autofilled_before_security_policy = ToOptionalBoolean(true),
         .had_value_after_filling = ToOptionalBoolean(true),
-        .filling_method = AutofillFillingMethod::kFieldByFieldFilling});
+        .filling_method = FillingMethod::kFieldByFieldFilling});
   }
   manager_->driver().ApplyFieldAction(action_type, action_persistence,
                                       field.global_id(), value);
@@ -626,7 +626,7 @@ void FormFiller::FillOrPreviewForm(
                 skip_reasons[autofill_field->global_id()],
             .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
             .had_value_after_filling = ToOptionalBoolean(has_value_before),
-            .filling_method = AutofillFillingMethod::kNone,
+            .filling_method = FillingMethod::kNone,
             .value_that_would_have_been_filled_in_a_prefilled_field_hash =
                 value_that_would_have_been_filled_in_a_prefilled_field_hash(),
         });
@@ -697,8 +697,8 @@ void FormFiller::FillOrPreviewForm(
                         features::kAutofillGranularFillingAvailable)
                         ? GetFillingMethodFromTargetedFields(
                               trigger_details.field_types_to_fill)
-                        : AutofillFillingMethod::kFullForm
-                  : AutofillFillingMethod::kNone,
+                        : FillingMethod::kFullForm
+                  : FillingMethod::kNone,
       });
     }
     LOG_AF(buffer)

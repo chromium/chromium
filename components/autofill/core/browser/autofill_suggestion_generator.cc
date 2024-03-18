@@ -69,6 +69,10 @@ namespace autofill {
 
 namespace {
 
+constexpr DenseSet<FillingMethod> kGroupFillingMethods = {
+    FillingMethod::kGroupFillingName, FillingMethod::kGroupFillingAddress,
+    FillingMethod::kGroupFillingEmail, FillingMethod::kGroupFillingPhoneNumber};
+
 // Returns the credit card field |value| trimmed from whitespace and with stop
 // characters removed.
 std::u16string SanitizeCreditCardFieldValue(const std::u16string& value) {
@@ -700,13 +704,16 @@ PopupItemId GetProfileSuggestionPopupItemId(
 
   switch (GetFillingMethodFromTargetedFields(
       last_targeted_fields.value_or(kAllFieldTypes))) {
-    case AutofillFillingMethod::kGroupFilling:
+    case FillingMethod::kGroupFillingName:
+    case FillingMethod::kGroupFillingAddress:
+    case FillingMethod::kGroupFillingEmail:
+    case FillingMethod::kGroupFillingPhoneNumber:
       return get_popup_item_id_for_group_filling();
-    case AutofillFillingMethod::kFullForm:
+    case FillingMethod::kFullForm:
       return PopupItemId::kAddressEntry;
-    case AutofillFillingMethod::kFieldByFieldFilling:
+    case FillingMethod::kFieldByFieldFilling:
       return PopupItemId::kAddressFieldByFieldFilling;
-    case AutofillFillingMethod::kNone:
+    case FillingMethod::kNone:
       NOTREACHED_NORETURN();
   }
 }
@@ -717,32 +724,25 @@ PopupItemId GetProfileSuggestionPopupItemId(
 // filling behaviour. Returns an empty string when no granular filling label
 // needs to be applied for a profile.
 std::u16string GetGranularFillingLabels(
-    std::optional<FieldTypeSet> last_targeted_fields,
-    FieldType triggering_field_type) {
-  AutofillFillingMethod filling_method = GetFillingMethodFromTargetedFields(
+    std::optional<FieldTypeSet> last_targeted_fields) {
+  FillingMethod filling_method = GetFillingMethodFromTargetedFields(
       last_targeted_fields.value_or(kAllFieldTypes));
-  if (filling_method != AutofillFillingMethod::kGroupFilling) {
+  if (!kGroupFillingMethods.contains(filling_method)) {
     return u"";
   }
 
-  switch (GroupTypeOfFieldType(triggering_field_type)) {
-    case FieldTypeGroup::kName:
+  switch (filling_method) {
+    case FillingMethod::kGroupFillingName:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED);
-    case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kAddress:
+    case FillingMethod::kGroupFillingAddress:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED);
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kPhone:
-    case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCreditCard:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kIban:
+    case FillingMethod::kGroupFillingEmail:
+    case FillingMethod::kGroupFillingPhoneNumber:
       return u"";
+    default:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -765,10 +765,10 @@ bool ShouldAddAddressLine1ToSuggestionLabels(FieldType triggering_field_type) {
 int GetNumberOfMinimalFieldsToShow(
     FieldType trigger_field_type,
     std::optional<FieldTypeSet> last_targeted_fields) {
-  AutofillFillingMethod filling_method = GetFillingMethodFromTargetedFields(
+  FillingMethod filling_method = GetFillingMethodFromTargetedFields(
       last_targeted_fields.value_or(kAllFieldTypes));
 
-  if (filling_method == AutofillFillingMethod::kGroupFilling) {
+  if (kGroupFillingMethods.contains(filling_method)) {
     // If an address field cannot provide sufficient information about the
     // address, then `ADDRESS_HOME_LINE1` should be part of the label.
     // Otherwise, no general labels are needed in group filling mode. Only
@@ -845,7 +845,7 @@ CreateSuggestionLabelsWithGranularFillingDetails(
   }
 
   const std::u16string suggestions_granular_filling_label =
-      GetGranularFillingLabels(last_targeted_fields, trigger_field_type);
+      GetGranularFillingLabels(last_targeted_fields);
 
   const std::vector<std::u16string> suggestions_differentiating_labels =
       GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,

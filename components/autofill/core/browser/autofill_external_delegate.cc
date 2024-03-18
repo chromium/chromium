@@ -536,8 +536,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillFullAddress:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingAddress,
-          FillingProduct::kAddress,
+          FillingMethod::kGroupFillingAddress, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -548,8 +547,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillFullName:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingName,
-          FillingProduct::kAddress,
+          FillingMethod::kGroupFillingName, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -560,9 +558,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillFullPhoneNumber:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::
-              kGroupFillingPhoneNumber,
-          FillingProduct::kAddress,
+          FillingMethod::kGroupFillingPhoneNumber, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -574,8 +570,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillFullEmail:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kGroupFillingEmail,
-          FillingProduct::kAddress,
+          FillingMethod::kGroupFillingEmail, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -706,8 +701,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           GetFillingProductFromPopupItemId(PopupItemId::kAddressEntry),
           manager_->client().IsOffTheRecord());
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kFullForm,
-          FillingProduct::kAddress,
+          FillingMethod::kFullForm, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       autofill_metrics::LogUserAcceptedPreviouslyHiddenProfileSuggestion(
           suggestion.hidden_prior_to_address_rewriter_usage);
@@ -719,8 +713,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kFillEverythingFromAddressProfile:
       autofill_metrics::LogFillingMethodUsed(
-          autofill_metrics::AutofillFillingMethodMetric::kFullForm,
-          FillingProduct::kAddress,
+          FillingMethod::kFullForm, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -1016,8 +1009,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
       IsAddressType(autofill_trigger_field->Type().GetStorableType());
 
   autofill_metrics::LogFillingMethodUsed(
-      autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling,
-      FillingProduct::kAddress,
+      FillingMethod::kFieldByFieldFilling, FillingProduct::kAddress,
       /*triggering_field_type_matches_filling_product=*/
       is_triggering_field_address);
 

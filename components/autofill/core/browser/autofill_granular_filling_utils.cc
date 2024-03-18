@@ -38,18 +38,27 @@ FieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
 
 }  // namespace
 
-AutofillFillingMethod GetFillingMethodFromTargetedFields(
+FillingMethod GetFillingMethodFromTargetedFields(
     const FieldTypeSet& targeted_field_types) {
   if (targeted_field_types == kAllFieldTypes) {
-    return AutofillFillingMethod::kFullForm;
+    return FillingMethod::kFullForm;
   }
-  if (AreFieldsGranularFillingGroup(targeted_field_types)) {
-    return AutofillFillingMethod::kGroupFilling;
+  if (targeted_field_types == GetFieldTypesOfGroup(FieldTypeGroup::kName)) {
+    return FillingMethod::kGroupFillingName;
+  }
+  if (targeted_field_types == GetAddressFieldsForGroupFilling()) {
+    return FillingMethod::kGroupFillingAddress;
+  }
+  if (targeted_field_types == GetFieldTypesOfGroup(FieldTypeGroup::kEmail)) {
+    return FillingMethod::kGroupFillingEmail;
+  }
+  if (targeted_field_types == GetFieldTypesOfGroup(FieldTypeGroup::kPhone)) {
+    return FillingMethod::kGroupFillingPhoneNumber;
   }
   if (targeted_field_types.size() == 1) {
-    return AutofillFillingMethod::kFieldByFieldFilling;
+    return FillingMethod::kFieldByFieldFilling;
   }
-  return AutofillFillingMethod::kNone;
+  return FillingMethod::kNone;
 }
 
 FieldTypeSet GetAddressFieldsForGroupFilling() {
@@ -69,14 +78,17 @@ FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
     const FieldTypeSet& last_targeted_field_types,
     FieldType triggering_field_type) {
   switch (GetFillingMethodFromTargetedFields(last_targeted_field_types)) {
-    case AutofillFillingMethod::kGroupFilling:
+    case FillingMethod::kGroupFillingName:
+    case FillingMethod::kGroupFillingAddress:
+    case FillingMethod::kGroupFillingEmail:
+    case FillingMethod::kGroupFillingPhoneNumber:
       return GetServerFieldsForFieldGroup(
           GroupTypeOfFieldType(triggering_field_type));
-    case AutofillFillingMethod::kFullForm:
+    case FillingMethod::kFullForm:
       return kAllFieldTypes;
-    case AutofillFillingMethod::kFieldByFieldFilling:
+    case FillingMethod::kFieldByFieldFilling:
       return {triggering_field_type};
-    case AutofillFillingMethod::kNone:
+    case FillingMethod::kNone:
       break;
   }
   NOTREACHED_NORETURN();

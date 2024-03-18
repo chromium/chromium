@@ -127,13 +127,13 @@ void LogFieldFillingStats(FormType form_type,
       form_type, base::StrCat({"Autofill.FieldFillingStats."}), filling_stats);
 }
 
-void LogAddressFieldFillingStatsForAutofillFillingMethod(
-    AutofillFillingMethod filling_method,
+void LogAddressFieldFillingStatsForFillingMethod(
+    FillingMethod filling_method,
     const FormGroupFillingStats& filling_stats) {
   LogFieldFillingStatsWithHistogramPrefix(
       FormType::kAddressForm,
       base::StrCat({"Autofill.FieldFillingStats.",
-                    AutofillFillingMethodToStringView(filling_method), "."}),
+                    FillingMethodToCompactStringView(filling_method), "."}),
       filling_stats);
 }
 
@@ -216,14 +216,14 @@ void LogFieldFillingStatsAndScore(
   LogFormFillingComplexScore(FormType::kCreditCardForm, cc_filling_stats);
 }
 
-void LogAddressFieldFillingStatsAndScoreByAutofillFillingMethod(
-    const base::flat_map<AutofillFillingMethod,
+void LogAddressFieldFillingStatsAndScoreByFillingMethod(
+    const base::flat_map<FillingMethod,
                          autofill_metrics::FormGroupFillingStats>&
         address_filling_stats_by_filling_method) {
   autofill_metrics::FormGroupFillingStats any;
   for (const auto& filling_stats : address_filling_stats_by_filling_method) {
-    LogAddressFieldFillingStatsForAutofillFillingMethod(filling_stats.first,
-                                                        filling_stats.second);
+    LogAddressFieldFillingStatsForFillingMethod(filling_stats.first,
+                                                filling_stats.second);
     MergeFormGroupFillingStats(filling_stats.second, any);
   }
   LogFieldFillingStatsWithHistogramPrefix(

@@ -3664,7 +3664,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
         .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
         .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
         .had_value_after_filling = OptionalBoolean::kTrue,
-        .filling_method = AutofillFillingMethod::kFullForm,
+        .filling_method = FillingMethod::kFullForm,
         .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse,
     });
     EXPECT_THAT(autofill_field_ptr->field_log_events(),
@@ -3742,7 +3742,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_method = FillingMethod::kFullForm,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse,
       });
@@ -3755,7 +3755,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .autofill_skipped_status = FieldFillingSkipReason::kNoValueToFill,
           .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kFalse,
-          .filling_method = AutofillFillingMethod::kNone,
+          .filling_method = FillingMethod::kNone,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kUndefined,
       });
@@ -3777,7 +3777,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_method = FillingMethod::kFullForm,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse,
       });
@@ -3813,7 +3813,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_method = FillingMethod::kFullForm,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse,
       }));
@@ -3845,7 +3845,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_method = AutofillFillingMethod::kGroupFilling,
+          .filling_method = FillingMethod::kGroupFillingName,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse,
       }));
@@ -3877,7 +3877,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_method = AutofillFillingMethod::kFieldByFieldFilling,
+          .filling_method = FillingMethod::kFieldByFieldFilling,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse,
       }));
@@ -3944,7 +3944,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
       .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
-      .filling_method = AutofillFillingMethod::kFullForm,
+      .filling_method = FillingMethod::kFullForm,
       .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse,
   };
 
@@ -3974,7 +3974,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_method = FillingMethod::kFullForm,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse});
     } else if (autofill_field_ptr->parseable_label() == u"Phone Number" ||
@@ -3985,7 +3985,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       expected_event.had_value_after_filling = OptionalBoolean::kFalse;
       expected_event.filling_prevented_by_iframe_security_policy =
           OptionalBoolean::kUndefined;
-      expected_event.filling_method = AutofillFillingMethod::kNone;
+      expected_event.filling_method = FillingMethod::kNone;
       expected_event.autofill_skipped_status =
           FieldFillingSkipReason::kNoValueToFill;
       expected_events.push_back(expected_event);
@@ -3995,7 +3995,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_method = FillingMethod::kFullForm,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse});
     } else {
@@ -4007,7 +4007,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
               FieldFillingSkipReason::kAutofilledFieldsNotRefill,
           .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_method = AutofillFillingMethod::kNone,
+          .filling_method = FillingMethod::kNone,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kUndefined});
     }
@@ -4060,7 +4060,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
       .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
       .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
-      .filling_method = AutofillFillingMethod::kFullForm,
+      .filling_method = FillingMethod::kFullForm,
       .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse,
   };
 
@@ -4137,7 +4137,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
       .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
-      .filling_method = AutofillFillingMethod::kFullForm,
+      .filling_method = FillingMethod::kFullForm,
       .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse,
   };
 
@@ -4170,7 +4170,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .autofill_skipped_status = FieldFillingSkipReason::kNoValueToFill,
           .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kFalse,
-          .filling_method = AutofillFillingMethod::kNone,
+          .filling_method = FillingMethod::kNone,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kUndefined,
       });

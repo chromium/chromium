@@ -1244,7 +1244,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // suggestion (`PopupItemId`) accepted.
 struct FillingMethodMetricsTestParams {
   const PopupItemId popup_item_id;
-  const autofill_metrics::AutofillFillingMethodMetric target_metric;
+  const FillingMethod target_metric;
   const std::string test_name;
 };
 
@@ -1254,31 +1254,27 @@ class FillingMethodMetricsUnitTest
 
 const FillingMethodMetricsTestParams kFillingMethodMetricsTestCases[] = {
     {.popup_item_id = PopupItemId::kAddressEntry,
-     .target_metric = autofill_metrics::AutofillFillingMethodMetric::kFullForm,
+     .target_metric = FillingMethod::kFullForm,
      .test_name = "addressEntry"},
     {.popup_item_id = PopupItemId::kFillEverythingFromAddressProfile,
-     .target_metric = autofill_metrics::AutofillFillingMethodMetric::kFullForm,
+     .target_metric = FillingMethod::kFullForm,
      .test_name = "fillEverythingFromAddressProfile"},
     {.popup_item_id = PopupItemId::kAddressFieldByFieldFilling,
-     .target_metric =
-         autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling,
+     .target_metric = FillingMethod::kFieldByFieldFilling,
      .test_name = "fieldByFieldFilling"},
     {.popup_item_id = PopupItemId::kFillFullAddress,
-     .target_metric =
-         autofill_metrics::AutofillFillingMethodMetric::kGroupFillingAddress,
+     .target_metric = FillingMethod::kGroupFillingAddress,
      .test_name = "fillFullAddress"},
     {.popup_item_id = PopupItemId::kFillFullPhoneNumber,
-     .target_metric = autofill_metrics::AutofillFillingMethodMetric::
-         kGroupFillingPhoneNumber,
+     .target_metric = FillingMethod::kGroupFillingPhoneNumber,
      .test_name = "fillFullPhoneNumber"},
     {.popup_item_id = PopupItemId::kFillFullEmail,
-     .target_metric =
-         autofill_metrics::AutofillFillingMethodMetric::kGroupFillingEmail,
+     .target_metric = FillingMethod::kGroupFillingEmail,
      .test_name = "fillFullEmail"},
 };
 
 // Tests that for a certain `PopupItemId` accepted, the expected
-// `AutofillFillingMethodMetric` is recorded.
+// `FillingMethod` is recorded.
 TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
   IssueOnQuery();
   const FillingMethodMetricsTestParams& params = GetParam();
@@ -1292,8 +1288,7 @@ TEST_P(FillingMethodMetricsUnitTest, RecordFillingMethodForPopupType) {
 
   // Field-by-field filling is the only filling method that can fill
   // unclassified fields.
-  if (params.target_metric ==
-      autofill_metrics::AutofillFillingMethodMetric::kFieldByFieldFilling) {
+  if (params.target_metric == FillingMethod::kFieldByFieldFilling) {
     get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
     external_delegate().DidAcceptSuggestion(suggestion,
                                             SuggestionPosition{.row = 0});

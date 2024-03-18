@@ -44,7 +44,7 @@ TEST(
 }
 
 // The test below asserts that when the last targeted fields match
-// `AutofillFillingMethod::kGroupFilling`,
+// `FillingMethod::kGroupFillingFoo`,
 // `GetTargetServerFieldsForTypeAndLastTargetedFields()` returns a set of fields
 // that match the group of the triggering field.
 TEST(

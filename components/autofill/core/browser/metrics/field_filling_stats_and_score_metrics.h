@@ -27,9 +27,9 @@ void LogFieldFillingStatsAndScore(
     const FormGroupFillingStats& cc_filling_stats,
     const FormGroupFillingStats& ac_unrecognized_address_field_stats);
 
-// Same as above but keyed by `AutofillFillingMethod`.
-void LogAddressFieldFillingStatsAndScoreByAutofillFillingMethod(
-    const base::flat_map<AutofillFillingMethod,
+// Same as above but keyed by `FillingMethod`.
+void LogAddressFieldFillingStatsAndScoreByFillingMethod(
+    const base::flat_map<FillingMethod,
                          autofill_metrics::FormGroupFillingStats>&
         address_filling_stats_by_filling_method);
 
