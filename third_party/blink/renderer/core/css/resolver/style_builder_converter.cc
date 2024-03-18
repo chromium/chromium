@@ -2447,12 +2447,20 @@ SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,
         case CSSValueID::kContextFill:
           // context-fill cannot be use as a uri fallback
           DCHECK(!paint.resource);
-          paint.type = SVGPaintType::kContextFill;
+          if (RuntimeEnabledFeatures::SvgContextPaintEnabled()) {
+            paint.type = SVGPaintType::kContextFill;
+          } else {
+            local_identifier_value = nullptr;
+          }
           break;
         case CSSValueID::kContextStroke:
           // context-stroke cannot be use as a uri fallback
           DCHECK(!paint.resource);
-          paint.type = SVGPaintType::kContextStroke;
+          if (RuntimeEnabledFeatures::SvgContextPaintEnabled()) {
+            paint.type = SVGPaintType::kContextStroke;
+          } else {
+            local_identifier_value = nullptr;
+          }
           break;
         default:
           // For all other keywords, try to parse as a color.

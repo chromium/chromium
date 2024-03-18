@@ -3728,6 +3728,10 @@
       base_feature: "none",
     },
     {
+      name: "SvgContextPaint",
+      status: "stable",
+    },
+    {
       name: "SvgCrossOriginAttribute",
       status: "stable",
     },
