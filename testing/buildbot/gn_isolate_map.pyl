@@ -613,6 +613,13 @@
     "label": "//courgette:courgette_unittests",
     "type": "console_test_launcher",
   },
+  "cq_medium_tast_tests": {
+    "label": "//chromeos:cq_medium_tast_tests",
+    "type": "generated_script",
+    "args": [
+      "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+  },
   "crashpad_tests": {
     "label": "//third_party/crashpad/crashpad:crashpad_tests",
     "type": "console_test_launcher",

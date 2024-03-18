@@ -349,8 +349,7 @@
           'chromeos-betty',
         ],
         'test_suites': {
-          'gtest_tests': 'chromeos_vm_gtests_and_tast',
-          'isolated_scripts': 'chromeos_isolated_scripts',
+          'gtest_tests': 'chromeos_vm_preuprev_tast',
         },
       },
       'chromeos-brya-chrome-preuprev': {
@@ -358,7 +357,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_brya_skylab_tests',
+          'skylab_tests': 'chromeos_brya_preuprev_tests',
         },
         'os_type': 'chromeos',
       },
@@ -367,7 +366,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
+          'skylab_tests': 'chromeos_jacuzzi_preuprev_tests',
         },
         'os_type': 'chromeos',
       },
@@ -376,7 +375,7 @@
           'chromiumos_preflight',
         ],
         'test_suites': {
-          'skylab_tests': 'chromeos_volteer_skylab_tests',
+          'skylab_tests': 'chromeos_volteer_preuprev_tests',
         },
         'os_type': 'chromeos',
       },
@@ -398,7 +397,6 @@
         },
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests',
-          'isolated_scripts': 'linux_chromeos_isolated_scripts',
         },
       },
     },

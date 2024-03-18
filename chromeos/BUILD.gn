@@ -225,6 +225,18 @@ if (is_chromeos_ash && is_chromeos_device) {
     tast_tests = [ "ui.ChromeVariationsSmoke" ]
   }
 
+  # Test suite to test the CrOS basic functionality (See http://go/cq-medium).
+  tast_test("cq_medium_tast_tests") {
+    if (is_skylab) {
+      # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
+      tast_attr_expr = "(\"group:cq-medium\" && \"dep:chrome\" && !\"dep:no_chrome_dcheck\" && !informational)"
+    } else {
+      deploy_lacros_chrome = true
+    }
+
+    tast_disabled_tests = _tast_disabled_tests_on_this_board
+  }
+
   group("cros_chrome_deploy") {
     # The following run-time dependencies are needed to deploy chrome to a
     # ChromeOS device. See the link for the full list:

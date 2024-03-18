@@ -369,6 +369,69 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "chromeos_brya_preuprev_tests",
+    basic_suites = {
+        "chromeos_cq_medium_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_ASH_LKGM",
+            ],
+        ),
+        "chromeos_integration_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_ASH_LKGM",
+            ],
+        ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_ASH_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "chromeos_jacuzzi_preuprev_tests",
+    basic_suites = {
+        "chromeos_cq_medium_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_JACUZZI_RELEASE_LKGM",
+            ],
+        ),
+        "chromeos_integration_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_JACUZZI_RELEASE_LKGM",
+            ],
+        ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_JACUZZI_RELEASE_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "chromeos_volteer_preuprev_tests",
+    basic_suites = {
+        "chromeos_cq_medium_tast_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+            ],
+        ),
+        "chromeos_integration_tests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+            ],
+        ),
+        "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            variants = [
+                "CROS_VOLTEER_RELEASE_ASH_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "fieldtrial_ios_simulator_tests",
     basic_suites = {
         "ios_eg2_cq_tests": targets.legacy_matrix_config(

@@ -200,6 +200,15 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "chromeos_vm_preuprev_tast",
+    basic_suites = [
+        "chromeos_cq_medium_tast_tests",
+        "chromeos_integration_tests",
+        "chromeos_device_only_gtests",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "chromeos_vm_tast",
     basic_suites = [
         "chromeos_browser_all_tast_tests",
