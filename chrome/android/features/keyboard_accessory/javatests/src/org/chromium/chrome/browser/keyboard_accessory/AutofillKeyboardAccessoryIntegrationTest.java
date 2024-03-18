@@ -4,20 +4,26 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.ViewActionOnDescendant.performOnRecyclerViewNthItem;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabAtPosition;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.waitToBeHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 
 import android.app.Activity;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -158,6 +164,29 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mHelper.getFirstAccessorySuggestion().performClick());
         mHelper.waitForKeyboardAccessoryToDisappear();
+    }
+
+    @Test
+    @MediumTest
+    public void testClicksThroughOtherSurfaceAreIgnored()
+            throws ExecutionException, TimeoutException, InterruptedException {
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        loadTestPage(MultiWindowKeyboard::new);
+        mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
+        mHelper.waitForKeyboardAccessoryToBeShown(true);
+
+        for (int i = 0; i < mHelper.getAccessoryBarView().getAdapter().getItemCount(); i++) {
+            performOnRecyclerViewNthItem(
+                    withId(R.id.bar_items_view),
+                    i,
+                    createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+            onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
+            performOnRecyclerViewNthItem(
+                    withId(R.id.bar_items_view),
+                    i,
+                    createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+            onView(withId(R.id.keyboard_accessory)).check(matches(isDisplayed()));
+        }
     }
 
     @Test

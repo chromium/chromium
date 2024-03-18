@@ -161,6 +161,14 @@ class KeyboardAccessoryView extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        final boolean isViewObscured =
+                (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0
+                        || (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_OBSCURED) != 0;
+        // The event is filtered out when the keyboard accessory view is fully or partially obscured
+        // given that no user education bubbles are shown to the user.
+        if (isViewObscured && !mAllowClicksWhileObscured) {
+            return true;
+        }
         // When keyboard accessory view is fully or partially obsured, clicks are allowed only if
         // the user education bubble is being displayed. After the first click
         // (MotionEvent.ACTION_UP), such motion events start to get filtered again. Please note that
