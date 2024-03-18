@@ -784,61 +784,6 @@ void MediaDevices::setCaptureHandleConfig(ScriptState* script_state,
       .SetCaptureHandleConfig(std::move(config_ptr));
 }
 
-// Checks whether the production of a SubCaptureTarget of the given type is
-// allowed. Throw an appropriate exception if not.
-//
-// These lines were left in their current place to minimize the changes
-// introduced by the CL and make reviewers' lives easier.
-// TODO(crbug.com/329705703): In a subsequent CL, make the order conform to the
-// order in the header file, then remove the comment above.
-#if !BUILDFLAG(IS_ANDROID)
-bool MediaDevices::MayProduceSubCaptureTarget(ScriptState* script_state,
-                                              Element* element,
-                                              ExceptionState& exception_state,
-                                              SubCaptureTarget::Type type) {
-  CHECK(type == SubCaptureTarget::Type::kCropTarget ||
-        type == SubCaptureTarget::Type::kRestrictionTarget);
-
-#if BUILDFLAG(IS_IOS)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return false;
-#else
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Current frame is detached.");
-    RecordUma(type, ProduceTargetFunctionResult::kInvalidContext);
-    return false;
-  }
-
-  LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
-  if (!window) {
-    RecordUma(type, ProduceTargetFunctionResult::kGenericError);
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Missing execution context.");
-    return false;
-  }
-
-  if (!element) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Invalid element.");
-    return false;
-  }
-
-  if (GetExecutionContext() != element->GetExecutionContext()) {
-    RecordUma(type, ProduceTargetFunctionResult::
-                        kElementAndMediaDevicesNotInSameExecutionContext);
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "The Element and the MediaDevices object must be same-window.");
-    return false;
-  }
-
-  return true;
-#endif
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 ScriptPromiseTyped<CropTarget> MediaDevices::ProduceCropTarget(
     ScriptState* script_state,
     Element* element,
@@ -1320,6 +1265,54 @@ void MediaDevices::CloseFocusWindowOfOpportunity(
   }
 
   GetDispatcherHost(window->GetFrame()).CloseFocusWindowOfOpportunity(id);
+}
+
+// Checks whether the production of a SubCaptureTarget of the given type is
+// allowed. Throw an appropriate exception if not.
+bool MediaDevices::MayProduceSubCaptureTarget(ScriptState* script_state,
+                                              Element* element,
+                                              ExceptionState& exception_state,
+                                              SubCaptureTarget::Type type) {
+  CHECK(type == SubCaptureTarget::Type::kCropTarget ||
+        type == SubCaptureTarget::Type::kRestrictionTarget);
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                    "Unsupported.");
+  return false;
+#else
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Current frame is detached.");
+    RecordUma(type, ProduceTargetFunctionResult::kInvalidContext);
+    return false;
+  }
+
+  LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
+  if (!window) {
+    RecordUma(type, ProduceTargetFunctionResult::kGenericError);
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Missing execution context.");
+    return false;
+  }
+
+  if (!element) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Invalid element.");
+    return false;
+  }
+
+  if (GetExecutionContext() != element->GetExecutionContext()) {
+    RecordUma(type, ProduceTargetFunctionResult::
+                        kElementAndMediaDevicesNotInSameExecutionContext);
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The Element and the MediaDevices object must be same-window.");
+    return false;
+  }
+
+  return true;
+#endif
 }
 
 void MediaDevices::ResolveCropTargetPromise(Element* element,
