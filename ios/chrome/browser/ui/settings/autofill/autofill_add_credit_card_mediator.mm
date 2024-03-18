@@ -16,19 +16,14 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_util.h"
 
-@interface AutofillAddCreditCardMediator ()
+@implementation AutofillAddCreditCardMediator {
+  // This property is for an interface which sends a response about saving the
+  // credit card either the credit card is valid or it is invalid.
+  __weak id<AddCreditCardMediatorDelegate> _addCreditCardMediatorDelegate;
 
-// Used for adding new CreditCard object.
-@property(nonatomic, assign) autofill::PersonalDataManager* personalDataManager;
-
-// This property is for an interface which sends a response about saving the
-// credit card either the credit card is valid or it is invalid.
-@property(nonatomic, weak) id<AddCreditCardMediatorDelegate>
-    addCreditCardMediatorDelegate;
-
-@end
-
-@implementation AutofillAddCreditCardMediator
+  // Used for adding new CreditCard object.
+  raw_ptr<autofill::PersonalDataManager> _personalDataManager;
+}
 
 - (instancetype)initWithDelegate:(id<AddCreditCardMediatorDelegate>)
                                      addCreditCardMediatorDelegate
@@ -64,26 +59,25 @@
 
   // Validates the credit card number, expiration date, and nickname.
   if (!creditCard.HasValidCardNumber()) {
-    [self.addCreditCardMediatorDelegate
+    [_addCreditCardMediatorDelegate
         creditCardMediatorHasInvalidCardNumber:self];
     return;
   }
 
   if (!creditCard.HasValidExpirationDate()) {
-    [self.addCreditCardMediatorDelegate
+    [_addCreditCardMediatorDelegate
         creditCardMediatorHasInvalidExpirationDate:self];
     return;
   }
 
   if (!autofill::CreditCard::IsNicknameValid(
           base::SysNSStringToUTF16(cardNickname))) {
-    [self.addCreditCardMediatorDelegate
-        creditCardMediatorHasInvalidNickname:self];
+    [_addCreditCardMediatorDelegate creditCardMediatorHasInvalidNickname:self];
     return;
   }
 
   autofill::CreditCard* savedCreditCard =
-      self.personalDataManager->GetCreditCardByNumber(
+      _personalDataManager->GetCreditCardByNumber(
           base::SysNSStringToUTF8(cardNumber));
 
   // If the credit card number already exist in saved credit card
@@ -100,23 +94,22 @@
                                 cardNickname:cardNickname
                                     appLocal:appLocal];
 
-    self.personalDataManager->UpdateCreditCard(savedCreditCardCopy);
+    _personalDataManager->UpdateCreditCard(savedCreditCardCopy);
   } else {
     base::RecordAction(
         base::UserMetricsAction("MobileAddCreditCard.CreditCardAdded"));
-    base::UmaHistogramCounts100(
-        "Autofill.PaymentMethods.SettingsPage."
-        "StoredCreditCardCountBeforeCardAdded",
-        self.personalDataManager->GetCreditCards().size());
-    self.personalDataManager->AddCreditCard(creditCard);
+    base::UmaHistogramCounts100("Autofill.PaymentMethods.SettingsPage."
+                                "StoredCreditCardCountBeforeCardAdded",
+                                _personalDataManager->GetCreditCards().size());
+    _personalDataManager->AddCreditCard(creditCard);
   }
 
-  [self.addCreditCardMediatorDelegate creditCardMediatorDidFinish:self];
+  [_addCreditCardMediatorDelegate creditCardMediatorDidFinish:self];
 }
 
 - (void)addCreditCardViewControllerDidCancel:
     (AutofillAddCreditCardViewController*)viewController {
-  [self.addCreditCardMediatorDelegate creditCardMediatorDidFinish:self];
+  [_addCreditCardMediatorDelegate creditCardMediatorDidFinish:self];
 }
 
 - (bool)addCreditCardViewController:
