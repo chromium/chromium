@@ -155,6 +155,12 @@ void ChromeSearchResult::SetMetricsType(MetricsType metrics_type) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetContinueFileSuggestionType(
+    ash::ContinueFileSuggestionType type) {
+  metadata_->continue_file_suggestion_type = type;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetIsRecommendation(bool is_recommendation) {
   metadata_->is_recommendation = is_recommendation;
   SetSearchResultMetadata();

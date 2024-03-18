@@ -175,8 +175,9 @@ void ZeroStateDriveProvider::SetSearchResults(
                              ? ash::ToTimestampBasedScore(result, max_recency)
                              : (1.0 - item_index / total_items);
     ++item_index;
-    provider_results.emplace_back(MakeListResult(
-        result.id, result.file_path, result.prediction_reason, score));
+    provider_results.emplace_back(
+        MakeListResult(result.id, result.file_path, result.justification_type,
+                       result.prediction_reason, score));
   }
 
   SwapResults(&provider_results);
@@ -186,6 +187,7 @@ void ZeroStateDriveProvider::SetSearchResults(
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const std::string& result_id,
     const base::FilePath& filepath,
+    ash::FileSuggestionJustificationType justification_type,
     const std::optional<std::u16string>& prediction_reason,
     const float relevance) {
   std::optional<std::u16string> details;
@@ -197,6 +199,26 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
       ash::AppListSearchResultType::kZeroStateDrive,
       ash::SearchResultDisplayType::kContinue, relevance, std::u16string(),
       FileResult::Type::kFile, profile_);
+  switch (justification_type) {
+    case ash::FileSuggestionJustificationType::kUnknown:
+      break;
+    case ash::FileSuggestionJustificationType::kViewed:
+      result->SetContinueFileSuggestionType(
+          ash::ContinueFileSuggestionType::kViewedDrive);
+      break;
+    case ash::FileSuggestionJustificationType::kModified:
+      result->SetContinueFileSuggestionType(
+          ash::ContinueFileSuggestionType::kModifiedDrive);
+      break;
+    case ash::FileSuggestionJustificationType::kModifiedByCurrentUser:
+      result->SetContinueFileSuggestionType(
+          ash::ContinueFileSuggestionType::kModifiedByCurrentUserDrive);
+      break;
+    case ash::FileSuggestionJustificationType::kShared:
+      result->SetContinueFileSuggestionType(
+          ash::ContinueFileSuggestionType::kSharedWithUserDrive);
+      break;
+  }
   return result;
 }
 

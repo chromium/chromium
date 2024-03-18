@@ -54,6 +54,17 @@ std::set<ash::SearchResultType> TypeSet(const std::vector<Result>& results) {
   return types;
 }
 
+std::set<ash::ContinueFileSuggestionType> ContinueFileTypeSet(
+    const std::vector<Result>& results) {
+  std::set<ash::ContinueFileSuggestionType> types;
+  for (const auto& result : results) {
+    if (result.continue_file_type) {
+      types.insert(*result.continue_file_type);
+    }
+  }
+  return types;
+}
+
 // Log an action on a set of search result types.
 void LogTypeActions(const std::string& action_name,
                     Location location,
@@ -69,6 +80,21 @@ void LogTypeActions(const std::string& action_name,
       base::UmaHistogramEnumeration(histogram_name, type,
                                     ash::SEARCH_RESULT_TYPE_BOUNDARY);
     }
+  }
+}
+
+void LogContinueFileTypeActions(
+    const std::string& action_name,
+    Location location,
+    const std::set<ash::ContinueFileSuggestionType>& continue_file_types) {
+  if (location != Location::kContinue) {
+    return;
+  }
+
+  const std::string histogram_name = base::StrCat(
+      {kHistogramPrefix, "Continue.FileSuggestionType.", action_name});
+  for (auto type : continue_file_types) {
+    base::UmaHistogramEnumeration(histogram_name, type);
   }
 }
 
@@ -143,6 +169,8 @@ void SearchMetricsManager::OnImpression(Location location,
                                         const std::vector<Result>& results,
                                         const std::u16string& query) {
   LogTypeActions("Impression", location, query, TypeSet(results));
+  LogContinueFileTypeActions("Impression", location,
+                             ContinueFileTypeSet(results));
   if (!results.empty())
     LogViewAction(location, query, Action::kImpression);
   if (location == Location::kContinue)
@@ -153,6 +181,7 @@ void SearchMetricsManager::OnAbandon(Location location,
                                      const std::vector<Result>& results,
                                      const std::u16string& query) {
   LogTypeActions("Abandon", location, query, TypeSet(results));
+  LogContinueFileTypeActions("Abandon", location, ContinueFileTypeSet(results));
   if (!results.empty())
     LogViewAction(location, query, Action::kAbandon);
 }
@@ -171,8 +200,22 @@ void SearchMetricsManager::OnLaunch(Location location,
       types.insert(result.type);
     }
   }
+
+  std::set<ash::ContinueFileSuggestionType> continue_file_types;
+  for (const auto& result : shown) {
+    if (result.continue_file_type &&
+        result.continue_file_type != launched.continue_file_type) {
+      continue_file_types.insert(*result.continue_file_type);
+    }
+  }
+
   LogTypeActions("Ignore", location, query, types);
+  LogContinueFileTypeActions("Ignore", location, continue_file_types);
   LogTypeActions("Launch", location, query, {launched.type});
+  if (launched.continue_file_type) {
+    LogContinueFileTypeActions("Launch", location,
+                               {*launched.continue_file_type});
+  }
 
   // Record the launch index.
   int launched_index = -1;

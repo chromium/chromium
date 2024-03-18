@@ -75,6 +75,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   std::unique_ptr<FileResult> MakeListResult(
       const std::string& result_id,
       const base::FilePath& filepath,
+      ash::FileSuggestionJustificationType justification_type,
       const std::optional<std::u16string>& prediction_reason,
       const float relevance);
 

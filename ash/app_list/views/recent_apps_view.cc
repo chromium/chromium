@@ -219,8 +219,9 @@ void RecentAppsView::UpdateResults(
   if (auto* notifier = view_delegate_->GetNotifier()) {
     std::vector<AppListNotifier::Result> notifier_results;
     for (const RecentAppInfo& app : apps)
-      notifier_results.emplace_back(app.result->id(),
-                                    app.result->metrics_type());
+      notifier_results.emplace_back(
+          app.result->id(), app.result->metrics_type(),
+          app.result->continue_file_suggestion_type());
     notifier->NotifyResultsUpdated(SearchResultDisplayType::kRecentApps,
                                    notifier_results);
   }

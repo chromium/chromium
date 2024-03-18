@@ -78,6 +78,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="PWA"/>
 </enum>
 
+<enum name="AppListContinueFileSuggestionType">
+  <int value="0" label="Recently viewed drive file"/>
+  <int value="1" label="Recently modified drive file"/>
+  <int value="2" label="Drive file recently modified by user"/>
+  <int value="3" label="Drive file recently shared with user"/>
+  <int value="4" label="Recently viewed local file"/>
+  <int value="5" label="Local file recently modified by user"/>
+</enum>
+
 <enum name="AppListFederatedActions">
   <int value="0" label="Impression"/>
   <int value="1" label="Launch"/>

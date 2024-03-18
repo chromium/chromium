@@ -142,6 +142,14 @@ class APP_LIST_MODEL_EXPORT SearchResult {
     metadata_->metrics_type = metrics_type;
   }
 
+  const std::optional<ContinueFileSuggestionType>&
+  continue_file_suggestion_type() const {
+    return metadata_->continue_file_suggestion_type;
+  }
+  void set_metrics_subtype(ContinueFileSuggestionType type) {
+    metadata_->continue_file_suggestion_type = type;
+  }
+
   const Actions& actions() const { return metadata_->actions; }
   void SetActions(const Actions& sets);
 
