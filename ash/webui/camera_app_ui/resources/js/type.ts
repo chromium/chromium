@@ -332,7 +332,6 @@ export enum ErrorType {
   FILE_SYSTEM_FAILURE = 'file-system-failure',
   FRAME_ROTATION_NOT_DISABLED = 'frame-rotation-not-disabled',
   HANDLE_CAMERA_RESULT_FAILURE = 'handle-camera-result-failure',
-  IDLE_DETECTOR_FAILURE = 'idle-detector-failure',
   INVALID_REVIEW_UI_STATE = 'invalid-review-ui-state',
   METADATA_MAPPING_FAILURE = 'metadata-mapping-failure',
   MULTI_WINDOW_HANDLING_FAILURE = 'multi-window-handling-failure',

@@ -19,6 +19,7 @@ export {
   ExternalScreenMonitorCallbackRouter,
   FileMonitorResult,
   LidStateMonitorCallbackRouter,
+  ScreenLockedMonitorCallbackRouter,
   ScreenState,
   ScreenStateMonitorCallbackRouter,
   StorageMonitorCallbackRouter,

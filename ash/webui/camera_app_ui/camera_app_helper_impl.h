@@ -16,6 +16,7 @@
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/services/machine_learning/public/mojom/document_scanner.mojom.h"
 #include "media/capture/video/chromeos/mojom/system_event_monitor.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,6 +32,7 @@ enum class TabletState;
 namespace ash {
 
 class CameraAppHelperImpl : public ScreenBacklightObserver,
+                            public SessionManagerClient::Observer,
                             public display::DisplayObserver,
                             public cros::mojom::CrosLidObserver,
                             public camera_app::mojom::CameraAppHelper {
@@ -49,6 +51,7 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
       camera_app::mojom::CameraUsageOwnershipMonitor;
   using StorageMonitor = camera_app::mojom::StorageMonitor;
   using LidStateMonitor = camera_app::mojom::LidStateMonitor;
+  using ScreenLockedMonitor = camera_app::mojom::ScreenLockedMonitor;
 
   CameraAppHelperImpl(CameraAppUI* camera_app_ui,
                       CameraResultCallback camera_result_callback,
@@ -111,6 +114,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   void SetLidStateMonitor(mojo::PendingRemote<LidStateMonitor> monitor,
                           SetLidStateMonitorCallback callback) override;
   void GetEventsSender(GetEventsSenderCallback callback) override;
+  void SetScreenLockedMonitor(mojo::PendingRemote<ScreenLockedMonitor> monitor,
+                              SetScreenLockedMonitorCallback callback) override;
 
  private:
   void CheckExternalScreenState();
@@ -130,6 +135,9 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   // ScreenBacklightObserver overrides;
   void OnScreenBacklightStateChanged(
       ScreenBacklightState screen_backlight_state) override;
+
+  // ash::SessionManagerClient::Observer overrides;
+  void ScreenLockedStateUpdated() override;
 
   // display::DisplayObserver overrides;
   void OnDisplayAdded(const display::Display& new_display) override;
@@ -175,6 +183,8 @@ class CameraAppHelperImpl : public ScreenBacklightObserver,
   mojo::Remote<cros::mojom::CrosSystemEventMonitor> monitor_;
 
   mojo::Receiver<cros::mojom::CrosLidObserver> lid_observer_receiver_{this};
+
+  mojo::Remote<ScreenLockedMonitor> screen_locked_monitor_;
 
   mojo::Receiver<camera_app::mojom::CameraAppHelper> receiver_{this};
 
