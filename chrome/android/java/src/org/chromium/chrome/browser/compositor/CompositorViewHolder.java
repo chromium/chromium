@@ -308,6 +308,11 @@ public class CompositorViewHolder extends FrameLayout
                 }
 
                 @Override
+                public void onWillShowBrowserControls(Tab tab) {
+                    CompositorViewHolder.this.onWillShowBrowserControls();
+                }
+
+                @Override
                 public void onWebContentsSwapped(
                         Tab tab, boolean didStartLoad, boolean didFinishLoad) {
                     // After swapping web contents, any gesture active in the old ContentView is
@@ -1516,6 +1521,22 @@ public class CompositorViewHolder extends FrameLayout
         }
         Tab tab = mTabModelSelector.getCurrentTab();
         setTab(tab);
+    }
+
+    @VisibleForTesting
+    void onWillShowBrowserControls() {
+        // TODO(bokan): Flag guarding new behavior, remove once M125 ships.
+        // https://crbug.com/41490049.
+        if (!ChromeFeatureList.sBrowserControlsEarlyResize.isEnabled()) return;
+
+        // Let observers know the controls will be shown, resize the web content
+        // immediately rather than waiting for the controls animation to finish. This
+        // helps makes the resize more predictable, in particular, when capturing
+        // snapshots of outgoing content for a view transition.
+        if (mControlsResizeView) return;
+        mControlsResizeView = true;
+        updateWebContentsSize(getCurrentTab());
+        onControlsResizeViewChanged(getWebContents(), mControlsResizeView);
     }
 
     private void setTab(Tab tab) {

@@ -199,6 +199,7 @@ public abstract class ChromeFeatureList {
     public static final String BACK_GESTURE_REFACTOR = "BackGestureRefactorAndroid";
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
+    public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
@@ -778,13 +779,14 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP, true);
     public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
+    public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
+            newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, true);
     public static final MutableFlagWithSafeDefault sIncognitoNtpRevamp =
             newMutableFlagWithSafeDefault(INCOGNITO_NTP_REVAMP, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, false);
-
     public static final MutableFlagWithSafeDefault sOmniboxAnswerActions =
             newMutableFlagWithSafeDefault(OMNIBOX_ANSWER_ACTIONS, false);
     public static final MutableFlagWithSafeDefault sOmniboxHistoryClusterProvider =

@@ -2082,6 +2082,18 @@ class TabImpl implements Tab {
         mLaunchType = launchType;
     }
 
+    /**
+     * Forces a resize of the web contents view to accommodate for browser controls immediately.
+     *
+     * <p>This is used to force the resize to happen at the same time as the controls are requested
+     * to show (potentially animate) so that web content can be adapted to the controls sooner.
+     */
+    public void willShowBrowserControls() {
+        for (TabObserver observer : mObservers) {
+            observer.onWillShowBrowserControls(this);
+        }
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {

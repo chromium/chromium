@@ -193,6 +193,11 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                         && current == BrowserControlsState.HIDDEN)) {
             return;
         }
+
+        if (current == BrowserControlsState.SHOWN || constraints == BrowserControlsState.SHOWN) {
+            mTab.willShowBrowserControls();
+        }
+
         if (mNativeTabBrowserControlsConstraintsHelper == 0) {
             mNativeTabBrowserControlsConstraintsHelper =
                     TabBrowserControlsConstraintsHelperJni.get()

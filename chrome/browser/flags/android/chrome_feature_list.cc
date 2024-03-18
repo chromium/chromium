@@ -168,6 +168,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackGestureRefactorAndroid,
     &kBackgroundThreadPool,
     &kBlockIntentsWhileLocked,
+    &kBrowserControlsEarlyResize,
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
@@ -470,6 +471,10 @@ BASE_FEATURE(kBackgroundThreadPool,
 BASE_FEATURE(kBlockIntentsWhileLocked,
              "BlockIntentsWhileLocked",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBrowserControlsEarlyResize,
+             "BrowserControlsEarlyResize",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCacheActivityTaskID,
              "CacheActivityTaskID",

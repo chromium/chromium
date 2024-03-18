@@ -335,6 +335,13 @@ public interface TabObserver {
             int bottomControlsMinHeightOffsetY);
 
     /**
+     * Called when the tab is about to notify its renderer to show the browser controls.
+     *
+     * @param tab The notifying {@link Tab}.
+     */
+    void onWillShowBrowserControls(Tab tab);
+
+    /**
      * Called when scrolling state of Tab's content view changes.
      * @param scrolling {@code true} if scrolling started; {@code false} if stopped.
      */
