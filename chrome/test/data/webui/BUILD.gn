@@ -102,6 +102,7 @@ source_set("browser_tests") {
       "chromeos/firmware_update/firmware_update_browsertest.cc",
       "chromeos/inline_login/inline_login_browsertest.cc",
       "chromeos/oobe/security_token_pin_browsertest.cc",
+      "chromeos/parent_access/parent_access_browsertest.cc",
       "chromeos/personalization_app/personalization_app_browsertest.cc",
       "chromeos/personalization_app/personalization_app_sea_pen_browsertest.cc",
       "chromeos/print_preview_cros/print_preview_cros_browsertest.cc",
