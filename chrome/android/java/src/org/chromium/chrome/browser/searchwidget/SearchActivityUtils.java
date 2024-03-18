@@ -81,7 +81,9 @@ public class SearchActivityUtils implements SearchActivityClient {
                                         ACTION_SEARCH_FORMAT,
                                         IntentOrigin.CUSTOM_TAB,
                                         SearchType.TEXT))
-                        .putExtra(EXTRA_CURRENT_URL, currentUrl.getSpec())
+                        .putExtra(
+                                EXTRA_CURRENT_URL,
+                                GURL.isEmptyOrInvalid(currentUrl) ? null : currentUrl.getSpec())
                         .putExtra(EXTRA_ORIGIN, IntentOrigin.CUSTOM_TAB)
                         .putExtra(EXTRA_SEARCH_TYPE, SearchType.TEXT)
                         .addFlags(
@@ -103,12 +105,23 @@ public class SearchActivityUtils implements SearchActivityClient {
      * @return the origin of an intent
      */
     /* package */ static @IntentOrigin int getIntentOrigin(@NonNull Intent intent) {
-        if (IntentUtils.isTrustedIntentFromSelf(intent)
-                && IntentUtils.safeHasExtra(intent, EXTRA_ORIGIN)) {
+        if (IntentUtils.isTrustedIntentFromSelf(intent)) {
             return IntentUtils.safeGetIntExtra(intent, EXTRA_ORIGIN, IntentOrigin.UNKNOWN);
         }
 
         return IntentOrigin.UNKNOWN;
+    }
+
+    /**
+     * @return the document url associated with the intent, if the intent is trusted and carries
+     *     valid URL.
+     */
+    /* package */ static @Nullable GURL getIntentUrl(@NonNull Intent intent) {
+        if (IntentUtils.isTrustedIntentFromSelf(intent)) {
+            var gurl = new GURL(IntentUtils.safeGetStringExtra(intent, EXTRA_CURRENT_URL));
+            if (!GURL.isEmptyOrInvalid(gurl)) return gurl;
+        }
+        return null;
     }
 
     /**
@@ -119,8 +132,7 @@ public class SearchActivityUtils implements SearchActivityClient {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static @SearchType int getIntentSearchType(@NonNull Intent intent) {
-        if (IntentUtils.isTrustedIntentFromSelf(intent)
-                && IntentUtils.safeHasExtra(intent, EXTRA_SEARCH_TYPE)) {
+        if (IntentUtils.isTrustedIntentFromSelf(intent)) {
             return IntentUtils.safeGetIntExtra(intent, EXTRA_SEARCH_TYPE, SearchType.TEXT);
         }
 

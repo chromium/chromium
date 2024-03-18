@@ -82,6 +82,7 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -352,12 +353,26 @@ public class SearchActivity extends AsyncInitializationActivity
         mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
         mSearchType = SearchActivityUtils.getIntentSearchType(intent);
 
-        if (mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET) {
-            recordQuickActionSearchType(mSearchType);
+        switch (mIntentOrigin) {
+            case IntentOrigin.CUSTOM_TAB:
+                // TODO(crbug/327023983): Recognize SRP.
+                mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
+                break;
+
+            case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET:
+                recordQuickActionSearchType(mSearchType);
+                mSearchBoxDataProvider.setPageClassification(
+                        PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
+                break;
+
+            case IntentOrigin.SEARCH_WIDGET:
+            default:
+                mSearchBoxDataProvider.setPageClassification(
+                        PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
+                break;
         }
 
-        mSearchBoxDataProvider.setIsFromQuickActionSearchWidget(
-                mIntentOrigin == IntentOrigin.QUICK_ACTION_SEARCH_WIDGET);
+        mSearchBoxDataProvider.setCurrentUrl(SearchActivityUtils.getIntentUrl(intent));
     }
 
     @Override
@@ -828,5 +843,9 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /* package */ void setActivityUsableForTesting(boolean isUsable) {
         mIsActivityUsable = isUsable;
+    }
+
+    /* package */ SearchBoxDataProvider getSearchBoxDataProvider() {
+        return mSearchBoxDataProvider;
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +38,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -50,6 +52,8 @@ public class SearchActivityUnitTest {
         int getIntentOrigin(Intent intent);
 
         void resolveOmniboxRequestForResult(Activity activity, GURL url);
+
+        GURL getIntentUrl(Intent intent);
     }
 
     // Shadow forwarding static calls to TestSearchActivityUtils.
@@ -60,6 +64,11 @@ public class SearchActivityUnitTest {
         @Implementation
         public static @IntentOrigin int getIntentOrigin(Intent intent) {
             return sMockUtils.getIntentOrigin(intent);
+        }
+
+        @Implementation
+        public static GURL getIntentUrl(Intent intent) {
+            return sMockUtils.getIntentUrl(intent);
         }
 
         @Implementation
@@ -142,5 +151,52 @@ public class SearchActivityUnitTest {
 
         mActivity.cancelSearch();
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
+    }
+
+    @Test
+    public void handleNewIntent_forSearchWidget() {
+        doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent());
+
+        var data = mActivity.getSearchBoxDataProvider();
+        assertEquals(
+                PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
+                data.getPageClassification(true, true));
+        assertEquals(
+                PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
+                data.getPageClassification(true, false));
+    }
+
+    @Test
+    public void handleNewIntent_forQuickActionSearchWidget() {
+        doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent());
+
+        var data = mActivity.getSearchBoxDataProvider();
+        assertEquals(
+                PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
+                data.getPageClassification(true, true));
+        assertEquals(
+                PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
+                data.getPageClassification(true, false));
+    }
+
+    @Test
+    public void handleNewIntent_forCustomTab() {
+        doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
+        mActivity.handleNewIntent(new Intent());
+
+        var data = mActivity.getSearchBoxDataProvider();
+        assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, true));
+        assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, false));
+    }
+
+    @Test
+    public void handleNewIntent_passIntentUrlToLocationBarData() {
+        doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
+        mActivity.handleNewIntent(new Intent());
+
+        var data = mActivity.getSearchBoxDataProvider();
+        assertEquals("https://abc.xyz/", data.getCurrentGurl().getSpec());
     }
 }

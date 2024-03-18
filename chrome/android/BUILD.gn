@@ -1300,6 +1300,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/gif_player:gif_player_java",
       "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_java",
+      "//third_party/metrics_proto:metrics_proto_java",
       "//ui/accessibility:ax_base_java",
       "//ui/accessibility:ui_accessibility_features_java",
       "//ui/android:ui_java",
