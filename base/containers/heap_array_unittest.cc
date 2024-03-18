@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <type_traits>
 
 #include "base/containers/span.h"
@@ -205,6 +206,15 @@ TEST(HeapArray, Uninit) {
   // volatile uint32_t* x = vec.data() + 2;
   // EXPECT_DEATH(*x, "");
 #endif
+}
+
+TEST(HeapArray, Fill) {
+  auto vec = HeapArray<uint32_t>::Uninit(4);
+  std::ranges::fill(vec, 0x76543210);
+  EXPECT_EQ(0x76543210u, vec[0]);
+  EXPECT_EQ(0x76543210u, vec[1]);
+  EXPECT_EQ(0x76543210u, vec[2]);
+  EXPECT_EQ(0x76543210u, vec[3]);
 }
 
 TEST(HeapArray, CopiedFrom) {
