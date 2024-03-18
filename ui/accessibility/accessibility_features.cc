@@ -45,7 +45,7 @@ bool IsAccessibilityPruneRedundantInlineTextEnabled() {
 
 BASE_FEATURE(kAugmentExistingImageLabels,
              "AugmentExistingImageLabels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAugmentExistingImageLabelsEnabled() {
   return base::FeatureList::IsEnabled(::features::kAugmentExistingImageLabels);
 }
