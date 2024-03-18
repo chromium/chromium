@@ -6,6 +6,7 @@
 
   --iph-section-border-color: var(--google-green-300);
   --main-column-max-width: 680px;
+  --new-badge-section-border-color: var(--google-yellow-300);
   --side-bar-width: 200px;
   --tutorials-section-border-color: var(--google-blue-300);
 }
@@ -88,6 +89,12 @@ h2 {
   scroll-margin-top: 16px;
 }
 
+#newBadges {
+  border-inline-start: 1px solid var(--new-badge-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
 user-education-internals-card {
   padding-block: var(--cr-section-vertical-padding);
   padding-inline: var(--cr-section-padding);
@@ -148,6 +155,9 @@ user-education-internals-card {
         <a role="menuitem" href="#iph" class="cr-nav-menu-item">
           Feature Promos
         </a>
+        <a role="menuitem" href="#newBadges" class="cr-nav-menu-item">
+          "New" Badges
+        </a>
     </div>
   </div>
   <div id="main">
@@ -166,6 +176,7 @@ user-education-internals-card {
               id="[[item.internalName]]"
               hidden$="[[!promoFilter_(item, filter)]]"
               promo="[[item]]"
+              show-action
               on-promo-launch="startTutorial_">
           </user-education-internals-card>
         </template>
@@ -191,8 +202,21 @@ user-education-internals-card {
               id="[[item.internalName]]"
               hidden$="[[!promoFilter_(item, filter)]]"
               promo="[[item]]"
+              show-action
               on-promo-launch="showFeaturePromo_"
               on-clear-promo-data="clearPromoData_">
+          </user-education-internals-card>
+        </template>
+      </div>
+      <div id="newBadges">
+        <a name="newBadges"></a>
+        <h2>"New" Badges</h2>
+        <template id="newBadges" is="dom-repeat" items="[[newBadges_]]">
+          <user-education-internals-card
+              id="[[item.internalName]]"
+              hidden$="[[!promoFilter_(item, filter)]]"
+              promo="[[item]]"
+              on-clear-promo-data="clearNewBadgeData_">
           </user-education-internals-card>
         </template>
       </div>

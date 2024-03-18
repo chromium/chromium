@@ -87,6 +87,7 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
   filter: string = '';
   private tutorials_: FeaturePromoDemoPageInfo[];
   private featurePromos_: FeaturePromoDemoPageInfo[];
+  private newBadges_: FeaturePromoDemoPageInfo[];
   private featurePromoErrorMessage_: string;
   private narrow_: boolean = false;
   private sessionData_: FeaturePromoDemoPageData[];
@@ -128,6 +129,10 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
 
     this.handler_.getFeaturePromos().then(({featurePromos}) => {
       this.featurePromos_ = featurePromos;
+    });
+
+    this.handler_.getNewBadges().then(({newBadges}) => {
+      this.newBadges_ = newBadges;
     });
   }
 
@@ -183,6 +188,22 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
       } else {
         this.handler_.getSessionData().then(({sessionData}) => {
           this.sessionData_ = sessionData;
+        });
+      }
+    });
+  }
+
+  private clearNewBadgeData_(e: CustomEvent) {
+    const id = e.detail;
+    this.featurePromoErrorMessage_ = '';
+
+    this.handler_.clearNewBadgeData(id).then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getNewBadges().then(({newBadges}) => {
+          this.newBadges_ = newBadges;
         });
       }
     });

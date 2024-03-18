@@ -66,4 +66,10 @@ interface UserEducationInternalsPageHandler {
 
   // Clears all session-related User Education data.
   ClearSessionData() => (string error_message);
+
+  // Retrieves "New" Badge data.
+  GetNewBadges() => (array<FeaturePromoDemoPageInfo> new_badges);
+
+  // Clears "New" Badge data associated with a particular feature.
+  ClearNewBadgeData(string feature_name) => (string error_message);
 };
