@@ -165,16 +165,7 @@ Page* Page::CreateOrdinary(
   Page* page = MakeGarbageCollected<Page>(
       base::PassKey<Page>(), chrome_client, agent_group_scheduler,
       browsing_context_group_info, color_provider_colors, /*is_ordinary=*/true);
-
-  if (opener) {
-    // Before: ... -> opener -> next -> ...
-    // After: ... -> opener -> page -> next -> ...
-    Page* next = opener->next_related_page_;
-    opener->next_related_page_ = page;
-    page->prev_related_page_ = opener;
-    page->next_related_page_ = next;
-    next->prev_related_page_ = page;
-  }
+  page->opener_ = opener;
 
   OrdinaryPages().insert(page);
 
@@ -393,6 +384,34 @@ void Page::SetMainFrame(Frame* main_frame) {
   main_frame_ = main_frame;
 
   page_scheduler_->SetIsMainFrameLocal(main_frame->IsLocalFrame());
+
+  // Now that the page has a main frame, connect it to related pages if needed.
+  // However, if the main frame is a fake RemoteFrame used for a new Page to
+  // host a provisional main LocalFrame, don't connect it just yet, as this Page
+  // should not be interacted with until the provisional main LocalFrame gets
+  // swapped in. After the LocalFrame gets swapped in, we will call this
+  // function again and connect this Page to the related pages at that time.
+  auto* remote_main_frame = DynamicTo<RemoteFrame>(main_frame);
+  if (!remote_main_frame || remote_main_frame->IsRemoteFrameHostRemoteBound()) {
+    LinkRelatedPagesIfNeeded();
+  }
+}
+
+void Page::LinkRelatedPagesIfNeeded() {
+  // Don't link if there's no opener, or if this page is already linked to other
+  // pages, or if the opener is being detached (its related pages has been set
+  // to null).
+  if (!opener_ || prev_related_page_ != this || next_related_page_ != this ||
+      !opener_->next_related_page_) {
+    return;
+  }
+  // Before: ... -> opener -> next -> ...
+  // After: ... -> opener -> page -> next -> ...
+  Page* next = opener_->next_related_page_;
+  opener_->next_related_page_ = this;
+  prev_related_page_ = opener_;
+  next_related_page_ = next;
+  next->prev_related_page_ = this;
 }
 
 void Page::TakeCloseTaskHandler(Page* old_page) {
@@ -1129,6 +1148,7 @@ void Page::Trace(Visitor* visitor) const {
   visitor->Trace(v8_compile_hints_producer_);
   visitor->Trace(v8_compile_hints_consumer_);
   visitor->Trace(close_task_handler_);
+  visitor->Trace(opener_);
   Supplementable<Page>::Trace(visitor);
 }
 

@@ -499,6 +499,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void InvalidateColorScheme();
 
+  // Connect the Page to the `opener_`'s related pages, if those exist.
+  void LinkRelatedPagesIfNeeded();
+
   // Typically, the main frame and Page should both be owned by the embedder,
   // which must call Page::willBeDestroyed() prior to destroying Page. This
   // call detaches the main frame and clears this pointer, thus ensuring that
@@ -608,6 +611,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // browsing context.  See also RelatedPages method.
   Member<Page> next_related_page_;
   Member<Page> prev_related_page_;
+
+  // The Page that opened this Page.
+  WeakMember<Page> opener_;
 
   // A handle to notify the scheduler whether this page has other related
   // pages or not.
