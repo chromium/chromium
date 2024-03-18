@@ -479,6 +479,58 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, DISABLED_ReenterOverviewPineSession) {
   EXPECT_FALSE(GetPineDialogRestoreButton());
 }
 
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_RestoreOff) {
+  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  prefs->SetInteger(prefs::kRestoreAppsAndPagesPrefName,
+                    static_cast<int>(RestoreOption::kDoNotRestore));
+  prefs->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+}
+
+// Tests that when Restore is off, we show the onboarding dialog.
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, RestoreOff) {
+  // The first time after rebooting, we show the onboarding dialog.
+  auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
+  ASSERT_TRUE(onboarding_dialog);
+
+  // Press the accept button.
+  test::Click(onboarding_dialog->GetAcceptButtonForTesting(), /*flag=*/0);
+  views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
+  EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
+
+  // Verify we have entered overview with no pine contents.
+  WaitForOverviewEnterAnimation();
+  EXPECT_FALSE(GetPineContentsView());
+
+  // Verify the restore pref is updated.
+  EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
+            ProfileManager::GetActiveUserProfile()->GetPrefs()->GetInteger(
+                prefs::kRestoreAppsAndPagesPrefName));
+}
+
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_NoRestoreData) {
+  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
+            prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
+  prefs->SetBoolean(prefs::kShouldShowPineOnboarding, true);
+}
+
+// Tests that when Restore is 'Ask every time' and there is no restore data, we
+// show the onboarding dialog.
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, NoRestoreData) {
+  // The first time after rebooting, we show the onboarding dialog.
+  auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
+  ASSERT_TRUE(onboarding_dialog);
+
+  // Press the accept button.
+  test::Click(onboarding_dialog->GetAcceptButtonForTesting(), /*flag=*/0);
+  views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
+  EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
+
+  // Verify we have entered overview with no pine contents.
+  WaitForOverviewEnterAnimation();
+  EXPECT_FALSE(GetPineContentsView());
+}
+
 IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_Onboarding) {
   // The restore pref setting is 'Ask every time' by default.
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -499,12 +551,11 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_Onboarding) {
 IN_PROC_BROWSER_TEST_F(PineBrowserTest, Onboarding) {
   // The first time after rebooting, we show the onboarding dialog.
   auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
-  EXPECT_TRUE(onboarding_dialog);
+  ASSERT_TRUE(onboarding_dialog);
 
   // Press the accept button.
   test::Click(onboarding_dialog->GetAcceptButtonForTesting(), /*flag=*/0);
   views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
 
   // Verify we have entered overview. The restore button will be null if

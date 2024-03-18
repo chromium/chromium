@@ -1072,13 +1072,17 @@ TEST_F(ForestFullRestoreServiceTest, Always) {
   EXPECT_TRUE(CanPerformRestore(account_id()));
 }
 
-// If the OS restore setting is 'Do not restore', after reboot, don't show the
-// pine dialog and verify the restore flag.
+// If the OS restore setting is 'Do not restore', after reboot, start a
+// zero-state pine session.
 TEST_F(ForestFullRestoreServiceTest, NotRestore) {
   SetRestoreOption(RestoreOption::kDoNotRestore);
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate, MaybeStartPineOverviewSession(testing::_))
-      .Times(0);
+      .WillOnce([](std::unique_ptr<PineContentsData> data) {
+        ASSERT_TRUE(data);
+        EXPECT_TRUE(data->apps_infos.empty());
+      });
+
   CreateFullRestoreServiceForTesting(std::move(mock_delegate));
   VerifyRestoreInitSettingHistogram(RestoreOption::kDoNotRestore, 1);
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());

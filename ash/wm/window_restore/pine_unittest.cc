@@ -34,6 +34,7 @@
 #include "ash/wm/window_restore/pine_items_overflow_view.h"
 #include "ash/wm/window_restore/pine_screenshot_icon_row_view.h"
 #include "ash/wm/window_restore/pine_test_api.h"
+#include "ash/wm/window_restore/pine_test_base.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -48,12 +49,12 @@
 
 namespace ash {
 
-class PineTest : public AshTestBase {
+class PineTest : public PineTestBase {
  public:
-  PineTest() { switches::SetIgnoreForestSecretKeyForTest(true); }
+  PineTest() = default;
   PineTest(const PineTest&) = delete;
   PineTest& operator=(const PineTest&) = delete;
-  ~PineTest() override { switches::SetIgnoreForestSecretKeyForTest(false); }
+  ~PineTest() override = default;
 
   void StartPineOverviewSession(std::unique_ptr<PineContentsData> data) {
     Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
@@ -350,15 +351,11 @@ TEST_F(PineTest, OnboardingMetrics) {
   base::HistogramTester histogram_tester;
   PineController::SetIgnorePrefsForTesting(true);
 
-  // Set some fake data to simulate having restore data.
-  // TODO(sophiewen): Remove this when UX decide what to do.
-  auto* pine_controller = Shell::Get()->pine_controller();
-  pine_controller->pine_contents_data_ = MakeTestAppIds(1);
-
   // Verify initial histogram counts.
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 0);
 
   // Press "Accept". Test we increment `true`.
+  auto* pine_controller = Shell::Get()->pine_controller();
   pine_controller->MaybeShowPineOnboardingMessage(
       /*restore_on=*/false);
   auto* dialog = PineTestApi().GetOnboardingDialog();
@@ -384,8 +381,14 @@ TEST_F(PineTest, OnboardingMetrics) {
   // Show the onboarding dialog with 'Restore' on. Test we don't record.
   pine_controller->MaybeShowPineOnboardingMessage(
       /*restore_on=*/true);
-  LeftClickOn(PineTestApi().GetOnboardingDialog()->GetAcceptButtonForTesting());
+  dialog = PineTestApi().GetOnboardingDialog();
+  LeftClickOn(dialog->GetAcceptButtonForTesting());
+  views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
+  WaitForOverviewEntered();
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
+
+  // Reset prefs so following tests can enter overview.
+  PineController::SetIgnorePrefsForTesting(false);
 }
 
 // Tests that if we exit overview without clicking the restore or cancel

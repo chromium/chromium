@@ -531,7 +531,7 @@ bool ShouldShowBirchBar(aura::Window* root_window) {
 bool ShouldShowPineDialog(aura::Window* root_window) {
   return root_window == Shell::GetPrimaryRootWindow() &&
          features::IsForestFeatureEnabled() &&
-         !!Shell::Get()->pine_controller()->pine_contents_data();
+         Shell::Get()->pine_controller()->ShouldShowPineDialog();
 }
 
 }  // namespace
@@ -672,6 +672,8 @@ void OverviewGrid::PrepareForOverview() {
         std::make_unique<ScopedOverviewWallpaperClipper>(this);
   }
 
+  // TODO(b/326434696): Currently this will return false if there is no restore
+  // data in the pine contents data. Show the zero-state dialog.
   if (ShouldShowPineDialog(root_window_)) {
     pine_widget_ = PineContentsView::Create(GetGridEffectiveBounds());
     pine_widget_->ShowInactive();

@@ -112,6 +112,10 @@ PineController::~PineController() {
   Shell::Get()->overview_controller()->RemoveObserver(this);
 }
 
+bool PineController::ShouldShowPineDialog() const {
+  return !!pine_contents_data_ && !pine_contents_data_->apps_infos.empty();
+}
+
 void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
   if (onboarding_widget_) {
     return;
@@ -244,6 +248,10 @@ void PineController::MaybeStartPineOverviewSession(
     return;
   }
 
+  if (!pine_contents_data_) {
+    return;
+  }
+
   RecordPineScreenshotMetrics(Shell::Get()->local_state());
   image_util::DecodeImageFile(
       base::BindOnce(&PineController::OnPineImageDecoded,
@@ -331,11 +339,6 @@ void PineController::StartPineOverviewSession() {
 }
 
 void PineController::OnOnboardingAcceptPressed(bool restore_on) {
-  // TODO(sophiewen): Update the pref when UX decide what to do.
-  if (!restore_on) {
-    // We only record the action taken if the user had Restore off.
-    base::UmaHistogramBoolean(kPineOnboardingHistogram, true);
-  }
   // Wait until the onboarding widget is destroyed before starting overview,
   // since we disallow entering overview while system modal windows are open.
   // Use a weak ptr since `this` can be deleted before we close all windows.
@@ -347,6 +350,16 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
             }
           },
           weak_ptr_factory_.GetWeakPtr()));
+  if (restore_on) {
+    return;
+  }
+  // The onboarding dialog would only be shown if `GetActivePrefService()` is
+  // not null.
+  GetActivePrefService()->SetInteger(
+      prefs::kRestoreAppsAndPagesPrefName,
+      static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
+  // We only record the action taken if the user had Restore off.
+  base::UmaHistogramBoolean(kPineOnboardingHistogram, true);
 }
 
 void PineController::OnOnboardingCancelPressed() {

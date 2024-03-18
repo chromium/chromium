@@ -153,10 +153,6 @@ class FullRestoreService : public KeyedService,
   // Callback used when the pref |kRestoreAppsAndPagesPrefName| changes.
   void OnPreferenceChanged(const std::string& pref_name);
 
-  // Returns true if there are some restore data and this is not the first time
-  // Chrome is run. Otherwise, returns false.
-  bool ShouldShowNotification() const;
-
   void OnAppTerminating();
 
   // Callbacks for the pine dialog buttons.
@@ -173,6 +169,11 @@ class FullRestoreService : public KeyedService,
                     bool read_error);
   void OnGotAllSessions(bool last_session_crashed,
                         const std::vector<SessionWindows>& all_session_windows);
+
+  // Starts overview or the pine onboarding dialog when there is no restore
+  // data.
+  // TODO(sophiewen|sammiequon): Rename this and the `PineController` API.
+  void MaybeStartPineOverviewSession(bool last_session_crashed);
 
   // Constructs the object needed to show the pine dialog. It will be passed to
   // ash which will then use its contents to create and display the pine dialog.

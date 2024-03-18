@@ -282,6 +282,9 @@ void FullRestoreService::Init(bool& show_notification) {
       MaybeInitiateAdminTemplateAutoLaunch();
       break;
     case RestoreOption::kDoNotRestore:
+      if (features::IsForestFeatureEnabled()) {
+        MaybeStartPineOverviewSession(/*last_session_crashed=*/false);
+      }
       ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
       MaybeInitiateAdminTemplateAutoLaunch();
       return;
@@ -472,8 +475,10 @@ bool FullRestoreService::CanBeInited() const {
 
 void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
                                                       bool& show_notification) {
-  if (!ShouldShowNotification())
+  if (!app_launch_handler_ || ::first_run::IsChromeFirstRun() ||
+      close_notification_) {
     return;
+  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kForceFullRestoreAndSessionRestoreAfterCrash)) {
@@ -482,11 +487,19 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
     return;
   }
 
+  const bool last_session_crashed = id == kRestoreForCrashNotificationId;
+  if (!app_launch_handler_->HasRestoreData()) {
+    if (features::IsForestFeatureEnabled()) {
+      MaybeStartPineOverviewSession(last_session_crashed);
+    }
+    return;
+  }
+  CHECK(app_launch_handler_->HasRestoreData());
+
   // If the system is restored from crash, create the crash lock for the browser
   // session restore to help set the browser saving flag.
   ExitTypeService* exit_type_service =
       ExitTypeService::GetInstanceForProfile(profile_);
-  const bool last_session_crashed = id == kRestoreForCrashNotificationId;
   if (last_session_crashed && exit_type_service) {
     crashed_lock_ = exit_type_service->CreateCrashedLock();
   }
@@ -616,11 +629,6 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
   }
 }
 
-bool FullRestoreService::ShouldShowNotification() const {
-  return app_launch_handler_ && app_launch_handler_->HasRestoreData() &&
-         !::first_run::IsChromeFirstRun() && !close_notification_;
-}
-
 void FullRestoreService::OnAppTerminating() {
   if (auto* arc_task_handler =
           app_restore::AppRestoreArcTaskHandler::GetForProfile(profile_)) {
@@ -658,12 +666,23 @@ void FullRestoreService::OnGotAllSessions(
                              all_session_windows, last_session_crashed));
 }
 
+void FullRestoreService::MaybeStartPineOverviewSession(
+    bool last_session_crashed) {
+  CHECK(features::IsForestFeatureEnabled());
+  delegate_->MaybeStartPineOverviewSession(CreatePineContentsData(
+      /*restore_data=*/nullptr,
+      /*all_session_windows=*/{}, last_session_crashed));
+}
+
 std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
     ::app_restore::RestoreData* restore_data,
     const std::vector<SessionWindows>& all_session_windows,
     bool last_session_crashed) {
   auto pine_contents_data = std::make_unique<PineContentsData>();
   pine_contents_data->last_session_crashed = last_session_crashed;
+  if (!restore_data) {
+    return pine_contents_data;
+  }
   pine_contents_data->restore_callback = base::BindOnce(
       &FullRestoreService::RestoreForForest, weak_ptr_factory_.GetWeakPtr());
   pine_contents_data->cancel_callback = base::BindOnce(
