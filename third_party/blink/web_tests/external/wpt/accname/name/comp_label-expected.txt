@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] aria-label undefined on img w/ alt
   assert_equals: <img alt="alt" aria-label="undefined" data-expectedlabel="alt" data-testname="aria-label undefined on img w/ alt" class="ex"> expected "alt" but got "undefined"
 [FAIL] aria-label undefined on img w/o alt
@@ -12,11 +12,5 @@ Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: <img alt="" aria-label="undefined" data-expectedlabel="title" data-testname="aria-label undefined on img w/ empty alt but w/ title" class="ex"> expected "title" but got "undefined"
 [FAIL] button's hidden referenced name (visibility:hidden) with hidden aria-labelledby traversal falls back to aria-label
   assert_equals: <button aria-labelledby="span4" aria-label="foo" data-expectedlabel="foo" data-testname="button's hidden referenced name (visibility:hidden) with hidden aria-labelledby traversal falls back to aria-label" class="ex">\n  <span id="span4">\n    <span id="span5" style="visibility:hidden;">label</span>\n  </span>\n  x\n</button> expected "foo" but got "label"
-[FAIL] textarea with tab character as aria-label does not use aria-label as name
-  assert_equals: <textarea aria-label="  " title="title" data-testname="textarea with tab character as aria-label does not use aria-label as name" data-expectedlabel="title" class="ex">textarea contents</textarea> expected "title" but got ""
-[FAIL] button with carriage return as aria-label does not use aria-label as name
-  assert_equals: <button aria-label="\n" data-testname="button with carriage return as aria-label does not use aria-label as name" data-expectedlabel="my button" class="ex">my button</button> expected "my button" but got ""
-[FAIL] button with space characters as aria-label does not use aria-label as name
-  assert_equals: <button aria-label="      " data-testname="button with space characters as aria-label does not use aria-label as name" data-expectedlabel="my button" class="ex">my button</button> expected "my button" but got ""
 Harness: the test ran to completion.
 
