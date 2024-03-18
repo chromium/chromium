@@ -251,17 +251,23 @@ function addVolumeReducer(currentState: State, payload: {
       currentState.uiEntries =
           [...currentState.uiEntries, driveFakeRoot.toURL()];
     }
-    const driveRootFileDataChildren: FileKey[] = [];
-
-    appendChildIfNotExisted(driveFakeRoot, newVolumeEntry);
-    driveRootFileDataChildren.push(volumeRootKey);
-
     // We want the order to be
     // - My Drive
     // - Shared Drives (if the user has any)
     // - Computers (if the user has any)
     // - Shared with me
     // - Offline
+    //
+    // Clear all existing UI children to make sure we can maintain the append
+    // order. For example: when Drive is disconnected and then reconnected, if
+    // we don't clear current children, all other children are still there and
+    // only "My Drive" will be re-added at the end.
+    driveFakeRoot.removeAllChildren();
+    const driveRootFileDataChildren: FileKey[] = [];
+
+    driveFakeRoot.addEntry(newVolumeEntry);
+    driveRootFileDataChildren.push(volumeRootKey);
+
     const {sharedDriveDisplayRoot, computersDisplayRoot, fakeEntries} =
         volumeInfo;
     // Add "Shared drives" (team drives) grand root into Drive. It's guaranteed

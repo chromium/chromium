@@ -6,7 +6,7 @@ import {addEntries, ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPat
 
 import {remoteCall} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
-import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
+import {BASIC_LOCAL_ENTRY_SET, COMPUTERS_ENTRY_SET, SHARED_DRIVE_ENTRY_SET} from './test_data.js';
 
 /**
  * Tests that when the current folder is changed, the 'selected' attribute
@@ -650,4 +650,71 @@ export async function directoryTreeHideExpandIconWhenLastSubFolderIsRemoved() {
 
   // Expand icon should appear again.
   await directoryTree.waitForItemExpandIconToShowByLabel('parent-folder');
+}
+
+/**
+ * When Google Drive is being disconnected and reconnected, the children order
+ * of "Google Drive" directory tree item should be kept.
+ */
+export async function directoryTreeKeepDriveOrderAfterReconnected() {
+  const expectedChildrenLabels = [
+    'My Drive',
+    'Shared drives',
+    'Computers',
+    'Shared with me',
+    'Offline',
+  ];
+
+  // Open FilesApp on Drive with Computers and TeamDrives entries.
+  const appId = await remoteCall.setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [...COMPUTERS_ENTRY_SET, ...SHARED_DRIVE_ENTRY_SET]);
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
+
+  // Check children order.
+  const childrenBefore =
+      await directoryTree.getChildItemsByParentLabel('Google Drive');
+  const labelsBefore =
+      childrenBefore.map(childItem => directoryTree.getItemLabel(childItem));
+  chrome.test.assertEq(labelsBefore, expectedChildrenLabels);
+
+  // Disable Drive.
+  await sendTestMessage({name: 'setDriveEnabled', enabled: false});
+
+  // Drive will be gone and My Files will be selected.
+  await directoryTree.waitForItemLostByLabel('Google Drive');
+  await directoryTree.waitForSelectedItemByLabel('My files');
+
+  // Mount drive and re-add Computers/Team Drives and then re-enable it,
+  // otherwise the Computers/Team Drives won't be there after remounting.
+  await sendTestMessage({name: 'mountDrive'});
+  await addEntries(
+      ['drive'], [...COMPUTERS_ENTRY_SET, ...SHARED_DRIVE_ENTRY_SET]);
+  await sendTestMessage({name: 'setDriveEnabled', enabled: true});
+  // Drive will be back.
+  await directoryTree.waitForItemByLabel('Google Drive');
+
+  // Expand it and check the children.
+  await directoryTree.expandTreeItemByLabel('Google Drive');
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const childrenAfter =
+        await directoryTree.getChildItemsByParentLabel('Google Drive');
+    const labelsAfter =
+        childrenAfter.map(childItem => directoryTree.getItemLabel(childItem));
+    const sameLength = labelsAfter.length === labelsBefore.length;
+    if (!sameLength) {
+      return pending(
+          caller, 'Expect Google Drive to have %d children, but got %d',
+          labelsBefore.length, labelsAfter.length);
+    }
+    for (let i = 0; i < labelsAfter.length; i++) {
+      if (labelsBefore[i] !== labelsAfter[i]) {
+        return pending(
+            caller, 'Expect Google Drive children to be %j, but got %j',
+            labelsBefore, labelsAfter);
+      }
+    }
+    return undefined;
+  });
 }

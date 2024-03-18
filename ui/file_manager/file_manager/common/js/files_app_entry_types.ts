@@ -552,6 +552,10 @@ export class EntryList extends FilesAppDirEntry {
     return false;
   }
 
+  removeAllChildren() {
+    this.children_ = [];
+  }
+
   override getNativeEntry() {
     return null;
   }
