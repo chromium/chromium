@@ -42,6 +42,7 @@ blink_modules_sources("mediarecorder") {
   deps = [
     "//build:chromeos_buildflags",
     "//media",
+    "//media/gpu:gpu",
     "//media/mojo/clients",
     "//media/mojo/mojom",
     "//third_party/blink/renderer/modules/mediastream",

@@ -49,6 +49,10 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "media/gpu/windows/mf_audio_encoder.h"
+#endif
+
 using base::TimeTicks;
 
 namespace blink {
@@ -480,6 +484,16 @@ bool MediaRecorderHandler::Start(int timeslice,
         audio_codec, use_video_tracks, use_audio_tracks,
         std::make_unique<media::Mp4MuxerDelegate>(write_callback),
         optional_timeslice);
+
+#if BUILDFLAG(IS_WIN)
+    // Windows OS uses MediaFoundation for MP4 muxing, which requires the
+    // specific audio bit rate for AAC encoding.
+    if (audio_bits_per_second_ != 0u) {
+      audio_bits_per_second_ =
+          media::MFAudioEncoder::ClampAccCodecBitrate(audio_bits_per_second_);
+      recorder_->UpdateAudioBitrate(audio_bits_per_second_);
+    }
+#endif
   } else {
     muxer = std::make_unique<media::WebmMuxer>(
         audio_codec, use_video_tracks, use_audio_tracks,

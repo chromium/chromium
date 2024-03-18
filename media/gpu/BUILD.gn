@@ -50,6 +50,7 @@ component("gpu") {
     "//remoting/codec:encoder",
     "//third_party/blink/renderer/modules:unit_tests",
     "//third_party/blink/renderer/modules:unit_tests_v2",
+    "//third_party/blink/renderer/modules/mediarecorder",
     "//ui/gl:gl_unittests",
 
     # TODO(crbug.com/1184041): Remove //remoting/host:common when the usage is removed.
@@ -386,9 +387,7 @@ source_set("common") {
       "vp9_svc_layers.h",
     ]
     configs += [ "//third_party/libvpx:libvpx_config" ]
-    deps += [
-      "//third_party/libvpx:libvpxrc",
-    ]
+    deps += [ "//third_party/libvpx:libvpxrc" ]
   }
 
   if (use_av1_hw_decoder) {
@@ -654,6 +653,7 @@ source_set("unit_tests") {
       "windows/d3d11_video_device_format_support_unittest.cc",
       "windows/d3d11_video_processor_proxy_unittest.cc",
       "windows/d3d12_helpers_unittest.cc",
+      "windows/mf_audio_encoder_unittest.cc",
       "windows/scoped_d3d_buffers_unittest.cc",
       "windows/supported_profile_helpers_unittest.cc",
     ]

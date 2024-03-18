@@ -557,4 +557,8 @@ void MediaRecorder::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
+void MediaRecorder::UpdateAudioBitrate(uint32_t bits_per_second) {
+  audio_bits_per_second_ = bits_per_second;
+}
+
 }  // namespace blink

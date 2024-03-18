@@ -74,6 +74,10 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   // previous call to `Flush()` has been run.
   void Flush(EncoderStatusCB done_cb) override;
 
+  // Clamp given audio bits per second to the value that Media Foundation
+  // supports.
+  static uint32_t ClampAccCodecBitrate(uint32_t bitrate);
+
  private:
   // This class has six states.
   // kIdle: no input has been received yet, or all data has been processed, and

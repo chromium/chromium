@@ -95,6 +95,8 @@ class MODULES_EXPORT MediaRecorder
 
   void Trace(Visitor* visitor) const override;
 
+  void UpdateAudioBitrate(uint32_t bits_per_second);
+
  private:
   void CreateBlobEvent(Blob* blob, double timecode);
 
