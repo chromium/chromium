@@ -20,15 +20,9 @@ const SHARED_ID_DIVIDER = '_element_';
 export function getSharedId(
   frameId: string,
   documentId: string,
-  backendNodeId: number,
-  sharedIdWithFrame: boolean
+  backendNodeId: number
 ): string {
-  if (sharedIdWithFrame) {
-    return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
-  }
-  // TODO: remove once ChromeDriver accepts sharedId in the new format:
-  //  http://go/chromedriver:weak-map
-  return `${documentId}${SHARED_ID_DIVIDER}${backendNodeId}`;
+  return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
 }
 
 function parseLegacySharedId(sharedId: string): {

@@ -25,23 +25,11 @@ describe('SharedId', () => {
     documentId: 'document_id',
     backendNodeId: 42,
   };
-  const PARSED_LEGACY_SHARED_ID = {
-    frameId: undefined,
-    documentId: 'document_id',
-    backendNodeId: 42,
-  };
   const SHARED_ID = 'f.frame_id.d.document_id.e.42';
-  const LEGACY_SHARED_ID = 'document_id_element_42';
 
   describe('parseSharedId', () => {
     it('should parse proper formatted string', () => {
       expect(parseSharedId(SHARED_ID)).to.deep.equal(PARSED_SHARED_ID);
-    });
-
-    it('should parse legacy sharedId', () => {
-      expect(parseSharedId(LEGACY_SHARED_ID)).to.deep.equal(
-        PARSED_LEGACY_SHARED_ID
-      );
     });
 
     it('should not parse incorrectly formatted string', () => {
@@ -50,28 +38,14 @@ describe('SharedId', () => {
   });
 
   describe('getSharedId', () => {
-    it('should generate new format', () => {
+    it('should generate', () => {
       expect(
         getSharedId(
           PARSED_SHARED_ID.frameId,
           PARSED_SHARED_ID.documentId,
-          PARSED_SHARED_ID.backendNodeId,
-          true
+          PARSED_SHARED_ID.backendNodeId
         )
       ).to.equal(SHARED_ID);
-    });
-  });
-
-  describe('getLegacySharedId(', () => {
-    it('should generate legacy format', () => {
-      expect(
-        getSharedId(
-          PARSED_SHARED_ID.frameId,
-          PARSED_SHARED_ID.documentId,
-          PARSED_SHARED_ID.backendNodeId,
-          false
-        )
-      ).to.equal(LEGACY_SHARED_ID);
     });
   });
 });

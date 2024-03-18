@@ -83,7 +83,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     acceptInsecureCerts: boolean,
-    sharedIdWithFrame: boolean,
     parser: BidiCommandParameterParser = new BidiNoOpParser(),
     logger?: LoggerFn
   ) {
@@ -110,7 +109,6 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       networkStorage,
       preloadScriptStorage,
       acceptInsecureCerts,
-      sharedIdWithFrame,
       defaultUserContextId,
       logger
     );

@@ -23,8 +23,8 @@ import logging
 from collections.abc import Callable
 from typing import Literal
 
-from anys import (ANY_NUMBER, ANY_STR, AnyContains, AnyFullmatch, AnyGT, AnyLT,
-                  AnyMatch, AnyWithEntries)
+from anys import (ANY_NUMBER, ANY_STR, AnyFullmatch, AnyGT, AnyLT, AnyMatch,
+                  AnyWithEntries)
 from PIL import Image, ImageChops
 
 logging.basicConfig(level=logging.INFO)
@@ -193,9 +193,7 @@ async def wait_for_filtered_event(
     return await wait_for_message(websocket, filter_lambda_wrapper)
 
 
-ANY_NEW_SHARED_ID = ANY_STR & AnyMatch("f\\..*\\.d\\..*\\.e\\..*")
-ANY_LEGACY_SHARED_ID = ANY_STR & AnyContains("_element_")
-ANY_SHARED_ID = ANY_NEW_SHARED_ID | ANY_LEGACY_SHARED_ID
+ANY_SHARED_ID = ANY_STR & AnyMatch("f\\..*\\.d\\..*\\.e\\..*")
 
 # Check if the timestamp has the proper order of magnitude between
 #  - "2020-01-01 00:00:00" (1577833200000) and
