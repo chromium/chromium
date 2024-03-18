@@ -32,6 +32,12 @@ PineTestApi::PineTestApi() = default;
 
 PineTestApi::~PineTestApi() = default;
 
+void PineTestApi::SetPineContentsDataForTesting(
+    std::unique_ptr<PineContentsData> pine_contents_data) {
+  Shell::Get()->pine_controller()->pine_contents_data_ =
+      std::move(pine_contents_data);
+}
+
 SystemDialogDelegateView* PineTestApi::GetOnboardingDialog() {
   auto* onboarding_widget =
       Shell::Get()->pine_controller()->onboarding_widget_.get();

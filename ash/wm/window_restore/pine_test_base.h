@@ -18,6 +18,8 @@ class PineTestBase : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override;
+
+  PrefService* GetTestPrefService();
 };
 
 }  // namespace ash

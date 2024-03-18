@@ -54,6 +54,9 @@
       <!-- Clipboard Nudge -->
       <structure type="lottie" name="IDR_CLIPBOARD_NUDGE_COPIED_IMAGE" file="unscaled_resources/clipboard_nudge_copied.json" compress="gzip" />
       <structure type="lottie" name="IDR_CLIPBOARD_NUDGE_SELECT_IMAGE" file="unscaled_resources/clipboard_nudge_select.json" compress="gzip" />
+       <!-- Pine Nudge -->
+       <structure type="lottie" name="IDR_PINE_NUDGE_IMAGE_DM" file="unscaled_resources/pine_nudge_dm.json" compress="gzip" />
+       <structure type="lottie" name="IDR_PINE_NUDGE_IMAGE_LM" file="unscaled_resources/pine_nudge_lm.json" compress="gzip" />
     </structures>
   </release>
 </grit>

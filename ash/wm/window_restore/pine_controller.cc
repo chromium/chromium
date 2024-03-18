@@ -10,6 +10,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/display/screen_ash.h"
 #include "ash/public/cpp/image_util.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/window_properties.h"
@@ -17,10 +18,12 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
@@ -44,9 +47,6 @@ namespace {
 // have not yet passed since it was last shown.
 constexpr int kNudgeMaxShownCount = 3;
 constexpr base::TimeDelta kNudgeTimeBetweenShown = base::Hours(24);
-
-// If set to true, ignores the prefs show limit for testing.
-bool g_ignore_prefs_for_testing = false;
 
 // Records the UMA metrics for the pine screenshot taken on the last shutdown.
 // Resets the prefs used to store the metrics across shutdowns.
@@ -95,9 +95,6 @@ PrefService* GetActivePrefService() {
 // Returns true if this is the first time login and we should show the pine
 // onboarding message.
 bool ShouldShowPineOnboarding() {
-  if (g_ignore_prefs_for_testing) {
-    return true;
-  }
   PrefService* prefs = GetActivePrefService();
   return prefs && prefs->GetBoolean(prefs::kShouldShowPineOnboarding);
 }
@@ -265,12 +262,24 @@ void PineController::MaybeEndPineOverviewSession() {
                                          OverviewEnterExitType::kNormal);
 }
 
+void PineController::OnOverviewModeEnding(OverviewSession* overview_session) {
+  in_pine_ = false;
+  for (const auto& grid : overview_session->grid_list()) {
+    if (grid->pine_widget()) {
+      in_pine_ = true;
+      break;
+    }
+  }
+}
+
 void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
-  if (canceled || !features::IsForestFeatureEnabled()) {
+  // If `canceled` is true, overview was reentered before the exit animations
+  // were finished. `in_pine_` will be reset the next time overview ends.
+  if (canceled || !in_pine_ || !features::IsForestFeatureEnabled()) {
     return;
   }
 
-  // TODO(sophiewen): Check if pine was in session?
+  in_pine_ = false;
 
   PrefService* prefs = GetActivePrefService();
   if (!prefs) {
@@ -285,7 +294,7 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
 
   // Nudge has been shown within the last 24 hours already.
   base::Time now = base::Time::Now();
-  if ((now - prefs->GetTime(prefs::kPineNudgeLastShown)) <
+  if (now - prefs->GetTime(prefs::kPineNudgeLastShown) <
       kNudgeTimeBetweenShown) {
     return;
   }
@@ -293,15 +302,16 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
   AnchoredNudgeData nudge_data(
       kEducationNudgeId, NudgeCatalogName::kPineEducationNudge,
       l10n_util::GetStringUTF16(IDS_ASH_PINE_EDUCATION_NUDGE));
+  nudge_data.image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+              ? IDR_PINE_NUDGE_IMAGE_DM
+              : IDR_PINE_NUDGE_IMAGE_LM);
+  nudge_data.fill_image_size = true;
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
   prefs->SetInteger(prefs::kPineNudgeShownCount, shown_count + 1);
   prefs->SetTime(prefs::kPineNudgeLastShown, now);
-}
-
-// static
-void PineController::SetIgnorePrefsForTesting(bool val) {
-  g_ignore_prefs_for_testing = val;
 }
 
 void PineController::OnPineImageDecoded(const gfx::ImageSkia& pine_image) {

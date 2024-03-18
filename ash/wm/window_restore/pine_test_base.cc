@@ -59,4 +59,9 @@ void PineTestBase::SetUp() {
   session_controller->SetSessionState(session_manager::SessionState::ACTIVE);
 }
 
+PrefService* PineTestBase::GetTestPrefService() {
+  return GetSessionControllerClient()->GetUserPrefService(
+      AccountId::FromUserEmail(kTestUserEmail));
+}
+
 }  // namespace ash

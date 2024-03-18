@@ -5,6 +5,8 @@
 #ifndef ASH_WM_WINDOW_RESTORE_PINE_TEST_API_H_
 #define ASH_WM_WINDOW_RESTORE_PINE_TEST_API_H_
 
+#include <memory>
+
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/pine_items_container_view.h"
@@ -89,6 +91,9 @@ class PineTestApi {
   PineTestApi(const PineTestApi&) = delete;
   PineTestApi& operator=(const PineTestApi&) = delete;
   ~PineTestApi();
+
+  void SetPineContentsDataForTesting(
+      std::unique_ptr<PineContentsData> pine_contents_data);
 
   SystemDialogDelegateView* GetOnboardingDialog();
 };

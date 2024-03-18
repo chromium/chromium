@@ -346,10 +346,34 @@ TEST_F(PineTest, NudgePreferences) {
   EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
 }
 
+// Tests that we only show the nudge for pine overview.
+TEST_F(PineTest, NudgePine) {
+  Shell::Get()
+      ->pine_controller()
+      ->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
+  ToggleOverview();
+  auto* anchored_nudge_manager = Shell::Get()->anchored_nudge_manager();
+  EXPECT_TRUE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+  anchored_nudge_manager->Cancel(kEducationNudgeId);
+
+  // Reset `pine_contents_data` so we start normal overview.
+  PineTestApi().SetPineContentsDataForTesting(nullptr);
+
+  // Start and end overview normally. Test we don't show the nudge.
+  ToggleOverview();
+  auto* overview_grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_FALSE(OverviewGridTestApi(overview_grid).pine_widget());
+  ToggleOverview();
+  EXPECT_FALSE(anchored_nudge_manager->GetShownNudgeForTest(kEducationNudgeId));
+}
+
 // Tests the onboarding metrics are recorded correctly.
 TEST_F(PineTest, OnboardingMetrics) {
   base::HistogramTester histogram_tester;
-  PineController::SetIgnorePrefsForTesting(true);
+
+  // The pref is set to false in tests by default.
+  GetTestPrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, true);
 
   // Verify initial histogram counts.
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 0);
@@ -364,6 +388,7 @@ TEST_F(PineTest, OnboardingMetrics) {
   histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
                                      /*sample=*/true,
                                      /*expected_count=*/1);
+  GetTestPrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, true);
 
   // Press "Cancel". Test we increment `false`.
   pine_controller->MaybeShowPineOnboardingMessage(
@@ -374,6 +399,7 @@ TEST_F(PineTest, OnboardingMetrics) {
   histogram_tester.ExpectBucketCount(kPineOnboardingHistogram,
                                      /*sample=*/false,
                                      /*expected_count=*/1);
+  GetTestPrefService()->SetBoolean(prefs::kShouldShowPineOnboarding, true);
 
   // Verify total counts.
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
@@ -386,9 +412,6 @@ TEST_F(PineTest, OnboardingMetrics) {
   views::test::WidgetDestroyedWaiter(dialog->GetWidget()).Wait();
   WaitForOverviewEntered();
   histogram_tester.ExpectTotalCount(kPineOnboardingHistogram, 2);
-
-  // Reset prefs so following tests can enter overview.
-  PineController::SetIgnorePrefsForTesting(false);
 }
 
 // Tests that if we exit overview without clicking the restore or cancel

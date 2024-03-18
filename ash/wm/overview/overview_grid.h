@@ -496,6 +496,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return faster_splitview_widget_.get();
   }
 
+  const views::Widget* pine_widget() const { return pine_widget_.get(); }
+
   int num_incognito_windows() const { return num_incognito_windows_; }
 
   int num_unsupported_windows() const { return num_unsupported_windows_; }

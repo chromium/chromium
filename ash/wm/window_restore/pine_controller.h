@@ -61,13 +61,12 @@ class ASH_EXPORT PineController : public OverviewObserver {
   void MaybeEndPineOverviewSession();
 
   // OverviewObserver:
+  void OnOverviewModeEnding(OverviewSession* overview_session) override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
  private:
   friend class PineTestApi;
   FRIEND_TEST_ALL_PREFIXES(PineTest, OnboardingMetrics);
-
-  static void SetIgnorePrefsForTesting(bool val);
 
   // Callback function for when the pine image is finished decoding.
   void OnPineImageDecoded(const gfx::ImageSkia& pine_image);
@@ -78,6 +77,10 @@ class ASH_EXPORT PineController : public OverviewObserver {
   // pressed.
   void OnOnboardingAcceptPressed(bool restore_on);
   void OnOnboardingCancelPressed();
+
+  // True if overview was in pine session, up until the overview animation is
+  // ended.
+  bool in_pine_ = false;
 
   // The first-time experience onboarding dialog.
   views::UniqueWidgetPtr onboarding_widget_;
