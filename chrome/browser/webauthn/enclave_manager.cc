@@ -81,7 +81,7 @@ struct EnclaveManager::StoreKeysArgs {
 
 struct EnclaveManager::PendingAction {
   EnclaveManager::Callback callback;
-  bool want_registration;
+  bool want_registration = false;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
   bool setup_account = false;
   std::string pin;
@@ -1149,8 +1149,13 @@ class EnclaveManager::StateMachine {
             [](std::optional<std::vector<uint8_t>> key_id,
                std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key)
                 -> Event {
+#if BUILDFLAG(IS_WIN)
+              auto provider = crypto::GetUnexportableKeyProvider(
+                  crypto::UnexportableKeyProvider::Config());
+#else
               auto provider =
                   crypto::GetSoftwareUnsecureUnexportableKeyProvider();
+#endif
               if (!provider) {
                 return Failure();
               }
@@ -1908,7 +1913,7 @@ void EnclaveManager::GetHardwareKeyForSignature(
         }
         DCHECK_CALLED_ON_VALID_SEQUENCE(enclave_manager->sequence_checker_);
         if (!key) {
-          // TODO(enclave): The key is gone. Clear registration state.
+          enclave_manager->ClearRegistration();
           std::move(callback).Run(nullptr);
           return;
         }
@@ -1927,8 +1932,16 @@ void EnclaveManager::GetHardwareKeyForSignature(
       base::BindOnce(
           [](std::string wrapped_hardware_private_key)
               -> std::unique_ptr<crypto::UnexportableSigningKey> {
+#if BUILDFLAG(IS_WIN)
+            auto provider = crypto::GetUnexportableKeyProvider(
+                crypto::UnexportableKeyProvider::Config());
+            if (!provider) {
+              return nullptr;
+            }
+#else
             auto provider =
                 crypto::GetSoftwareUnsecureUnexportableKeyProvider();
+#endif
             return provider->FromWrappedSigningKeySlowly(
                 ToVector(wrapped_hardware_private_key));
           },
@@ -2015,7 +2028,7 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
       crypto::GetUserVerifyingKeyProvider(MakeUserVerifyingKeyConfig());
   if (!user_verifying_key_provider) {
     // This indicates the platform key provider was available, but now is not.
-    // TODO(enclave): Clear registration state.
+    ClearRegistration();
     std::move(callback).Run(nullptr);
     return;
   }
@@ -2038,7 +2051,7 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
           return;
         }
         if (!key) {
-          // TODO(enclave): The key is gone. Clear registration state.
+          enclave_manager->ClearRegistration();
           std::move(callback).Run(nullptr);
           return;
         }
@@ -2270,6 +2283,11 @@ bool EnclaveManager::RunWhenStoppedForTesting(base::OnceClosure on_stop) {
 
 EnclaveLocalState& EnclaveManager::local_state_for_testing() const {
   return *local_state_;
+}
+
+void EnclaveManager::ClearCachedKeysForTesting() {
+  user_verifying_key_ = nullptr;
+  hardware_key_ = nullptr;
 }
 
 // static
@@ -2571,4 +2589,24 @@ void EnclaveManager::WriteStateComplete(bool success) {
   if (write_finished_callback_) {
     std::move(write_finished_callback_).Run();
   }
+}
+
+void EnclaveManager::ClearRegistration() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!user_) {
+    return;
+  }
+
+  user_verifying_key_.reset();
+  hardware_key_.reset();
+
+  // TODO(enclave): Attempt to delete UV keys from system, since these can
+  // sometimes be stored.
+  user_ = nullptr;  // Prevent dangling raw_ptr error on next line.
+  CHECK(local_state_->mutable_users()->erase(primary_account_info_->gaia));
+  user_ = CreateStateForUser(local_state_.get(), *primary_account_info_);
+  WriteState(local_state_.get());
+
+  CancelAllActions();
+  Stopped();
 }

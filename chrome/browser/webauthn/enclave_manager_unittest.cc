@@ -26,6 +26,8 @@
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "crypto/scoped_fake_user_verifying_key_provider.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_authenticator.h"
@@ -43,8 +45,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-
-#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #endif
 
 // These tests are also disabled under MSAN. The enclave subprocess is written
@@ -307,6 +307,8 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
                                             response->first);
           }
         }));
+    mock_hw_provider_ =
+        std::make_unique<crypto::ScopedMockUnexportableKeyProvider>();
   }
 
   ~EnclaveManagerTest() override {
@@ -507,6 +509,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   signin::IdentityTestEnvironment identity_test_env_;
   std::string gaia_id_;
   std::unique_ptr<FakeSecurityDomainService> security_domain_service_;
+  std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
   EnclaveManager manager_;
 };
 
@@ -886,11 +889,14 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
   EXPECT_FALSE(std::get<0>(add_callback.result().value()));
 }
 
-// TODO(enclave): Make ScopedFakeUserVerifyingKeyProvider build on other
-// platforms and enable these tests.
+// UV keys are only supported on Windows at this time.
 #if BUILDFLAG(IS_WIN)
-TEST_F(EnclaveManagerTest, UserVerifyingKeyAvailable) {
-  crypto::ScopedFakeUserVerifyingKeyProvider fake_provider;
+#define MAYBE_UserVerifyingKeyAvailable UserVerifyingKeyAvailable
+#else
+#define MAYBE_UserVerifyingKeyAvailable DISABLED_UserVerifyingKeyAvailable
+#endif
+TEST_F(EnclaveManagerTest, MAYBE_UserVerifyingKeyAvailable) {
+  crypto::ScopedFakeUserVerifyingKeyProvider fake_uv_provider;
   security_domain_service_->pretend_there_are_members();
   NoArgCallback loaded_callback;
   manager_.Load(loaded_callback.callback());
@@ -914,11 +920,17 @@ TEST_F(EnclaveManagerTest, UserVerifyingKeyAvailable) {
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
 
-  ASSERT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
+  EXPECT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
 }
 
-TEST_F(EnclaveManagerTest, UserVerifyingKeyUnavailable) {
-  crypto::ScopedNullUserVerifyingKeyProvider null_provider;
+// UV keys are only supported on Windows at this time.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_UserVerifyingKeyUnavailable UserVerifyingKeyUnavailable
+#else
+#define MAYBE_UserVerifyingKeyUnavailable DISABLED_UserVerifyingKeyUnavailable
+#endif
+TEST_F(EnclaveManagerTest, MAYBE_UserVerifyingKeyUnavailable) {
+  crypto::ScopedNullUserVerifyingKeyProvider null_uv_provider;
   security_domain_service_->pretend_there_are_members();
   NoArgCallback loaded_callback;
   manager_.Load(loaded_callback.callback());
@@ -942,9 +954,110 @@ TEST_F(EnclaveManagerTest, UserVerifyingKeyUnavailable) {
   ASSERT_FALSE(manager_.is_idle());
   add_callback.WaitForCallback();
   ASSERT_TRUE(manager_.is_registered());
-  ASSERT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kNone);
+  EXPECT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kNone);
 }
-#endif  // BUILDFLAG(IS_WIN)
+
+// UV keys are only supported on Windows at this time.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_UserVerifyingKeyLost UserVerifyingKeyLost
+#else
+#define MAYBE_UserVerifyingKeyLost DISABLED_UserVerifyingKeyLost
+#endif
+TEST_F(EnclaveManagerTest, MAYBE_UserVerifyingKeyLost) {
+  {
+    crypto::ScopedFakeUserVerifyingKeyProvider fake_uv_provider;
+    security_domain_service_->pretend_there_are_members();
+    NoArgCallback loaded_callback;
+    manager_.Load(loaded_callback.callback());
+    loaded_callback.WaitForCallback();
+
+    BoolCallback register_callback;
+    manager_.RegisterIfNeeded(register_callback.callback());
+    ASSERT_FALSE(manager_.is_idle());
+    register_callback.WaitForCallback();
+
+    std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+    ASSERT_FALSE(manager_.has_pending_keys());
+    manager_.StoreKeys(gaia_id_, {std::move(key)},
+                       /*last_key_version=*/kSecretVersion);
+    ASSERT_TRUE(manager_.is_idle());
+    ASSERT_TRUE(manager_.has_pending_keys());
+
+    BoolCallback add_callback;
+    ASSERT_TRUE(manager_.AddDeviceToAccount(
+        /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+    ASSERT_FALSE(manager_.is_idle());
+    add_callback.WaitForCallback();
+
+    ASSERT_EQ(manager_.uv_key_state(),
+              EnclaveManager::UvKeyState::kUsesSystemUI);
+  }
+  manager_.ClearCachedKeysForTesting();
+  {
+    crypto::ScopedNullUserVerifyingKeyProvider null_uv_provider;
+    auto signing_callback = manager_.UserVerifyingKeySigningCallback();
+    auto quit_closure = task_env_.QuitClosure();
+    std::move(signing_callback)
+        .Run({1, 2, 3, 4},
+             base::BindLambdaForTesting(
+                 [&quit_closure](
+                     std::optional<enclave::ClientSignature> signature) {
+                   EXPECT_EQ(signature, std::nullopt);
+                   quit_closure.Run();
+                 }));
+    task_env_.RunUntilQuit();
+    EXPECT_FALSE(manager_.is_registered());
+  }
+}
+
+// Tests that rely on `ScopedMockUnexportableKeyProvider` only work on
+// platforms where EnclaveManager uses `GetUnexportableKeyProvider`, as opposed
+// to `GetSoftwareUnsecureUnexportableKeyProvider`.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HardwareKeyLost HardwareKeyLost
+#else
+#define MAYBE_HardwareKeyLost DISABLED_HardwareKeyLost
+#endif
+TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
+  security_domain_service_->pretend_there_are_members();
+  NoArgCallback loaded_callback;
+  manager_.Load(loaded_callback.callback());
+  loaded_callback.WaitForCallback();
+
+  BoolCallback register_callback;
+  manager_.RegisterIfNeeded(register_callback.callback());
+  ASSERT_FALSE(manager_.is_idle());
+  register_callback.WaitForCallback();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolCallback add_callback;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+  ASSERT_FALSE(manager_.is_idle());
+  add_callback.WaitForCallback();
+  mock_hw_provider_.reset();
+  manager_.ClearCachedKeysForTesting();
+
+  crypto::ScopedNullUnexportableKeyProvider null_hw_provider;
+  auto signing_callback = manager_.HardwareKeySigningCallback();
+  auto quit_closure = task_env_.QuitClosure();
+  std::move(signing_callback)
+      .Run({1, 2, 3, 4},
+           base::BindLambdaForTesting(
+               [&quit_closure](
+                   std::optional<enclave::ClientSignature> signature) {
+                 EXPECT_EQ(signature, std::nullopt);
+                 quit_closure.Run();
+               }));
+  task_env_.RunUntilQuit();
+  EXPECT_FALSE(manager_.is_registered());
+}
 
 }  // namespace
 

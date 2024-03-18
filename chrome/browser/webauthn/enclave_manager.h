@@ -186,6 +186,9 @@ class EnclaveManager : public KeyedService {
 
   webauthn_pb::EnclaveLocalState& local_state_for_testing() const;
 
+  // Release the cached HW and UV key references.
+  void ClearCachedKeysForTesting();
+
   // These methods get internal URLs so that tests can reply when they're
   // fetched.
   static std::string_view recovery_key_store_url_for_testing();
@@ -237,6 +240,11 @@ class EnclaveManager : public KeyedService {
   void GetUserVerifyingKeyForSignature(
       base::OnceCallback<void(
           scoped_refptr<crypto::RefCountedUserVerifyingSigningKey>)> callback);
+
+  // If signing keys are lost or disabled, this can put the enclave registration
+  // in an unrecoverable state. In this case the registration state needs to be
+  // reset, and can be initiated from scratch.
+  void ClearRegistration();
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
