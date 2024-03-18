@@ -19,7 +19,7 @@
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/picker_rich_media.h"
-#include "ash/picker/picker_search_controller.h"
+#include "ash/picker/search/picker_search_controller.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_positioning.h"
 #include "ash/picker/views/picker_view.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PICKER_PICKER_SEARCH_CONTROLLER_H_
-#define ASH_PICKER_PICKER_SEARCH_CONTROLLER_H_
+#ifndef ASH_PICKER_SEARCH_PICKER_SEARCH_CONTROLLER_H_
+#define ASH_PICKER_SEARCH_PICKER_SEARCH_CONTROLLER_H_
 
 #include <optional>
 #include <string>
@@ -105,4 +105,4 @@ class ASH_EXPORT PickerSearchController {
 
 }  // namespace ash
 
-#endif  // ASH_PICKER_PICKER_SEARCH_CONTROLLER_H_
+#endif  // ASH_PICKER_SEARCH_PICKER_SEARCH_CONTROLLER_H_
