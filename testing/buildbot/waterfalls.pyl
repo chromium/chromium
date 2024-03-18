@@ -4283,7 +4283,6 @@
         'os_type': 'lacros',
         'browser_config': 'release',
         'mixins': [
-          'limited_capacity_bot',
           'linux_amd_rx_5500_xt',
         ],
         'test_suites': {
@@ -4355,11 +4354,7 @@
       'Linux FYI Release (AMD RX 5500 XT)': {
         'os_type': 'linux',
         'browser_config': 'release',
-        # There are only two bots of this type in the Swarming pool right now,
-        # so we have to increase the default expiration time of 1 hour
-        # to prevent webgl2_conformance_tests' shards from timing out.
         'mixins': [
-          'limited_capacity_bot',
           'linux_amd_rx_5500_xt',
         ],
         'test_suites': {
@@ -4660,12 +4655,9 @@
         },
       },
       'Win10 FYI x64 Release (AMD RX 5500 XT)': {
-        # This bot currently only has two pieces of hardware behind it,
-        # and is being qualified for potential scale-out.
         'os_type': 'win',
         'browser_config': 'release_x64',
         'mixins': [
-          'limited_capacity_bot',
           'win10_amd_rx_5500_xt_stable',
         ],
         'test_suites': {
