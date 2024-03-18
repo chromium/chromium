@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/audio_device_encoding.h"
 #include "chromeos/ash/components/audio/audio_device_selection_test_base.h"
 
 namespace ash {
@@ -23,8 +24,9 @@ class AudioDeviceMetricsHandlerTest : public AudioDeviceSelectionTestBase {
 
 TEST_F(AudioDeviceMetricsHandlerTest,
        RecordAudioSelectionMetrics_NonChromeRestarts) {
-  AudioDeviceList current_devices = {AudioDevice(NewInputNode("USB")),
-                                     AudioDevice(NewInputNode("BLUETOOTH"))};
+  AudioDevice input_USB = AudioDevice(NewInputNode("USB"));
+  AudioDevice input_BLUETOOTH = AudioDevice(NewInputNode("BLUETOOTH"));
+  AudioDeviceList current_devices = {input_USB, input_BLUETOOTH};
 
   for (const bool is_input : {true, false}) {
     for (const bool is_switched : {true, false}) {
@@ -59,14 +61,34 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       histogram_tester().ExpectBucketCount(device_count_histogram_name,
                                            current_devices.size(),
                                            /*bucket_count=*/1);
+
+      std::string device_set_histogram_name;
+      if (is_switched) {
+        device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemSwitchInputAudioDeviceSetNonChromeRestarts
+                     : AudioDeviceMetricsHandler::
+                           kSystemSwitchOutputAudioDeviceSetNonChromeRestarts;
+      } else {
+        device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::
+                      kSystemNotSwitchInputAudioDeviceSetNonChromeRestarts
+                : AudioDeviceMetricsHandler::
+                      kSystemNotSwitchOutputAudioDeviceSetNonChromeRestarts;
+      }
+      histogram_tester().ExpectBucketCount(
+          device_set_histogram_name, EncodeAudioDeviceSet(current_devices),
+          /*bucket_count=*/1);
     }
   }
 }
 
 TEST_F(AudioDeviceMetricsHandlerTest,
        RecordAudioSelectionMetrics_ChromeRestarts) {
-  AudioDeviceList current_devices = {AudioDevice(NewInputNode("USB")),
-                                     AudioDevice(NewInputNode("BLUETOOTH"))};
+  AudioDevice input_USB = AudioDevice(NewInputNode("USB"));
+  AudioDevice input_BLUETOOTH = AudioDevice(NewInputNode("BLUETOOTH"));
+  AudioDeviceList current_devices = {input_USB, input_BLUETOOTH};
 
   for (const bool is_input : {true, false}) {
     for (const bool is_switched : {true, false}) {
@@ -100,6 +122,24 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       histogram_tester().ExpectBucketCount(device_count_histogram_name,
                                            current_devices.size(),
                                            /*bucket_count=*/1);
+
+      std::string device_set_histogram_name;
+      if (is_switched) {
+        device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemSwitchInputAudioDeviceSetChromeRestarts
+                     : AudioDeviceMetricsHandler::
+                           kSystemSwitchOutputAudioDeviceSetChromeRestarts;
+      } else {
+        device_set_histogram_name =
+            is_input ? AudioDeviceMetricsHandler::
+                           kSystemNotSwitchInputAudioDeviceSetChromeRestarts
+                     : AudioDeviceMetricsHandler::
+                           kSystemNotSwitchOutputAudioDeviceSetChromeRestarts;
+      }
+      histogram_tester().ExpectBucketCount(
+          device_set_histogram_name, EncodeAudioDeviceSet(current_devices),
+          /*bucket_count=*/1);
     }
   }
 }

@@ -62,6 +62,35 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
           "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio."
           "AudioDeviceCount.NonChromeRestarts";
 
+  // A series of histogram metrics to record the audio device types when the
+  // system selection decision is made after audio device has changed, separated
+  // by chrome restarts or not.
+  static constexpr char kSystemSwitchInputAudioDeviceSetChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio.AudioDeviceSet."
+      "ChromeRestarts";
+  static constexpr char kSystemNotSwitchInputAudioDeviceSetChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio.AudioDeviceSet."
+      "ChromeRestarts";
+  static constexpr char kSystemSwitchOutputAudioDeviceSetChromeRestarts[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio.AudioDeviceSet."
+      "ChromeRestarts";
+  static constexpr char kSystemNotSwitchOutputAudioDeviceSetChromeRestarts[] =
+      "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceSet."
+      "ChromeRestarts";
+  static constexpr char kSystemSwitchInputAudioDeviceSetNonChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.SystemSwitchAudio.AudioDeviceSet."
+      "NonChromeRestarts";
+  static constexpr char kSystemNotSwitchInputAudioDeviceSetNonChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio.AudioDeviceSet."
+      "NonChromeRestarts";
+  static constexpr char kSystemSwitchOutputAudioDeviceSetNonChromeRestarts[] =
+      "ChromeOS.AudioSelection.Output.SystemSwitchAudio.AudioDeviceSet."
+      "NonChromeRestarts";
+  static constexpr char
+      kSystemNotSwitchOutputAudioDeviceSetNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceSet."
+          "NonChromeRestarts";
+
   // Record system selection related metrics in the case of chrome restarts,
   // including system boots and users sign out, as well as the case of normal
   // user hotplug or unplug.

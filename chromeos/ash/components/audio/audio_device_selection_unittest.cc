@@ -312,6 +312,19 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchInputAudioDeviceSetNonChromeRestarts,
+      EncodeAudioDeviceSet(
+          {AudioDevice(output_internal), AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchOutputAudioDeviceSetNonChromeRestarts,
+      EncodeAudioDeviceSet(
+          {AudioDevice(output_internal), AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{AudioDevice(output_internal)},
@@ -393,6 +406,13 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemNotSwitchInputAudioDeviceSetNonChromeRestarts,
+      EncodeAudioDeviceSet({AudioDevice(input_internal), AudioDevice(input_USB),
+                            AudioDevice(input_bluetooth_nb)}),
+      /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemNotSwitchInputBeforeAndAfterAudioDeviceSet,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{AudioDevice(output_internal),
@@ -439,6 +459,13 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
 
   histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemSwitchInputAudioDeviceSet,
+      EncodeAudioDeviceSet(
+          {AudioDevice(input_internal), AudioDevice(input_bluetooth_nb)}),
+      /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchInputAudioDeviceSetNonChromeRestarts,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_bluetooth_nb)}),
       /*bucket_count=*/1);
@@ -529,6 +556,18 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
       CrasAudioHandler::kSystemSwitchOutputAudioDeviceSet,
       EncodeAudioDeviceSet(
           {AudioDevice(input_internal), AudioDevice(input_USB)}),
+      /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::kSystemSwitchInputAudioDeviceSetChromeRestarts,
+      EncodeAudioDeviceSet(
+          {AudioDevice(output_internal), AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchOutputAudioDeviceSetChromeRestarts,
+      EncodeAudioDeviceSet(
+          {AudioDevice(output_internal), AudioDevice(output_USB)}),
       /*bucket_count=*/1);
 
   histogram_tester().ExpectBucketCount(
