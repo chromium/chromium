@@ -75,6 +75,7 @@
 
 #if (BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && \
      (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)))
+#include "services/screen_ai/public/cpp/utilities.h"  // nogncheck
 #include "services/screen_ai/sandbox/screen_ai_sandbox_hook_linux.h"  // nogncheck
 #endif
 
@@ -294,7 +295,10 @@ int UtilityMain(MainFunctionParams parameters) {
       break;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
-      pre_sandbox_hook = base::BindOnce(&screen_ai::ScreenAIPreSandboxHook);
+      pre_sandbox_hook =
+          base::BindOnce(&screen_ai::ScreenAIPreSandboxHook,
+                         parameters.command_line->GetSwitchValuePath(
+                             screen_ai::GetBinaryPathSwitch()));
       break;
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)

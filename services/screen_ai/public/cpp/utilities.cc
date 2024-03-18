@@ -18,6 +18,11 @@
 namespace screen_ai {
 
 namespace {
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+constexpr char kBinaryPathSwitch[] = "screen-ai-binary";
+#endif
+
 const base::FilePath::CharType kScreenAISubDirName[] =
     FILE_PATH_LITERAL("screen_ai");
 
@@ -149,6 +154,15 @@ base::FilePath GetLatestComponentBinaryPath() {
   }
 
   return component_path;
+}
+
+const char* GetBinaryPathSwitch() {
+  // This is only used on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  return kBinaryPathSwitch;
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace screen_ai

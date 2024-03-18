@@ -15,12 +15,14 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/mojom/base/file_path.mojom.h"
+#include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -276,9 +278,13 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
       << "ScreenAI service launch triggered when component is not "
          "available.";
 
+  base::FilePath binary_path = state_instance->get_component_binary_path();
 #if BUILDFLAG(IS_WIN)
-  base::FilePath library_path = state_instance->get_component_binary_path();
-  std::vector<base::FilePath> preload_libraries = {library_path};
+  std::vector<base::FilePath> preload_libraries = {binary_path};
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  std::vector<std::string> extra_switches = {
+      base::StringPrintf("--%s=%s", screen_ai::GetBinaryPathSwitch(),
+                         binary_path.MaybeAsASCII().c_str())};
 #endif  // BUILDFLAG(IS_WIN)
 
   content::ServiceProcessHost::Launch(
@@ -289,6 +295,8 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
           .WithPreloadedLibraries(
               preload_libraries,
               content::ServiceProcessHostPreloadLibraries::GetPassKey())
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+          .WithExtraCommandLineSwitches(extra_switches)
 #endif  // BUILDFLAG(IS_WIN)
           .Pass());
 }

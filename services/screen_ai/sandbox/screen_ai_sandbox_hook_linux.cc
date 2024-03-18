@@ -27,12 +27,12 @@ void CallPresandboxInitFunction(void* presandbox_init_function) {
 
 }  // namespace
 
-bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
-  base::FilePath library_path = screen_ai::GetLatestComponentBinaryPath();
-  if (library_path.empty()) {
+bool ScreenAIPreSandboxHook(base::FilePath binary_path,
+                            sandbox::policy::SandboxLinux::Options options) {
+  if (binary_path.empty()) {
     VLOG(0) << "Screen AI component binary not found.";
   } else {
-    void* screen_ai_library = dlopen(library_path.value().c_str(),
+    void* screen_ai_library = dlopen(binary_path.value().c_str(),
                                      RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
     // The library is delivered by the component updater or DLC. If it is not
     // available or has loading or syntax problems, we cannot do anything about
@@ -40,14 +40,14 @@ bool ScreenAIPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
     // does not exist or does not initialize.
     if (screen_ai_library == nullptr) {
       VLOG(0) << dlerror();
-      library_path.clear();
+      binary_path.clear();
     } else {
       void* presandbox_init = dlsym(screen_ai_library, "PresandboxInit");
       if (presandbox_init == nullptr) {
         VLOG(0) << "PresandboxInit function of Screen AI library not found.";
-        library_path.clear();
+        binary_path.clear();
       } else {
-        VLOG(2) << "Screen AI library loaded pre-sandboxing: " << library_path;
+        VLOG(2) << "Screen AI library loaded pre-sandboxing: " << binary_path;
         CallPresandboxInitFunction(presandbox_init);
       }
     }
