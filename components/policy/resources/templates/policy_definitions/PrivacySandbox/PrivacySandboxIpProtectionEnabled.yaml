@@ -14,6 +14,9 @@ features:
   per_profile: true
 future_on:
  - fuchsia
+ - chrome.*
+ - chrome_os
+ - android
 items:
 - caption: Disable the <ph name="PRIVACY_SANDBOX_NAME">Privacy Sandbox</ph> IP Protection feature.
   value: false
@@ -26,9 +29,5 @@ owners:
 - file://components/ip_protection/OWNERS
 schema:
   type: boolean
-supported_on:
- - chrome.*:124-
- - chrome_os:124-
- - android:124-
 tags: []
 type: main
