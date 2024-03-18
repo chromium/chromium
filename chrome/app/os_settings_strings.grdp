@@ -6551,6 +6551,15 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DISALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks geolocation access to every geolocation client (including system services).">
     Blocked for all
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_ALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. ">
+    Apps, websites and system services with the location permission can use your location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_ONLY_ALLOWED_FOR_SYSTEM" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks access to all clients but system-services (such as PWAs or Android apps).">
+    Only system services can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_DISALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks geolocation access to every geolocation client (including system services).">
+    Nothing can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCURACY_TOGGLE_TEXT" desc="In Geolocation setting advance subpage (under Privacy Controls), text description for the toggle settings that controls location accuracy toggle.">
     <!-- TODO(vsomani): Figure out how we can add break in the below line. -->
     Google’s location service improves location accuracy by using Wi-Fi, mobile networks, and sensors to help estimate your location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.

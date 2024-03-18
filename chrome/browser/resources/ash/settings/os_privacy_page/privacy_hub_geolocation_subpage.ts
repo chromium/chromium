@@ -95,6 +95,14 @@ export class SettingsPrivacyHubGeolocationSubpage extends
         },
       },
       /**
+       * Show the right description text for the selected geolocation mode.
+       */
+      geolocationModeDescriptionText_: {
+        type: TrustedHTML,
+        computed: 'computeGeolocationModeDescriptionText_(' +
+            'prefs.ash.user.geolocation_access_level.value)',
+      },
+      /**
        * Apps with location permission defined.
        */
       appList_: {
@@ -165,6 +173,7 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   ]);
 
   private geolocationMapTargets_: DropdownMenuOptionList;
+  private geolocationModeDescriptionText_: string;
   private appList_: App[];
   private appPermissionsObserverReceiver_: AppPermissionsObserverReceiver|null;
   private isSecondaryUser_: boolean;
@@ -287,6 +296,24 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   private onManagePermissionsInChromeRowClick_(): void {
     this.mojoInterfaceProvider_.openBrowserPermissionSettings(
         PermissionType.kLocation);
+  }
+
+  private computeGeolocationModeDescriptionText_(): TrustedHTML {
+    const accessLevel: GeolocationAccessLevel =
+        this.getPref<GeolocationAccessLevel>(
+                'ash.user.geolocation_access_level')
+            .value;
+    switch (accessLevel) {
+      case GeolocationAccessLevel.ALLOWED:
+        return this.i18nAdvanced('geolocationAllowedModeDescription');
+      case GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM:
+        return this.i18nAdvanced(
+            'geolocationOnlyAllowedForSystemModeDescription');
+      case GeolocationAccessLevel.DISALLOWED:
+        return this.i18nAdvanced('geolocationBlockedModeDescription');
+      default:
+        assertExhaustive(accessLevel);
+    }
   }
 
   private recordMetric_(): void {

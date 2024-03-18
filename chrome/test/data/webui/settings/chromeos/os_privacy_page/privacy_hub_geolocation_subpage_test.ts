@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {PrivacyHubBrowserProxyImpl, SettingsPrivacyHubGeolocationSubpage} from 'chrome://os-settings/lazy_load.js';
-import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, Router, routes, setAppPermissionProviderForTesting, SettingsDropdownMenuElement, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
+import {appPermissionHandlerMojom, CrLinkRowElement, GeolocationAccessLevel, LocalizedLinkElement, Router, routes, setAppPermissionProviderForTesting, SettingsDropdownMenuElement, SettingsPrivacyHubSystemServiceRow} from 'chrome://os-settings/os_settings.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -172,6 +172,59 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         'Automatic light/dark theme', 'privacyHubSystemServicesAllowedText',
         'Allowed', 'Blocked');
   }
+
+  test('Geolocation sub-label updates on location change', async () => {
+    await initPage();
+
+    let subLabelElement: LocalizedLinkElement|null;
+    let subLabel: string;
+
+    // Helper function to remove HTML tags from the localizedString.
+    const removeAnchorTags = (text: string) =>
+        text.replace('<a>', '').replace('</a>', '');
+
+    // Check "Allowed"
+    assertTrue(getGeolocationAccessLevel() === GeolocationAccessLevel.ALLOWED);
+    subLabelElement =
+        privacyHubGeolocationSubpage.shadowRoot!
+            .querySelector<LocalizedLinkElement>(
+                '#geolocationModeDescriptionDiv > localized-link');
+    assertTrue(!!subLabelElement);
+    subLabel = subLabelElement.localizedString.toString();
+    assertEquals(
+        privacyHubGeolocationSubpage.i18n('geolocationAllowedModeDescription'),
+        removeAnchorTags(subLabel));
+
+    // Check "Allowed For System Services"
+    setGeolocationAccessLevel(GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
+    assertTrue(
+        getGeolocationAccessLevel() ===
+        GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
+    subLabelElement =
+        privacyHubGeolocationSubpage.shadowRoot!
+            .querySelector<LocalizedLinkElement>(
+                '#geolocationModeDescriptionDiv > localized-link');
+    assertTrue(!!subLabelElement);
+    subLabel = subLabelElement.localizedString.toString();
+    assertEquals(
+        privacyHubGeolocationSubpage.i18n(
+            'geolocationOnlyAllowedForSystemModeDescription'),
+        removeAnchorTags(subLabel));
+
+    // Check "Blocked for all"
+    setGeolocationAccessLevel(GeolocationAccessLevel.DISALLOWED);
+    assertTrue(
+        getGeolocationAccessLevel() === GeolocationAccessLevel.DISALLOWED);
+    subLabelElement =
+        privacyHubGeolocationSubpage.shadowRoot!
+            .querySelector<LocalizedLinkElement>(
+                '#geolocationModeDescriptionDiv > localized-link');
+    assertTrue(!!subLabelElement);
+    subLabel = subLabelElement.localizedString.toString();
+    assertEquals(
+        privacyHubGeolocationSubpage.i18n('geolocationBlockedModeDescription'),
+        removeAnchorTags(subLabel));
+  });
 
   test('App list displayed when geolocation allowed', async () => {
     await initPage();

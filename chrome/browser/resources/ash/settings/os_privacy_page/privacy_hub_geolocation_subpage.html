@@ -3,6 +3,12 @@
     border-bottom: var(--cr-separator-line);
   }
 
+  #geolocationModeDescriptionDiv {
+    padding-inline-start: var(--cr-section-padding);
+    padding-inline-end: var(--cr-section-padding);
+    padding-bottom: var(--cr-section-vertical-padding);
+  }
+
   h2 {
     padding-inline-start: var(--cr-section-padding);
   }
@@ -46,6 +52,12 @@
       on-settings-control-change="recordMetric_"
       pref="{{prefs.ash.user.geolocation_access_level}}">
   </settings-dropdown-menu>
+</div>
+
+<div id="geolocationModeDescriptionDiv" class="cr-secondary-text">
+    <localized-link localized-string="[[geolocationModeDescriptionText_]]"
+        link-url="$i18n{systemGeolocationDialogLearnMoreUrl}">
+    </localized-link>
 </div>
 
 <div class="hr"></div>
