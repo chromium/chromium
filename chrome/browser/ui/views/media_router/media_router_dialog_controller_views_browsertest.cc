@@ -165,7 +165,14 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialog) {
   ASSERT_TRUE(view->GetAnchorView());
 }
 
-IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest, OpenGMCDialogInWebApp) {
+// TODO(crbug.com/282805035): Re-enable after fixing flakiness
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OpenGMCDialogInWebApp DISABLED_OpenGMCDialogInWebApp
+#else
+#define MAYBE_OpenGMCDialogInWebApp OpenGMCDialogInWebApp
+#endif
+IN_PROC_BROWSER_TEST_F(GlobalMediaControlsDialogTest,
+                       MAYBE_OpenGMCDialogInWebApp) {
   EXPECT_FALSE(MediaDialogView::IsShowing());
   // Navigate to a page with origin so that the PresentationRequest notification
   // created on this page has an origin to be displayed.
