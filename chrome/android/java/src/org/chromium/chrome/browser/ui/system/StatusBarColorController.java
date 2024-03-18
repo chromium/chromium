@@ -304,6 +304,7 @@ public class StatusBarColorController
     private boolean shouldUpdateStatusBarColorForHomeSurface() {
         return mIsSurfacePolishEnabled
                 && !mIsIncognito
+                && mStartSurfaceSupplier != null
                 && mStartSurfaceSupplier.hasValue()
                 && mStartSurfaceSupplier.get().isHomepageShown();
     }
