@@ -283,12 +283,7 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
-  if (parent->is_root()) {
-    // Account permanent folders were just created.
-    // TODO(crbug.com/326185948): Figure out a way to notify observers.
-    return;
-  }
-  if (IsNodeExcludedFromView(parent)) {
+  if (!parent->is_root() && IsNodeExcludedFromView(parent)) {
     return;
   }
   for (bookmarks::BookmarkModelObserver& observer : observers_) {
@@ -300,7 +295,7 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::OnWillRemoveBookmarks(
     const bookmarks::BookmarkNode* parent,
     size_t old_index,
     const bookmarks::BookmarkNode* node) {
-  if (IsNodeExcludedFromView(node)) {
+  if (!parent->is_root() && IsNodeExcludedFromView(parent)) {
     return;
   }
   for (bookmarks::BookmarkModelObserver& observer : observers_) {
@@ -313,12 +308,7 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeRemoved(
     size_t old_index,
     const bookmarks::BookmarkNode* node,
     const std::set<GURL>& no_longer_bookmarked) {
-  if (parent->is_root()) {
-    // Account permanent folders were just removed.
-    // TODO(crbug.com/326185948): Figure out a way to notify observers.
-    return;
-  }
-  if (IsNodeExcludedFromView(parent)) {
+  if (!parent->is_root() && IsNodeExcludedFromView(parent)) {
     return;
   }
   // It isn't possible to compute `no_longer_bookmarked` so the workaround here

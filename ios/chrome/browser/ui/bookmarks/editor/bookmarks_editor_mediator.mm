@@ -207,7 +207,14 @@
     // This might happen when the user has changed `self.folder` but has not
     // commited the changes by pressing done. And in the background the chosen
     // folder was deleted.
-    [self changeFolder:model->mobile_node()];
+    if (model->mobile_node()) {
+      [self changeFolder:model->mobile_node()];
+    } else {
+      // When dealing with account bookmarks, it is possible that permanent
+      // folders no longer exist (e.g. the user signed out). In this case, fall
+      // back to the local model.
+      [self changeFolder:_localOrSyncableBookmarkModel->mobile_node()];
+    }
   }
 }
 

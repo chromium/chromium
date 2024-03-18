@@ -521,6 +521,9 @@ bool IsABookmarkNodeSectionForIdentifier(
 #pragma mark - Properties
 
 - (LegacyBookmarkModel*)displayedBookmarkModel {
+  if (!self.displayedNode) {
+    return _localOrSyncableBookmarkModel.get();
+  }
   return bookmark_utils_ios::GetBookmarkModelForNode(
       self.displayedNode, _localOrSyncableBookmarkModel.get(),
       _accountBookmarkModel.get());

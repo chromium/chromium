@@ -437,7 +437,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
     // This might happen when the user has changed `_parentFolder` but has not
     // commited the changes by pressing done. And in the background the chosen
     // folder was deleted.
-    _parentFolder = model->mobile_node();
+    if (model->mobile_node()) {
+      _parentFolder = model->mobile_node();
+    } else {
+      // When dealing with account bookmarks, it is possible that permanent
+      // folders no longer exist (e.g. the user signed out). In this case, fall
+      // back to the local model.
+      _parentFolder = _localOrSyncableBookmarkModel->mobile_node();
+    }
     [self updateParentFolderState];
   }
 }

@@ -132,6 +132,11 @@ class LegacyBookmarkModelWithSharedUnderlyingModel
     const raw_ptr<const bookmarks::BookmarkNode> managed_node_;
   };
 
+  // Predicate that determines whether a specific node is relevant or visible
+  // in the context of this view. For example, if `this` is exposing account
+  // bookmarks, then this predicate will exclude local-or-syncable nodes,
+  // including permanent folders themselves. It always returns false for the
+  // root node.
   NodeExcludedFromViewPredicate GetNodeExcludedFromViewPredicate() const;
   bool IsNodeExcludedFromView(const bookmarks::BookmarkNode* node) const;
 

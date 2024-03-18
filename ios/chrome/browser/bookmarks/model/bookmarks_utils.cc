@@ -63,6 +63,21 @@ std::vector<const BookmarkNode*> PrimaryPermanentNodes(
     LegacyBookmarkModel* model) {
   DCHECK(model->loaded());
   std::vector<const BookmarkNode*> nodes;
+
+  // When dealing with account bookmarks, it is possible that they don't
+  // actually exist (e.g. the user is signed out). It is guaranteed that all
+  // exist or none.
+  if (!model->mobile_node()) {
+    // Account bookmarks do not exist, no need to return them.
+    DCHECK(!model->bookmark_bar_node());
+    DCHECK(!model->other_node());
+    return nodes;
+  }
+
+  // Account bookmarks do exist (all three). Return them.
+  DCHECK(model->bookmark_bar_node());
+  DCHECK(model->other_node());
+
   nodes.push_back(model->mobile_node());
   nodes.push_back(model->bookmark_bar_node());
   nodes.push_back(model->other_node());
@@ -118,7 +133,8 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   }
 
   // Either preferences is not set, or refers to a non-existing folder.
-  BookmarkModelType type = (is_account_bookmark_model_available)
+  BookmarkModelType type = (is_account_bookmark_model_available &&
+                            account_bookmark_model->mobile_node() != nullptr)
                                ? BookmarkModelType::kAccount
                                : BookmarkModelType::kLocalOrSyncable;
   LegacyBookmarkModel* bookmark_model = GetBookmarkModelForType(

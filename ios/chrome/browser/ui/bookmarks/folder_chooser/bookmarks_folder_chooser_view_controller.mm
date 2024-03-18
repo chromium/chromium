@@ -149,7 +149,8 @@ using bookmarks::BookmarkNode;
         // If `parent` (selected folder) is `nullptr`, set the root folder of
         // the corresponding section to be the parent folder.
         parentNode =
-            (sectionID == SectionIdentifierAccountBookmarks)
+            (sectionID == SectionIdentifierAccountBookmarks &&
+             [_dataSource.accountDataSource mobileFolderNode] != nullptr)
                 ? [_dataSource.accountDataSource mobileFolderNode]
                 : [_dataSource.localOrSyncableDataSource mobileFolderNode];
       }
