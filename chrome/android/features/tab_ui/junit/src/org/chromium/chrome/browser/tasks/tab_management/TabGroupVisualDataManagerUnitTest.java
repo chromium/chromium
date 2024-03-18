@@ -319,8 +319,7 @@ public class TabGroupVisualDataManagerUnitTest {
         // The stored title should be assigned to the new root id. The title of the source group
         // will not be deleted until the merge is committed, after
         // SnackbarController#onDismissNoAction is called for the UndoGroupSnackbarController.
-        verify(mEditorTitle).putString(eq(String.valueOf(TAB3_ID)), eq(CUSTOMIZED_TITLE1));
-        verify(mPutStringEditorTitle).apply();
+        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB3_ID), eq(CUSTOMIZED_TITLE1));
         verify(mEditorColor).putInt(eq(String.valueOf(TAB3_ID)), eq(COLOR1_ID));
         verify(mPutIntEditorColor).apply();
     }
@@ -419,8 +418,7 @@ public class TabGroupVisualDataManagerUnitTest {
         // The stored title should be assigned to the new root id.
         verify(mEditorTitle).remove(eq(String.valueOf(TAB1_ID)));
         verify(mRemoveEditorTitle).apply();
-        verify(mEditorTitle).putString(eq(String.valueOf(TAB2_ID)), eq(CUSTOMIZED_TITLE1));
-        verify(mPutStringEditorTitle).apply();
+        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB2_ID), eq(CUSTOMIZED_TITLE1));
         verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
         verify(mRemoveEditorColor).apply();
         verify(mEditorColor).putInt(eq(String.valueOf(TAB2_ID)), eq(COLOR1_ID));

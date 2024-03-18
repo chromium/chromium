@@ -1824,13 +1824,13 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 3);
 
         // Get the next suggested color id.
-        int nextSuggestedColorId =
-                TabGroupColorUtils.getNextSuggestedColorId(
-                        (TabGroupModelFilter)
-                                cta.getTabModelSelectorSupplier()
-                                        .get()
-                                        .getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter());
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        cta.getTabModelSelectorSupplier()
+                                .get()
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
+        int nextSuggestedColorId = TabGroupColorUtils.getNextSuggestedColorId(filter);
 
         // Merge first two tabs into a group.
         TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
@@ -1839,10 +1839,7 @@ public class TabSwitcherLayoutTest {
                         Arrays.asList(normalTabModel.getTabAt(0), normalTabModel.getTabAt(1)));
         createTabGroup(cta, false, tabGroup);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabGroupTitleUtils.storeTabGroupTitle(
-                            normalTabModel.getTabAt(0).getRootId(), "Foo");
-                });
+                () -> filter.setTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo"));
         verifyTabSwitcherCardCount(cta, 2);
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
@@ -1901,13 +1898,13 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 5);
 
         // Get the next suggested color id.
-        int nextSuggestedColorId1 =
-                TabGroupColorUtils.getNextSuggestedColorId(
-                        (TabGroupModelFilter)
-                                cta.getTabModelSelectorSupplier()
-                                        .get()
-                                        .getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter());
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        cta.getTabModelSelectorSupplier()
+                                .get()
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
+        int nextSuggestedColorId1 = TabGroupColorUtils.getNextSuggestedColorId(filter);
 
         // Merge last two tabs into a group.
         TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
@@ -1943,10 +1940,8 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 3);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabGroupTitleUtils.storeTabGroupTitle(
-                            normalTabModel.getTabAt(3).getRootId(), "Foo");
-                    TabGroupTitleUtils.storeTabGroupTitle(
-                            normalTabModel.getTabAt(1).getRootId(), "Bar");
+                    filter.setTabGroupTitle(normalTabModel.getTabAt(3).getRootId(), "Foo");
+                    filter.setTabGroupTitle(normalTabModel.getTabAt(1).getRootId(), "Bar");
                 });
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
@@ -2009,13 +2004,13 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 3);
 
         // Get the next suggested color id.
-        int nextSuggestedColorId =
-                TabGroupColorUtils.getNextSuggestedColorId(
-                        (TabGroupModelFilter)
-                                cta.getTabModelSelectorSupplier()
-                                        .get()
-                                        .getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter());
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        cta.getTabModelSelectorSupplier()
+                                .get()
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
+        int nextSuggestedColorId = TabGroupColorUtils.getNextSuggestedColorId(filter);
 
         // Merge first two tabs into a group.
         TabModel normalTabModel = cta.getTabModelSelector().getModel(false);
@@ -2026,10 +2021,9 @@ public class TabSwitcherLayoutTest {
         int[] ungroupedRootId = new int[1];
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    TabGroupTitleUtils.storeTabGroupTitle(
-                            normalTabModel.getTabAt(0).getRootId(), "Foo");
+                    filter.setTabGroupTitle(normalTabModel.getTabAt(0).getRootId(), "Foo");
                     ungroupedRootId[0] = normalTabModel.getTabAt(2).getRootId();
-                    TabGroupTitleUtils.storeTabGroupTitle(ungroupedRootId[0], "Bar");
+                    filter.setTabGroupTitle(ungroupedRootId[0], "Bar");
                 });
         verifyTabSwitcherCardCount(cta, 2);
         assertTrue(

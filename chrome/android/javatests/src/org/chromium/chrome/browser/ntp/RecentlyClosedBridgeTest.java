@@ -704,7 +704,7 @@ public class RecentlyClosedBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
                     mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB}), false);
@@ -766,7 +766,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabA.getId());
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabC.getTitle();
                     mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabC}), false);
@@ -822,7 +822,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabA.getId());
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabC.getTitle();
                     mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabC}), true);
@@ -878,7 +878,7 @@ public class RecentlyClosedBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
                     mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA}), true);
                     mTabModel.commitTabClosure(tabA.getId());
@@ -923,7 +923,7 @@ public class RecentlyClosedBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
                     mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA}), false);
                 });
@@ -972,7 +972,7 @@ public class RecentlyClosedBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
                     mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA}), true);
                     mTabModel.commitTabClosure(tabA.getId());
@@ -1025,7 +1025,7 @@ public class RecentlyClosedBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
                     mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA}), false);
                 });
@@ -1087,7 +1087,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     mTabGroupModelFilter.mergeTabsToGroup(tabC.getId(), tabA.getId());
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Bar");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
@@ -1238,7 +1238,7 @@ public class RecentlyClosedBridgeTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
-                    TabGroupTitleUtils.storeTabGroupTitle(tabA.getId(), "Foo");
+                    mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Foo");
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();

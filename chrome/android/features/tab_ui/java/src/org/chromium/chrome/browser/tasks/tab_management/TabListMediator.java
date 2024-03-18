@@ -1183,12 +1183,16 @@ class TabListMediator {
 
                     @Override
                     protected String getTabGroupTitle(int tabRootId) {
-                        return TabGroupTitleUtils.getTabGroupTitle(tabRootId);
+                        TabGroupModelFilter filter =
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                        return filter.getTabGroupTitle(tabRootId);
                     }
 
                     @Override
                     protected void storeTabGroupTitle(int tabRootId, String title) {
-                        TabGroupTitleUtils.storeTabGroupTitle(tabRootId, title);
+                        TabGroupModelFilter filter =
+                                (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+                        filter.setTabGroupTitle(tabRootId, title);
                     }
                 };
 

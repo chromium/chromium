@@ -17,18 +17,23 @@ public class TabGroupTitleUtils {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
     /**
-     * This method stores tab group title with reference to {@code tabRootId}.
-     * @param tabRootId   The tab root ID which is used as reference to store group title.
-     * @param title       The tab group title to store.
+     * This method stores tab group title with reference to {@code tabRootId}. Package protected as
+     * all access should route through the {@link TabGroupModelFilter}.
+     *
+     * @param tabRootId The tab root ID which is used as reference to store group title.
+     * @param title The tab group title to store.
      */
-    public static void storeTabGroupTitle(int tabRootId, String title) {
+    static void storeTabGroupTitle(int tabRootId, String title) {
         assert tabRootId != Tab.INVALID_TAB_ID;
         getSharedPreferences().edit().putString(String.valueOf(tabRootId), title).apply();
     }
 
     /**
      * This method deletes specific stored tab group title with reference to {@code tabRootId}.
-     * @param tabRootId  The tab root ID whose related tab group title will be deleted.
+     * While currently public, the intent is to make this package protected and force all access to
+     * go through the {@Link TabGroupModelFilter}.
+     *
+     * @param tabRootId The tab root ID whose related tab group title will be deleted.
      */
     // Package Private.
     public static void deleteTabGroupTitle(int tabRootId) {
@@ -37,8 +42,11 @@ public class TabGroupTitleUtils {
     }
 
     /**
-     * This method fetches tab group title with related tab group root ID.
-     * @param tabRootId  The tab root ID whose related tab group title will be fetched.
+     * This method fetches tab group title with related tab group root ID. While currently public,
+     * the intent is to make this package protected and force all access to go through the {@Link
+     * TabGroupModelFilter}.
+     *
+     * @param tabRootId The tab root ID whose related tab group title will be fetched.
      * @return The stored title of the target tab group, default value is null.
      */
     public static @Nullable String getTabGroupTitle(int tabRootId) {

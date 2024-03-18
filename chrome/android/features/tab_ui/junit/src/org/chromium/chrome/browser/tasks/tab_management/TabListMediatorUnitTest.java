@@ -432,6 +432,16 @@ public class TabListMediatorUnitTest {
                         })
                 .when(mSpanSizeLookup)
                 .getSpanSize(anyInt());
+
+        doAnswer(
+                        invocation -> {
+                            int rootId = invocation.getArgument(0);
+                            String title = invocation.getArgument(1);
+                            when(mTabGroupModelFilter.getTabGroupTitle(rootId)).thenReturn(title);
+                            return null;
+                        })
+                .when(mTabGroupModelFilter)
+                .setTabGroupTitle(anyInt(), anyString());
     }
 
     @After
@@ -473,10 +483,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        getGroupTitleSharedPreferences()
-                .edit()
-                .putString(String.valueOf(mTab1.getRootId()), CUSTOMIZED_DIALOG_TITLE1)
-                .apply();
+        mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(mModel.get(0).model.get(TabProperties.TITLE), equalTo(TAB1_TITLE));
 
         mTabObserver.onTitleUpdated(mTab1);
@@ -2026,10 +2033,7 @@ public class TabListMediatorUnitTest {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        getGroupTitleSharedPreferences()
-                .edit()
-                .putString(String.valueOf(mTab1.getRootId()), CUSTOMIZED_DIALOG_TITLE1)
-                .apply();
+        mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mMediator.getTabGroupTitleEditor().getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
@@ -2045,10 +2049,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void getLatestTitle_SingleTabGroupSupported_GTS() {
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        getGroupTitleSharedPreferences()
-                .edit()
-                .putString(String.valueOf(mTab1.getRootId()), CUSTOMIZED_DIALOG_TITLE1)
-                .apply();
+        mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mMediator.getTabGroupTitleEditor().getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
@@ -2066,10 +2067,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void getLatestTitle_SingleTabGroupNotSupported_GTS() {
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        getGroupTitleSharedPreferences()
-                .edit()
-                .putString(String.valueOf(mTab1.getRootId()), CUSTOMIZED_DIALOG_TITLE1)
-                .apply();
+        mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mMediator.getTabGroupTitleEditor().getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
@@ -2086,10 +2084,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void getLatestTitle_Stored_GTS() {
         // Mock that we have a stored title stored with reference to root ID of tab1.
-        getGroupTitleSharedPreferences()
-                .edit()
-                .putString(String.valueOf(mTab1.getRootId()), CUSTOMIZED_DIALOG_TITLE1)
-                .apply();
+        mTabGroupModelFilter.setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
         assertThat(
                 mMediator.getTabGroupTitleEditor().getTabGroupTitle(mTab1.getRootId()),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
@@ -2149,16 +2144,8 @@ public class TabListMediatorUnitTest {
     @Test
     public void tabGroupTitleEditor_storeTitle() {
         TabGroupTitleEditor tabGroupTitleEditor = mMediator.getTabGroupTitleEditor();
-
-        assertNull(
-                getGroupTitleSharedPreferences()
-                        .getString(String.valueOf(mTab1.getRootId()), null));
-
         tabGroupTitleEditor.storeTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
-        assertEquals(
-                CUSTOMIZED_DIALOG_TITLE1,
-                getGroupTitleSharedPreferences()
-                        .getString(String.valueOf(mTab1.getRootId()), null));
+        verify(mTabGroupModelFilter).setTabGroupTitle(mTab1.getRootId(), CUSTOMIZED_DIALOG_TITLE1);
     }
 
     @Test

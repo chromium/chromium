@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -140,11 +139,12 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
 
         if (title == null || title.isEmpty()) return;
 
-        TabGroupTitleUtils.storeTabGroupTitle(rootId, title);
+        groupFilter.setTabGroupTitle(rootId, title);
     }
 
     /**
      * Initializes this class with the given profile.
+     *
      * @param profile The {@link Profile} whose recently closed tabs will be queried.
      * @param tabModelSelector The {@link TabModelSelector} to use to get {@link TabModelFilter}s.
      */

@@ -117,20 +117,15 @@ public class TabGroupModelFilterUnitTest {
     private static final int COLOR_ID = 0;
 
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
-
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock Token.Natives mTokenJniMock;
-
     @Mock TabModel mTabModel;
-
     @Mock TabGroupModelFilterObserver mTabGroupModelFilterObserver;
-
     @Mock Context mContext;
-
     @Mock SharedPreferences mSharedPreferencesTitle;
-
     @Mock SharedPreferences mSharedPreferencesColor;
+    @Mock SharedPreferences.Editor mEditor;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -340,6 +335,10 @@ public class TabGroupModelFilterUnitTest {
         ContextUtils.initApplicationContextForTests(mContext);
         when(mSharedPreferencesTitle.getString(anyString(), any())).thenReturn(TAB_TITLE);
         when(mSharedPreferencesColor.getInt(anyString(), anyInt())).thenReturn(INVALID_COLOR_ID);
+        when(mSharedPreferencesTitle.edit()).thenReturn(mEditor);
+        when(mSharedPreferencesColor.edit()).thenReturn(mEditor);
+        when(mEditor.putString(anyString(), anyString())).thenReturn(mEditor);
+        when(mEditor.putInt(anyString(), anyInt())).thenReturn(mEditor);
 
         mModelAndObserverInOrder = inOrder(mTabModel, mTabGroupModelFilterObserver);
     }
@@ -1846,5 +1845,11 @@ public class TabGroupModelFilterUnitTest {
         rootIds.add(mTab5.getRootId());
 
         assertEquals(rootIds, mTabGroupModelFilter.getAllTabGroupRootIds());
+    }
+
+    @Test
+    public void testSetTabGroupTitle() {
+        mTabGroupModelFilter.setTabGroupTitle(TAB2_ROOT_ID, "Foo");
+        verify(mTabGroupModelFilterObserver).didChangeTabGroupTitle(TAB2_ROOT_ID, "Foo");
     }
 }

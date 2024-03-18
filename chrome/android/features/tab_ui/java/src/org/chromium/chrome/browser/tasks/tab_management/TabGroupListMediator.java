@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -188,7 +187,7 @@ public class TabGroupListMediator {
             int colorIndex = TabGroupColorUtils.getOrCreateTabGroupColor(tabId, mFilter);
             builder.with(COLOR_INDEX, colorIndex);
 
-            String userTitle = TabGroupTitleUtils.getTabGroupTitle(tabId);
+            String userTitle = mFilter.getTabGroupTitle(tabId);
             int numberOfTabs = mFilter.getRelatedTabList(tabId).size();
             Pair<String, Integer> titleData = new Pair<>(userTitle, numberOfTabs);
             builder.with(TITLE_DATA, titleData);

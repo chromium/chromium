@@ -38,9 +38,7 @@ public class TabGroupVisualDataManager {
                 new TabModelObserver() {
                     @Override
                     public void tabClosureCommitted(Tab tab) {
-                        TabGroupModelFilter filter =
-                                (TabGroupModelFilter)
-                                        tabModelFilterProvider.getTabModelFilter(tab.isIncognito());
+                        TabGroupModelFilter filter = filterFromTab(tab);
                         int rootId = tab.getRootId();
                         Tab groupTab = filter.getGroupLastShownTab(rootId);
                         if (groupTab == null || !filter.isTabInTabGroup(groupTab)) {
@@ -75,7 +73,8 @@ public class TabGroupVisualDataManager {
                         // If the target group has no title but the source group has a title,
                         // handover the stored title to the group after merge.
                         if (sourceGroupTitle != null && targetGroupTitle == null) {
-                            TabGroupTitleUtils.storeTabGroupTitle(newRootId, sourceGroupTitle);
+                            TabGroupModelFilter filter = filterFromTab(movedTab);
+                            filter.setTabGroupTitle(newRootId, sourceGroupTitle);
                         }
 
                         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
@@ -99,10 +98,7 @@ public class TabGroupVisualDataManager {
                         // If the group size is 2, i.e. the group becomes a single tab after
                         // ungroup, delete the stored visual data. When tab groups of size 1 are
                         // supported this behavior is no longer valid.
-                        TabGroupModelFilter filter =
-                                (TabGroupModelFilter)
-                                        tabModelFilterProvider.getTabModelFilter(
-                                                movedTab.isIncognito());
+                        TabGroupModelFilter filter = filterFromTab(movedTab);
                         int sizeThreshold =
                                 ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled() ? 1 : 2;
                         boolean shouldDeleteVisualData =
@@ -123,7 +119,7 @@ public class TabGroupVisualDataManager {
                         if (rootId != newRootId) {
                             if (title != null) {
                                 TabGroupTitleUtils.deleteTabGroupTitle(rootId);
-                                TabGroupTitleUtils.storeTabGroupTitle(newRootId, title);
+                                filter.setTabGroupTitle(newRootId, title);
                             }
 
                             if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
@@ -143,6 +139,11 @@ public class TabGroupVisualDataManager {
                 .addTabGroupObserver(mFilterObserver);
         ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true))
                 .addTabGroupObserver(mFilterObserver);
+    }
+
+    private TabGroupModelFilter filterFromTab(Tab tab) {
+        return (TabGroupModelFilter)
+                mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(tab.isIncognito());
     }
 
     /** Destroy any members that need clean up. */

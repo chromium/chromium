@@ -99,4 +99,12 @@ public interface TabGroupModelFilterObserver {
      * @param filter The {@link TabGroupModelFilter} that the new group event triggers on.
      */
     default void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {}
+
+    /**
+     * This method is called after a new title is set on a tab group.
+     *
+     * @param rootId The current rootId of the tab group.
+     * @param newTitle The new title.
+     */
+    default void didChangeTabGroupTitle(int rootId, String newTitle) {}
 }

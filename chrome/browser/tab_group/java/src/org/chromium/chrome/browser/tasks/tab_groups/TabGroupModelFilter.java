@@ -1226,6 +1226,19 @@ public class TabGroupModelFilter extends TabModelFilter {
         return group != null;
     }
 
+    /** Returns the current title of the tab group. */
+    public String getTabGroupTitle(int rootId) {
+        return TabGroupTitleUtils.getTabGroupTitle(rootId);
+    }
+
+    /** Stores the given title for the tab group. */
+    public void setTabGroupTitle(int rootId, String title) {
+        TabGroupTitleUtils.storeTabGroupTitle(rootId, title);
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            observer.didChangeTabGroupTitle(rootId, title);
+        }
+    }
+
     private static Token getOrCreateTabGroupId(@NonNull Tab tab) {
         return getOrCreateTabGroupIdWithDefault(tab, null);
     }
