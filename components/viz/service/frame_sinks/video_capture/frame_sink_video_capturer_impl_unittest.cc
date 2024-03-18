@@ -31,6 +31,7 @@
 #include "components/viz/service/frame_sinks/gmb_video_frame_pool_context_provider.h"
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "media/base/limits.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_util.h"
@@ -779,7 +780,7 @@ class TestGmbVideoFramePoolContext
         gpu::SharedImageMetadata(si_format, gpu_memory_buffer->GetSize(),
                                  color_space, surface_origin, alpha_type,
                                  usage),
-        sync_token, nullptr);
+        sync_token, nullptr, gpu_memory_buffer->GetType());
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
@@ -793,10 +794,11 @@ class TestGmbVideoFramePoolContext
     return base::MakeRefCounted<gpu::ClientSharedImage>(
         gpu::Mailbox::GenerateForSharedImage(),
         gpu::SharedImageMetadata(
-            GetSinglePlaneSharedImageFormat(gpu_memory_buffer->GetFormat()),
+            GetSinglePlaneSharedImageFormat(gpu::GetPlaneBufferFormat(
+                plane, gpu_memory_buffer->GetFormat())),
             gpu_memory_buffer->GetSize(), color_space, surface_origin,
             alpha_type, usage),
-        sync_token, nullptr);
+        sync_token, nullptr, gpu_memory_buffer->GetType());
   }
 
   void DestroySharedImage(

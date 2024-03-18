@@ -7,6 +7,7 @@ include_rules = [
   "+components/viz/service/gl/gpu_service_impl.h",
   "+components/viz/service/viz_service_export.h",
   "+components/viz/service/display_embedder/compositor_gpu_thread.h",
+  "+gpu/command_buffer/common/gpu_memory_buffer_support.h",
   "+gpu/config/gpu_feature_info.h",
   "+gpu/ipc/common/surface_handle.h",
   "+services/viz/privileged/mojom",
