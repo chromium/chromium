@@ -588,7 +588,6 @@ class SSLClientAuthDelegate : public SSLClientAuthHandler::Delegate {
       scoped_refptr<net::X509Certificate> cert,
       scoped_refptr<net::SSLPrivateKey> private_key) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK((cert && private_key) || (!cert && !private_key));
 
     if (cert && private_key) {
       mojo::PendingRemote<network::mojom::SSLPrivateKey> ssl_private_key;
