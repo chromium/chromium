@@ -60,20 +60,19 @@ public class TabGroupVisualDataManager {
                         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                             final @TabGroupColorId int colorId =
                                     TabGroupColorUtils.getNextSuggestedColorId(filter);
-                            TabGroupColorUtils.storeTabGroupColor(
-                                    destinationTab.getRootId(), colorId);
+                            filter.setTabGroupColor(destinationTab.getRootId(), colorId);
                         }
                     }
 
                     @Override
                     public void willMergeTabToGroup(Tab movedTab, int newRootId) {
+                        TabGroupModelFilter filter = filterFromTab(movedTab);
                         String sourceGroupTitle =
                                 TabGroupTitleUtils.getTabGroupTitle(movedTab.getRootId());
                         String targetGroupTitle = TabGroupTitleUtils.getTabGroupTitle(newRootId);
                         // If the target group has no title but the source group has a title,
                         // handover the stored title to the group after merge.
                         if (sourceGroupTitle != null && targetGroupTitle == null) {
-                            TabGroupModelFilter filter = filterFromTab(movedTab);
                             filter.setTabGroupTitle(newRootId, sourceGroupTitle);
                         }
 
@@ -85,7 +84,7 @@ public class TabGroupVisualDataManager {
                             // handover the stored color to the group after merge.
                             if (sourceGroupColor != INVALID_COLOR_ID
                                     && targetGroupColor == INVALID_COLOR_ID) {
-                                TabGroupColorUtils.storeTabGroupColor(newRootId, sourceGroupColor);
+                                filter.setTabGroupColor(newRootId, sourceGroupColor);
                             }
                         }
                     }
@@ -127,7 +126,7 @@ public class TabGroupVisualDataManager {
                                 assert colorId != INVALID_COLOR_ID;
 
                                 TabGroupColorUtils.deleteTabGroupColor(rootId);
-                                TabGroupColorUtils.storeTabGroupColor(newRootId, colorId);
+                                filter.setTabGroupColor(newRootId, colorId);
                             }
                         }
                     }

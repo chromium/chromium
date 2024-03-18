@@ -11,8 +11,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
-import android.graphics.Color;
-
 import androidx.core.util.Pair;
 import androidx.test.filters.SmallTest;
 
@@ -31,7 +29,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -83,12 +80,12 @@ public class TabGroupListMediatorUnitTest {
     @SmallTest
     public void testOneGroup() {
         MockTab tab = new MockTab(0, mProfile);
-        TabGroupColorUtils.storeTabGroupColor(0, TabGroupColorId.GREY);
         when(mTabGroupModelFilter.getCount()).thenReturn(1);
         when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab);
         when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabGroupModelFilter.getRelatedTabList(0)).thenReturn(Collections.singletonList(tab));
         when(mTabGroupModelFilter.getTabGroupTitle(0)).thenReturn("Title");
+        when(mTabGroupModelFilter.getTabGroupColor(0)).thenReturn(TabGroupColorId.GREY);
 
         new TabGroupListMediator(mModelList, mTabGroupModelFilter);
         assertEquals(1, mModelList.size());
@@ -106,7 +103,6 @@ public class TabGroupListMediatorUnitTest {
         tab1.setRootId(2);
 
         MockTab tab2 = new MockTab(2, mProfile);
-        TabGroupColorUtils.storeTabGroupColor(2, TabGroupColorId.GREY);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getCount()).thenReturn(1);
         when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab1);
@@ -114,6 +110,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
         when(mTabGroupModelFilter.getRelatedTabList(2)).thenReturn(Arrays.asList(tab1, tab2));
         when(mTabGroupModelFilter.getTabGroupTitle(2)).thenReturn("Title");
+        when(mTabGroupModelFilter.getTabGroupColor(2)).thenReturn(TabGroupColorId.GREY);
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getTabAt(0)).thenReturn(tab1);
         when(mTabModel.getTabAt(1)).thenReturn(tab2);
@@ -131,11 +128,8 @@ public class TabGroupListMediatorUnitTest {
     public void testTwoGroups() {
         // Tabs look like: [1, 2], [3, 4, 5].
         MockTab tab1 = new MockTab(1, mProfile);
-        TabGroupColorUtils.storeTabGroupColor(1, TabGroupColorId.BLUE);
-
         MockTab tab2 = new MockTab(2, mProfile);
         MockTab tab3 = new MockTab(3, mProfile);
-        TabGroupColorUtils.storeTabGroupColor(3, TabGroupColorId.RED);
         MockTab tab4 = new MockTab(4, mProfile);
         MockTab tab5 = new MockTab(5, mProfile);
 
@@ -148,6 +142,8 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRelatedTabList(3)).thenReturn(Arrays.asList(tab3, tab4, tab5));
         when(mTabGroupModelFilter.getTabGroupTitle(1)).thenReturn("Foo");
         when(mTabGroupModelFilter.getTabGroupTitle(3)).thenReturn("Bar");
+        when(mTabGroupModelFilter.getTabGroupColor(1)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabGroupModelFilter.getTabGroupColor(3)).thenReturn(TabGroupColorId.RED);
 
         new TabGroupListMediator(mModelList, mTabGroupModelFilter);
         assertEquals(2, mModelList.size());
@@ -168,12 +164,12 @@ public class TabGroupListMediatorUnitTest {
         assertEquals(0, mModelList.size());
 
         MockTab tab = new MockTab(0, mProfile);
-        TabGroupColorUtils.storeTabGroupColor(0, Color.GREEN);
         when(mTabGroupModelFilter.getCount()).thenReturn(1);
         when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab);
         when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabGroupModelFilter.getRelatedTabList(0)).thenReturn(Collections.singletonList(tab));
         when(mTabGroupModelFilter.getTabGroupTitle(0)).thenReturn("Title");
+        when(mTabGroupModelFilter.getTabGroupColor(3)).thenReturn(TabGroupColorId.GREEN);
         assertEquals(0, mModelList.size());
 
         verify(mTabGroupModelFilter)

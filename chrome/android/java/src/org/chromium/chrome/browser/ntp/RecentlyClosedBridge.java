@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.url.GURL;
 
@@ -121,7 +120,7 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         // Ensure that the color is set before merging the tabs into a group on restore, to indicate
         // that this is not going to be a new group creation.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
-            TabGroupColorUtils.storeTabGroupColor(rootId, color);
+            groupFilter.setTabGroupColor(rootId, color);
         }
 
         if (tabIds.length == 1) {

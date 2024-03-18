@@ -263,8 +263,7 @@ public class TabGroupVisualDataManagerUnitTest {
                 .didCreateNewGroup(mTab1, mTabGroupModelFilter);
 
         // Verify that a default color was stored.
-        verify(mEditorColor).putInt(eq(String.valueOf(TAB1_ID)), eq(COLOR1_ID));
-        verify(mPutIntEditorColor).apply();
+        verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(COLOR1_ID));
     }
 
     @Test
@@ -320,8 +319,7 @@ public class TabGroupVisualDataManagerUnitTest {
         // will not be deleted until the merge is committed, after
         // SnackbarController#onDismissNoAction is called for the UndoGroupSnackbarController.
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB3_ID), eq(CUSTOMIZED_TITLE1));
-        verify(mEditorColor).putInt(eq(String.valueOf(TAB3_ID)), eq(COLOR1_ID));
-        verify(mPutIntEditorColor).apply();
+        verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB3_ID), eq(COLOR1_ID));
     }
 
     @Test
@@ -421,8 +419,7 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB2_ID), eq(CUSTOMIZED_TITLE1));
         verify(mEditorColor).remove(eq(String.valueOf(TAB1_ID)));
         verify(mRemoveEditorColor).apply();
-        verify(mEditorColor).putInt(eq(String.valueOf(TAB2_ID)), eq(COLOR1_ID));
-        verify(mPutIntEditorColor).apply();
+        verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB2_ID), eq(COLOR1_ID));
     }
 
     private void createTabGroup(List<Tab> tabs, int rootId, @Nullable Token groupId) {

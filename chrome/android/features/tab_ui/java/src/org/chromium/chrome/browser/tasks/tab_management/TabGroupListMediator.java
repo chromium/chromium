@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -183,8 +182,7 @@ public class TabGroupListMediator {
             // TODO(b:324911877): Create drawable icon.
             // propertyModel.set(TabGroupRowProperties.START_DRAWABLE, null);
 
-            @TabGroupColorId
-            int colorIndex = TabGroupColorUtils.getOrCreateTabGroupColor(tabId, mFilter);
+            @TabGroupColorId int colorIndex = mFilter.getTabGroupColor(tabId);
             builder.with(COLOR_INDEX, colorIndex);
 
             String userTitle = mFilter.getTabGroupTitle(tabId);

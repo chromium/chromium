@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_groups;
 
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.List;
 
@@ -107,4 +108,12 @@ public interface TabGroupModelFilterObserver {
      * @param newTitle The new title.
      */
     default void didChangeTabGroupTitle(int rootId, String newTitle) {}
+
+    /**
+     * This method is called after a new color is set on a tab group.
+     *
+     * @param rootId The current rootId of the tab group.
+     * @param newColor The new color.
+     */
+    default void didChangeTabGroupColor(int rootId, @TabGroupColorId int newColor) {}
 }

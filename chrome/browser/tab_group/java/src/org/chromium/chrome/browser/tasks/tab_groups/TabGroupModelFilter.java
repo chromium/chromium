@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1236,6 +1237,20 @@ public class TabGroupModelFilter extends TabModelFilter {
         TabGroupTitleUtils.storeTabGroupTitle(rootId, title);
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.didChangeTabGroupTitle(rootId, title);
+        }
+    }
+
+    /** Returns the current color of the tab group. */
+    public @TabGroupColorId int getTabGroupColor(int rootId) {
+        // TODO(crbug.com/329127327): Refactor and emit an event when this changes the color.
+        return TabGroupColorUtils.getOrCreateTabGroupColor(rootId, this);
+    }
+
+    /** Stores the given color for the tab group. */
+    public void setTabGroupColor(int rootId, @TabGroupColorId int color) {
+        TabGroupColorUtils.storeTabGroupColor(rootId, color);
+        for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
+            observer.didChangeTabGroupColor(rootId, color);
         }
     }
 

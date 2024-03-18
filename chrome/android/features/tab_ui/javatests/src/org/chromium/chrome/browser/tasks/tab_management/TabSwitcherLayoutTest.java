@@ -118,6 +118,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
@@ -390,7 +391,14 @@ public class TabSwitcherLayoutTest {
         verifyTabSwitcherCardCount(cta, 1);
         // Hardcode TabGroupColorId.GREY as the tab group color for render testing purposes.
         Tab tab = cta.getTabModelSelector().getCurrentTab();
-        TabGroupColorUtils.storeTabGroupColor(tab.getRootId(), 0);
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        cta.getTabModelSelectorSupplier()
+                                .get()
+                                .getTabModelFilterProvider()
+                                .getCurrentTabModelFilter();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> filter.setTabGroupColor(tab.getRootId(), TabGroupColorId.GREY));
         // Leave and re enter GTS to refetch the favicon.
         leaveTabSwitcher(cta);
         enterTabSwitcher(cta);

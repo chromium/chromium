@@ -476,11 +476,11 @@ public class TabGridDialogMediator
     void setSelectedTabGroupColor(int selectedColor) {
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, selectedColor);
 
-        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
         Tab currentTab = TabModelUtils.getTabById(filter.getTabModel(), mCurrentTabId);
 
         if (currentTab != null) {
-            TabGroupColorUtils.storeTabGroupColor(currentTab.getRootId(), selectedColor);
+            filter.setTabGroupColor(currentTab.getRootId(), selectedColor);
         }
     }
 

@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1851,5 +1852,12 @@ public class TabGroupModelFilterUnitTest {
     public void testSetTabGroupTitle() {
         mTabGroupModelFilter.setTabGroupTitle(TAB2_ROOT_ID, "Foo");
         verify(mTabGroupModelFilterObserver).didChangeTabGroupTitle(TAB2_ROOT_ID, "Foo");
+    }
+
+    @Test
+    public void testSetTabGroupColor() {
+        mTabGroupModelFilter.setTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.GREY);
+        verify(mTabGroupModelFilterObserver)
+                .didChangeTabGroupColor(TAB2_ROOT_ID, TabGroupColorId.GREY);
     }
 }

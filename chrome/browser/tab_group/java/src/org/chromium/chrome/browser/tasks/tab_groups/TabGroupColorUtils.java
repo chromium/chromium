@@ -25,18 +25,21 @@ public class TabGroupColorUtils {
     private static final int MIGRATION_DONE = 1;
 
     /**
-     * This method stores tab group colors with reference to {@code tabRootId}.
+     * This method stores tab group colors with reference to {@code tabRootId}. Package protected as
+     * all access should route through the {@link TabGroupModelFilter}.
      *
      * @param tabRootId The tab root ID which is used as a reference to store group colors.
      * @param color The tab group color {@link TabGroupColorId} to store.
      */
-    public static void storeTabGroupColor(int tabRootId, int color) {
+    static void storeTabGroupColor(int tabRootId, int color) {
         assert tabRootId != Tab.INVALID_TAB_ID;
         getSharedPreferences().edit().putInt(String.valueOf(tabRootId), color).apply();
     }
 
     /**
      * This method deletes a specific stored tab group color with reference to {@code tabRootId}.
+     * While currently public, the intent is to make this package protected and force all access to
+     * go through the {@Link TabGroupModelFilter}.
      *
      * @param tabRootId The tab root ID whose related tab group color will be deleted.
      */
@@ -46,7 +49,9 @@ public class TabGroupColorUtils {
     }
 
     /**
-     * This method fetches tab group colors for the related tab group root ID.
+     * This method fetches tab group colors for the related tab group root ID. While currently
+     * public, the intent is to make this package protected and force all access to go through the
+     * {@Link TabGroupModelFilter}.
      *
      * @param tabRootId The tab root ID whose related tab group color will be fetched.
      * @return The stored color of the target tab group, default value is -1 (INVALID_COLOR_ID).

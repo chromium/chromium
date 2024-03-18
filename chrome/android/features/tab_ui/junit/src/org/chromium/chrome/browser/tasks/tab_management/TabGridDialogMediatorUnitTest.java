@@ -1054,21 +1054,15 @@ public class TabGridDialogMediatorUnitTest {
         createTabGroup(tabgroup, TAB1_ID, TAB_GROUP_ID);
 
         // Mock that we have a stored color stored with reference to root ID of tab1.
-        getGroupColorSharedPreferences()
-                .edit()
-                .putInt(String.valueOf(mTab1.getRootId()), COLOR_2)
-                .apply();
+        // when(mTabGroupModelFilter.getTabGroupColor(mTab1.getRootId())).thenReturn(COLOR_2);
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, COLOR_2);
 
         mMediator.onReset(tabgroup);
         mMediator.setSelectedTabGroupColor(COLOR_3);
 
-        // Assert that the color has changed both in the model and in the shared prefs store.
+        // Assert that the color has changed both in the property model and the model filter.
         assertThat(mModel.get(TabGridDialogProperties.TAB_GROUP_COLOR_ID), equalTo(COLOR_3));
-        assertThat(
-                getGroupColorSharedPreferences()
-                        .getInt(String.valueOf(mTab1.getRootId()), INVALID_COLOR_ID),
-                equalTo(COLOR_3));
+        verify(mTabGroupModelFilter).setTabGroupColor(mTab1.getRootId(), COLOR_3);
     }
 
     @Test
