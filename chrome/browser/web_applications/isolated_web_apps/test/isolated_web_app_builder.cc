@@ -317,6 +317,13 @@ ManifestBuilder& ManifestBuilder::AddProtocolHandler(std::string_view protocol,
   return *this;
 }
 
+ManifestBuilder& ManifestBuilder::AddFileHandler(
+    std::string_view action,
+    const FileHandlerAccept& accept) {
+  file_handlers_[std::string(action)] = accept;
+  return *this;
+}
+
 const std::string& ManifestBuilder::start_url() const {
   return start_url_;
 }
@@ -372,6 +379,24 @@ std::string ManifestBuilder::ToJson() const {
   }
   json.Set("protocol_handlers", std::move(protocol_handlers));
 
+  if (!file_handlers_.empty()) {
+    base::Value::List file_handlers;
+    for (const auto& handler_entry : file_handlers_) {
+      base::Value::Dict accept;
+      for (const auto& accept_entry : handler_entry.second) {
+        base::Value::List extensions;
+        for (const auto& extension : accept_entry.second) {
+          extensions.Append(extension);
+        }
+        accept.Set(accept_entry.first, std::move(extensions));
+      }
+      file_handlers.Append(base::Value::Dict()
+                               .Set("action", handler_entry.first)
+                               .Set("accept", std::move(accept)));
+    }
+    json.Set("file_handlers", std::move(file_handlers));
+  }
+
   return base::WriteJsonWithOptions(json, base::OPTIONS_PRETTY_PRINT).value();
 }
 
@@ -419,8 +444,20 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     manifest->permissions_policy.push_back(decl);
   }
 
-  // Permissions policy isn't included here as it's not needed by anything
-  // yet and is tricky to parse.
+  for (const auto& file_handler : file_handlers_) {
+    base::flat_map<std::u16string, std::vector<std::u16string>> accept;
+    for (const auto& accept_entry : file_handler.second) {
+      std::vector<std::u16string>& extensions =
+          accept[base::UTF8ToUTF16(accept_entry.first)];
+      for (const auto& extension : accept_entry.second) {
+        extensions.push_back(base::UTF8ToUTF16(extension));
+      }
+    }
+    auto handler = blink::mojom::ManifestFileHandler::New();
+    handler->action = GURL(file_handler.first);
+    handler->accept = accept;
+    manifest->file_handlers.push_back(std::move(handler));
+  }
 
   return manifest;
 }

@@ -67,6 +67,9 @@ class ManifestBuilder {
     std::vector<url::Origin> origins;
   };
 
+  // Mime type to vector of file extensions.
+  using FileHandlerAccept = std::map<std::string, std::vector<std::string>>;
+
   // Creates the following default manifest:
   // {
   //   name: "Test App",
@@ -99,9 +102,10 @@ class ManifestBuilder {
 
   ManifestBuilder& AddProtocolHandler(std::string_view protocol,
                                       std::string_view url);
+  ManifestBuilder& AddFileHandler(std::string_view action,
+                                  const FileHandlerAccept& accept);
 
-  // TODO: Other manifest fields like file_handlers,
-  // share_target as needed by tests.
+  // TODO: Other manifest fields like share_target as needed by tests.
 
   const std::string& start_url() const;
   const std::vector<IconMetadata>& icons() const;
@@ -118,6 +122,7 @@ class ManifestBuilder {
   std::map<blink::mojom::PermissionsPolicyFeature, PermissionsPolicy>
       permissions_policy_;
   std::vector<std::pair<std::string, std::string>> protocol_handlers_;
+  std::map<std::string, FileHandlerAccept> file_handlers_;
 };
 
 class BundledIsolatedWebApp {
