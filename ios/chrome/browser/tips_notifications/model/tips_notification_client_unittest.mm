@@ -128,15 +128,15 @@ class TipsNotificationClientTest : public PlatformTest {
         kTipsNotificationsSentPref, 0);
   }
 
-  // Stubs the `dismissModalDialogsWithCompletion:` method from
-  // `ApplicationCommands` so that it immediately calls the completion block.
-  void StubDismissModalDialogs() {
+  // Stubs the `prepareToPresentModal:` method from `ApplicationCommands` so
+  // that it immediately calls the completion block.
+  void StubPrepareToPresentModal() {
     mock_application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
     [[[mock_application_handler_ stub] andDo:^(NSInvocation* invocation) {
       void (^block)();
       [invocation getArgument:&block atIndex:2];
       block();
-    }] dismissModalDialogsWithCompletion:[OCMArg any]];
+    }] prepareToPresentModal:[OCMArg any]];
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_handler_
                      forProtocol:@protocol(ApplicationCommands)];
@@ -205,7 +205,7 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
 
 // Tests that the client handles a Default Browser notification response.
 TEST_F(TipsNotificationClientTest, DefaultBrowserHandle) {
-  StubDismissModalDialogs();
+  StubPrepareToPresentModal();
   id mock_handler = OCMProtocolMock(@protocol(SettingsCommands));
   OCMExpect([mock_handler
       showDefaultBrowserSettingsFromViewController:nil
@@ -240,7 +240,7 @@ TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
 
 // Tests that the client handles a Whats New notification response.
 TEST_F(TipsNotificationClientTest, WhatsNewHandle) {
-  StubDismissModalDialogs();
+  StubPrepareToPresentModal();
   id mock_handler = OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
   OCMExpect([mock_handler showWhatsNew]);
   [browser_->GetCommandDispatcher()

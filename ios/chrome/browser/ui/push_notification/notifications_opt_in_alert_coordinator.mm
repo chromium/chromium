@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -140,16 +141,23 @@
   NSString* buttonText =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_MANAGE_SETTINGS);
   // Show snackbar confirmation.
-  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-  __weak id<SettingsCommands> weakSettingsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SettingsCommands);
-  [snackbarHandler showSnackbarWithMessage:self.confirmationMessage
-                                buttonText:buttonText
-                             messageAction:^{
-                               [weakSettingsHandler showNotificationsSettings];
-                             }
-                          completionAction:nil];
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  __weak id<SettingsCommands> weakSettingsHandler =
+      HandlerForProtocol(dispatcher, SettingsCommands);
+  __weak id<ApplicationCommands> weakApplicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  [snackbarHandler
+      showSnackbarWithMessage:self.confirmationMessage
+                   buttonText:buttonText
+                messageAction:^{
+                  [weakApplicationHandler prepareToPresentModal:^{
+                    [weakSettingsHandler showNotificationsSettings];
+                  }];
+                }
+             completionAction:nil];
 }
 
 // Opens the iOS settings app to the app's Notification permissions.

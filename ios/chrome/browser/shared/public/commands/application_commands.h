@@ -147,6 +147,10 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Open a new window with `userActivity`
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity;
 
+// Closes all open modals and ensures that a non-incognito tab is open. If
+// incognito is forced, then it will ensure an incognito tab is open.
+- (void)prepareToPresentModal:(ProceduralBlock)completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_APPLICATION_COMMANDS_H_

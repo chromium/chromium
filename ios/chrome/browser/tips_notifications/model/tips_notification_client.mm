@@ -309,7 +309,7 @@ void TipsNotificationClient::ShowDefaultBrowserPromo() {
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
   id<ApplicationCommands> application_handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  [application_handler dismissModalDialogsWithCompletion:^{
+  [application_handler prepareToPresentModal:^{
     id<SettingsCommands> settings_handler =
         HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
     [settings_handler
@@ -325,7 +325,7 @@ void TipsNotificationClient::ShowWhatsNew() {
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
   id<ApplicationCommands> application_handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  [application_handler dismissModalDialogsWithCompletion:^{
+  [application_handler prepareToPresentModal:^{
     [HandlerForProtocol(browser->GetCommandDispatcher(),
                         BrowserCoordinatorCommands) showWhatsNew];
   }];
@@ -356,7 +356,7 @@ void TipsNotificationClient::ShowSignin() {
 
   id<ApplicationCommands> application_handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  [application_handler dismissModalDialogsWithCompletion:^{
+  [application_handler prepareToPresentModal:^{
     [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
         showSignin:command];
   }];

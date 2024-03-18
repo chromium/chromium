@@ -2042,6 +2042,19 @@ using UserFeedbackDataCallback =
   }
 }
 
+- (void)prepareToPresentModal:(ProceduralBlock)completion {
+  if (self.mainCoordinator.isTabGridActive ||
+      (self.currentInterface.incognito && ![self isIncognitoForced])) {
+    __weak __typeof(self) weakSelf = self;
+    [self closePresentedViews:YES
+                   completion:^{
+                     [weakSelf openNonIncognitoTab:completion];
+                   }];
+    return;
+  }
+  [self dismissModalDialogsWithCompletion:completion];
+}
+
 // Returns YES if the current Tab is available to present a view controller.
 - (BOOL)isTabAvailableToPresentViewController {
   if (self.signinCoordinator) {
@@ -3641,6 +3654,39 @@ using UserFeedbackDataCallback =
     [self lastIncognitoTabClosed];
   } else if (webStateList == self.mainInterface.browser->GetWebStateList()) {
     [self lastRegularTabClosed];
+  }
+}
+
+// Open a non-incognito tab, if one exists. If one doesn't exist, open a new
+// one. If incognito is forced, an incognito tab will be opened.
+- (void)openNonIncognitoTab:(ProceduralBlock)completion {
+  if (self.mainInterface.browser->GetWebStateList()->GetActiveWebState()) {
+    // Reuse an existing tab, if one exists.
+    ApplicationMode mode = [self isIncognitoForced] ? ApplicationMode::INCOGNITO
+                                                    : ApplicationMode::NORMAL;
+    [self setCurrentInterfaceForMode:mode];
+    if (self.mainCoordinator.isTabGridActive) {
+      [self.mainCoordinator
+          showTabViewController:self.currentInterface.viewController
+                      incognito:self.currentInterface.incognito
+                     completion:completion];
+      [self setIncognitoContentVisible:self.currentInterface.incognito];
+    } else {
+      if (completion) {
+        completion();
+      }
+    }
+  } else {
+    // Open a new NTP.
+    UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
+    params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
+    ApplicationModeForTabOpening mode =
+        [self isIncognitoForced] ? ApplicationModeForTabOpening::INCOGNITO
+                                 : ApplicationModeForTabOpening::NORMAL;
+    [self dismissModalsAndMaybeOpenSelectedTabInMode:mode
+                                   withUrlLoadParams:params
+                                      dismissOmnibox:YES
+                                          completion:completion];
   }
 }
 
