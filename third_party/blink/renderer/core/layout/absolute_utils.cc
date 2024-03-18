@@ -22,22 +22,6 @@ namespace {
 
 using InsetBias = InsetModifiedContainingBlock::InsetBias;
 
-StyleSelfAlignmentData AlignSelf(const ComputedStyle& style,
-                                 ItemPosition normal_behavior) {
-  return RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()
-             ? style.ResolvedAlignSelf(normal_behavior)
-             : StyleSelfAlignmentData(ItemPosition::kNormal,
-                                      OverflowAlignment::kDefault);
-}
-
-StyleSelfAlignmentData JustifySelf(const ComputedStyle& style,
-                                   ItemPosition normal_behavior) {
-  return RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()
-             ? style.ResolvedJustifySelf(normal_behavior)
-             : StyleSelfAlignmentData(ItemPosition::kNormal,
-                                      OverflowAlignment::kDefault);
-}
-
 inline InsetBias GetStaticPositionInsetBias(
     LogicalStaticPosition::InlineEdge inline_edge) {
   switch (inline_edge) {
@@ -463,10 +447,12 @@ LogicalAlignment ComputeAlignment(
       IsParallelWritingMode(container_writing_direction.GetWritingMode(),
                             self_writing_direction.GetWritingMode());
   return is_parallel
-             ? LogicalAlignment{JustifySelf(style, justify_normal_behavior),
-                                AlignSelf(style, align_normal_behavior)}
-             : LogicalAlignment{AlignSelf(style, align_normal_behavior),
-                                JustifySelf(style, justify_normal_behavior)};
+             ? LogicalAlignment{style.ResolvedJustifySelf(
+                                    justify_normal_behavior),
+                                style.ResolvedAlignSelf(align_normal_behavior)}
+             : LogicalAlignment{
+                   style.ResolvedAlignSelf(align_normal_behavior),
+                   style.ResolvedJustifySelf(justify_normal_behavior)};
 }
 
 LogicalAnchorCenterPosition ComputeAnchorCenterPosition(

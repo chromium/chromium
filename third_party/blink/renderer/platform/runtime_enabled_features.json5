@@ -2208,10 +2208,6 @@
       settable_from_internals: true,
     },
     {
-      name: "LayoutAlignForPositioned",
-      status: "stable",
-    },
-    {
       name: "LayoutFlexNewRowAlgorithmV3",
       status: "test",
     },

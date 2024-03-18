@@ -1939,28 +1939,26 @@ OutOfFlowLayoutPart::TryCalculateOffset(
     builder.SetReplacedPercentageResolutionSize(
         space.PercentageResolutionSize());
 
-    if (RuntimeEnabledFeatures::LayoutAlignForPositionedEnabled()) {
-      const bool is_parallel =
-          IsParallelWritingMode(container_writing_direction.GetWritingMode(),
-                                candidate_writing_direction.GetWritingMode());
-      const ItemPosition inline_position =
-          (is_parallel ? candidate_style.JustifySelf()
-                       : candidate_style.AlignSelf())
-              .GetPosition();
-      const bool is_inline_stretch = !imcb.has_auto_inline_inset &&
-                                     inline_position == ItemPosition::kStretch;
-      if (is_inline_stretch) {
-        builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-      }
-      const ItemPosition block_position =
-          (is_parallel ? candidate_style.AlignSelf()
-                       : candidate_style.JustifySelf())
-              .GetPosition();
-      const bool is_block_stretch = !imcb.has_auto_block_inset &&
-                                    block_position == ItemPosition::kStretch;
-      if (is_block_stretch) {
-        builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-      }
+    const bool is_parallel =
+        IsParallelWritingMode(container_writing_direction.GetWritingMode(),
+                              candidate_writing_direction.GetWritingMode());
+    const ItemPosition inline_position =
+        (is_parallel ? candidate_style.JustifySelf()
+                     : candidate_style.AlignSelf())
+            .GetPosition();
+    const bool is_inline_stretch = !imcb.has_auto_inline_inset &&
+                                   inline_position == ItemPosition::kStretch;
+    if (is_inline_stretch) {
+      builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    }
+    const ItemPosition block_position =
+        (is_parallel ? candidate_style.AlignSelf()
+                     : candidate_style.JustifySelf())
+            .GetPosition();
+    const bool is_block_stretch =
+        !imcb.has_auto_block_inset && block_position == ItemPosition::kStretch;
+    if (is_block_stretch) {
+      builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
     }
 
     replaced_size =
