@@ -408,7 +408,6 @@ animations/prefixed/duplicated-keyframes-name-unprefixed-03.html
 animations/prefixed/keyframes-cssom-unprefixed-01.html
 animations/prefixed/keyframes-unprefixed-01.html
 animations/prefixed/string-keyframes-identifier-prefixed.html
-animations/responsive/interpolation/box-shadow-responsive.html
 animations/responsive/responsive-neutral-keyframes.html
 animations/responsive/svg-responsive-to-timing-updates.html
 animations/retain-zero-percent.html
