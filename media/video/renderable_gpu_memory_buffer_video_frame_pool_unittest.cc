@@ -77,7 +77,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
         gpu::SharedImageMetadata(si_format, gpu_memory_buffer->GetSize(),
                                  color_space, surface_origin, alpha_type,
                                  usage),
-        sync_token, nullptr);
+        sync_token, nullptr, gpu_memory_buffer->GetType());
   }
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
@@ -95,7 +95,7 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                                      gpu_memory_buffer->GetFormat()),
                                  gpu_memory_buffer->GetSize(), color_space,
                                  surface_origin, alpha_type, usage),
-        sync_token, nullptr);
+        sync_token, nullptr, gpu_memory_buffer->GetType());
   }
 
   MOCK_METHOD2(DoCreateGpuMemoryBuffer,
