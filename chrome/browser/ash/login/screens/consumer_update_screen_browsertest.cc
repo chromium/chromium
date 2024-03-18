@@ -146,6 +146,10 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
         ->is_branded_build = true;
   }
 
+  void SaveScreenAfterConsumerUpdate(const std::string& screen_name) {
+    StartupUtils::SaveScreenAfterConsumerUpdate(screen_name);
+  }
+
   void TearDownOnMainThread() override {
     network_state_test_helper_.reset();
     consumer_update_screen_ = nullptr;
@@ -180,6 +184,18 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
     WaitForOobeUI();
     WizardController::default_controller()->AdvanceToScreen(
         ConsumerUpdateScreenView::kScreenId);
+  }
+
+  void SimulateNoUpdateAvailable() {
+    SetUpdateEngineStatus(update_engine::Operation::IDLE);
+    SetUpdateEngineStatus(update_engine::Operation::CHECKING_FOR_UPDATE);
+
+    OobeScreenWaiter consumer_update_screen_waiter(
+        ConsumerUpdateScreenView::kScreenId);
+    consumer_update_screen_waiter.set_assert_next_screen();
+    consumer_update_screen_waiter.Wait();
+
+    SetUpdateEngineStatus(update_engine::Operation::IDLE);
   }
 
   ConsumerUpdateScreen::Result WaitForScreenExitResult() {
@@ -435,6 +451,86 @@ IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, SkipUpdate) {
   EXPECT_EQ(result, ConsumerUpdateScreen::Result::SKIPPED);
   EXPECT_FALSE(update_engine_client()->HasObserver(version_updater_));
 }
+
+IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, ResumeFlowWithAddChild) {
+  SaveScreenAfterConsumerUpdate("add-child");
+  ShowConsumerUpdateScreen();
+
+  // Simulate No update just so the screen exit.
+  SimulateNoUpdateAvailable();
+
+  ConsumerUpdateScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, ConsumerUpdateScreen::Result::UPDATE_NOT_REQUIRED);
+
+  OobeScreenWaiter(AddChildScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest,
+                       ResumeFlowWithNonExistingScreen) {
+  SaveScreenAfterConsumerUpdate("non-existing-screen");
+  ShowConsumerUpdateScreen();
+
+  // Simulate No update just so the screen exit.
+  SimulateNoUpdateAvailable();
+
+  ConsumerUpdateScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, ConsumerUpdateScreen::Result::UPDATE_NOT_REQUIRED);
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, ResumeFlowWithGaia) {
+  SaveScreenAfterConsumerUpdate("gaia-signin");
+  ShowConsumerUpdateScreen();
+
+  // Simulate No update just so the screen exit.
+  SimulateNoUpdateAvailable();
+
+  ConsumerUpdateScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, ConsumerUpdateScreen::Result::UPDATE_NOT_REQUIRED);
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
+class ConsumerUpdateScreenGaiaInfoExpirementTest
+    : public ConsumerUpdateScreenTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ConsumerUpdateScreenGaiaInfoExpirementTest() : ConsumerUpdateScreenTest() {
+    gaia_info_disabled_ = GetParam();
+    if (gaia_info_disabled_) {
+      feature_list_.InitWithFeatures({}, {ash::features::kOobeGaiaInfoScreen});
+    } else {
+      feature_list_.InitWithFeatures({ash::features::kOobeGaiaInfoScreen}, {});
+    }
+  }
+
+ protected:
+  bool gaia_info_disabled_ = false;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ConsumerUpdateScreenGaiaInfoExpirementTest,
+                       ResumeFlowWithGaiaInfoExpirement) {
+  SaveScreenAfterConsumerUpdate("gaia-info");
+  ShowConsumerUpdateScreen();
+
+  // Simulate No update just so the screen exit.
+  SimulateNoUpdateAvailable();
+
+  ConsumerUpdateScreen::Result result = WaitForScreenExitResult();
+  EXPECT_EQ(result, ConsumerUpdateScreen::Result::UPDATE_NOT_REQUIRED);
+
+  if (gaia_info_disabled_) {
+    OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  } else {
+    OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ConsumerUpdateScreenGaiaInfoExpirementTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace ash

@@ -1349,10 +1349,20 @@ void WizardController::OnConsumerUpdateScreenExit(
 
   const std::string screen_name =
       GetLocalState()->GetString(prefs::kOobeScreenAfterConsumerUpdate);
-  if (screen_name == GaiaView::kScreenId.name) {
-    AdvanceToScreen(GaiaView::kScreenId);
-  } else {
+  if (screen_name == GaiaInfoScreenView::kScreenId.name) {
+    if (features::IsOobeGaiaInfoScreenEnabled() &&
+        HasScreen(PrefToScreenId(screen_name))) {
+      AdvanceToScreen(PrefToScreenId(screen_name));
+    } else {
+      AdvanceToScreen(GaiaView::kScreenId);
+    }
+  } else if (HasScreen(PrefToScreenId(screen_name))) {
     AdvanceToScreen(PrefToScreenId(screen_name));
+  } else {
+    // Fallback for resuming consumer update screen from local state. This
+    // handles cases where screen names/structure changed between versions.
+    // 'OnUserCreationScreenExit' would update the state for compatibility.
+    AdvanceToScreen(UserCreationView::kScreenId);
   }
 }
 
