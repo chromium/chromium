@@ -117,6 +117,8 @@ crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecord
 crbug.com/1506258 [ asan graphite-enabled intel-0x3e9b mac no-clang-coverage release ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1506258 [ debug graphite-enabled intel-0x3e9b mac no-asan no-clang-coverage ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
+# Gardener 2024-03-18
+crbug.com/330132405 [ fuchsia fuchsia-board-qemu-x64 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
