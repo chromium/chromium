@@ -20,8 +20,7 @@ using manual_fill::ManualFillDataType;
 @interface ExpandedManualFillCoordinator () <
     ExpandedManualFillViewControllerDelegate,
     AddressCoordinatorDelegate,
-    CardCoordinatorDelegate,
-    PasswordCoordinatorDelegate>
+    CardCoordinatorDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -84,24 +83,6 @@ using manual_fill::ManualFillDataType;
   // now.
 }
 
-#pragma mark - PasswordCoordinatorDelegate
-
-- (void)openPasswordManager {
-  //  TODO(b/40942168): Implement logic.
-}
-
-- (void)openPasswordSettings {
-  //  TODO(b/40942168): Implement logic.
-}
-
-- (void)openAllPasswordsPicker {
-  //  TODO(b/40942168): Implement logic.
-}
-
-- (void)openPasswordSuggestion {
-  //  TODO(b/40942168): Implement logic.
-}
-
 #pragma mark - CardCoordinatorDelegate
 
 - (void)openCardSettings {
@@ -160,7 +141,7 @@ using manual_fill::ManualFillDataType;
             invokedOnObfuscatedField:self.invokedOnObfuscatedField
                               formID:self.formID
                              frameID:self.frameID];
-  passwordCoordinator.delegate = self;
+  passwordCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =
       passwordCoordinator.viewController;
