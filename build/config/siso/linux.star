@@ -16,6 +16,7 @@ load("./proto_linux.star", "proto")
 load("./reproxy.star", "reproxy")
 load("./rust_linux.star", "rust")
 load("./typescript_unix.star", "typescript")
+load("./v8.star", "v8")
 
 def __filegroups(ctx):
     fg = {}
@@ -58,6 +59,7 @@ def __step_config(ctx, step_config):
     step_config = proto.step_config(ctx, step_config)
     step_config = rust.step_config(ctx, step_config)
     step_config = typescript.step_config(ctx, step_config)
+    step_config = v8.step_config(ctx, step_config)
 
     return step_config
 
