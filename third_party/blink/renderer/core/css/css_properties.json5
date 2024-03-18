@@ -1722,7 +1722,6 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
-      valid_for_position_try: true,
     },
     {
       name: "align-items",
@@ -1733,7 +1732,6 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kNormal, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      valid_for_position_try: true,
     },
     {
       name: "alignment-baseline",
@@ -3317,7 +3315,6 @@
       default_value: "StyleContentAlignmentData(ContentPosition::kNormal, ContentDistributionType::kDefault, OverflowAlignment::kDefault)",
       type_name: "StyleContentAlignmentData",
       converter: "ConvertContentAlignmentData",
-      valid_for_position_try: true,
     },
     {
       name: "justify-items",
@@ -3328,7 +3325,6 @@
       default_value: "StyleSelfAlignmentData(ItemPosition::kLegacy, OverflowAlignment::kDefault)",
       type_name: "StyleSelfAlignmentData",
       converter: "ConvertSelfOrDefaultAlignmentData",
-      valid_for_position_try: true,
     },
     {
       name: "justify-self",
@@ -4275,6 +4271,7 @@
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
+      valid_for_position_try: true,
     },
     {
       name: "position-fallback-bounds",
@@ -7580,6 +7577,7 @@
       name: "place-self",
       longhands: ["align-self", "justify-self"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_position_try: true,
     },
     {
       name: "grid-area",
