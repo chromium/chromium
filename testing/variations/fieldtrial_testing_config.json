@@ -186,23 +186,6 @@
             ]
         }
     ],
-    "AccountStorageOnDesktopFollowup": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ButterOnDesktopFollowup"
-                    ]
-                }
-            ]
-        }
-    ],
     "AdaptiveChargingParamTuning": [
         {
             "platforms": [
@@ -2759,6 +2742,23 @@
                     },
                     "enable_features": [
                         "BufferSizeForFilterSourceStreamFeature"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ButterOnDesktopFollowup": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ButterOnDesktopFollowup"
                     ]
                 }
             ]
