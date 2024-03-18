@@ -10,6 +10,18 @@
 
 namespace autofill::autofill_metrics {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AutofillAddNewAddressPromptOutcome {
+  kSaved = 0,
+  kCanceled = 1,
+  kMaxValue = kCanceled
+};
+
+// Called when the "Add new address" prompt (triggered from the context menu
+// when there are no addresses saved) gets a decision from the user.
+void LogAddNewAddressPromptOutcome(AutofillAddNewAddressPromptOutcome outcome);
+
 // Metrics logger when autofill is triggered from either an unclassified field
 // or a field that does not match the target `FillingProduct`, for instance when
 // an user uses address fallback on a field classified as credit card. Like

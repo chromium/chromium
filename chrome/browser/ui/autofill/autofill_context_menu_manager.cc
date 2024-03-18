@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
+#include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -299,11 +300,19 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
             [](PersonalDataManager* pdm,
                AutofillClient::AddressPromptUserDecision decision,
                base::optional_ref<const AutofillProfile> profile) {
-              if (decision == AutofillClient::AddressPromptUserDecision::
-                                  kEditAccepted &&
-                  pdm && profile.has_value()) {
+              bool new_address_saved =
+                  decision ==
+                  AutofillClient::AddressPromptUserDecision::kEditAccepted;
+              if (new_address_saved && profile.has_value()) {
                 pdm->AddProfile(*profile);
               }
+
+              LogAddNewAddressPromptOutcome(
+                  new_address_saved
+                      ? autofill_metrics::AutofillAddNewAddressPromptOutcome::
+                            kSaved
+                      : autofill_metrics::AutofillAddNewAddressPromptOutcome::
+                            kCanceled);
             },
             // `PersonalDataManager`, as a keyed service, will always outlive
             // the bubble, which is bound to a tab.

@@ -2935,6 +2935,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.ManualFallback.AddNewAddressPromptShown"
+    enum="AutofillAddNewAddressPromptOutcome" expires_after="2025-03-18">
+  <owner>brunobraga@google.com</owner>
+  <owner>vykochko@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the outcome of the 'Add new address' popup prompt interaction (new
+    address added or prompt canceled/ignored).
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.{AutocompleteState}.Address"
     enum="BooleanSelectManualFallback" expires_after="2024-08-25">

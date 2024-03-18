@@ -11,6 +11,11 @@
 
 namespace autofill::autofill_metrics {
 
+void LogAddNewAddressPromptOutcome(AutofillAddNewAddressPromptOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ManualFallback.AddNewAddressPromptShown", outcome);
+}
+
 ManualFallbackEventLogger::~ManualFallbackEventLogger() {
   // Emit the explicit triggering metric for fields that were either
   // unclassified or classified as something differently from the targeted
