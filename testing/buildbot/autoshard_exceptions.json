@@ -310,63 +310,63 @@
             },
             "lacros_chrome_browsertests Lacros version skew testing ash beta": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 88,
-                    "estimated_bot_hour_delta": -1.64,
-                    "prev_avg_pending_time_sec": 49.2,
+                    "avg_num_builds_per_peak_hour": 101,
+                    "estimated_bot_hour_delta": 1.43,
+                    "prev_avg_pending_time_sec": 45.7,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 168.0,
-                    "prev_percentile_duration_minutes": 12.35,
-                    "prev_shard_count": 6,
-                    "simulated_max_shard_duration": 14.82,
-                    "test_overhead_min": 1.1166666666666667,
+                    "prev_p90_pending_time_sec": 146.0,
+                    "prev_percentile_duration_minutes": 16.48,
+                    "prev_shard_count": 5,
+                    "simulated_max_shard_duration": 13.88,
+                    "test_overhead_min": 0.85,
                     "try_builder": "linux-lacros-rel"
                 },
-                "shards": 5
+                "shards": 6
             },
             "lacros_chrome_browsertests Lacros version skew testing ash canary": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 88,
-                    "estimated_bot_hour_delta": -1.69,
-                    "prev_avg_pending_time_sec": 48.8,
+                    "avg_num_builds_per_peak_hour": 101,
+                    "estimated_bot_hour_delta": 1.29,
+                    "prev_avg_pending_time_sec": 45.3,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 167.0,
-                    "prev_percentile_duration_minutes": 12.38,
-                    "prev_shard_count": 6,
-                    "simulated_max_shard_duration": 14.86,
-                    "test_overhead_min": 1.15,
+                    "prev_p90_pending_time_sec": 144.0,
+                    "prev_percentile_duration_minutes": 16.54,
+                    "prev_shard_count": 5,
+                    "simulated_max_shard_duration": 13.91,
+                    "test_overhead_min": 0.7666666666666667,
                     "try_builder": "linux-lacros-rel"
                 },
-                "shards": 5
+                "shards": 6
             },
             "lacros_chrome_browsertests Lacros version skew testing ash dev": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 88,
-                    "estimated_bot_hour_delta": -1.52,
-                    "prev_avg_pending_time_sec": 48.6,
+                    "avg_num_builds_per_peak_hour": 101,
+                    "estimated_bot_hour_delta": 1.4,
+                    "prev_avg_pending_time_sec": 45.2,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 167.0,
-                    "prev_percentile_duration_minutes": 12.36,
-                    "prev_shard_count": 6,
-                    "simulated_max_shard_duration": 14.83,
-                    "test_overhead_min": 1.0333333333333334,
+                    "prev_p90_pending_time_sec": 143.0,
+                    "prev_percentile_duration_minutes": 16.51,
+                    "prev_shard_count": 5,
+                    "simulated_max_shard_duration": 13.9,
+                    "test_overhead_min": 0.8333333333333334,
                     "try_builder": "linux-lacros-rel"
                 },
-                "shards": 5
+                "shards": 6
             },
             "lacros_chrome_browsertests Lacros version skew testing ash stable": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": 88,
-                    "estimated_bot_hour_delta": -1.59,
-                    "prev_avg_pending_time_sec": 48.6,
+                    "avg_num_builds_per_peak_hour": 101,
+                    "estimated_bot_hour_delta": 1.46,
+                    "prev_avg_pending_time_sec": 45.2,
                     "prev_p50_pending_time_sec": 1.0,
-                    "prev_p90_pending_time_sec": 166.0,
-                    "prev_percentile_duration_minutes": 12.34,
-                    "prev_shard_count": 6,
-                    "simulated_max_shard_duration": 14.81,
-                    "test_overhead_min": 1.0833333333333333,
+                    "prev_p90_pending_time_sec": 143.0,
+                    "prev_percentile_duration_minutes": 16.44,
+                    "prev_shard_count": 5,
+                    "simulated_max_shard_duration": 13.84,
+                    "test_overhead_min": 0.8666666666666667,
                     "try_builder": "linux-lacros-rel"
                 },
-                "shards": 5
+                "shards": 6
             }
         }
     },
@@ -700,17 +700,18 @@
         "Win10 Tests x64": {
             "content_browsertests": {
                 "debug": {
-                    "avg_num_builds_per_peak_hour": "71.0",
-                    "estimated_bot_hour_delta": "-5.43",
-                    "prev_avg_pending_time_sec": "194.8",
-                    "prev_p50_pending_time_sec": "77.0",
-                    "prev_p90_pending_time_sec": "599.0",
-                    "prev_percentile_duration_minutes": "12.62",
-                    "prev_shard_count": "12",
-                    "simulated_max_shard_duration": "15.14",
+                    "avg_num_builds_per_peak_hour": 101,
+                    "estimated_bot_hour_delta": -0.76,
+                    "prev_avg_pending_time_sec": 98.6,
+                    "prev_p50_pending_time_sec": 3.0,
+                    "prev_p90_pending_time_sec": 291.0,
+                    "prev_percentile_duration_minutes": 13.29,
+                    "prev_shard_count": 10,
+                    "simulated_max_shard_duration": 14.72,
+                    "test_overhead_min": 0.45,
                     "try_builder": "win-rel"
                 },
-                "shards": "10"
+                "shards": 9
             },
             "updater_tests_system": {
                 "debug": {
