@@ -441,4 +441,41 @@ TEST_F(ShillManagerClientTest, CreateP2PGroup) {
   EXPECT_EQ(create_p2p_group_result.Get(), result_dictionary);
 }
 
+TEST_F(ShillManagerClientTest, ConnectToP2PGroup) {
+  const char kShillId[] = "sample_shill_id";
+  const char kConnectToGroupResult[] = "success";
+
+  const char kSSID[] = "test_ssid";
+  const char kPassphrase[] = "test_passphrase";
+
+  // Create response.
+  base::Value::Dict result_dictionary;
+  result_dictionary.Set("shill_id", kShillId);
+  result_dictionary.Set("result", kConnectToGroupResult);
+
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter writer(response.get());
+  AppendValueDataAsVariant(&writer, result_dictionary);
+
+  // Create input dictionary
+  base::Value::Dict input_dictionary;
+  input_dictionary.Set("ssid", kSSID);
+  input_dictionary.Set("passphrase", kPassphrase);
+
+  // Set expectation.
+  const bool string_valued = false;
+  PrepareForMethodCall(shill::kConnectToP2PGroupFunction,
+                       base::BindRepeating(&ExpectValueDictionaryArgument,
+                                           &input_dictionary, string_valued),
+                       response.get());
+
+  base::test::TestFuture<base::Value::Dict> connect_to_p2p_group_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->ConnectToP2PGroup(
+      input_dictionary,
+      connect_to_p2p_group_result.GetCallback<base::Value::Dict>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_EQ(connect_to_p2p_group_result.Get(), result_dictionary);
+}
+
 }  // namespace ash

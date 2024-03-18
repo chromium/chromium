@@ -241,6 +241,18 @@ class ShillManagerClientImpl : public ShillManagerClient {
         &method_call, std::move(callback), std::move(error_callback));
   }
 
+  void ConnectToP2PGroup(
+      const base::Value::Dict& properties,
+      base::OnceCallback<void(base::Value::Dict result)> callback,
+      ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kConnectToP2PGroupFunction);
+    dbus::MessageWriter writer(&method_call);
+    ShillClientHelper::AppendServiceProperties(&writer, properties);
+    helper_->CallDictValueMethodWithErrorCallback(
+        &method_call, std::move(callback), std::move(error_callback));
+  }
+
   TestInterface* GetTestInterface() override { return nullptr; }
 
   void Init(dbus::Bus* bus) {

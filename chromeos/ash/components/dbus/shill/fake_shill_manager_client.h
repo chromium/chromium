@@ -91,6 +91,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) override;
 
+  void ConnectToP2PGroup(
+      const base::Value::Dict& properties,
+      base::OnceCallback<void(base::Value::Dict result)> callback,
+      ErrorCallback error_callback) override;
+
   ShillManagerClient::TestInterface* GetTestInterface() override;
 
   // ShillManagerClient::TestInterface overrides.
