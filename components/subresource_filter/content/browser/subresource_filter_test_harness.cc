@@ -165,7 +165,7 @@ SubresourceFilterTestHarness::CreateAndNavigateDisallowedSubframe(
 void SubresourceFilterTestHarness::ConfigureAsSubresourceFilterOnlyURL(
     const GURL& url) {
   fake_safe_browsing_database()->AddBlocklistedUrl(
-      url, safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+      url, safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
 }
 
 void SubresourceFilterTestHarness::RemoveURLFromBlocklist(const GURL& url) {

@@ -125,22 +125,22 @@ typedef safe_browsing::SubresourceFilterType SBType;
 const ActivationListTestData kActivationListTestData[] = {
     {kActivationListSocialEngineeringAdsInterstitial,
      ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL,
-     safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+     safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
      safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS,
      {}},
     {kActivationListPhishingInterstitial,
      ActivationList::PHISHING_INTERSTITIAL,
-     safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+     safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
      safe_browsing::ThreatPatternType::NONE,
      {}},
     {kActivationListSubresourceFilter,
      ActivationList::SUBRESOURCE_FILTER,
-     safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+     safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
      safe_browsing::ThreatPatternType::NONE,
      {}},
     {kActivationListSubresourceFilter,
      ActivationList::BETTER_ADS,
-     safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+     safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
      safe_browsing::ThreatPatternType::NONE,
      {{SBType::BETTER_ADS, SBLevel::ENFORCE}}},
 };
@@ -326,11 +326,12 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
               SimulateCommit(navigation_simulator()));
   }
 
-  void ConfigureForMatch(const GURL& url,
-                         safe_browsing::SBThreatType pattern_type =
-                             safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
-                         const safe_browsing::ThreatMetadata& metadata =
-                             safe_browsing::ThreatMetadata()) {
+  void ConfigureForMatch(
+      const GURL& url,
+      safe_browsing::SBThreatType pattern_type =
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+      const safe_browsing::ThreatMetadata& metadata =
+          safe_browsing::ThreatMetadata()) {
     fake_safe_browsing_database_->AddBlocklistedUrl(url, pattern_type,
                                                     metadata);
   }
@@ -554,7 +555,8 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   safe_browsing::ThreatMetadata metadata;
   metadata.threat_pattern_type =
       safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS;
-  ConfigureForMatch(match_url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+  ConfigureForMatch(match_url,
+                    safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
                     metadata);
   SimulateNavigateAndCommit({match_url}, main_rfh());
   EXPECT_EQ(mojom::ActivationLevel::kDisabled,
@@ -636,6 +638,8 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
 }
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, ActivationList) {
+  using enum safe_browsing::SBThreatType;
+
   const struct {
     mojom::ActivationLevel expected_activation_level;
     ActivationList activation_list;
@@ -643,56 +647,51 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, ActivationList) {
     safe_browsing::ThreatPatternType threat_type_metadata;
   } kTestCases[] = {
       {mojom::ActivationLevel::kDisabled, ActivationList::NONE,
-       safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+       SB_THREAT_TYPE_URL_PHISHING,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled,
-       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL, SB_THREAT_TYPE_URL_PHISHING,
        safe_browsing::ThreatPatternType::NONE},
       {mojom::ActivationLevel::kDisabled,
-       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL, SB_THREAT_TYPE_URL_PHISHING,
        safe_browsing::ThreatPatternType::MALWARE_LANDING},
       {mojom::ActivationLevel::kDisabled,
-       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL, SB_THREAT_TYPE_URL_PHISHING,
        safe_browsing::ThreatPatternType::MALWARE_DISTRIBUTION},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_API_ABUSE,
+       SB_THREAT_TYPE_API_ABUSE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE,
+       SB_THREAT_TYPE_BLOCKLISTED_RESOURCE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE,
+       SB_THREAT_TYPE_URL_BINARY_MALWARE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_UNWANTED,
+       SB_THREAT_TYPE_URL_UNWANTED,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
+       SB_THREAT_TYPE_URL_MALWARE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+       SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_SAFE,
+       SB_THREAT_TYPE_SAFE,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kEnabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
-       safe_browsing::ThreatPatternType::NONE},
+       SB_THREAT_TYPE_URL_PHISHING, safe_browsing::ThreatPatternType::NONE},
       {mojom::ActivationLevel::kEnabled,
-       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+       ActivationList::SOCIAL_ENG_ADS_INTERSTITIAL, SB_THREAT_TYPE_URL_PHISHING,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kEnabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
+       SB_THREAT_TYPE_URL_PHISHING,
        safe_browsing::ThreatPatternType::SOCIAL_ENGINEERING_ADS},
       {mojom::ActivationLevel::kEnabled, ActivationList::SUBRESOURCE_FILTER,
-       safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+       SB_THREAT_TYPE_SUBRESOURCE_FILTER,
        safe_browsing::ThreatPatternType::NONE},
       {mojom::ActivationLevel::kDisabled, ActivationList::PHISHING_INTERSTITIAL,
-       safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+       SB_THREAT_TYPE_SUBRESOURCE_FILTER,
        safe_browsing::ThreatPatternType::NONE},
   };
   const GURL test_url("https://matched_url.com/");
@@ -1056,8 +1055,10 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   scoped_configuration()->ResetConfiguration({config_p1, config_p2});
 
   // Configure the URLs to match on different lists, phishing is worse.
-  ConfigureForMatch(bad_url, safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
-  ConfigureForMatch(worse_url, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
+  ConfigureForMatch(
+      bad_url, safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER);
+  ConfigureForMatch(worse_url,
+                    safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
 
   // Check cases where there are multiple redirects. Activation only triggers
   // on the final url, but redirect position is evaluated based on the worst.
@@ -1120,8 +1121,9 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
     metadata.threat_pattern_type = safe_browsing::ThreatPatternType::NONE;
     metadata.subresource_filter_match = safe_browsing::SubresourceFilterMatch(
         {{SBType::ABUSIVE, SBLevel::ENFORCE}});
-    ConfigureForMatch(url, safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
-                      metadata);
+    ConfigureForMatch(
+        url, safe_browsing::SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+        metadata);
 
     SimulateStartAndExpectProceed(url);
     SimulateCommitAndExpectProceed();

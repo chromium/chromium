@@ -52,7 +52,7 @@ void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {
   if (synchronous_finish) {
     request_completed_ = true;
     SendCheckResultToClient(false /* served_from_network */,
-                            safe_browsing::SB_THREAT_TYPE_SAFE,
+                            safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE,
                             safe_browsing::ThreatMetadata());
     return;
   }
@@ -76,7 +76,7 @@ void SubresourceFilterSafeBrowsingClientRequest::OnCheckBrowseUrlResult(
 void SubresourceFilterSafeBrowsingClientRequest::OnCheckUrlTimeout() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SendCheckResultToClient(true /* served_from_network */,
-                          safe_browsing::SB_THREAT_TYPE_SAFE,
+                          safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE,
                           safe_browsing::ThreatMetadata());
 }
 
