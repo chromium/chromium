@@ -1260,9 +1260,17 @@ if (use_blink && !is_cronet_build) {
       "@WrappedPath(.)",
     ]
   } else {
-    _common_web_test_args = [ "@WrappedPath(" + rebase_path(
-                                  "//third_party/blink/tools/run_web_tests.py",
-                                  root_build_dir) + ")" ]
+    base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), ".")
+    out_dir = get_path_info(root_build_dir, "name")
+    _common_web_test_args = [
+      "@WrappedPath(" +
+          rebase_path("//third_party/blink/tools/run_web_tests.py",
+                      root_build_dir) + ")",
+      "--build-directory",
+      base_out_dir,
+      "--target",
+      out_dir,
+    ]
   }
   if (is_debug) {
     _common_web_test_args += [ "--debug" ]
