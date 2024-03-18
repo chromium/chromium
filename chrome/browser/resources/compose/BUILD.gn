@@ -38,4 +38,6 @@ build_webui("build") {
     "$root_gen_dir/chrome/common/compose/compose.mojom-webui.ts",
     "$root_gen_dir/components/compose/core/browser/compose_enums.mojom-webui.ts",
   ]
+
+  webui_host = "chrome-untrusted://compose"
 }

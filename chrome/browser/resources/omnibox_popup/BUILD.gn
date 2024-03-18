@@ -31,4 +31,5 @@ build_webui("build") {
       "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
     ]
   }
+  webui_host = "omnibox-popup.top-chrome"
 }
