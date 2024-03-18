@@ -201,7 +201,7 @@ BASE_FEATURE(kSpotlightReadingListSource,
 
 BASE_FEATURE(kSpotlightDonateNewIntents,
              "SpotlightDonateNewIntents",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kConsistencyNewAccountInterface,
              "ConsistencyNewAccountInterface",
