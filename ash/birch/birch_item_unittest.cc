@@ -14,7 +14,11 @@
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace ash {
 namespace {
@@ -235,8 +239,17 @@ TEST_F(BirchItemIconTest, File_LoadIcon) {
   const base::FilePath excel_path("/my/test/mySheet.xlsx");
   BirchFileItem item(excel_path, u"suggested", base::Time());
 
-  item.LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
+  item.LoadIcon(base::BindOnce([](const ui::ImageModel& icon) {
+    // Icon was set.
+    EXPECT_FALSE(icon.IsEmpty());
+
+    // Color is the one used for MS Excel documents.
+    auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+    auto* color_provider = ui::ColorProviderManager::Get().GetColorProviderFor(
+        native_theme->GetColorProviderKey(nullptr));
+    EXPECT_EQ(icon.GetVectorIcon().color(),
+              color_provider->GetColor(cros_tokens::kCrosSysFileMsExcel));
+  }));
 }
 
 }  // namespace

@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -19,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 
@@ -253,8 +255,10 @@ void BirchFileItem::PerformSecondaryAction() {
 }
 
 void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(
-      ui::ImageModel::FromVectorIcon(chromeos::GetIconForPath(file_path_)));
+  const gfx::VectorIcon& icon = chromeos::GetIconForPath(file_path_);
+  bool dark_mode = DarkLightModeController::Get()->IsDarkModeEnabled();
+  SkColor color = chromeos::GetIconColorForPath(file_path_, dark_mode);
+  std::move(callback).Run(ui::ImageModel::FromVectorIcon(icon, color));
 }
 
 // static
