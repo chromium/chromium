@@ -11163,7 +11163,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="UpgradeDetector.HoursBeforeUpgrade" units="hours"
-    expires_after="2024-05-01">
+    expires_after="2024-09-01">
   <owner>emshack@chromium.org</owner>
   <owner>pbos@chromium.org</owner>
   <summary>
