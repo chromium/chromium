@@ -304,7 +304,8 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
       &web_state);
 
   security_interstitials::UnsafeResource resource;
-  resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.url = GURL("http://www.chromium.test");
   resource.request_destination = network::mojom::RequestDestination::kDocument;
   resource.weak_web_state = web_state.GetWeakPtr();
