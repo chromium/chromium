@@ -118,14 +118,9 @@ NSInteger kFeedSymbolPointSize = 17;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // Applies an opacity to the background. If ReduceTransparency is enabled,
-  // then this replaces the blur effect.
-  // With the Magic Stack enabled, the background color will
-  // be clear for continuity with the overall NTP gradient view.
-  self.view.backgroundColor = IsMagicStackEnabled()
-                                  ? [UIColor clearColor]
-                                  : [[UIColor colorNamed:kBackgroundColor]
-                                        colorWithAlphaComponent:0.95];
+  // The background color will be clear for continuity with the overall NTP
+  // gradient view.
+  self.view.backgroundColor = [UIColor clearColor];
 
   self.container = [[UIView alloc] init];
 
@@ -819,10 +814,8 @@ NSInteger kFeedSymbolPointSize = 17;
 - (UIColor*)backgroundColorForBlurredState:(BOOL)blurred {
   if (blurred) {
     return [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.1];
-  } else if (IsMagicStackEnabled()) {
-    return [UIColor clearColor];
   } else {
-    return [[UIColor colorNamed:kBackgroundColor] colorWithAlphaComponent:0.95];
+    return [UIColor clearColor];
   }
 }
 

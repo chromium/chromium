@@ -366,7 +366,7 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
 // completes its run.
 TEST_F(SafetyCheckMediatorTest, TimestampSetForLatestRun) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kMagicStack, kSafetyCheckMagicStack}, {});
+  feature_list.InitWithFeatures({kSafetyCheckMagicStack}, {});
 
   mediator_.checkDidRun = true;
 

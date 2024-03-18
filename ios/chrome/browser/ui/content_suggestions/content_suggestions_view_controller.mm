@@ -67,9 +67,6 @@
 
 namespace {
 
-// The bottom padding for the vertical stack view.
-const float kBottomStackViewPadding = 6.0f;
-
 // The corner radius of the Magic Stack.
 const float kMagicStackCornerRadius = 16.0f;
 
@@ -144,11 +141,7 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
   self.dragDropHandler.dropDelegate = self;
   [self.view addInteraction:[[UIDropInteraction alloc]
                                 initWithDelegate:self.dragDropHandler]];
-  if (IsMagicStackEnabled()) {
-    self.view.backgroundColor = [UIColor clearColor];
-  } else {
-    self.view.backgroundColor = ntp_home::NTPBackgroundColor();
-  }
+  self.view.backgroundColor = [UIColor clearColor];
   self.view.accessibilityIdentifier = kContentSuggestionsCollectionIdentifier;
 
   self.verticalStackView = [[UIStackView alloc] init];
@@ -161,17 +154,6 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
   self.verticalStackView.distribution = UIStackViewDistributionFill;
   [self.view addSubview:self.verticalStackView];
 
-  // Add bottom spacing to the last module by applying it after
-  // `_verticalStackView`. If `IsContentSuggestionsUIModuleRefreshEnabled()` is
-  // YES, and ShouldMinimizeSpacingForModuleRefresh() is YES, then no space is
-  // added after the last module. Otherwise we add kModuleVerticalSpacing. If
-  // `IsContentSuggestionsUIModuleRefreshEnabled()` is NO, then we add
-  // `kBottomStackViewPadding`
-  CGFloat bottomSpacing = kBottomStackViewPadding;
-  if (IsMagicStackEnabled()) {
-    // Add more spacing between magic stack and feed header.
-    bottomSpacing = kBottomMagicStackPadding;
-  }
   [NSLayoutConstraint activateConstraints:@[
     [self.verticalStackView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
@@ -182,7 +164,7 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
                        constant:content_suggestions::HeaderBottomPadding()],
     [self.verticalStackView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor
-                       constant:-bottomSpacing]
+                       constant:-kBottomMagicStackPadding]
   ]];
 
   if (_mostVisitedTileConfig && !ShouldPutMostVisitedSitesInMagicStack()) {
@@ -191,7 +173,7 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
 
   // Only Create Magic Stack if the ranking has been received. It can be delayed
   // to after -viewDidLoad if fecthing from Segmentation Platform.
-  if (IsMagicStackEnabled() && !IsIOSMagicStackCollectionViewEnabled()) {
+  if (!IsIOSMagicStackCollectionViewEnabled()) {
     [self createMagicStack];
     if (_magicStackRankReceived) {
       [self populateMagicStack];

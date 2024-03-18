@@ -83,7 +83,6 @@ void MaybeDismissNotification() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   //  config.features_enabled.push_back(kIOSTipsNotifications);
-  config.features_enabled.push_back(kMagicStack);
 
   // Enable Tips Notifications with 1s trigger time.
   std::string enableFeatures = base::StringPrintf(

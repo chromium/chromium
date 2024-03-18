@@ -379,7 +379,7 @@ TEST_F(SetUpListTest, Disable) {
 
 // Tests that the Set Up List item order is correct with kMagicStack enabled.
 TEST_F(SetUpListTest, MagicStackItemOrder) {
-  feature_list_.InitWithFeatures({kMagicStack, kIOSTipsNotifications}, {});
+  feature_list_.InitWithFeatures({kIOSTipsNotifications}, {});
   BuildSetUpList();
 
   EXPECT_EQ(GetItemIndex(SetUpListItemType::kDefaultBrowser), 0u);

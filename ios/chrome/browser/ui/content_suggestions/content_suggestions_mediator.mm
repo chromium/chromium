@@ -109,9 +109,7 @@
   if (!self.consumer) {
     return;
   }
-  if (IsMagicStackEnabled()) {
-    [self.magicStackRankingModel fetchLatestMagicStackRanking];
-  }
+  [self.magicStackRankingModel fetchLatestMagicStackRanking];
   if (!ShouldPutMostVisitedSitesInMagicStack() &&
       self.mostVisitedTilesMediator.mostVisitedConfig) {
     [self.consumer setMostVisitedTilesConfig:self.mostVisitedTilesMediator

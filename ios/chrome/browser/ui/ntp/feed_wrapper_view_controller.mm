@@ -87,9 +87,7 @@
   [emptyCollectionView setShowsVerticalScrollIndicator:NO];
   [self.view addSubview:emptyCollectionView];
   self.contentCollectionView = emptyCollectionView;
-  self.contentCollectionView.backgroundColor =
-      IsMagicStackEnabled() ? [UIColor clearColor]
-                            : ntp_home::NTPBackgroundColor();
+  self.contentCollectionView.backgroundColor = [UIColor clearColor];
   self.contentCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.contentCollectionView, self.view.safeAreaLayoutGuide);
 }

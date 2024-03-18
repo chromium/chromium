@@ -111,9 +111,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   self.promoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
   self.promoViewContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
 
-  // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync promo
-  // after experiment.
-  if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
+  if (!IsFeedContainmentEnabled()) {
     self.promoViewContainer.backgroundColor =
         [UIColor colorNamed:kBackgroundColor];
   }

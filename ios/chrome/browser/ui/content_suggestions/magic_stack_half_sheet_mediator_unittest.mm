@@ -27,9 +27,8 @@ using startup_metric_utils::FirstRunSentinelCreationResult;
 class MagicStackHalfSheetMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kMagicStack, kSafetyCheckMagicStack,
-                                           kTabResumption, kIOSParcelTracking},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {kSafetyCheckMagicStack, kTabResumption, kIOSParcelTracking}, {});
 
     // Necessary set up for kIOSSetUpList.
     local_state_.Get()->ClearPref(set_up_list_prefs::kDisabled);

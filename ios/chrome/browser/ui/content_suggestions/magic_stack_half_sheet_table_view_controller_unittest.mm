@@ -18,9 +18,8 @@
 class MagicStackHalfSheetTableViewControllerUnittest : public PlatformTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({kMagicStack, kSafetyCheckMagicStack,
-                                           kTabResumption, kIOSParcelTracking},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {kSafetyCheckMagicStack, kTabResumption, kIOSParcelTracking}, {});
 
     view_controller_ = [[MagicStackHalfSheetTableViewController alloc] init];
   }

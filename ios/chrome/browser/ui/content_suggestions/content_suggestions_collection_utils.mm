@@ -104,10 +104,8 @@ CGFloat FakeToolbarVerticalMargin() {
 UIColor* FakeboxIconColor() {
   if (IsIOSLargeFakeboxEnabled()) {
     return [UIColor colorNamed:kGrey700Color];
-  } else if (IsMagicStackEnabled()) {
-    return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
   }
-  return [UIColor colorNamed:kTextfieldPlaceholderColor];
+  return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
 }
 
 // Sets up fakebox button with a symbol and a round background.
@@ -356,10 +354,8 @@ UIView* NearestAncestor(UIView* view, Class of_class) {
 UIColor* SearchHintLabelColor() {
   if (IsIOSLargeFakeboxEnabled()) {
     return [UIColor colorNamed:kGrey800Color];
-  } else if (IsMagicStackEnabled()) {
-    return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
   }
-  return [UIColor colorNamed:kTextfieldPlaceholderColor];
+  return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
 }
 
 int SetUpListTitleStringID() {

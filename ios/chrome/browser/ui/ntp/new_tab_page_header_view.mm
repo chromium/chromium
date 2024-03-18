@@ -92,28 +92,22 @@ CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
 
 // Returns the top color of the Fakebox's gradient background.
 UIColor* FakeboxTopColor() {
-  if (IsMagicStackEnabled()) {
-    if (IsIOSLargeFakeboxEnabled()) {
-      return UIAccessibilityIsReduceTransparencyEnabled()
-                 ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-                 : [UIColor colorNamed:@"fake_omnibox_top_gradient_color"];
-    }
-    return [UIColor colorNamed:@"fake_omnibox_background_color"];
+  if (IsIOSLargeFakeboxEnabled()) {
+    return UIAccessibilityIsReduceTransparencyEnabled()
+               ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+               : [UIColor colorNamed:@"fake_omnibox_top_gradient_color"];
   }
-  return [UIColor colorNamed:kTextfieldBackgroundColor];
+  return [UIColor colorNamed:@"fake_omnibox_background_color"];
 }
 
 // Returns the bottom color of the Fakebox's gradient background.
 UIColor* FakeboxBottomColor() {
-  if (IsMagicStackEnabled()) {
-    if (IsIOSLargeFakeboxEnabled()) {
-      return UIAccessibilityIsReduceTransparencyEnabled()
-                 ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-                 : [UIColor colorNamed:@"fake_omnibox_bottom_gradient_color"];
-    }
-    return [UIColor colorNamed:@"fake_omnibox_background_color"];
+  if (IsIOSLargeFakeboxEnabled()) {
+    return UIAccessibilityIsReduceTransparencyEnabled()
+               ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+               : [UIColor colorNamed:@"fake_omnibox_bottom_gradient_color"];
   }
-  return [UIColor colorNamed:kTextfieldBackgroundColor];
+  return [UIColor colorNamed:@"fake_omnibox_background_color"];
 }
 
 // Returns the background color for the NTP Header view. This is the color
@@ -121,10 +115,8 @@ UIColor* FakeboxBottomColor() {
 UIColor* HeaderBackgroundColor(id<UITraitEnvironment> environment) {
   if (IsIOSLargeFakeboxEnabled() && IsSplitToolbarMode(environment)) {
     return [UIColor colorNamed:kBackgroundColor];
-  } else if (IsMagicStackEnabled()) {
-    return [UIColor colorNamed:@"ntp_background_color"];
   } else {
-    return ntp_home::NTPBackgroundColor();
+    return [UIColor colorNamed:@"ntp_background_color"];
   }
 }
 

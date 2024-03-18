@@ -181,14 +181,6 @@ TEST_F(ContentSuggestionsViewControllerTest,
 // only after the initial view construction.
 TEST_F(ContentSuggestionsViewControllerTest,
        TestMagicStackTopImpressionMetricSegmentation) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
-       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
-        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
-       {kMagicStack, {}}},
-      {});
-
   [view_controller_ setShortcutTilesConfig:ShortcutsConfigWithBookmark()];
   histogram_tester_->ExpectBucketCount(kMagicStackTopModuleImpressionHistogram,
                                        ContentSuggestionsModuleType::kShortcuts,
@@ -409,14 +401,6 @@ TEST_F(ContentSuggestionsViewControllerTest,
 // Magic Stack order available yet, and that the placeholders are replaced with
 // the real modules once the Magic Stack order is received.
 TEST_F(ContentSuggestionsViewControllerTest, TestMagicStackPlaceholder) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{segmentation_platform::features::kSegmentationPlatformFeature, {}},
-       {segmentation_platform::features::kSegmentationPlatformIosModuleRanker,
-        {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
-       {kMagicStack, {}}},
-      {});
-
   [view_controller_ setShortcutTilesConfig:ShortcutsConfigWithBookmark()];
 
   [view_controller_ loadViewIfNeeded];

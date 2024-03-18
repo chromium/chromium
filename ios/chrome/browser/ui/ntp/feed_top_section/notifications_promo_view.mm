@@ -168,9 +168,7 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
       button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
 
       button.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync
-      // promo after experiment.
-      if (IsMagicStackEnabled() && !IsFeedContainmentEnabled()) {
+      if (!IsFeedContainmentEnabled()) {
         button.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
       }
       // Button layout and constraints.

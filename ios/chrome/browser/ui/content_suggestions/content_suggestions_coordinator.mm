@@ -330,21 +330,19 @@
     [moduleMediators addObject:_safetyCheckMediator];
   }
 
-  if (IsMagicStackEnabled()) {
-    _magicStackRankingModel = [[MagicStackRankingModel alloc]
-        initWithSegmentationService:
-            segmentation_platform::SegmentationPlatformServiceFactory::
-                GetForBrowserState(self.browser->GetBrowserState())
-                        prefService:prefs
-                         localState:GetApplicationContext()->GetLocalState()
-                    moduleMediators:moduleMediators];
-    _magicStackRankingModel.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
-    self.contentSuggestionsMediator.magicStackRankingModel =
-        _magicStackRankingModel;
-    if (IsIOSMagicStackCollectionViewEnabled()) {
-      _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
-    }
+  _magicStackRankingModel = [[MagicStackRankingModel alloc]
+      initWithSegmentationService:
+          segmentation_platform::SegmentationPlatformServiceFactory::
+              GetForBrowserState(self.browser->GetBrowserState())
+                      prefService:prefs
+                       localState:GetApplicationContext()->GetLocalState()
+                  moduleMediators:moduleMediators];
+  _magicStackRankingModel.contentSuggestionsMetricsRecorder =
+      self.contentSuggestionsMetricsRecorder;
+  self.contentSuggestionsMediator.magicStackRankingModel =
+      _magicStackRankingModel;
+  if (IsIOSMagicStackCollectionViewEnabled()) {
+    _magicStackRankingModel.delegate = self.contentSuggestionsMediator;
   }
 
   self.contentSuggestionsViewController =

@@ -216,21 +216,17 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
               action:@selector(handleSingleTapInView:)];
   singleTapRecognizer.delegate = self;
   [self.view addGestureRecognizer:singleTapRecognizer];
-  if (IsMagicStackEnabled()) {
-    if (!base::FeatureList::IsEnabled(kMagicStackRemoveGradientView)) {
-      _backgroundGradientView = [[GradientView alloc]
-          initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
-               bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
-      _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
-      [self.view addSubview:_backgroundGradientView];
-      AddSameConstraints(_backgroundGradientView, self.view);
-    }
-    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
-              self.traitCollection.userInterfaceStyle];
-    self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
-  } else {
-    self.view.backgroundColor = ntp_home::NTPBackgroundColor();
+  if (!base::FeatureList::IsEnabled(kMagicStackRemoveGradientView)) {
+    _backgroundGradientView = [[GradientView alloc]
+        initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
+             bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+    _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_backgroundGradientView];
+    AddSameConstraints(_backgroundGradientView, self.view);
   }
+  [self updateModularHomeBackgroundColorForUserInterfaceStyle:
+            self.traitCollection.userInterfaceStyle];
+  self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
 
   [self registerNotifications];
 
@@ -393,10 +389,8 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
   if (previousTraitCollection.userInterfaceStyle !=
       self.traitCollection.userInterfaceStyle) {
-    if (IsMagicStackEnabled()) {
-      [self updateModularHomeBackgroundColorForUserInterfaceStyle:
-                self.traitCollection.userInterfaceStyle];
-    }
+    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
+              self.traitCollection.userInterfaceStyle];
   }
 
   if (previousTraitCollection.horizontalSizeClass !=

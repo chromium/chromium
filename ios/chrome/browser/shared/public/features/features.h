@@ -533,9 +533,6 @@ extern const char kTabResumptionMostRecentTabOnlyParam[];
 extern const char kTabResumptionAllTabsParam[];
 extern const char kTabResumptionAllTabsOneDayThresholdParam[];
 
-// Whether the Magic Stack should be shown.
-bool IsMagicStackEnabled();
-
 // Whether the feed is contained in a Home module.
 bool IsFeedContainmentEnabled();
 

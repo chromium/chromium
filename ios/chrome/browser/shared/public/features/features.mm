@@ -662,13 +662,8 @@ const char kTabResumptionAllTabsParam[] = "tab-resumption-all-tabs";
 const char kTabResumptionAllTabsOneDayThresholdParam[] =
     "tab-resumption-all-tabs-one-day-threshold";
 
-bool IsMagicStackEnabled() {
-  return base::FeatureList::IsEnabled(kMagicStack);
-}
-
 bool IsFeedContainmentEnabled() {
-  return IsMagicStackEnabled() &&
-         base::FeatureList::IsEnabled(kEnableFeedContainment);
+  return base::FeatureList::IsEnabled(kEnableFeedContainment);
 }
 
 int HomeModuleMinimumPadding() {
@@ -677,7 +672,7 @@ int HomeModuleMinimumPadding() {
 }
 
 bool IsTabResumptionEnabled() {
-  return IsMagicStackEnabled() && base::FeatureList::IsEnabled(kTabResumption);
+  return base::FeatureList::IsEnabled(kTabResumption);
 }
 
 bool IsTabResumptionEnabledForMostRecentTabOnly() {

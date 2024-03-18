@@ -88,7 +88,6 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
   if ([self isRunningTest:@selector
             (testBannerNotDisplayedOnNTPWhenTabResumptionEnbaled)]) {
     config.features_enabled.push_back(kTabResumption);
-    config.features_enabled.push_back(kMagicStack);
 
   } else {
     config.features_disabled.push_back(kTabResumption);
