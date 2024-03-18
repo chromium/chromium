@@ -276,6 +276,7 @@ bool IsSafeBrowsingNonRecoverable(SafeBrowsingApiLookupResult lookup_result) {
 // a few.
 SafetyNetJavaThreatType SBThreatTypeToSafetyNetJavaThreatType(
     const SBThreatType& sb_threat_type) {
+  using enum SBThreatType;
   switch (sb_threat_type) {
     case SB_THREAT_TYPE_BILLING:
       return SafetyNetJavaThreatType::BILLING;
@@ -313,6 +314,7 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafetyNetJavaArray(
 // Convert a Java threat type for SafeBrowsing to a SBThreatType.
 SBThreatType SafeBrowsingJavaToSBThreatType(
     SafeBrowsingJavaThreatType java_threat_num) {
+  using enum SBThreatType;
   switch (java_threat_num) {
     case SafeBrowsingJavaThreatType::NO_THREAT:
       return SB_THREAT_TYPE_SAFE;
@@ -334,6 +336,7 @@ SBThreatType SafeBrowsingJavaToSBThreatType(
 // support a few.
 SafeBrowsingJavaThreatType SBThreatTypeToSafeBrowsingApiJavaThreatType(
     const SBThreatType& sb_threat_type) {
+  using enum SBThreatType;
   switch (sb_threat_type) {
     case SB_THREAT_TYPE_URL_PHISHING:
       return SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING;
@@ -356,13 +359,14 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToSafeBrowsingJavaArray(
     const SBThreatTypeSet& threat_types) {
   DCHECK_LT(0u, threat_types.size());
   size_t threat_type_size =
-      base::Contains(threat_types, SB_THREAT_TYPE_SUBRESOURCE_FILTER)
+      base::Contains(threat_types,
+                     SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER)
           ? threat_types.size() + 1
           : threat_types.size();
   int int_threat_types[threat_type_size];
   int* itr = &int_threat_types[0];
   for (auto threat_type : threat_types) {
-    if (threat_type == SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
+    if (threat_type == SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER) {
       *itr++ = static_cast<int>(
           SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION);
       *itr++ =
@@ -471,14 +475,16 @@ void OnUrlCheckDoneBySafetyNetApi(jlong callback_id,
       DCHECK_EQ(result_status, SafetyNetRemoteCallResultStatus::INTERNAL_ERROR);
       ReportUmaResult(UmaRemoteCallResult::INTERNAL_ERROR);
     }
-    std::move(*callback).Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
+    std::move(*callback).Run(SBThreatType::SB_THREAT_TYPE_SAFE,
+                             ThreatMetadata());
     return;
   }
 
   // Shortcut for safe, so we don't have to parse JSON.
   if (metadata == "{}") {
     ReportUmaResult(UmaRemoteCallResult::SAFE);
-    std::move(*callback).Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
+    std::move(*callback).Run(SBThreatType::SB_THREAT_TYPE_SAFE,
+                             ThreatMetadata());
   } else {
     // Unsafe, assuming we can parse the JSON.
     SBThreatType worst_threat;
@@ -553,7 +559,7 @@ void OnUrlCheckDoneBySafeBrowsingApi(
   if (!IsResponseFromJavaValid(callback->protocol, lookup_result, threat_type,
                                threat_attributes, response_status)) {
     std::move(*(callback->response_callback))
-        .Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
+        .Run(SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
   }
 
@@ -563,7 +569,7 @@ void OnUrlCheckDoneBySafeBrowsingApi(
           .OnSafeBrowsingApiNonRecoverableFailure();
     }
     std::move(*(callback->response_callback))
-        .Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
+        .Run(SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
   }
 
@@ -657,8 +663,9 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafetyNet(
     // Mark all requests as safe. Only users who have an old, broken GMSCore or
     // have sideloaded Chrome w/o PlayStore should land here.
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), SB_THREAT_TYPE_SAFE,
-                                  ThreatMetadata()));
+        FROM_HERE,
+        base::BindOnce(std::move(*callback), SBThreatType::SB_THREAT_TYPE_SAFE,
+                       ThreatMetadata()));
     ReportUmaResult(UmaRemoteCallResult::UNSUPPORTED);
     return;
   }
@@ -720,7 +727,8 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
 bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
   if (interceptor_for_testing_)
     return false;
-  return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST);
+  return StartAllowlistCheck(
+      url, safe_browsing::SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST);
 }
 
 void SafeBrowsingApiHandlerBridge::OnSafeBrowsingApiNonRecoverableFailure() {

@@ -300,7 +300,7 @@ class MockObserver : public SafeBrowsingUIManager::Observer {
 
 MATCHER_P(IsUnsafeResourceFor, url, "") {
   return (arg.url.spec() == url.spec() &&
-          arg.threat_type != SB_THREAT_TYPE_SAFE);
+          arg.threat_type != SBThreatType::SB_THREAT_TYPE_SAFE);
 }
 
 class ServiceEnabledHelper : public base::ThreadTestHelper {
@@ -387,6 +387,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   }
 
  private:
+  using enum SBThreatType;
+
   friend class base::RefCountedThreadSafe<TestSBClient>;
   ~TestSBClient() override = default;
 
@@ -586,6 +588,8 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   }
 
  protected:
+  using enum SBThreatType;
+
   StrictMock<MockObserver> observer_;
 
  private:

@@ -37,6 +37,7 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -553,7 +554,8 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   EXPECT_EQ(phishing_url, resource.url);
   EXPECT_EQ(phishing_url, resource.original_url);
   EXPECT_FALSE(resource.is_subresource);
-  EXPECT_EQ(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING, resource.threat_type);
+  EXPECT_EQ(SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+            resource.threat_type);
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));
@@ -624,7 +626,8 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_EQ(other_phishing_url, resource.url);
   EXPECT_EQ(other_phishing_url, resource.original_url);
   EXPECT_FALSE(resource.is_subresource);
-  EXPECT_EQ(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING, resource.threat_type);
+  EXPECT_EQ(SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+            resource.threat_type);
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));

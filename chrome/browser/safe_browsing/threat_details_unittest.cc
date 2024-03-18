@@ -278,6 +278,8 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
   bool ReportWasSent() { return ui_manager_->ReportWasSent(); }
 
  protected:
+  using enum SBThreatType;
+
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {{HistoryServiceFactory::GetInstance(),
              HistoryServiceFactory::GetDefaultFactory()}};

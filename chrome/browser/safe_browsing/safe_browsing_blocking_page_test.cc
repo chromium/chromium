@@ -163,11 +163,11 @@ const char kInterstitialCloseHistogram[] = "interstitial.CloseReason";
 const char kInterstitialPreCommitPageHistogramSuffix[] = ".before_page_shown";
 
 std::string GetHistogramPrefix(const SBThreatType& threat_type) {
-  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
+  if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_MALWARE) {
     return "malware";
-  } else if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+  } else if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     return "phishing";
-  } else if (threat_type == SB_THREAT_TYPE_URL_UNWANTED) {
+  } else if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_UNWANTED) {
     return "harmful";
   } else {
     NOTREACHED();
@@ -1902,9 +1902,10 @@ INSTANTIATE_TEST_SUITE_P(
     SafeBrowsingBlockingPageBrowserTestWithThreatTypeAndIsolationSetting,
     SafeBrowsingBlockingPageBrowserTest,
     testing::Combine(
-        testing::Values(SB_THREAT_TYPE_URL_MALWARE,  // Threat types
-                        SB_THREAT_TYPE_URL_PHISHING,
-                        SB_THREAT_TYPE_URL_UNWANTED),
+        testing::Values(
+            SBThreatType::SB_THREAT_TYPE_URL_MALWARE,  // Threat types
+            SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+            SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool()));  // If isolate all sites for testing.
 
 // Check back and forward work correctly after clicking through an interstitial.
@@ -1994,8 +1995,9 @@ INSTANTIATE_TEST_SUITE_P(
     AntiPhishingTelemetryBrowserTestWithThreatTypeAndIsolationSetting,
     AntiPhishingTelemetryBrowserTest,
     testing::Combine(
-        testing::Values(SB_THREAT_TYPE_URL_PHISHING,  // Threat types
-                        SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
+        testing::Values(
+            SBThreatType::SB_THREAT_TYPE_URL_PHISHING,  // Threat types
+            SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
         testing::Bool()));  // If isolate all sites for testing.
 
 IN_PROC_BROWSER_TEST_P(AntiPhishingTelemetryBrowserTest,
@@ -2031,7 +2033,7 @@ IN_PROC_BROWSER_TEST_P(AntiPhishingTelemetryBrowserTest,
   SBThreatType threat_type = GetThreatType();
   // SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING does not set the page_url because
   // its resource's navigation_url is empty.
-  if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+  if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     EXPECT_EQ(report.page_url(), embedded_test_server()->GetURL(kEmptyPage));
   }
   // Create sorted vector of interstitial interactions. Sorted by
@@ -2086,12 +2088,12 @@ IN_PROC_BROWSER_TEST_P(AntiPhishingTelemetryBrowserTest,
   EXPECT_EQ(report.url(), embedded_test_server()->GetURL(kEmptyPage));
   // Verify the report interactions only contain interstitial interactions.
   SBThreatType threat_type = GetThreatType();
-  if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+  if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     EXPECT_EQ(report.type(),
               ClientSafeBrowsingReportRequest_ReportType_URL_PHISHING);
     EXPECT_EQ(report.page_url(), embedded_test_server()->GetURL(kEmptyPage));
   }
-  if (threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING) {
+  if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING) {
     EXPECT_EQ(
         report.type(),
         ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_PHISHING);
@@ -2131,7 +2133,7 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(report.url(), embedded_test_server()->GetURL(kEmptyPage));
   SBThreatType threat_type = GetThreatType();
-  if (threat_type == SB_THREAT_TYPE_URL_PHISHING) {
+  if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     EXPECT_EQ(report.page_url(), embedded_test_server()->GetURL(kEmptyPage));
   }
   // Verify the report interaction only contains a
@@ -2149,7 +2151,7 @@ INSTANTIATE_TEST_SUITE_P(
     SafeBrowsingHatsSurveyBrowserTest,
     testing::Combine(
         // Threat types.
-        testing::Values(SB_THREAT_TYPE_URL_MALWARE),
+        testing::Values(SBThreatType::SB_THREAT_TYPE_URL_MALWARE),
         // If isolate all sites for testing.
         testing::Bool()));
 
@@ -2294,10 +2296,11 @@ INSTANTIATE_TEST_SUITE_P(
     TrustSafetySentimentSurveyV2BrowserTestWithThreatTypeAndIsolationSetting,
     TrustSafetySentimentSurveyV2BrowserTest,
     testing::Combine(
-        testing::Values(SB_THREAT_TYPE_URL_PHISHING,  // Threat types
-                        SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
-                        SB_THREAT_TYPE_URL_MALWARE,
-                        SB_THREAT_TYPE_URL_UNWANTED),
+        testing::Values(
+            SBThreatType::SB_THREAT_TYPE_URL_PHISHING,  // Threat types
+            SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+            SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+            SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool()));  // If isolate all sites for testing.
 
 IN_PROC_BROWSER_TEST_P(TrustSafetySentimentSurveyV2BrowserTest,
@@ -2355,10 +2358,11 @@ INSTANTIATE_TEST_SUITE_P(
     RedInterstitialFaceliftBrowserTestWithThreatTypeAndIsolationSetting,
     RedInterstitialFaceliftBrowserTest,
     testing::Combine(
-        testing::Values(SB_THREAT_TYPE_URL_PHISHING,  // Threat types
-                        SB_THREAT_TYPE_URL_MALWARE,
-                        SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
-                        SB_THREAT_TYPE_URL_UNWANTED),
+        testing::Values(
+            SBThreatType::SB_THREAT_TYPE_URL_PHISHING,  // Threat types
+            SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+            SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
+            SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool()));  // If isolate all sites for testing.
 
 IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
@@ -2387,8 +2391,8 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
   ASSERT_EQ(load_time_data.Find("heading")->GetString(),
             base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_HEADING_NEW)));
   SBThreatType threat_type = GetThreatType();
-  if (threat_type == SB_THREAT_TYPE_URL_PHISHING ||
-      threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING) {
+  if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING ||
+      threat_type == SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING) {
     ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_PHISHING_V4_PRIMARY_PARAGRAPH_NEW)));
@@ -2398,7 +2402,7 @@ IN_PROC_BROWSER_TEST_P(RedInterstitialFaceliftBrowserTest,
     ASSERT_EQ(load_time_data.Find("finalParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_PHISHING_V4_PROCEED_PARAGRAPH_NEW)));
-  } else if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
+  } else if (threat_type == SBThreatType::SB_THREAT_TYPE_URL_MALWARE) {
     ASSERT_EQ(load_time_data.Find("primaryParagraph")->GetString(),
               base::UTF16ToUTF8(l10n_util::GetStringUTF16(
                   IDS_MALWARE_V3_PRIMARY_PARAGRAPH_NEW)));
@@ -2609,7 +2613,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
 
   void NavigateAndAssertNoInterstitial() {
     const GURL top_frame = embedded_test_server()->GetURL("/iframe.html");
-    SetURLThreatType(top_frame, SB_THREAT_TYPE_URL_PHISHING);
+    SetURLThreatType(top_frame, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_frame));
     AssertNoInterstitial(browser());
@@ -2659,7 +2663,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
 
   // Navigate to a non-phishing page. The warning should not be delayed.
   const GURL url = embedded_test_server()->GetURL("/empty.html");
-  SetURLThreatType(url, SB_THREAT_TYPE_URL_MALWARE);
+  SetURLThreatType(url, SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WaitForReady(browser()));
 
@@ -3031,7 +3035,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageDelayedWarningBrowserTest,
   content::TestNavigationObserver observer1(contents);
   const GURL url =
       embedded_test_server()->GetURL("/password/password_form.html");
-  SetURLThreatType(url, SB_THREAT_TYPE_URL_PHISHING);
+  SetURLThreatType(url, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   observer1.Wait();
 
@@ -3098,11 +3102,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageIDNTest,
   EXPECT_TRUE(VerifyIDNDecoded());
 }
 
-INSTANTIATE_TEST_SUITE_P(SafeBrowsingBlockingPageIDNTestWithThreatType,
-                         SafeBrowsingBlockingPageIDNTest,
-                         testing::Values(SB_THREAT_TYPE_URL_MALWARE,
-                                         SB_THREAT_TYPE_URL_PHISHING,
-                                         SB_THREAT_TYPE_URL_UNWANTED));
+INSTANTIATE_TEST_SUITE_P(
+    SafeBrowsingBlockingPageIDNTestWithThreatType,
+    SafeBrowsingBlockingPageIDNTest,
+    testing::Values(SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+                    SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+                    SBThreatType::SB_THREAT_TYPE_URL_UNWANTED));
 
 class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
     : public policy::PolicyTest {
@@ -3143,7 +3148,7 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
 
     static_cast<FakeSafeBrowsingDatabaseManager*>(
         service->database_manager().get())
-        ->AddDangerousUrl(url, SB_THREAT_TYPE_URL_MALWARE);
+        ->AddDangerousUrl(url, SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     EXPECT_TRUE(WaitForReady(browser));
@@ -3864,7 +3869,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
   // Mark the URL as dangerous for both checks.
   SetupUrlRealTimeVerdictInCacheManager(url, browser()->profile(),
                                         /*is_unsafe=*/true);
-  SetURLThreatType(url, SB_THREAT_TYPE_URL_PHISHING);
+  SetURLThreatType(url, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   NavigateToURLAndWaitForAsyncChecks(url);
 
   // The security indicator should be downgraded while the interstitial
@@ -3903,7 +3908,7 @@ IN_PROC_BROWSER_TEST_P(
   EnableAsyncCheck();
   // Trigger a pre commit interstitial and go back.
   GURL start_url = embedded_test_server()->GetURL(kEmptyPage);
-  SetURLThreatType(start_url, SB_THREAT_TYPE_URL_PHISHING);
+  SetURLThreatType(start_url, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   NavigateToURLAndWaitForAsyncChecks(start_url);
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "primary-button"));
   AssertNoInterstitial(browser());
@@ -4295,9 +4300,10 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SafeBrowsingPrerenderBrowserTest,
     testing::Combine(
-        testing::Values(SB_THREAT_TYPE_URL_MALWARE,  // Threat types
-                        SB_THREAT_TYPE_URL_PHISHING,
-                        SB_THREAT_TYPE_URL_UNWANTED),
+        testing::Values(
+            SBThreatType::SB_THREAT_TYPE_URL_MALWARE,  // Threat types
+            SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+            SBThreatType::SB_THREAT_TYPE_URL_UNWANTED),
         testing::Bool()));  // If isolate all sites for testing.
 
 // Attempt to prerender an unsafe page. The prerender navigation should be
@@ -4322,10 +4328,11 @@ class SafeBrowsingThreatDetailsPrerenderBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     SafeBrowsingThreatDetailsPrerenderBrowserTest,
-    // We simulate a SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING to trigger DOM
-    // detail collection.
-    testing::Combine(testing::Values(SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
-                     testing::Bool()));  // If isolate all sites for testing.
+    // We simulate a SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING to
+    // trigger DOM detail collection.
+    testing::Combine(
+        testing::Values(SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
+        testing::Bool()));  // If isolate all sites for testing.
 
 // Test that the prerendering doesn't affect on the primary's threat report.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingThreatDetailsPrerenderBrowserTest,
@@ -4487,8 +4494,9 @@ INSTANTIATE_TEST_SUITE_P(
     WarningShownTimestampCSBRRDisabledBrowserTestWithThreatTypeAndIsolationSetting,
     WarningShownTimestampCSBRRDisabledBrowserTest,
     testing::Combine(
-        testing::Values(SB_THREAT_TYPE_URL_PHISHING,  // Threat types
-                        SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
+        testing::Values(
+            SBThreatType::SB_THREAT_TYPE_URL_PHISHING,  // Threat types
+            SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
         testing::Bool()));  // If isolate all sites for testing.
 
 IN_PROC_BROWSER_TEST_P(WarningShownTimestampCSBRRDisabledBrowserTest,

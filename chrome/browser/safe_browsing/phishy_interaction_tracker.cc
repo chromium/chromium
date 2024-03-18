@@ -154,10 +154,10 @@ bool PhishyInteractionTracker::IsSitePhishy() {
           /*allowlist_only=*/true, &current_threat_type)) {
     return false;
   }
-  return current_threat_type == safe_browsing::SB_THREAT_TYPE_URL_PHISHING ||
+  return current_threat_type == SBThreatType::SB_THREAT_TYPE_URL_PHISHING ||
          current_threat_type ==
-             safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
-         current_threat_type == safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE;
+             SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
+         current_threat_type == SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE;
 }
 
 void PhishyInteractionTracker::HandlePhishyInteraction(

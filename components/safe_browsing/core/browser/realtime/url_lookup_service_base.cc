@@ -187,6 +187,8 @@ bool RealTimeUrlLookupServiceBase::CanCheckUrl(const GURL& url) {
 SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
     RTLookupResponse::ThreatInfo::ThreatType rt_threat_type,
     RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type) {
+  using enum SBThreatType;
+
   if (rt_threat_type == RTLookupResponse::ThreatInfo::MANAGED_POLICY) {
     switch (rt_verdict_type) {
       case RTLookupResponse::ThreatInfo::DANGEROUS:

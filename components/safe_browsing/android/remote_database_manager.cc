@@ -303,8 +303,8 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
           base::BindOnce(&ClientRequest::OnRequestDoneWeak, req->GetWeakPtr()));
   SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
       std::move(callback), url,
-      CreateSBThreatTypeSet(
-          {SB_THREAT_TYPE_SUBRESOURCE_FILTER, SB_THREAT_TYPE_URL_PHISHING}));
+      CreateSBThreatTypeSet({SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
+                             SBThreatType::SB_THREAT_TYPE_URL_PHISHING}));
 
   current_requests_.push_back(req.release());
 
@@ -380,7 +380,7 @@ void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
   for (safe_browsing::RemoteSafeBrowsingDatabaseManager::ClientRequest* req :
        to_callback) {
     DVLOG(1) << "Stopping: Invoking unfinished req for URL " << req->url();
-    req->OnRequestDone(SB_THREAT_TYPE_SAFE, ThreatMetadata());
+    req->OnRequestDone(SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata());
   }
   enabled_ = false;
 

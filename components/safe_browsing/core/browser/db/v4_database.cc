@@ -437,7 +437,7 @@ ListInfo::ListInfo(const bool fetch_updates,
       list_id_(list_id),
       sb_threat_type_(sb_threat_type) {
   DCHECK(!fetch_updates_ || !filename_.empty());
-  DCHECK_NE(SB_THREAT_TYPE_SAFE, sb_threat_type_);
+  DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, sb_threat_type_);
 }
 
 ListInfo::~ListInfo() {}

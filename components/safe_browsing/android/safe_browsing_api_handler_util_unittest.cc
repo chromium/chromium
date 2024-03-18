@@ -16,6 +16,8 @@ namespace safe_browsing {
 
 class SafeBrowsingApiHandlerUtilTest : public ::testing::Test {
  protected:
+  using enum SBThreatType;
+
   SBThreatType threat_;
   ThreatMetadata meta_;
   const ThreatMetadata empty_meta_;

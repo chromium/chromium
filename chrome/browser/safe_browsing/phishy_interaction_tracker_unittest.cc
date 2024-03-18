@@ -64,7 +64,7 @@ class MockSafeBrowsingUIManager : public safe_browsing::SafeBrowsingUIManager {
       WebContents* web_contents,
       bool allowlist_only,
       safe_browsing::SBThreatType* threat_type) override {
-    *threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+    *threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
     return true;
   }
 
@@ -128,7 +128,7 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
     resource.url = GURL(url);
     resource.is_subresource = is_subresource;
     resource.threat_type =
-        safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+        safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     return resource;
   }
 

@@ -747,6 +747,8 @@ class HashRealTimeServiceNoCacheManagerTest : public HashRealTimeServiceTest {
 };
 
 TEST_F(HashRealTimeServiceTest, TestLookup_OneHash) {
+  using enum SBThreatType;
+
   struct TestCase {
     std::optional<V5::ThreatType> response_threat_type;
     std::optional<std::vector<V5::ThreatAttribute>> response_threat_attributes;

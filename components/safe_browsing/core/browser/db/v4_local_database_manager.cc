@@ -66,6 +66,8 @@ const ThreatSeverity kLeastSeverity =
 const char* const kStoreFileNamesToDelete[] = {"IpMalware.store"};
 
 ListInfos GetListInfos() {
+  using enum SBThreatType;
+
   // NOTE(vakh): When adding a store here, add the corresponding store-specific
   // histograms also.
   // The first argument to ListInfo specifies whether to sync hash prefixes for
@@ -173,6 +175,8 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
 
 // This is only valid for types that are passed to GetBrowseUrl().
 ListIdentifier GetUrlIdFromSBThreatType(SBThreatType sb_threat_type) {
+  using enum SBThreatType;
+
   switch (sb_threat_type) {
     case SB_THREAT_TYPE_URL_MALWARE:
       return GetUrlMalwareId();
@@ -286,13 +290,14 @@ V4LocalDatabaseManager::PendingCheck::PendingCheck(
     const std::vector<GURL>& urls)
     : client(client),
       client_callback_type(client_callback_type),
-      most_severe_threat_type(SB_THREAT_TYPE_SAFE),
+      most_severe_threat_type(SBThreatType::SB_THREAT_TYPE_SAFE),
       stores_to_check(stores_to_check),
       urls(urls) {
   for (const auto& url : urls) {
     V4ProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
   }
-  full_hash_threat_types.assign(full_hashes.size(), SB_THREAT_TYPE_SAFE);
+  full_hash_threat_types.assign(full_hashes.size(),
+                                SBThreatType::SB_THREAT_TYPE_SAFE);
 }
 
 V4LocalDatabaseManager::PendingCheck::PendingCheck(
@@ -302,11 +307,12 @@ V4LocalDatabaseManager::PendingCheck::PendingCheck(
     const std::set<FullHashStr>& full_hashes_set)
     : client(client),
       client_callback_type(client_callback_type),
-      most_severe_threat_type(SB_THREAT_TYPE_SAFE),
+      most_severe_threat_type(SBThreatType::SB_THREAT_TYPE_SAFE),
       stores_to_check(stores_to_check) {
   full_hashes.assign(full_hashes_set.begin(), full_hashes_set.end());
   DCHECK(full_hashes.size());
-  full_hash_threat_types.assign(full_hashes.size(), SB_THREAT_TYPE_SAFE);
+  full_hash_threat_types.assign(full_hashes.size(),
+                                SBThreatType::SB_THREAT_TYPE_SAFE);
 }
 
 V4LocalDatabaseManager::PendingCheck::~PendingCheck() {
@@ -824,8 +830,8 @@ SBThreatType V4LocalDatabaseManager::GetSBThreatTypeForList(
     const ListIdentifier& list_id) {
   auto it = base::ranges::find(list_infos_, list_id, &ListInfo::list_id);
   DCHECK(list_infos_.end() != it);
-  DCHECK_NE(SB_THREAT_TYPE_SAFE, it->sb_threat_type());
-  DCHECK_NE(SB_THREAT_TYPE_UNUSED, it->sb_threat_type());
+  DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, it->sb_threat_type());
+  DCHECK_NE(SBThreatType::SB_THREAT_TYPE_UNUSED, it->sb_threat_type());
   return it->sb_threat_type();
 }
 
@@ -935,9 +941,9 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
   } else if (check->client_callback_type ==
              ClientCallbackType::CHECK_CSD_ALLOWLIST) {
     if (GetPrefixMatchesIsAsync()) {
-      check->most_severe_threat_type = did_match_allowlist
-                                           ? SB_THREAT_TYPE_CSD_ALLOWLIST
-                                           : SB_THREAT_TYPE_SAFE;
+      check->most_severe_threat_type =
+          did_match_allowlist ? SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST
+                              : SBThreatType::SB_THREAT_TYPE_SAFE;
       RespondToClient(std::move(check));
     }
   } else {
@@ -1229,10 +1235,10 @@ void V4LocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
 
     case ClientCallbackType::CHECK_CSD_ALLOWLIST: {
       DCHECK_EQ(1u, check->urls.size());
-      bool did_match_allowlist =
-          check->most_severe_threat_type == SB_THREAT_TYPE_CSD_ALLOWLIST;
-      DCHECK(did_match_allowlist ||
-             check->most_severe_threat_type == SB_THREAT_TYPE_SAFE);
+      bool did_match_allowlist = check->most_severe_threat_type ==
+                                 SBThreatType::SB_THREAT_TYPE_CSD_ALLOWLIST;
+      DCHECK(did_match_allowlist || check->most_severe_threat_type ==
+                                        SBThreatType::SB_THREAT_TYPE_SAFE);
       check->client->OnCheckAllowlistUrlResult(did_match_allowlist);
       break;
     }
@@ -1242,7 +1248,8 @@ void V4LocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
                 check->full_hashes.size());
       std::set<FullHashStr> unsafe_extension_ids;
       for (size_t i = 0; i < check->full_hash_threat_types.size(); i++) {
-        if (check->full_hash_threat_types[i] == SB_THREAT_TYPE_EXTENSION) {
+        if (check->full_hash_threat_types[i] ==
+            SBThreatType::SB_THREAT_TYPE_EXTENSION) {
           unsafe_extension_ids.insert(check->full_hashes[i]);
         }
       }

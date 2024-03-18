@@ -107,6 +107,8 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
 
 class RemoteDatabaseManagerTest : public testing::Test {
  protected:
+  using enum SBThreatType;
+
   RemoteDatabaseManagerTest() {}
 
   void SetUp() override {

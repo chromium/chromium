@@ -417,6 +417,8 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureEnabled) {
 }
 
 TEST_F(RealTimeUrlLookupServiceTest, TestGetSBThreatTypeForRTThreatType) {
+  using enum SBThreatType;
+
   EXPECT_EQ(SB_THREAT_TYPE_URL_MALWARE,
             RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
                 RTLookupResponse::ThreatInfo::WEB_MALWARE,

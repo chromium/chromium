@@ -53,9 +53,10 @@ std::vector<SafeBrowsingJavaThreatType> GetAllSafeBrowsingThreatTypes() {
 }
 
 SBThreatTypeSet GetAllThreatTypes() {
-  return CreateSBThreatTypeSet(
-      {SB_THREAT_TYPE_URL_UNWANTED, SB_THREAT_TYPE_URL_MALWARE,
-       SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_BILLING});
+  return CreateSBThreatTypeSet({SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+                                SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+                                SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+                                SBThreatType::SB_THREAT_TYPE_BILLING});
 }
 
 }  // namespace
@@ -82,6 +83,8 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
   }
 
  protected:
+  using enum SBThreatType;
+
   void AddSafetyNetBlocklistResponse(const GURL& url,
                                      const std::string& metadata,
                                      const std::vector<SafetyNetJavaThreatType>&

@@ -748,6 +748,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetOrganizationTypeGSuite) {
 }
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
+  using enum SBThreatType;
+
   GURL url("http://password_reuse_url.com");
   NavigateAndCommit(url);
   SBThreatType current_threat_type = SB_THREAT_TYPE_UNUSED;
@@ -775,8 +777,8 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
       web_contents(), false, &current_threat_type));
   EXPECT_EQ(SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE, current_threat_type);
 
-  service_->UpdateSecurityState(safe_browsing::SB_THREAT_TYPE_SAFE,
-                                reused_password_type, web_contents());
+  service_->UpdateSecurityState(SB_THREAT_TYPE_SAFE, reused_password_type,
+                                web_contents());
   current_threat_type = SB_THREAT_TYPE_UNUSED;
   service_->ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       url, false, web_contents()->GetController().GetLastCommittedEntry(),

@@ -2354,20 +2354,7 @@ TEST_F(DownloadProtectionServiceTest, TestCheckDownloadUrl) {
   {
     EXPECT_CALL(*sb_service_->mock_database_manager(),
                 CheckDownloadUrl(ContainerEq(url_chain), NotNull()))
-        .WillOnce(
-            DoAll(CheckDownloadUrlDone(SB_THREAT_TYPE_SAFE), Return(false)));
-    RunLoop run_loop;
-    download_service_->CheckDownloadUrl(
-        &item, base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
-                              base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-    EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
-    Mock::VerifyAndClearExpectations(sb_service_.get());
-  }
-  {
-    EXPECT_CALL(*sb_service_->mock_database_manager(),
-                CheckDownloadUrl(ContainerEq(url_chain), NotNull()))
-        .WillOnce(DoAll(CheckDownloadUrlDone(SB_THREAT_TYPE_URL_MALWARE),
+        .WillOnce(DoAll(CheckDownloadUrlDone(SBThreatType::SB_THREAT_TYPE_SAFE),
                         Return(false)));
     RunLoop run_loop;
     download_service_->CheckDownloadUrl(
@@ -2380,7 +2367,22 @@ TEST_F(DownloadProtectionServiceTest, TestCheckDownloadUrl) {
   {
     EXPECT_CALL(*sb_service_->mock_database_manager(),
                 CheckDownloadUrl(ContainerEq(url_chain), NotNull()))
-        .WillOnce(DoAll(CheckDownloadUrlDone(SB_THREAT_TYPE_URL_BINARY_MALWARE),
+        .WillOnce(DoAll(
+            CheckDownloadUrlDone(SBThreatType::SB_THREAT_TYPE_URL_MALWARE),
+            Return(false)));
+    RunLoop run_loop;
+    download_service_->CheckDownloadUrl(
+        &item, base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
+                              base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
+    Mock::VerifyAndClearExpectations(sb_service_.get());
+  }
+  {
+    EXPECT_CALL(*sb_service_->mock_database_manager(),
+                CheckDownloadUrl(ContainerEq(url_chain), NotNull()))
+        .WillOnce(DoAll(CheckDownloadUrlDone(
+                            SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE),
                         Return(false)));
     RunLoop run_loop;
     download_service_->CheckDownloadUrl(

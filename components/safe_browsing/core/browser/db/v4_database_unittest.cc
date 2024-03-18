@@ -110,13 +110,13 @@ class V4DatabaseTest : public PlatformTest {
 
   void SetupInfoMapAndExpectedState() {
     list_infos_.emplace_back(true, "win_url_malware", win_malware_id_,
-                             SB_THREAT_TYPE_URL_MALWARE);
+                             SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
     expected_identifiers_.push_back(win_malware_id_);
     expected_store_paths_.push_back(
         database_dirname_.AppendASCII("win_url_malware.store"));
 
     list_infos_.emplace_back(true, "linux_url_malware", linux_malware_id_,
-                             SB_THREAT_TYPE_URL_MALWARE);
+                             SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
     expected_identifiers_.push_back(linux_malware_id_);
     expected_store_paths_.push_back(
         database_dirname_.AppendASCII("linux_url_malware.store"));

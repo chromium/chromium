@@ -210,11 +210,11 @@ size_t StoreAndHashPrefix::hash() const {
 bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set) {
   for (SBThreatType type : set) {
     switch (type) {
-      case SB_THREAT_TYPE_URL_PHISHING:
-      case SB_THREAT_TYPE_URL_MALWARE:
-      case SB_THREAT_TYPE_URL_UNWANTED:
-      case SB_THREAT_TYPE_SUSPICIOUS_SITE:
-      case SB_THREAT_TYPE_BILLING:
+      case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
+      case SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
+      case SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
+      case SBThreatType::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+      case SBThreatType::SB_THREAT_TYPE_BILLING:
         break;
 
       default:
