@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
 }
 
 // TODO(crbug.com/329645039): Re-enable this test once fixed
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG))
 #define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
   DISABLED_ServiceWorkerPermissionAfterRendererCrash
 #else
