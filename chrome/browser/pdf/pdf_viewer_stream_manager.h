@@ -133,6 +133,11 @@ class PdfViewerStreamManager
   // differentiate between the hosts.
   bool IsPdfExtensionHost(content::RenderFrameHost* render_frame_host);
 
+  // Returns true if `frame_tree_node_id` is the frame tree node ID for the PDF
+  // extension frame under `embedder_host`, false otherwise.
+  bool IsPdfExtensionFrameTreeNodeId(content::RenderFrameHost* embedder_host,
+                                     int frame_tree_node_id);
+
   // Returns true if `render_frame_host` is a content host for a PDF. During a
   // PDF load, the initial RFH for the content frame attempts to navigate to the
   // stream URL. Another RFH will then be chosen to host the content frame. This
@@ -140,6 +145,11 @@ class PdfViewerStreamManager
   // on, callers can also check the last committed URL to differentiate between
   // the hosts.
   bool IsPdfContentHost(content::RenderFrameHost* render_frame_host);
+
+  // Returns true if `frame_tree_node_id` is the frame tree node ID for the PDF
+  // content frame under `embedder_host`, false otherwise.
+  bool IsPdfContentFrameTreeNodeId(content::RenderFrameHost* embedder_host,
+                                   int frame_tree_node_id);
 
   // Returns whether the PDF plugin should handle save events.
   bool PluginCanSave(content::RenderFrameHost* embedder_host);
