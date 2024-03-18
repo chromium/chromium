@@ -366,10 +366,19 @@ bool WindowTreeHost::IsNativeWindowOcclusionEnabled() const {
 }
 
 void WindowTreeHost::SetNativeWindowOcclusionState(
-    Window::OcclusionState state,
-    const SkRegion& occluded_region) {
-  if (occlusion_state_ == state && occluded_region_ == occluded_region)
+    Window::OcclusionState raw_occlusion_state,
+    const SkRegion& raw_occluded_region) {
+  raw_occlusion_state_ = raw_occlusion_state;
+  raw_occluded_region_ = raw_occluded_region;
+
+  auto state = video_capture_count_ > 0 ? Window::OcclusionState::VISIBLE
+                                        : raw_occlusion_state;
+  auto occluded_region =
+      video_capture_count_ > 0 ? SkRegion() : raw_occluded_region;
+
+  if (occlusion_state_ == state && occluded_region_ == occluded_region) {
     return;
+  }
 
   occlusion_state_ = state;
   occluded_region_ = occluded_region;
@@ -669,6 +678,9 @@ void WindowTreeHost::MaybeUpdateComposibleVisibilityForVideoLockCountChange() {
   if (video_capture_count_ > 1) {
     return;
   }
+  // If we no longer have video capture locks, update the occlusion state to
+  // what the platform last sent us.
+  SetNativeWindowOcclusionState(raw_occlusion_state_, raw_occluded_region_);
   MaybeUpdateCompositorVisibilityForNativeOcclusion();
 }
 
