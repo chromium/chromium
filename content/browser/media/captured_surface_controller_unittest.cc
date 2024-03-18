@@ -889,48 +889,6 @@ TEST_P(CapturedSurfaceControllerSelfCaptureTest,
   run_loop.Run();
 }
 
-class CapturedSurfaceControllerFocusRequirementTest
-    : public CapturedSurfaceControllerInterfaceTestBase,
-      public ::testing::WithParamInterface<CapturedSurfaceControlAPI> {
- public:
-  CapturedSurfaceControllerFocusRequirementTest()
-      : CapturedSurfaceControllerInterfaceTestBase(GetParam()) {}
-
-  void SetUp() override {
-    // Skip CapturedSurfaceControllerTestBase's SetUp(),
-    RenderViewHostTestHarness::SetUp();
-    SetUpTestTabs(/*focus_capturer=*/false);
-    StartCaptureOf(*capturee_);
-    AwaitWebContentsResolution();
-  }
-
-  ~CapturedSurfaceControllerFocusRequirementTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    CapturedSurfaceControllerFocusRequirementTest,
-    ::testing::Values(CapturedSurfaceControlAPI::kSendWheel,
-                      CapturedSurfaceControlAPI::kSetZoomLevel));
-
-TEST_P(CapturedSurfaceControllerFocusRequirementTest,
-       CallSucceedsIfCapturerFocused) {
-  base::RunLoop run_loop;
-  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
-  capturer_->Focus();
-  RunTestedActionAndExpect(&run_loop, CSCResult::kSuccess);
-  run_loop.Run();
-}
-
-TEST_P(CapturedSurfaceControllerFocusRequirementTest,
-       CallsFailsIfCapturerUnfocused) {
-  base::RunLoop run_loop;
-  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
-  // Note absence of call to `capturer_->Focus()`.
-  RunTestedActionAndExpect(&run_loop, CSCResult::kCapturerNotFocusedError);
-  run_loop.Run();
-}
-
 // This test suite checks correct clamping of x/y wheel-deltas to min/max.
 //
 // The suite is parameterized on the *zoom* level because that affects

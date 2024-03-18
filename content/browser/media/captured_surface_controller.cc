@@ -90,15 +90,6 @@ std::optional<CapturedSurfaceInfo> ResolveCapturedSurfaceOnUI(
                              subscription_version, initial_zoom_level);
 }
 
-// Checks whether the app is focused.
-// Note that this is different from requiring that the capturer RFH is focused.
-// The check here starts at the primary main frame, and then cascades through
-// the tree - which is the desired behavior.
-bool IsFocused(WebContentsImpl& web_contents) {
-  RenderFrameHostImpl* const rfhi = web_contents.GetPrimaryMainFrame();
-  return rfhi && rfhi->IsFocused();
-}
-
 // Deliver a synthetic MouseWheel action on `captured_wc` with the parameters
 // described by the values in `action`.
 //
@@ -133,10 +124,6 @@ CapturedSurfaceControlResult DoSendWheel(
 
   if (capturer_wc == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
-  }
-
-  if (!IsFocused(*capturer_wc)) {
-    return CapturedSurfaceControlResult::kCapturerNotFocusedError;
   }
 
   // Scale (x, y).
@@ -212,10 +199,6 @@ CapturedSurfaceControlResult DoSetZoomLevel(
 
   if (capturer_wc == captured_wc.get()) {
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
-  }
-
-  if (!IsFocused(*capturer_wc)) {
-    return CapturedSurfaceControlResult::kCapturerNotFocusedError;
   }
 
   // TODO(crbug.com/328589994): Hard-code kCapturedSurfaceControlTemporaryZoom.

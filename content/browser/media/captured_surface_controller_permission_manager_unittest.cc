@@ -114,6 +114,7 @@ class CapturedSurfaceControlPermissionManagerTest
     RenderViewHostTestHarness::SetUp();
 
     capturing_wc_ = MakeTestWebContents();
+    FocusCapturer();
 
     auto mock_permission_controller =
         std::make_unique<CscMockPermissionController>();
@@ -132,6 +133,18 @@ class CapturedSurfaceControlPermissionManagerTest
     mock_permission_controller_ = nullptr;
 
     RenderViewHostTestHarness::TearDown();
+  }
+
+  void FocusCapturer() {
+    capturing_wc_->GetPrimaryMainFrame()->GetRenderWidgetHost()->Focus();
+    FrameTree& frame_tree = capturing_wc_->GetPrimaryFrameTree();
+    FrameTreeNode* const root = frame_tree.root();
+    frame_tree.SetFocusedFrame(
+        root, root->current_frame_host()->GetSiteInstance()->group());
+  }
+
+  void UnFocusCapturer() {
+    capturing_wc_->GetPrimaryMainFrame()->GetRenderWidgetHost()->Blur();
   }
 
   // Run CheckPermission() on the unit-under-test
@@ -380,6 +393,29 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   state_2->WaitForUserPromptToBeShown();
   EXPECT_TRUE(state_2->user_prompted());
   EXPECT_EQ(state_2->result(), std::nullopt);
+}
+
+TEST_F(CapturedSurfaceControlPermissionManagerTest,
+       CallFailsIfCapturerUnfocused) {
+  UnFocusCapturer();
+  SetTransientActivation(true);
+
+  std::unique_ptr<PermissionCheckState> state = CheckPermission();
+  state->WaitForCheckPermissionCallbackResult();
+
+  EXPECT_FALSE(state->user_prompted());
+  EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kError);
+}
+
+TEST_F(CapturedSurfaceControlPermissionManagerTest,
+       UserPromptedIfCapturerFocused) {
+  // Capturer focused in SetUp()
+  SetTransientActivation(true);
+
+  std::unique_ptr<PermissionCheckState> state = CheckPermission();
+  state->WaitForUserPromptToBeShown();
+
+  EXPECT_TRUE(state->user_prompted());
 }
 
 }  // namespace

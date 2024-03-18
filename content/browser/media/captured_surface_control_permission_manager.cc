@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
@@ -23,6 +24,15 @@ namespace {
 using ::blink::mojom::PermissionStatus;
 using PermissionResult =
     ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
+
+// Checks whether the app is focused.
+// Note that this is different from requiring that the capturer RFH is focused.
+// The check here starts at the primary main frame, and then cascades through
+// the tree - which is the desired behavior.
+bool IsFocused(WebContentsImpl& web_contents) {
+  RenderFrameHostImpl* const rfhi = web_contents.GetPrimaryMainFrame();
+  return rfhi && rfhi->IsFocused();
+}
 
 // Translate between callbacks expecting different types.
 base::OnceCallback<void(PermissionStatus)> WrapCallback(
@@ -42,20 +52,33 @@ void PromptForPermissionOnUIThread(
     base::OnceCallback<void(PermissionResult)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  RenderFrameHost* const capturer_rfh =
-      RenderFrameHost::FromID(capturer_rfh_id);
-  if (!capturer_rfh) {
+  RenderFrameHostImpl* const capturer_rfhi =
+      RenderFrameHostImpl::FromID(capturer_rfh_id);
+  if (!capturer_rfhi) {
     std::move(callback).Run(PermissionResult::kError);
     return;
   }
 
-  BrowserContext* const browser_context = capturer_rfh->GetBrowserContext();
+  BrowserContext* const browser_context = capturer_rfhi->GetBrowserContext();
   if (!browser_context) {
     std::move(callback).Run(PermissionResult::kError);
     return;
   }
 
-  const bool user_gesture = capturer_rfh->HasTransientUserActivation();
+  WebContentsImpl* const capturer_wc =
+      WebContentsImpl::FromRenderFrameHostImpl(capturer_rfhi);
+  if (!capturer_wc) {
+    // The capturing frame or tab appears to have closed asynchronously.
+    std::move(callback).Run(PermissionResult::kError);
+    return;
+  }
+
+  if (!IsFocused(*capturer_wc)) {
+    std::move(callback).Run(PermissionResult::kError);
+    return;
+  }
+
+  const bool user_gesture = capturer_rfhi->HasTransientUserActivation();
   if (!user_gesture) {
     std::move(callback).Run(PermissionResult::kDenied);
     return;
@@ -69,7 +92,7 @@ void PromptForPermissionOnUIThread(
   }
 
   permission_controller->RequestPermissionFromCurrentDocument(
-      capturer_rfh,
+      capturer_rfhi,
       PermissionRequestDescription(
           blink::PermissionType::CAPTURED_SURFACE_CONTROL, user_gesture),
       WrapCallback(std::move(callback)));
