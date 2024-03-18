@@ -866,7 +866,7 @@ void WebStateList::RemoveFromGroupsImpl(const std::set<int>& indices) {
     const TabGroup* group = GetGroupOfWebStateAt(index);
     if (group) {
       const int to_index = GetGroupRange(group).range_end() - 1;
-      MoveWebStateWrapperAt(*it, to_index, /*pinned=*/false,
+      MoveWebStateWrapperAt(index, to_index, /*pinned=*/false,
                             /*new_group=*/nullptr);
     }
   }
@@ -875,6 +875,7 @@ void WebStateList::RemoveFromGroupsImpl(const std::set<int>& indices) {
 void WebStateList::DeleteGroupImpl(const TabGroup* group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(locked_);
+  DCHECK(group);
 
   for (int index : GetGroupRange(group)) {
     MoveWebStateWrapperAt(index, index, /*pinned=*/false,
@@ -965,11 +966,9 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
   web_state_wrappers_[from_index]->SetGroup(new_group);
 
   // Update the groups ranges.
-  for (auto group_it = begin(groups_); group_it != end(groups_); ++group_it) {
-    const TabGroup* group = group_it->first.get();
-    Range& group_range = group_it->second;
+  for (auto& [group, group_range] : groups_) {
     // Remove the item from the old group.
-    if (group == old_group) {
+    if (group.get() == old_group) {
       group_range.ContractRight();
     }
     // Slide all groups after the removed tab to the left.
@@ -977,7 +976,7 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
       group_range.MoveLeft();
     }
     // Add the item to the new group.
-    if (group == new_group) {
+    if (group.get() == new_group) {
       group_range.ExpandRight();
     } else if (to_index <= group_range.range_begin()) {
       // Slide all groups at or after the added tab to the right.
@@ -1005,7 +1004,7 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
   }
 
   // Notify the observers of the change.
-  // The moves didn't change the active WebState.
+  // The move didn't change the active WebState.
   web::WebState* const active_web_state = GetActiveWebState();
   const WebStateListStatus status = {.old_active_web_state = active_web_state,
                                      .new_active_web_state = active_web_state};
