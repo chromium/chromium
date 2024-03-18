@@ -1411,7 +1411,8 @@ void PartitionRoot::ShrinkEmptySlotSpansRing(size_t limit) {
     // The ring is not always full, may be nullptr.
     if (slot_span) {
       slot_span->DecommitIfPossible(this);
-      global_empty_slot_span_ring[index] = nullptr;
+      // DecommitIfPossible() should set the buffer to null.
+      PA_DCHECK(!global_empty_slot_span_ring[index]);
     }
     index += 1;
     // Walk through the entirety of possible slots, even though the last ones

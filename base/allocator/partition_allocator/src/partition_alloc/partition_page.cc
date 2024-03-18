@@ -107,6 +107,10 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
     slot_span_to_decommit->DecommitIfPossible(root);
   }
 
+  // There should not be a slot span in the buffer at the position this is
+  // going into.
+  PA_DCHECK(!root->global_empty_slot_span_ring[current_index]);
+
   // We put the empty slot span on our global list of "slot spans that were once
   // empty", thus providing it a bit of breathing room to get re-used before we
   // really free it. This reduces the number of system calls. Otherwise any
@@ -249,8 +253,8 @@ void SlotSpanMetadata::DecommitIfPossible(PartitionRoot* root) {
   in_empty_cache_ = 0;
   if (is_empty()) {
     Decommit(root);
-    root->global_empty_slot_span_ring[empty_cache_index_] = nullptr;
   }
+  root->global_empty_slot_span_ring[empty_cache_index_] = nullptr;
 }
 
 void SlotSpanMetadata::SortFreelist() {
