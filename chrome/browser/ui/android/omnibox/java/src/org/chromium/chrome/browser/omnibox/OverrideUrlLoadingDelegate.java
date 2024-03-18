@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import org.chromium.ui.base.PageTransition;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 
 /**
  * Delegate interface that allows implementers to override the default URL loading behavior of the
@@ -12,11 +12,5 @@ import org.chromium.ui.base.PageTransition;
  */
 public interface OverrideUrlLoadingDelegate {
     /** Returns true if the delegate will handle loading for the given parameters. */
-    boolean willHandleLoadUrlWithPostData(
-            String url,
-            @PageTransition int transition,
-            long inputStart,
-            String postDataType,
-            byte[] postData,
-            boolean incognito);
+    boolean willHandleLoadUrlWithPostData(OmniboxLoadUrlParams params, boolean incognito);
 }

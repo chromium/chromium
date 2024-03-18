@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
@@ -51,9 +52,9 @@ import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
-import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -88,7 +89,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -159,11 +159,7 @@ public class SearchActivity extends AsyncInitializationActivity
     private boolean mIsActivityUsable;
 
     /** Input submitted before before the native library was loaded. */
-    private String mQueuedUrl;
-
-    private @PageTransition int mQueuedTransition;
-    private String mQueuedPostDataType;
-    private byte[] mQueuedPostData;
+    private OmniboxLoadUrlParams mQueuedParams;
 
     /** The View that represents the search box. */
     private SearchActivityLocationBarLayout mSearchBox;
@@ -252,17 +248,6 @@ public class SearchActivity extends AsyncInitializationActivity
             }
         }
 
-        OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
-                (String url,
-                        @PageTransition int transition,
-                        long inputStart,
-                        String postDataType,
-                        byte[] postData,
-                        boolean incognito) -> {
-                    loadUrl(url, transition, postDataType, postData);
-                    return true;
-                };
-
         BackPressManager backPressManager = new BackPressManager();
         getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
         mLocationBarCoordinator =
@@ -280,7 +265,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* shareDelegateSupplier= */ null,
                         /* incognitoStateProvider= */ null,
                         getLifecycleDispatcher(),
-                        overrideUrlLoadingDelegate,
+                        this::loadUrl,
                         /* backKeyBehavior= */ this,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
                         IntentHandler::bringTabToFront,
@@ -510,8 +495,9 @@ public class SearchActivity extends AsyncInitializationActivity
         assert !mIsActivityUsable
                 : "finishDeferredInitialization() incorrectly called multiple times";
         mIsActivityUsable = true;
-        if (mQueuedUrl != null) {
-            loadUrl(mQueuedUrl, mQueuedTransition, mQueuedPostDataType, mQueuedPostData);
+        if (mQueuedParams != null) {
+            // SearchActivity does not support incognito operation.
+            loadUrl(mQueuedParams, /* isIncognito= */ false);
         }
 
         // TODO(tedchoc): Warmup triggers the CustomTab layout to be inflated, but this widget
@@ -622,35 +608,26 @@ public class SearchActivity extends AsyncInitializationActivity
         }
     }
 
-    /* package */ void loadUrl(
-            String url,
-            @PageTransition int transition,
-            @Nullable String postDataType,
-            @Nullable byte[] postData) {
+    /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
         finish();
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
-            SearchActivityUtils.resolveOmniboxRequestForResult(this, new GURL(url));
+            SearchActivityUtils.resolveOmniboxRequestForResult(this, new GURL(params.url));
             overridePendingTransition(0, android.R.anim.fade_out);
         } else {
-            loadUrlInChromeBrowser(url, transition, postDataType, postData);
+            loadUrlInChromeBrowser(params);
         }
+        return true;
     }
 
-    private void loadUrlInChromeBrowser(
-            String url,
-            @PageTransition int transition,
-            @Nullable String postDataType,
-            @Nullable byte[] postData) {
-        // Wait until native has loaded.
+    private void loadUrlInChromeBrowser(@NonNull OmniboxLoadUrlParams params) {
         if (!mIsActivityUsable) {
-            mQueuedUrl = url;
-            mQueuedTransition = transition;
-            mQueuedPostDataType = postDataType;
-            mQueuedPostData = postData;
+            // Wait until native has loaded.
+            mQueuedParams = params;
             return;
         }
 
-        Intent intent = createIntentForStartActivity(url, postDataType, postData);
+        Intent intent =
+                createIntentForStartActivity(params.url, params.postDataType, params.postData);
         if (intent == null) return;
 
         IntentUtils.safeStartActivity(
@@ -660,7 +637,8 @@ public class SearchActivity extends AsyncInitializationActivity
                                 this, android.R.anim.fade_in, android.R.anim.fade_out)
                         .toBundle());
         RecordUserAction.record("SearchWidget.SearchMade");
-        LocaleManager.getInstance().recordLocaleBasedSearchMetrics(true, url, transition);
+        LocaleManager.getInstance()
+                .recordLocaleBasedSearchMetrics(true, params.url, params.transitionType);
     }
 
     /**

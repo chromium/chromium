@@ -805,16 +805,18 @@ public class ToolbarManager
                                     mIncognitoStateProvider.isIncognitoSelected()));
         } else {
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
-                    (url, transition, inputStart, postDataType, postData, incognito) -> {
+                    (omniboxParams, isIncognito) -> {
                         LoadUrlParams params =
                                 new LoadUrlParams(
-                                        url, transition | PageTransition.FROM_ADDRESS_BAR);
-                        params.setInputStartTimestamp(inputStart);
+                                        omniboxParams.url,
+                                        omniboxParams.transitionType
+                                                | PageTransition.FROM_ADDRESS_BAR);
+                        params.setInputStartTimestamp(omniboxParams.inputStartTimestamp);
                         return ReturnToChromeUtil.handleLoadUrlWithPostDataFromStartSurface(
                                 params,
-                                postDataType,
-                                postData,
-                                incognito,
+                                omniboxParams.postDataType,
+                                omniboxParams.postData,
+                                isIncognito,
                                 startSurfaceParentTabSupplier.get());
                     };
             ChromePageInfo toolbarPageInfo =

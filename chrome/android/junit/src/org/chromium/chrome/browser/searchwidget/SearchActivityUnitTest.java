@@ -36,9 +36,11 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -46,6 +48,9 @@ import org.chromium.url.GURL;
         manifest = Config.NONE,
         shadows = {SearchActivityUnitTest.ShadowSearchActivityUtils.class})
 public class SearchActivityUnitTest {
+    private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_SIMPLE =
+            new OmniboxLoadUrlParams.Builder("https://abc.xyz", PageTransition.TYPED).build();
+
     // SearchActivityUtils call intercepting mock.
     private interface TestSearchActivityUtils {
         @IntentOrigin
@@ -108,7 +113,7 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent());
 
-        mActivity.loadUrl("https://abc.xyz", 0, null, null);
+        mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
         verify(mUtils)
                 .resolveOmniboxRequestForResult(eq(mActivity), eq(new GURL("https://abc.xyz")));
         assertNull(mShadowActivity.getNextStartedActivity());
@@ -119,7 +124,7 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent());
 
-        mActivity.loadUrl("https://abc.xyz", 0, null, null);
+        mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
         assertNotNull(mShadowActivity.getNextStartedActivity());
     }
@@ -130,7 +135,7 @@ public class SearchActivityUnitTest {
         mActivity.setActivityUsableForTesting(false);
         mActivity.handleNewIntent(new Intent());
 
-        mActivity.loadUrl("https://abc.xyz", 0, null, null);
+        mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
         verify(mUtils, never()).resolveOmniboxRequestForResult(any(), any());
         assertNull(mShadowActivity.getNextStartedActivity());
     }

@@ -525,12 +525,7 @@ class LocationBarMediator
 
         // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
         if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(
-                omniboxLoadUrlParams.url,
-                omniboxLoadUrlParams.transitionType,
-                omniboxLoadUrlParams.inputStartTimestamp,
-                omniboxLoadUrlParams.postDataType,
-                omniboxLoadUrlParams.postData,
-                mLocationBarDataProvider.isIncognito())) {
+                omniboxLoadUrlParams, mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
