@@ -2113,6 +2113,13 @@ void OverviewGrid::ShowSavedDeskLibrary() {
   }
 
   desks_bar_view_->UpdateButtonsForSavedDeskGrid();
+
+  if (pine_widget_) {
+    pine_widget_->GetNativeWindow()->SetEventTargetingPolicy(
+        aura::EventTargetingPolicy::kNone);
+    PerformFadeOutLayer(pine_widget_->GetLayer(), /*animate=*/true,
+                        base::DoNothing());
+  }
 }
 
 void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
@@ -3136,6 +3143,11 @@ void OverviewGrid::OnSavedDeskGridFadedOut() {
   UpdateSaveDeskButtons();
   UpdateNoWindowsWidget(/*no_items=*/empty(), /*animate=*/true,
                         /*is_continuous_enter=*/false);
+  if (pine_widget_) {
+    pine_widget_->GetNativeWindow()->SetEventTargetingPolicy(
+        aura::EventTargetingPolicy::kTargetAndDescendants);
+    PerformFadeInLayer(pine_widget_->GetLayer(), /*animate=*/true);
+  }
 }
 
 void OverviewGrid::OnSaveDeskButtonContainerFadedOut() {

@@ -13,7 +13,10 @@
 #include "ash/style/system_dialog_delegate_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/wm/desks/templates/saved_desk_test_helper.h"
+#include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
@@ -494,6 +497,32 @@ TEST_F(PineTest, ZoomDisplay) {
   verify_widget_bounds("Zoom 2, up");
   display_manager->ZoomDisplay(display_id, /*up=*/false);
   verify_widget_bounds("Zoom 2, down");
+}
+
+// Tests that the pine dialog gets hidden when we show the saved desk library.
+TEST_F(PineTest, ShowSavedDeskLibrary) {
+  // Add one entry for the saved desk button to show up.
+  ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
+  AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
+                    base::Uuid::GenerateRandomV4(), "saved_desk",
+                    base::Time::Now(), DeskTemplateType::kSaveAndRecall);
+
+  // Start a pine overview session.
+  Shell::Get()
+      ->pine_controller()
+      ->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
+
+  views::Widget* pine_widget =
+      OverviewGridTestApi(GetOverviewGridForRoot(Shell::GetPrimaryRootWindow()))
+          .pine_widget();
+  ASSERT_TRUE(pine_widget);
+
+  // Click the library button and test that the dialog has zero opacity.
+  const views::Button* library_button = GetLibraryButton();
+  ASSERT_TRUE(library_button);
+  LeftClickOn(library_button);
+  EXPECT_EQ(0.f, pine_widget->GetLayer()->GetTargetOpacity());
 }
 
 }  // namespace ash
