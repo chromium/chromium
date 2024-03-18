@@ -526,6 +526,44 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            testManageSyncRowIsNotShownWhenReplaceSyncPromosWithSignInPromosEnabledWithoutSyncConsent()
+                    throws InterruptedException {
+        launchSettingsActivity();
+
+        Assert.assertFalse(
+                "Sync preference should be hidden when the user is signed out.",
+                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
+
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        Assert.assertFalse(
+                "Sync preference should not be shown when the user is signed in.",
+                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @DisabledTest(message = "http://b/issues/41491395")
+    public void
+            testManageSyncRowIsShownWhenReplaceSyncPromosWithSignInPromosEnabledWithSyncConsent()
+                    throws InterruptedException {
+        launchSettingsActivity();
+
+        Assert.assertFalse(
+                "Sync preference should be hidden when the user is signed out.",
+                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
+
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        SyncTestUtil.waitForSyncFeatureActive();
+        Assert.assertTrue(
+                "Sync preference should be shown when the user is syncing.",
+                mMainSettings.findPreference(MainSettings.PREF_MANAGE_SYNC).isVisible());
+    }
+
+    @Test
+    @SmallTest
     public void testAccountManagementRowForChildAccountWithNonDisplayableAccountEmail()
             throws InterruptedException {
         launchSettingsActivity();

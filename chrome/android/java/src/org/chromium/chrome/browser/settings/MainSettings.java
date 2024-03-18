@@ -341,7 +341,14 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         IdentityServicesProvider.get()
                                 .getIdentityManager(getProfile())
                                 .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
-        boolean showManageSync = primaryAccountName != null;
+
+        SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
+
+        boolean showManageSync =
+                primaryAccountName != null
+                        && (!ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                                || syncService.hasSyncConsent());
         mManageSync.setVisible(showManageSync);
         if (!showManageSync) return;
 
