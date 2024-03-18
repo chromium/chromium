@@ -205,6 +205,13 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
   CHECK(bootstrap_controller_);
   QS_LOG(INFO) << "Aborting flow: " << reason;
 
+  // If user proceeds with enrollment, allow source device to gracefully close
+  // connection and show "setup complete" UI.
+  if (reason == QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT) {
+    bootstrap_controller_->OnSetupComplete();
+    return;
+  }
+
   bootstrap_controller_->CloseOpenConnections(
       ConnectionClosedReasonFromAbortFlowReason(reason));
   bootstrap_controller_->StopAdvertising();
