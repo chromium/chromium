@@ -186,6 +186,13 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   }
 
   bubble_created_time_ = base::TimeTicks::Now();
+  webui_bubble_manager_->set_widget_initialization_callback(base::BindOnce(
+      [](base::TimeTicks bubble_init_start_time) {
+        base::UmaHistogramMediumTimes(
+            "Tabs.TabSearch.BubbleWidgetInitializationTime",
+            base::TimeTicks::Now() - bubble_init_start_time);
+      },
+      *bubble_created_time_));
   webui_bubble_manager_->ShowBubble(anchor,
                                     ShouldTabSearchRenderBeforeTabStrip()
                                         ? views::BubbleBorder::TOP_LEFT

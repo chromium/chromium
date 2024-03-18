@@ -49,8 +49,6 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
 
   cache_timer_->Stop();
 
-  bubble_init_start_time_ = base::TimeTicks::Now();
-
   WebUIContentsWarmupLevelRecorder warmup_level_recorder;
   warmup_level_recorder.BeforeContentsCreation();
   bubble_view_ = CreateWebUIBubbleDialog(anchor, arrow);

@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -55,9 +56,16 @@ class WebUIBubbleManager : public views::WidgetObserver {
 
   views::Widget* GetBubbleWidget() const;
 
+  // Register a callback that will be invoked when the bubble widget is
+  // initialized. This is used for metrics collections.
+  void set_widget_initialization_callback(base::OnceClosure callback) {
+    widget_initialization_callback_ = std::move(callback);
+  }
+
   bool bubble_using_cached_web_contents() const {
     return bubble_using_cached_web_contents_;
   }
+
   WebUIContentsWarmupLevel contents_warmup_level() const {
     CHECK(contents_warmup_level_.has_value());
     return *contents_warmup_level_;
@@ -92,7 +100,8 @@ class WebUIBubbleManager : public views::WidgetObserver {
     bubble_using_cached_web_contents_ = is_cached;
   }
 
-  std::optional<base::TimeTicks> bubble_init_start_time_;
+  // A callback that will be invoked when the bubble widget is initialized.
+  base::OnceClosure widget_initialization_callback_;
 
  private:
   void ResetContentsWrapper();
@@ -223,16 +232,9 @@ WebUIBubbleManagerImpl<T>::CreateWebUIBubbleDialog(
   auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
       anchor_view_, contents_wrapper->GetWeakPtr(), anchor, arrow);
 
-  // Register callback to emit histogram when the widget is created
-  if (bubble_init_start_time_) {
-    bubble_view->RegisterWidgetInitializedCallback(base::BindOnce(
-        [](base::TimeTicks bubble_init_start_time) {
-          base::UmaHistogramMediumTimes(
-              "Tabs.TabSearch.BubbleWidgetInitializationTime",
-              base::TimeTicks::Now() - bubble_init_start_time);
-        },
-        *bubble_init_start_time_));
-    bubble_init_start_time_.reset();
+  if (!widget_initialization_callback_.is_null()) {
+    bubble_view->RegisterWidgetInitializedCallback(
+        std::move(widget_initialization_callback_));
   }
 
   auto weak_ptr = bubble_view->GetWeakPtr();
