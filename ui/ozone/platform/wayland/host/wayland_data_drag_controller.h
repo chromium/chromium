@@ -130,6 +130,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDragWithText);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, AsyncNoopStartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
+                           SuppressPointerButtonReleasesAfterEnter);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            StartDragWithWrongMimeType);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            ForeignDragHandleAskAction);
@@ -215,6 +217,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
 
   State state_ = State::kIdle;
   std::optional<mojom::DragEventSource> drag_source_;
+
+  // In outgoing sessions, tracks if any drag enter has already been received.
+  bool has_received_enter_ = false;
 
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;

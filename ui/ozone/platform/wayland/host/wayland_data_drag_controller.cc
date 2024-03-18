@@ -27,6 +27,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -185,6 +186,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 
   // Starts the wayland drag session setting |this| object as delegate.
   state_ = State::kStarted;
+  has_received_enter_ = false;
   drag_source_ = source;
   origin_window_ = origin_window;
   data_device_->StartDrag(*data_source_, *origin_window, serial->value,
@@ -384,6 +386,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     // so we don't need to read it through Wayland and can just copy it here.
     DCHECK_EQ(state_, State::kStarted);
     DCHECK(offered_exchange_data_provider_);
+    has_received_enter_ = true;
     window_->OnDragDataAvailable(std::make_unique<OSExchangeData>(
         offered_exchange_data_provider_->Clone()));
   } else {
@@ -515,6 +518,7 @@ void WaylandDataDragController::OnDataSourceFinish(WaylandDataSource* source,
   icon_frame_callback_.reset();
   offered_exchange_data_provider_.reset();
   data_device_->ResetDragDelegate();
+  has_received_enter_ = false;
   state_ = State::kIdle;
 }
 
@@ -722,17 +726,30 @@ bool WaylandDataDragController::CanDispatchEvent(const PlatformEvent& event) {
 uint32_t WaylandDataDragController::DispatchEvent(const PlatformEvent& event) {
   DCHECK_NE(state_, State::kIdle);
 
-  // Drag session start may be triggered asynchronously, eg: dragging web
-  // contents, which might lead to race conditions where mouse button release is
-  // processed at compositor-side, sent to the client and processed just after
-  // the start_drag request is issued. In such cases, the compositor may ignore
-  // the request, and protocol-wise there is no explicit mechanism for clients
-  // to be notified about it (eg: an error event), and the only way of detecting
-  // that, for now, is to monitor wl_pointer events here and abort the session
-  // if it comes in.
+  // Two distinct problematic edge cases are handled here, where mouse button
+  // release events come in after start_drag has already been requested:
+  //
+  // 1. If it's received before the drag session effectively starts at
+  // compositor side, which is possible given the asynchronous nature of the
+  // Wayland protocol. In this case, to preventing UI from getting stuck on the
+  // drag nested loop, we just abort the drag session by calling.
+  //
+  // 2. Otherwise, button release events may be received from buggy compositors
+  // in addition to the actual dnd drop events, in which case the event is
+  // suppressed, otherwise it leads to broken UI state, as observed for example
+  // in https://crbug.com/329703410.
+  //
+  // Currently, there's no reliable way in the protocol to determine when the
+  // drag session has effectively started, so as a best-effort heuristic we
+  // consider it started once wl_data_device.enter has been received at least
+  // once.
   if (event->type() == ET_MOUSE_RELEASED) {
-    OnDataSourceFinish(data_source_.get(), event->time_stamp(),
-                       /*completed=*/false);
+    if (!has_received_enter_) {
+      OnDataSourceFinish(data_source_.get(), event->time_stamp(),
+                         /*completed=*/false);
+    } else {
+      return POST_DISPATCH_STOP_PROPAGATION;
+    }
   }
 
   return POST_DISPATCH_PERFORM_DEFAULT;
