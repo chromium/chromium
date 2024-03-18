@@ -509,7 +509,7 @@ void ScopedLayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
   }
 
   for (ui::Layer* child : layer->children()) {
-    RestoreLayerTree(child);
+    RestoreLayerTreeImpl(child);
   }
 }
 
