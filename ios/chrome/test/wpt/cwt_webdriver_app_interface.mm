@@ -14,7 +14,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
-#import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -38,10 +38,8 @@ NSString* GetIdForWebState(web::WebState* web_state) {
   return web_state->GetStableIdentifier();
 }
 
-// TODO(crbug.com/327330603): Avoid using
-// mainController.browserProviderInterface.
 WebStateList* GetCurrentWebStateList() {
-  return chrome_test_util::GetMainController()
+  return chrome_test_util::GetForegroundActiveScene()
       .browserProviderInterface.currentBrowserProvider.browser
       ->GetWebStateList();
 }

@@ -122,6 +122,7 @@ source_set("app_support") {
     "//components/signin/internal/identity_manager",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs/model",
