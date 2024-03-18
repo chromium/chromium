@@ -252,6 +252,13 @@ CocoaTestHelper::WeakWindowVector CocoaTestHelper::WindowsLeft() {
   WeakWindowVector windows = ApplicationWindows();
   WeakWindowSet windows_set(windows.begin(), windows.end());
 
+  // Ignore TextInputUIMacHelper.framework created TUINSWindow. We have no
+  // control or documentation about these windows, ignoring them seems like the
+  // best approach.
+  std::erase_if(windows_set, [](NSWindow* __weak set_window) {
+    return [set_window isKindOfClass:NSClassFromString(@"TUINSWindow")];
+  });
+
   // Subtract away the initial windows. The current window set will not have any
   // nil values, as it was just obtained, so subtracting away the nil from any
   // initial windows that have been closed is safe.
