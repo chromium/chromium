@@ -207,8 +207,7 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .gtest_name = "CrosIconButton",
     },
     {
-        .script_src =
-            "chrome://resources/cros_components/dropdown/dropdown.js",
+        .script_src = "chrome://resources/cros_components/dropdown/dropdown.js",
         .component_name = "cros-dropdown",
         .gtest_name = "CrosDropdown",
     },
@@ -219,26 +218,22 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .gtest_name = "CrosDropdownOption",
     },
     {
-        .script_src =
-            "chrome://resources/cros_components/tabs/tabs.js",
+        .script_src = "chrome://resources/cros_components/tabs/tabs.js",
         .component_name = "cros-tabs",
         .gtest_name = "CrosTabs",
     },
     {
-        .script_src =
-            "chrome://resources/cros_components/tabs/tab.js",
+        .script_src = "chrome://resources/cros_components/tabs/tab.js",
         .component_name = "cros-tab",
         .gtest_name = "CrosTab",
     },
     {
-        .script_src =
-            "chrome://resources/cros_components/menu/menu.js",
+        .script_src = "chrome://resources/cros_components/menu/menu.js",
         .component_name = "cros-menu",
         .gtest_name = "CrosMenu",
     },
     {
-        .script_src =
-            "chrome://resources/cros_components/menu/menu_item.js",
+        .script_src = "chrome://resources/cros_components/menu/menu_item.js",
         .component_name = "cros-menu-item",
         .gtest_name = "CrosMenuItem",
     },
@@ -255,8 +250,7 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .gtest_name = "CrosSubMenuItem",
     },
     {
-        .script_src =
-            "chrome://resources/cros_components/snackbar/snackbar.js",
+        .script_src = "chrome://resources/cros_components/snackbar/snackbar.js",
         .component_name = "cros-snackbar",
         .gtest_name = "CrosSnackbar",
     },
@@ -265,6 +259,12 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
             "chrome://resources/cros_components/snackbar/snackbar-item.js",
         .component_name = "cros-snackbar-item",
         .gtest_name = "CrosSnackbarItem",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/orca_feedback/orca-feedback.js",
+        .component_name = "mako-orca-feedback",
+        .gtest_name = "CrosOrcaFeedbackItem",
     },
 };
 

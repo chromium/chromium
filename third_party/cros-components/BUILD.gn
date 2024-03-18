@@ -13,6 +13,7 @@ _cros_components_ts_files = [
   "button/button.ts",
   "card/card.ts",
   "checkbox/checkbox.ts",
+  "chip/chip.ts",
   "dropdown/dropdown.ts",
   "dropdown/dropdown_option.ts",
   "helpers/helpers.ts",
@@ -25,6 +26,7 @@ _cros_components_ts_files = [
   "menu/menu_separator.ts",
   "menu/menu_util.ts",
   "menu/sub_menu_item.ts",
+  "orca_feedback/orca-feedback.ts",
   "radio/radio.ts",
   "sidenav/sidenav.ts",
   "sidenav/sidenav_item.ts",
@@ -101,7 +103,7 @@ rewrite_imports("cros_components_ts") {
 
   import_mappings = [
     "lit|//resources/mwc/lit/index.js",
-    "@lit/|//resources/mwc/@lit/",
+    "@lit/task|//resources/mwc/lit/index.js",
 
     "@material/|chrome://resources/mwc/@material/",
 

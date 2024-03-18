@@ -270,7 +270,7 @@ rewrite_imports("mwc_rewrite") {
 
   import_mappings = [
     "lit|//resources/mwc/lit/index.js",
-    "@lit/task|//resources/mwc/@lit/task/index.js",
+    "@lit/task|//resources/mwc/lit/index.js",
   ]
   import_var_mappings = [
     "lit/static-html:html|staticHtml",
