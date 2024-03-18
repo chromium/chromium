@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PIN_OPTIONS_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PIN_OPTIONS_BUTTON_H_
 
+#include "chrome/browser/ui/views/controls/md_text_button_with_down_arrow.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/views/controls/button/menu_button.h"
 
 namespace views {
 class MenuRunner;
@@ -15,9 +15,9 @@ class MenuRunner;
 
 // Defines a button visible in the GPM pin creation dialog, that upon pressing
 // displays a menu with pin format options, allowing to pick one.
-class PinOptionsButton : public views::MenuButton,
+class PinOptionsButton : public views::MdTextButtonWithDownArrow,
                          public ui::SimpleMenuModel::Delegate {
-  METADATA_HEADER(PinOptionsButton, views::MenuButton)
+  METADATA_HEADER(PinOptionsButton, views::MdTextButtonWithDownArrow)
 
  public:
   PinOptionsButton(const std::u16string& label,
@@ -25,9 +25,6 @@ class PinOptionsButton : public views::MenuButton,
   PinOptionsButton(const PinOptionsButton&) = delete;
   PinOptionsButton& operator=(const PinOptionsButton&) = delete;
   ~PinOptionsButton() override;
-
-  // views::MenuButton:
-  bool IsGroupFocusTraversable() const override;
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
