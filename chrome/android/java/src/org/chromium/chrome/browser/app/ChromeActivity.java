@@ -42,6 +42,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.InputHintChecker;
 import org.chromium.base.Log;
 import org.chromium.base.PowerMonitor;
 import org.chromium.base.StrictModeContext;
@@ -1200,10 +1201,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // Close the current UMA record and start a new UMA one.
         markSessionResume();
 
-        // Inform the actity lifecycle observers. Among other things, the observers record
-        // metrics pertaining to the "resumed" activity. This needs to happens after
-        // markSessionResume has closed the old UMA record, pertaining to the previous
-        // (backgrounded) activity, and opened a new one pertaining to the "resumed" activity.
+        // Inform the activity lifecycle observers. Among other things, the observers record metrics
+        // pertaining to the "resumed" activity. This needs to happen after markSessionResume has
+        // closed the old UMA record, pertaining to the previous (backgrounded) activity, and opened
+        // a new one pertaining to the "resumed" activity.
         super.onResumeWithNative();
 
         // Resume the ChromeActivity...
@@ -1221,8 +1222,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             if (webContents != null) webContents.notifyRendererPreferenceUpdate();
         }
 
-        ChromeSessionState.setIsInMultiWindowMode(
-                MultiWindowUtils.getInstance().isInMultiWindowMode(this));
+        boolean inMultiWindowMode = MultiWindowUtils.getInstance().isInMultiWindowMode(this);
+        ChromeSessionState.setIsInMultiWindowMode(inMultiWindowMode);
 
         boolean appIsInNightMode = getNightModeStateProvider().isInNightMode();
         boolean systemIsInNightMode = SystemNightModeMonitor.getInstance().isSystemNightModeOn();
@@ -1237,6 +1238,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         getManualFillingComponent().onResume();
         checkForDeviceLockOnAutomotive();
+        setViewForInputHint(inMultiWindowMode);
+    }
+
+    private void setViewForInputHint(boolean inMultiWindowMode) {
+        View view = inMultiWindowMode ? null : getWindow().getDecorView();
+        InputHintChecker.setView(view);
     }
 
     private void checkForDeviceLockOnAutomotive() {

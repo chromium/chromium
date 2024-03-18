@@ -5,7 +5,10 @@
 #ifndef BASE_ANDROID_INPUT_HINT_CHECKER_H_
 #define BASE_ANDROID_INPUT_HINT_CHECKER_H_
 
+#include "base/android/jni_weak_ref.h"
+#include "base/base_export.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -27,10 +30,18 @@ class BASE_EXPORT InputHintChecker {
   InputHintChecker() = default;
   virtual ~InputHintChecker() = default;
 
+  // Returns the singleton.
+  static InputHintChecker& GetInstance();
+
   // Enables reading the input hint according to the field trial configuration.
   // Other methods of this class return trivial results before this
   // initialization is completed.
   static void InitializeFeatures();
+
+  // Obtains a weak reference to |root_view| so that the following calls to
+  // HasInput() take the input hint for this View. Requirements for the View
+  // object are described in InputHintChecker.java.
+  void SetView(JNIEnv* env, jobject root_view);
 
   // Fetches and returns the input hint from the Android Framework. Throttles
   // the calls to one every few milliseconds. When a call is made before the
@@ -48,8 +59,8 @@ class BASE_EXPORT InputHintChecker {
 
  private:
   friend class base::NoDestructor<InputHintChecker>;
-  static InputHintChecker& GetInstance();
 
+  JavaObjectWeakGlobalRef view_;
   THREAD_CHECKER(thread_checker_);
   base::TimeTicks last_checked_;
 };

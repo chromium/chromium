@@ -4,6 +4,7 @@
 
 #include "base/android/input_hint_checker.h"
 
+#include "base/base_jni/InputHintChecker_jni.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
@@ -52,6 +53,11 @@ bool InputHintChecker::HasInputImplWithThrottling() {
   return false;
 }
 
+void InputHintChecker::SetView(JNIEnv* env, jobject root_view) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  view_ = JavaObjectWeakGlobalRef(env, root_view);
+}
+
 // static
 bool InputHintChecker::HasInput() {
   if (!g_input_hint_enabled) {
@@ -75,6 +81,11 @@ InputHintChecker::ScopedOverrideInstance::ScopedOverrideInstance(
 
 InputHintChecker::ScopedOverrideInstance::~ScopedOverrideInstance() {
   g_test_instance = nullptr;
+}
+
+void JNI_InputHintChecker_SetView(_JNIEnv* env,
+                                  const JavaParamRef<jobject>& v) {
+  InputHintChecker::GetInstance().SetView(env, v.obj());
 }
 
 }  // namespace base::android
