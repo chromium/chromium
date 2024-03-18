@@ -174,6 +174,8 @@ bool SecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
 
 security_state::MaliciousContentStatus
 SecurityStateTabHelper::GetMaliciousContentStatus() const {
+  using enum safe_browsing::SBThreatType;
+
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
   if (!entry)
@@ -187,20 +189,20 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
   if (sb_ui_manager->IsUrlAllowlistedOrPendingForWebContents(
           entry->GetURL(), false, entry, web_contents(), false, &threat_type)) {
     switch (threat_type) {
-      case safe_browsing::SB_THREAT_TYPE_UNUSED:
-      case safe_browsing::SB_THREAT_TYPE_SAFE:
-      case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
-      case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+      case SB_THREAT_TYPE_UNUSED:
+      case SB_THREAT_TYPE_SAFE:
+      case SB_THREAT_TYPE_URL_PHISHING:
+      case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
         return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
-      case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
+      case SB_THREAT_TYPE_URL_MALWARE:
         return security_state::MALICIOUS_CONTENT_STATUS_MALWARE;
-      case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+      case SB_THREAT_TYPE_URL_UNWANTED:
         return security_state::MALICIOUS_CONTENT_STATUS_UNWANTED_SOFTWARE;
-      case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+      case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         return security_state::MALICIOUS_CONTENT_STATUS_SAVED_PASSWORD_REUSE;
 #endif
-      case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+      case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::
                 ShouldShowPasswordReusePageInfoBubble(
@@ -210,7 +212,7 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
         }
 #endif
         [[fallthrough]];
-      case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+      case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::
                 ShouldShowPasswordReusePageInfoBubble(
@@ -220,7 +222,7 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
         }
 #endif
         [[fallthrough]];
-      case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+      case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::
                 ShouldShowPasswordReusePageInfoBubble(
@@ -232,27 +234,26 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
         // If user has already changed password or FULL_SAFE_BROWSING isn't
         // enabled, returns the regular social engineering content status.
         return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
-      case safe_browsing::SB_THREAT_TYPE_BILLING:
+      case SB_THREAT_TYPE_BILLING:
         return security_state::MALICIOUS_CONTENT_STATUS_BILLING;
-      case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+      case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
         return security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_BLOCK;
-      case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+      case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
         return security_state::MALICIOUS_CONTENT_STATUS_MANAGED_POLICY_WARN;
-      case safe_browsing::
-          DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
-      case safe_browsing::DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-      case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
-      case safe_browsing::SB_THREAT_TYPE_EXTENSION:
-      case safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
-      case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
-      case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-      case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
-      case safe_browsing::SB_THREAT_TYPE_AD_SAMPLE:
-      case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
-      case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
-      case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
-      case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
-      case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+      case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+      case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+      case SB_THREAT_TYPE_URL_BINARY_MALWARE:
+      case SB_THREAT_TYPE_EXTENSION:
+      case SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
+      case SB_THREAT_TYPE_API_ABUSE:
+      case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+      case SB_THREAT_TYPE_CSD_ALLOWLIST:
+      case SB_THREAT_TYPE_AD_SAMPLE:
+      case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+      case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+      case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+      case SB_THREAT_TYPE_APK_DOWNLOAD:
+      case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
         // These threat types are not currently associated with
         // interstitials, and thus resources with these threat types are
         // not ever whitelisted or pending whitelisting.
