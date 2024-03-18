@@ -19,6 +19,8 @@ namespace security_state {
 
 MaliciousContentStatus GetMaliciousContentStatus(
     const web::WebState* web_state) {
+  using enum safe_browsing::SBThreatType;
+
   // There is no known malicious content if there is no allow list or no visible
   // item.
   const SafeBrowsingUrlAllowList* allow_list =
@@ -42,38 +44,37 @@ MaliciousContentStatus GetMaliciousContentStatus(
   // threat type.
   DCHECK(!threats.empty());
   switch (*threats.begin()) {
-    case safe_browsing::SB_THREAT_TYPE_UNUSED:
-    case safe_browsing::SB_THREAT_TYPE_SAFE:
-    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case SB_THREAT_TYPE_UNUSED:
+    case SB_THREAT_TYPE_SAFE:
+    case SB_THREAT_TYPE_URL_PHISHING:
+    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
       return security_state::MALICIOUS_CONTENT_STATUS_SOCIAL_ENGINEERING;
-    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
+    case SB_THREAT_TYPE_URL_MALWARE:
       return security_state::MALICIOUS_CONTENT_STATUS_MALWARE;
-    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+    case SB_THREAT_TYPE_URL_UNWANTED:
       return security_state::MALICIOUS_CONTENT_STATUS_UNWANTED_SOFTWARE;
-    case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_BILLING:
+    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_BILLING:
       return security_state::MALICIOUS_CONTENT_STATUS_BILLING;
-    case safe_browsing::
-        DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
-    case safe_browsing::DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_EXTENSION:
-    case safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
-    case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
-    case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-    case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
-    case safe_browsing::SB_THREAT_TYPE_AD_SAMPLE:
-    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
-    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
-    case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
-    case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
-    case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
-    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+    case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case DEPRECATED_SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+    case SB_THREAT_TYPE_URL_BINARY_MALWARE:
+    case SB_THREAT_TYPE_EXTENSION:
+    case SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
+    case SB_THREAT_TYPE_API_ABUSE:
+    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
+    case SB_THREAT_TYPE_AD_SAMPLE:
+    case SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case SB_THREAT_TYPE_APK_DOWNLOAD:
+    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       // These threat types are not currently associated with
       // interstitials, and thus resources with these threat types are
       // not ever whitelisted or pending whitelisting.
