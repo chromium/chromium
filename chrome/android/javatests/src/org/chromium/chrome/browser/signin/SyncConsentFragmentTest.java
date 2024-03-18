@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -70,6 +71,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -93,9 +95,11 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountCapabilities;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -188,6 +192,10 @@ public class SyncConsentFragmentTest {
                     .setDescription(RENDER_DESCRIPTION)
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
                     .build();
+
+    @Rule public final JniMocker mocker = new JniMocker();
+
+    @Mock private IdentityManager.Natives mIdentityManagerNativeMock;
 
     @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
@@ -792,6 +800,63 @@ public class SyncConsentFragmentTest {
         onView(withText(defaultAccountInfo.getEmail())).check(doesNotExist());
         onView(withText(nonDefaultAccountName)).check(matches(isDisplayed()));
         bookmarkHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testSelectNonDefaultAccountInAccountPickerDialogOpposingCapability() {
+        mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        AccountInfo defaultAccountInfo =
+                mSigninTestRule.addAccount(
+                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_NOT_REQUIRED);
+        String nonDefaultAccountName = "test.account.nondefault@gmail.com";
+        AccountInfo nonDefaultAccountInfo =
+                mSigninTestRule.addAccount(nonDefaultAccountName, MINOR_MODE_REQUIRED);
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                        anyLong(), eq(defaultAccountInfo.getEmail())))
+                .thenReturn(defaultAccountInfo);
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                        anyLong(), eq(nonDefaultAccountInfo.getEmail())))
+                .thenReturn(nonDefaultAccountInfo);
+
+        mSyncConsentActivity = waitForSyncConsentActivity(defaultAccountInfo);
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        // Default account has the capability MINOR_MODE_NOT_REQUIRED thus buttons will be unequally
+        // weighted
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertNotEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
+
+        onView(withText(defaultAccountInfo.getEmail()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(withText(nonDefaultAccountName)).inRoot(isDialog()).perform(click());
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        // Sync consent activity now has the non-default account which has the capability
+        // MINOR_MODE_REQUIRED thus buttons will be equally weighted
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
     }
 
     @Test
