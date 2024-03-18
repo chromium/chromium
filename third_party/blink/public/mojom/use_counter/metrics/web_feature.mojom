@@ -4285,6 +4285,8 @@ enum WebFeature {
   kWebPrintJobAttributesFunction = 4915,
   kWebPrintJobCancelFunction = 4916,
   kWebPrintJobOnJobStateChangeEvent = 4917,
+  kFledgeAuctionReportBuyers = 4918,
+  kFledgeAuctionReportBuyerDebugModeConfig = 4919,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

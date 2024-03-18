@@ -11368,6 +11368,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4915" label="WebPrintJobAttributesFunction"/>
   <int value="4916" label="WebPrintJobCancelFunction"/>
   <int value="4917" label="WebPrintJobOnJobStateChangeEvent"/>
+  <int value="4918" label="FledgeAuctionReportBuyers"/>
+  <int value="4919" label="FledgeAuctionReportBuyerDebugModeConfig"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

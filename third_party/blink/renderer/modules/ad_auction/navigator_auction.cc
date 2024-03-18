@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -2070,12 +2071,16 @@ bool CopyPerBuyerPrioritySignalsFromIdlToMojo(
 // TODO(caraitto): Consider validating keys -- no bucket base + offset
 // conflicts, no overflow, etc.
 bool CopyAuctionReportBuyerKeysFromIdlToMojo(
+    ExecutionContext& execution_context,
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasAuctionReportBuyerKeys()) {
     return true;
   }
+
+  UseCounter::Count(execution_context,
+                    blink::WebFeature::kFledgeAuctionReportBuyers);
 
   output.auction_ad_config_non_shared_params->auction_report_buyer_keys
       .emplace();
@@ -2094,12 +2099,16 @@ bool CopyAuctionReportBuyerKeysFromIdlToMojo(
 }
 
 bool CopyAuctionReportBuyersFromIdlToMojo(
+    ExecutionContext& execution_context,
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasAuctionReportBuyers()) {
     return true;
   }
+
+  UseCounter::Count(execution_context,
+                    blink::WebFeature::kFledgeAuctionReportBuyers);
 
   output.auction_ad_config_non_shared_params->auction_report_buyers.emplace();
   for (const auto& [report_type_string, report_config] :
@@ -2138,6 +2147,7 @@ bool CopyAuctionReportBuyersFromIdlToMojo(
 }
 
 bool CopyAuctionReportBuyerDebugModeConfigFromIdlToMojo(
+    ExecutionContext& execution_context,
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
@@ -2147,6 +2157,10 @@ bool CopyAuctionReportBuyerDebugModeConfigFromIdlToMojo(
       !input.hasAuctionReportBuyerDebugModeConfig()) {
     return true;
   }
+
+  UseCounter::Count(
+      execution_context,
+      blink::WebFeature::kFledgeAuctionReportBuyerDebugModeConfig);
 
   const AuctionReportBuyerDebugModeConfig* debug_mode_config =
       input.auctionReportBuyerDebugModeConfig();
@@ -2365,7 +2379,7 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
     bool is_top_level,
     uint32_t nested_pos,
     ScriptState& script_state,
-    const ExecutionContext& context,
+    ExecutionContext& context,
     ExceptionState& exception_state,
     const ResourceFetcher& resource_fetcher,
     const AuctionAdConfig& config) {
@@ -2405,12 +2419,12 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                             config, *mojo_config) ||
       !CopyPerBuyerPrioritySignalsFromIdlToMojo(exception_state, config,
                                                 *mojo_config) ||
-      !CopyAuctionReportBuyerKeysFromIdlToMojo(exception_state, config,
+      !CopyAuctionReportBuyerKeysFromIdlToMojo(context, exception_state, config,
                                                *mojo_config) ||
-      !CopyAuctionReportBuyersFromIdlToMojo(exception_state, config,
+      !CopyAuctionReportBuyersFromIdlToMojo(context, exception_state, config,
                                             *mojo_config) ||
       !CopyAuctionReportBuyerDebugModeConfigFromIdlToMojo(
-          exception_state, config, *mojo_config) ||
+          context, exception_state, config, *mojo_config) ||
       !CopyRequiredSellerSignalsFromIdlToMojo(context, exception_state, config,
                                               *mojo_config) ||
       !CopyRequestedSizeFromIdlToMojo(context, exception_state, config,
