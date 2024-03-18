@@ -84,7 +84,7 @@ using fixed_flat_set = base::flat_set<Key, Compare, std::array<const Key, N>>;
 //   constexpr auto kSet = base::MakeFixedFlatSet<std::string_view>(
 //       base::sorted_unique, {"bar", "baz", "foo", "qux"});
 template <class Key, size_t N, class Compare = std::less<>>
-constexpr fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
+consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
     sorted_unique_t,
     std::common_type_t<Key> (&&data)[N],
     const Compare& comp = Compare()) {
@@ -111,8 +111,8 @@ constexpr fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
 // Note: Wrapping `Key` in `std::common_type_t` below requires callers to
 // explicitly specify `Key`, which is desired here.
 template <class Key, size_t N, class Compare = std::less<>>
-constexpr fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
-    std::common_type_t<Key>(&&data)[N],
+consteval fixed_flat_set<Key, N, Compare> MakeFixedFlatSet(
+    std::common_type_t<Key> (&&data)[N],
     const Compare& comp = Compare()) {
   std::sort(data, data + N, comp);
   return MakeFixedFlatSet<Key>(sorted_unique, std::move(data), comp);

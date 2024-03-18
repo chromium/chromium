@@ -28,10 +28,4 @@ TEST(FixedFlatSetTest, MakeFixedFlatSet_UnsortedInput) {
   EXPECT_THAT(kSet, ::testing::ElementsAre("bar", "baz", "foo"));
 }
 
-// Verifies that passing repeated keys to MakeFixedFlatSet results in a CHECK
-// failure.
-TEST(FixedFlatSetTest, RepeatedKeys) {
-  EXPECT_CHECK_DEATH(MakeFixedFlatSet<int>({1, 2, 3, 1}));
-}
-
 }  // namespace base
