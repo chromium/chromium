@@ -1111,24 +1111,17 @@ void X11Window::SetDecorationInsets(const gfx::Insets* insets_px) {
     return;
   }
 
-  // For a window in maximised or minimised state, insets should be re-set to
-  // zero.
-  // On the other hand, non-zero insets should be set when the window is being
-  // initialised and has unknown state, otherwise the bounds will be
-  // unnecessarily inflated at later steps.
-  // See https://crbug.com/1281211 and https://crbug.com/1287212 for details.
-  if (GetPlatformWindowState() == PlatformWindowState::kNormal ||
-      GetPlatformWindowState() == PlatformWindowState::kUnknown) {
-    connection_->SetArrayProperty(
-        xwindow_, atom, x11::Atom::CARDINAL,
-        std::vector<uint32_t>{static_cast<uint32_t>(insets_px->left()),
-                              static_cast<uint32_t>(insets_px->right()),
-                              static_cast<uint32_t>(insets_px->top()),
-                              static_cast<uint32_t>(insets_px->bottom())});
-  } else {
-    connection_->SetArrayProperty(xwindow_, atom, x11::Atom::CARDINAL,
-                                  std::vector<uint32_t>({0, 0, 0, 0}));
-  }
+  // Insets must be zero when the window state is not normal nor unknown.
+  CHECK(GetPlatformWindowState() == PlatformWindowState::kNormal ||
+        GetPlatformWindowState() == PlatformWindowState::kUnknown ||
+        *insets_px == gfx::Insets(0));
+
+  connection_->SetArrayProperty(
+      xwindow_, atom, x11::Atom::CARDINAL,
+      std::vector<uint32_t>{static_cast<uint32_t>(insets_px->left()),
+                            static_cast<uint32_t>(insets_px->right()),
+                            static_cast<uint32_t>(insets_px->top()),
+                            static_cast<uint32_t>(insets_px->bottom())});
 }
 
 void X11Window::SetOpaqueRegion(
