@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Суурилуулсан гар</translation>
 <translation id="6417265370957905582">Google туслах</translation>
 <translation id="6423239382391657905">VPN-г нээх</translation>
+<translation id="6438073885402882007">Энэ нь зөвшөөрөлтэй системийн үйлчилгээнүүдэд таны байршлыг ашиглахыг зөвшөөрдөг. Байршил нь Wi-Fi, мобайл сүлжээ болон мэдрэгчид зэрэг эх сурвалжийг таны төхөөрөмжийн байршлыг тооцоолоход ашиглаж магадгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Сул (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Бүртгэлийн тохиргоо хэсэгт очих</translation>
 <translation id="6462978824459367242">APN нэмэх товчлуурыг одоо идэвхжүүлсэн</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6647510110698214773">Шифрлэлтийн алгоритм</translation>
 <translation id="6650062777702288430">Кана/үсэг тоон шилжүүлэгч</translation>
+<translation id="6657240842932274095">Системийн үйлчилгээнүүдэд таны байршлыг ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6659594942844771486">Таб</translation>
 <translation id="66621959568103627">шүрний ягаан</translation>

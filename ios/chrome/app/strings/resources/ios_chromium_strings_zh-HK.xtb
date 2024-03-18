@@ -117,6 +117,7 @@
 <translation id="4195557071150719219">查看 Chromium 最近開啟的分頁</translation>
 <translation id="4200712796753248893">在 iOS 上使用「Chromium 操作」</translation>
 <translation id="420541179527342563">在 iPad 上關閉「封鎖模式」，就能在 Chromium 中停用此模式。</translation>
+<translation id="427331839909790668">如果想讓 Chromium 和其他 Google 服務運用彼此的資料，為你提供貼近個人需求的體驗，請連結 Chromium 和其他 Google 服務</translation>
 <translation id="4408912345039114853">執行 Chromium「安全檢查」</translation>
 <translation id="4432744876818348753">登入以充分運用 Chromium 的所有功能。</translation>
 <translation id="4445228361214254027">你的機構已關閉在 Google 帳戶中使用及儲存 Chromium 資料的功能。新書籤、密碼等資料只會儲存在此裝置上。</translation>
@@ -218,6 +219,7 @@
 <translation id="6852799557929001644">在此裝置的其他應用程式中使用你的 Chromium 密碼和其他資料。</translation>
 <translation id="6887138405044152640">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chromium。</translation>
 <translation id="6911341667534646387">繼續使用 Google 帳戶中的 Chromium 資料</translation>
+<translation id="7002548535535009764">如想獲得最貼近個人需求的體驗，請在「<ph name="FEATURE_NAME_1" />」和「<ph name="FEATURE_NAME_2" />」中加入 Chromium</translation>
 <translation id="7006920032187763988">您可在 iPad 上的其他應用程式使用您儲存到「密碼管理工具」的密碼。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7045244423563602563">自訂屬於您的 Chromium</translation>

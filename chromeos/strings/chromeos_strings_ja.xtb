@@ -408,6 +408,7 @@
 <translation id="3486220673238053218">定義</translation>
 <translation id="3488065109653206955">一部有効</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" />色調の<ph name="OFFICE_STYLE" />オフィス</translation>
+<translation id="3493187369049186498">お使いの Chromebook で測定されたデータ使用量です。測定結果はプロバイダのデータとは異なる場合があります。</translation>
 <translation id="3502426834823382181">すべてのアプリを表示</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />パフォーマンス追跡データ<ph name="END_LINK1" />を送信する</translation>
 <translation id="3517001332549868749">ChromeOS の更新</translation>
@@ -467,6 +468,7 @@
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
 <translation id="3877066159641251281">翻訳を聞く</translation>
 <translation id="3885327323343477505">スクリーン セーバーを変更</translation>
+<translation id="3889914174935857450">リセット日</translation>
 <translation id="391412459402535266">デバイスをテストできません。テストするにはノートパソコン モードに切り替えます。</translation>
 <translation id="3916998944874125962">スクリーンショットを撮る</translation>
 <translation id="3923184630988645767">データ使用</translation>
@@ -855,6 +857,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">利用可能なスキャナがありません</translation>
 <translation id="6232017090690406397">バッテリー</translation>
+<translation id="6234024205316847054">概要を表示</translation>
 <translation id="6235460611964961764">データ使用量を手動でリセットする</translation>
 <translation id="6243280677745499710">現在設定されている壁紙</translation>
 <translation id="6250316632541035980">ベーコンと卵</translation>
@@ -894,6 +897,7 @@
 <translation id="6412715219990689313">デバイス内蔵キーボード</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">システム サービスによる位置情報の使用を許可するかどうかを指定します。デバイスの位置情報の特定には、Wi-Fi、モバイル ネットワーク、センサーなどのソースが使用される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">弱い（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="6447630859861661624">アカウント設定に移動</translation>
 <translation id="6462978824459367242">[APN を追加] ボタンが有効になりました</translation>
@@ -932,6 +936,7 @@
 <translation id="6643016212128521049">削除</translation>
 <translation id="6647510110698214773">暗号化アルゴリズム</translation>
 <translation id="6650062777702288430">かなと英数字の切り替え</translation>
+<translation id="6657240842932274095">システム サービスによる位置情報の使用を許可しますか？</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6659594942844771486">タブ</translation>
 <translation id="66621959568103627">コーラルピンク</translation>
@@ -1005,6 +1010,7 @@
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> 限定のアートワークを選択します</translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7119389851461848805">電源</translation>
+<translation id="7129287270910503851">毎月この日にデータ使用量がリセットされます</translation>
 <translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7135814714616751706">ショートカットの検索</translation>
@@ -1243,6 +1249,7 @@
 <translation id="8508640263392900755">APN の詳細</translation>
 <translation id="8522687886059337719">新しい<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁紙<ph name="END_LINK_WALLPAPER_SUBPAGE" />と<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />スクリーン セーバー<ph name="END_LINK_SCREENSAVER_SUBPAGE" />にアクセスできるようになりました</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8538236298648811558">Google AI を搭載</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>

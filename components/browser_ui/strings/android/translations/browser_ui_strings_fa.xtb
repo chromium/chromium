@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">بریده‌دان</translation>
 <translation id="2597457036804169544">زمینه تیره برای سایت‌ها استفاده نشود</translation>
 <translation id="2606760465469169465">تأیید خودکار</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">جاوااسکریپت را برای سایتی خاص مجاز کنید.</translation>
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="2677748264148917807">خروج</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">محتوای محافظت‌شده</translation>
 <translation id="662080504995468778">ماندن</translation>
 <translation id="6653342741369270081">برای خروج از حالت تمام‌صفحه، دکمه برگشت را فشار دهید.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{پنهان کردن ادامه دادن با این برگه}one{پنهان کردن ادامه دادن با این برگه}other{پنهان کردن ادامه دادن با این برگه‌ها}}</translation>
 <translation id="6689172468748959065">عکس‌های نمایه</translation>
 <translation id="6697925417670533197">بارگیری‌های فعال</translation>
 <translation id="6722828510648505498">پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت مسدود می‌شود.</translation>

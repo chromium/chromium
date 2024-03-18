@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{‫<ph name="NUM_WEEKS_ONE" /> هفته پیش ایجاد شد}one{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}other{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}}</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{‫<ph name="NUM_YEARS_ONE" /> سال پیش ایجاد شد}one{‫<ph name="NUM_YEARS_MANY" /> سال پیش ایجاد شد}other{‫<ph name="NUM_YEARS_MANY" /> سال پیش ایجاد شد}}</translation>
 <translation id="1155815720264022949">می‌خواهید برگه‌های قدیمی را ببندید؟</translation>
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="1215127405478249895">مرور برگه‌ها</translation>
 <translation id="125153950246128346">برای دیدن برگه دیگر ضربه بزنید</translation>
 <translation id="1322824555808364080">دعوت از افراد</translation>
 <translation id="1326271443836399892">تنظیمات فعلی مرتب کردن را مرور کنید.</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> دقیقه پیش ایجاد شد}one{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش ایجاد شد}other{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش ایجاد شد}}</translation>
 <translation id="1499635324672558517">همه «برگه‌های ناشناس» بسته شود؟</translation>
 <translation id="1555130319947370107">آبی</translation>
 <translation id="161042844686301425">فیروزه‌ای</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">ایجاد گروه</translation>
 <translation id="2662028055331606429">رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">دیدن سایت</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{‫<ph name="NUM_HOURS_ONE" /> ساعت پیش ایجاد شد}one{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}other{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}}</translation>
 <translation id="2801787514987684416">اطلاعات فروشگاه نمایش داده شود؟</translation>
 <translation id="2928243913527329289">‏Google | درباره این فروشگاه</translation>
 <translation id="2977480621796371840">برداشتن از گروه</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">پیگیری قیمت در برگه‌ها</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{گروه‌بندی برگه}one{گروه‌بندی برگه}other{گروه‌بندی برگه‌ها}}</translation>
 <translation id="3996880007329611795">دریافت اعلان</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{‫<ph name="NUM_DAYS_ONE" /> روز پیش ایجاد شد}one{‫<ph name="NUM_DAYS_MANY" /> روز پیش ایجاد شد}other{‫<ph name="NUM_DAYS_MANY" /> روز پیش ایجاد شد}}</translation>
 <translation id="4133493477912226187">به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
 <translation id="4159784952369912983">بنفش</translation>
 <translation id="4212246570487010370">ادامه مرور</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ازهم بازکردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> برگه.}one{ازهم بازکردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}other{ازهم بازکردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
 <translation id="427987768447457592">گروه برگه جدید</translation>
 <translation id="4648718555153979859">برگه‌هایتان اینجا باهم گروه‌بندی می‌شوند</translation>
+<translation id="4686942373615810936">همین الآن ایجاد شد</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="4870911314065352661">همه برگه‌ها بسته شود؟</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">پوشه جدید - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">قیمت کمتر</translation>
 <translation id="8730999928494395583">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماه پیش ایجاد شد}one{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}other{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}}</translation>
 <translation id="8820741577754260431">دیدن کاهش قیمت در برگه‌ها</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{ازهم بازکردن گروه برگه با <ph name="TABS_COUNT_ONE" /> برگه.}one{ازهم بازکردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}other{ازهم بازکردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
 <translation id="9090098097337832354">اطلاعات مربوط به این فروشگاه بسته شد</translation>

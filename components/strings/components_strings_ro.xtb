@@ -95,6 +95,7 @@
 <translation id="1175364870820465910">&amp;Printează...</translation>
 <translation id="1175393348063009671">Foto (mat)</translation>
 <translation id="1175875016430184367">Capsare triplă în dreapta</translation>
+<translation id="1176123604678140687">Luna expirării</translation>
 <translation id="1177548198167638471">Nu mai întreba</translation>
 <translation id="1177863135347784049">Personalizează</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
@@ -485,6 +486,7 @@
 <translation id="1874224422119691492">Poți modifica dacă folosești blocarea ecranului pentru completarea parolelor în <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Tava foto</translation>
 <translation id="1875512691959384712">Formulare Google</translation>
+<translation id="1876116428946561107">Nu ai nicio adresă salvată. Adaugă o adresă pentru a o folosi în Chrome.</translation>
 <translation id="1876399092304384674">În funcție de dată</translation>
 <translation id="187918866476621466">Deschide paginile de pornire</translation>
 <translation id="1880901968112404879">Pentru a plăti mai rapid data viitoare, salvează cardul, codul de securitate și adresa de facturare în Contul Google</translation>
@@ -615,6 +617,7 @@
 <translation id="2126374524350484896">PDF Producer:</translation>
 <translation id="2130448033692577677">Șabloanele specificate nu pot fi aplicate, deoarece politica DnsOverHttpsMode nu este setată.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">Acestea apar în ordine aleatorie. Poți să modifici setarea prestabilită oricând.</translation>
 <translation id="2137891579555018930">Se așteaptă permisiunea…</translation>
 <translation id="213826338245044447">Marcaje mobile</translation>
 <translation id="2141000681034340397">Editează textul introdus</translation>
@@ -643,6 +646,7 @@
 <translation id="2170417331417184438">Cardul a fost salvat numai pe dispozitiv</translation>
 <translation id="2172089022819052306">Repararea și întreținerea vehiculelor</translation>
 <translation id="2175630235841878061">Fișierele de peste 100 MB nu sunt disponibile pentru descărcare</translation>
+<translation id="2176198174348007293">Folosește camerele (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Salvează adresa în cont</translation>
 <translation id="2178665390943006934">Butonul Actualizează Chrome, activează pentru a actualiza Chrome din setările Chrome</translation>
 <translation id="2181821976797666341">Politici</translation>
@@ -1304,6 +1308,7 @@
 <translation id="3507869775212388416">Locuri de muncă în domeniul juridic</translation>
 <translation id="3507936815618196901">să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video</translation>
 <translation id="3512163584740124171">Această politică este ignorată deoarece o altă politică din același grup de politici are prioritate ridicată.</translation>
+<translation id="351522771072578657">Te afli într-un meniu</translation>
 <translation id="3515972145999192222">Organizația ta a blocat aplicația <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, deoarece încalcă o politică. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Gestionarea mai multor obiecte</translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
@@ -1364,6 +1369,7 @@
 <translation id="3620239073311576716">Uniforme și îmbrăcăminte pentru lucru</translation>
 <translation id="36224234498066874">Șterge datele de navigare...</translation>
 <translation id="362276910939193118">Afișează întregul istoric</translation>
+<translation id="3623041590998910684">Pentru a folosi camera foto, permite accesul browserului Chrome în <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Filme romantice</translation>
 <translation id="3624292976554877583">Etichete (mat)</translation>
 <translation id="3628905806504633297">{0,plural, =1{Politica implementată de administrator nu recomandă să transferi acest fișier către <ph name="DESTINATION_NAME" />}few{Politica implementată de administrator nu recomandă să transferi aceste fișiere către <ph name="DESTINATION_NAME" />}other{Politica implementată de administrator nu recomandă să transferi aceste fișiere către <ph name="DESTINATION_NAME" />}}</translation>
@@ -2050,6 +2056,7 @@
 <translation id="4958444002117714549">Extindeți lista</translation>
 <translation id="4960068118612257147">Poți face modificări în setările de confidențialitate a anunțurilor din Chrome</translation>
 <translation id="4960203958361543136">Alege motorul de căutare</translation>
+<translation id="4961708452830821006">Pentru a folosi microfonul, permite accesul browserului Chrome în <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Amenajări exterioare</translation>
 <translation id="4967366744630699583">Editează adresa</translation>
 <translation id="4968522289500246572">Aplicația este creată pentru dispozitive mobile și poate să nu fie redimensionată corect. Poate să aibă erori sau să repornească.</translation>
@@ -2968,6 +2975,7 @@
 <translation id="677257480647123231">Siguranța pe internet a copiilor</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">Managerul de parole Google are nevoie de acces la MacOS Keychain</translation>
+<translation id="6782656837469339439">Anul expirării</translation>
 <translation id="6785990323398321538">Poți să schimbi oricând motorul de căutare din setările Chrome.</translation>
 <translation id="6786145470008421571">Plic de 6 x 9 inchi</translation>
 <translation id="67862343314499040">Violet</translation>
@@ -3118,6 +3126,7 @@
 <translation id="7064443976734085921">Mașini compacte</translation>
 <translation id="7064851114919012435">Informații de contact</translation>
 <translation id="7067633076996245366">Soul și R&amp;B</translation>
+<translation id="7070144569727915108">setări de sistem</translation>
 <translation id="70705239631109039">Conexiunea nu este complet sigură</translation>
 <translation id="7075452647191940183">Solicitarea este prea mare</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3145,6 +3154,7 @@
 <translation id="7111012039238467737">(Valid)</translation>
 <translation id="7111507312244504964">Inspecții și evaluări ale proprietăților</translation>
 <translation id="7112327784801341716">Nu apar informațiile curente? Contactează-ți banca pentru a le actualiza.</translation>
+<translation id="7116334367957017155">Nu ai nicio adresă salvată. Adaugă o adresă ca să o folosești în toate produsele Google.</translation>
 <translation id="7118618213916969306">Caută URL-ul din clipboard, <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">Drame TV</translation>
 <translation id="7119371694555167493">Copierea a expirat</translation>
@@ -3590,6 +3600,7 @@ Detalii suplimentare:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a afla despre funcțiile Chrome</translation>
 <translation id="7949135979217012031">Programe antivirus și malware</translation>
 <translation id="7950027195171824198">Gestionează-ți preferințele privind cookie-urile din setările Chrome</translation>
+<translation id="7950440490184876634">Folosește microfoanele (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 de biți)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Comanda rapidă trebuie completată</translation>
@@ -3749,6 +3760,7 @@ Detalii suplimentare:
 <translation id="8249296373107784235">Abandonați</translation>
 <translation id="824968735947741546">Se traduce din <ph name="SOURCE" /> (detectată automat) în <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Adresa se salvează momentan pe acest dispozitiv. Pentru a o folosi în toate produsele Google, salveaz-o în Contul Google, <ph name="ACCOUNT" />.</translation>
+<translation id="8251493595871259082">Completează adresa introducând mai puțin text</translation>
 <translation id="8252991034201168845">Butonul Gestionează setările de accesibilitate, apasă pe Enter pentru a personaliza instrumentele de accesibilitate în setările sistemului de operare Chrome</translation>
 <translation id="8253091569723639551">Adresa de facturare este obligatorie</translation>
 <translation id="8257387598443225809">Aplicația este creată pentru dispozitive mobile</translation>
@@ -4137,6 +4149,7 @@ Detalii suplimentare:
 <translation id="9014705027639070815">Site-urile pe care le accesezi pot solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor lor. Chrome le permite site-urilor să colecteze tipuri de date limitate, de exemplu, dacă ai făcut o achiziție după ce ai accesat un site.</translation>
 <translation id="9018120810758822233">Introdu codul de securitate pentru <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-mail</translation>
+<translation id="90196294733273307">S-a afișat caseta de dialog cu detaliile cardului de credit</translation>
 <translation id="9020542370529661692">Această pagină a fost tradusă în <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a trimite fila prin distribuirea linkului, crearea unui cod QR, proiectare și altele</translation>

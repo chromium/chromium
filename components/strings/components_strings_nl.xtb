@@ -95,6 +95,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1175364870820465910">&amp;Afdrukken...</translation>
 <translation id="1175393348063009671">Foto (mat)</translation>
 <translation id="1175875016430184367">Drie nietjes rechts</translation>
+<translation id="1176123604678140687">Vervalmaand</translation>
 <translation id="1177548198167638471">Niet meer vragen</translation>
 <translation id="1177863135347784049">Aangepast</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
@@ -485,6 +486,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1874224422119691492">Je kunt in <ph name="SETTINGS" /> wijzigen of je je schermvergrendeling gebruikt om wachtwoorden in te vullen</translation>
 <translation id="1875025161375567525">Fotolade</translation>
 <translation id="1875512691959384712">Google Formulieren</translation>
+<translation id="1876116428946561107">Je hebt geen adressen opgeslagen. Voeg een adres toe om het te gebruiken in Chrome.</translation>
 <translation id="1876399092304384674">Op datum</translation>
 <translation id="187918866476621466">Startpagina's openen</translation>
 <translation id="1880901968112404879">Sla je kaart, versleutelde beveiligingscode en factuuradres op in je Google-account, zodat je de volgende keer sneller kunt betalen</translation>
@@ -615,6 +617,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2126374524350484896">Pdf gemaakt met:</translation>
 <translation id="2130448033692577677">De gespecificeerde templates worden misschien niet toegepast omdat het beleid DnsOverHttpsMode niet is ingesteld.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">Deze worden in willekeurige volgorde getoond. Je kunt de standaardwaarde altijd wijzigen.</translation>
 <translation id="2137891579555018930">Wachten op toestemming...</translation>
 <translation id="213826338245044447">Mobiele bookmarks</translation>
 <translation id="2141000681034340397">Je invoer bewerken</translation>
@@ -643,6 +646,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2170417331417184438">Kaart alleen opgeslagen op het apparaat</translation>
 <translation id="2172089022819052306">Voertuigreparatie en -onderhoud</translation>
 <translation id="2175630235841878061">Je kunt bestanden groter dan 100 MB niet downloaden</translation>
+<translation id="2176198174348007293">Je camera's gebruiken (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Adres opslaan in account</translation>
 <translation id="2178665390943006934">Knop Chrome updaten. Activeer deze om Chrome te updaten vanuit de Chrome-instellingen.</translation>
 <translation id="2181821976797666341">Beleid</translation>
@@ -1300,6 +1304,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3507869775212388416">Juridische banen</translation>
 <translation id="3507936815618196901">Een 3D-kaart van je omgeving maken en de camerapositie volgen</translation>
 <translation id="3512163584740124171">Dit beleid wordt genegeerd omdat een ander beleid in dezelfde beleidsgroep een hogere prioriteit heeft.</translation>
+<translation id="351522771072578657">Je bevindt je op dit moment in een menu</translation>
 <translation id="3515972145999192222">Je organisatie heeft <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> geblokkeerd omdat deze een beleid schendt. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Verwerking van meerdere objecten</translation>
 <translation id="3525130752944427905">10 x 14 inch</translation>
@@ -1360,6 +1365,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3620239073311576716">Uniformen en werkkleding</translation>
 <translation id="36224234498066874">Browsegegevens wissen</translation>
 <translation id="362276910939193118">Volledige geschiedenis bekijken</translation>
+<translation id="3623041590998910684">Geef Chrome toegang via <ph name="LINK" /> om je camera te gebruiken.</translation>
 <translation id="3623398832322170566">Romantische films</translation>
 <translation id="3624292976554877583">Labels (mat)</translation>
 <translation id="3628905806504633297">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand over te zetten naar <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden over te zetten naar <ph name="DESTINATION_NAME" />}}</translation>
@@ -2045,6 +2051,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4958444002117714549">Lijst uitvouwen</translation>
 <translation id="4960068118612257147">Je kunt wijzigingen aanbrengen in de Chrome-instellingen voor advertentieprivacy.</translation>
 <translation id="4960203958361543136">Je zoekmachine kiezen</translation>
+<translation id="4961708452830821006">Als je je microfoon wilt gebruiken, geef je Chrome toegang via <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Landschapsontwerp</translation>
 <translation id="4967366744630699583">Adres bewerken</translation>
 <translation id="4968522289500246572">Deze app is ontworpen voor mobiel en het formaat wordt misschien niet goed aangepast. De app kan problemen ondervinden of opnieuw opstarten.</translation>
@@ -2962,6 +2969,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="677257480647123231">Internetveiligheid van kinderen</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">Google Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
+<translation id="6782656837469339439">Vervaljaar</translation>
 <translation id="6785990323398321538">Je kunt je zoekmachine op elk moment wijzigen via de instellingen van Chrome.</translation>
 <translation id="6786145470008421571">Envelop 6 x 9 inch</translation>
 <translation id="67862343314499040">Violet</translation>
@@ -3112,6 +3120,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7064443976734085921">Compacte auto's</translation>
 <translation id="7064851114919012435">Contactgegevens</translation>
 <translation id="7067633076996245366">Soul en R&amp;B</translation>
+<translation id="7070144569727915108">systeeminstellingen</translation>
 <translation id="70705239631109039">Je verbinding is niet volledig beveiligd</translation>
 <translation id="7075452647191940183">Verzoek is te groot</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3139,6 +3148,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7111012039238467737">(Geldig)</translation>
 <translation id="7111507312244504964">Inspecties en taxatie van vastgoed</translation>
 <translation id="7112327784801341716">Is je informatie niet actueel? Neem contact op met je bank om deze te updaten.</translation>
+<translation id="7116334367957017155">Je hebt geen adressen opgeslagen. Voeg een adres toe om het in meerdere Google-producten te gebruiken.</translation>
 <translation id="7118618213916969306">Zoeken naar klembord-URL, <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">Tv-drama's</translation>
 <translation id="7119371694555167493">Time-out bij kopiëren</translation>
@@ -3584,6 +3594,7 @@ Aanvullende informatie:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter voor meer informatie over Chrome-functies</translation>
 <translation id="7949135979217012031">Antivirus en malware</translation>
 <translation id="7950027195171824198">Je cookievoorkeuren beheren in de Chrome-instellingen</translation>
+<translation id="7950440490184876634">Je microfoons gebruiken (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bits)</translation>
 <translation id="7952192831285741665">Europese EDP</translation>
 <translation id="7952250633095257243">De snelkoppeling mag niet leeg zijn</translation>
@@ -3743,6 +3754,7 @@ Aanvullende informatie:
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (automatisch gedetecteerd) vertalen naar het <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Dit adres is momenteel opgeslagen op dit apparaat. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="ACCOUNT" />).</translation>
+<translation id="8251493595871259082">Vul je adres in met minder typen</translation>
 <translation id="8252991034201168845">De knop Toegankelijkheidsinstellingen beheren, druk op Enter om je toegankelijkheidstools te personaliseren in de Chrome OS-instellingen</translation>
 <translation id="8253091569723639551">Factuuradres vereist</translation>
 <translation id="8257387598443225809">Deze app is ontworpen voor mobiel</translation>
@@ -4130,6 +4142,7 @@ Aanvullende informatie:
 <translation id="9014705027639070815">Sites die je bezoekt, kunnen Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites beperkte typen gegevens verzamelen, bijvoorbeeld informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="9018120810758822233">Geef je beveiligingscode voor <ph name="CREDIT_CARD" /> op</translation>
 <translation id="901834265349196618">e-mail</translation>
+<translation id="90196294733273307">Dialoogvenster met creditcardgegevens is getoond</translation>
 <translation id="9020542370529661692">Deze pagina is vertaald naar het <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om dit tabblad te delen door bijvoorbeeld de link te delen, een QR-code te maken en te casten</translation>

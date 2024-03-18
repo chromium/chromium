@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Sisseehitatud klaviatuur</translation>
 <translation id="6417265370957905582">Google'i assistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">See võimaldab süsteemiteenustel teie asukohta kasutada. Funktsioon Asukoht võib teie seadme asukoha tuvastamiseks kasutada selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Nõrk (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ava konto seaded</translation>
 <translation id="6462978824459367242">APN-i nupp Lisa on nüüd lubatud</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Tühjenda</translation>
 <translation id="6647510110698214773">Krüpteerimise algoritm</translation>
 <translation id="6650062777702288430">Kana/tärgilüliti</translation>
+<translation id="6657240842932274095">Kas lubada süsteemiteenustel teie asukohta kasutada?</translation>
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6659594942844771486">Vaheleht</translation>
 <translation id="66621959568103627">korallroosades toonides</translation>

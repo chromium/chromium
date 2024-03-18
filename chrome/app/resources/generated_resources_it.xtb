@@ -1545,6 +1545,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2147151613919729065">Per cancellare la cronologia della modalità ospite, chiudi tutte le finestre ospite.</translation>
 <translation id="2147218225094845757">Nascondi riquadro laterale</translation>
 <translation id="2147282432401652483">comando</translation>
+<translation id="2147402320887035428">Questo file potrebbe essere un malware.<ph name="LINE_BREAK" />Google Navigazione sicura sta controllando se il file non è sicuro. In genere l'analisi richiede alcuni secondi.</translation>
 <translation id="2148219725039824548">Errore durante il montaggio della condivisione. Impossibile trovare la condivisione specificata sulla rete.</translation>
 <translation id="2148756636027685713">Formattazione terminata</translation>
 <translation id="2148892889047469596">Trasmetti scheda</translation>
@@ -2732,6 +2733,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3025174326431589540">{COUNT,plural, =0{Nessuna password salvata}=1{Sono state controllate le password di {COUNT} sito}other{Sono state controllate le password di {COUNT} siti e app}}</translation>
 <translation id="3027296729579831126">Attiva Condivisione nelle vicinanze</translation>
 <translation id="3027644380269727216">In base alla tua attività svolta su un sito. Questa impostazione è attiva.</translation>
+<translation id="3028371505549235127">Anziché inserire la password del tuo Account Google per accedere, puoi creare una password <ph name="DEVICE_TYPE" /> per questo dispositivo</translation>
 <translation id="3028445648481691885">Download annullato</translation>
 <translation id="3029466929721441205">Mostrare strumenti stilo nella barra delle app</translation>
 <translation id="3029808567601324798">Tempo di blocco</translation>
@@ -6023,6 +6025,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5634446357546764049">Visualizza ricordi dei tuoi ultimi viaggi e altro ancora</translation>
 <translation id="5635312199252507107">Consenti su siti specifici</translation>
 <translation id="5636012309446422">Vuoi rimuovere <ph name="DEVICE" /> da <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Altre azioni per il PIN</translation>
 <translation id="5636996382092289526">Per poter utilizzare la rete <ph name="NETWORK_ID" />, potrebbe essere necessario <ph name="LINK_START" />visitare la pagina di accesso della rete<ph name="LINK_END" />, che si aprirà automaticamente tra alcuni secondi. In caso contrario, non è possibile utilizzare la rete.</translation>
 <translation id="5637476008227280525">Attivazione dati mobili</translation>
 <translation id="5638170200695981015">Scegli "Apri nell'editor di base" per utilizzare opzioni di visualizzazione e modifica limitate.</translation>

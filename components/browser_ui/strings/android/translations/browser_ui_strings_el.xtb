@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Πρόχειρο</translation>
 <translation id="2597457036804169544">Να μην εφαρμόζεται σκούρο θέμα σε ιστοτόπους</translation>
 <translation id="2606760465469169465">Αυτόματη επαλήθευση</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Να επιτρέπεται η JavaScript για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Προστατ. περιεχ.</translation>
 <translation id="662080504995468778">Παραμονή</translation>
 <translation id="6653342741369270081">Πατήστε το κουμπί Πίσω για έξοδο από την πλήρη οθόνη.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Απόκρυψη της επιλογής Συνέχεια με αυτή την καρτέλα}other{Απόκρυψη της επιλογής Συνέχεια με αυτές τις καρτέλες}}</translation>
 <translation id="6689172468748959065">Φωτογραφίες προφίλ</translation>
 <translation id="6697925417670533197">Ενεργές λήψεις</translation>
 <translation id="6722828510648505498">Αποκλείστε τις προτροπές σύνδεσης από υπηρεσίες ταυτότητας.</translation>

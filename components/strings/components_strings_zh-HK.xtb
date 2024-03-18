@@ -95,6 +95,7 @@
 <translation id="1175364870820465910">列印(&amp;P)…</translation>
 <translation id="1175393348063009671">相紙 (啞面)</translation>
 <translation id="1175875016430184367">三釘 (右側)</translation>
+<translation id="1176123604678140687">到期月份</translation>
 <translation id="1177548198167638471">不要再詢問</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1178581264944972037">暫停</translation>
@@ -485,6 +486,7 @@
 <translation id="1874224422119691492">您可在「<ph name="SETTINGS" />」中變更是否要使用螢幕鎖定功能填入密碼</translation>
 <translation id="1875025161375567525">相片匣</translation>
 <translation id="1875512691959384712">Google 表格</translation>
+<translation id="1876116428946561107">你尚未儲存任何地址。新增地址後，即可在 Chrome 中使用。</translation>
 <translation id="1876399092304384674">按日期分類</translation>
 <translation id="187918866476621466">開啟起始網頁</translation>
 <translation id="1880901968112404879">將付款卡、已加密的安全碼和帳單地址儲存至 Google 帳戶，下次就能更快完成付款程序</translation>
@@ -615,6 +617,7 @@
 <translation id="2126374524350484896">PDF 製作工具：</translation>
 <translation id="2130448033692577677">您並未設定 DnsOverHttpsMode 政策，因此系統無法套用您指定的範本。</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">系統採隨機方式排列，你隨時可以變更預設設定。</translation>
 <translation id="2137891579555018930">正在等待許可…</translation>
 <translation id="213826338245044447">流動版書籤</translation>
 <translation id="2141000681034340397">修改輸入內容</translation>
@@ -643,6 +646,7 @@
 <translation id="2170417331417184438">付款卡只會儲存至此裝置</translation>
 <translation id="2172089022819052306">汽車維修和保養</translation>
 <translation id="2175630235841878061">無法下載超過 100 MB 的檔案</translation>
+<translation id="2176198174348007293">使用攝影機 (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">將地址儲存在帳戶中</translation>
 <translation id="2178665390943006934">更新 Chrome 按鈕，啟動之後就可以透過 Chrome 設定更新 Chrome</translation>
 <translation id="2181821976797666341">政策</translation>
@@ -1303,6 +1307,7 @@
 <translation id="3507869775212388416">法律職位</translation>
 <translation id="3507936815618196901">建立您身處環境的 3D 地圖並追蹤攝錄機位置</translation>
 <translation id="3512163584740124171">由於相同政策群組中有其他政策的優先順序更高，因此系統已忽略此政策。</translation>
+<translation id="351522771072578657">目前位在選單上</translation>
 <translation id="3515972145999192222">由於 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 違反政策，因此已被您的機構封鎖。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">多物件處理</translation>
 <translation id="3525130752944427905">10 x 14 吋</translation>
@@ -1363,6 +1368,7 @@
 <translation id="3620239073311576716">制服及工作服</translation>
 <translation id="36224234498066874">清除瀏覽資料…</translation>
 <translation id="362276910939193118">顯示完整記錄</translation>
+<translation id="3623041590998910684">如要使用攝影機，請前往<ph name="LINK" />授予 Chrome 存取權。</translation>
 <translation id="3623398832322170566">愛情電影</translation>
 <translation id="3624292976554877583">標籤 (啞面)</translation>
 <translation id="3628905806504633297">{0,plural, =1{管理員政策不建議傳輸此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議傳輸這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
@@ -2049,6 +2055,7 @@
 <translation id="4958444002117714549">展開清單</translation>
 <translation id="4960068118612257147">你可前往 Chrome 廣告私隱設定作出變更</translation>
 <translation id="4960203958361543136">選擇搜尋引擎</translation>
+<translation id="4961708452830821006">如要使用麥克風，請前往<ph name="LINK" />授予 Chrome 存取權。</translation>
 <translation id="4963413887558778009">園景設計</translation>
 <translation id="4967366744630699583">編輯地址</translation>
 <translation id="4968522289500246572">此應用程式專為流動裝置而設，可能無法正常調整大小。應用程式可能會發生問題或重新啟動。</translation>
@@ -2967,6 +2974,7 @@
 <translation id="677257480647123231">兒童互聯網安全</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">「Google 密碼管理工具」需要存取「MacOS 鑰匙圈」</translation>
+<translation id="6782656837469339439">到期年份</translation>
 <translation id="6785990323398321538">你可在 Chrome 設定中隨時變更搜尋引擎設定。</translation>
 <translation id="6786145470008421571">6 x 9 吋信封</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
@@ -3117,6 +3125,7 @@
 <translation id="7064443976734085921">小型車</translation>
 <translation id="7064851114919012435">聯絡人資訊</translation>
 <translation id="7067633076996245366">騷靈音樂和 R&amp;B</translation>
+<translation id="7070144569727915108">系統設定</translation>
 <translation id="70705239631109039">您的連線並非完全安全</translation>
 <translation id="7075452647191940183">要求過大</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3144,6 +3153,7 @@
 <translation id="7111012039238467737">(有效)</translation>
 <translation id="7111507312244504964">物業檢查和估值</translation>
 <translation id="7112327784801341716">目前的資料不正確嗎？請通知銀行更新。</translation>
+<translation id="7116334367957017155">你尚未儲存任何地址。只要新增地址，就能在各項 Google 產品中使用這項資訊。</translation>
 <translation id="7118618213916969306">搵剪貼簿網址 <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">電視劇</translation>
 <translation id="7119371694555167493">複製逾時</translation>
@@ -3589,6 +3599,7 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以了解 Chrome 嘅功能</translation>
 <translation id="7949135979217012031">防毒軟件和惡意軟件</translation>
 <translation id="7950027195171824198">在 Chrome 設定中管理 Cookie 偏好設定</translation>
+<translation id="7950440490184876634">使用麥克風 (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 位元)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">快速指令不可留空</translation>
@@ -3748,6 +3759,7 @@
 <translation id="8249296373107784235">取消</translation>
 <translation id="824968735947741546">正在將<ph name="SOURCE" /> (自動偵測) 的內容翻譯成<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">此地址目前已儲存在此裝置上。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="ACCOUNT" />)。</translation>
+<translation id="8251493595871259082">系統會自動填入地址，節省你打字的時間</translation>
 <translation id="8252991034201168845">管理無障礙設定按鈕，㩒一下 Enter 鍵就可以喺 Chrome OS 設定度個人化您嘅無障礙工具</translation>
 <translation id="8253091569723639551">必須提供帳單地址</translation>
 <translation id="8257387598443225809">此應用程式專為流動裝置而設</translation>
@@ -4135,6 +4147,7 @@
 <translation id="9014705027639070815">你瀏覽的網站可要求 Chrome 提供資料，協助網站評估廣告成效。Chrome 只允許網站收集特定類型的資料，例如使用者是否在瀏覽網站後購物。</translation>
 <translation id="9018120810758822233">請輸入 <ph name="CREDIT_CARD" /> 的安全碼</translation>
 <translation id="901834265349196618">電郵</translation>
+<translation id="90196294733273307">顯示信用卡資料的對話方塊</translation>
 <translation id="9020542370529661692">這個網頁內容已翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以透過分享連結、建立 QR 碼、投放之類嘅功能分享呢個分頁</translation>

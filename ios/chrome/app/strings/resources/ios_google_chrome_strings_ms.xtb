@@ -22,6 +22,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="1436059927646026729">Buka Tab Terbaharu Saya dalam Chrome</translation>
 <translation id="1449241544691504574">Tambahkan Penanda Halaman pada Chrome</translation>
 <translation id="1462727070346936664">Log masuk untuk memanfaatkan Chrome sepenuhnya.</translation>
+<translation id="1462833127986525564">Pautkan Chrome dengan perkhidmatan Google lain jika anda mahu pengalaman anda diperibadikan menggunakan data antara satu sama lain</translation>
 <translation id="1491435845014430217">Hidupkan “Kunci Tab Inkognito Apabila Anda Menutup Chrome”.</translation>
 <translation id="1493827051843127077">Tetapkan Chrome sebagai penyemak imbas lalai untuk menyegerakkan tab, kata laluan dan maklumat pembayaran anda pada semua peranti anda</translation>
 <translation id="1504372625950710826">Chrome tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
@@ -142,6 +143,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="4834499902900503484">Apabila anda log masuk ke Chrome, kata laluan yang anda simpan akan disimpan pada Google Account anda. Untuk mematikan ciri ini, <ph name="BEGIN_LINK" />akses tetapan<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Tidak disokong pada Chrome Beta</translation>
 <translation id="4840404732697892756">Google Password Manager boleh menyemak kata laluan anda apabila anda log masuk menggunakan Google Account anda.</translation>
+<translation id="4856636171409137183">Untuk mendapatkan pengalaman yang paling diperibadikan, sertakan Chrome dalam <ph name="FEATURE_NAME_1" /> dan <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome boleh membantu anda menjejaki pakej ini pada Halaman Tab Baharu.}other{Chrome boleh membantu anda menjejaki pakej ini pada Halaman Tab Baharu.}}</translation>
 <translation id="4903674399067644695">Kad ini menunjukkan cadangan tentang cara memanfaatkan Chrome sepenuhnya.</translation>
 <translation id="49200511069271369">Organisasi anda, <ph name="DOMAIN" />, mengurus akaun yang anda log masuk dan cara Chrome boleh digunakan. Pentadbir anda boleh menyediakan atau mengehadkan ciri tertentu.</translation>

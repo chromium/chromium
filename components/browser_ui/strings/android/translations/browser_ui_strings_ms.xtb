@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Papan Keratan</translation>
 <translation id="2597457036804169544">Jangan gunakan tema gelap pada laman</translation>
 <translation id="2606760465469169465">Sahkan secara automatik</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Benarkan JavaScript untuk tapak tertentu.</translation>
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Kandungan yang dilindungi</translation>
 <translation id="662080504995468778">Kekal di sini</translation>
 <translation id="6653342741369270081">Tekan butang kembali untuk keluar daripada skrin penuh.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Sembunyikan teruskan dengan tab ini}other{Sembunyikan teruskan dengan tab ini}}</translation>
 <translation id="6689172468748959065">Foto profil</translation>
 <translation id="6697925417670533197">Muat turun aktif</translation>
 <translation id="6722828510648505498">Sekat gesaan log masuk daripada perkhidmatan identiti.</translation>

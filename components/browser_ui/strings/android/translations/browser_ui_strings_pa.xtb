@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">ਕਲਿੱਪਬੋਰਡ</translation>
 <translation id="2597457036804169544">ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ ਲਾਗੂ ਨਾ ਕਰੋ</translation>
 <translation id="2606760465469169465">ਸਵੈ-ਪੁਸ਼ਟੀਕਰਨ</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">ਕਿਸੇ ਖ਼ਾਸ ਸਾਈਟ ਲਈ JavaScript ਨੂੰ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="2653659639078652383">ਪ੍ਰਸਤੁਤ ਕਰੋ</translation>
 <translation id="2677748264148917807">ਛੱਡੋ</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
 <translation id="662080504995468778">ਇੱਥੇ ਰੁਕੋ</translation>
 <translation id="6653342741369270081">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ ਪਿੱਛੇ ਜਾਓ ਬਟਨ ਨੂੰ ਦਬਾਓ।</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{'ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ' ਨੂੰ ਲੁਕਾਓ}one{'ਇਸ ਟੈਬ ਨਾਲ ਜਾਰੀ ਰੱਖੋ' ਨੂੰ ਲੁਕਾਓ}other{'ਇਨ੍ਹਾਂ ਟੈਬਾਂ ਨਾਲ ਜਾਰੀ ਰੱਖੋ' ਨੂੰ ਲੁਕਾਓ}}</translation>
 <translation id="6689172468748959065">ਪ੍ਰੋਫਾਈਲ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="6697925417670533197">ਕਿਰਿਆਸ਼ੀਲ ਡਾਊਨਲੋਡ</translation>
 <translation id="6722828510648505498">ਪਛਾਣ ਸੰਬੰਧੀ ਸੇਵਾਵਾਂ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਉਤਪ੍ਰੇਰਕਾਂ ਨੂੰ ਬਲਾਕ ਕਰੋ।</translation>

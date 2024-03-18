@@ -22,6 +22,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="1436059927646026729">A legutóbbi lap megnyitása a Chrome-ban</translation>
 <translation id="1449241544691504574">Könyvjelzők hozzáadása a Chrome-hoz</translation>
 <translation id="1462727070346936664">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chrome-ból.</translation>
+<translation id="1462833127986525564">Kapcsolja össze a Chrome-ot az egyéb Google-szolgáltatásokkal, ha szeretné, hogy az adatok kölcsönös megosztása alapján szabják személyre a felhasználói élményt</translation>
 <translation id="1491435845014430217">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
 <translation id="1493827051843127077">A Chrome-ot alapértelmezett böngészőként beállítva az összes eszközén szinkronizálhatja a lapfüleket, jelszavakat és fizetési adatokat</translation>
 <translation id="1504372625950710826">A Chrome nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
@@ -142,6 +143,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="4834499902900503484">Amikor be van jelentkezve a Chrome-ba, az Ön által mentett jelszavak a Google-fiókjába kerülnek. Ezt a viselkedést a <ph name="BEGIN_LINK" />beállítások<ph name="END_LINK" /> között kapcsolhatja ki.</translation>
 <translation id="484033449593719797">A Chrome bétaverziója nem támogatja</translation>
 <translation id="4840404732697892756">A Google Jelszókezelő ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
+<translation id="4856636171409137183">A leginkább személyre szabott élmény érdekében vegye fel a Chrome-ot itt: <ph name="FEATURE_NAME_1" /> és itt: <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{A Chrome segíthet a csomag nyomon követésében az Új lap oldalon.}other{A Chrome segíthet a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="4903674399067644695">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
 <translation id="49200511069271369">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe bejelentkezik, valamint azt is, hogy miként használhatja a Chrome-ot. A rendszergazda beállíthat, illetve korlátozhat bizonyos funkciókat.</translation>

@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週間前に作成}other{<ph name="NUM_WEEKS_MANY" /> 週間前に作成}}</translation>
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前に作成}other{<ph name="NUM_YEARS_MANY" /> 年前に作成}}</translation>
 <translation id="1155815720264022949">古いタブを閉じますか？</translation>
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="1215127405478249895">タブを確認</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
 <translation id="1322824555808364080">ユーザーを招待</translation>
 <translation id="1326271443836399892">現在の整理の設定を確認できます。</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分前に作成}other{<ph name="NUM_MINS_MANY" /> 分前に作成}}</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="161042844686301425">シアン</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">グループを作成</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価</translation>
 <translation id="266935134738038806">サイトを見る</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> 時間前に作成}other{<ph name="NUM_HOURS_MANY" /> 時間前に作成}}</translation>
 <translation id="2801787514987684416">ストア情報を表示しますか？</translation>
 <translation id="2928243913527329289">Google | このショップについて</translation>
 <translation id="2977480621796371840">グループから削除</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{タブをグループ化する}other{タブをグループ化する}}</translation>
 <translation id="3996880007329611795">通知を受け取る</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> 日前に作成}other{<ph name="NUM_DAYS_MANY" /> 日前に作成}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="4159784952369912983">パープル</translation>
 <translation id="4212246570487010370">引き続き閲覧</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_ONE" /> 個のタブを展開します。}other{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを展開します。}}</translation>
 <translation id="427987768447457592">新しいタブグループ</translation>
 <translation id="4648718555153979859">タブはここにグループ化されます</translation>
+<translation id="4686942373615810936">作成: たった今</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{（<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ）}other{（<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ）}}</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="4870911314065352661">タブをすべて閉じますか？</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">新しいフォルダ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">値下げ</translation>
 <translation id="8730999928494395583">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> か月前に作成}other{<ph name="NUM_MONTHS_MANY" /> か月前に作成}}</translation>
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{タブグループの <ph name="TABS_COUNT_ONE" /> 個のタブを展開します。}other{タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを展開します。}}</translation>
 <translation id="9090098097337832354">このショップに関する情報は非表示になっています</translation>

@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">CAPS LOCK асаалттай байна</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" />-г зогсооно уу. <ph name="CAPTURE_MEDIUM" /> нь <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">Тоглоомын тохиргоог засах</translation>
 <translation id="2526581474998477112">Цонхнуудын түгжээг тайлах</translation>
 <translation id="2528111225373402384">Сүлжээний цэгийн тохиргоо</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -1264,6 +1265,7 @@
 <translation id="5983567367406220847">Идэвхгүй байдлын улмаас сүлжээний цэгийг унтраасан.</translation>
 <translation id="598407983968395253">Загварыг ашиглах</translation>
 <translation id="598882571027504733">Шинэчлэлт авахын тулд Chromebook-ээ хавсаргасан гараар шинэчилнэ үү.</translation>
+<translation id="5998374579424866922">Тоглоомын тохиргоог унтраах</translation>
 <translation id="6000279412553873020">Түлхүүр, товчлуур болон бусад</translation>
 <translation id="6002122790816966947">Таны төхөөрөмжүүд</translation>
 <translation id="6012623610530968780">Хуудас <ph name="TOTAL_PAGE_NUM" />-н <ph name="SELECTED_PAGE" /></translation>
@@ -1666,6 +1668,7 @@
 <translation id="7607002721634913082">зогссон</translation>
 <translation id="7609951632080598826">Календарийн харагдах байдал, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камер дахин холбогдсон.</translation>
+<translation id="7613620083300976559">Тоглоомын тохиргоог асаах</translation>
 <translation id="761736749114493194">Камерын хүрээлэх онцлогийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Камерыг баруун доод булан руу зэрэгцүүлсэн</translation>

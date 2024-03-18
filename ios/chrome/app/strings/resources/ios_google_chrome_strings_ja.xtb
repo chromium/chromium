@@ -22,6 +22,7 @@
 <translation id="1436059927646026729">Chrome で最近使ったタブを開く</translation>
 <translation id="1449241544691504574">ブックマークを Chrome に追加する</translation>
 <translation id="1462727070346936664">Chrome を最大限に活用するにはログインしてください。</translation>
+<translation id="1462833127986525564">Chrome と他の Google サービスをリンクすると、相互のデータ使用によりサービスがパーソナライズされます</translation>
 <translation id="1491435845014430217">[Chrome を終了するときにシークレット タブをロックする] をオンにします。</translation>
 <translation id="1493827051843127077">Chrome を既定に設定すると、タブ、パスワード、お支払い情報をすべてのデバイスで同期できるようになります</translation>
 <translation id="1504372625950710826">Chrome でアップデートを確認できませんでした。インターネット接続を確認してみてください。</translation>
@@ -142,6 +143,7 @@
 <translation id="4834499902900503484">Chrome にログインすると、保存したパスワードが Google アカウントに保存されます。この機能をオフにするには、<ph name="BEGIN_LINK" />[設定] に移動<ph name="END_LINK" />します。</translation>
 <translation id="484033449593719797">Chrome ベータ版ではサポートされていません</translation>
 <translation id="4840404732697892756">Google アカウントでログインすると、Google パスワード マネージャーでパスワードを確認できるようになります。</translation>
+<translation id="4856636171409137183">よりパーソナライズされたサービスを利用するには、<ph name="FEATURE_NAME_1" /> と <ph name="FEATURE_NAME_2" /> に Chrome を追加してください</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome の新しいタブページでこの荷物を追跡できます。}other{Chrome の新しいタブページでこれらの荷物を追跡できます。}}</translation>
 <translation id="4903674399067644695">このカードでは、Chrome を最大限に活用するためのヒントを紹介しています。</translation>
 <translation id="49200511069271369">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chrome の使用方法を管理しています。管理者は特定の機能を設定または制限できます。</translation>

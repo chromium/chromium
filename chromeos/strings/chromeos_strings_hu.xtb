@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Beépített billentyűzet</translation>
 <translation id="6417265370957905582">Google Segéd</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Ezáltal az engedéllyel rendelkező rendszerszolgáltatások használhatják a helyadatokat. Eszköze helyének meghatározásához a helyszolgáltatás a Wi-Fi- és mobilhálózatok, továbbá az érzékelők adatait használhatja fel. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="6439505561246192797">Gyenge (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ugrás a fiókbeállításokhoz</translation>
 <translation id="6462978824459367242">Az APN hozzáadása gomb mostantól engedélyezve van</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6647510110698214773">Titkosítási algoritmus</translation>
 <translation id="6650062777702288430">Kana/alfanumerikus karakterek kapcsolója</translation>
+<translation id="6657240842932274095">Engedélyezi a rendszerszolgáltatásoknak a helyadatok használatát?</translation>
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6659594942844771486">Lap</translation>
 <translation id="66621959568103627">korallrózsaszín</translation>

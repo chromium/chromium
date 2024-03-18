@@ -588,6 +588,7 @@
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
+<translation id="4617553623719764431">Cuaca tidak dipaparkan kerana sistem tidak mengetahui lokasi anda. Untuk memaparkan cuaca setempat, <ph name="BEGIN_LINK" />hidupkan Akses lokasi<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> daripada <ph name="TOTAL_PAGE_NUMBER" />. Tekan enter untuk membatalkan tugas cetak.</translation>
 <translation id="463791356324567266">Membatalkan pengimbasan...</translation>
 <translation id="4646949265910132906">Sambungan WiFi Selamat</translation>
@@ -897,6 +898,7 @@
 <translation id="6412715219990689313">Papan kekunci terbina dalam</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Tindakan ini membolehkan perkhidmatan sistem dengan kebenaran untuk menggunakan lokasi anda. Lokasi mungkin menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pergi ke tetapan akaun</translation>
 <translation id="6462978824459367242">Butang tambahkan APN kini didayakan</translation>
@@ -935,6 +937,7 @@
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6647510110698214773">Algoritma penyulitan</translation>
 <translation id="6650062777702288430">Penukaran kana/abjad angka</translation>
+<translation id="6657240842932274095">Benarkan perkhidmatan sistem untuk menggunakan lokasi anda?</translation>
 <translation id="6657585470893396449">Kata laluan</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">merah jambu merjan</translation>

@@ -2147,6 +2147,7 @@ Voor oorsprongen waarvoor geen informatie is in beleid of gebruikersinstellingen
       Dit beleid is van toepassing op het inlogscherm. Raadpleeg ook het beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie. Het wordt aangeraden beide beleidsregels op dezelfde waarde in te stellen. Als de waarden niet overeenkomen, kan er bij het starten van een gebruikerssessie terwijl de door het gebruikersbeleid gespecificeerde waarde wordt toegepast, een vertraging optreden.
       </translation>
 <translation id="2697717608663878828">Het ClientHallo-experiment met TLS-versleuteling aanzetten</translation>
+<translation id="2697818835890656951">Aangepast profiellabel</translation>
 <translation id="2699836109975228367">Monogeluid op het inlogscherm aanzetten</translation>
 <translation id="2702023190395322609">Media-aanbevelingen aanzetten</translation>
 <translation id="2702682139813393777">Afdwingen dat Windows-hosts voor native berichten worden gestart via cmd.exe</translation>
@@ -3475,6 +3476,9 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
 
       Opmerking: Voor apparaten die via <ph name="MS_AD_NAME" /> worden beheerd, ondersteunt dit beleid de uitbreiding van <ph name="MACHINE_NAME_VARIABLE" /> naar de naam van de <ph name="MS_AD_NAME" />-machine of naar een subtekenreeks daarvan. Als de machinenaam bijvoorbeeld <ph name="MACHINE_NAME_EXAMPLE" /> is, wordt <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> vervangen door 4 tekens vanaf de 6e positie, oftewel <ph name="MACHINE_NAME_PART_EXAMPLE" />. De positie wordt geteld vanaf 0.</translation>
 <translation id="377044054160169374">Interventie voor misleidende functionaliteit afdwingen</translation>
+<translation id="3771860261556084445">Met dit beleid wordt een aangepast label toegevoegd waarmee een ingelogd profiel wordt geïdentificeerd. Dit label wordt op verschillende plekken getoond, zodat gebruikers het profiel makkelijk kunnen herkennen, bijvoorbeeld naast het profielicoon op de werkbalk.
+Dit label wordt ook gebruikt als standaardnaam voor nieuwe profielen, die gebruikers kunnen aanpassen.
+Als je dit beleid niet instelt en er een label moet worden getoond, wordt het standaardlabel Werk of School gebruikt.</translation>
 <translation id="3778689139323007309">Intrekkingscontroles uitvoeren voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten</translation>
 <translation id="3780152581321609624">Niet-standaardpoort in Kerberos-SPN opnemen</translation>
 <translation id="3788662722837364290">Instellingen voor energiebeheer wanneer de gebruiker inactief is</translation>
@@ -6566,6 +6570,16 @@ Voor oorsprongen waarvoor geen informatie is in beleid of gebruikersinstellingen
 <translation id="6374945506685352202">Blokkeerlijst voor installatietypen van extensies</translation>
 <translation id="6376540107659524656">SSH uitzetten in Terminal System App</translation>
 <translation id="6376659517206731212">Kan verplicht zijn</translation>
+<translation id="637677821295115289">Hiermee stel je de directory in waarin Screenshots (zowel screenshots als schermopnamen) worden opgeslagen.
+Als je het beleid instelt als Aanbevolen, wordt de waarde standaard gebruikt, maar kan de gebruiker deze wijzigen.
+Anders kan de gebruiker deze niet wijzigen en worden de opnamen altijd opgeslagen in de aangegeven directory.
+
+Het beleid gebruikt dezelfde indeling als het beleid <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+De locatie kan worden ingesteld op een lokaal bestandssysteem of op <ph name="GOOGLE_DRIVE_NAME" /> (met het voorvoegsel '${google_drive}') of <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (met het voorvoegsel '${microsoft_onedrive}').
+Als je het beleid instelt op een lege tekenreeks, wordt afgedwongen dat de schermopnamen worden opgeslagen in de lokale map Downloads.
+Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standaarddirectory Downloads om schermopnamen op te slaan en kunnen gebruikers deze directory wijzigen.</translation>
 <translation id="6377031865393559909">Toestaan dat gebruikers bureautemplates gebruiken</translation>
 <translation id="6378076389057087301">Specificeer of audioactiviteit invloed heeft op stroombeheer</translation>
 <translation id="6378393933102834628">Als je het beleid instelt op 'True', wordt de app-snelkoppeling getoond. Als je het beleid instelt op 'False', wordt deze snelkoppeling nooit getoond.

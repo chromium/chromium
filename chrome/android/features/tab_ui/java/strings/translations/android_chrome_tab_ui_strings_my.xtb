@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ပြီးခဲ့သော <ph name="NUM_WEEKS_ONE" /> ပတ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_WEEKS_MANY" /> ပတ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော <ph name="NUM_YEARS_ONE" /> လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_YEARS_MANY" /> လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="1155815720264022949">တဘ်အဟောင်းများ ပိတ်လိုပါသလား။</translation>
 <translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
 <translation id="1215127405478249895">တဘ်များ ကြည့်ခြင်း</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
 <translation id="1322824555808364080">လူများကို ဖိတ်ကြားရန်</translation>
 <translation id="1326271443836399892">မလိုသည်များ ဖယ်ရှားသော လက်ရှိဆက်တင်များကို စိစစ်ပါ။</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MINS_ONE" /> မိနစ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MINS_MANY" /> မိနစ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="1499635324672558517">ရုပ်ဖျက်တဘ်အားလုံး ပိတ်မလား။</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">အုပ်စုဖွဲ့ရန်</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> အဆင့်သတ်မှတ်ချက်</translation>
 <translation id="266935134738038806">ဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန်</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{ပြီးခဲ့သော <ph name="NUM_HOURS_ONE" /> နာရီက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_HOURS_MANY" /> နာရီက ပြုလုပ်ထားသည်}}</translation>
 <translation id="2801787514987684416">ဆိုင်အချက်အလက် ကြည့်မလား။</translation>
 <translation id="2928243913527329289">Google | ဤဆိုင်အကြောင်း</translation>
 <translation id="2977480621796371840">အဖွဲ့မှ ဖယ်ရှားပါ</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">တဘ်များတွင် ဈေးနှုန်းများစောင့်ကြည့်ရန်</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{တဘ် အုပ်စုဖွဲ့ရန်}other{တဘ်များ အုပ်စုဖွဲ့ရန်}}</translation>
 <translation id="3996880007329611795">အကြောင်းကြားချက် ရယူရန်</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{ပြီးခဲ့သော <ph name="NUM_DAYS_ONE" /> ရက်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_DAYS_MANY" /> ရက်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="4133493477912226187">တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
 <translation id="4159784952369912983">ခရမ်း</translation>
 <translation id="4212246570487010370">ဆက်တိုက် ရှာကြည့်ခြင်း</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုပါသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ပိုပြပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုပါသော <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ပိုပြပါ။}}</translation>
 <translation id="427987768447457592">တဘ်အုပ်စုအသစ်</translation>
 <translation id="4648718555153979859">သင့်တဘ်များကို ဤနေရာတွင် အုပ်စုဖွဲ့ထားသည်</translation>
+<translation id="4686942373615810936">ယခုလေးတင် ပြုလုပ်ထားသည်</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_ONE" /> ခု)}other{(သုံးသပ်ချက် <ph name="REVIEWS_COUNT_MANY" /> ခု)}}</translation>
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="4870911314065352661">တဘ်အားလုံး ပိတ်မလား။</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">ဖိုင်တွဲအသစ် - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">ကျသွားသော ဈေးနှုန်း</translation>
 <translation id="8730999928494395583">ဤ ‘ရုပ်ဖျက်တဘ်များ’ ရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖယ်ရှားပါမည်</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော <ph name="NUM_MONTHS_ONE" /> လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_MONTHS_MANY" /> လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="8820741577754260431">သင့်တဘ်များတွင် ဈေးကျသွားသည်များကို ကြည့်နိုင်သည်</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခုပါသော တဘ်အုပ်စုကို ပိုပြပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုပါသော တဘ်အုပ်စုကို ပိုပြပါ။}}</translation>
 <translation id="9090098097337832354">ဤဆိုင် ပိတ်ရသည့်အကြောင်း</translation>

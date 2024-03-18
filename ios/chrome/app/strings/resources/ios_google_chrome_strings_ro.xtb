@@ -22,6 +22,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="1436059927646026729">Deschide cea mai recentă filă în Chrome</translation>
 <translation id="1449241544691504574">Adaugă marcaje în Chrome</translation>
 <translation id="1462727070346936664">Conectează-te pentru a profita din plin de Chrome.</translation>
+<translation id="1462833127986525564">Conectează Chrome și alte servicii Google dacă vrei ca acestea să-ți personalizeze experiența folosind date între ele</translation>
 <translation id="1491435845014430217">Activează Blochează filele incognito când închizi Chrome.</translation>
 <translation id="1493827051843127077">Setează Chrome ca browser prestabilit pentru a sincroniza filele, parolele și informațiile de plată pe toate dispozitivele</translation>
 <translation id="1504372625950710826">Chrome nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
@@ -142,6 +143,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4834499902900503484">Dacă te-ai conectat la Chrome, parolele pe care le salvezi vor fi păstrate în Contul tău Google. Pentru a dezactiva opțiunea, <ph name="BEGIN_LINK" />accesează setările<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Nu se acceptă în Chrome Beta</translation>
 <translation id="4840404732697892756">Managerul de parole Google poate verifica parolele atunci când te conectezi cu Contul Google.</translation>
+<translation id="4856636171409137183">Pentru a beneficia de o experiență cât mai personalizată, include Chrome în <ph name="FEATURE_NAME_1" /> și <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome te poate ajuta să urmărești acest pachet în pagina Filă nouă.}few{Chrome te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}other{Chrome te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}}</translation>
 <translation id="4903674399067644695">Acest card afișează sugestii pentru a profita la maximum de Chrome.</translation>
 <translation id="49200511069271369">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te conectezi și modul în care poate fi folosit Chrome. Administratorul poate să configureze sau să restricționeze anumite funcții.</translation>

@@ -117,6 +117,7 @@
 <translation id="4195557071150719219">ເບິ່ງແຖບຫຼ້າສຸດໃນ Chromium</translation>
 <translation id="4200712796753248893">ໃຊ້ຄຳສັ່ງ Chromium ຢູ່ iOS</translation>
 <translation id="420541179527342563">ເພື່ອປິດການນຳໃຊ້ໂໝດການລັອກດາວໃນ Chromium ໃຫ້ປິດມັນຢູ່ iPad ຂອງທ່ານ.</translation>
+<translation id="427331839909790668">ລິ້ງ Chromium ແລະ ບໍລິການອື່ນໆຂອງ Google ຫາກທ່ານຕ້ອງການປັບແຕ່ງປະສົບການຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວໂດຍໃຊ້ຂໍ້ມູນຈາກບໍລິການທີ່ລິ້ງດັ່ງກ່າວ</translation>
 <translation id="4408912345039114853">ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພ Chromium</translation>
 <translation id="4432744876818348753">ເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
 <translation id="4445228361214254027">ອົງກອນຂອງທ່ານໄດ້ປິດຄວາມສາມາດໃນການໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານໄວ້ແລ້ວ. ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆຈະຖືກບັນທຶກໄປໃສ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
@@ -217,6 +218,7 @@
 <translation id="6852799557929001644">ເຂົ້າເຖິງລະຫັດຜ່ານ Chromium ຂອງທ່ານ ແລະ ອື່ນໆໃນທົ່ວແອັບຕ່າງໆຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="6887138405044152640">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chromium ຢູ່ບ່ອນນັ້ນ.</translation>
 <translation id="6911341667534646387">ໃຊ້ຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ</translation>
+<translation id="7002548535535009764">ເພື່ອຮັບປະສົບການໃນການໃຊ້ທີ່ປັບແຕ່ງສ່ວນຕົວຫຼາຍທີ່ສຸດ, ໃຫ້ຮວມ Chromium ໄວ້ໃນ <ph name="FEATURE_NAME_1" /> ແລະ <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານໃນແອັບອື່ນຢູ່ iPad ຂອງທ່ານໄດ້.</translation>
 <translation id="7018284295775193585">Chromium ບໍ່ສາມາດອັບເດດໄດ້</translation>
 <translation id="7045244423563602563">ຕັ້ງຄ່າ Chromium ແບບກຳນົດເອງ</translation>

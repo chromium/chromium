@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Түр санах ой</translation>
 <translation id="2597457036804169544">Сайтуудад бараан загварыг бүү ашигла</translation>
 <translation id="2606760465469169465">Автоматаар баталгаажуулах</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">JavaScript-г тодорхой сайтад зөвшөөрнө үү.</translation>
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Хамгаалагдсан агуулга</translation>
 <translation id="662080504995468778">Үлдэх</translation>
 <translation id="6653342741369270081">Бүтэн дэлгэцийн горимоос гарахын тулд буцах товчлуурыг дарна уу.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Энэ табаар үргэлжлүүлэхийг нуух}other{Эдгээр табаар үргэлжлүүлэхийг нуух}}</translation>
 <translation id="6689172468748959065">Профайл зураг</translation>
 <translation id="6697925417670533197">Идэвхтэй татаж авсан файл</translation>
 <translation id="6722828510648505498">Таниулбарын үйлчилгээнүүдийн нэвтрэх сануулгыг блоклоно уу.</translation>

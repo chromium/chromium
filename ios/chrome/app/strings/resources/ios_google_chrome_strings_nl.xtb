@@ -22,6 +22,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1436059927646026729">Mijn nieuwste tabblad openen in Chrome</translation>
 <translation id="1449241544691504574">Bookmarks toevoegen aan Chrome</translation>
 <translation id="1462727070346936664">Log in om het maximale uit Chrome te halen.</translation>
+<translation id="1462833127986525564">Koppel Chrome en andere Google-services als je wilt dat ze de functionaliteit personaliseren met gegevens van elkaar</translation>
 <translation id="1491435845014430217">Zet Incognitotabbladen vergrendelen als je Chrome sluit aan.</translation>
 <translation id="1493827051843127077">Stel Chrome in als je standaardbrowser om je tabbladen, wachtwoorden en betalingsgegevens op al je apparaten te synchroniseren</translation>
 <translation id="1504372625950710826">Chrome kan niet checken op updates. Check de internetverbinding.</translation>
@@ -142,6 +143,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4834499902900503484">Als je bent ingelogd bij Chrome, worden wachtwoorden die je opslaat, opgeslagen in je Google-account. <ph name="BEGIN_LINK" />Ga naar Instellingen<ph name="END_LINK" /> om dit uit te zetten.</translation>
 <translation id="484033449593719797">Niet ondersteund in Chrome (bèta)</translation>
 <translation id="4840404732697892756">Google Wachtwoordmanager kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
+<translation id="4856636171409137183">Neem Chrome op in <ph name="FEATURE_NAME_1" /> en <ph name="FEATURE_NAME_2" /> voor de meest gepersonaliseerde functionaliteit</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome kan je helpen om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chrome kan je helpen om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="4903674399067644695">Op deze kaart zie je suggesties voor hoe je het maximale uit Chrome kunt halen.</translation>
 <translation id="49200511069271369">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je inlogt en hoe Chrome kan worden gebruikt. Je beheerder kan bepaalde functies instellen of beperken.</translation>

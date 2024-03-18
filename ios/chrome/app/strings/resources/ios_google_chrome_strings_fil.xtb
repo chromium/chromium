@@ -22,6 +22,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1436059927646026729">Buksan ang Aking Pinakabagong Tab sa Chrome</translation>
 <translation id="1449241544691504574">Magdagdag ng Mga Bookmark sa Chrome</translation>
 <translation id="1462727070346936664">Mag-sign in para masulit ang Chrome.</translation>
+<translation id="1462833127986525564">I-link ang Chrome at iba pang serbisyo ng Google kung gusto mong i-personalize ng mga ito ang iyong experience gamit ang data ng isa't isa</translation>
 <translation id="1491435845014430217">I-on ang “I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chrome.”</translation>
 <translation id="1493827051843127077">Itakda ang Chrome bilang default para ma-sync ang iyong mga tab, password, at impormasyon sa pagbabayad sa lahat ng device mo</translation>
 <translation id="1504372625950710826">Hindi matingnan ng Chrome kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
@@ -142,6 +143,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="4834499902900503484">Kapag naka-sign in ka sa Chrome, ang mga sine-save mong password ay mapupunta sa iyong Google Account. Para i-off ito, <ph name="BEGIN_LINK" />pumunta sa mga setting<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Hindi sinusuportahan sa Chrome Beta</translation>
 <translation id="4840404732697892756">Masusuri ng Google Password Manager ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
+<translation id="4856636171409137183">Para makuha ang pinakamahusay na naka-personalize na experience, isama ang Chrome sa <ph name="FEATURE_NAME_1" /> at <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Matutulungan ka ng Chrome na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Matutulungan ka ng Chrome na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Matutulungan ka ng Chrome na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
 <translation id="4903674399067644695">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chrome.</translation>
 <translation id="49200511069271369">Pinapamahalaan ng iyong organisasyong <ph name="DOMAIN" /> ang account kung saan ka nagsa-sign in at kung paano magagamit ang Chrome. Puwedeng i-set up o paghigpitan ng iyong administrator ang ilang partikular na feature.</translation>

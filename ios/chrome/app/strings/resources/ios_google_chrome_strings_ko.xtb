@@ -22,6 +22,7 @@
 <translation id="1436059927646026729">Chrome에서 최신 내 탭 열기</translation>
 <translation id="1449241544691504574">Chrome에 북마크 추가</translation>
 <translation id="1462727070346936664">로그인하여 Chrome의 모든 기능을 이용하세요</translation>
+<translation id="1462833127986525564">Chrome 및 기타 Google 서비스가 서로의 데이터를 사용하여 내 환경을 맞춤설정하도록 하려면 이러한 서비스를 연결하세요</translation>
 <translation id="1491435845014430217">'Chrome 종료 시 시크릿 탭 잠금'을 사용 설정합니다.</translation>
 <translation id="1493827051843127077">Chrome을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본 브라우저로 설정하세요.</translation>
 <translation id="1504372625950710826">Chrome에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
@@ -142,6 +143,7 @@
 <translation id="4834499902900503484">Chrome에 로그인하면 저장한 비밀번호가 내 Google 계정에 저장됩니다. 이 기능을 사용 중지하려면 <ph name="BEGIN_LINK" />설정으로 이동하세요<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Chrome 베타에서는 지원되지 않습니다.</translation>
 <translation id="4840404732697892756">Google 계정으로 로그인하면 Google 비밀번호 관리자에서 비밀번호를 확인할 수 있습니다.</translation>
+<translation id="4856636171409137183">최적의 맞춤 환경을 이용하려면 <ph name="FEATURE_NAME_1" /> 및 <ph name="FEATURE_NAME_2" />에 Chrome을 포함하세요</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}other{Chrome의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}}</translation>
 <translation id="4903674399067644695">이 카드는 Chrome을 최대한 활용하는 방법에 관한 추천을 보여줍니다.</translation>
 <translation id="49200511069271369">내가 로그인한 계정과 Chrome이 사용될 수 있는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다</translation>

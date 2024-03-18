@@ -588,6 +588,7 @@
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
+<translation id="4617553623719764431">Počasie sa nezobrazuje, pretože nepozná vašu polohu. Ak si chcete zobraziť miestne počasie, <ph name="BEGIN_LINK" />zapnite prístup k polohe<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
 <translation id="463791356324567266">Ruší sa skenovanie…</translation>
 <translation id="4646949265910132906">Zabezpečené pripojenie Wi‑Fi</translation>

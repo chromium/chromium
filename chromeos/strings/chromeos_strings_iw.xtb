@@ -468,7 +468,7 @@
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
 <translation id="3877066159641251281">האזנה לתרגום</translation>
 <translation id="3885327323343477505">החלפת שומר המסך</translation>
-<translation id="3889914174935857450">איפוס התאריך</translation>
+<translation id="3889914174935857450">תאריך האיפוס</translation>
 <translation id="391412459402535266">לא ניתן לבדוק את המכשיר. צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה.</translation>
 <translation id="3916998944874125962">צילום מסך</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
@@ -1008,7 +1008,7 @@
 <translation id="7107255225945990211">בחירת יצירות אומנות בלעדיות ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">הזנת מפתח</translation>
 <translation id="7119389851461848805">הפעלה</translation>
-<translation id="7129287270910503851">השימוש בחבילת הגלישה שלך יאופס מדי חודש ביום הזה</translation>
+<translation id="7129287270910503851">נתוני השימוש בחבילת הגלישה יאופס מדי חודש ביום הזה</translation>
 <translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7135814714616751706">חיפוש מקשי קיצור</translation>

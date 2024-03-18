@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Built-in na keyboard</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Pinapayagan nito ang mga serbisyo ng system na may pahintulot na gamitin ang iyong lokasyon. Posibleng gumamit ang lokasyon ng mga source na tulad ng Wi‑Fi, mga mobile network, at mga sensor para makatulong sa pagtantya sa lokasyon ng iyong device. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Mabagal (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pumunta sa mga setting ng account</translation>
 <translation id="6462978824459367242">Naka-enable na ang button na Magdagdag ng APN</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6647510110698214773">Algorithm ng pag-encrypt</translation>
 <translation id="6650062777702288430">Kana/alphanumeric na switch</translation>
+<translation id="6657240842932274095">Payagan ang mga serbisyo ng system na gamitin ang iyong lokasyon?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">coral pink</translation>

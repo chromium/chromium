@@ -117,6 +117,7 @@ Adatai az összetett jelszavával vannak titkosítva. Adja meg, ha Google-fiókj
 <translation id="4195557071150719219">Legutóbbi Chromium-lapok megtekintése</translation>
 <translation id="4200712796753248893">Chromium-műveletek használata iOS rendszeren</translation>
 <translation id="420541179527342563">Ha le szeretné tiltani a Lezárás módot a Chromiumban, kapcsolja ki iPad eszközén.</translation>
+<translation id="427331839909790668">Kapcsolja össze a Chromiumot az egyéb Google-szolgáltatásokkal, ha szeretné, hogy az adatok kölcsönös megosztása alapján szabják személyre a felhasználói élményt</translation>
 <translation id="4408912345039114853">A Chromium biztonsági ellenőrzésének futtatása</translation>
 <translation id="4432744876818348753">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chromiumból.</translation>
 <translation id="4445228361214254027">Szervezete letiltotta a Chromium-adatok Google-fiókban való használatát és mentését. Az új könyvjelzők, jelszavak és egyebek csak erre az eszközre lesznek mentve.</translation>
@@ -218,6 +219,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="6852799557929001644">Hozzáférhet Chromium-jelszavaihoz és még sok máshoz az erre az eszközre telepített más alkalmazásokban.</translation>
 <translation id="6887138405044152640">Ha szeretné elküldeni ezt a lapot egy másik eszközre, jelentkezzen be a Chromiumba az adott eszközön.</translation>
 <translation id="6911341667534646387">Továbbra is használhatja a Google-fiókjában lévő Chromium-adatokat</translation>
+<translation id="7002548535535009764">A leginkább személyre szabott élmény érdekében vegye fel a Chromiumot itt: <ph name="FEATURE_NAME_1" /> és itt: <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">A Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPad eszközén.</translation>
 <translation id="7018284295775193585">Nem lehet frissíteni a Chromiumot</translation>
 <translation id="7045244423563602563">Tegye személyessé a Chromiumot</translation>

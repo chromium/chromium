@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">CAPS LOCK이 켜져 있습니다.</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> 기능을 정지합니다. <ph name="CAPTURE_MEDIUM" /> 기능이 <ph name="CAPTURE_STATE" /> 상태입니다.</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">게임 컨트롤 수정</translation>
 <translation id="2526581474998477112">창 잠금 해제</translation>
 <translation id="2528111225373402384">핫스팟 설정</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" />, <ph name="SERVICE_PROVIDER" /></translation>
@@ -1263,6 +1264,7 @@
 <translation id="5983567367406220847">활동이 없어 핫스팟이 사용 중지되었습니다.</translation>
 <translation id="598407983968395253">템플릿 사용</translation>
 <translation id="598882571027504733">업데이트하려면 키보드가 연결된 상태로 Chromebook을 다시 시작하세요.</translation>
+<translation id="5998374579424866922">게임 컨트롤 사용 중지</translation>
 <translation id="6000279412553873020">키, 버튼 등</translation>
 <translation id="6002122790816966947">내 기기</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" />페이지</translation>
@@ -1665,6 +1667,7 @@
 <translation id="7607002721634913082">일시중지됨</translation>
 <translation id="7609951632080598826">캘린더 보기, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">카메라가 다시 연결되었습니다.</translation>
+<translation id="7613620083300976559">게임 컨트롤 사용 설정</translation>
 <translation id="761736749114493194">카메라 프레이밍을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7634648064048557203">카메라 미리보기가 오른쪽 하단으로 맞춰졌습니다</translation>
