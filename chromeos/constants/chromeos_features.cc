@@ -288,6 +288,14 @@ bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
 }
 
+bool IsCrosMallEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsCrosMallEnabled();
+#else
+  return base::FeatureList::IsEnabled(kCrosMall);
+#endif
+}
+
 bool IsCrosShortstandEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsCrosShortstandEnabled();

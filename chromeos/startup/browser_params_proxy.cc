@@ -368,4 +368,8 @@ bool BrowserParamsProxy::IsOrcaEnabled() const {
   return BrowserInitParams::Get()->is_orca_enabled;
 }
 
+bool BrowserParamsProxy::IsCrosMallEnabled() const {
+  return BrowserInitParams::Get()->is_cros_mall_enabled;
+}
+
 }  // namespace chromeos

@@ -1158,8 +1158,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 81
-// Next id: 81
+// Next version: 82
+// Next id: 82
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1628,6 +1628,11 @@ struct BrowserInitParams {
   // If true, "Orca" will be enabled.
   [MinVersion=80]
   bool is_orca_enabled@80;
+
+  // Set to true when the `chromeos::features::kCrosMall` flag is enabled in
+  // Ash.
+  [MinVersion=81]
+  bool is_cros_mall_enabled@81;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

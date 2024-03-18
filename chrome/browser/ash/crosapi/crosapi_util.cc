@@ -899,6 +899,8 @@ void InjectBrowserInitParams(
       chromeos::features::IsCrosWebAppInstallDialogEnabled();
 
   params->is_orca_enabled = chromeos::features::IsOrcaEnabled();
+
+  params->is_cros_mall_enabled = chromeos::features::IsCrosMallEnabled();
 }
 
 template <typename BrowserParams>

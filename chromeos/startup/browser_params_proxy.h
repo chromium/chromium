@@ -170,6 +170,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsOrcaEnabled() const;
 
+  bool IsCrosMallEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 
