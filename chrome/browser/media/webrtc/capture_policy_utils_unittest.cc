@@ -261,7 +261,7 @@ TEST_F(CapturePolicyUtilsTest, FilterMediaListRestrictedSameOrigin) {
   EXPECT_EQ(expected_media_types, actual_media_types);
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class MultiCaptureTest
     : public testing::Test,
@@ -343,4 +343,4 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::ValuesIn({std::string("https://www.google.com"),
                              std::string("https://www.notallowed.com")})));
 
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS)

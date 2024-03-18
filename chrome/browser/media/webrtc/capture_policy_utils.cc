@@ -141,7 +141,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
     return false;
@@ -176,7 +176,7 @@ bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
 
 bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
                                  const GURL& url) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile) {
     return false;

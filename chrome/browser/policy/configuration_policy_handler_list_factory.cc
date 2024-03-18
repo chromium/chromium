@@ -1955,14 +1955,14 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1454054): replace the
   // kGetDisplayMediaSetSelectAllScreensAllowedForUrls policy by a policy that
   // matches the name of the new `getAllScreensMedia` API.
   { key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
     capture_policy::kManagedAccessToGetAllScreensMediaAllowedForUrls,
     base::Value::Type::LIST },
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   { key::kAuthNegotiateDelegateByKdcPolicy,

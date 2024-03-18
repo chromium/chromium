@@ -27,8 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
-// TODO(crbug.com/1447824): Implement no-dynamic refresh (and a test) for
-// lacros.
 namespace {
 struct TestParam {
   std::vector<std::string> allow_listed_origins;
@@ -55,7 +53,6 @@ class SelectAllScreensTestBase : public policy::PolicyTest {
 
   void SetAllowedOriginsPolicy(
       const std::vector<std::string>& allow_listed_origins) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     policy::PolicyMap policies;
     base::Value::List allowed_origins;
     for (const auto& allowed_origin : allow_listed_origins) {
@@ -66,7 +63,6 @@ class SelectAllScreensTestBase : public policy::PolicyTest {
         policy::key::kGetDisplayMediaSetSelectAllScreensAllowedForUrls,
         base::Value(std::move(allowed_origins)));
     provider_.UpdateChromePolicy(policies);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -118,9 +114,7 @@ INSTANTIATE_TEST_SUITE_P(
             .allow_listed_origins = {},
             .testing_url = "https://www.chromium.org",
             .expected_is_get_all_screens_media_allowed = false,
-        })
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-            ,
+        }),
         TestParam({
             .allow_listed_origins = {},
             .testing_url = "",
@@ -145,11 +139,8 @@ INSTANTIATE_TEST_SUITE_P(
             .allow_listed_origins = {"[*.]chrome.org", "[*.]chromium.org"},
             .testing_url = "https://www.chromium.org",
             .expected_is_get_all_screens_media_allowed = true,
-        })
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-            ));
+        })));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 class SelectAllScreensDynamicRefreshTest
     : public SelectAllScreensTestBase,
       public testing::WithParamInterface<NoRefreshTestParam> {
@@ -157,7 +148,8 @@ class SelectAllScreensDynamicRefreshTest
   SelectAllScreensDynamicRefreshTest() = default;
   ~SelectAllScreensDynamicRefreshTest() override = default;
 
-  SelectAllScreensDynamicRefreshTest(const SelectAllScreensTest&) = delete;
+  explicit SelectAllScreensDynamicRefreshTest(const SelectAllScreensTest&) =
+      delete;
   SelectAllScreensDynamicRefreshTest& operator=(const SelectAllScreensTest&) =
       delete;
 
@@ -213,5 +205,3 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_allowed_origins = {},
             .expected_forbidden_origins = {},
         })));
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

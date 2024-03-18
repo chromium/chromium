@@ -1,8 +1,7 @@
 [
   {
     "os": [
-      "chromeos_ash",
-      "linux"
+      "chromeos_ash"
     ],
     "policy_pref_mapping_tests": [
       {
