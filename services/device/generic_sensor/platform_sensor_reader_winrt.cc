@@ -8,7 +8,6 @@
 
 #include "base/numerics/math_constants.h"
 #include "base/time/time.h"
-#include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/public/mojom/sensor.mojom.h"
@@ -100,11 +99,7 @@ PlatformSensorReaderWinrtBase<
     ISensorWinrtStatics,
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
-    ISensorReadingChangedEventArgs>::PlatformSensorReaderWinrtBase()
-    : com_sta_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-  DETACH_FROM_SEQUENCE(main_sequence_checker_);
-
+    ISensorReadingChangedEventArgs>::PlatformSensorReaderWinrtBase() {
   get_sensor_factory_callback_ =
       base::BindRepeating([](ISensorWinrtStatics** sensor_factory) -> HRESULT {
         return base::win::GetActivationFactory<ISensorWinrtStatics,
@@ -124,8 +119,6 @@ void PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::SetClient(Client* client) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-
   base::AutoLock autolock(lock_);
   client_ = client;
 }
@@ -143,8 +136,6 @@ HRESULT PlatformSensorReaderWinrtBase<runtime_class_id,
                                       ISensorReadingChangedEventArgs>::
     ConvertSensorReadingTimeStamp(ComPtr<ISensorReading> sensor_reading,
                                   base::TimeDelta* timestamp_delta) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   DateTime timestamp;
   HRESULT hr = sensor_reading->get_Timestamp(&timestamp);
   if (FAILED(hr))
@@ -166,8 +157,6 @@ bool PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::Initialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   ComPtr<ISensorWinrtStatics> sensor_statics;
 
   HRESULT hr = get_sensor_factory_callback_.Run(&sensor_statics);
@@ -191,14 +180,10 @@ bool PlatformSensorReaderWinrtBase<
     return false;
   }
 
-  {
-    base::AutoLock autolock(lock_);
-    minimum_report_interval_ = GetMinimumReportIntervalFromSensor();
+  minimum_report_interval_ = GetMinimumReportIntervalFromSensor();
 
-    if (minimum_report_interval_.is_zero()) {
-      DLOG(WARNING) << "Failed to get sensor minimum report interval";
-    }
-  }
+  if (minimum_report_interval_.is_zero())
+    DLOG(WARNING) << "Failed to get sensor minimum report interval";
 
   return true;
 }
@@ -214,8 +199,6 @@ base::TimeDelta PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::GetMinimumReportIntervalFromSensor() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   UINT32 minimum_report_interval_ms = 0;
   HRESULT hr = sensor_->get_MinimumReportInterval(&minimum_report_interval_ms);
 
@@ -242,9 +225,6 @@ base::TimeDelta PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::GetMinimalReportingInterval() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-
-  base::AutoLock autolock(lock_);
   return minimum_report_interval_;
 }
 
@@ -259,8 +239,6 @@ bool PlatformSensorReaderWinrtBase<runtime_class_id,
                                    ISensorReadingChangedHandler,
                                    ISensorReadingChangedEventArgs>::
     StartSensor(const PlatformSensorConfiguration& configuration) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-
   base::AutoLock autolock(lock_);
 
   if (!reading_callback_token_) {
@@ -278,39 +256,7 @@ bool PlatformSensorReaderWinrtBase<runtime_class_id,
     }
 
     auto reading_changed_handler = Callback<ISensorReadingChangedHandler>(
-        [weak_ptr(weak_ptr_factory_.GetWeakPtr()),
-         com_sta_task_runner(com_sta_task_runner_)](
-            ISensorWinrtClass* sender, ISensorReadingChangedEventArgs* args) {
-          // We cannot invoke OnReadingChangedCallback() directly because this
-          // callback is run on a COM MTA thread spawned by Windows (on tests,
-          // we mimic the behavior by using base::ThreadPool, as the task
-          // scheduler threads live in the MTA).
-          //
-          // This callback is invoked on an MTA thread because the
-          // ISensorReadingChangedHandler declarations explicitly inherit from
-          // Microsoft::WRL::FtmBase, which makes them agile, free-threaded
-          // objects.
-          //
-          // We could CHECK() this behavior here, but ::CoGetApartmentType()
-          // depends on ole32.dll and base::win::GetComApartmentTypeForThread()
-          // returns NONE in the non-test code path even though
-          // ::GoGetApartmentType() returns MTA, so the best we can do is just
-          // double-check that this is not running on an STA.
-          DCHECK_NE(base::win::GetComApartmentTypeForThread(),
-                    base::win::ComApartmentType::STA);
-          com_sta_task_runner->PostTask(
-              FROM_HERE,
-              base::BindOnce(
-                  // TODO(crbug.com/326349405): base::IgnoreResult is being used
-                  // temporarily to reduce the amount of changes required for
-                  // this bug. OnReadingChangedCallback() must be changed to
-                  // have a void return type.
-                  base::IgnoreResult(
-                      &PlatformSensorReaderWinrtBase::OnReadingChangedCallback),
-                  weak_ptr, ComPtr<ISensorWinrtClass>(sender),
-                  ComPtr<ISensorReadingChangedEventArgs>(args)));
-          return S_OK;
-        });
+        this, &PlatformSensorReaderWinrtBase::OnReadingChangedCallback);
 
     EventRegistrationToken event_token;
     hr = sensor_->add_ReadingChanged(reading_changed_handler.Get(),
@@ -339,9 +285,6 @@ void PlatformSensorReaderWinrtBase<
     ISensorWinrtClass,
     ISensorReadingChangedHandler,
     ISensorReadingChangedEventArgs>::StopSensor() {
-  // This function is called in the main task runner by PlatformSensorWin as
-  // well as in the com_sta_task_runner_ by the destructor.
-
   base::AutoLock autolock(lock_);
 
   if (reading_callback_token_) {
@@ -373,8 +316,6 @@ PlatformSensorReaderWinrtLightSensor::PlatformSensorReaderWinrtLightSensor() =
 HRESULT PlatformSensorReaderWinrtLightSensor::OnReadingChangedCallback(
     ILightSensor* light_sensor,
     ILightSensorReadingChangedEventArgs* reading_changed_args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   ComPtr<ILightSensorReading> light_sensor_reading;
   HRESULT hr = reading_changed_args->get_Reading(&light_sensor_reading);
   if (FAILED(hr)) {
@@ -438,8 +379,6 @@ PlatformSensorReaderWinrtAccelerometer::
 HRESULT PlatformSensorReaderWinrtAccelerometer::OnReadingChangedCallback(
     IAccelerometer* accelerometer,
     IAccelerometerReadingChangedEventArgs* reading_changed_args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   ComPtr<IAccelerometerReading> accelerometer_reading;
   HRESULT hr = reading_changed_args->get_Reading(&accelerometer_reading);
   if (FAILED(hr)) {
@@ -525,8 +464,6 @@ PlatformSensorReaderWinrtGyrometer::PlatformSensorReaderWinrtGyrometer() =
 HRESULT PlatformSensorReaderWinrtGyrometer::OnReadingChangedCallback(
     IGyrometer* gyrometer,
     IGyrometerReadingChangedEventArgs* reading_changed_args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   ComPtr<IGyrometerReading> gyrometer_reading;
   HRESULT hr = reading_changed_args->get_Reading(&gyrometer_reading);
   if (FAILED(hr)) {
@@ -611,8 +548,6 @@ PlatformSensorReaderWinrtMagnetometer::PlatformSensorReaderWinrtMagnetometer() =
 HRESULT PlatformSensorReaderWinrtMagnetometer::OnReadingChangedCallback(
     IMagnetometer* magnetometer,
     IMagnetometerReadingChangedEventArgs* reading_changed_args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   ComPtr<IMagnetometerReading> magnetometer_reading;
   HRESULT hr = reading_changed_args->get_Reading(&magnetometer_reading);
   if (FAILED(hr)) {
@@ -696,8 +631,6 @@ HRESULT
 PlatformSensorReaderWinrtAbsOrientationEulerAngles::OnReadingChangedCallback(
     IInclinometer* inclinometer,
     IInclinometerReadingChangedEventArgs* reading_changed_args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   ComPtr<IInclinometerReading> inclinometer_reading;
   HRESULT hr = reading_changed_args->get_Reading(&inclinometer_reading);
   if (FAILED(hr)) {
@@ -784,8 +717,6 @@ HRESULT
 PlatformSensorReaderWinrtAbsOrientationQuaternion::OnReadingChangedCallback(
     IOrientationSensor* orientation_sensor,
     IOrientationSensorReadingChangedEventArgs* reading_changed_args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
-
   ComPtr<IOrientationSensorReading> orientation_sensor_reading;
   HRESULT hr = reading_changed_args->get_Reading(&orientation_sensor_reading);
   if (FAILED(hr)) {
