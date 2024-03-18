@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/file_handlers/directory_util.h"
@@ -218,9 +219,18 @@ void ShowItemInFolder(Profile* profile,
                       platform_util::OpenOperationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // Convert Fusebox paths if possible.
+  fusebox::Server* fusebox_server = fusebox::Server::GetInstance();
+  storage::FileSystemURL file_url;
+  if (fusebox_server) {
+    file_url = fusebox_server->ResolveFilename(profile, file_path.value());
+  }
+
   GURL url;
-  if (!ConvertAbsoluteFilePathToFileSystemUrl(profile, file_path,
-                                              GetFileManagerURL(), &url)) {
+  if (file_url.is_valid()) {
+    url = file_url.ToGURL();
+  } else if (!ConvertAbsoluteFilePathToFileSystemUrl(
+                 profile, file_path, GetFileManagerURL(), &url)) {
     std::move(callback).Run(platform_util::OPEN_FAILED_PATH_NOT_FOUND);
     return;
   }
