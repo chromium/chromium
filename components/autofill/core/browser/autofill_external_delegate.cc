@@ -34,7 +34,6 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -703,8 +702,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       autofill_metrics::LogFillingMethodUsed(
           FillingMethod::kFullForm, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
-      autofill_metrics::LogUserAcceptedPreviouslyHiddenProfileSuggestion(
-          suggestion.hidden_prior_to_address_rewriter_usage);
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,

@@ -165,8 +165,7 @@ class AutofillSuggestionGenerator {
       const FieldTypeSet& field_types,
       std::optional<FieldTypeSet> last_targeted_fields,
       FieldType trigger_field_type,
-      uint64_t trigger_field_max_length,
-      const std::set<std::string>& previously_hidden_profiles_guid = {});
+      uint64_t trigger_field_max_length);
 
   // Creates a suggestion for the given `credit_card`. `virtual_card_option`
   // suggests whether the suggestion is a virtual card option.

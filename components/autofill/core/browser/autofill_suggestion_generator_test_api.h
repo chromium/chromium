@@ -49,11 +49,10 @@ class AutofillSuggestionGeneratorTestApi {
       const FieldTypeSet& field_types,
       std::optional<FieldTypeSet> last_targeted_fields,
       FieldType trigger_field_type,
-      uint64_t trigger_field_max_length,
-      const std::set<std::string>& previously_hidden_profiles_guid = {}) {
+      uint64_t trigger_field_max_length) {
     return suggestion_generator_->CreateSuggestionsFromProfiles(
         profiles, field_types, last_targeted_fields, trigger_field_type,
-        trigger_field_max_length, previously_hidden_profiles_guid);
+        trigger_field_max_length);
   }
 
   Suggestion CreateCreditCardSuggestion(

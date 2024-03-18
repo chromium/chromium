@@ -39,7 +39,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
-#include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -1027,12 +1026,10 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
       trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress
           ? trigger_field.value
           : u"";
-
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
       profiles_to_suggest = GetProfilesToSuggest(
           trigger_field_type, field_value_for_filtering,
           trigger_field.is_autofilled, field_types, trigger_source);
-
   // If autofill for addresses is triggered from the context menu on an address
   // field and no suggestions can be shown (i.e. if a user has only addresses
   // without emails and then triggers autofill from the context menu on an email
@@ -1052,48 +1049,15 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
         {UNKNOWN_TYPE}, trigger_field, UNKNOWN_TYPE,
         std::move(last_targeted_fields), trigger_source);
   }
-
-  // Find the profiles that were hidden prior to the effects of the feature
-  // kAutofillUseAddressRewriterInProfileSubsetComparison.
-  std::set<std::string> previously_hidden_profiles_guid;
-  for (const AutofillProfile* profile : profiles_to_suggest) {
-    previously_hidden_profiles_guid.insert(profile->guid());
-  }
-  constexpr FieldTypeSet street_address_field_types = {
-      ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
-      ADDRESS_HOME_LINE3};
-  FieldTypeSet field_types_without_address_types = field_types;
-  field_types_without_address_types.erase_all(street_address_field_types);
-
-  // Autofill already considers suggestions as different if the suggestion's
-  // main text, to be filled in the triggering field, differs regardless of
-  // the other fields.
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      previously_suggested_profiles =
-          street_address_field_types.contains(trigger_field_type)
-              ? profiles_to_suggest
-              : GetProfilesToSuggest(
-                    trigger_field_type, field_value_for_filtering,
-                    trigger_field.is_autofilled,
-                    field_types_without_address_types, trigger_source);
-  for (const AutofillProfile* profile : previously_suggested_profiles) {
-    previously_hidden_profiles_guid.erase(profile->guid());
-  }
-  autofill_metrics::LogPreviouslyHiddenProfileSuggestionNumber(
-      previously_hidden_profiles_guid.size());
-
   std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
       profiles_to_suggest, field_types, last_targeted_fields,
-      trigger_field_type, trigger_field.max_length,
-      previously_hidden_profiles_guid);
+      trigger_field_type, trigger_field.max_length);
 
   if (suggestions.empty()) {
     return suggestions;
   }
-
   base::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled),
                      std::back_inserter(suggestions));
-
   return suggestions;
 }
 
@@ -1121,7 +1085,6 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
         sorted_profiles.begin() +
             std::min(kMaxDisplayedAddressSuggestions, sorted_profiles.size()));
   }
-
   // When suggesting with no prefix to match, suppress disused address
   // suggestions as well as those based on invalid profile data if the
   // `trigger_source` is not
@@ -1133,7 +1096,6 @@ AutofillSuggestionGenerator::GetProfilesToSuggest(
         AutofillClock::Now() - kDisusedDataModelTimeDelta;
     RemoveProfilesNotUsedSinceTimestamp(min_last_used, sorted_profiles);
   }
-
   std::vector<const AutofillProfile*> matched_profiles =
       GetPrefixMatchedProfiles(sorted_profiles, trigger_field_type,
                                field_contents, field_contents_canon,
@@ -1165,16 +1127,13 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     const FieldTypeSet& field_types,
     std::optional<FieldTypeSet> last_targeted_fields,
     FieldType trigger_field_type,
-    uint64_t trigger_field_max_length,
-    const std::set<std::string>& previously_hidden_profiles_guid) {
+    uint64_t trigger_field_max_length) {
   std::vector<Suggestion> suggestions;
   std::string app_locale = personal_data().app_locale();
-
   std::vector<std::vector<Suggestion::Text>> labels =
       CreateSuggestionLabelsWithGranularFillingDetails(
           profiles, field_types, last_targeted_fields, trigger_field_type,
           app_locale);
-
   // This will be used to check if suggestions should be supported with icons.
   const bool contains_profile_related_fields =
       base::ranges::count_if(field_types, [](FieldType field_type) {
@@ -1184,7 +1143,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
                field_type_group == FieldTypeGroup::kPhone ||
                field_type_group == FieldTypeGroup::kEmail;
       }) > 1;
-
   FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
   for (size_t i = 0; i < profiles.size(); ++i) {
@@ -1208,7 +1166,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
           *profile, app_locale,
           ShouldUseNationalFormatPhoneNumber(trigger_field_type));
     }
-
     suggestions.emplace_back(main_text);
     suggestions.back().labels.emplace_back(std::move(labels[i]));
     suggestions.back().payload = Suggestion::Guid(profile->guid());
@@ -1216,8 +1173,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
     suggestions.back().popup_item_id = popup_item_id;
     suggestions.back().is_acceptable = IsAddressType(trigger_field_type);
-    suggestions.back().hidden_prior_to_address_rewriter_usage =
-        previously_hidden_profiles_guid.contains(profile->guid());
     if (suggestions.back().popup_item_id ==
         PopupItemId::kAddressFieldByFieldFilling) {
       suggestions.back().field_by_field_filling_type_used =
@@ -1236,7 +1191,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
         suggestions.back().icon = Suggestion::Icon::kAccount;
       }
     }
-
     if (profile && profile->source() == AutofillProfile::Source::kAccount &&
         profile->initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
@@ -1244,7 +1198,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
           feature_engagement::
               kIPHAutofillExternalAccountProfileSuggestionFeature.name;
     }
-
     if (base::FeatureList::IsEnabled(
             features::kAutofillGranularFillingAvailable)) {
       // TODO(crbug.com/1502162): Make the granular filling options vary
@@ -1254,7 +1207,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
                                                 suggestions.back());
     }
   }
-
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
   if (std::optional<Suggestion> test_addresses_suggestion =
@@ -1263,7 +1215,6 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
     suggestions.insert(suggestions.begin(),
                        std::move(*test_addresses_suggestion));
   }
-
   return suggestions;
 }
 
