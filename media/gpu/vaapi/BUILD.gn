@@ -82,7 +82,6 @@ source_set("vaapi") {
 
   configs += [
     "//build/config/linux/libva",
-    "//third_party/libvpx:libvpx_config",
   ]
 
   deps = [
@@ -200,7 +199,6 @@ source_set("unit_test") {
     "vaapi_wrapper_unittest.cc",
     "vp9_vaapi_video_encoder_delegate_unittest.cc",
   ]
-  configs += [ "//third_party/libvpx:libvpx_config" ]
   deps = [
     ":common",
     ":vaapi",
