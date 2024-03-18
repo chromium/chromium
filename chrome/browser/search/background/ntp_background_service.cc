@@ -4,6 +4,8 @@
 
 #include "chrome/browser/search/background/ntp_background_service.h"
 
+#include <string_view>
+
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -62,7 +64,7 @@ constexpr char kImageOptions[] = "=w3840-h2160-p-k-no-nd-mv";
 constexpr char kFilteringLabel[] = "chrome_desktop_ntp";
 
 // Returns the configured collections base URL with |path| appended.
-GURL GetUrl(base::StringPiece path) {
+GURL GetUrl(std::string_view path) {
   return GURL(base::CommandLine::ForCurrentProcess()->HasSwitch(
                   kCollectionsBaseUrlCmdlineSwitch)
                   ? base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
