@@ -17,6 +17,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -250,16 +251,31 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
   const std::string feedback_type =
       metadata->is_positive ? "Positive" : "Negative";
   CHECK(last_query_);
+  // Text query is not supported.
+  if (last_query_->is_text_query()) {
+    return;
+  }
   const std::string user_visible_query_text =
-      (last_query_->is_text_query())
-          ? last_query_->get_text_query()
-          : last_query_->get_template_query()->user_visible_query->text;
+      last_query_->get_template_query()->user_visible_query->text;
   const std::string description_template =
       hashtag + " " + feedback_type + ": " + user_visible_query_text + "\n";
 
   base::Value::Dict ai_metadata;
   ai_metadata.Set("from_chromeos", "true");
-  ai_metadata.Set("log_id", metadata->log_id);
+  ai_metadata.Set("template_id", metadata->log_id);
+
+  base::Value::List options;
+  for (const auto& [chip, option] :
+       last_query_->get_template_query()->options) {
+    options.Append(
+        base::Value::Dict()
+            .Set("chip", base::NumberToString(static_cast<int32_t>(chip)))
+            .Set("options",
+                 base::NumberToString(static_cast<int32_t>(option))));
+  }
+  std::string options_json;
+  base::JSONWriter::Write(options, &options_json);
+  ai_metadata.Set("template_options", std::move(options_json));
 
   base::RecordAction(base::UserMetricsAction("SeaPen_FeedbackPressed"));
   chrome::ShowFeedbackPage(
