@@ -127,7 +127,7 @@
   if (snapshot) {
     [_snapshots addObject:snapshot];
   } else {
-    [_snapshots addObject:[NSNull null]];
+    [_snapshots addObject:[[UIImage alloc] init]];
   }
 }
 
@@ -137,7 +137,7 @@
   if (favicon) {
     [_favicons addObject:favicon];
   } else {
-    [_favicons addObject:[NSNull null]];
+    [_favicons addObject:[[UIImage alloc] init]];
   }
 }
 

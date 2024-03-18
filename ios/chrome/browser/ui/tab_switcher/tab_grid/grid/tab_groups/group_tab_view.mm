@@ -199,7 +199,6 @@ const CGFloat kSnapshotConfigurationCornerRadius = 12;
     _bottomFaviconView.hidden = NO;
   }
   _snapshotFaviconView.hidden = NO;
-  return;
 }
 
 - (void)configureWithFavicons:(NSArray<UIImage*>*)favicons {
@@ -215,7 +214,6 @@ const CGFloat kSnapshotConfigurationCornerRadius = 12;
 
 - (void)configureWithFavicons:(NSArray<UIImage*>*)favicons
           remainingTabsNumber:(NSInteger)remainingTabsNumber {
-  CHECK_EQ([favicons count], 3u);
   [self configureWithFavicons:favicons];
   _viewList[3].hidden = NO;
   _bottomTrailingFaviconLabel.hidden = NO;

@@ -13,8 +13,6 @@
 // snapshots.
 @interface TabGroupSnapshotsView : UIView
 
-- (instancetype)initWithSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon;
-
 - (instancetype)initWithTabGroupInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos
                                  size:(NSUInteger)size
                                 light:(BOOL)isLight

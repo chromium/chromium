@@ -76,6 +76,13 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   const TabGroup* _tabGroup;
   // Number of selected items.
   NSInteger _numberOfSelectedItems;
+
+  // Configured view that handle the snapshots dispositions.
+  TabGroupSnapshotsView* _snapshotsView;
+  // Constraints for the snapshots view, depending on if we display one or
+  // multiple snapshots.
+  NSArray<NSLayoutConstraint*>* _singleSnapshotConstraints;
+  NSArray<NSLayoutConstraint*>* _multipleSnapshotsConstraints;
 }
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
@@ -632,39 +639,23 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   snapshotsBackground.layer.cornerRadius = kSnapshotViewCornerRadius;
   snapshotsBackground.opaque = NO;
 
-  UIView* snapshotView;
-  CGFloat sizeConstraint;
-  // TODO(crbug.com/1501837): Remove this and move it inside
-  // TabGroupSnapshotsView so it uses the group tab view object.
-  if ([_snapshots count] == 1u || [_favicons count] == 1u) {
-    snapshotView = [[TabGroupSnapshotsView alloc]
-        initWithSnapshot:[self imageFromObject:_snapshots.firstObject]
-                 favicon:[self imageFromObject:_favicons.firstObject]];
-
-    [snapshotsBackground addSubview:snapshotView];
-    sizeConstraint = kSingleSnapshotRatio;
-  } else {
     // TODO(crbug.com/1501837): Remove the creation of tab group infos once the
     // appropriate method is implemented.
-    NSMutableArray<GroupTabInfo*>* tabGroupInfos =
-        [[NSMutableArray alloc] init];
-    for (NSUInteger i = 0; i < [_snapshots count] && i < [_favicons count];
-         i++) {
-      GroupTabInfo* tabGroupInfo = [[GroupTabInfo alloc] init];
-      tabGroupInfo.snapshot = _snapshots[i];
-      tabGroupInfo.favicon = _favicons[i];
-      [tabGroupInfos addObject:tabGroupInfo];
-    }
-    snapshotView = [[TabGroupSnapshotsView alloc]
-        initWithTabGroupInfos:tabGroupInfos
-                         size:_numberOfSelectedItems
-                        light:self.traitCollection.userInterfaceStyle ==
-                              UIUserInterfaceStyleLight
-                         cell:NO];
-
-    [snapshotsBackground addSubview:snapshotView];
-    sizeConstraint = kMultipleSnapshotsRatio;
+  NSMutableArray<GroupTabInfo*>* tabGroupInfos = [[NSMutableArray alloc] init];
+  for (NSUInteger i = 0; i < MIN([_snapshots count], [_favicons count]); ++i) {
+    GroupTabInfo* tabGroupInfo = [[GroupTabInfo alloc] init];
+    tabGroupInfo.snapshot = _snapshots[i];
+    tabGroupInfo.favicon = _favicons[i];
+    [tabGroupInfos addObject:tabGroupInfo];
   }
+  _snapshotsView = [[TabGroupSnapshotsView alloc]
+      initWithTabGroupInfos:tabGroupInfos
+                       size:_numberOfSelectedItems
+                      light:self.traitCollection.userInterfaceStyle ==
+                            UIUserInterfaceStyleLight
+                       cell:NO];
+
+  [snapshotsBackground addSubview:_snapshotsView];
 
   NSLayoutConstraint* backgroundHeightConstraint =
       [snapshotsBackground.heightAnchor
@@ -673,22 +664,34 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   // reduced instead of other elements where the user can interact with.
   backgroundHeightConstraint.priority = UILayoutPriorityDefaultLow;
 
+  _singleSnapshotConstraints = @[
+    [_snapshotsView.widthAnchor
+        constraintEqualToAnchor:snapshotsBackground.widthAnchor
+                     multiplier:kSingleSnapshotRatio],
+    [_snapshotsView.heightAnchor
+        constraintEqualToAnchor:snapshotsBackground.heightAnchor
+                     multiplier:kSingleSnapshotRatio]
+  ];
+  _multipleSnapshotsConstraints = @[
+    [_snapshotsView.widthAnchor
+        constraintEqualToAnchor:snapshotsBackground.widthAnchor
+                     multiplier:kMultipleSnapshotsRatio],
+    [_snapshotsView.heightAnchor
+        constraintEqualToAnchor:snapshotsBackground.heightAnchor
+                     multiplier:kMultipleSnapshotsRatio]
+  ];
+
   [NSLayoutConstraint activateConstraints:@[
     backgroundHeightConstraint,
     [snapshotsBackground.widthAnchor
         constraintEqualToAnchor:snapshotsBackground.heightAnchor
                      multiplier:kSnapshotViewRatio],
-    [snapshotView.centerXAnchor
+    [_snapshotsView.centerXAnchor
         constraintEqualToAnchor:snapshotsBackground.centerXAnchor],
-    [snapshotView.centerYAnchor
+    [_snapshotsView.centerYAnchor
         constraintEqualToAnchor:snapshotsBackground.centerYAnchor],
-    [snapshotView.widthAnchor
-        constraintEqualToAnchor:snapshotsBackground.widthAnchor
-                     multiplier:sizeConstraint],
-    [snapshotView.heightAnchor
-        constraintEqualToAnchor:snapshotsBackground.heightAnchor
-                     multiplier:sizeConstraint],
   ]];
+  [self applyConstraints];
 
   return snapshotsBackground;
 }
@@ -703,19 +706,33 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
                  favicons:(NSArray<UIImage*>*)favicons
     numberOfSelectedItems:(NSInteger)numberOfSelectedItems {
   // TODO(crbug.com/1501837): Pass an array of Group Tab Info.
+  NSMutableArray<GroupTabInfo*>* tabGroupInfos = [[NSMutableArray alloc] init];
+  for (NSUInteger i = 0; i < MIN([snapshots count], [favicons count]); ++i) {
+    GroupTabInfo* info = [[GroupTabInfo alloc] init];
+    info.snapshot = snapshots[i];
+    info.favicon = favicons[i];
+    [tabGroupInfos addObject:info];
+  }
   _snapshots = snapshots;
   _favicons = favicons;
   _numberOfSelectedItems = numberOfSelectedItems;
+  [_snapshotsView
+      configureTabGroupSnapshotsViewWithTabGroupInfos:tabGroupInfos
+                                                 size:_numberOfSelectedItems];
+  [self applyConstraints];
 }
 
 #pragma mark - Private Helpers
 
-// Returns the picture is it is a picture and nil if not.
-- (UIImage*)imageFromObject:(id)object {
-  if ([object isKindOfClass:[NSNull class]]) {
-    return [[UIImage alloc] init];
+// Activates or deactivates the appropriate constraints.
+- (void)applyConstraints {
+  if (_numberOfSelectedItems == 1) {
+    [NSLayoutConstraint deactivateConstraints:_multipleSnapshotsConstraints];
+    [NSLayoutConstraint activateConstraints:_singleSnapshotConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_singleSnapshotConstraints];
+    [NSLayoutConstraint activateConstraints:_multipleSnapshotsConstraints];
   }
-  return object;
 }
 
 @end

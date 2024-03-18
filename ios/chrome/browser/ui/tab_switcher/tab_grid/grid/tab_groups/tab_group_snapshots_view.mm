@@ -15,12 +15,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
-constexpr CGFloat kFaviconSize = 16;
-constexpr CGFloat kFaviconPadding = 8;
-constexpr CGFloat kFaviconMargin = 4;
-constexpr CGFloat kFaviconCornerRadius = 7;
-constexpr CGFloat kSnapshotCornerRadius = 12;
-constexpr CGFloat kSnapshotOverlayAlpha = 0.14;
 constexpr CGFloat kSpacing = 4;
 constexpr CGFloat kFinalViewCornerRadius = 16;
 }  // namespace
@@ -32,75 +26,7 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
   NSUInteger _tabGroupTabNumber;
   UIStackView* _firstLine;
   UIStackView* _secondLine;
-}
-
-// TODO(crbug.com/1501837): Remove this and use GroupTabView instead.
-- (instancetype)initWithSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon {
-  CHECK(IsTabGroupInGridEnabled())
-      << "You should not be able to create a tab group snapshot view outside "
-         "the Tab Groups experiment.";
-  self = [super init];
-  if (self) {
-    UIView* finalView = self;
-    finalView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    TopAlignedImageView* snapshotView = [[TopAlignedImageView alloc] init];
-    snapshotView.image = snapshot;
-    snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-    snapshotView.layer.cornerRadius = kSnapshotCornerRadius;
-    snapshotView.contentMode = UIViewContentModeScaleAspectFill;
-    snapshotView.clipsToBounds = YES;
-
-    GradientView* snapshotOverlay = [[GradientView alloc]
-        initWithTopColor:[[UIColor blackColor] colorWithAlphaComponent:0]
-             bottomColor:[[UIColor blackColor]
-                             colorWithAlphaComponent:kSnapshotOverlayAlpha]];
-    snapshotOverlay.translatesAutoresizingMaskIntoConstraints = NO;
-    [snapshotView addSubview:snapshotOverlay];
-    AddSameConstraints(snapshotOverlay, snapshotView);
-
-    // Add a favicon only if there is one.
-    // TODO(crbug.com/1501837): Condition should be removed once we garanty to
-    // have at least the default favicon.
-    if (favicon && !CGSizeEqualToSize(favicon.size, CGSizeZero)) {
-      UIImageView* faviconImageView = [[UIImageView alloc] init];
-      faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-      faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
-      faviconImageView.image = favicon;
-
-      UIView* faviconBackground = [[UIView alloc] init];
-      faviconBackground.translatesAutoresizingMaskIntoConstraints = NO;
-      faviconBackground.backgroundColor = UIColor.whiteColor;
-      faviconBackground.layer.cornerRadius = kFaviconCornerRadius;
-      faviconBackground.clipsToBounds = YES;
-
-      [faviconBackground addSubview:faviconImageView];
-      AddSameCenterConstraints(faviconBackground, faviconImageView);
-
-      [snapshotView addSubview:faviconBackground];
-
-      [NSLayoutConstraint activateConstraints:@[
-        [faviconImageView.widthAnchor constraintEqualToConstant:kFaviconSize],
-        [faviconImageView.heightAnchor constraintEqualToConstant:kFaviconSize],
-        [faviconBackground.widthAnchor
-            constraintEqualToAnchor:faviconImageView.widthAnchor
-                           constant:kFaviconPadding],
-        [faviconBackground.heightAnchor
-            constraintEqualToAnchor:faviconImageView.heightAnchor
-                           constant:kFaviconPadding],
-        [faviconBackground.trailingAnchor
-            constraintEqualToAnchor:snapshotView.trailingAnchor
-                           constant:-kFaviconMargin],
-        [faviconBackground.bottomAnchor
-            constraintEqualToAnchor:snapshotView.bottomAnchor
-                           constant:-kFaviconMargin],
-      ]];
-    }
-
-    [finalView addSubview:snapshotView];
-    AddSameConstraints(finalView, snapshotView);
-  }
-  return self;
+  GroupTabView* _singleView;
 }
 
 - (instancetype)initWithTabGroupInfos:(NSArray<GroupTabInfo*>*)tabGroupInfos
@@ -132,6 +58,18 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
 
     [self configureTabGroupSnapshotsViewWithTabGroupInfos:tabGroupInfos
                                                      size:size];
+
+    if (!_isCell) {
+      _singleView = [[GroupTabView alloc] initWithIsCell:_isCell];
+      _singleView.translatesAutoresizingMaskIntoConstraints = NO;
+      [_singleView configureWithSnapshot:tabGroupInfos.firstObject.snapshot
+                                 favicon:tabGroupInfos.firstObject.favicon];
+      [self addSubview:_singleView];
+      AddSameConstraints(_singleView, self);
+      _singleView.hidden = size > 1;
+      _firstLine.hidden = size == 1;
+      _secondLine.hidden = size == 1;
+    }
 
     if (@available(iOS 17, *)) {
       [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
@@ -240,7 +178,18 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
                                                    size:(NSUInteger)size {
   _tabGroupInfos = [self prepareInfos:tabGroupInfos];
   _tabGroupTabNumber = size;
-  [self updateViews];
+  if (!_isCell && (size == 1)) {
+    _singleView.hidden = NO;
+    _firstLine.hidden = YES;
+    _secondLine.hidden = YES;
+    [_singleView configureWithSnapshot:tabGroupInfos.firstObject.snapshot
+                               favicon:tabGroupInfos.firstObject.favicon];
+  } else {
+    _singleView.hidden = YES;
+    _firstLine.hidden = NO;
+    _secondLine.hidden = NO;
+    [self updateViews];
+  }
 }
 
 - (void)updateViews {
