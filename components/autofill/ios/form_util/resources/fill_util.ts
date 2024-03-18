@@ -310,7 +310,7 @@ function setInputElementValue(value: string, input: HTMLInputElement): boolean {
 
   if (overrideProperty) {
     Object.defineProperty(input, propertyName, oldPropertyDescriptor);
-    if (!setterCalled && input[propertyName] !== value) {
+    if (!setterCalled) {
       // The setter was never called. This may be intentional (the framework
       // ignored the input event) or not (the event did not conform to what
       // framework expected). The whole function will likely fail, but try to
