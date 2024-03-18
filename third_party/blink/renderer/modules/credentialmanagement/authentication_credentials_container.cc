@@ -2106,7 +2106,8 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   base::UmaHistogramEnumeration("Blink.FedCm.RpContext", rp_context);
 
   mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
-  if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled()) {
+  if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled(
+          resolver->GetExecutionContext())) {
     // TODO(crbug.com/1429083): add use counters for rp mode.
     rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(identity_options.mode());
   }

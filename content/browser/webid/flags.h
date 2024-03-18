@@ -60,7 +60,7 @@ bool IsFedCmErrorEnabled();
 bool IsFedCmDisconnectEnabled();
 
 // Whether "Use Other Account" is enabled.
-bool IsFedCmUseOtherAccountEnabled();
+bool IsFedCmUseOtherAccountEnabled(bool is_button_mode);
 
 // Whether the ExemptIdpWithThirdPartyCookies feature is enabled.
 bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled();

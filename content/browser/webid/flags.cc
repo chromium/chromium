@@ -76,8 +76,12 @@ bool IsFedCmDisconnectEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmDisconnect);
 }
 
-bool IsFedCmUseOtherAccountEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount);
+bool IsFedCmUseOtherAccountEnabled(bool is_button_mode) {
+  // TODO(crbug.com/328470597): this feature is bundled with the button mode at
+  // the moment. We should decouple them when supporting the feature in the
+  // widget flow.
+  return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount) ||
+         (IsFedCmButtonModeEnabled() && is_button_mode);
 }
 
 bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled() {

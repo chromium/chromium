@@ -535,7 +535,7 @@ void OnConfigParsed(const GURL& provider,
   }
   idp_metadata.idp_login_url =
       ExtractEndpoint(provider, response, kLoginUrlKey);
-  if (IsFedCmUseOtherAccountEnabled()) {
+  if (IsFedCmUseOtherAccountEnabled(rp_mode == blink::mojom::RpMode::kButton)) {
     const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
     const base::Value::Dict* selected_mode_dict = nullptr;
     if (modes_dict) {
