@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWaitStatus;
+import org.chromium.base.test.transit.ConditionalState.Phase;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -110,8 +111,11 @@ public class Trip extends Transition {
         ArrayList<ConditionWaitStatus> waitStatuses = new ArrayList<>();
 
         Elements originElements =
-                origin != null ? origin.getElementsIncludingFacilities() : Elements.EMPTY;
-        Elements destinationElements = destination.getElementsIncludingFacilities();
+                origin != null
+                        ? origin.getElementsIncludingFacilitiesWithPhase(Phase.ACTIVE)
+                        : Elements.EMPTY;
+        Elements destinationElements =
+                destination.getElementsIncludingFacilitiesWithPhase(Phase.NEW);
 
         // Create ENTER Conditions for Views that should appear and LogicalElements that should
         // be true.

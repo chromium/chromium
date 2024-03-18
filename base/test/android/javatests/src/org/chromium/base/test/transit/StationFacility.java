@@ -33,8 +33,13 @@ public abstract class StationFacility<T extends TransitStation> extends Conditio
     /**
      * Constructor.
      *
-     * <p>Instantiate a subclass, then call {@link #enterSync(StationFacility, Trigger)} to enter
-     * it.
+     * <p>Instantiate a concrete subclass instead of this base class.
+     *
+     * <p>If the TransitStation is still NEW, the Enter conditions of this facility with be added to
+     * the transition to the station.
+     *
+     * <p>If the TransitStation is already ACTIVE, call {@link #enterSync(StationFacility, Trigger)}
+     * to enter this Facility synchronously with a Transition.
      *
      * @param station the TransitStation this StationFacility is scoped to.
      */

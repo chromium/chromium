@@ -32,11 +32,11 @@ public abstract class TransitStation extends ConditionalState {
         TrafficControl.notifyCreatedStation(this);
     }
 
-    Elements getElementsIncludingFacilities() {
+    Elements getElementsIncludingFacilitiesWithPhase(@Phase int phase) {
         Elements.Builder allElements = Elements.newBuilder();
         allElements.addAll(getElements());
         for (StationFacility facility : mFacilities) {
-            if (facility.getPhase() == Phase.ACTIVE) {
+            if (facility.getPhase() == phase) {
                 allElements.addAll(facility.getElements());
             }
         }
@@ -57,5 +57,45 @@ public abstract class TransitStation extends ConditionalState {
      */
     public int getId() {
         return mId;
+    }
+
+    @Override
+    void setStateTransitioningTo() {
+        super.setStateTransitioningTo();
+
+        for (StationFacility facility : mFacilities) {
+            facility.setStateTransitioningTo();
+        }
+    }
+
+    @Override
+    void setStateActive() {
+        super.setStateActive();
+
+        for (StationFacility facility : mFacilities) {
+            facility.setStateActive();
+        }
+    }
+
+    @Override
+    void setStateTransitioningFrom() {
+        super.setStateTransitioningFrom();
+
+        for (StationFacility facility : mFacilities) {
+            if (facility.getPhase() == Phase.ACTIVE) {
+                facility.setStateTransitioningFrom();
+            }
+        }
+    }
+
+    @Override
+    void setStateFinished() {
+        super.setStateFinished();
+
+        for (StationFacility facility : mFacilities) {
+            if (facility.getPhase() == Phase.TRANSITIONING_FROM) {
+                facility.setStateFinished();
+            }
+        }
     }
 }
