@@ -3556,6 +3556,51 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, FailToAccessInnerFramesIframe) {
                                   kNestedWindowFramesUndefinedCheck));
 }
 
+// Tests that a data URL to a PDF loads successfully.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfFullPage) {
+  // The data URL to load a simple PDF page.
+  const char kDataUrlPdfFullPage[] =
+      "data:application/pdf;base64,"
+      "JVBERi0xLjcKJaDypPQKMSAwIG9iaiA8PAogIC9UeXBlIC9DYXRhbG9nCiAgL1BhZ2VzIDIg"
+      "MCBSCj4+CmVuZG9iagoyIDAgb2JqIDw8CiAgL1R5cGUgL1BhZ2VzCiAgL0NvdW50IDEKICAv"
+      "S2lkcyBbMyAwIFJdCiAgL1Jlc291cmNlcyA8PCA+Pgo+PgplbmRvYmoKMyAwIG9iaiA8PAog"
+      "IC9UeXBlIC9QYWdlIAogIC9QYXJlbnQgMiAwIFIKICAvTWVkaWFCb3ggWzAgMCAxMDAgNTBd"
+      "Cj4+CmVuZG9iagp4cmVmCjAgNAowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTUgMDAw"
+      "MDAgbiAKMDAwMDAwMDA2OCAwMDAwMCBuIAowMDAwMDAwMTUwIDAwMDAwIG4gCnRyYWlsZXIg"
+      "PDwKICAvUm9vdCAxIDAgUgogIC9TaXplIDQKPj4Kc3RhcnR4cmVmCjIyNwolJUVPRgo=";
+  EXPECT_TRUE(LoadPdf(GURL(kDataUrlPdfFullPage)));
+}
+
+// Tests that a data URL to a HTML page embedding a PDF in an embed loads
+// successfully.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfEmbed) {
+  const std::string url =
+      embedded_test_server()->GetURL("/pdf/test.pdf").spec();
+  const std::string data_url =
+      "data:text/html,"
+      "<html><body>"
+      "<embed type=\"application/pdf\" src=\"" +
+      url +
+      "\">"
+      "</body></html>";
+  EXPECT_TRUE(LoadPdfInFirstChild(GURL(data_url)));
+}
+
+// Tests that a data URL to a HTML page embedding a PDF in an iframe loads
+// successfully.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfIframe) {
+  const std::string url =
+      embedded_test_server()->GetURL("/pdf/test.pdf").spec();
+  const std::string data_url =
+      "data:text/html,"
+      "<html><body>"
+      "<iframe type=\"application/pdf\" src=\"" +
+      url +
+      "\">"
+      "</body></html>";
+  EXPECT_TRUE(LoadPdfInFirstChild(GURL(data_url)));
+}
+
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);

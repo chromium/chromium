@@ -26,6 +26,7 @@
 #include "url/origin.h"
 
 namespace blink {
+class WebFrame;
 class WebURL;
 }  // namespace blink
 
@@ -44,6 +45,10 @@ class ContentSettingsAgentImpl
   class Delegate {
    public:
     virtual ~Delegate();
+
+    // Return true if this frame should be allowlisted for accessing storage.
+    virtual bool IsFrameAllowlistedForStorageAccess(
+        blink::WebFrame* frame) const;
 
     // Return true if this scheme should be allowlisted for content settings.
     virtual bool IsSchemeAllowlisted(const std::string& scheme);

@@ -37,6 +37,8 @@ class ChromeContentSettingsAgentDelegate
   void AllowPluginTemporarily(const std::string& identifier);
 
   // content_settings::ContentSettingsAgentImpl::Delegate:
+  bool IsFrameAllowlistedForStorageAccess(
+      blink::WebFrame* frame) const override;
   bool IsSchemeAllowlisted(const std::string& scheme) override;
   bool AllowReadFromClipboard() override;
   bool AllowWriteToClipboard() override;

@@ -6,8 +6,15 @@
 
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
+#include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/test/scoped_feature_list.h"
+#include "pdf/pdf_features.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 class ChromeContentSettingsAgentDelegateBrowserTest
     : public ChromeRenderViewTest {
@@ -57,4 +64,45 @@ TEST_F(ChromeContentSettingsAgentDelegateBrowserTest,
   delegate->AllowPluginTemporarily(std::string());
   EXPECT_TRUE(delegate->IsPluginTemporarilyAllowed(foo_plugin));
   EXPECT_TRUE(delegate->IsPluginTemporarilyAllowed(bar_plugin));
+}
+
+#if BUILDFLAG(ENABLE_PDF)
+// Test that the PDF extension frame is allowlisted for storage access.
+TEST_F(ChromeContentSettingsAgentDelegateBrowserTest,
+       FrameAllowlistedForStorageAccessPdfExtensionOrigin) {
+  // Load HTML with an iframe navigating to the PDF extension URL. Normally,
+  // an iframe navigating to the PDF extension URL fails. For testing purposes,
+  // it is needed to create a child with the PDF extension origin.
+  LoadHTML(
+      "<html><iframe "
+      "src='chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html'></"
+      "iframe></html>");
+
+  auto* delegate =
+      ChromeContentSettingsAgentDelegate::Get(GetMainRenderFrame());
+
+  blink::WebFrame* child_frame = GetMainFrame()->FirstChild();
+  ASSERT_TRUE(child_frame);
+
+  base::test::ScopedFeatureList feature_list(chrome_pdf::features::kPdfOopif);
+
+  // The PDF extension frame should be allowlisted for storage access.
+  EXPECT_TRUE(delegate->IsFrameAllowlistedForStorageAccess(child_frame));
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+// Test that a child frame with an origin not allowlisted for storage access
+// cannot access it.
+TEST_F(ChromeContentSettingsAgentDelegateBrowserTest,
+       FrameAllowlistedForStorageAccessFail) {
+  // Load HTML with an iframe navigating to a URL without an allowlisted origin.
+  LoadHTML("<html><iframe src='https://www.example.com'></iframe></html>");
+
+  auto* delegate =
+      ChromeContentSettingsAgentDelegate::Get(GetMainRenderFrame());
+
+  blink::WebFrame* child_frame = GetMainFrame()->FirstChild();
+  ASSERT_TRUE(child_frame);
+
+  EXPECT_FALSE(delegate->IsFrameAllowlistedForStorageAccess(child_frame));
 }

@@ -55,6 +55,11 @@ bool IsFrameWithOpaqueOrigin(WebFrame* frame) {
 
 ContentSettingsAgentImpl::Delegate::~Delegate() = default;
 
+bool ContentSettingsAgentImpl::Delegate::IsFrameAllowlistedForStorageAccess(
+    blink::WebFrame* frame) const {
+  return false;
+}
+
 bool ContentSettingsAgentImpl::Delegate::IsSchemeAllowlisted(
     const std::string& scheme) {
   return false;
@@ -230,6 +235,11 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
     StorageType storage_type,
     base::OnceCallback<void(bool)> callback) {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
+  if (delegate_->IsFrameAllowlistedForStorageAccess(frame)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
   if (IsFrameWithOpaqueOrigin(frame)) {
     std::move(callback).Run(false);
     return;
@@ -263,8 +273,13 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
 bool ContentSettingsAgentImpl::AllowStorageAccessSync(
     StorageType storage_type) {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
-  if (IsFrameWithOpaqueOrigin(frame))
+  if (delegate_->IsFrameAllowlistedForStorageAccess(frame)) {
+    return true;
+  }
+
+  if (IsFrameWithOpaqueOrigin(frame)) {
     return false;
+  }
 
   StoragePermissionsKey key(url::Origin(frame->GetSecurityOrigin()),
                             storage_type);
