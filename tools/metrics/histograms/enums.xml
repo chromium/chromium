@@ -4017,33 +4017,33 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Invalid JSON"/>
   <int value="1" label="Root JSON value has wrong type"/>
   <int value="2" label="Filters has wrong type"/>
-  <int value="3" label="Filters value has wrong type"/>
-  <int value="4" label="Filters list value has wrong type"/>
+  <int value="3" label="Filters value is invalid"/>
+  <int value="4" label="Filters lookback window value is invalid"/>
   <int value="5"
       label="Filters is using a reserved key (starts with &quot;_&quot;)"/>
-  <int value="6" label="aggregatable_values has wrong type"/>
-  <int value="7" label="aggregatable_values key too long"/>
-  <int value="8" label="aggregatable_values list value has wrong type"/>
-  <int value="9"
+  <int value="6" label="Filters list value is invalid"/>
+  <int value="7" label="Filters list lookback window value is invalid"/>
+  <int value="8"
+      label="Filters list is using a reserved key (starts with &quot;_&quot;)"/>
+  <int value="9" label="aggregatable_values has wrong type"/>
+  <int value="10" label="aggregatable_values key too long"/>
+  <int value="11"
       label="aggregatable_values list value is missing values field"/>
-  <int value="10" label="aggregatable_values value is invalid"/>
-  <int value="11" label="aggregatable_trigger_data has wrong type"/>
-  <int value="12" label="aggregatable_trigger_data value has wrong type"/>
-  <int value="13" label="aggregatable_trigger_data value key_piece missing"/>
-  <int value="14"
-      label="aggregatable_trigger_data value source_keys has wrong type"/>
-  <int value="15" label="aggregatable_trigger_data value key_piece is invalid"/>
-  <int value="16"
-      label="aggregatable_trigger_data value source_keys key is invalid"/>
-  <int value="17" label="event_trigger_data has wrong type"/>
-  <int value="18" label="event_trigger_data value is invalid"/>
-  <int value="19" label="event_trigger_data value has wrong type"/>
-  <int value="20" label="event_trigger priority value is invalid"/>
-  <int value="21" label="event_trigger dedup key value is invalid"/>
-  <int value="22" label="aggregation_coordinator_identifier value is invalid"/>
-  <int value="23" label="aggregatable_deduplication_keys has wrong type"/>
+  <int value="12" label="aggregatable_values value is invalid"/>
+  <int value="13" label="aggregatable_values list key too long"/>
+  <int value="14" label="aggregatable_values list value is invalid"/>
+  <int value="15" label="aggregatable_trigger_data has wrong type"/>
+  <int value="16" label="aggregatable_trigger_data value key_piece missing"/>
+  <int value="17"
+      label="aggregatable_tsrigger_data value source_keys is invalid"/>
+  <int value="18" label="aggregatable_trigger_data value key_piece is invalid"/>
+  <int value="19" label="event_trigger_data has wrong type"/>
+  <int value="20" label="event_trigger_data value is invalid"/>
+  <int value="21" label="event_trigger priority value is invalid"/>
+  <int value="22" label="event_trigger dedup key value is invalid"/>
+  <int value="23" label="aggregation_coordinator_identifier value is invalid"/>
   <int value="24" label="aggregatable_deduplication_keys value is invalid"/>
-  <int value="25" label="aggregatable_deduplication_keys value has wrong type"/>
+  <int value="25" label="aggregatable_deduplication_keys has wrong type"/>
   <int value="26"
       label="aggregatable_source_registration_time valid is invalid"/>
   <int value="27" label="trigger_context_id value is invalid"/>

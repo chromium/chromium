@@ -6,6 +6,7 @@
 
 #include "base/test/values_test_util.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,6 +14,7 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 TEST(RegistrationHeaderErrorTest, SourceRegistrationErrorDetails) {
   const struct {
@@ -310,6 +312,231 @@ TEST(RegistrationHeaderErrorTest, SourceRegistrationErrorDetails) {
           R"json({
             "path": ["event_level_epsilon"],
             "msg": "must be a number in the range [0, 14]"
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.error);
+    EXPECT_THAT(ErrorDetails(test_case.error),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(RegistrationHeaderErrorTest, TriggerRegistrationErrorDetails) {
+  const struct {
+    TriggerRegistrationError error;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          TriggerRegistrationError::kInvalidJson,
+          R"json({
+            "msg": "invalid JSON"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kRootWrongType,
+          R"json({
+            "path": [],
+            "msg": "must be a dictionary"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kFiltersWrongType,
+          R"json({
+            "path": ["filters"],
+            "msg": "must be a dictionary or a list of dictionaries"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kFiltersValueInvalid,
+          R"json({
+            "path": ["filters", "*"],
+            "msg": "must be a list of strings"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kFiltersLookbackWindowValueInvalid,
+          R"json({
+            "path": ["filters", "_lookback_window"],
+            "msg": "must be a positive integer"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kFiltersUsingReservedKey,
+          R"json({
+            "path": ["filters"],
+            "msg": "strings starting with \"_\" are reserved keys"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kFiltersListValueInvalid,
+          R"json({
+            "path": ["filters", "*", "*"],
+            "msg": "must be a list of strings"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid,
+          R"json({
+            "path": ["filters", "*", "_lookback_window"],
+            "msg": "must be a positive integer"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kFiltersListUsingReservedKey,
+          R"json({
+            "path": ["filters", "*"],
+            "msg": "strings starting with \"_\" are reserved keys"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableValuesWrongType,
+          R"json({
+            "path": ["aggregatable_values"],
+            "msg": "must be a dictionary or a list of dictionaries"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableValuesKeyTooLong,
+          R"json({
+            "path": ["aggregatable_values"],
+            "msg": "key length must be less than or equal to 25"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableValuesListValuesFieldMissing,
+          R"json({
+            "path": ["aggregatable_values", "*", "values"],
+            "msg": "required"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableValuesListKeyTooLong,
+          R"json({
+            "path": ["aggregatable_values", "*", "values"],
+            "msg": "key length must be less than or equal to 25"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableValuesValueInvalid,
+          R"json({
+            "path": ["aggregatable_values", "*"],
+            "msg": "must be an integer in the range [1, 65536]"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableValuesListValueInvalid,
+          R"json({
+            "path": ["aggregatable_values", "*", "values", "*"],
+            "msg": "must be an integer in the range [1, 65536]"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableTriggerDataWrongType,
+          R"json({
+            "path": ["aggregatable_trigger_data"],
+            "msg": "must be a list of dictionaries"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableTriggerDataKeyPieceMissing,
+          R"json({
+            "path": ["aggregatable_trigger_data", "*", "key_piece"],
+            "msg": "required"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableTriggerDataSourceKeysInvalid,
+          R"json({
+            "path": ["aggregatable_trigger_data", "*", "source_keys"],
+            "msg": "must be a list of strings, each with length less than or equal to 25"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableTriggerDataKeyPieceInvalid,
+          R"json({
+            "path": ["aggregatable_trigger_data", "*", "key_piece"],
+            "msg": "must be a base16-encoded string of a uint128 with a \"0x\" prefix"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kEventTriggerDataWrongType,
+          R"json({
+            "path": ["event_trigger_data"],
+            "msg": "must be a list of dictionaries"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kEventTriggerDataValueInvalid,
+          R"json({
+            "path": ["event_trigger_data", "*", "trigger_data"],
+            "msg": "must be a base10-encoded string of a uint64"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kEventPriorityValueInvalid,
+          R"json({
+            "path": ["event_trigger_data", "*", "priority"],
+            "msg": "must be a base10-encoded string of a int64"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kEventDedupKeyValueInvalid,
+          R"json({
+            "path": ["event_trigger_data", "*", "deduplication_key"],
+            "msg": "must be a base10-encoded string of a uint64"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregationCoordinatorValueInvalid,
+          R"json({
+            "path": ["aggregation_coordinator_origin"],
+            "msg": "must be a potentially trustworthy URL on the allowlist that uses HTTP/HTTPS"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableDedupKeyValueInvalid,
+          R"json({
+            "path": ["aggregatable_deduplication_keys", "*", "deduplication_key"],
+            "msg": "must be a base10-encoded string of a uint64"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kAggregatableDedupKeyWrongType,
+          R"json({
+            "path": ["aggregatable_deduplication_keys"],
+            "msg": "must be a list of dictionaries"
+          })json",
+      },
+      {
+          TriggerRegistrationError::
+              kAggregatableSourceRegistrationTimeValueInvalid,
+          R"json({
+            "path": ["aggregatable_source_registration_time"],
+            "msg": "must be one of the following (case-sensitive): include, exclude"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kTriggerContextIdInvalidValue,
+          R"json({
+            "path": ["trigger_context_id"],
+            "msg": "must be a non-empty string with length less than or equal to 64"
+          })json",
+      },
+      {
+          TriggerRegistrationError::
+              kTriggerContextIdInvalidSourceRegistrationTimeConfig,
+          R"json({
+            "path": ["trigger_context_id"],
+            "msg": "is prohibited for aggregatable_source_registration_time include"
+          })json",
+      },
+      {
+          TriggerRegistrationError::kEventValueInvalid,
+          R"json({
+            "path": ["event_trigger_data", "*", "value"],
+            "msg": "must be a positive integer in the range [1, 4294967295]"
           })json",
       },
   };

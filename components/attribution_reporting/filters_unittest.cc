@@ -85,17 +85,21 @@ const struct {
   std::optional<base::Value> json;
   base::expected<FilterData, SourceRegistrationError> expected_filter_data;
   base::expected<FiltersDisjunction, TriggerRegistrationError> expected_filters;
+  base::expected<FiltersDisjunction, TriggerRegistrationError>
+      expected_filters_list;
 } kParseTestCases[] = {
     {
         "Null",
         std::nullopt,
         FilterData(),
         FiltersDisjunction(),
+        FiltersDisjunction(),
     },
     {
         "empty",
         base::Value(base::Value::Dict()),
         FilterData(),
+        FiltersDisjunction(),
         FiltersDisjunction(),
     },
     {
@@ -115,6 +119,11 @@ const struct {
             {"c", {"e", "d"}},
             {"f", {}},
         })}),
+        FiltersDisjunction({*FilterConfig::Create({
+            {"a", {"b"}},
+            {"c", {"e", "d"}},
+            {"f", {}},
+        })}),
     },
     {
         "source_type_key",
@@ -122,6 +131,7 @@ const struct {
           "source_type": ["a"]
         })json"),
         base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        FiltersDisjunction({*FilterConfig::Create({{{"source_type", {"a"}}}})}),
         FiltersDisjunction({*FilterConfig::Create({{{"source_type", {"a"}}}})}),
     },
     {
@@ -132,6 +142,8 @@ const struct {
         base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
         FiltersDisjunction(
             {*FilterConfig::Create({}, /*lookback_window=*/base::Seconds(1))}),
+        FiltersDisjunction(
+            {*FilterConfig::Create({}, /*lookback_window=*/base::Seconds(1))}),
     },
     {
         "reserved_key",
@@ -140,36 +152,47 @@ const struct {
         })json"),
         base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
         base::unexpected(TriggerRegistrationError::kFiltersUsingReservedKey),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersListUsingReservedKey),
     },
     {
         "lookback_window_list",
         base::test::ParseJson(R"json({"_lookback_window": ["a"]})json"),
         base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
-        base::unexpected(TriggerRegistrationError::kFiltersValueWrongType),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersLookbackWindowValueInvalid),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid),
     },
     {
         "lookback_window_not_positive",
         base::test::ParseJson(R"json({"_lookback_window": 0})json"),
         base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
-        base::unexpected(TriggerRegistrationError::kFiltersValueWrongType),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersLookbackWindowValueInvalid),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid),
     },
     {
         "wrong_type",
         base::Value("foo"),
         base::unexpected(SourceRegistrationError::kFilterDataDictInvalid),
         base::unexpected(TriggerRegistrationError::kFiltersWrongType),
+        base::unexpected(TriggerRegistrationError::kFiltersWrongType),
     },
     {
         "value_not_array",
         base::test::ParseJson(R"json({"a": true})json"),
         base::unexpected(SourceRegistrationError::kFilterDataListInvalid),
-        base::unexpected(TriggerRegistrationError::kFiltersListWrongType),
+        base::unexpected(TriggerRegistrationError::kFiltersValueInvalid),
+        base::unexpected(TriggerRegistrationError::kFiltersListValueInvalid),
     },
     {
         "array_element_not_string",
         base::test::ParseJson(R"json({"a": [true]})json"),
         base::unexpected(SourceRegistrationError::kFilterDataListValueInvalid),
-        base::unexpected(TriggerRegistrationError::kFiltersValueWrongType),
+        base::unexpected(TriggerRegistrationError::kFiltersValueInvalid),
+        base::unexpected(TriggerRegistrationError::kFiltersListValueInvalid),
     },
 };
 
@@ -332,7 +355,8 @@ TEST(FiltersTest, FromJSON_list) {
     auto list = base::Value::List();
     list.Append(test_case.json->Clone());
     auto json_copy = base::Value(std::move(list));
-    EXPECT_EQ(FiltersFromJSONForTesting(&json_copy), test_case.expected_filters)
+    EXPECT_EQ(FiltersFromJSONForTesting(&json_copy),
+              test_case.expected_filters_list)
         << test_case.description << " within a list";
   }
   {

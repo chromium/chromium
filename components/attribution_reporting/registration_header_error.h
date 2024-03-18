@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "components/attribution_reporting/registration_header_type.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 
 namespace base {
 class Value;
@@ -33,6 +34,9 @@ struct RegistrationHeaderError {
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::Value ErrorDetails(mojom::SourceRegistrationError);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value ErrorDetails(mojom::TriggerRegistrationError);
 
 }  // namespace attribution_reporting
 

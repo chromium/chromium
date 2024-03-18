@@ -29,7 +29,6 @@ namespace {
 
 constexpr char kDebugKey[] = "debug_key";
 constexpr char kDebugReporting[] = "debug_reporting";
-constexpr char kDeduplicationKey[] = "deduplication_key";
 
 template <typename T>
 base::expected<std::optional<T>, ParseError> ParseIntegerFromString(

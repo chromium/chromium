@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
@@ -21,9 +22,6 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
-
-constexpr char kTriggerData[] = "trigger_data";
-constexpr char kValue[] = "value";
 
 }  // namespace
 

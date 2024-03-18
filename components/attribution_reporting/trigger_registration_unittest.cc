@@ -144,7 +144,7 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "event_triggers_wrong_type",
           R"json({"event_trigger_data":{}})json",
-          ErrorIs(TriggerRegistrationError::kEventTriggerDataListWrongType),
+          ErrorIs(TriggerRegistrationError::kEventTriggerDataWrongType),
       },
       {
           "event_trigger_data_wrong_type",
@@ -199,8 +199,7 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "aggregatable_trigger_data_list_wrong_type",
           R"json({"aggregatable_trigger_data": {}})json",
-          ErrorIs(
-              TriggerRegistrationError::kAggregatableTriggerDataListWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableTriggerDataWrongType),
       },
       {
           "aggregatable_trigger_data_wrong_type",
@@ -245,7 +244,7 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "aggregatable_dedup_keys_wrong_type",
           R"json({"aggregatable_deduplication_keys":{}})json",
-          ErrorIs(TriggerRegistrationError::kAggregatableDedupKeyListWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableDedupKeyWrongType),
       },
       {
           "aggregatable_dedup_key_wrong_type",
@@ -282,7 +281,7 @@ TEST(TriggerRegistrationTest, Parse) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError10";
+      "Conversions.TriggerRegistrationError11";
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
@@ -381,7 +380,7 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
   };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError10";
+      "Conversions.TriggerRegistrationError11";
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(

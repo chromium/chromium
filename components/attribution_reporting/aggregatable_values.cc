@@ -25,8 +25,6 @@ namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-constexpr char kValues[] = "values";
-
 bool IsValueInRange(int value) {
   return value > 0 && value <= kMaxAggregatableValue;
 }
@@ -39,19 +37,19 @@ bool IsValid(const AggregatableValues::Values& values) {
 }
 
 base::expected<AggregatableValues::Values, mojom::TriggerRegistrationError>
-ParseValues(const base::Value::Dict& dict) {
+ParseValues(const base::Value::Dict& dict,
+            TriggerRegistrationError key_error,
+            TriggerRegistrationError value_error) {
   AggregatableValues::Values::container_type container;
 
   for (auto [id, key_value] : dict) {
     if (!AggregationKeyIdHasValidLength(id)) {
-      return base::unexpected(
-          TriggerRegistrationError::kAggregatableValuesKeyTooLong);
+      return base::unexpected(key_error);
     }
 
     std::optional<int> int_value = key_value.GetIfInt();
     if (!int_value.has_value() || !IsValueInRange(*int_value)) {
-      return base::unexpected(
-          TriggerRegistrationError::kAggregatableValuesValueInvalid);
+      return base::unexpected(value_error);
     }
 
     container.emplace_back(id, *int_value);
@@ -81,7 +79,11 @@ AggregatableValues::FromJSON(base::Value* input_value) {
   }
 
   if (base::Value::Dict* dict = input_value->GetIfDict()) {
-    ASSIGN_OR_RETURN(Values values, ParseValues(*dict));
+    ASSIGN_OR_RETURN(
+        Values values,
+        ParseValues(*dict,
+                    TriggerRegistrationError::kAggregatableValuesKeyTooLong,
+                    TriggerRegistrationError::kAggregatableValuesValueInvalid));
     if (!values.empty()) {
       configs.push_back(AggregatableValues(std::move(values), FilterPair()));
     }
@@ -91,7 +93,7 @@ AggregatableValues::FromJSON(base::Value* input_value) {
       base::Value::Dict* dict_value = maybe_dict_value.GetIfDict();
       if (!dict_value) {
         return base::unexpected(
-            TriggerRegistrationError::kAggregatableValuesListWrongType);
+            TriggerRegistrationError::kAggregatableValuesWrongType);
       }
 
       const base::Value::Dict* agg_values_dict = dict_value->FindDict(kValues);
@@ -100,7 +102,12 @@ AggregatableValues::FromJSON(base::Value* input_value) {
                                     kAggregatableValuesListValuesFieldMissing);
       }
 
-      ASSIGN_OR_RETURN(Values values, ParseValues(*agg_values_dict));
+      ASSIGN_OR_RETURN(
+          Values values,
+          ParseValues(
+              *agg_values_dict,
+              TriggerRegistrationError::kAggregatableValuesListKeyTooLong,
+              TriggerRegistrationError::kAggregatableValuesListValueInvalid));
       ASSIGN_OR_RETURN(FilterPair filters, FilterPair::FromJSON(*dict_value));
 
       configs.push_back(

@@ -18,8 +18,10 @@
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/registration_header_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
+#include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 
 namespace attribution_reporting {
 
@@ -27,6 +29,19 @@ namespace {
 
 using ::attribution_reporting::mojom::RegistrationHeaderType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::TriggerRegistrationError;
+
+constexpr char kIndex[] = "*";
+
+constexpr char kAggregationKeyPieceMsg[] =
+    R"(must be a base16-encoded string of a uint128 with a "0x" prefix)";
+constexpr char kBase10EncodedMsg[] = "must be a base10-encoded string of a ";
+constexpr char kDictionaryMsg[] = "must be a dictionary";
+constexpr char kInvalidJsonMsg[] = "invalid JSON";
+constexpr char kListOfDictionariesMsg[] = "must be a list of dictionaries";
+constexpr char kKeyLengthMsg[] = "key length must be less than or equal to ";
+constexpr char kPositiveIntegerMsg[] = "must be a positive integer";
+constexpr char kRequiredMsg[] = "required";
 
 base::Value GetPath(base::span<const std::string_view> parts) {
   base::Value::List list;
@@ -83,30 +98,32 @@ std::string InvalidTriggerDataMsg() {
        base::NumberToString(std::numeric_limits<uint32_t>::max()), "]"});
 }
 
+std::string AggregationKeyTooLongMsg() {
+  return base::StrCat(
+      {kKeyLengthMsg, base::NumberToString(kMaxBytesPerAggregationKeyId)});
+}
+
+std::string AggregatableValueMsg() {
+  return base::StrCat({"must be an integer in the range [1, ",
+                       base::NumberToString(kMaxAggregatableValue), "]"});
+}
+
 }  // namespace
 
 base::Value ErrorDetails(SourceRegistrationError error) {
-  static constexpr char kIndex[] = "*";
-
-  static constexpr char kBase10EncodedMsg[] =
-      "must be a base10-encoded string of a ";
   static constexpr char kDestinationPotentiallyTrustworthyMsg[] =
       "must be a potentially trustworthy URL that uses HTTP/HTTPS";
-  static constexpr char kDictionaryMsg[] = "must be a dictionary";
   static constexpr char kDuplicateTriggerDataMsg[] =
       "must not contain duplicate trigger_data";
   static constexpr char kExpiryOrReportWindowInvalidMsg[] =
       "must be a non-negative integer or a base10-encoded string of a uint64";
-  static constexpr char kKeyLengthMsg[] =
-      "key length must be less than or equal to ";
-  static constexpr char kRequiredMsg[] = "required";
 
   base::Value path;
   std::string msg;
 
   switch (error) {
     case SourceRegistrationError::kInvalidJson:
-      msg = "invalid JSON";
+      msg = kInvalidJsonMsg;
       break;
     case SourceRegistrationError::kRootWrongType:
       path = base::Value(base::Value::List());
@@ -162,8 +179,7 @@ base::Value ErrorDetails(SourceRegistrationError error) {
       break;
     case SourceRegistrationError::kAggregationKeysValueInvalid:
       path = GetPath({{kAggregationKeys, kIndex}});
-      msg =
-          R"(must be a base16-encoded string of a uint128 with a "0x" prefix)";
+      msg = kAggregationKeyPieceMsg;
       break;
     case SourceRegistrationError::kSourceEventIdValueInvalid:
       path = GetPath({{kSourceEventId}});
@@ -220,7 +236,7 @@ base::Value ErrorDetails(SourceRegistrationError error) {
       break;
     case SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid:
       path = GetPath({{kEventReportWindows, kEndTimes}});
-      msg = "must be a positive integer";
+      msg = kPositiveIntegerMsg;
       break;
     case SourceRegistrationError::kTriggerDataMatchingValueInvalid:
       path = GetPath({{kTriggerDataMatching}});
@@ -228,7 +244,7 @@ base::Value ErrorDetails(SourceRegistrationError error) {
       break;
     case SourceRegistrationError::kTriggerSpecsWrongType:
       path = GetPath({{kTriggerSpecs}});
-      msg = "must be a list of dictionaries";
+      msg = kListOfDictionariesMsg;
       break;
     case SourceRegistrationError::kTriggerSpecTriggerDataMissing:
       path = GetPath({{kTriggerSpecs, kIndex, kTriggerData}});
@@ -289,6 +305,155 @@ base::Value ErrorDetails(SourceRegistrationError error) {
       path = GetPath({{kEventLevelEpsilon}});
       msg = base::StrCat({"must be a number in the range [0, ",
                           base::NumberToString(EventLevelEpsilon::max()), "]"});
+      break;
+  }
+
+  return SerializeErrorDetails(std::move(path), std::move(msg));
+}
+
+base::Value ErrorDetails(TriggerRegistrationError error) {
+  static constexpr char kDictionaryOrListOfDictionariesMsg[] =
+      "must be a dictionary or a list of dictionaries";
+  static constexpr char kFiltersReservedKeysMsg[] =
+      R"(strings starting with "_" are reserved keys)";
+  static constexpr char kFiltersValueInvalidMsg[] = "must be a list of strings";
+
+  base::Value path;
+  std::string msg;
+
+  switch (error) {
+    case TriggerRegistrationError::kInvalidJson:
+      msg = kInvalidJsonMsg;
+      break;
+    case TriggerRegistrationError::kRootWrongType:
+      path = base::Value(base::Value::List());
+      msg = kDictionaryMsg;
+      break;
+    case TriggerRegistrationError::kFiltersWrongType:
+      path = GetPath({{kFilters}});
+      msg = kDictionaryOrListOfDictionariesMsg;
+      break;
+    case TriggerRegistrationError::kFiltersValueInvalid:
+      path = GetPath({{kFilters, kIndex}});
+      msg = kFiltersValueInvalidMsg;
+      break;
+    case TriggerRegistrationError::kFiltersLookbackWindowValueInvalid:
+      path = GetPath({{kFilters, FilterConfig::kLookbackWindowKey}});
+      msg = kPositiveIntegerMsg;
+      break;
+    case TriggerRegistrationError::kFiltersUsingReservedKey:
+      path = GetPath({{kFilters}});
+      msg = kFiltersReservedKeysMsg;
+      break;
+    case TriggerRegistrationError::kFiltersListValueInvalid:
+      path = GetPath({{kFilters, kIndex, kIndex}});
+      msg = kFiltersValueInvalidMsg;
+      break;
+    case TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid:
+      path = GetPath({{kFilters, kIndex, FilterConfig::kLookbackWindowKey}});
+      msg = kPositiveIntegerMsg;
+      break;
+    case TriggerRegistrationError::kFiltersListUsingReservedKey:
+      path = GetPath({{kFilters, kIndex}});
+      msg = kFiltersReservedKeysMsg;
+      break;
+    case TriggerRegistrationError::kAggregatableValuesWrongType:
+      path = GetPath({{kAggregatableValues}});
+      msg = kDictionaryOrListOfDictionariesMsg;
+      break;
+    case TriggerRegistrationError::kAggregatableValuesKeyTooLong:
+      path = GetPath({{kAggregatableValues}});
+      msg = AggregationKeyTooLongMsg();
+      break;
+    case TriggerRegistrationError::kAggregatableValuesListKeyTooLong:
+      path = GetPath({{kAggregatableValues, kIndex, kValues}});
+      msg = AggregationKeyTooLongMsg();
+      break;
+    case TriggerRegistrationError::kAggregatableValuesValueInvalid:
+      path = GetPath({{kAggregatableValues, kIndex}});
+      msg = AggregatableValueMsg();
+      break;
+    case TriggerRegistrationError::kAggregatableValuesListValueInvalid:
+      path = GetPath({{kAggregatableValues, kIndex, kValues, kIndex}});
+      msg = AggregatableValueMsg();
+      break;
+    case TriggerRegistrationError::kAggregatableValuesListValuesFieldMissing:
+      path = GetPath({{kAggregatableValues, kIndex, kValues}});
+      msg = kRequiredMsg;
+      break;
+    case TriggerRegistrationError::kAggregatableTriggerDataWrongType:
+      path = GetPath({{kAggregatableTriggerData}});
+      msg = kListOfDictionariesMsg;
+      break;
+    case TriggerRegistrationError::kAggregatableTriggerDataKeyPieceMissing:
+      path = GetPath({{kAggregatableTriggerData, kIndex, kKeyPiece}});
+      msg = kRequiredMsg;
+      break;
+    case TriggerRegistrationError::kAggregatableTriggerDataKeyPieceInvalid:
+      path = GetPath({{kAggregatableTriggerData, kIndex, kKeyPiece}});
+      msg = kAggregationKeyPieceMsg;
+      break;
+    case TriggerRegistrationError::kAggregatableTriggerDataSourceKeysInvalid:
+      path = GetPath({{kAggregatableTriggerData, kIndex, kSourceKeys}});
+      msg = base::StrCat(
+          {"must be a list of strings, each with length less than or equal to ",
+           base::NumberToString(kMaxBytesPerAggregationKeyId)});
+      break;
+    case TriggerRegistrationError::kEventTriggerDataWrongType:
+      path = GetPath({{kEventTriggerData}});
+      msg = kListOfDictionariesMsg;
+      break;
+    case TriggerRegistrationError::kEventTriggerDataValueInvalid:
+      path = GetPath({{kEventTriggerData, kIndex, kTriggerData}});
+      msg = base::StrCat({kBase10EncodedMsg, "uint64"});
+      break;
+    case TriggerRegistrationError::kEventPriorityValueInvalid:
+      path = GetPath({{kEventTriggerData, kIndex, kPriority}});
+      msg = base::StrCat({kBase10EncodedMsg, "int64"});
+      break;
+    case TriggerRegistrationError::kEventDedupKeyValueInvalid:
+      path = GetPath({{kEventTriggerData, kIndex, kDeduplicationKey}});
+      msg = base::StrCat({kBase10EncodedMsg, "uint64"});
+      break;
+    case TriggerRegistrationError::kAggregationCoordinatorValueInvalid:
+      path = GetPath({{kAggregationCoordinatorOrigin}});
+      msg =
+          "must be a potentially trustworthy URL on the allowlist that uses "
+          "HTTP/HTTPS";
+      break;
+    case TriggerRegistrationError::kAggregatableDedupKeyWrongType:
+      path = GetPath({{kAggregatableDeduplicationKeys}});
+      msg = kListOfDictionariesMsg;
+      break;
+    case TriggerRegistrationError::kAggregatableDedupKeyValueInvalid:
+      path = GetPath(
+          {{kAggregatableDeduplicationKeys, kIndex, kDeduplicationKey}});
+      msg = base::StrCat({kBase10EncodedMsg, "uint64"});
+      break;
+    case TriggerRegistrationError::
+        kAggregatableSourceRegistrationTimeValueInvalid:
+      path = GetPath({{kAggregatableSourceRegistrationTime}});
+      msg = EnumMsg(
+          {{kSourceRegistrationTimeInclude, kSourceRegistrationTimeExclude}});
+      break;
+    case TriggerRegistrationError::kTriggerContextIdInvalidValue:
+      path = GetPath({{kTriggerContextId}});
+      msg = base::StrCat(
+          {"must be a non-empty string with length less than or equal to ",
+           base::NumberToString(kMaxTriggerContextIdLength)});
+      break;
+    case TriggerRegistrationError::
+        kTriggerContextIdInvalidSourceRegistrationTimeConfig:
+      path = GetPath({{kTriggerContextId}});
+      msg = base::StrCat({"is prohibited for ",
+                          kAggregatableSourceRegistrationTime, " ",
+                          kSourceRegistrationTimeInclude});
+      break;
+    case TriggerRegistrationError::kEventValueInvalid:
+      path = GetPath({{kEventTriggerData, kIndex, kValue}});
+      msg = base::StrCat(
+          {kPositiveIntegerMsg, " in the range [1, ",
+           base::NumberToString(std::numeric_limits<uint32_t>::max()), "]"});
       break;
   }
 

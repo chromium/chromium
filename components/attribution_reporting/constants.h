@@ -39,6 +39,8 @@ inline constexpr int kMaxSettableEventLevelAttributionsPerSource = 20;
 // https://wicg.github.io/attribution-reporting-api/#max-distinct-trigger-data-per-source
 inline constexpr uint8_t kMaxTriggerDataPerSource = 32;
 
+inline constexpr size_t kMaxTriggerContextIdLength = 64;
+
 inline constexpr char kTriggerDataMatchingExact[] = "exact";
 inline constexpr char kTriggerDataMatchingModulus[] = "modulus";
 
@@ -64,6 +66,26 @@ inline constexpr char kSummaryWindowOperator[] = "summary_window_operator";
 inline constexpr char kTriggerData[] = "trigger_data";
 inline constexpr char kTriggerDataMatching[] = "trigger_data_matching";
 inline constexpr char kTriggerSpecs[] = "trigger_specs";
+
+inline constexpr char kAggregatableDeduplicationKeys[] =
+    "aggregatable_deduplication_keys";
+inline constexpr char kAggregatableSourceRegistrationTime[] =
+    "aggregatable_source_registration_time";
+inline constexpr char kAggregatableTriggerData[] = "aggregatable_trigger_data";
+inline constexpr char kAggregatableValues[] = "aggregatable_values";
+inline constexpr char kAggregationCoordinatorOrigin[] =
+    "aggregation_coordinator_origin";
+inline constexpr char kDeduplicationKey[] = "deduplication_key";
+inline constexpr char kEventTriggerData[] = "event_trigger_data";
+inline constexpr char kFilters[] = "filters";
+inline constexpr char kKeyPiece[] = "key_piece";
+inline constexpr char kSourceKeys[] = "source_keys";
+inline constexpr char kTriggerContextId[] = "trigger_context_id";
+inline constexpr char kValue[] = "value";
+inline constexpr char kValues[] = "values";
+
+inline constexpr char kSourceRegistrationTimeInclude[] = "include";
+inline constexpr char kSourceRegistrationTimeExclude[] = "exclude";
 
 }  // namespace attribution_reporting
 

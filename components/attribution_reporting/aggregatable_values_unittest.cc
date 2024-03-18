@@ -14,6 +14,7 @@
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
@@ -83,7 +84,7 @@ TEST(AggregatableValuesTest, Parse) {
       {
           "list_element_wrong_type",
           R"json([123])json",
-          ErrorIs(TriggerRegistrationError::kAggregatableValuesListWrongType),
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesWrongType),
       },
       {
           "list_values_field_missing",
@@ -95,6 +96,18 @@ TEST(AggregatableValuesTest, Parse) {
           ])json",
           ErrorIs(TriggerRegistrationError::
                       kAggregatableValuesListValuesFieldMissing),
+      },
+      {
+          "list_values_invalid_value",
+          R"json([
+                {
+                  "values": {
+                    "a": 65537,
+                  }
+                }
+          ])json",
+          ErrorIs(
+              TriggerRegistrationError::kAggregatableValuesListValueInvalid),
       },
       {
           "list_filters_field_wrong_type",
@@ -162,6 +175,25 @@ TEST(AggregatableValuesTest, Parse_KeyLength) {
 
   EXPECT_THAT(parse_dict_with_key_length(26),
               ErrorIs(TriggerRegistrationError::kAggregatableValuesKeyTooLong));
+}
+
+TEST(AggregatableValuesTest, Parse_ListKeyLength) {
+  auto parse_dict_with_key_length = [](size_t length) {
+    base::Value::Dict values;
+    values.Set(std::string(length, 'a'), 1);
+
+    base::Value value(base::Value::List().Append(
+        base::Value::Dict().Set(kValues, std::move(values))));
+    return AggregatableValues::FromJSON(&value);
+  };
+
+  for (size_t length = 0; length < 26; length++) {
+    EXPECT_THAT(parse_dict_with_key_length(length), ValueIs(_));
+  }
+
+  EXPECT_THAT(
+      parse_dict_with_key_length(26),
+      ErrorIs(TriggerRegistrationError::kAggregatableValuesListKeyTooLong));
 }
 
 TEST(AggregatableValuesTest, ToJson) {
