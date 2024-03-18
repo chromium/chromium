@@ -118,6 +118,10 @@ constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 constexpr char kCanShowDemoToolsNudge[] =
     "ash.capture_mode.can_show_demo_tools_nudge";
 
+// An invalid IDS value used as a placeholder to not show a message in a
+// notification.
+constexpr int kNoMessage = -1;
+
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
   kButtonEdit = 0,
@@ -252,10 +256,12 @@ void ShowNotification(
   const auto type = optional_fields.image.IsEmpty()
                         ? message_center::NOTIFICATION_TYPE_SIMPLE
                         : message_center::NOTIFICATION_TYPE_CUSTOM;
+  const std::u16string message = message_id == kNoMessage
+                                     ? std::u16string()
+                                     : l10n_util::GetStringUTF16(message_id);
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotificationPtr(
-          type, notification_id, l10n_util::GetStringUTF16(title_id),
-          l10n_util::GetStringUTF16(message_id),
+          type, notification_id, l10n_util::GetStringUTF16(title_id), message,
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
           GURL(),
           message_center::NotifierId(
@@ -1661,9 +1667,14 @@ void CaptureModeController::ShowPreviewNotification(
     const CaptureModeBehavior* behavior) {
   const bool for_video = type == CaptureModeType::kVideo;
   const int title_id = GetNotificationTitleIdForFile(screen_capture_path);
-  const int message_id = for_video && low_disk_space_threshold_reached_
-                             ? IDS_ASH_SCREEN_CAPTURE_LOW_STORAGE_SPACE_MESSAGE
-                             : IDS_ASH_SCREEN_CAPTURE_MESSAGE;
+  int message_id;
+  if (for_video && low_disk_space_threshold_reached_) {
+    message_id = IDS_ASH_SCREEN_CAPTURE_LOW_STORAGE_SPACE_MESSAGE;
+  } else {
+    message_id = base::FeatureList::IsEnabled(features::kFileNotificationRevamp)
+                     ? kNoMessage
+                     : IDS_ASH_SCREEN_CAPTURE_MESSAGE;
+  }
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons = behavior->GetNotificationButtonsInfo(for_video);
