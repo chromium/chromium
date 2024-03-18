@@ -15,6 +15,10 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "ui/gfx/image/image.h"
 
+#if defined(USE_AURA)
+#include "ui/aura/window_tree_host.h"
+#endif
+
 namespace base {
 class SingleThreadTaskRunner;
 }
@@ -87,6 +91,27 @@ class NativeDesktopMediaList final : public DesktopMediaListBase {
 
   int pending_aura_capture_requests_ = 0;
   bool pending_native_thumbnail_capture_ = false;
+
+  // We capture thumbnails of the aura windows, but they may be occluded and not
+  // drawing. Keep track of video capture locks for all windows we are currently
+  // showing to make sure they are considered visible and drawing. Similar to
+  // `previous_aura_thumbnail_hashes_`, we need two structures to keep track of
+  // the locks for the changing set of windows on each refresh of the
+  // thumbnails. Taking the thumbnail is an asynchronous process and we don't
+  // know when each thumbnail will be ready, so we need to keep the previous
+  // locks around in `previous_capture_locks_` until all thumbnails for the next
+  // refresh have been taken.
+  //
+  // TODO(crbug.com/330127757): Holding locks for all windows is slow and we
+  // should improve this. We can't simply take locks when we need to take a
+  // snapshot then immediately destroy them, because web contents take some time
+  // to be re-rastered and shown. So, to avoid thumbnails with empty web
+  // contents, we take these locks for the duration that the window is shown in
+  // the media picker.
+  std::vector<std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock>>
+      previous_capture_locks_;
+  std::vector<std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock>>
+      capture_locks_;
 #endif
   base::WeakPtrFactory<NativeDesktopMediaList> weak_factory_{this};
 };

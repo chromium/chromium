@@ -66,6 +66,16 @@ BASE_FEATURE(kNativeDesktopMediaList,
 const base::FeatureParam<int> kNativeDesktopMediaListMaxConcurrentStreams{
     &kNativeDesktopMediaList, "max_concurrent_streams", 100};
 
+#if defined(USE_AURA)
+// Controls whether we take VideoCaptureLocks for aura windows to force them
+// to be visible. This is required for their thumbnails to be taken correctly
+// if native occlusion applying to the compositor
+// (`kApplyNativeOcclusionToCompositor`) is enabled.
+BASE_FEATURE(kMediaPickerWindowsForcedVisible,
+             "MediaPickerWindowsForcedVisible",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Update the list every second.
 const int kDefaultNativeDesktopMediaListUpdatePeriod = 1000;
 
@@ -1049,6 +1059,10 @@ void NativeDesktopMediaList::CaptureAuraWindowThumbnail(
       gfx::Rect(thumbnail_size_), window_rect.size());
 
   pending_aura_capture_requests_++;
+  if (base::FeatureList::IsEnabled(kMediaPickerWindowsForcedVisible)) {
+    capture_locks_.push_back(window->GetHost()->CreateVideoCaptureLock());
+  }
+
   ui::GrabWindowSnapshotAndScaleAura(
       window, window_rect, scaled_rect.size(),
       base::BindOnce(&NativeDesktopMediaList::OnAuraThumbnailCaptured,
@@ -1073,10 +1087,13 @@ void NativeDesktopMediaList::OnAuraThumbnailCaptured(const DesktopMediaID& id,
   DCHECK_GE(pending_aura_capture_requests_, 0);
   if (pending_aura_capture_requests_ == 0) {
     previous_aura_thumbnail_hashes_ = std::move(new_aura_thumbnail_hashes_);
-    // Schedule next refresh if aura thumbnail captures finished after native
-    // thumbnail captures.
-    if (!pending_native_thumbnail_capture_)
+    previous_capture_locks_ = std::move(capture_locks_);
+    capture_locks_.clear();
+    // Schedule next refresh if aura thumbnail captures finished after
+    // native thumbnail captures.
+    if (!pending_native_thumbnail_capture_) {
       OnRefreshComplete();
+    }
   }
 }
 
