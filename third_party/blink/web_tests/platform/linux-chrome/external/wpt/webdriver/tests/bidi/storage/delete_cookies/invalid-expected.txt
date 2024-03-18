@@ -1,0 +1,176 @@
+This is a wdspec test.
+[FAIL] test_params_filter_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_invalid_type[foo]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_domain_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_domain_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_domain_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_domain_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_expiry_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_expiry_invalid_type[foo]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_expiry_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_expiry_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_expiry_invalid_type[-1]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_expiry_invalid_type[0.5]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_http_only_invalid_type[foo]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_http_only_invalid_type[value1]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_http_only_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_http_only_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_name_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_name_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_name_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_name_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_path_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_path_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_path_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_path_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_same_site_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_same_site_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_same_site_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_same_site_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_same_site_invalid_value[]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_same_site_invalid_value[INVALID_SAME_SITE_STATE]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_secure_invalid_type[foo]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_secure_invalid_type[value1]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_secure_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_secure_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_size_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_size_invalid_type[foo]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_size_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_size_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_size_invalid_type[-1]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_size_invalid_type[0.5]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_invalid_type[foo]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_type_invalid_type[None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_type_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_type_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_type_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_type_invalid_type[value4]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_type_invalid_value
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_base64_type_invalid_type[None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_base64_type_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_base64_type_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_base64_type_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_base64_type_invalid_type[value4]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_string_type_invalid_type[None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_string_type_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_string_type_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_string_type_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_filter_value_string_type_invalid_type[value4]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_invalid_type[foo]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_type_invalid_type[None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_type_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_type_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_type_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_type_invalid_type[value4]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_type_invalid_value
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_context_invalid_type[None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_context_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_context_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_context_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_context_invalid_type[value4]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_partition_invalid_context
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_source_origin_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_source_origin_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_source_origin_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_source_origin_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_user_context_invalid_type[False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_user_context_invalid_type[42]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_user_context_invalid_type[value2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_user_context_invalid_type[value3]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_params_partition_user_context_invalid_value
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+Harness: the test ran to completion.

@@ -1,0 +1,10 @@
+This is a wdspec test.
+[FAIL] test_other_context[beforeRequestSent]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: signal is aborted without reason
+[FAIL] test_other_context[responseStarted]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: signal is aborted without reason
+[FAIL] test_other_context_with_event_subscription
+  AssertionError
+[FAIL] test_two_contexts_global_intercept
+  AssertionError
+Harness: the test ran to completion.

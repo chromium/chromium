@@ -1,0 +1,40 @@
+This is a wdspec test.
+[FAIL] test_filter[filter0]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter[filter1]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter[filter2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_domain
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_expiry[1-2]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_expiry[1-None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_name
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_same_site[none-strict]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_same_site[lax-none]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_same_site[strict-none]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_same_site[lax-strict]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_same_site[strict-lax]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_secure[True-False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_secure[False-True]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_path[/webdriver/tests/support-/]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_path[/-None]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_path[/webdriver-/webdriver/tests]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_http_only[True-False]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+[FAIL] test_filter_http_only[False-True]
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (storage.deleteCookies is not supported yet)
+Harness: the test ran to completion.

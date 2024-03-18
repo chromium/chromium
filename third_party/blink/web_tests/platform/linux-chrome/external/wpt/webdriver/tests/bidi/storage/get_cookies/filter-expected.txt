@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_filter[filter2]
+  assert 0 == 2
+Harness: the test ran to completion.
