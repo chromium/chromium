@@ -248,9 +248,13 @@ ExportedSharedImage ClientSharedImage::Export() {
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
     const ExportedSharedImage& exported_shared_image) {
+  // TODO(crbug.com/41494843): Plumb information through ExportedSharedImage to
+  // ensure that the ClientSharedImage created here computes the same texture
+  // target via GetTextureTarget() as the source ClientSharedImage from which
+  // the ExportedSharedImage was created.
   return base::MakeRefCounted<ClientSharedImage>(
       exported_shared_image.mailbox_, exported_shared_image.metadata_,
-      exported_shared_image.sync_token_, nullptr);
+      exported_shared_image.sync_token_, nullptr, gfx::EMPTY_BUFFER);
 }
 
 ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
