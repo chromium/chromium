@@ -65,7 +65,7 @@ void SetJSModuleDefaults(content::WebUIDataSource* source) {
         "chrome://favicon2 chrome://app-icon chrome://extension-icon "
         "chrome://fileicon "
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        "chrome://chromeos-asset "
+        "chrome://chromeos-asset chrome://userimage "
 #endif
         "blob: data: 'self';");
   }
