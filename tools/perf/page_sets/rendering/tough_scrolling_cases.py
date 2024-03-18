@@ -18,6 +18,8 @@ class ToughFastScrollingPage(rendering_story.RenderingStory):
   SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_DEFAULT
   TAGS = [story_tags.GPU_RASTERIZATION, story_tags.TOUGH_SCROLLING]
   USE_FLING_SCROLL = False
+  VSYNC_OFFSET_US = 0
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_DEFAULT
 
   def __init__(self,
                page_set,
@@ -53,7 +55,9 @@ class ToughFastScrollingPage(rendering_story.RenderingStory):
             action_runner.ScrollPage(
                 direction=direction,
                 speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
-                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
+                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE,
+                vsync_offset_ms=self.VSYNC_OFFSET_US * 0.001,
+                input_event_pattern=self.INPUT_EVENT_PATTERN)
           else:
             # When there is a `selector` specified, scroll just that particular
             # element, rather than the entire page.
@@ -61,7 +65,9 @@ class ToughFastScrollingPage(rendering_story.RenderingStory):
                 selector=selector,
                 direction=direction,
                 speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
-                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
+                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE,
+                vsync_offset_ms=self.VSYNC_OFFSET_US * 0.001,
+                input_event_pattern=self.INPUT_EVENT_PATTERN)
         direction = 'up' if direction == 'down' else 'down'
 
 
@@ -280,3 +286,76 @@ class NonOpaqueBackgroundCompositorThreadScrolling00050Page(
   URL = 'file://../tough_scrolling_cases/text_on_non_opaque_background.html'
   SELECTOR = '#scroll'
   SPEED_IN_PIXELS_PER_SECOND = 50
+
+
+class ScrollingTextInputOnePerVsyncPlus0Us(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_one_per_vsync_plus_0us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = 0
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_ONE_PER_VSYNC
+
+
+# Test scrolling with different input event timings.
+class ScrollingTextInputOnePerVsyncMinus300UsPage(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_one_per_vsync_minus_300us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = -300
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_ONE_PER_VSYNC
+
+
+class ScrollingTextInputOnePerVsyncMinus1000UsPage(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_one_per_vsync_minus_1000us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = -1000
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_ONE_PER_VSYNC
+
+
+class ScrollingTextInputOnePerVsyncMinus3000UsPage(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_one_per_vsync_minus_3000us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = -3000
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_ONE_PER_VSYNC
+
+
+class ScrollingTextInputOnePerVsyncPlus300UsPage(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_one_per_vsync_plus_300us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = 300
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_ONE_PER_VSYNC
+
+
+class ScrollingTextInputOnePerVsyncPlus1000UsPage(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_one_per_vsync_plus_1000us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = 1000
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_ONE_PER_VSYNC
+
+
+class ScrollingTextInputOnePerVsyncPlus3000UsPage(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_one_per_vsync_plus_3000us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = 3000
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_ONE_PER_VSYNC
+
+
+class ScrollingTextInputTwoPerVsyncPlus0Us(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_two_per_vsync_plus_0us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = 0
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_TWO_PER_VSYNC
+
+
+class ScrollingTextInputEveryOtherVsyncPlus0Us(ToughFastScrollingPage):
+  BASE_NAME = 'text_scroll_input_every_other_vsync_plus_0us'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  SPEED_IN_PIXELS_PER_SECOND = 1000
+  VSYNC_OFFSET_US = 0
+  INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_EVERY_OTHER_VSYNC
