@@ -394,7 +394,15 @@ class PlatformNetworksManager {
     private static void requestCellInfoUpdate(
             TelephonyManager telephonyManager, Callback<List<CellInfo>> callback) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ApiHelperForQ.requestCellInfoUpdate(telephonyManager, callback);
+            try {
+                ApiHelperForQ.requestCellInfoUpdate(telephonyManager, callback);
+            } catch (IllegalStateException e) {
+                // TelephonyManager#requestCellInfoUpdate() throws IllegalStateException when
+                // Telephony is unavailable. It doesn't make sense to pass the call to the
+                // TelephonyManager#getAllCellInfo(), because given the same exact conditions it
+                // will return null, too.
+                callback.onResult(null);
+            }
             return;
         }
         callback.onResult(telephonyManager.getAllCellInfo());

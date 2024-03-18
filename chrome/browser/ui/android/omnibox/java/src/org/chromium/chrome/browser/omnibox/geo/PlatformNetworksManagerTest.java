@@ -10,7 +10,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,11 +34,13 @@ import android.telephony.CellIdentityCdma;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellIdentityLte;
 import android.telephony.CellIdentityWcdma;
+import android.telephony.CellInfo;
 import android.telephony.CellInfoCdma;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
 import android.telephony.TelephonyManager;
+import android.telephony.TelephonyManager.CellInfoCallback;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,12 +63,13 @@ import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /** Robolectric tests for {@link PlatformNetworksManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(sdk = 29, manifest = Config.NONE)
+@Config(sdk = Build.VERSION_CODES.Q, manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class PlatformNetworksManagerTest {
     private static final VisibleWifi CONNECTED_WIFI =
@@ -289,6 +294,33 @@ public class PlatformNetworksManagerTest {
         verify(mVisibleCellCallback).onResult(mVisibleCellsArgument.capture());
         // Empty set expected
         assertEquals(0, mVisibleCellsArgument.getValue().size());
+    }
+
+    @Test
+    public void testGetAllVisibleCells_telephonyIsShuttingDown() {
+        doThrow(new IllegalStateException())
+                .when(mTelephonyManager)
+                .requestCellInfoUpdate(any(), any());
+        PlatformNetworksManager.getAllVisibleCells(
+                mContext, mTelephonyManager, mVisibleCellCallback);
+        verify(mVisibleCellCallback).onResult(mVisibleCellsArgument.capture());
+        assertEquals(0, mVisibleCellsArgument.getValue().size());
+    }
+
+    @Test
+    public void testGetAllVisibleCells_successfulOperation() {
+        ArgumentCaptor<CellInfoCallback> captor = ArgumentCaptor.forClass(CellInfoCallback.class);
+        PlatformNetworksManager.getAllVisibleCells(
+                mContext, mTelephonyManager, mVisibleCellCallback);
+        verify(mTelephonyManager).requestCellInfoUpdate(any(), captor.capture());
+        verify(mVisibleCellCallback, never()).onResult(any());
+
+        // Emit update.
+        List<CellInfo> list = List.of(mCellInfoLte, mCellInfoGsm);
+        captor.getValue().onCellInfo(list);
+        verify(mVisibleCellCallback).onResult(mVisibleCellsArgument.capture());
+        assertEquals(2, mVisibleCellsArgument.getValue().size());
+        assertEquals(Set.of(GSM_CELL, LTE_CELL), Set.copyOf(mVisibleCellsArgument.getValue()));
     }
 
     @Test
