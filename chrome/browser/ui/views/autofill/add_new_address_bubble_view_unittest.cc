@@ -9,6 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -19,11 +21,9 @@ namespace autofill {
 
 class MockAddNewAddressBubbleController : public AddNewAddressBubbleController {
  public:
-  MockAddNewAddressBubbleController()
-      : AddNewAddressBubbleController(
-            /*web_contents=*/nullptr,
-            /*save_into_account=*/false,
-            /*delegate=*/nullptr) {}
+  explicit MockAddNewAddressBubbleController(content::WebContents* web_contents)
+      : AddNewAddressBubbleController(web_contents,
+                                      /*delegate=*/nullptr) {}
   MOCK_METHOD(std::u16string, GetBodyText, (), (const, override));
   MOCK_METHOD(std::u16string, GetFooterMessage, (), (const, override));
   MOCK_METHOD(void,
@@ -46,6 +46,9 @@ class AddNewAddressBubbleViewTest : public ChromeViewsTestBase {
 
     test_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    autofill_client_injector_[test_web_contents_.get()]
+        ->GetPersonalDataManager()
+        ->SetAutofillProfileEnabled(true);
   }
 
   void TearDown() override {
@@ -69,6 +72,8 @@ class AddNewAddressBubbleViewTest : public ChromeViewsTestBase {
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
+  TestAutofillClientInjector<TestContentAutofillClient>
+      autofill_client_injector_;
   std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<AddNewAddressBubbleView> view_ = nullptr;
   raw_ptr<testing::NiceMock<MockAddNewAddressBubbleController>>
@@ -87,7 +92,8 @@ void AddNewAddressBubbleViewTest::CreateViewAndShow(
   anchor_widget_->Show();
 
   auto mock_controller_unique =
-      std::make_unique<testing::NiceMock<MockAddNewAddressBubbleController>>();
+      std::make_unique<testing::NiceMock<MockAddNewAddressBubbleController>>(
+          test_web_contents_.get());
   mock_controller_ = mock_controller_unique.get();
 
   ON_CALL(*mock_controller(), GetBodyText())

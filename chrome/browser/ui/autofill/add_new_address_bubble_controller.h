@@ -24,7 +24,6 @@ class AddNewAddressBubbleController : public content::WebContentsObserver {
  public:
   AddNewAddressBubbleController(
       content::WebContents* web_contents,
-      bool save_into_account,
       base::WeakPtr<AddressBubbleControllerDelegate> delegate);
   AddNewAddressBubbleController(const AddNewAddressBubbleController&) = delete;
   AddNewAddressBubbleController& operator=(
@@ -53,7 +52,12 @@ class AddNewAddressBubbleController : public content::WebContentsObserver {
   // reject/ignore the prompt.
   base::WeakPtr<AddressBubbleControllerDelegate> delegate_;
 
-  const bool save_into_account_;
+  // The country code that the new address will be initially assigned. Can be
+  // changed in the editor later.
+  const AddressCountryCode country_code_;
+
+  // Whether the address profile will be saved in user's account.
+  const bool is_eligible_for_account_storage_;
 };
 
 }  // namespace autofill

@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -39,7 +41,10 @@ class MockDelegate : public AddressBubbleControllerDelegate {
               (AutofillClient::AddressPromptUserDecision decision,
                base::optional_ref<const AutofillProfile> profile),
               (override));
-  MOCK_METHOD(void, ShowEditor, (const std::u16string&, bool), (override));
+  MOCK_METHOD(void,
+              ShowEditor,
+              (const AutofillProfile&, const std::u16string&, bool),
+              (override));
   MOCK_METHOD(void, OnBubbleClosed, (), (override));
 
   base::WeakPtr<AddressBubbleControllerDelegate> GetWeakPtr() {
@@ -61,16 +66,21 @@ class AddNewAddressBubbleControllerTest : public ::testing::Test {
 
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+
+    autofill_client()->GetPersonalDataManager()->SetAutofillProfileEnabled(
+        true);
   }
 
-  std::unique_ptr<AddNewAddressBubbleController> CreateController(
-      bool save_into_account) {
+  std::unique_ptr<AddNewAddressBubbleController> CreateController() {
     return std::make_unique<AddNewAddressBubbleController>(
-        web_contents(), save_into_account, delegate_.GetWeakPtr());
+        web_contents(), delegate_.GetWeakPtr());
   }
 
  protected:
   content::WebContents* web_contents() { return web_contents_.get(); }
+  TestContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
+  }
 
  private:
   MockDelegate delegate_;
@@ -79,10 +89,16 @@ class AddNewAddressBubbleControllerTest : public ::testing::Test {
   TestingProfile profile_;
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> web_contents_;
+  TestAutofillClientInjector<TestContentAutofillClient>
+      autofill_client_injector_;
 };
 
 TEST_F(AddNewAddressBubbleControllerTest, SavingIntoChrome) {
-  auto controller = CreateController(/*save_into_account=*/false);
+  autofill_client()
+      ->GetPersonalDataManager()
+      ->SetIsEligibleForAddressAccountStorage(false);
+
+  auto controller = CreateController();
 
   EXPECT_EQ(controller->GetBodyText(),
             l10n_util::GetStringUTF16(
@@ -91,7 +107,11 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoChrome) {
 }
 
 TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
-  auto controller = CreateController(/*save_into_account=*/true);
+  autofill_client()
+      ->GetPersonalDataManager()
+      ->SetIsEligibleForAddressAccountStorage(true);
+
+  auto controller = CreateController();
   std::u16string email =
       base::UTF8ToUTF16(GetPrimaryAccountInfoFromBrowserContext(
                             web_contents()->GetBrowserContext())

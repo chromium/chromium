@@ -21,7 +21,8 @@ class AddressBubbleControllerDelegate {
   // the prompt bubble, it can be a new address to edit before saving or
   // existing one to update. Called by an explicit user action, such as a click
   // on the edit button in the update bubble.
-  virtual void ShowEditor(const std::u16string& editor_footer_message,
+  virtual void ShowEditor(const AutofillProfile& address_profile,
+                          const std::u16string& editor_footer_message,
                           bool is_editing_existing_address) = 0;
 
   virtual void OnUserDecision(

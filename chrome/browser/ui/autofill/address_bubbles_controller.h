@@ -58,7 +58,8 @@ class AddressBubblesController
       AutofillClient::AddressProfileSavePromptCallback callback);
 
   // AddressBubbleControllerDelegate:
-  void ShowEditor(const std::u16string& editor_footer_message,
+  void ShowEditor(const AutofillProfile& address_profile,
+                  const std::u16string& editor_footer_message,
                   bool is_editing_existing_address) override;
   void OnUserDecision(
       AutofillClient::AddressPromptUserDecision decision,
@@ -95,7 +96,6 @@ class AddressBubblesController
   void SetUpAndShowBubble(
       ShowBubbleViewCallback show_bubble_view_callback,
       std::u16string page_action_icon_tootip,
-      const AutofillProfile& profile,
       AutofillClient::SaveAddressProfilePromptOptions options,
       AutofillClient::AddressProfileSavePromptCallback
           address_profile_save_prompt_callback);
@@ -104,10 +104,6 @@ class AddressBubblesController
   // the address profile.
   AutofillClient::AddressProfileSavePromptCallback
       address_profile_save_prompt_callback_;
-
-  // Contains the details of the address profile that will be saved if the user
-  // accepts.
-  std::optional<AutofillProfile> address_profile_;
 
   // Whether the bubble is going to be shown upon user gesture (e.g. click on
   // the page action icon) or automatically (e.g. upon detection of an address

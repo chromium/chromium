@@ -5,30 +5,59 @@
 #include "chrome/browser/ui/autofill/add_new_address_bubble_controller.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
+namespace {
+
+AddressCountryCode GetCountryCodeForNewAddress(
+    content::WebContents* web_contents) {
+  PersonalDataManager* pdm =
+      ContentAutofillClient::FromWebContents(web_contents)
+          ->GetPersonalDataManager();
+  return AddressCountryCode(pdm->GetDefaultCountryCodeForNewAddress());
+}
+
+bool IsEligibleForAccountStorage(content::WebContents* web_contents,
+                                 const std::string& country_code) {
+  PersonalDataManager* pdm =
+      ContentAutofillClient::FromWebContents(web_contents)
+          ->GetPersonalDataManager();
+
+  // Note: addresses from unsupported countries can't be saved in account.
+  // TODO(crbug.com/1432505): remove temporary unsupported countries
+  // filtering.
+  return pdm->IsEligibleForAddressAccountStorage() &&
+         pdm->IsCountryEligibleForAccountStorage(country_code);
+}
+
+}  // namespace
+
 AddNewAddressBubbleController::AddNewAddressBubbleController(
     content::WebContents* web_contents,
-    bool save_into_account,
     base::WeakPtr<AddressBubbleControllerDelegate> delegate)
     : content::WebContentsObserver(web_contents),
       delegate_(delegate),
-      save_into_account_(save_into_account) {}
+      country_code_(GetCountryCodeForNewAddress(web_contents)),
+      is_eligible_for_account_storage_(
+          IsEligibleForAccountStorage(web_contents, country_code_.value())) {}
 
 AddNewAddressBubbleController::~AddNewAddressBubbleController() = default;
 
 std::u16string AddNewAddressBubbleController::GetBodyText() const {
   return l10n_util::GetStringUTF16(
-      save_into_account_
+      is_eligible_for_account_storage_
           ? IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_ACCOUNT_PROMPT_BODY_TEXT
           : IDS_AUTOFILL_ADD_NEW_ADDRESS_INTO_CHROME_PROMPT_BODY_TEXT);
 }
 
 std::u16string AddNewAddressBubbleController::GetFooterMessage() const {
-  if (save_into_account_ && web_contents()) {
+  if (is_eligible_for_account_storage_ && web_contents()) {
     std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
@@ -50,8 +79,13 @@ void AddNewAddressBubbleController::OnUserDecision(
 
 void AddNewAddressBubbleController::OnAddButtonClicked() {
   if (delegate_) {
-    delegate_->ShowEditor(GetFooterMessage(),
-                          /*is_editing_existing_address=*/false);
+    delegate_->ShowEditor(
+        AutofillProfile(is_eligible_for_account_storage_
+                            ? AutofillProfile::Source::kAccount
+                            : AutofillProfile::Source::kLocalOrSyncable,
+                        country_code_),
+        GetFooterMessage(),
+        /*is_editing_existing_address=*/false);
   }
 }
 

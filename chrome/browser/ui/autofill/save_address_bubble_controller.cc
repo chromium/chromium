@@ -266,7 +266,7 @@ void SaveAddressBubbleController::OnUserDecision(
 
 void SaveAddressBubbleController::OnEditButtonClicked() {
   if (delegate_) {
-    delegate_->ShowEditor(GetEditorFooterMessage(),
+    delegate_->ShowEditor(address_profile_, GetEditorFooterMessage(),
                           /*is_editing_existing_address=*/false);
   }
 }

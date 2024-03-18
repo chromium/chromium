@@ -75,12 +75,11 @@ AutofillBubbleBase* ShowUpdateBubble(
 }
 
 AutofillBubbleBase* ShowAddNewAddressBubble(
-    bool save_into_account,
     content::WebContents* web_contents,
     bool shown_by_user_gesture,
     base::WeakPtr<AddressBubbleControllerDelegate> delegate) {
-  auto controller = std::make_unique<AddNewAddressBubbleController>(
-      web_contents, save_into_account, delegate);
+  auto controller =
+      std::make_unique<AddNewAddressBubbleController>(web_contents, delegate);
   return chrome::FindBrowserWithTab(web_contents)
       ->window()
       ->GetAutofillBubbleHandler()
@@ -128,8 +127,8 @@ void AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
                      : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 
   controller->SetUpAndShowBubble(std::move(show_bubble_view_impl),
-                                 std::move(page_action_icon_tootip), profile,
-                                 options, std::move(callback));
+                                 std::move(page_action_icon_tootip), options,
+                                 std::move(callback));
 }
 
 // static
@@ -138,40 +137,23 @@ void AddressBubblesController::SetUpAndShowAddNewAddressBubble(
     AutofillClient::AddressProfileSavePromptCallback callback) {
   AddressBubblesController::CreateForWebContents(web_contents);
   auto* controller = AddressBubblesController::FromWebContents(web_contents);
-  PersonalDataManager* pdm =
-      ContentAutofillClient::FromWebContents(web_contents)
-          ->GetPersonalDataManager();
-  AddressCountryCode country_code(pdm->GetDefaultCountryCodeForNewAddress());
-  // Note: addresses from unsupported countries can't be saved in account.
-  // TODO(crbug.com/1432505): remove temporary unsupported countries
-  // filtering.
-  bool is_account_eligible =
-      pdm->IsEligibleForAddressAccountStorage() &&
-      pdm->IsCountryEligibleForAccountStorage(country_code.value());
-  autofill::AutofillProfile::Source source =
-      is_account_eligible ? autofill::AutofillProfile::Source::kAccount
-                          : autofill::AutofillProfile::Source::kLocalOrSyncable;
-  autofill::AutofillProfile profile(source, country_code);
-
-  auto show_bubble_view_callback = base::BindRepeating(
-      ShowAddNewAddressBubble,
-      profile.source() == AutofillProfile::Source::kAccount);
   std::u16string page_action_icon_tootip =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE);
 
-  controller->SetUpAndShowBubble(std::move(show_bubble_view_callback),
-                                 std::move(page_action_icon_tootip), profile,
-                                 {}, std::move(callback));
+  controller->SetUpAndShowBubble(base::BindRepeating(ShowAddNewAddressBubble),
+                                 std::move(page_action_icon_tootip), {},
+                                 std::move(callback));
 }
 
 void AddressBubblesController::ShowEditor(
+    const AutofillProfile& address_profile,
     const std::u16string& editor_footer_message,
     bool is_editing_existing_address) {
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   controller->OfferEdit(
-      *address_profile_, editor_footer_message, is_editing_existing_address,
+      address_profile, editor_footer_message, is_editing_existing_address,
       is_migration_to_account_,
       base::BindOnce(&AddressBubblesController::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -247,7 +229,6 @@ void AddressBubblesController::DoShowBubble() {
 void AddressBubblesController::SetUpAndShowBubble(
     ShowBubbleViewCallback show_bubble_view_callback,
     std::u16string page_action_icon_tootip,
-    const AutofillProfile& profile,
     AutofillClient::SaveAddressProfilePromptOptions options,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
@@ -272,7 +253,6 @@ void AddressBubblesController::SetUpAndShowBubble(
 
   show_bubble_view_callback_ = std::move(show_bubble_view_callback);
   page_action_icon_tootip_ = std::move(page_action_icon_tootip);
-  address_profile_ = profile;
   address_profile_save_prompt_callback_ =
       std::move(address_profile_save_prompt_callback);
   shown_by_user_gesture_ = false;
