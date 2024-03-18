@@ -28,20 +28,20 @@ class CloudPolicyClient;
 class CloudPolicyCore;
 class CloudPolicyStore;
 
-POLICY_EXPORT extern const char kPolicyDescriptionKey[];
-POLICY_EXPORT extern const char kFlexOrgWarningKey[];
+inline constexpr char kPolicyDescriptionKey[] = "policyDescriptionKey";
+inline constexpr char kFlexOrgWarningKey[] = "flexOrgWarning";
 
 // The following constants identify top-level keys in the dictionary returned by
 // PolicyStatusProvider.
-POLICY_EXPORT extern const char kAssetIdKey[];
-POLICY_EXPORT extern const char kLocationKey[];
-POLICY_EXPORT extern const char kDirectoryApiIdKey[];
-POLICY_EXPORT extern const char kGaiaIdKey[];
-POLICY_EXPORT extern const char kClientIdKey[];
-POLICY_EXPORT extern const char kUsernameKey[];
-POLICY_EXPORT extern const char kEnterpriseDomainManagerKey[];
-POLICY_EXPORT extern const char kDomainKey[];
-POLICY_EXPORT extern const char kEnrollmentTokenKey[];
+inline constexpr char kAssetIdKey[] = "assetId";
+inline constexpr char kLocationKey[] = "location";
+inline constexpr char kDirectoryApiIdKey[] = "directoryApiId";
+inline constexpr char kGaiaIdKey[] = "gaiaId";
+inline constexpr char kClientIdKey[] = "clientId";
+inline constexpr char kUsernameKey[] = "username";
+inline constexpr char kEnterpriseDomainManagerKey[] = "enterpriseDomainManager";
+inline constexpr char kDomainKey[] = "domain";
+inline constexpr char kEnrollmentTokenKey[] = "enrollmentToken";
 
 // An interface for querying the status of a policy provider.  It surfaces
 // things like last fetch time or status of the backing store, but not the

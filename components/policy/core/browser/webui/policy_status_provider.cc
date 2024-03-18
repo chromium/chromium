@@ -26,19 +26,6 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-const char kPolicyDescriptionKey[] = "policyDescriptionKey";
-const char kFlexOrgWarningKey[] = "flexOrgWarning";
-
-const char kAssetIdKey[] = "assetId";
-const char kLocationKey[] = "location";
-const char kDirectoryApiIdKey[] = "directoryApiId";
-const char kGaiaIdKey[] = "gaiaId";
-const char kClientIdKey[] = "clientId";
-const char kUsernameKey[] = "username";
-const char kEnterpriseDomainManagerKey[] = "enterpriseDomainManager";
-const char kDomainKey[] = "domain";
-const char kEnrollmentTokenKey[] = "enrollmentToken";
-
 namespace {
 
 // Formats the association state indicated by |data|. If |data| is NULL, the

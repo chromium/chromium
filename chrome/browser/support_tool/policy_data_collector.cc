@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
@@ -15,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -38,32 +38,28 @@ namespace {
 // Returns the PII type that `status_field` is categorised in if it's considered
 // as PII.
 std::optional<redaction::PIIType> GetPIITypeOfStatusField(
-    base::StringPiece status_field) {
+    std::string_view status_field) {
   // List of keys in policy status that will be considered as PII and will be
   // redacted selectively.
   // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
-  static const auto kPersonallyIdentifiableStatusFields =
-      base::MakeFixedFlatMapNonConsteval<base::StringPiece,
-                                         redaction::PIIType>({
+  static constexpr auto kPersonallyIdentifiableStatusFields =
+      base::MakeFixedFlatMap<std::string_view, redaction::PIIType>({
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-        {policy::kDeviceIdKey, redaction::PIIType::kStableIdentifier},
-            {policy::kEnrollmentTokenKey,
-             redaction::PIIType::kStableIdentifier},
-            {policy::kMachineKey, redaction::PIIType::kStableIdentifier},
+          {policy::kDeviceIdKey, redaction::PIIType::kStableIdentifier},
+          {policy::kEnrollmentTokenKey, redaction::PIIType::kStableIdentifier},
+          {policy::kMachineKey, redaction::PIIType::kStableIdentifier},
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-            {policy::kAssetIdKey, redaction::PIIType::kStableIdentifier},
-            // kLocationKey is the "Asset location" which is an identifier for
-            // the device that is set during enterprise enrollment or by the
-            // administrator.
-            {policy::kLocationKey, redaction::PIIType::kStableIdentifier},
-            {policy::kDirectoryApiIdKey, redaction::PIIType::kStableIdentifier},
-            {policy::kGaiaIdKey, redaction::PIIType::kGaiaID},
-            {policy::kClientIdKey, redaction::PIIType::kStableIdentifier},
-            {policy::kUsernameKey, redaction::PIIType::kEmail},
-            {policy::kEnterpriseDomainManagerKey, redaction::PIIType::kEmail}, {
-          policy::kDomainKey, redaction::PIIType::kEmail
-        }
-      });
+          {policy::kAssetIdKey, redaction::PIIType::kStableIdentifier},
+          // kLocationKey is the "Asset location" which is an identifier for
+          // the device that is set during enterprise enrollment or by the
+          // administrator.
+          {policy::kLocationKey, redaction::PIIType::kStableIdentifier},
+          {policy::kDirectoryApiIdKey, redaction::PIIType::kStableIdentifier},
+          {policy::kGaiaIdKey, redaction::PIIType::kGaiaID},
+          {policy::kClientIdKey, redaction::PIIType::kStableIdentifier},
+          {policy::kUsernameKey, redaction::PIIType::kEmail},
+          {policy::kEnterpriseDomainManagerKey, redaction::PIIType::kEmail},
+          {policy::kDomainKey, redaction::PIIType::kEmail}});
   return kPersonallyIdentifiableStatusFields.contains(status_field)
              ? std::make_optional(
                    kPersonallyIdentifiableStatusFields.at(status_field))
