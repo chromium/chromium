@@ -36,12 +36,11 @@ using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
+using chrome_test_util::KindOfTest;
 using chrome_test_util::OmniboxText;
 using chrome_test_util::ScrollToTop;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
-
-enum class KindOfTest { kSignedOut, kLocal, kAccount };
 
 BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   switch (kind) {
@@ -208,14 +207,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       renameBookmarkFolderWithFolderTitle:@"Title For New Folder"];
 
   // Verify current parent folder (Change Folder) is Bookmarks folder.
-  NSString* label = (kindOfTest == KindOfTest::kLocal)
-                        ? @"Mobile Bookmarks. Only on this device."
-                        : @"Mobile Bookmarks";
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(label), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
+                                            kindOfTest:kindOfTest];
 
   // Choose new parent folder (Change Folder).
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
@@ -247,13 +240,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       assertWithMatcher:grey_notVisible()];
 
   // Verify picked parent folder (Change Folder) is Folder 2.
-  label = (kindOfTest == KindOfTest::kLocal) ? @"Folder 2. Only on this device."
-                                             : @"Folder 2";
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(label), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Folder 2"
+                                            kindOfTest:kindOfTest];
 
   // Tap Done to close bookmark move flow.
   [[EarlGrey selectElementWithMatcher:BookmarksSaveEditFolderButton()]
@@ -648,7 +636,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
                   openEditor:kBookmarkFolderEditViewContainerIdentifier
            setParentFolderTo:@"Folder 1.1"
                         from:@"Mobile Bookmarks"
-            onlyOnThisDevice:kindOfTest == KindOfTest::kLocal];
+                  kindOfTest:kindOfTest];
 
   // Verify edit mode remains.
   [BookmarkEarlGreyUI verifyContextBarInEditMode];
@@ -779,12 +767,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Verify current parent folder for "Title For New Folder" folder is "Mobile
   // Bookmarks" folder.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(@"Mobile Bookmarks"),
-                                   nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
+                                            kindOfTest:kindOfTest];
 
   // Choose new parent folder for "Title For New Folder" folder.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
@@ -817,12 +801,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       assertWithMatcher:grey_notVisible()];
 
   // Verify picked parent folder is Folder 2.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(@"Folder 2"), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
+  [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Folder 2"
+                                            kindOfTest:kindOfTest];
   // Tap Done to close bookmark move flow.
   [[EarlGrey selectElementWithMatcher:BookmarksSaveEditFolderButton()]
       performAction:grey_tap()];
@@ -914,23 +894,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 
   // Verify current parent folder for "Title For New Folder" folder is "Mobile
   // Bookmarks" folder.
-  NSString* label;
-  switch (kindOfTest) {
-    case KindOfTest::kLocal:
-      label = @"Mobile Bookmarks. Only on this device.";
-      break;
-    case KindOfTest::kSignedOut:
-      label = @"Mobile Bookmarks";
-      break;
-    case KindOfTest::kAccount:
-      label = @"Mobile Bookmarks in your Google Account, foo1@gmail.com";
-      break;
-  }
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(label), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
+                                            kindOfTest:kindOfTest];
 
   // Tap Done to close bookmark move flow.
   [[EarlGrey selectElementWithMatcher:BookmarksSaveEditFolderButton()]
@@ -1385,12 +1350,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
                                           kBookmarkEditViewContainerIdentifier)]
       assertWithMatcher:grey_notNil()];
 
-  NSString* change_label = @"Mobile Bookmarks";
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(change_label), nil)]
-      assertWithMatcher:grey_notNil()];
+  [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
+                                            kindOfTest:kindOfTest];
 
   // Tap the Folder button.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]

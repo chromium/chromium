@@ -294,7 +294,7 @@ id<GREYMatcher> AddBookmarkButton() {
                   openEditor:kBookmarkEditViewContainerIdentifier
            setParentFolderTo:@"Folder 1.1"
                         from:@"Mobile Bookmarks"
-            onlyOnThisDevice:NO];
+                  kindOfTest:chrome_test_util::KindOfTest::kSignedOut];
 
   // Verify edit mode remains.
   [BookmarkEarlGreyUI verifyContextBarInEditMode];

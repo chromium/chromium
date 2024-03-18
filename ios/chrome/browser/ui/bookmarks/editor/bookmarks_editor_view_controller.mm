@@ -211,6 +211,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   self.folderItem =
       [[BookmarkParentFolderItem alloc] initWithType:ItemTypeFolder];
   self.folderItem.title = _folderName;
+  self.folderItem.shouldDisplayCloudSlashIcon =
+      [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
   [model addItem:self.folderItem toSectionWithIdentifier:SectionIdentifierInfo];
 
   self.URLItem = [[BookmarkTextFieldItem alloc] initWithType:ItemTypeURL];

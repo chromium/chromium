@@ -30,6 +30,18 @@ enum class BookmarkModelType;
 
 namespace chrome_test_util {
 
+// Represents in which state we expect to find the bookmark ui.
+enum class KindOfTest {
+  // The user is signed-out. All bookmarks are in the localOrSyncable model.
+  kSignedOut,
+  // The user is signed-in. The test consider the bookmarks in the
+  // localOrSyncable model.
+  kLocal,
+  // The user is signed-in. The test consider the bookmarks in the account
+  // model.
+  kAccount
+};
+
 // Matcher for bookmarks tool tip star. (used in iPad)
 id<GREYMatcher> StarButton();
 
@@ -136,11 +148,18 @@ id<GREYMatcher> SearchIconButton();
 // Verify a folder with given name is created and it is not being edited.
 - (void)verifyFolderCreatedWithTitle:(NSString*)folderTitle;
 
+// Checks that, in the bookmark or folder editor, the currently edited object is
+// in the correct folder. The name of the folder owning the edited node is
+// `parentName`. The expected label of the folder depends on `kindOfTest`.
+- (void)assertChangeFolderIsCorrectlySet:(NSString*)parentName
+                              kindOfTest:
+                                  (chrome_test_util::KindOfTest)kindOfTest;
+
 - (void)tapOnContextMenuButton:(int)menuButtonId
                     openEditor:(NSString*)editorId
              setParentFolderTo:(NSString*)destinationFolder
                           from:(NSString*)sourceFolder
-              onlyOnThisDevice:(BOOL)onlyOnThisDevice;
+                    kindOfTest:(chrome_test_util::KindOfTest)kindOfTest;
 
 - (void)tapOnLongPressContextMenuButton:(id<GREYMatcher>)actionMatcher
                                  onItem:(id<GREYMatcher>)item

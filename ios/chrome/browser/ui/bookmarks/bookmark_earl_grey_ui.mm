@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
 #import "components/strings/grit/components_strings.h"
@@ -50,6 +51,19 @@ using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 namespace chrome_test_util {
+
+// Returns the label for the folder entry in the bookmark/folder editor.
+NSString* FolderLabel(NSString* folderName, chrome_test_util::KindOfTest kind) {
+  switch (kind) {
+    case chrome_test_util::KindOfTest::kLocal:
+      return l10n_util::GetNSStringF(
+          IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
+          base::SysNSStringToUTF16(folderName));
+    case chrome_test_util::KindOfTest::kAccount:
+    case chrome_test_util::KindOfTest::kSignedOut:
+      return folderName;
+  }
+}
 
 id<GREYMatcher> BookmarksContextMenuEditButton() {
   // Making sure the edit button we're selecting is not on the bottom bar via
@@ -513,11 +527,23 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notVisible()];
 }
 
+- (void)assertChangeFolderIsCorrectlySet:(NSString*)parentName
+                              kindOfTest:
+                                  (chrome_test_util::KindOfTest)kindOfTest {
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(@"Change Folder"),
+                                   grey_accessibilityLabel(
+                                       FolderLabel(parentName, kindOfTest)),
+                                   grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
 - (void)tapOnContextMenuButton:(int)menuButtonId
                     openEditor:(NSString*)editorId
              setParentFolderTo:(NSString*)destinationFolder
                           from:(NSString*)sourceFolder
-              onlyOnThisDevice:(BOOL)onlyOnThisDevice {
+                    kindOfTest:(chrome_test_util::KindOfTest)kindOfTest {
   // Tap context menu.
   [[EarlGrey
       selectElementWithMatcher:ContextBarCenterButtonWithLabel(
@@ -533,16 +559,7 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify current parent folder for is correct.
-  NSString* sourceLabel =
-      (onlyOnThisDevice)
-          ? [NSString
-                stringWithFormat:@"%@. Only on this device.", sourceFolder]
-          : sourceFolder;
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(sourceLabel), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [self assertChangeFolderIsCorrectlySet:sourceFolder kindOfTest:kindOfTest];
 
   // Tap on Folder to open folder picker.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
@@ -570,17 +587,8 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notVisible()];
 
   // Verify parent folder has been changed in edit page.
-  NSString* destinationLabel =
-      (onlyOnThisDevice)
-          ? [NSString
-                stringWithFormat:@"%@. Only on this device.", destinationFolder]
-          : destinationFolder;
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(destinationLabel),
-                                   nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [self assertChangeFolderIsCorrectlySet:destinationFolder
+                              kindOfTest:kindOfTest];
 
   // Dismiss edit page (editor).
   id<GREYMatcher> dismissMatcher = BookmarksSaveEditDoneButton();
