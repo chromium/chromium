@@ -133,6 +133,40 @@ void CampaignsManager::SetOpenedApp(const std::string& app_id) {
   matcher_.SetOpenedApp(app_id);
 }
 
+void CampaignsManager::PerformAction(const Action* action) {
+  CHECK(action);
+
+  auto* params = action->GetParams();
+  auto action_type = action->GetActionType();
+  if (!action_type || !params) {
+    // TODO(b/306023057): Record invalid action error.
+    return;
+  }
+
+  auto& action_performer = actions_map_.at(action_type.value());
+  if (!action_performer) {
+    // TODO(b/306023057): Record unrecognized action error.
+    return;
+  }
+
+  action_performer->Run(
+      params,
+      base::BindOnce(
+          [](growth::ActionType action_type, growth::ActionResult result,
+             std::optional<growth::ActionResultReason> reason) {
+            if (result == growth::ActionResult::kSuccess) {
+              return;
+            }
+
+            // TODO(b/306023057) Record perform action fail error.
+            LOG(ERROR) << "Error running action. Action type: "
+                       << int(action_type) << ". Error code:"
+                       << static_cast<int>(reason.value_or(
+                              growth::ActionResultReason::kUnknown));
+          },
+          action_type.value()));
+}
+
 void CampaignsManager::OnCampaignsComponentLoaded(
     base::OnceClosure load_callback,
     bool in_oobe,

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/growth/campaigns_model.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -57,6 +58,10 @@ inline constexpr char kExperimentTargetings[] = "experimentTags";
 // Payloads
 inline constexpr char kPayloadPathTemplate[] = "payload.%s";
 inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
+
+// Actions
+inline constexpr char kActionTypePath[] = "type";
+inline constexpr char kActionParamsPath[] = "params";
 
 }  // namespace
 
@@ -251,6 +256,22 @@ SessionTargeting::GetSchedulings() const {
 
 const base::Value::List* SessionTargeting::GetExperimentTags() const {
   return GetListCriteria(kExperimentTargetings);
+}
+
+Action::Action(const base::Value::Dict* action_dict)
+    : action_dict_(action_dict) {}
+
+std::optional<growth::ActionType> Action::GetActionType() const {
+  auto action_type_value = action_dict_->FindInt(kActionTypePath);
+  if (!action_type_value) {
+    return std::nullopt;
+  }
+
+  return static_cast<growth::ActionType>(action_type_value.value());
+}
+
+const base::Value::Dict* Action::GetParams() const {
+  return action_dict_->FindDict(kActionParamsPath);
 }
 
 const std::vector<std::unique_ptr<AppTargeting>>

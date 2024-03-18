@@ -13,10 +13,17 @@
 namespace growth {
 
 // The different actions that the Growth framework can run.
+// These values are deserialized from Growth Campaign, so entries should not
+// be renumbered and numeric values should never be reused
 enum class ActionType {
-  kInstallWebApp = 0,
-  kPinWebApp = 1,
-  kOpenUrl = 2,
+  // This is a special action that handled by surfaces like Nudge which has
+  // different implementation of dismissal (instead of action performers that
+  // are used by different surfaces).
+  kDismiss = 0,
+
+  kInstallWebApp = 1,
+  kPinWebApp = 2,
+  kOpenUrl = 3,
 };
 
 enum class ActionResult {
@@ -25,11 +32,12 @@ enum class ActionResult {
 };
 
 enum class ActionResultReason {
-  kParsingActionFailed = 0,
+  kUnknown = 0,
+  kParsingActionFailed = 1,
 
   // For kInstallWebApp action
-  kWebAppProviderNotAvailable = 1,
-  kWebAppInstallFailedOther = 2,
+  kWebAppProviderNotAvailable = 2,
+  kWebAppInstallFailedOther = 3,
 };
 
 // Abstract interface for the different actions that Growth framework

@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/values.h"
+#include "chromeos/ash/components/growth/action_performer.h"
 
 namespace base {
 class Time;
@@ -232,6 +233,31 @@ class SessionTargeting : public TargetingBase {
   const base::Value::List* GetExperimentTags() const;
   // Returns a list of apps to be matched against the current opened app.
   const std::vector<std::unique_ptr<AppTargeting>> GetAppsOpened() const;
+};
+
+// Wrapper around the action dictionary for performing an action, including
+// action type and action params.
+// For example:
+// {
+//   "action": {
+//     "type": 3,
+//     "params": {
+//       "url": "https://www.google.com",
+//       "disposition": 0
+//     }
+//   }
+// }
+class Action {
+ public:
+  explicit Action(const base::Value::Dict* action_dict);
+  Action(const Action&) = delete;
+  Action& operator=(const Action) = delete;
+  ~Action();
+
+  std::optional<growth::ActionType> GetActionType() const;
+  const base::Value::Dict* GetParams() const;
+
+  raw_ptr<const base::Value::Dict> action_dict_;
 };
 
 }  // namespace growth

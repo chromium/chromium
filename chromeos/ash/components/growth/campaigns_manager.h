@@ -63,7 +63,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // opened app targeting.
   void SetOpenedApp(const std::string& app_id);
 
-  ActionMap& actions_map() { return actions_map_; }
+  // Select action performer based on the action type and perform action with
+  // action params.
+  void PerformAction(const Action* action);
 
  private:
   // Triggred when campaigns component loaded.
