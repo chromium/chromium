@@ -315,8 +315,12 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
   // Even though some of these checks where already performed in
   // CreateForNavigationIfNeeded(), they still need to checked again here
   // to handle pages with iframes.
+  //
+  // `pending_navigation_callback_` being null implies `DidFinishNavigation`
+  // has already been called, so further lookups/metrics code need to run.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
+      !navigation_handle->HasCommitted() ||
+      !pending_navigation_callback_) {
     return;
   }
 
