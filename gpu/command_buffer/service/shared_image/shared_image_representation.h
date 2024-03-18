@@ -115,6 +115,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
   SkAlphaType alpha_type() const { return backing_->alpha_type(); }
   uint32_t usage() const { return backing_->usage(); }
   const gpu::Mailbox& mailbox() const { return backing_->mailbox(); }
+  const std::string& debug_label() const { return backing_->debug_label(); }
+  const char* backing_name() const { return backing_->GetName(); }
   MemoryTypeTracker* tracker() { return tracker_; }
   bool IsCleared() const { return backing_->IsCleared(); }
   void SetCleared() { backing_->SetCleared(); }

@@ -140,6 +140,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   bool is_thread_safe() const { return !!lock_; }
   bool is_ref_counted() const { return is_ref_counted_; }
   gfx::BufferUsage buffer_usage() const { return buffer_usage_.value(); }
+  const std::string& debug_label() const { return debug_label_; }
 
   void OnContextLost();
 
@@ -262,8 +263,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Used by SharedImageManager.
   friend class SharedImageManager;
   friend class CompoundImageBacking;
-
-  const std::string& debug_label() const { return debug_label_; }
 
   virtual std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
