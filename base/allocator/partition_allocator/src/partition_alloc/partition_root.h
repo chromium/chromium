@@ -1652,9 +1652,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
 #endif  // BUILDFLAG(USE_STARSCAN)
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  // TODO(keishi): Add PA_LIKELY when brp is fully enabled as |brp_enabled| will
-  // be false only for the aligned partition.
-  if (brp_enabled()) {
+  if (PA_LIKELY(brp_enabled())) {
     auto* ref_count = InSlotMetadataPointerFromSlotStartAndSize(
         slot_start, slot_span->bucket->slot_size);
     // If there are no more references to the allocation, it can be freed
@@ -2336,9 +2334,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   }
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  // TODO(keishi): Add PA_LIKELY when brp is fully enabled as |brp_enabled| will
-  // be false only for the aligned partition.
-  if (brp_enabled()) {
+  if (PA_LIKELY(brp_enabled())) {
     bool needs_mac11_malloc_size_hack = false;
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
     // Only apply hack to size 32 allocations on macOS 11. There is a buggy
