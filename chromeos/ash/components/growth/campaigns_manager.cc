@@ -129,6 +129,10 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
   return match_result;
 }
 
+void CampaignsManager::SetOpenedApp(const std::string& app_id) {
+  matcher_.SetOpenedApp(app_id);
+}
+
 void CampaignsManager::OnCampaignsComponentLoaded(
     base::OnceClosure load_callback,
     bool in_oobe,

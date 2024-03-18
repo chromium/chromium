@@ -21,6 +21,7 @@
 
 namespace growth {
 namespace {
+
 inline constexpr char kCampaignsExperimentTag[] = "exp_tag";
 
 bool MatchPref(const base::Value::List* criterias,
@@ -96,16 +97,6 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags) {
   return base::Contains(*experiment_tags, exp_tag);
 }
 
-bool MatchSessionTargeting(const SessionTargeting& targeting) {
-  if (!targeting.IsValid()) {
-    // Campaigns matched if there is no demo mode targeting.
-    return true;
-  }
-
-  return MatchSchedulings(targeting.GetSchedulings()) &&
-         MatchExperimentTags(targeting.GetExperimentTags());
-}
-
 }  // namespace
 
 CampaignsMatcher::CampaignsMatcher(CampaignsManagerClient* client,
@@ -115,6 +106,10 @@ CampaignsMatcher::~CampaignsMatcher() = default;
 
 void CampaignsMatcher::SetCampaigns(const CampaignsPerSlot* campaigns) {
   campaigns_ = campaigns;
+}
+
+void CampaignsMatcher::SetOpenedApp(const std::string& app_id) {
+  opened_app_id_ = app_id;
 }
 
 void CampaignsMatcher::SetPrefs(PrefService* prefs) {
@@ -272,6 +267,40 @@ bool CampaignsMatcher::MatchDeviceTargeting(
   }
 
   return MatchMilestone(targeting);
+}
+
+bool CampaignsMatcher::MatchOpenedApp(
+    std::vector<std::unique_ptr<AppTargeting>> apps_opened_targeting) const {
+  if (apps_opened_targeting.empty()) {
+    // Campaigns matched if apps opened targeting is empty.
+    return true;
+  }
+
+  for (const auto& app : apps_opened_targeting) {
+    auto* app_id = app->GetAppId();
+
+    if (!app_id) {
+      // Ignore if app id is missing from the targeting.
+      continue;
+    }
+
+    if (*app_id == opened_app_id_) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool CampaignsMatcher::MatchSessionTargeting(
+    const SessionTargeting& targeting) const {
+  if (!targeting.IsValid()) {
+    // Campaigns matched if there is no demo mode targeting.
+    return true;
+  }
+
+  return MatchSchedulings(targeting.GetSchedulings()) &&
+         MatchExperimentTags(targeting.GetExperimentTags()) &&
+         MatchOpenedApp(targeting.GetAppsOpened());
 }
 
 bool CampaignsMatcher::Matched(const Targetings* targetings) const {

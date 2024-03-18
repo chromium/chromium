@@ -99,8 +99,7 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
 
 class TargetingBase {
  public:
-  explicit TargetingBase(const Targeting* targeting_dict,
-                         const char* targeting_path);
+  TargetingBase(const Targeting* targeting_dict, const char* targeting_path);
   TargetingBase(const TargetingBase&) = delete;
   TargetingBase& operator=(const TargetingBase) = delete;
   ~TargetingBase();
@@ -184,7 +183,7 @@ class DeviceTargeting : public TargetingBase {
 // Start and end are the number of seconds since epoch in UTC.
 class SchedulingTargeting {
  public:
-  explicit SchedulingTargeting(const base::Value::Dict* scheduling);
+  explicit SchedulingTargeting(const base::Value::Dict* scheduling_dict);
   SchedulingTargeting(const SchedulingTargeting&) = delete;
   SchedulingTargeting& operator=(const SchedulingTargeting) = delete;
   ~SchedulingTargeting();
@@ -194,6 +193,25 @@ class SchedulingTargeting {
 
  private:
   raw_ptr<const base::Value::Dict> scheduling_dict_;
+};
+
+// Wrapper around app targeting dictionary.
+//
+// The structure looks like:
+// {
+//   "appId": "app_id",
+// }
+class AppTargeting {
+ public:
+  explicit AppTargeting(const base::Value::Dict* app);
+  AppTargeting(const AppTargeting&) = delete;
+  AppTargeting& operator=(const AppTargeting) = delete;
+  ~AppTargeting();
+
+  const std::string* GetAppId() const;
+
+ private:
+  raw_ptr<const base::Value::Dict> app_dict_;
 };
 
 // Wrapper around scheduling targeting dictionary.
@@ -212,6 +230,8 @@ class SessionTargeting : public TargetingBase {
   const std::vector<std::unique_ptr<SchedulingTargeting>> GetSchedulings()
       const;
   const base::Value::List* GetExperimentTags() const;
+  // Returns a list of apps to be matched against the current opened app.
+  const std::vector<std::unique_ptr<AppTargeting>> GetAppsOpened() const;
 };
 
 }  // namespace growth

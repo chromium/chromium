@@ -47,6 +47,10 @@ inline constexpr char kSchedulingTargetings[] = "schedulings";
 inline constexpr char kSchedulingStart[] = "start";
 inline constexpr char kSchedulingEnd[] = "end";
 
+// Opened App Targeting paths.
+inline constexpr char kAppsOpenedTargetings[] = "appsOpened";
+inline constexpr char kAppId[] = "appId";
+
 // Experiment Tag Targeting paths.
 inline constexpr char kExperimentTargetings[] = "experimentTags";
 
@@ -179,6 +183,16 @@ const std::optional<bool> DeviceTargeting::GetFeatureAwareDevice() const {
   return GetBoolCriteria(kFeatureAware);
 }
 
+// Apps Targeting.
+AppTargeting::AppTargeting(const base::Value::Dict* app_dict)
+    : app_dict_(app_dict) {}
+
+AppTargeting::~AppTargeting() = default;
+
+const std::string* AppTargeting::GetAppId() const {
+  return app_dict_->FindString(kAppId);
+}
+
 // Scheduling Targeting.
 SchedulingTargeting::SchedulingTargeting(
     const base::Value::Dict* scheduling_dict)
@@ -237,6 +251,27 @@ SessionTargeting::GetSchedulings() const {
 
 const base::Value::List* SessionTargeting::GetExperimentTags() const {
   return GetListCriteria(kExperimentTargetings);
+}
+
+const std::vector<std::unique_ptr<AppTargeting>>
+SessionTargeting::GetAppsOpened() const {
+  std::vector<std::unique_ptr<AppTargeting>> app_targetings;
+
+  auto* app_targeting_dicts = GetListCriteria(kAppsOpenedTargetings);
+  if (!app_targeting_dicts) {
+    return app_targetings;
+  }
+
+  for (auto& app_targeting_dict : *app_targeting_dicts) {
+    if (!app_targeting_dict.is_dict()) {
+      // TODO(b/329124927): Record error.
+      continue;
+    }
+    app_targetings.push_back(
+        std::make_unique<AppTargeting>(&app_targeting_dict.GetDict()));
+  }
+
+  return app_targetings;
 }
 
 }  // namespace growth

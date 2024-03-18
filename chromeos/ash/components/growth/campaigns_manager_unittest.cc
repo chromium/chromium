@@ -266,6 +266,17 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
 
+  void LoadComponentWithAppsOpenedTargeting(const std::string& apps_opened) {
+    auto session_targeting = base::StringPrintf(R"(
+            "session": {
+              "appsOpened": %s
+            }
+          )",
+                                                apps_opened.c_str());
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileTemplate, session_targeting.c_str()));
+  }
+
   base::test::TaskEnvironment task_environment_;
   MockCampaignsManagerClient mock_client_;
   base::ScopedTempDir temp_dir_;
@@ -1096,6 +1107,58 @@ TEST_F(CampaignsManagerTest, GetSchedulingCampaignInvalidScheduling) {
   histogram_tester.ExpectBucketCount(kCampaignsManagerErrorHistogramName,
                                      CampaignsManagerError::kInvalidTargeting,
                                      /*count=*/1);
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignAppsOpened) {
+  campaigns_manager_->SetOpenedApp("app_id_1");
+
+  LoadComponentWithAppsOpenedTargeting(
+      R"([
+      {"appId": "app_id_1"},
+      {"appId": "app_id_10"},
+      {"appId": "app_id_15"}
+    ])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignAppsOpenedOrRelationship) {
+  campaigns_manager_->SetOpenedApp("app_id_10");
+
+  LoadComponentWithAppsOpenedTargeting(
+      R"([
+      {"appId": "app_id_1"},
+      {"appId": "app_id_10"},
+      {"appId": "app_id_15"}
+    ])");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignAppOpenedMismatch) {
+  campaigns_manager_->SetOpenedApp("app_id_2");
+
+  LoadComponentWithAppsOpenedTargeting(
+      R"([
+      {"appId": "app_id_1"},
+      {"appId": "app_id_10"},
+      {"appId": "app_id_15"}
+    ])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignAppOpenedNoOpenedApp) {
+  LoadComponentWithAppsOpenedTargeting(
+      R"([
+      {"appId": "app_id_1"},
+      {"appId": "app_id_10"},
+      {"appId": "app_id_15"}
+    ])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 }  // namespace growth

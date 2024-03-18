@@ -25,6 +25,8 @@ class CampaignsMatcher {
 
   void SetCampaigns(const CampaignsPerSlot* campaigns);
 
+  void SetOpenedApp(const std::string& app_id);
+
   // Select the targeted campaign for the given `slot`. Returns nullptr if no
   // campaign found for the given `slot`.
   const Campaign* GetCampaignBySlot(Slot slot) const;
@@ -37,6 +39,9 @@ class CampaignsMatcher {
   bool MatchMilestone(const DeviceTargeting& targeting) const;
   bool MatchDeviceTargeting(const DeviceTargeting& targeting) const;
   bool MatchExperimentTagTargeting(const base::Value::List* targeting) const;
+  bool MatchOpenedApp(
+      std::vector<std::unique_ptr<AppTargeting>> apps_opened_targeting) const;
+  bool MatchSessionTargeting(const SessionTargeting& targeting) const;
   bool Matched(const Targetings* targetings) const;
 
   // Owned by CampaignsManager.
@@ -44,6 +49,7 @@ class CampaignsMatcher {
   raw_ptr<CampaignsManagerClient> client_ = nullptr;
   raw_ptr<PrefService> local_state_ = nullptr;
   raw_ptr<PrefService> prefs_ = nullptr;
+  std::string opened_app_id_;
 };
 
 }  // namespace growth
