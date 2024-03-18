@@ -28,9 +28,6 @@ PersonalizationAppMochaTestBase::PersonalizationAppMochaTestBase() {
       {
           ::ash::features::kFeatureManagementTimeOfDayScreenSaver,
           ::ash::features::kFeatureManagementTimeOfDayWallpaper,
-          ::manta::features::kMantaService,
-          ::ash::features::kSeaPen,
-          ::ash::features::kFeatureManagementSeaPen,
       },
       {});
   set_test_loader_host(

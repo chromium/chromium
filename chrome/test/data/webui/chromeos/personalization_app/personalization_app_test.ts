@@ -737,6 +737,73 @@ suite('sea pen', () => {
       }
     });
   });
+
+  test('selects recent image', async () => {
+    const seaPenRouter = await getSeaPenRouter();
+    const recentImages = await waitUntil(
+        () => seaPenRouter.shadowRoot
+                  ?.querySelector<SeaPenRecentWallpapersElement>(
+                      'sea-pen-recent-wallpapers'),
+        'waiting for sea-pen-recent-wallpapers');
+    assertTrue(!!recentImages, 'recent images should exist');
+
+    {
+      // Selects first non-selected image.
+      const image =
+          recentImages.shadowRoot?.querySelector<WallpaperGridItemElement>(
+              `wallpaper-grid-item[aria-selected=false]`);
+      assertTrue(!!image, 'image exists');
+      image!.click();
+      assertTrue(
+          image?.getAttribute('aria-selected') === 'true',
+          'image should be selected');
+    }
+
+    {
+      // Verifies the image is set properly.
+      const menuButton = recentImages.shadowRoot?.querySelector<
+          CrIconButtonElement>(
+          `wallpaper-grid-item[aria-selected=true] + .menu-icon-container cr-icon-button`);
+      menuButton!.click();
+
+      const aboutButton = await waitUntil(
+          () => recentImages.shadowRoot?.querySelector<HTMLButtonElement>(
+              `wallpaper-grid-item[aria-selected=true] ~ cr-action-menu .wallpaper-info-option`),
+          'waiting for about wallpaper button');
+      assertTrue(!!aboutButton, 'about wallpaper button exists');
+      aboutButton!.click();
+
+      const dialog = await waitUntil(
+          () => recentImages.shadowRoot?.querySelector<CrDialogElement>(
+              'cr-dialog'),
+          'waiting for about wallpaper dialog');
+      assertTrue(!!dialog, 'about wallpaper dialog exists');
+
+      const promptInfo =
+          recentImages.shadowRoot?.querySelector<HTMLParagraphElement>(
+              'p.about-prompt-info');
+      const promptText = promptInfo?.textContent?.trim();
+
+      // Verifies the image is set properly.
+      const wallpaperSelected = await waitUntil(
+          () => getRouter().shadowRoot?.getElementById('wallpaperSelected')!,
+          'waiting for sea-pen-router wallpaper-selected');
+      assertTrue(!!wallpaperSelected, 'wallpaper-selected should exist');
+      const textContainer = await waitUntil(
+          () => wallpaperSelected.shadowRoot?.getElementById('textContainer'),
+          'waiting for wallpaper text container', /*intervalMs=*/ 500,
+          /*timeoutMs=*/ 3001);
+      assertTrue(!!textContainer, 'wallpaper text container exists');
+      await waitUntil(
+          () => promptText?.includes(
+              textContainer.querySelector('#imageTitle')?.textContent?.trim()!),
+          () => `failed waiting for expected image title ` +
+              `after selecting wallpaper. ` +
+              `html:\n${textContainer.outerHTML}`,
+          /*intervalMs=*/ 500,
+          /*timeoutMs=*/ 3001);
+    }
+  });
 });
 
 suite('dynamic color', () => {
