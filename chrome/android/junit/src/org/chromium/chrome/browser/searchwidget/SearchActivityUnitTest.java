@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -56,7 +57,7 @@ public class SearchActivityUnitTest {
         @IntentOrigin
         int getIntentOrigin(Intent intent);
 
-        void resolveOmniboxRequestForResult(Activity activity, GURL url);
+        void resolveOmniboxRequestForResult(Activity activity, OmniboxLoadUrlParams params);
 
         GURL getIntentUrl(Intent intent);
     }
@@ -77,8 +78,9 @@ public class SearchActivityUnitTest {
         }
 
         @Implementation
-        public static void resolveOmniboxRequestForResult(Activity activity, GURL url) {
-            sMockUtils.resolveOmniboxRequestForResult(activity, url);
+        public static void resolveOmniboxRequestForResult(
+                Activity activity, OmniboxLoadUrlParams params) {
+            sMockUtils.resolveOmniboxRequestForResult(activity, params);
         }
     }
 
@@ -114,8 +116,11 @@ public class SearchActivityUnitTest {
         mActivity.handleNewIntent(new Intent());
 
         mActivity.loadUrl(LOAD_URL_PARAMS_SIMPLE, false);
-        verify(mUtils)
-                .resolveOmniboxRequestForResult(eq(mActivity), eq(new GURL("https://abc.xyz")));
+        ArgumentCaptor<OmniboxLoadUrlParams> captor =
+                ArgumentCaptor.forClass(OmniboxLoadUrlParams.class);
+        verify(mUtils).resolveOmniboxRequestForResult(eq(mActivity), captor.capture());
+
+        assertEquals("https://abc.xyz", captor.getValue().url);
         assertNull(mShadowActivity.getNextStartedActivity());
     }
 

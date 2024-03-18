@@ -12,7 +12,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,14 +83,12 @@ import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverSupplier;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 
@@ -611,7 +608,7 @@ public class SearchActivity extends AsyncInitializationActivity
     /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
         finish();
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
-            SearchActivityUtils.resolveOmniboxRequestForResult(this, new GURL(params.url));
+            SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
             overridePendingTransition(0, android.R.anim.fade_out);
         } else {
             loadUrlInChromeBrowser(params);
@@ -626,9 +623,12 @@ public class SearchActivity extends AsyncInitializationActivity
             return;
         }
 
-        Intent intent =
-                createIntentForStartActivity(params.url, params.postDataType, params.postData);
+        Intent intent = SearchActivityUtils.createIntentForStartActivity(this, params);
         if (intent == null) return;
+
+        if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {
+            intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
+        }
 
         IntentUtils.safeStartActivity(
                 this,
@@ -639,39 +639,6 @@ public class SearchActivity extends AsyncInitializationActivity
         RecordUserAction.record("SearchWidget.SearchMade");
         LocaleManager.getInstance()
                 .recordLocaleBasedSearchMetrics(true, params.url, params.transitionType);
-    }
-
-    /**
-     * Creates an intent that will be used to launch Chrome.
-     *
-     * @param url The URL to be loaded.
-     * @param postDataType postData type.
-     * @param postData Post-data to include in the tab URL's request body, ex. bitmap when image
-     *     search.
-     * @return the intent will be passed to ChromeLauncherActivity, null if input was emprty.
-     */
-    private Intent createIntentForStartActivity(
-            String url, @Nullable String postDataType, @Nullable byte[] postData) {
-        // Don't do anything if the input was empty. This is done after the native check to prevent
-        // resending a queued query after the user deleted it.
-        if (TextUtils.isEmpty(url)) return null;
-
-        // Fix up the URL and send it to the full browser.
-        GURL fixedUrl = UrlFormatter.fixupUrl(url);
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(fixedUrl.getValidSpecOrEmpty()));
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        intent.setClass(this, ChromeLauncherActivity.class);
-        if (!TextUtils.isEmpty(postDataType) && postData != null && postData.length != 0) {
-            intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, postDataType);
-            intent.putExtra(IntentHandler.EXTRA_POST_DATA, postData);
-        }
-        if (mIntentOrigin == IntentOrigin.SEARCH_WIDGET) {
-            intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
-        }
-        intent.putExtra(EXTRA_FROM_SEARCH_ACTIVITY, true);
-        IntentUtils.addTrustedIntentExtras(intent);
-
-        return intent;
     }
 
     private ViewGroup createContentView() {

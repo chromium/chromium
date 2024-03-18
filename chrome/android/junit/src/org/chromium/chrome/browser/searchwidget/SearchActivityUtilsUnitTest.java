@@ -4,36 +4,99 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(
+        manifest = Config.NONE,
+        shadows = {SearchActivityUtilsUnitTest.ShadowUrlFormatter.class})
 public class SearchActivityUtilsUnitTest {
     // Placeholder Activity class that guarantees the PackageName is valid for IntentUtils.
     private static class TestActivity extends Activity {}
 
     private static final GURL GOOD_URL = new GURL("https://abc.xyz");
     private static final GURL EMPTY_URL = GURL.emptyGURL();
+    private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_NULL_URL =
+            new OmniboxLoadUrlParams.Builder(null, PageTransition.TYPED).build();
+    private static final OmniboxLoadUrlParams LOAD_URL_PARAMS_INVALID_URL =
+            new OmniboxLoadUrlParams.Builder("abcde", PageTransition.TYPED).build();
+    private static final OmniboxLoadUrlParams.Builder LOAD_URL_PARAMS_BUILDER =
+            new OmniboxLoadUrlParams.Builder("https://abc.xyz", PageTransition.TYPED);
+    private static final ComponentName COMPONENT_TRUSTED =
+            new ComponentName(ContextUtils.getApplicationContext(), SearchActivity.class);
+    private static final ComponentName COMPONENT_UNTRUSTED =
+            new ComponentName("com.some.package", "com.some.package.test.Activity");
+
     private Activity mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+
+    // UrlFormatter call intercepting mock.
+    private interface TestUrlFormatter {
+        GURL fixupUrl(String uri);
+    }
+
+    @Implements(UrlFormatter.class)
+    public static class ShadowUrlFormatter {
+        static TestUrlFormatter sMockFormatter;
+
+        @Implementation
+        public static GURL fixupUrl(String uri) {
+            return sMockFormatter.fixupUrl(uri);
+        }
+    }
+
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    private @Mock TestUrlFormatter mFormatter;
+
+    @Before
+    public void setUp() {
+        ShadowUrlFormatter.sMockFormatter = mFormatter;
+
+        doAnswer(
+                        i -> {
+                            return new GURL(i.getArgument(0));
+                        })
+                .when(mFormatter)
+                .fixupUrl(any());
+    }
 
     @Test
     public void createIntent_forTextSearch() {
@@ -288,13 +351,11 @@ public class SearchActivityUtilsUnitTest {
         activity.setCallingActivity(
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
 
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
 
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
-        assertTrue(intent.hasExtra(SearchActivityUtils.EXTRA_URL_TO_NAVIGATE));
-        assertEquals(
-                GOOD_URL.getSpec(),
-                IntentUtils.safeGetStringExtra(intent, SearchActivityUtils.EXTRA_URL_TO_NAVIGATE));
+        assertEquals("https://abc.xyz/", intent.getDataString());
         assertEquals(Activity.RESULT_OK, Shadows.shadowOf(mActivity).getResultCode());
     }
 
@@ -304,14 +365,14 @@ public class SearchActivityUtilsUnitTest {
         var activity = Shadows.shadowOf(mActivity);
         activity.setCallingPackage("com.abc.xyz");
 
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
 
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
-        assertFalse(intent.hasExtra(SearchActivityUtils.EXTRA_URL_TO_NAVIGATE));
-        assertFalse(IntentUtils.safeHasExtra(intent, SearchActivityUtils.EXTRA_URL_TO_NAVIGATE));
+        assertNull(intent);
 
         // Respectfully tell the caller we have nothing else to share.
-        assertEquals(Activity.RESULT_OK, Shadows.shadowOf(mActivity).getResultCode());
+        assertEquals(Activity.RESULT_CANCELED, Shadows.shadowOf(mActivity).getResultCode());
     }
 
     @Test
@@ -321,10 +382,10 @@ public class SearchActivityUtilsUnitTest {
         SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, null);
         assertEquals(Activity.RESULT_CANCELED, activity.getResultCode());
 
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GURL.emptyGURL());
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, LOAD_URL_PARAMS_NULL_URL);
         assertEquals(Activity.RESULT_CANCELED, activity.getResultCode());
 
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, new GURL("a b"));
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, LOAD_URL_PARAMS_INVALID_URL);
         assertEquals(Activity.RESULT_CANCELED, activity.getResultCode());
     }
 
@@ -333,7 +394,8 @@ public class SearchActivityUtilsUnitTest {
         var activity = Shadows.shadowOf(mActivity);
         activity.setCallingActivity(
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
 
         // Our own responses should always be valid.
@@ -347,7 +409,8 @@ public class SearchActivityUtilsUnitTest {
         var activity = Shadows.shadowOf(mActivity);
         activity.setCallingActivity(
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
 
         assertFalse(
@@ -362,7 +425,8 @@ public class SearchActivityUtilsUnitTest {
         var activity = Shadows.shadowOf(mActivity);
         activity.setCallingActivity(
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
 
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
@@ -376,10 +440,11 @@ public class SearchActivityUtilsUnitTest {
         var activity = Shadows.shadowOf(mActivity);
         activity.setCallingActivity(
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
 
-        intent.removeExtra(SearchActivityUtils.EXTRA_URL_TO_NAVIGATE);
+        intent.setData(null);
         assertFalse(
                 SearchActivityUtils.isOmniboxResult(
                         SearchActivityUtils.OMNIBOX_REQUEST_CODE, intent));
@@ -387,16 +452,16 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getOmniboxResult_successfulResolution() {
-        // Resolve intent with GOOD_URL.
         var activity = Shadows.shadowOf(mActivity);
         activity.setCallingActivity(
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
 
         // We should see the same URL on the receiving side.
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
         assertEquals(
-                GOOD_URL.getSpec(),
+                "https://abc.xyz/",
                 SearchActivityUtils.getOmniboxResult(
                                 SearchActivityUtils.OMNIBOX_REQUEST_CODE,
                                 Activity.RESULT_OK,
@@ -411,7 +476,8 @@ public class SearchActivityUtilsUnitTest {
         var activity = Shadows.shadowOf(mActivity);
         activity.setCallingActivity(
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
 
         // We should see no GURL object on the receiving side: this is not our intent.
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
@@ -427,7 +493,8 @@ public class SearchActivityUtilsUnitTest {
         var activity = Shadows.shadowOf(mActivity);
         activity.setCallingActivity(
                 new ComponentName(ContextUtils.getApplicationContext(), TestActivity.class));
-        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, GOOD_URL);
+        var params = LOAD_URL_PARAMS_BUILDER.build();
+        SearchActivityUtils.resolveOmniboxRequestForResult(mActivity, params);
 
         // We should see an empty GURL on the receiving side.
         var intent = Shadows.shadowOf(mActivity).getResultIntent();
@@ -437,5 +504,132 @@ public class SearchActivityUtilsUnitTest {
                                 Activity.RESULT_CANCELED,
                                 intent)
                         .isEmpty());
+    }
+
+    @Test
+    public void createLoadUrlIntent_nullParams() {
+        assertNull(SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, null));
+    }
+
+    @Test
+    public void createLoadUrlIntent_nullUrl() {
+        assertNull(
+                SearchActivityUtils.createLoadUrlIntent(
+                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_NULL_URL));
+    }
+
+    @Test
+    public void createLoadUrlIntent_invalidUrl() {
+        assertNull(
+                SearchActivityUtils.createLoadUrlIntent(
+                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_INVALID_URL));
+    }
+
+    @Test
+    public void createLoadUrlIntent_invalidFixedUpUrl() {
+        doReturn(null).when(mFormatter).fixupUrl(any());
+        assertNull(
+                SearchActivityUtils.createLoadUrlIntent(
+                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_BUILDER.build()));
+    }
+
+    @Test
+    public void createLoadUrlIntent_untrustedRecipient() {
+        Intent intent =
+                SearchActivityUtils.createLoadUrlIntent(
+                        mActivity, COMPONENT_UNTRUSTED, LOAD_URL_PARAMS_BUILDER.build());
+        assertNull(intent);
+    }
+
+    @Test
+    public void createLoadUrlIntent_simpleParams() {
+        Intent intent =
+                SearchActivityUtils.createLoadUrlIntent(
+                        mActivity, COMPONENT_TRUSTED, LOAD_URL_PARAMS_BUILDER.build());
+        assertNotNull(intent);
+
+        assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
+        assertTrue(intent.getBooleanExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false));
+        assertEquals(COMPONENT_TRUSTED.getClassName(), intent.getComponent().getClassName());
+        assertNull(intent.getStringExtra(IntentHandler.EXTRA_POST_DATA_TYPE));
+        assertNull(intent.getByteArrayExtra(IntentHandler.EXTRA_POST_DATA));
+        assertTrue(intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
+    }
+
+    @Test
+    public void createLoadUrlIntent_paramsWithNullPostData() {
+        var params = LOAD_URL_PARAMS_BUILDER.setpostDataAndType(null, "abc").build();
+        Intent intent =
+                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        assertNotNull(intent);
+
+        assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
+        assertTrue(intent.getBooleanExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false));
+        assertEquals(COMPONENT_TRUSTED.getClassName(), intent.getComponent().getClassName());
+        assertNull(intent.getStringExtra(IntentHandler.EXTRA_POST_DATA_TYPE));
+        assertNull(intent.getByteArrayExtra(IntentHandler.EXTRA_POST_DATA));
+        assertTrue(intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
+    }
+
+    @Test
+    public void createLoadUrlIntent_paramsWithEmptyPostData() {
+        var params = LOAD_URL_PARAMS_BUILDER.setpostDataAndType(new byte[] {}, "abc").build();
+        Intent intent =
+                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        assertNotNull(intent);
+
+        assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
+        assertTrue(intent.getBooleanExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false));
+        assertEquals(COMPONENT_TRUSTED.getClassName(), intent.getComponent().getClassName());
+        assertNull(intent.getStringExtra(IntentHandler.EXTRA_POST_DATA_TYPE));
+        assertNull(intent.getByteArrayExtra(IntentHandler.EXTRA_POST_DATA));
+        assertTrue(intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
+    }
+
+    @Test
+    public void createLoadUrlIntent_paramsWithNullPostDataType() {
+        var params = LOAD_URL_PARAMS_BUILDER.setpostDataAndType(new byte[] {1, 2, 3}, null).build();
+        Intent intent =
+                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        assertNotNull(intent);
+
+        assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
+        assertTrue(intent.getBooleanExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false));
+        assertEquals(COMPONENT_TRUSTED.getClassName(), intent.getComponent().getClassName());
+        assertNull(intent.getStringExtra(IntentHandler.EXTRA_POST_DATA_TYPE));
+        assertNull(intent.getByteArrayExtra(IntentHandler.EXTRA_POST_DATA));
+        assertTrue(intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
+    }
+
+    @Test
+    public void createLoadUrlIntent_paramsWithEmptyPostDataType() {
+        var params = LOAD_URL_PARAMS_BUILDER.setpostDataAndType(new byte[] {1, 2, 3}, "").build();
+        Intent intent =
+                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        assertNotNull(intent);
+
+        assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
+        assertTrue(intent.getBooleanExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false));
+        assertEquals(COMPONENT_TRUSTED.getClassName(), intent.getComponent().getClassName());
+        assertNull(intent.getStringExtra(IntentHandler.EXTRA_POST_DATA_TYPE));
+        assertNull(intent.getByteArrayExtra(IntentHandler.EXTRA_POST_DATA));
+        assertTrue(intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
+    }
+
+    @Test
+    public void createLoadUrlIntent_paramsWithValidPostDataType() {
+        var params =
+                LOAD_URL_PARAMS_BUILDER.setpostDataAndType(new byte[] {1, 2, 3}, "test").build();
+        Intent intent =
+                SearchActivityUtils.createLoadUrlIntent(mActivity, COMPONENT_TRUSTED, params);
+        assertNotNull(intent);
+
+        assertEquals(Uri.parse("https://abc.xyz/"), intent.getData());
+        assertTrue(intent.getBooleanExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false));
+        assertEquals(COMPONENT_TRUSTED.getClassName(), intent.getComponent().getClassName());
+        assertEquals("test", intent.getStringExtra(IntentHandler.EXTRA_POST_DATA_TYPE));
+        assertArrayEquals(
+                new byte[] {1, 2, 3}, intent.getByteArrayExtra(IntentHandler.EXTRA_POST_DATA));
+        assertTrue(intent.hasExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA));
     }
 }

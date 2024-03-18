@@ -10,6 +10,8 @@ import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,7 +19,11 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.url.GURL;
 
 /** Class facilitating interactions with the SearchActivity and the Omnibox. */
@@ -28,7 +34,6 @@ public class SearchActivityUtils implements SearchActivityClient {
     @VisibleForTesting /* package */ static final String EXTRA_ORIGIN = "origin";
     @VisibleForTesting /* package */ static final String EXTRA_SEARCH_TYPE = "search-type";
     @VisibleForTesting /* package */ static final String EXTRA_CURRENT_URL = "current-url";
-    @VisibleForTesting /* package */ static final String EXTRA_URL_TO_NAVIGATE = "url-to-navigate";
 
     // Note: while we don't rely on Actions, PendingIntents do require them to be Unique.
     // Responsibility to define values for PendingIntents could be offset to Caller; meantime we
@@ -147,22 +152,75 @@ public class SearchActivityUtils implements SearchActivityClient {
      *     results with canceled request; anything else resolves request successfully
      */
     /* package */ static void resolveOmniboxRequestForResult(
-            @NonNull Activity activity, @Nullable GURL url) {
-        if (GURL.isEmptyOrInvalid(url)) {
+            @NonNull Activity activity, @NonNull OmniboxLoadUrlParams params) {
+        var intent = createLoadUrlIntent(activity, activity.getCallingActivity(), params);
+        if (intent != null) {
+            activity.setResult(Activity.RESULT_OK, intent);
+        } else {
             activity.setResult(Activity.RESULT_CANCELED);
-            return;
         }
+    }
 
-        var intent = new Intent().setPackage(activity.getCallingPackage());
+    /**
+     * Creates an intent that can be used to launch Chrome.
+     *
+     * @param context current context
+     * @param params information about what url to load and what additional data to pass
+     * @return the intent will be passed to ChromeLauncherActivity, or null if page cannot be loaded
+     */
+    /* package */ static @Nullable Intent createIntentForStartActivity(
+            Context context, OmniboxLoadUrlParams params) {
+        var intent =
+                createLoadUrlIntent(
+                        context, new ComponentName(context, ChromeLauncherActivity.class), params);
+        if (intent == null) return null;
+
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+
+        return intent;
+    }
+
+    /**
+     * Create a base intent that can be further expanded to request URL loading.
+     *
+     * @param context the current context
+     * @param recipient the activity being targeted
+     * @param params the OmniboxLoadUrlParams describing what URL to load and what extra data to
+     *     pass
+     * @return Intent, if all the supplied data is valid, otherwise null
+     */
+    @VisibleForTesting
+    /* package */ static @Nullable Intent createLoadUrlIntent(
+            Context context, ComponentName recipient, OmniboxLoadUrlParams params) {
+        // Don't do anything if the input was empty.
+        if (params == null || TextUtils.isEmpty(params.url)) return null;
+
+        // Fix up the URL and send it to the full browser.
+        GURL fixedUrl = UrlFormatter.fixupUrl(params.url);
+        if (GURL.isEmptyOrInvalid(fixedUrl)) return null;
+
+        var intent =
+                new Intent()
+                        .putExtra(SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, true)
+                        .setComponent(recipient)
+                        .setData(Uri.parse(fixedUrl.getSpec()));
 
         // Do not pass any of these information if the calling package is something we did not
         // expect, but somehow it managed to fabricate a trust token.
-        if (IntentUtils.intentTargetsSelf(activity, intent)) {
-            intent.putExtra(EXTRA_URL_TO_NAVIGATE, url.getSpec());
-            IntentUtils.addTrustedIntentExtras(intent);
+        if (!IntentUtils.intentTargetsSelf(context, intent)) {
+            return null;
         }
 
-        activity.setResult(Activity.RESULT_OK, intent);
+        if (!TextUtils.isEmpty(params.postDataType)
+                && params.postData != null
+                && params.postData.length != 0) {
+            intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, params.postDataType)
+                    .putExtra(IntentHandler.EXTRA_POST_DATA, params.postData);
+        }
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        return intent;
     }
 
     /**
@@ -176,7 +234,7 @@ public class SearchActivityUtils implements SearchActivityClient {
     public static boolean isOmniboxResult(int requestCode, @NonNull Intent intent) {
         return requestCode == OMNIBOX_REQUEST_CODE
                 && IntentUtils.isTrustedIntentFromSelf(intent)
-                && IntentUtils.safeHasExtra(intent, EXTRA_URL_TO_NAVIGATE);
+                && !TextUtils.isEmpty(intent.getDataString());
     }
 
     /**
@@ -192,7 +250,7 @@ public class SearchActivityUtils implements SearchActivityClient {
             int requestCode, int resultCode, @NonNull Intent intent) {
         if (!isOmniboxResult(requestCode, intent)) return null;
         if (resultCode != Activity.RESULT_OK) return GURL.emptyGURL();
-        return new GURL(IntentUtils.safeGetStringExtra(intent, EXTRA_URL_TO_NAVIGATE));
+        return new GURL(intent.getDataString());
     }
 
     /**
