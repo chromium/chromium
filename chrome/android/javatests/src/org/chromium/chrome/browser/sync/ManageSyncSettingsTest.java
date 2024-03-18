@@ -93,20 +93,7 @@ public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 5;
 
     /** Maps selected types to their UI element IDs. */
-    private static final Map<Integer, String> UI_DATATYPES = new HashMap<>();
-
-    static {
-        UI_DATATYPES.put(UserSelectableType.AUTOFILL, ManageSyncSettings.PREF_SYNC_AUTOFILL);
-        UI_DATATYPES.put(UserSelectableType.BOOKMARKS, ManageSyncSettings.PREF_SYNC_BOOKMARKS);
-        UI_DATATYPES.put(
-                UserSelectableType.PAYMENTS, ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
-        UI_DATATYPES.put(UserSelectableType.HISTORY, ManageSyncSettings.PREF_SYNC_HISTORY);
-        UI_DATATYPES.put(UserSelectableType.PASSWORDS, ManageSyncSettings.PREF_SYNC_PASSWORDS);
-        UI_DATATYPES.put(
-                UserSelectableType.READING_LIST, ManageSyncSettings.PREF_SYNC_READING_LIST);
-        UI_DATATYPES.put(UserSelectableType.TABS, ManageSyncSettings.PREF_SYNC_RECENT_TABS);
-        UI_DATATYPES.put(UserSelectableType.PREFERENCES, ManageSyncSettings.PREF_SYNC_SETTINGS);
-    }
+    private Map<Integer, String> mUiDataTypes;
 
     private SettingsActivity mSettingsActivity;
 
@@ -157,6 +144,21 @@ public class ManageSyncSettingsTest {
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.isEeaChoiceCountry()).thenReturn(false);
+
+        mUiDataTypes = new HashMap<>();
+        mUiDataTypes.put(UserSelectableType.AUTOFILL, ManageSyncSettings.PREF_SYNC_AUTOFILL);
+        mUiDataTypes.put(UserSelectableType.BOOKMARKS, ManageSyncSettings.PREF_SYNC_BOOKMARKS);
+        mUiDataTypes.put(
+                UserSelectableType.PAYMENTS, ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
+        mUiDataTypes.put(UserSelectableType.HISTORY, ManageSyncSettings.PREF_SYNC_HISTORY);
+        mUiDataTypes.put(UserSelectableType.PASSWORDS, ManageSyncSettings.PREF_SYNC_PASSWORDS);
+        mUiDataTypes.put(
+                UserSelectableType.READING_LIST, ManageSyncSettings.PREF_SYNC_READING_LIST);
+        mUiDataTypes.put(UserSelectableType.TABS, ManageSyncSettings.PREF_SYNC_RECENT_TABS);
+        mUiDataTypes.put(UserSelectableType.PREFERENCES, ManageSyncSettings.PREF_SYNC_SETTINGS);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND)) {
+            mUiDataTypes.put(UserSelectableType.APPS, ManageSyncSettings.PREF_SYNC_APPS);
+        }
     }
 
     @After
@@ -380,7 +382,7 @@ public class ManageSyncSettingsTest {
     public void testPaymentsIntegrationUnchecked() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
 
-        Set<Integer> allDataTypesExceptPayments = new HashSet<>(UI_DATATYPES.keySet());
+        Set<Integer> allDataTypesExceptPayments = new HashSet<>(mUiDataTypes.keySet());
         allDataTypesExceptPayments.remove(UserSelectableType.PAYMENTS);
 
         mSyncTestRule.setSelectedTypes(false, allDataTypesExceptPayments);
@@ -422,7 +424,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.disableDataType(UserSelectableType.PAYMENTS);
 
-        mSyncTestRule.setSelectedTypes(false, UI_DATATYPES.keySet());
+        mSyncTestRule.setSelectedTypes(false, mUiDataTypes.keySet());
         ManageSyncSettings fragment = startManageSyncPreferences();
 
         CheckBoxPreference paymentsIntegration =
@@ -818,6 +820,25 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
+    @EnableFeatures({ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND})
+    public void testAdvancedSyncFlowBottomViewWithWebApks() throws Exception {
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    // Sometimes the rendered image may not contain the scrollbar and cause
+                    // flakiness.
+                    // Hide the scrollbar altogether to reduce flakiness.
+                    recyclerView.setVerticalScrollBarEnabled(false);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
+        render(fragment, "advanced_sync_flow_bottom_view_with_webapks");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
     public void testAdvancedSyncFlowFromSyncConsentTopView() throws Exception {
         mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
@@ -1185,7 +1206,7 @@ public class ManageSyncSettingsTest {
 
     private Map<Integer, CheckBoxPreference> getDataTypes(ManageSyncSettings fragment) {
         Map<Integer, CheckBoxPreference> dataTypes = new HashMap<>();
-        for (Map.Entry<Integer, String> uiDataType : UI_DATATYPES.entrySet()) {
+        for (Map.Entry<Integer, String> uiDataType : mUiDataTypes.entrySet()) {
             Integer selectedType = uiDataType.getKey();
             String prefId = uiDataType.getValue();
             dataTypes.put(selectedType, (CheckBoxPreference) fragment.findPreference(prefId));
@@ -1248,7 +1269,7 @@ public class ManageSyncSettingsTest {
     }
 
     private void assertSelectedTypesAre(final Set<Integer> enabledDataTypes) {
-        final Set<Integer> disabledDataTypes = new HashSet<>(UI_DATATYPES.keySet());
+        final Set<Integer> disabledDataTypes = new HashSet<>(mUiDataTypes.keySet());
         disabledDataTypes.removeAll(enabledDataTypes);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

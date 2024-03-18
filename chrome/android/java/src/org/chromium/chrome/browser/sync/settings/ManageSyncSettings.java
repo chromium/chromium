@@ -106,6 +106,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String PREF_SYNC_READING_LIST = "sync_reading_list";
     @VisibleForTesting public static final String PREF_SYNC_RECENT_TABS = "sync_recent_tabs";
     @VisibleForTesting public static final String PREF_SYNC_SETTINGS = "sync_settings";
+    @VisibleForTesting public static final String PREF_SYNC_APPS = "sync_apps";
     @VisibleForTesting public static final String PREF_TURN_OFF_SYNC = "turn_off_sync";
     private static final String PREF_ADVANCED_CATEGORY = "advanced_category";
 
@@ -236,6 +237,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 UserSelectableType.PAYMENTS, findPreference(PREF_SYNC_PAYMENTS_INTEGRATION));
         mSyncTypePreferencesMap.put(
                 UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_APK_BACKUP_AND_RESTORE_BACKEND)) {
+            mSyncTypePreferencesMap.put(UserSelectableType.APPS, findPreference(PREF_SYNC_APPS));
+        } else {
+            findPreference(PREF_SYNC_APPS).setVisible(false);
+        }
+
         mSyncTypePreferencesMap.put(
                 UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
         mSyncTypePreferencesMap.put(UserSelectableType.TABS, findPreference(PREF_SYNC_RECENT_TABS));

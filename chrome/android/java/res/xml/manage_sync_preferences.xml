@@ -63,6 +63,11 @@ found in the LICENSE file.
         android:title="@string/sync_settings"
         android:persistent="false"/>
 
+    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+        android:key="sync_apps"
+        android:title="@string/sync_apps"
+        android:persistent="false"/>
+
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="turn_off_sync"
         android:title="@string/sign_out_and_turn_off_sync"
