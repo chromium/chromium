@@ -2241,6 +2241,64 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.CAPPORT.ContainsBytesRemaining"
+    enum="BooleanSuccess" expires_after="2024-12-31">
+  <owner>akahuang@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric indicating if a CAPPORT status response contains the
+    &quot;bytes-remaining&quot; field defined in RFC8908. This metric is only
+    recorded once per CAPPORT session and only if the CAPPORT server started
+    advertising &quot;captive&quot; as false.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.CAPPORT.ContainsSecondsRemaining"
+    enum="BooleanSuccess" expires_after="2024-12-31">
+  <owner>akahuang@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric indicating if a CAPPORT status response contains the
+    &quot;seconds-remaining&quot; field defined in RFC8908. This metric is only
+    recorded once per CAPPORT session and only if the CAPPORT server started
+    advertising &quot;captive&quot; as false.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.CAPPORT.ContainsVenueInfoURL"
+    enum="BooleanSuccess" expires_after="2024-12-31">
+  <owner>akahuang@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric indicating if a CAPPORT status response contains the
+    &quot;venue-info-url&quot; field defined in RFC8908. This metric is only
+    recorded once per CAPPORT session and only if the CAPPORT server started
+    advertising &quot;captive&quot; as false.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.CAPPORT.MaxSecondsRemaining" units="seconds"
+    expires_after="2024-12-31">
+  <owner>akahuang@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric indicating if the maximum value advertised in
+    CAPPORT status responses for the &quot;seconds-remaining&quot; field defined
+    in RFC8908. This metric is only recorded once per CAPPORT session (the
+    maximum value).
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.CAPPORT.QueryResult" enum="CAPPORTQueryResult"
+    expires_after="2024-12-31">
+  <owner>akahuang@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric indicating the results for a CAPPORT query as
+    defined in RFC8908.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Cellular.3GPPRegistrationDelayedDrop"
     enum="NetworkCellular3GPPRegistrationDelayedDrop"
     expires_after="2024-09-01">
@@ -2677,6 +2735,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Network.Shill.PortalDetector.AggregateCAPPORTResult.{Technology}"
+    enum="PortalDetectorAggregateCAPPORTResult" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Result of ChromeOS network validation CAPPORT queries aggregated over
+    multiple queries until Internet connectivity has been validated or until
+    disconnection.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
 <histogram name="Network.Shill.PortalDetector.AggregateResult.{Technology}"
     enum="PortalDetectorAggregateResult" expires_after="2024-12-31">
   <owner>hugobenichi@google.com</owner>
@@ -2912,12 +2983,17 @@ chromium-metrics-reviews@google.com.
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Total time it takes for ChromeOS network validation to find a captive portal
-    redirection or to validate Internet access starting from the initial network
-    connection (&quot;TimeToRedirect, &quot;TimeToInternet&quot;) or starting
-    from the first discovery of a captive portal redirection
-    (&quot;TimeToInternetAfterRedirect&quot;).
+    redirection (&quot;TimeToRedirect&quot;), or to find a captive portal
+    sign-in URL after a CAPPORT query as defined in RFC8908
+    (&quot;TimeToCAPPORTUserPortalURL&quot;), or to validate Internet access
+    starting from the initial network connection (&quot;TimeToInternet&quot;),
+    or starting from the first discovery of a captive portal redirection
+    (&quot;TimeToInternetAfterRedirect&quot;), or after interacting with a
+    CAPPORT server as defined in RFC8908 (&quot;TimeToCAPPORTNotCaptive&quot;),
   </summary>
   <token key="Transition">
+    <variant name="TimeToCAPPORTNotCaptive"/>
+    <variant name="TimeToCAPPORTUserPortalURL"/>
     <variant name="TimeToInternet"/>
     <variant name="TimeToInternetAfterRedirect"/>
     <variant name="TimeToRedirect"/>
