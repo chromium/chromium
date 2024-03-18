@@ -573,6 +573,10 @@ inline constexpr char kNotificationsPromoTimesDismissed[] =
 inline constexpr char kInsecureFormWarningsEnabled[] =
     "ios.insecure_form_warnings_enabled";
 
+// TODO(crbug.com/329381234) Remove once we have a better solution.
+// This value is true if the default user agent was changed. To be used
+// only when raccoon is enabled.
+inline constexpr char kUserAgentWasChanged[] = "UserAgentWasChanged";
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_

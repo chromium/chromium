@@ -763,6 +763,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // to the top Most Visited Sites.
   registry->RegisterListPref(prefs::kIosLatestMostVisitedSites,
                              PrefRegistry::LOSSY_PREF);
+
+  registry->RegisterBooleanPref(prefs::kUserAgentWasChanged, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

@@ -23,6 +23,7 @@
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #import "components/component_updater/url_param_filter_remover.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/enterprise/idle/idle_features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -67,6 +68,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
+#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
@@ -109,6 +111,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -136,6 +139,7 @@
 #import "ios/net/empty_nsurlcache.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/public/provider/chrome/browser/overrides/overrides_api.h"
+#import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
@@ -701,6 +705,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       browserState,
       std::make_unique<MainControllerAuthenticationServiceDelegate>(
           browserState, self));
+
+  // Force desktop mode when raccoon is enabled.
+  if (ios::provider::IsRaccoonEnabled()) {
+    if (!browserState->GetPrefs()->GetBoolean(prefs::kUserAgentWasChanged)) {
+      HostContentSettingsMap* settingsMap =
+          ios::HostContentSettingsMapFactory::GetForBrowserState(browserState);
+      settingsMap->SetDefaultContentSetting(
+          ContentSettingsType::REQUEST_DESKTOP_SITE, CONTENT_SETTING_ALLOW);
+      browserState->GetPrefs()->SetBoolean(prefs::kUserAgentWasChanged, true);
+    }
+  }
 }
 
 #pragma mark - AppStateObserver
