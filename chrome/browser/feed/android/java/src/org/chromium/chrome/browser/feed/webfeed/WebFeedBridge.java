@@ -232,6 +232,10 @@ public class WebFeedBridge {
         return WebFeedBridgeJni.get().isCormorantEnabledForLocale();
     }
 
+    public static boolean isWebFeedEnabled() {
+        return WebFeedBridgeJni.get().isWebFeedEnabled();
+    }
+
     /**
      * Requests to follow of the most relevant Web Feed represented by the provided URL.
      * @param tab The tab with the loaded page that should be followed.
@@ -358,5 +362,7 @@ public class WebFeedBridge {
         void queryWebFeedId(String id, Callback<QueryResult> callback);
 
         boolean isCormorantEnabledForLocale();
+
+        boolean isWebFeedEnabled();
     }
 }

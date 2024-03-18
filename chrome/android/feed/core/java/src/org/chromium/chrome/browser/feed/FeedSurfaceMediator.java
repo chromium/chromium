@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator.OptionChangedListener;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -1026,9 +1027,7 @@ public class FeedSurfaceMediator
             }
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
-                && FeedServiceBridge.isSignedIn()
-                && isExpanded) {
+        if (WebFeedBridge.isWebFeedEnabled() && FeedServiceBridge.isSignedIn() && isExpanded) {
             return res.getString(R.string.ntp_discover_on);
         } else if (isDefaultSearchEngineGoogle) {
             return isExpanded
@@ -1046,7 +1045,7 @@ public class FeedSurfaceMediator
 
         // Do not display Manage menu items for the supervised-user feed.
         if (FeedServiceBridge.isSignedIn() && !mCoordinator.shouldDisplaySupervisedFeed()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
+            if (WebFeedBridge.isWebFeedEnabled()) {
                 itemList.add(
                         buildMenuListItem(
                                 R.string.ntp_manage_feed,

@@ -2700,9 +2700,6 @@ extern const char kVideoTutorialsDescription[];
 extern const char kWebAuthnAndroidCredManName[];
 extern const char kWebAuthnAndroidCredManDescription[];
 
-extern const char kWebFeedName[];
-extern const char kWebFeedDescription[];
-
 extern const char kWebFeedAwarenessName[];
 extern const char kWebFeedAwarenessDescription[];
 

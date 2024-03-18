@@ -985,9 +985,7 @@ void TestMetricsReporter::OnUploadActions(UploadActionsStatus status) {
   MetricsReporter::OnUploadActions(status);
 }
 
-FeedApiTest::FeedApiTest() {
-  scoped_feature_list_.InitAndEnableFeature(kWebFeed);
-}
+FeedApiTest::FeedApiTest() = default;
 FeedApiTest::~FeedApiTest() = default;
 void FeedApiTest::SetUp() {
   kTestTimeEpoch = base::Time::Now();
@@ -1043,7 +1041,7 @@ bool FeedApiTest::IsOffline() {
   return is_offline_;
 }
 std::string FeedApiTest::GetCountry() {
-  return "US";
+  return country_;
 }
 AccountInfo FeedApiTest::GetAccountInfo() {
   return account_info_;
@@ -1076,6 +1074,9 @@ TabGroupEnabledState FeedApiTest::GetTabGroupEnabledState() {
 void FeedApiTest::ClearAll() {
   if (on_clear_all_)
     on_clear_all_.Run();
+}
+void FeedApiTest::SetCountry(const std::string& country) {
+  country_ = country;
 }
 void FeedApiTest::PrefetchImage(const GURL& url) {
   prefetched_images_.push_back(url);

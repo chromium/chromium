@@ -91,7 +91,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 // default or removed if the flag is removed.
 @DisableFeatures(ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)
 @EnableFeatures({
-    ChromeFeatureList.WEB_FEED,
     ChromeFeatureList.INTEREST_FEED_V2_HEARTS,
     ChromeFeatureList.WEB_FEED_SORT,
 })
@@ -142,6 +141,7 @@ public class FeedSurfaceMediatorTest {
         // We want to make the feed service bridge ignore the ablation flag.
         when(mFeedServiceBridgeJniMock.isEnabled())
                 .thenAnswer(invocation -> mPrefService.getBoolean(Pref.ENABLE_SNIPPETS));
+        when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(true);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);

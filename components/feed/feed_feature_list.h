@@ -27,9 +27,6 @@ BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
 BASE_DECLARE_FEATURE(kInterestFeedNoticeCardAutoDismiss);
 #endif
 
-// Feature that allows users to keep up with and consume web content.
-BASE_DECLARE_FEATURE(kWebFeed);
-
 // Use the new DiscoFeed endpoint.
 BASE_DECLARE_FEATURE(kDiscoFeedEndpoint);
 
@@ -127,6 +124,8 @@ BASE_DECLARE_FEATURE(kFeedSportsCard);
 
 // Feature that enables refreshing feed when Chrome restarts.
 BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
+
+bool IsWebFeedEnabledForLocale(const std::string& country);
 
 }  // namespace feed
 
