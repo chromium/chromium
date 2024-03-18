@@ -138,7 +138,7 @@ def DownloadUrl(url, output_file):
         output_file.write(gzip_decode.flush())
       print(' Done.')
       return
-    except urllib.error.URLError as e:
+    except (ConnectionError, urllib.error.URLError) as e:
       sys.stdout.write('\n')
       print(e)
       if num_retries == 0 or isinstance(
