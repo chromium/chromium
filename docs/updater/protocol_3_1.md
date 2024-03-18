@@ -365,7 +365,7 @@ following members:
      unknown, or that the concept of enabling/disabling does not exist. "0"
      indicates that the application is disabled. "1" indicates that the app is
      enabled.  Default: "-1".
- *   `fp`: The current [differential fingerprint](#differential-fingerprint) of
+ *   `fp`: The current [differential fingerprint](#differential-updates) of
      the application, or "" if unknown. Default: "".
  *   `iid`: Installation ID is an opaque token that identifies an installation
      flow. The installation ID is a unique identifier embedded into a
@@ -709,7 +709,7 @@ of the update. In this version of the protocol, all packages describe CRX files.
 Packages can also come in differential update forms. Clients should attempt a
 differential patch of package first, and fall back to a full package if the
 differential patch fails to apply. A package object has the following members:
- *   `fp`: The [differential fingerprint](#differential-fingerprints) of the
+ *   `fp`: The [differential fingerprint](#differential-updates) of the
      new version of the package.
  *   `size`: The size of the file, in octets.
  *   `sizediff`: The size of the differential file, in octets, if one is
@@ -874,7 +874,7 @@ attmpted as part of this update session. All events have the following members:
 Depending on the event type, additional members may be present:
 
 For `type == 2` events:
- *   `nextfp`: The [differential fingerprint](#differential-fingerprints) that
+ *   `nextfp`: The [differential fingerprint](#differential-updates) that
      the client was attempting to update to, regardless of whether that update
      was successful.
  *   `nextversion`: The application version that the client was attempting to
@@ -893,7 +893,7 @@ For `type == 3` events:
      `diffresult`.
  *   `diffextracode1`: As `extracode1` but for differential updates. Similar to
      `diffresult`.
- *   `previousfp`: The [differential fingerprint](#differential-fingerprints)
+ *   `previousfp`: The [differential fingerprint](#differential-updates)
      the client had prior to the update, regardless of whether that update
      was successful.
  *   `previousversion`: The application version the client had prior to the
