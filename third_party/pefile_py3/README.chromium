@@ -16,3 +16,5 @@ headers is accessible, as well as all the sections' details and data.
 Local Modifications:
  - Only pefile.py, ordlookup, and LICENSE are present.
  - BUILD.gn, OWNERS, and README.chromium files were added.
+ - pefile.py patched to increase the 0x10000000 offset limit for
+ https://crbug.com/329661971.
