@@ -47,10 +47,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
   bool IsOffscreen() override;
   gpu::SurfaceHandle GetSurfaceHandle() override;
   scoped_refptr<gl::GLSurface> CreateGLSurface(
-      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
       gl::GLSurfaceFormat format) override;
-  scoped_refptr<gl::Presenter> CreatePresenter(
-      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) override;
+  scoped_refptr<gl::Presenter> CreatePresenter() override;
   base::ScopedClosureRunner CachePresenter(gl::Presenter* presenter) override;
   base::ScopedClosureRunner CacheGLSurface(gl::GLSurface* surface) override;
   scoped_refptr<base::TaskRunner> GetClientTaskRunner() override;

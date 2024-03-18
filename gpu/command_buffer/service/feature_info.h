@@ -131,7 +131,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool mesa_framebuffer_flip_y = false;
     bool ovr_multiview2 = false;
     bool khr_parallel_shader_compile = false;
-    bool android_surface_control = false;
     bool khr_robust_buffer_access_behavior = false;
     bool webgl_multi_draw = false;
     bool nv_internalformat_sample_query = false;

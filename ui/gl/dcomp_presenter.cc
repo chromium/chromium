@@ -30,7 +30,7 @@ DCompPresenter::PendingFrame::~PendingFrame() = default;
 DCompPresenter::PendingFrame& DCompPresenter::PendingFrame::operator=(
     PendingFrame&& other) = default;
 
-DCompPresenter::DCompPresenter(GLDisplayEGL* display, const Settings& settings)
+DCompPresenter::DCompPresenter(const Settings& settings)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       max_pending_frames_(settings.max_pending_frames),
       layer_tree_(std::make_unique<DCLayerTree>(
@@ -55,7 +55,7 @@ bool DCompPresenter::Initialize() {
 
   child_window_.Initialize();
 
-  if (!layer_tree_->Initialize(window(), d3d11_device_)) {
+  if (!layer_tree_->Initialize(child_window_.window(), d3d11_device_)) {
     return false;
   }
 
@@ -263,6 +263,10 @@ void DCompPresenter::EnqueuePendingFrame(PresentationCallback callback,
   pending_frames_.emplace_back(std::move(query), std::move(callback));
 
   StartOrStopVSyncThread();
+}
+
+HWND DCompPresenter::GetWindow() const {
+  return child_window_.window();
 }
 
 }  // namespace gl

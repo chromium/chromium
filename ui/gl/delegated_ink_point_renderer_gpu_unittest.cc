@@ -137,16 +137,12 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
  private:
   void CreateDCompPresenter() {
     DCompPresenter::Settings settings;
-    presenter_ = base::MakeRefCounted<DCompPresenter>(
-        gl::GLSurfaceEGL::GetGLDisplayEGL(), settings);
+    presenter_ = base::MakeRefCounted<DCompPresenter>(settings);
     EXPECT_TRUE(presenter_->Initialize());
 
-    // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in
-    // production code here. However, to remove dependency from
-    // gpu/ipc/service/image_transport_surface_delegate.h, here we directly
-    // executes the required minimum code.
+    // Add our child window to the root window.
     if (parent_window_)
-      ::SetParent(presenter_->window(), parent_window_);
+      ::SetParent(presenter_->GetWindow(), parent_window_);
   }
 
   void DestroyPresenter(scoped_refptr<DCompPresenter> presenter) {

@@ -55,8 +55,7 @@ class GL_EXPORT DCompPresenter : public Presenter,
     bool no_downscaled_overlay_promotion = false;
   };
 
-  DCompPresenter(GLDisplayEGL* display,
-                 const Settings& settings);
+  explicit DCompPresenter(const Settings& settings);
 
   DCompPresenter(const DCompPresenter&) = delete;
   DCompPresenter& operator=(const DCompPresenter&) = delete;
@@ -95,7 +94,7 @@ class GL_EXPORT DCompPresenter : public Presenter,
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
           pending_receiver) override;
 
-  HWND window() const { return child_window_.window(); }
+  HWND GetWindow() const override;
 
   scoped_refptr<base::TaskRunner> GetWindowTaskRunnerForTesting();
 

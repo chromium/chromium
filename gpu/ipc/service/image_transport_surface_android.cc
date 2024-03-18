@@ -14,10 +14,8 @@
 #include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/command_buffer/service/feature_info.h"
-#include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
-#include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -29,14 +27,16 @@ namespace gpu {
 // static
 scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     gl::GLDisplay* display,
-    base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
+    const GpuDriverBugWorkarounds& workarounds,
+    const GpuFeatureInfo& gpu_feature_info,
     SurfaceHandle surface_handle) {
   if (gl::GetGLImplementation() == gl::kGLImplementationMockGL ||
       gl::GetGLImplementation() == gl::kGLImplementationStubGL)
     return nullptr;
 
-  if (!delegate ||
-      !delegate->GetFeatureInfo()->feature_flags().android_surface_control) {
+  if (gpu_feature_info
+          .status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] !=
+      gpu::kGpuFeatureStatusEnabled) {
     return nullptr;
   }
 
@@ -77,7 +77,6 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
 // static
 scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
     gl::GLDisplay* display,
-    base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
   if (gl::GetGLImplementation() == gl::kGLImplementationMockGL ||
