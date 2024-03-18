@@ -488,18 +488,19 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
   /**
    * Called when a key event is pressed while the input element has focus.
    */
-  private onInputKeyDown_(event: Event): void {
+  private onInputKeyDown_(event: KeyboardEvent): void {
     assertInstanceof(event, KeyboardEvent);
 
     // Up/down pressed, swallow the event to prevent the input value from
     // being incremented or decremented.
-    if (event.keyCode === 38 || event.keyCode === 40) {
+    if (event.keyCode === 38 || event.keyCode === 40 ||
+        event.code === 'ArrowUp' || event.code === 'ArrowDown') {
       event.preventDefault();
       return;
     }
 
     // Enter pressed.
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13 || event.code === 'Enter') {
       this.firePinSubmitEvent_();
       event.preventDefault();
       return;
