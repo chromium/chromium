@@ -1,0 +1,19 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build_webui_tests.gni")
+
+build_webui_tests("build_webui_tests") {
+  ts_path_mappings =
+      [ "chrome://oobe/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/chromeos/login/tsc/*",
+            target_gen_dir) ]
+  files = [ "pin_input_test.ts" ]
+  ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//chrome/browser/resources/chromeos/login:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

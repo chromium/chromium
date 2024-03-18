@@ -176,9 +176,9 @@ namespace ash {
 
 namespace {
 
-const char* kKnownDisplayTypes[] = {OobeUI::kAppLaunchSplashDisplay,
-                                    OobeUI::kGaiaSigninDisplay,
-                                    OobeUI::kOobeDisplay};
+const char* kKnownDisplayTypes[] = {
+    OobeUI::kAppLaunchSplashDisplay, OobeUI::kGaiaSigninDisplay,
+    OobeUI::kOobeDisplay, OobeUI::kOobeTestLoader};
 
 // Sorted
 constexpr char kArcOverlayCSSPath[] = "arc_support/overlay.css";
@@ -310,6 +310,14 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   // Add boolean variables that are used to add screens
   // dynamically depending on the flow type.
   const bool is_oobe_flow = display_type == OobeUI::kOobeDisplay;
+
+  if (display_type == OobeUI::kOobeTestLoader) {
+    source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+    source->AddResourcePath("test_loader_util.js",
+                            IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+    source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
+  }
+
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
   source->AddBoolean("isOobeLazyLoadingEnabled",
@@ -410,14 +418,20 @@ const DisplayScaleFactor k4KDisplay = {3840, 1.5f},
                          kMediumDisplay = {1440, 4.f / 3};
 
 bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
+                         command_line->HasSwitch(::switches::kTestType);
+
   return ash::ProfileHelper::IsSigninProfile(
-      Profile::FromBrowserContext(browser_context));
+             Profile::FromBrowserContext(browser_context)) ||
+         is_running_test;
 }
 
 // static
 const char OobeUI::kAppLaunchSplashDisplay[] = "app-launch-splash";
 const char OobeUI::kGaiaSigninDisplay[] = "gaia-signin";
 const char OobeUI::kOobeDisplay[] = "oobe";
+const char OobeUI::kOobeTestLoader[] = "test_loader.html";
 
 void OobeUI::ConfigureOobeDisplay() {
   network_state_informer_ = new NetworkStateInformer();

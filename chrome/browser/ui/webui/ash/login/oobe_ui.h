@@ -66,6 +66,7 @@ class OobeUI : public ui::MojoWebUIController {
   static const char kAppLaunchSplashDisplay[];
   static const char kGaiaSigninDisplay[];
   static const char kOobeDisplay[];
+  static const char kOobeTestLoader[];
 
   class Observer {
    public:

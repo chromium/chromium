@@ -1,46 +1,20 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://oobe/components/security_token_pin.js';
 
-/**
- * @fileoverview Tests for the <security-token-pin> Polymer element.
- */
+import {CrButtonElement} from '//resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {SecurityTokenPin} from 'chrome://oobe/components/security_token_pin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {assertEquals, assertFalse, assertGT, assertLE, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-GEN_INCLUDE([
-  '//chrome/test/data/webui/chromeos/polymer_browser_test_base.js',
-]);
-
-GEN('#include "ash/constants/ash_features.h"');
-GEN('#include "content/public/test/browser_test.h"');
-
-// TODO(https://crbug.com/1033337): js2gtest fixtures require var here.
-// eslint-disable-next-line no-var
-var PolymerSecurityTokenPinTest = class extends PolymerTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://oobe/login';
+declare global {
+  interface HTMLElementEventMap {
+    'completed': CustomEvent;
   }
+}
 
-  /** @override */
-  setUp() {
-    suiteSetup(async function() {
-      console.warn('Running suite setup..');
-      await cr.ui.Oobe.waitForOobeToLoad();
-      console.warn('OOBE has been loaded. Continuing with test.');
-    });
-  }
-
-  get extraLibraries() {
-    return [
-      '//third_party/node/node_modules/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-      'components/oobe_types.js',
-    ];
-  }
-};
-
-// TODO(crbug.com/1347183): Port this test to work with Polymer3.
-TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
+suite('pinInputTest', function() {
   const DEFAULT_PARAMETERS = {
     enableUserInput: true,
     hasError: false,
@@ -48,41 +22,46 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
     formattedAttemptsLeft: '',
   };
 
-  let securityTokenPin;
-  let pinKeyboardContainer;
-  let pinKeyboard;
-  let progressElement;
-  let pinInput;
-  let inputField;
-  let errorContainer;
-  let errorElement;
-  let submitElement;
-  let backElement;
+  let securityTokenPin: SecurityTokenPin;
+  let pinKeyboardContainer: HTMLElement;
+  let pinKeyboard: HTMLElement;
+  let progressElement: HTMLInputElement;
+  let pinInput: HTMLInputElement;
+  let inputField: HTMLInputElement;
+  let errorContainer: HTMLInputElement;
+  let errorElement: HTMLInputElement;
+  let submitElement: HTMLInputElement;
+  let backElement: HTMLInputElement;
+
+  function ensureExists<T>(arg: T): NonNullable<T> {
+    assert(arg);
+    return arg;
+  }
 
   setup(() => {
-    securityTokenPin = document.createElement('security-token-pin');
+    securityTokenPin =
+        ensureExists(document.createElement('security-token-pin'));
     document.body.appendChild(securityTokenPin);
     securityTokenPin.onBeforeShow();
+
     securityTokenPin.parameters = DEFAULT_PARAMETERS;
 
-    pinKeyboardContainer = securityTokenPin.shadowRoot.querySelector('#pinKeyboardContainer');
-    assert(pinKeyboardContainer);
-    pinKeyboard = securityTokenPin.shadowRoot.querySelector('#pinKeyboard');
-    assert(pinKeyboard);
-    progressElement = securityTokenPin.shadowRoot.querySelector('#progress');
-    assert(progressElement);
-    pinInput = pinKeyboard.shadowRoot.querySelector('#pinInput');
-    assert(pinInput);
-    inputField = pinInput.shadowRoot.querySelector('input');
-    assert(inputField);
-    errorContainer = securityTokenPin.shadowRoot.querySelector('#errorContainer');
-    assert(errorContainer);
-    errorElement = securityTokenPin.shadowRoot.querySelector('#error');
-    assert(errorElement);
-    submitElement = securityTokenPin.shadowRoot.querySelector('#submit');
-    assert(submitElement);
-    backElement = securityTokenPin.shadowRoot.querySelector('#back');
-    assert(backElement);
+    pinKeyboardContainer = ensureExists(
+        securityTokenPin.shadowRoot?.querySelector('#pinKeyboardContainer'));
+    pinKeyboard = ensureExists(
+        securityTokenPin.shadowRoot?.querySelector('#pinKeyboard'));
+    progressElement =
+        ensureExists(securityTokenPin.shadowRoot?.querySelector('#progress'));
+    pinInput = ensureExists(pinKeyboard.shadowRoot?.querySelector('#pinInput'));
+    inputField = ensureExists(pinInput.shadowRoot?.querySelector('input'));
+    errorContainer = ensureExists(
+        securityTokenPin.shadowRoot?.querySelector('#errorContainer'));
+    errorElement =
+        ensureExists(securityTokenPin.shadowRoot?.querySelector('#error'));
+    submitElement =
+        ensureExists(securityTokenPin.shadowRoot?.querySelector('#submit'));
+    backElement =
+        ensureExists(securityTokenPin.shadowRoot?.querySelector('#back'));
   });
 
   teardown(() => {
@@ -94,8 +73,8 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
     const FIRST_PIN = '0123';
     const SECOND_PIN = '987';
 
-    let completedEventDetail = null;
-    securityTokenPin.addEventListener('completed', (event) => {
+    let completedEventDetail: CustomEvent|null = null;
+    securityTokenPin.addEventListener('completed', (event: CustomEvent) => {
       assertNotEquals(event.detail, null);
       assertEquals(completedEventDetail, null);
       completedEventDetail = event.detail;
@@ -130,11 +109,8 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
     assertEquals(completedEventDetail, SECOND_PIN);
   });
 
-  // Test that the input field accepts non-digit PIN.
   test('non-digit PIN input validity', () => {
     const NON_DIGIT_PIN = '+Aa';
-
-    // The user enters a non-digit pin.
     pinInput.value = NON_DIGIT_PIN;
 
     assertEquals(pinInput.value, NON_DIGIT_PIN);
@@ -247,14 +223,17 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
     const PIN = '13097';
 
     let completedEventDetail = null;
-    securityTokenPin.addEventListener('completed', (event) => {
+    securityTokenPin.addEventListener('completed', (event: CustomEvent) => {
       completedEventDetail = event.detail;
     });
 
     // The user clicks the buttons of the on-screen keypad. The input field is
     // updated accordingly.
     for (const character of PIN) {
-      pinKeyboard.shadowRoot.querySelector('#digitButton' + character).click();
+      const button: CrButtonElement|undefined|null =
+          pinKeyboard.shadowRoot?.querySelector('#digitButton' + character);
+      assertTrue(button instanceof CrButtonElement);
+      button.click();
     }
     assertEquals(pinInput.value, PIN);
     assertEquals(inputField.value, PIN);
@@ -271,23 +250,34 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
     const PIN = '123';
 
     function enterPinAsync() {
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, _reject) => {
         // Click `PIN[0]`, then `PIN[1]`, then `PIN[2]`. Use specific delays
         // that can catch ordering bugs in the tested code (in case it handles
         // clicks in asynchronous tasks without proper sequencing).
         setTimeout(() => {
-          pinKeyboard.shadowRoot.querySelector('#digitButton' + PIN[1]).click();
+          const button: CrButtonElement|undefined|null =
+              pinKeyboard.shadowRoot?.querySelector('#digitButton' + PIN[1]);
+          assertTrue(button instanceof CrButtonElement);
+          button.click();
         }, 0);
-        pinKeyboard.shadowRoot.querySelector('#digitButton' + PIN[0]).click();
+
+        const button: CrButtonElement|undefined|null =
+            pinKeyboard.shadowRoot?.querySelector('#digitButton' + PIN[0]);
+        assertTrue(button instanceof CrButtonElement);
+        button.click();
+
         setTimeout(() => {
-          pinKeyboard.shadowRoot.querySelector('#digitButton' + PIN[2]).click();
+          const button: CrButtonElement|undefined|null =
+              pinKeyboard.shadowRoot?.querySelector('#digitButton' + PIN[2]);
+          assertTrue(button instanceof CrButtonElement);
+          button.click();
           resolve();
         }, 0);
       });
     }
 
     let completedEventDetail = null;
-    securityTokenPin.addEventListener('completed', (event) => {
+    securityTokenPin.addEventListener('completed', (event: CustomEvent) => {
       completedEventDetail = event.detail;
     });
 
@@ -306,6 +296,7 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
   // Test that the error is displayed only when it's set in the request.
   test('error visibility', () => {
     function getErrorContainerVisibility() {
+      assert(errorContainer);
       return getComputedStyle(errorContainer).getPropertyValue('visibility');
     }
 
@@ -392,14 +383,16 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
 
     // The PIN keyboard gets focused.
     securityTokenPin.focus();
-    assertEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
-    assertEquals(inputField.getRootNode().activeElement, inputField);
+    assertEquals(securityTokenPin.shadowRoot?.activeElement, pinKeyboard);
+    assertEquals(
+        (inputField.getRootNode() as Document).activeElement, inputField);
 
     // The user submits some value while keeping the focus on the input field.
     pinInput.value = '123';
-    const enterEvent = new Event('keydown');
-    enterEvent.keyCode = 13;
+    const enterEvent = new KeyboardEvent(
+        'keydown', {key: 'Enter', code: 'Enter', keyCode: 13});
     pinInput.dispatchEvent(enterEvent);
+
     // The PIN keyboard is replaced by the animation UI.
     assertTrue(pinKeyboardContainer.hidden);
     assertFalse(progressElement.hidden);
@@ -415,8 +408,9 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
     assertFalse(pinKeyboardContainer.hidden);
     assertTrue(progressElement.hidden);
     // The focus is on the input field.
-    assertEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
-    assertEquals(inputField.getRootNode().activeElement, inputField);
+    assertEquals(securityTokenPin.shadowRoot?.activeElement, pinKeyboard);
+    assertEquals(
+        (inputField.getRootNode() as Document).activeElement, inputField);
   });
 
   // Test that the input field gets focused when the PIN is requested again
@@ -444,9 +438,8 @@ TEST_F('PolymerSecurityTokenPinTest', 'DISABLED_All', function() {
     assertFalse(pinKeyboardContainer.hidden);
     assertTrue(progressElement.hidden);
     // The focus is on the input field.
-    assertEquals(securityTokenPin.shadowRoot.activeElement, pinKeyboard);
-    assertEquals(inputField.getRootNode().activeElement, inputField);
+    assertEquals(securityTokenPin.shadowRoot?.activeElement, pinKeyboard);
+    assertEquals(
+        (inputField.getRootNode() as Document).activeElement, inputField);
   });
-
-  mocha.run();
 });
