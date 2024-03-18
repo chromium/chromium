@@ -378,7 +378,6 @@ MojoSystemThunks2 g_thunks = {sizeof(g_thunks),
                               MojoCreateMessageImpl,
                               MojoDestroyMessageImpl,
                               MojoSerializeMessageImpl,
-                              MojoReserveMessageCapacityImpl,
                               MojoAppendMessageDataImpl,
                               MojoGetMessageDataImpl,
                               MojoSetMessageContextImpl,
@@ -412,7 +411,8 @@ MojoSystemThunks2 g_thunks = {sizeof(g_thunks),
                               MojoSetQuotaImpl,
                               MojoQueryQuotaImpl,
                               MojoShutdownImpl,
-                              MojoSetDefaultProcessErrorHandlerImpl};
+                              MojoSetDefaultProcessErrorHandlerImpl,
+                              MojoReserveMessageCapacityImpl};
 
 }  // namespace
 

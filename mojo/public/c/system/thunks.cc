@@ -829,7 +829,6 @@ MojoSystemThunks32 g_thunks_32 = {
     MojoCreateMessage,
     MojoDestroyMessage,
     MojoSerializeMessage,
-    MojoReserveMessageCapacity,
     MojoAppendMessageData32,
     MojoGetMessageData32,
     MojoSetMessageContext,
@@ -864,6 +863,7 @@ MojoSystemThunks32 g_thunks_32 = {
     MojoQueryQuota32,
     MojoShutdown,
     MojoSetDefaultProcessErrorHandler,
+    MojoReserveMessageCapacity,
 };
 
 const MojoSystemThunks2* MojoEmbedderGetSystemThunks2() {

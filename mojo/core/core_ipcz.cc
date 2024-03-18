@@ -869,7 +869,6 @@ MojoSystemThunks2 g_mojo_ipcz_thunks = {
     MojoCreateMessageIpcz,
     MojoDestroyMessageIpcz,
     MojoSerializeMessageIpcz,
-    MojoReserveMessageCapacityIpcz,
     MojoAppendMessageDataIpcz,
     MojoGetMessageDataIpcz,
     MojoSetMessageContextIpcz,
@@ -903,7 +902,8 @@ MojoSystemThunks2 g_mojo_ipcz_thunks = {
     MojoSetQuotaIpcz,
     MojoQueryQuotaIpcz,
     MojoShutdownIpcz,
-    MojoSetDefaultProcessErrorHandlerIpcz};
+    MojoSetDefaultProcessErrorHandlerIpcz,
+    MojoReserveMessageCapacityIpcz};
 
 }  // namespace
 
