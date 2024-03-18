@@ -35,6 +35,8 @@ namespace {
 #define DRM_FORMAT_YVU420 FOURCC('Y', 'V', '1', '2')
 #define DRM_FORMAT_NV12 FOURCC('N', 'V', '1', '2')
 #define DRM_FORMAT_P010 FOURCC('P', '0', '1', '0')
+/* Reserve 0 for the invalid format specifier */
+#define DRM_FORMAT_INVALID 0
 
 EGLint FourCC(gfx::BufferFormat format) {
   switch (format) {
@@ -70,11 +72,11 @@ EGLint FourCC(gfx::BufferFormat format) {
       return DRM_FORMAT_ABGR16161616F;
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return 0;
+      return DRM_FORMAT_INVALID;
   }
 
   NOTREACHED();
-  return 0;
+  return DRM_FORMAT_INVALID;
 }
 
 }  // namespace
@@ -116,7 +118,7 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     GLenum target,
     GLuint texture_id) {
   DCHECK(!pixmap_);
-  if (format_ == gfx::BufferFormat::YUVA_420_TRIPLANAR) {
+  if (FourCC(format_) == DRM_FORMAT_INVALID) {
     LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
     return false;
   }
