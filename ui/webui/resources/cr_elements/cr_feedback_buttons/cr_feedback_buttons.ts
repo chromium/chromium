@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../cr_shared_vars.css.js';
-import '../icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 
-import {getTemplate} from './cr_feedback_buttons.html.js';
+import {getCss} from './cr_feedback_buttons.css.js';
+import {getHtml} from './cr_feedback_buttons.html.js';
 
 export enum CrFeedbackOption {
   THUMBS_DOWN = 0,
@@ -26,57 +25,55 @@ export interface CrFeedbackButtonsElement {
   };
 }
 
-export class CrFeedbackButtonsElement extends PolymerElement {
+export class CrFeedbackButtonsElement extends CrLitElement {
   static get is() {
     return 'cr-feedback-buttons';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      selectedOption: {
-        type: String,
-        value: CrFeedbackOption.UNSPECIFIED,
-      },
-      thumbsDownLabel_: {
-        type: String,
-        value: () => loadTimeData.getString('thumbsDown'),
-      },
-      thumbsUpLabel_: {
-        type: String,
-        value: () => loadTimeData.getString('thumbsUp'),
-      },
+      selectedOption: {type: String},
+      thumbsDownLabel_: {type: String},
+      thumbsUpLabel_: {type: String},
     };
   }
 
-  selectedOption: CrFeedbackOption;
-  private thumbsDownLabel_: string;
-  private thumbsUpLabel_: string;
+  selectedOption: CrFeedbackOption = CrFeedbackOption.UNSPECIFIED;
+  protected thumbsDownLabel_: string = loadTimeData.getString('thumbsDown');
+  protected thumbsUpLabel_: string = loadTimeData.getString('thumbsUp');
 
-  private getThumbsDownAriaPressed_(): boolean {
+  protected getThumbsDownAriaPressed_(): boolean {
     return this.selectedOption === CrFeedbackOption.THUMBS_DOWN;
   }
 
-  private getThumbsDownIcon_(): string {
+  protected getThumbsDownIcon_(): string {
     return this.selectedOption === CrFeedbackOption.THUMBS_DOWN ?
         'cr:thumbs-down-filled' :
         'cr:thumbs-down';
   }
 
-  private getThumbsUpAriaPressed_(): boolean {
+  protected getThumbsUpAriaPressed_(): boolean {
     return this.selectedOption === CrFeedbackOption.THUMBS_UP;
   }
 
-  private getThumbsUpIcon_(): string {
+  protected getThumbsUpIcon_(): string {
     return this.selectedOption === CrFeedbackOption.THUMBS_UP ?
         'cr:thumbs-up-filled' :
         'cr:thumbs-up';
   }
 
-  private notifySelectedOptionChanged_() {
+  private async notifySelectedOptionChanged_() {
+    // Wait for the element's DOM to be updated before dispatching
+    // selected-option-changed event.
+    await this.updateComplete;
     this.dispatchEvent(new CustomEvent('selected-option-changed', {
       bubbles: true,
       composed: true,
@@ -84,14 +81,14 @@ export class CrFeedbackButtonsElement extends PolymerElement {
     }));
   }
 
-  private onThumbsDownClick_() {
+  protected onThumbsDownClick_() {
     this.selectedOption = this.selectedOption === CrFeedbackOption.THUMBS_DOWN ?
         CrFeedbackOption.UNSPECIFIED :
         CrFeedbackOption.THUMBS_DOWN;
     this.notifySelectedOptionChanged_();
   }
 
-  private onThumbsUpClick_() {
+  protected onThumbsUpClick_() {
     this.selectedOption = this.selectedOption === CrFeedbackOption.THUMBS_UP ?
         CrFeedbackOption.UNSPECIFIED :
         CrFeedbackOption.THUMBS_UP;

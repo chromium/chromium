@@ -23,7 +23,6 @@ build_webui("build") {
   if (include_polymer) {
     web_component_files += [
       "cr_a11y_announcer/cr_a11y_announcer.ts",
-      "cr_feedback_buttons/cr_feedback_buttons.ts",
       "cr_loading_gradient/cr_loading_gradient.ts",
       "cr_lottie/cr_lottie.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
@@ -77,6 +76,8 @@ build_webui("build") {
       "cr_drawer/cr_drawer.ts",
       "cr_expand_button/cr_expand_button.html.ts",
       "cr_expand_button/cr_expand_button.ts",
+      "cr_feedback_buttons/cr_feedback_buttons.html.ts",
+      "cr_feedback_buttons/cr_feedback_buttons.ts",
       "cr_grid/cr_grid.html.ts",
       "cr_grid/cr_grid.ts",
       "cr_icon_button/cr_icon_button.html.ts",
@@ -147,6 +148,7 @@ build_webui("build") {
       "cr_dialog/cr_dialog.css",
       "cr_drawer/cr_drawer.css",
       "cr_expand_button/cr_expand_button.css",
+      "cr_feedback_buttons/cr_feedback_buttons.css",
       "cr_grid/cr_grid.css",
       "cr_icon_button/cr_icon_button.css",
       "cr_input/cr_input.css",
