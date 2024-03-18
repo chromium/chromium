@@ -396,7 +396,7 @@ UILabel* SnippetLabel() {
     switch (newSnippetButtonState) {
       case SnippetButtonState::kOneLine:
         chevronButton.transform =
-            CGAffineTransformRotate(CGAffineTransformIdentity, upRotation);
+            CGAffineTransformRotate(CGAffineTransformIdentity, downRotation);
         snippetLabelOneLine.alpha = 1;
         snippetLabelExpanded.alpha = 0;
         snippetLabelOneLineConstraint.priority = UILayoutPriorityDefaultLow;
@@ -404,7 +404,7 @@ UILabel* SnippetLabel() {
         break;
       case SnippetButtonState::kExpanded:
         chevronButton.transform =
-            CGAffineTransformRotate(CGAffineTransformIdentity, downRotation);
+            CGAffineTransformRotate(CGAffineTransformIdentity, upRotation);
         snippetLabelOneLine.alpha = 0;
         snippetLabelExpanded.alpha = 1;
         snippetLabelOneLineConstraint.priority = UILayoutPriorityDefaultHigh;
