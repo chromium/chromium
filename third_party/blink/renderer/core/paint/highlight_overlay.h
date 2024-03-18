@@ -129,7 +129,8 @@ class CORE_EXPORT HighlightOverlay {
    public:
     HighlightDecoration(HighlightLayerType type,
                         uint16_t layer_index,
-                        HighlightRange range);
+                        HighlightRange range,
+                        Color override_color);
 
     String ToString() const;
 
@@ -139,6 +140,7 @@ class CORE_EXPORT HighlightOverlay {
     HighlightLayerType type;
     uint16_t layer_index;
     HighlightRange range;
+    Color highlight_override_color;
   };
 
   // Represents a |range| of the fragment that needs its text proper painted in
@@ -154,6 +156,7 @@ class CORE_EXPORT HighlightOverlay {
     HighlightPart(HighlightLayerType,
                   uint16_t,
                   HighlightRange,
+                  TextPaintStyle,
                   Vector<HighlightDecoration>);
     HighlightPart(HighlightLayerType, uint16_t, HighlightRange);
 
@@ -165,6 +168,7 @@ class CORE_EXPORT HighlightOverlay {
     HighlightLayerType type;
     uint16_t layer_index;
     HighlightRange range;
+    TextPaintStyle style;
     Vector<HighlightDecoration> decorations;
   };
 

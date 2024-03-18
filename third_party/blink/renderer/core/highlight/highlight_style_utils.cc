@@ -41,14 +41,6 @@ mojom::blink::ColorScheme UsedColorScheme(
                       : originating_style.UsedColorScheme();
 }
 
-Color PreviousLayerColor(const ComputedStyle& originating_style,
-                         std::optional<Color> previous_layer_color) {
-  if (previous_layer_color) {
-    return *previous_layer_color;
-  }
-  return originating_style.VisitedDependentColor(GetCSSPropertyColor());
-}
-
 // Returns the forced foreground color for the given |pseudo|.
 Color ForcedForegroundColor(PseudoId pseudo,
                             mojom::blink::ColorScheme color_scheme,
@@ -287,7 +279,10 @@ Color HighlightStyleUtils::ResolveColor(const Document& document,
   if (maybe_color) {
     return maybe_color.value();
   }
-  return PreviousLayerColor(originating_style, current_color);
+  if (!current_color) {
+    return originating_style.VisitedDependentColor(GetCSSPropertyColor());
+  }
+  return current_color.value();
 }
 
 // Returns the used value of the given <color>-valued |property|, taking into
@@ -442,6 +437,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
     highlight_style.selection_decoration_lines = TextDecorationLine::kNone;
     highlight_style.selection_decoration_color = Color::kBlack;
   }
+  Color text_decoration_color = Color::kBlack;
 
   // Each highlight overlay’s shadows are completely independent of any shadows
   // specified on the originating element (or the other highlight overlays).
@@ -486,6 +482,15 @@ HighlightStyleUtils::HighlightPaintingStyle(
     } else {
       colors_from_previous_layer.Put(HighlightColorProperty::kStrokeColor);
     }
+
+    maybe_color = MaybeResolveColor(document, style, pseudo_style, pseudo,
+                                    GetCSSPropertyTextDecorationColor());
+    if (maybe_color) {
+      text_decoration_color = maybe_color.value();
+    } else {
+      colors_from_previous_layer.Put(
+          HighlightColorProperty::kTextDecorationColor);
+    }
   }
 
   if (pseudo_style) {
@@ -513,7 +518,7 @@ HighlightStyleUtils::HighlightPaintingStyle(
         // Some code paths that do not use the highlight overlay painting system
         // may not resolve the color, so set it now.
         highlight_style.selection_decoration_color =
-            PreviousLayerColor(style, previous_layer_text_style.current_color);
+            previous_layer_text_style.current_color;
         colors_from_previous_layer.Put(
             HighlightColorProperty::kSelectionDecorationColor);
       }
@@ -525,39 +530,43 @@ HighlightStyleUtils::HighlightPaintingStyle(
     highlight_style.shadow = nullptr;
   }
 
-  return {highlight_style, colors_from_previous_layer};
+  return {highlight_style, text_decoration_color, colors_from_previous_layer};
 }
 
-TextPaintStyle HighlightStyleUtils::ResolveColorsFromPreviousLayer(
-    const HighlightTextPaintStyle unresolved_style,
-    const TextPaintStyle& previous_layer_style) {
-  if (unresolved_style.properties_using_current_color.Empty()) {
-    return unresolved_style.style;
+void HighlightStyleUtils::ResolveColorsFromPreviousLayer(
+    HighlightTextPaintStyle& text_style,
+    const HighlightTextPaintStyle& previous_layer_style) {
+  if (text_style.properties_using_current_color.Empty()) {
+    return;
   }
 
-  TextPaintStyle result = unresolved_style.style;
-  if (unresolved_style.properties_using_current_color.Has(
+  if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kCurrentColor)) {
-    result.current_color = previous_layer_style.current_color;
+    text_style.style.current_color = previous_layer_style.style.current_color;
   }
-  if (unresolved_style.properties_using_current_color.Has(
+  if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kFillColor)) {
-    result.fill_color = previous_layer_style.fill_color;
+    text_style.style.fill_color = previous_layer_style.style.fill_color;
   }
-  if (unresolved_style.properties_using_current_color.Has(
+  if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kStrokeColor)) {
-    result.stroke_color = previous_layer_style.stroke_color;
+    text_style.style.stroke_color = previous_layer_style.style.stroke_color;
   }
-  if (unresolved_style.properties_using_current_color.Has(
+  if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kEmphasisColor)) {
-    result.emphasis_mark_color = previous_layer_style.emphasis_mark_color;
+    text_style.style.emphasis_mark_color =
+        previous_layer_style.style.emphasis_mark_color;
   }
-  if (unresolved_style.properties_using_current_color.Has(
+  if (text_style.properties_using_current_color.Has(
           HighlightColorProperty::kSelectionDecorationColor)) {
-    result.selection_decoration_color =
-        previous_layer_style.selection_decoration_color;
+    text_style.style.selection_decoration_color =
+        previous_layer_style.style.selection_decoration_color;
   }
-  return result;
+  if (text_style.properties_using_current_color.Has(
+          HighlightColorProperty::kTextDecorationColor)) {
+    text_style.text_decoration_color =
+        previous_layer_style.text_decoration_color;
+  }
 }
 
 bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/highlight_overlay.h"
 
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
@@ -178,7 +179,7 @@ String HighlightEdge::ToString() const {
   result.AppendNumber(Offset());
   result.Append(edge_type == HighlightEdgeType::kStart ? "<" : ">");
   result.Append(HighlightTypeToString(layer_type));
-  result.Append(String::Number<uint16_t>(layer_index));
+  result.AppendNumber(layer_index);
   return result.ToString();
 }
 
@@ -221,8 +222,12 @@ bool HighlightEdge::operator!=(const HighlightEdge& other) const {
 
 HighlightDecoration::HighlightDecoration(HighlightLayerType type,
                                          uint16_t layer_index,
-                                         HighlightRange range)
-    : type(type), layer_index(layer_index), range(range) {}
+                                         HighlightRange range,
+                                         Color override_color)
+    : type(type),
+      layer_index(layer_index),
+      range(range),
+      highlight_override_color(override_color) {}
 
 String HighlightDecoration::ToString() const {
   StringBuilder result{};
@@ -244,16 +249,22 @@ bool HighlightDecoration::operator!=(const HighlightDecoration& other) const {
 HighlightPart::HighlightPart(HighlightLayerType type,
                              uint16_t layer_index,
                              HighlightRange range,
+                             TextPaintStyle style,
                              Vector<HighlightDecoration> decorations)
     : type(type),
       layer_index(layer_index),
       range(range),
+      style(style),
       decorations(std::move(decorations)) {}
 
 HighlightPart::HighlightPart(HighlightLayerType type,
                              uint16_t layer_index,
                              HighlightRange range)
-    : HighlightPart(type, layer_index, range, Vector<HighlightDecoration>{}) {}
+    : HighlightPart(type,
+                    layer_index,
+                    range,
+                    TextPaintStyle(),
+                    Vector<HighlightDecoration>{}) {}
 
 String HighlightPart::ToString() const {
   StringBuilder result{};
@@ -324,6 +335,9 @@ HeapVector<HighlightLayer> HighlightOverlay::ComputeLayers(
 
   layers[0].style = &originating_style;
   layers[0].text_style.style = originating_text_style;
+  layers[0].text_style.text_decoration_color =
+      originating_style.VisitedDependentColor(
+          GetCSSPropertyTextDecorationColor());
   layers[0].decorations_in_effect =
       originating_style.HasAppliedTextDecorations()
           ? originating_style.TextDecorationsInEffect()
@@ -495,10 +509,14 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
     const TextFragmentPaintInfo& content_offsets,
     const HeapVector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
+  const HighlightStyleUtils::HighlightTextPaintStyle& originating_text_style =
+      layers[0].text_style;
   const HighlightDecoration originating_decoration{
       HighlightLayerType::kOriginating,
       0,
-      {content_offsets.from, content_offsets.to}};
+      {content_offsets.from, content_offsets.to},
+      originating_text_style.text_decoration_color};
+
   Vector<HighlightPart> result{};
   Vector<std::optional<HighlightRange>> active(layers.size());
   std::optional<unsigned> prev_offset{};
@@ -506,6 +524,7 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
     result.push_back(HighlightPart{HighlightLayerType::kOriginating,
                                    0,
                                    {content_offsets.from, content_offsets.to},
+                                   originating_text_style.style,
                                    {originating_decoration}});
     return result;
   }
@@ -515,6 +534,7 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
                       0,
                       {content_offsets.from,
                        ClampOffset(edges.front().Offset(), content_offsets)},
+                      originating_text_style.style,
                       {originating_decoration}});
   }
   for (const HighlightEdge& edge : edges) {
@@ -528,8 +548,11 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
         HighlightPart part{HighlightLayerType::kOriginating,
                            0,
                            {part_from, part_to},
+                           originating_text_style.style,
                            {originating_decoration}};
-        for (wtf_size_t i = 0; i < layers.size(); i++) {
+        HighlightStyleUtils::HighlightTextPaintStyle previous_layer_style =
+            originating_text_style;
+        for (wtf_size_t i = 1; i < layers.size(); i++) {
           if (active[i]) {
             unsigned decoration_from =
                 ClampOffset(active[i]->from, content_offsets);
@@ -537,10 +560,17 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
                 ClampOffset(active[i]->to, content_offsets);
             part.type = layers[i].type;
             part.layer_index = static_cast<uint16_t>(i);
+            HighlightStyleUtils::HighlightTextPaintStyle part_style =
+                layers[i].text_style;
+            HighlightStyleUtils::ResolveColorsFromPreviousLayer(
+                part_style, previous_layer_style);
+            part.style = part_style.style;
             part.decorations.push_back(
                 HighlightDecoration{layers[i].type,
                                     static_cast<uint16_t>(i),
-                                    {decoration_from, decoration_to}});
+                                    {decoration_from, decoration_to},
+                                    part_style.text_decoration_color});
+            previous_layer_style = part_style;
           }
         }
         result.push_back(part);
@@ -564,6 +594,7 @@ Vector<HighlightPart> HighlightOverlay::ComputeParts(
                       0,
                       {ClampOffset(edges.back().Offset(), content_offsets),
                        content_offsets.to},
+                      originating_text_style.style,
                       {originating_decoration}});
   }
   return result;

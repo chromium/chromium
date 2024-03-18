@@ -36,13 +36,16 @@ class CORE_EXPORT HighlightStyleUtils {
     kStrokeColor,
     kEmphasisColor,
     kSelectionDecorationColor,
+    kTextDecorationColor,
+    // When adding another, update HighlightColorPropertySet below.
   };
   using HighlightColorPropertySet =
       base::EnumSet<HighlightColorProperty,
                     HighlightColorProperty::kCurrentColor,
-                    HighlightColorProperty::kSelectionDecorationColor>;
+                    HighlightColorProperty::kTextDecorationColor>;
   struct HighlightTextPaintStyle {
     TextPaintStyle style;
+    Color text_decoration_color;
     HighlightColorPropertySet properties_using_current_color;
   };
 
@@ -83,9 +86,9 @@ class CORE_EXPORT HighlightStyleUtils {
       PseudoId pseudo,
       const AtomicString& pseudo_argument = g_null_atom);
 
-  static TextPaintStyle ResolveColorsFromPreviousLayer(
-      HighlightTextPaintStyle unresolved_style,
-      const TextPaintStyle& previous_layer_style);
+  static void ResolveColorsFromPreviousLayer(
+      HighlightTextPaintStyle& text_style,
+      const HighlightTextPaintStyle& previous_layer_style);
 
   static bool ShouldInvalidateVisualOverflow(const Node& node,
                                              DocumentMarker::MarkerType type);

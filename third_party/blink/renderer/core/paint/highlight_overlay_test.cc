@@ -34,7 +34,13 @@ using HighlightPart = HighlightOverlay::HighlightPart;
 
 class HighlightOverlayTest : public PageTestBase {
  public:
-  HighlightOverlayTest() : PageTestBase() {}
+  TextPaintStyle CreatePaintStyle(Color color) {
+    return TextPaintStyle{color,   color,
+                          color,   color,
+                          2,       ::blink::mojom::blink::ColorScheme::kLight,
+                          nullptr, TextDecorationLine::kNone,
+                          color,   kPaintOrderNormal};
+  }
 };
 
 TEST_F(HighlightOverlayTest, ComputeLayers) {
@@ -332,6 +338,58 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
       GetDocument(), node, text_style, paint_style, paint_info, &selection,
       *custom, *grammar, *spelling, *target);
 
+  // Set up paint styles for each layer
+  Color originating_color(0, 0, 0);
+  HighlightStyleUtils::HighlightColorPropertySet originating_current_colors;
+  HighlightStyleUtils::HighlightTextPaintStyle originating_text_style{
+      CreatePaintStyle(originating_color), originating_color,
+      originating_current_colors};
+  layers[0].text_style = originating_text_style;
+
+  Color foo_color(0, 0, 1);
+  HighlightStyleUtils::HighlightColorPropertySet foo_current_colors;
+  HighlightStyleUtils::HighlightTextPaintStyle foo_text_style{
+      CreatePaintStyle(foo_color), foo_color, foo_current_colors};
+  layers[1].text_style = foo_text_style;
+
+  Color bar_color(0, 0, 2);
+  HighlightStyleUtils::HighlightColorPropertySet bar_current_colors{
+      HighlightStyleUtils::HighlightColorProperty::kCurrentColor,
+      HighlightStyleUtils::HighlightColorProperty::kFillColor,
+      HighlightStyleUtils::HighlightColorProperty::kStrokeColor,
+      HighlightStyleUtils::HighlightColorProperty::kEmphasisColor,
+      HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor,
+      HighlightStyleUtils::HighlightColorProperty::kTextDecorationColor};
+  HighlightStyleUtils::HighlightTextPaintStyle bar_text_style{
+      CreatePaintStyle(bar_color), bar_color, bar_current_colors};
+  layers[2].text_style = bar_text_style;
+
+  Color spelling_color(0, 0, 3);
+  HighlightStyleUtils::HighlightColorPropertySet spelling_current_colors;
+  HighlightStyleUtils::HighlightTextPaintStyle spelling_text_style{
+      CreatePaintStyle(spelling_color), spelling_color,
+      spelling_current_colors};
+  layers[3].text_style = spelling_text_style;
+
+  Color target_color(0, 0, 4);
+  HighlightStyleUtils::HighlightColorPropertySet target_current_colors{
+      HighlightStyleUtils::HighlightColorProperty::kCurrentColor,
+      HighlightStyleUtils::HighlightColorProperty::kFillColor,
+      HighlightStyleUtils::HighlightColorProperty::kStrokeColor,
+      HighlightStyleUtils::HighlightColorProperty::kEmphasisColor,
+      HighlightStyleUtils::HighlightColorProperty::kSelectionDecorationColor,
+      HighlightStyleUtils::HighlightColorProperty::kTextDecorationColor};
+  HighlightStyleUtils::HighlightTextPaintStyle target_text_style{
+      CreatePaintStyle(target_color), target_color, target_current_colors};
+  layers[4].text_style = target_text_style;
+
+  Color selection_color(0, 0, 5);
+  HighlightStyleUtils::HighlightColorPropertySet selection_current_colors;
+  HighlightStyleUtils::HighlightTextPaintStyle selection_text_style{
+      CreatePaintStyle(selection_color), selection_color,
+      selection_current_colors};
+  layers[5].text_style = selection_text_style;
+
   // 0     6   10   15   20  24
   // brown fxo oevr lazy dgo today
   // [                       ]        originating
@@ -348,8 +406,8 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   // clang-format off
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges),
             (Vector<HighlightPart>{
-                HighlightPart{HighlightLayerType::kOriginating, 0, {0,25},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}}}},
+                HighlightPart{HighlightLayerType::kOriginating, 0, {0,25}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color}}},
             }))
       << "should return correct kOriginating part when nothing is highlighted";
 
@@ -368,45 +426,45 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges2),
             (Vector<HighlightPart>{
-                HighlightPart{HighlightLayerType::kCustom, 1, {0,6},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1, {0,14}}}},
-                HighlightPart{HighlightLayerType::kSpelling, 3, {6,9},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1,{ 0,14}},
-                               {HighlightLayerType::kSpelling, 3, {6,9}}}},
-                HighlightPart{HighlightLayerType::kCustom, 1, {9,10},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1, {0,14}}}},
-                HighlightPart{HighlightLayerType::kSpelling, 3, {10,13},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1, {0,14}},
-                               {HighlightLayerType::kCustom, 2, {10,19}},
-                               {HighlightLayerType::kSpelling, 3, {10,14}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {13,14},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1, {0,14}},
-                               {HighlightLayerType::kCustom, 2, {10,19}},
-                               {HighlightLayerType::kSpelling, 3, {10,14}},
-                               {HighlightLayerType::kSelection, 5, {13,19}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {14,15},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 2, {10,19}},
-                               {HighlightLayerType::kSelection, 5, {13,19}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {15,19},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 2, {10,19}},
-                               {HighlightLayerType::kTargetText, 4, {15,23}},
-                               {HighlightLayerType::kSelection, 5, {13,19}}}},
-                HighlightPart{HighlightLayerType::kTargetText, 4, {19,20},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kTargetText, 4, {15,23}}}},
-                HighlightPart{HighlightLayerType::kTargetText, 4, {20,23},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kSpelling, 3, {20,23}},
-                               {HighlightLayerType::kTargetText, 4, {15,23}}}},
-                HighlightPart{HighlightLayerType::kOriginating, 0, {23,25},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}}}},
+                HighlightPart{HighlightLayerType::kCustom, 1, {0,6}, foo_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {0,14}, foo_color}}},
+                HighlightPart{HighlightLayerType::kSpelling, 3, {6,9}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {0,14}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {6,9}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kCustom, 1, {9,10}, foo_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {0,14}, foo_color}}},
+                HighlightPart{HighlightLayerType::kSpelling, 3, {10,13}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {0,14}, foo_color},
+                               {HighlightLayerType::kCustom, 2, {10,19}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {10,14}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {13,14}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {0,14}, foo_color},
+                               {HighlightLayerType::kCustom, 2, {10,19}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {10,14}, spelling_color},
+                               {HighlightLayerType::kSelection, 5, {13,19}, selection_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {14,15}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 2, {10,19}, originating_color},
+                               {HighlightLayerType::kSelection, 5, {13,19}, selection_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {15,19}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 2, {10,19}, originating_color},
+                               {HighlightLayerType::kTargetText, 4, {15,23}, originating_color},
+                               {HighlightLayerType::kSelection, 5, {13,19}, selection_color}}},
+                HighlightPart{HighlightLayerType::kTargetText, 4, {19,20}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kTargetText, 4, {15,23}, originating_color}}},
+                HighlightPart{HighlightLayerType::kTargetText, 4, {20,23}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kSpelling, 3, {20,23}, spelling_color},
+                               {HighlightLayerType::kTargetText, 4, {15,23}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kOriginating, 0, {23,25}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color}}},
             }))
       << "should return correct parts given several active highlights";
 
@@ -426,44 +484,44 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating, layers, edges3),
             (Vector<HighlightPart>{
-                HighlightPart{HighlightLayerType::kOriginating, 0, {0,6},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}}}},
-                HighlightPart{HighlightLayerType::kSpelling, 3, {6,9},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1, {6,14}},
-                               {HighlightLayerType::kSpelling, 3, {6,9}}}},
-                HighlightPart{HighlightLayerType::kCustom, 1, {9,10},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1, {6,14}}}},
-                HighlightPart{HighlightLayerType::kSpelling, 3, {10,13},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1, {6,14}},
-                               {HighlightLayerType::kCustom, 2, {10,19}},
-                               {HighlightLayerType::kSpelling, 3, {10,14}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {13,14},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 1, {6,14}},
-                               {HighlightLayerType::kCustom, 2, {10,19}},
-                               {HighlightLayerType::kSpelling, 3, {10,14}},
-                               {HighlightLayerType::kSelection, 5, {13,19}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {14,15},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 2, {10,19}},
-                               {HighlightLayerType::kSelection, 5, {13,19}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {15,19},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kCustom, 2, {10,19}},
-                               {HighlightLayerType::kTargetText, 4, {15,23}},
-                               {HighlightLayerType::kSelection, 5, {13,19}}}},
-                HighlightPart{HighlightLayerType::kTargetText, 4, {19,20},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kTargetText, 4, {15,23}}}},
-                HighlightPart{HighlightLayerType::kTargetText, 4, {20,23},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}},
-                               {HighlightLayerType::kSpelling, 3, {20,23}},
-                               {HighlightLayerType::kTargetText, 4,{15,23}}}},
-                HighlightPart{HighlightLayerType::kOriginating, 0, {23,25},
-                              {{HighlightLayerType::kOriginating, 0, {0,25}}}},
+                HighlightPart{HighlightLayerType::kOriginating, 0, {0,6}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color}}},
+                HighlightPart{HighlightLayerType::kSpelling, 3, {6,9}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {6,14}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {6,9}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kCustom, 1, {9,10}, foo_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {6,14}, foo_color}}},
+                HighlightPart{HighlightLayerType::kSpelling, 3, {10,13}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {6,14}, foo_color},
+                               {HighlightLayerType::kCustom, 2, {10,19}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {10,14}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {13,14}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {6,14}, foo_color},
+                               {HighlightLayerType::kCustom, 2, {10,19}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {10,14}, spelling_color},
+                               {HighlightLayerType::kSelection, 5, {13,19}, selection_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {14,15}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 2, {10,19}, originating_color},
+                               {HighlightLayerType::kSelection, 5, {13,19}, selection_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {15,19}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kCustom, 2, {10,19}, originating_color},
+                               {HighlightLayerType::kTargetText, 4, {15,23}, originating_color},
+                               {HighlightLayerType::kSelection, 5, {13,19}, selection_color}}},
+                HighlightPart{HighlightLayerType::kTargetText, 4, {19,20}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kTargetText, 4, {15,23}, originating_color}}},
+                HighlightPart{HighlightLayerType::kTargetText, 4, {20,23}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color},
+                               {HighlightLayerType::kSpelling, 3, {20,23}, spelling_color},
+                               {HighlightLayerType::kTargetText, 4, {15,23}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kOriginating, 0, {23,25}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {0,25}, originating_color}}},
             }))
       << "correct when first edge starts after start of originating fragment";
 
@@ -484,33 +542,33 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating2, layers, edges4),
             (Vector<HighlightPart>{
-                HighlightPart{HighlightLayerType::kSpelling, 3, {8,9},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}},
-                               {HighlightLayerType::kCustom, 1, {8,14}},
-                               {HighlightLayerType::kSpelling, 3, {8,9}}}},
-                HighlightPart{HighlightLayerType::kCustom, 1, {9,10},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}},
-                               {HighlightLayerType::kCustom, 1, {8,14}}}},
-                HighlightPart{HighlightLayerType::kSpelling, 3, {10,13},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}},
-                               {HighlightLayerType::kCustom, 1, {8,14}},
-                               {HighlightLayerType::kCustom, 2, {10,18}},
-                               {HighlightLayerType::kSpelling, 3, {10,14}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {13,14},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}},
-                               {HighlightLayerType::kCustom, 1, {8,14}},
-                               {HighlightLayerType::kCustom, 2, {10,18}},
-                               {HighlightLayerType::kSpelling, 3, {10,14}},
-                               {HighlightLayerType::kSelection, 5, {13,18}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {14,15},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}},
-                               {HighlightLayerType::kCustom, 2, {10,18}},
-                               {HighlightLayerType::kSelection, 5, {13,18}}}},
-                HighlightPart{HighlightLayerType::kSelection, 5, {15,18},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}},
-                               {HighlightLayerType::kCustom, 2, {10,18}},
-                               {HighlightLayerType::kTargetText, 4, {15,18}},
-                               {HighlightLayerType::kSelection, 5, {13,18}}}},
+                HighlightPart{HighlightLayerType::kSpelling, 3, {8,9}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {8,14}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {8,9}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kCustom, 1, {9,10}, foo_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {8,14}, foo_color}}},
+                HighlightPart{HighlightLayerType::kSpelling, 3, {10,13}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {8,14}, foo_color},
+                               {HighlightLayerType::kCustom, 2, {10,18}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {10,14}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {13,14}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
+                               {HighlightLayerType::kCustom, 1, {8,14}, foo_color},
+                               {HighlightLayerType::kCustom, 2, {10,18}, foo_color},
+                               {HighlightLayerType::kSpelling, 3, {10,14}, spelling_color},
+                               {HighlightLayerType::kSelection, 5, {13,18}, selection_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {14,15}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
+                               {HighlightLayerType::kCustom, 2, {10,18}, originating_color},
+                               {HighlightLayerType::kSelection, 5, {13,18}, selection_color}}},
+                HighlightPart{HighlightLayerType::kSelection, 5, {15,18}, selection_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
+                               {HighlightLayerType::kCustom, 2, {10,18}, originating_color},
+                               {HighlightLayerType::kTargetText, 4, {15,18}, originating_color},
+                               {HighlightLayerType::kSelection, 5, {13,18}, selection_color}}},
             }))
       << "should clamp result to originating fragment offsets";
 
@@ -529,16 +587,16 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating2, layers, edges5),
             (Vector<HighlightPart>{
-                HighlightPart{HighlightLayerType::kSpelling, 3, {8,9},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}},
-                               {HighlightLayerType::kSpelling, 3, {8,9}}}},
-                HighlightPart{HighlightLayerType::kOriginating, 0, {9,10},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}}}},
-                HighlightPart{HighlightLayerType::kSpelling, 3, {10,14},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}},
-                               {HighlightLayerType::kSpelling, 3, {10,14}}}},
-                HighlightPart{HighlightLayerType::kOriginating, 0, {14,18},
-                              {{HighlightLayerType::kOriginating, 0, {8,18}}}},
+                HighlightPart{HighlightLayerType::kSpelling, 3, {8,9}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
+                               {HighlightLayerType::kSpelling, 3, {8,9}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kOriginating, 0, {9,10}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color}}},
+                HighlightPart{HighlightLayerType::kSpelling, 3, {10,14}, spelling_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color},
+                               {HighlightLayerType::kSpelling, 3, {10,14}, spelling_color}}},
+                HighlightPart{HighlightLayerType::kOriginating, 0, {14,18}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {8,18}, originating_color}}},
             }))
       << "should not crash if there is a gap in active layers";
 
@@ -559,8 +617,8 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating3, layers, edges6),
             (Vector<HighlightPart>{
-                HighlightPart{HighlightLayerType::kOriginating, 0, {1,4},
-                              {{HighlightLayerType::kOriginating, 0, {1,4}}}},
+                HighlightPart{HighlightLayerType::kOriginating, 0, {1,4}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {1,4}, originating_color}}},
             }))
       << "correct when first edge starts after end of originating fragment";
 
@@ -581,8 +639,8 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
 
   EXPECT_EQ(HighlightOverlay::ComputeParts(originating4, layers, edges7),
             (Vector<HighlightPart>{
-                HighlightPart{HighlightLayerType::kOriginating, 0, {25,28},
-                              {{HighlightLayerType::kOriginating, 0, {25,28}}}},
+                HighlightPart{HighlightLayerType::kOriginating, 0, {25,28}, originating_text_style.style,
+                              {{HighlightLayerType::kOriginating, 0, {25,28}, originating_color}}},
             }))
       << "correct when last edge ends before start of originating fragment";
 }

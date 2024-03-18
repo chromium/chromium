@@ -855,29 +855,20 @@ void HighlightPainter::PaintHighlightOverlays(
     }
   }
 
-  // For each overlay, paint the text proper over every highlighted range,
-  // except any parts for which we’re not the topmost active highlight.
-  for (wtf_size_t i = 0; i < layers_.size(); ++i) {
-    HighlightLayer& layer = layers_[i];
-    if (layer.type == HighlightLayerType::kOriginating ||
-        layer.type == HighlightLayerType::kSelection) {
+  // For each part, paint the text proper over every highlighted range,
+  for (auto part : parts_) {
+    if (part.type == HighlightLayerType::kOriginating ||
+        part.type == HighlightLayerType::kSelection) {
       continue;
     }
 
-    for (const HighlightPart& part : parts_) {
-      if (part.layer_index != static_cast<uint16_t>(i)) {
-        continue;
-      }
-
-      // TODO(crbug.com/1434114) expand range to include partial glyphs, then
-      // paint with clipping (TextPainter::PaintSelectedText)
-      PaintDecorationsExceptLineThrough(part);
-      text_painter_.Paint(
-          fragment_paint_info_.Slice(part.range.from, part.range.to),
-          layer.text_style.style, node_id, foreground_auto_dark_mode_,
-          TextPainterBase::kTextProperOnly);
-      PaintDecorationsOnlyLineThrough(part);
-    }
+    // TODO(crbug.com/1434114) expand range to include partial glyphs, then
+    // paint with clipping (TextPainter::PaintSelectedText)
+    PaintDecorationsExceptLineThrough(part);
+    text_painter_.Paint(
+        fragment_paint_info_.Slice(part.range.from, part.range.to), part.style,
+        node_id, foreground_auto_dark_mode_, TextPainterBase::kTextProperOnly);
+    PaintDecorationsOnlyLineThrough(part);
   }
 
   // Paint ::selection foreground, including its shadows.
@@ -1071,16 +1062,10 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
 
     if (part.type != HighlightLayerType::kOriginating) {
       if (decoration.type == HighlightLayerType::kOriginating) {
-        decoration_info->SetHighlightOverrideColor(
-            layers_[part.layer_index].text_style.style.current_color);
+        decoration_info->SetHighlightOverrideColor(part.style.current_color);
       } else {
         decoration_info->SetHighlightOverrideColor(
-            HighlightStyleUtils::ResolveColor(
-                layout_object_->GetDocument(), originating_style_,
-                decoration_layer.style.Get(), decoration_layer.PseudoId(),
-                GetCSSPropertyTextDecorationColor(),
-                layers_[decoration.layer_index - 1]
-                    .text_style.style.current_color));
+            decoration.highlight_override_color);
       }
     }
 
@@ -1134,16 +1119,10 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
 
     if (part.type != HighlightLayerType::kOriginating) {
       if (decoration.type == HighlightLayerType::kOriginating) {
-        decoration_info->SetHighlightOverrideColor(
-            layers_[part.layer_index].text_style.style.current_color);
+        decoration_info->SetHighlightOverrideColor(part.style.current_color);
       } else {
         decoration_info->SetHighlightOverrideColor(
-            HighlightStyleUtils::ResolveColor(
-                layout_object_->GetDocument(), originating_style_,
-                decoration_layer.style.Get(), decoration_layer.PseudoId(),
-                GetCSSPropertyTextDecorationColor(),
-                layers_[decoration.layer_index - 1]
-                    .text_style.style.current_color));
+            decoration.highlight_override_color);
       }
     }
 
