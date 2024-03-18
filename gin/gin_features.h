@@ -50,6 +50,7 @@ GIN_EXPORT extern const base::FeatureParam<int>
     kV8EfficiencyModeTieringDelayTurbofan;
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistograms);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsCodeMemoryWriteProtection);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsIntelJCCErratumMitigation);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsNoTurbofan);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsSparkplug);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsSparkplugAndroid);

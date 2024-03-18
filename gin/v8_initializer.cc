@@ -358,6 +358,8 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   bool any_slow_histograms_alias =
       base::FeatureList::IsEnabled(
           features::kV8SlowHistogramsCodeMemoryWriteProtection) ||
+      base::FeatureList::IsEnabled(
+          features::kV8SlowHistogramsIntelJCCErratumMitigation) ||
       base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplug) ||
       base::FeatureList::IsEnabled(
           features::kV8SlowHistogramsSparkplugAndroid) ||

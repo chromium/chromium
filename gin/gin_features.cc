@@ -172,6 +172,9 @@ BASE_FEATURE(kV8SlowHistograms,
 BASE_FEATURE(kV8SlowHistogramsCodeMemoryWriteProtection,
              "V8SlowHistogramsCodeMemoryWriteProtection",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kV8SlowHistogramsIntelJCCErratumMitigation,
+             "V8SlowHistogramsIntelJCCErratumMitigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8SlowHistogramsSparkplug,
              "V8SlowHistogramsSparkplug",
              base::FEATURE_DISABLED_BY_DEFAULT);
