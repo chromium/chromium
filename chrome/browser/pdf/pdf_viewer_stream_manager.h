@@ -133,6 +133,14 @@ class PdfViewerStreamManager
   // differentiate between the hosts.
   bool IsPdfExtensionHost(content::RenderFrameHost* render_frame_host);
 
+  // Returns true if `render_frame_host` is a content host for a PDF. During a
+  // PDF load, the initial RFH for the content frame attempts to navigate to the
+  // stream URL. Another RFH will then be chosen to host the content frame. This
+  // returns true for both hosts. Depending on what navigation step the frame is
+  // on, callers can also check the last committed URL to differentiate between
+  // the hosts.
+  bool IsPdfContentHost(content::RenderFrameHost* render_frame_host);
+
   // Returns whether the PDF plugin should handle save events.
   bool PluginCanSave(content::RenderFrameHost* embedder_host);
 
@@ -149,6 +157,8 @@ class PdfViewerStreamManager
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
   void FrameDeleted(int frame_tree_node_id) override;
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
@@ -163,6 +173,13 @@ class PdfViewerStreamManager
   // `frame_tree_node_id`. This is needed to listen for extension host deletion.
   // Callers must ensure that `embedder_host` has a claimed stream info.
   void SetExtensionFrameTreeNodeIdForTesting(
+      content::RenderFrameHost* embedder_host,
+      int frame_tree_node_id);
+
+  // For testing only. Set `embedder_host`'s content frame tree node ID as
+  // `frame_tree_node_id`. This is needed to listen for content host deletion.
+  // Callers must ensure that `embedder_host` has a claimed stream info.
+  void SetContentFrameTreeNodeIdForTesting(
       content::RenderFrameHost* embedder_host,
       int frame_tree_node_id);
 
@@ -211,6 +228,14 @@ class PdfViewerStreamManager
       extension_host_frame_tree_node_id_ = frame_tree_node_id;
     }
 
+    int content_host_frame_tree_node_id() const {
+      return content_host_frame_tree_node_id_;
+    }
+
+    void set_content_host_frame_tree_node_id(int frame_tree_node_id) {
+      content_host_frame_tree_node_id_ = frame_tree_node_id;
+    }
+
     bool plugin_can_save() const { return plugin_can_save_; }
 
     void set_plugin_can_save(bool plugin_can_save) {
@@ -238,6 +263,10 @@ class PdfViewerStreamManager
     // The frame tree node ID of the extension host. Initialized when the
     // initial about:blank navigation commits in the extension frame.
     int extension_host_frame_tree_node_id_ = 0;
+
+    // The frame tree node ID of the content host. Initialized when the
+    // navigation to the stream URL starts.
+    int content_host_frame_tree_node_id_ = 0;
 
     // A unique ID for this instance. Used for postMessage support to identify
     // `extensions::MimeHandlerViewFrameContainer` objects.
@@ -287,6 +316,11 @@ class PdfViewerStreamManager
   [[nodiscard]] bool MaybeDeleteStreamOnPdfExtensionHostChanged(
       content::RenderFrameHost* old_host);
 
+  // Same as `MaybeDeleteStreamOnPdfExtensionHostChanged()`, but for the content
+  // host.
+  [[nodiscard]] bool MaybeDeleteStreamOnPdfContentHostChanged(
+      content::RenderFrameHost* old_host);
+
   // Intended to be called during the PDF content frame's
   // `ReadyToCommitNavigation()` event. Registers navigations occurring in a PDF
   // content frame as a subresource.
@@ -297,6 +331,11 @@ class PdfViewerStreamManager
   // Sets up postMessage communication between the embedder frame and the PDF
   // extension frame after the PDF has finished loading.
   bool MaybeSetUpPostMessage(content::NavigationHandle* navigation_handle);
+
+  // During the PDF content frame navigation, set the related PDF stream's
+  // content host frame tree node ID.
+  void SetStreamContentHostFrameTreeNodeId(
+      content::NavigationHandle* navigation_handle);
 
   // Sets up beforeunload API support for full-page PDF viewers.
   // TODO(crbug.com/1445746): Currently a no-op. Support the beforeunload API.

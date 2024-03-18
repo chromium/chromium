@@ -9765,6 +9765,7 @@ test("unit_tests") {
       "//extensions/browser",
       "//net",
       "//pdf:content_restriction",
+      "//pdf:features",
       "//services/network/public/mojom:url_loader_base",
       "//url",
     ]
