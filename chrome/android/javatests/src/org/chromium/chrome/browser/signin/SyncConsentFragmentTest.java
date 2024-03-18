@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
+import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -1230,6 +1231,106 @@ public class SyncConsentFragmentTest {
         ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
 
         checkButtonsAreEquallyWeightedandVisible();
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testSignedInWithMinorModeUnknownHasEqualButtonsBeforeDeadline()
+            throws InterruptedException {
+
+        MinorModeHelper.disableTimeoutForTesting();
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        // Account Capabilities are intentionally empty.
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_UNKNOWN);
+        mSigninTestRule.waitForSeeding();
+        SigninTestUtil.signin(accountInfo);
+        mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
+
+        // Buttons will not be visible before capability/deadline is reached.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
+                });
+
+        // Capability is received as MINOR_MODE_REQUIRED after an arbitrary amount of time that is
+        // less than the deadline {@link
+        // org.chromium.chrome.browser.ui.signin.MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons
+        // will be equally weighted.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSigninTestRule.setAccountCapabilities(
+                            accountInfo.getId(), MINOR_MODE_REQUIRED);
+                });
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN)
+    public void testSignedInWithMinorModeUnknownHasUnequalButtonsBeforeDeadline()
+            throws InterruptedException {
+        MinorModeHelper.disableTimeoutForTesting();
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+        // Account Capabilities are intentionally empty.
+        AccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL, MINOR_MODE_UNKNOWN);
+        mSigninTestRule.waitForSeeding();
+        SigninTestUtil.signin(accountInfo);
+
+        mSyncConsentActivity = waitForSyncConsentActivity(accountInfo);
+
+        // Buttons will not be visible before capability/deadline is reached.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
+                });
+
+        // Capability is received as MINOR_MODE_NOT_REQUIRED after an arbitrary amount of time that
+        // is less than the deadline {@link
+        // org.chromium.chrome.browser.ui.signin.MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons
+        // will be unequally weighted.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSigninTestRule.setAccountCapabilities(
+                            accountInfo.getId(), MINOR_MODE_NOT_REQUIRED);
+                });
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertNotEquals(
+                            primaryButton.getTextColors().getDefaultColor(),
+                            secondaryButton.getTextColors().getDefaultColor());
+                });
     }
 
     @Test

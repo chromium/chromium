@@ -348,4 +348,16 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
             observer.onCoreAccountInfosChanged();
         }
     }
+
+    /**
+     * Replaces any capabilities that have been previously set with the given accountCapabilities.
+     * and notifies AccountsChangeObservers.
+     */
+    public void setAccountCapabilities(
+            CoreAccountId accountId, AccountCapabilities accountCapabilities) {
+        assert accountId != null;
+        AccountHolder accountHolder = getAccountHolder(accountId);
+        accountHolder.setAccountCapabilities(accountCapabilities);
+        fireOnAccountsChangedNotification();
+    }
 }

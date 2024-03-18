@@ -84,4 +84,9 @@ public class AccountHolder {
     public AccountCapabilities getAccountCapabilities() {
         return mAccountInfo.getAccountCapabilities();
     }
+
+    /** Manually replace the previously set capabilities with given accountCapabilities */
+    public void setAccountCapabilities(AccountCapabilities accountCapabilities) {
+        mAccountInfo.setAccountCapabilities(accountCapabilities);
+    }
 }

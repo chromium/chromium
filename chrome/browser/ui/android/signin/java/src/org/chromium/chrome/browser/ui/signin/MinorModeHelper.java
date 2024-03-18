@@ -37,7 +37,8 @@ import java.lang.annotation.RetentionPolicy;
  *
  * <p>Use {@link resolveMinorMode} and {@link trackLatency} methods as entry points.
  */
-class MinorModeHelper implements IdentityManager.Observer {
+public class MinorModeHelper implements IdentityManager.Observer {
+
     /** Screen modes indicated by capability. */
     @IntDef({ScreenMode.PENDING, ScreenMode.RESTRICTED, ScreenMode.UNRESTRICTED})
     @Retention(RetentionPolicy.SOURCE)
@@ -92,6 +93,8 @@ class MinorModeHelper implements IdentityManager.Observer {
     };
 
     private static final int CAPABILITY_TIMEOUT_MS = 400;
+
+    private static boolean sDisableHistorySyncOptInTimeout;
 
     private final long mCreated = SystemClock.elapsedRealtime();
 
@@ -176,8 +179,12 @@ class MinorModeHelper implements IdentityManager.Observer {
         this.mPrimaryAccount = primaryAccount;
         mUiUpdater = uiUpdater;
 
-        PostTask.postDelayedTask(
-                TaskTraits.UI_DEFAULT, this::defaultToRestricted, CAPABILITY_TIMEOUT_MS);
+        // When the sDisableHistorySyncOptInTimeout is enabled in tests, the buttons should only be
+        // updated due to a capability change and not due to a timeout.
+        if (!sDisableHistorySyncOptInTimeout) {
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT, this::defaultToRestricted, CAPABILITY_TIMEOUT_MS);
+        }
     }
 
     @Override
@@ -227,5 +234,10 @@ class MinorModeHelper implements IdentityManager.Observer {
         long latency = SystemClock.elapsedRealtime() - mCreated;
         RecordHistogram.recordTimesHistogram(USER_LATENCY_HISTOGRAM_NAME, latency);
         RecordHistogram.recordTimesHistogram(FETCH_LATENCY_HISTOGRAM_NAME, latency);
+    }
+
+    /** Disable timeout to show sync buttons on FRE for testing */
+    public static void disableTimeoutForTesting() {
+        sDisableHistorySyncOptInTimeout = true;
     }
 }

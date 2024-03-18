@@ -74,7 +74,7 @@ public class AccountInfo extends CoreAccountInfo {
     private final String mFullName;
     private final String mGivenName;
     private final @Nullable Bitmap mAccountImage;
-    private final AccountCapabilities mAccountCapabilities;
+    private AccountCapabilities mAccountCapabilities;
 
     @VisibleForTesting
     @CalledByNative
@@ -143,5 +143,11 @@ public class AccountInfo extends CoreAccountInfo {
         return !TextUtils.isEmpty(mFullName)
                 || !TextUtils.isEmpty(mGivenName)
                 || mAccountImage != null;
+    }
+
+    /** Manually replace the previously set capabilities with given accountCapabilities */
+    @VisibleForTesting
+    public void setAccountCapabilities(AccountCapabilities accountCapabilities) {
+        mAccountCapabilities = accountCapabilities;
     }
 }

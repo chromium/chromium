@@ -264,4 +264,12 @@ public class AccountManagerTestRule implements TestRule {
         drawable.draw(canvas);
         return bitmap;
     }
+
+    /**
+     * Replaces any capabilities that have been previously set with the given accountCapabilities.
+     */
+    public void setAccountCapabilities(
+            CoreAccountId accountId, AccountCapabilities accountCapabilities) {
+        mFakeAccountManagerFacade.setAccountCapabilities(accountId, accountCapabilities);
+    }
 }
