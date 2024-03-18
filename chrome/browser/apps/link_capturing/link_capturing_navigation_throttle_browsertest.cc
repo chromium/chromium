@@ -37,9 +37,9 @@ class LinkCapturingNavigationThrottleBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER))
+    (BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)) || BUILDFLAG(IS_MAC)
     // TODO(https://issues.chromium.org/329174385): Deflake tests in
-    // lacros_chrome_browser_tests / Linux MSan Tests.
+    // lacros_chrome_browser_tests / Linux MSan Tests / Mac Tests.
     GTEST_SKIP();
 #else
     InProcessBrowserTest::SetUpOnMainThread();
