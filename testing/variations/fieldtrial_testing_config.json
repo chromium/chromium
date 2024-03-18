@@ -1929,6 +1929,25 @@
             ]
         }
     ],
+    "AutofillUndo": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillUndo"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillUploadVotesForFieldsWithEmail": [
         {
             "platforms": [
