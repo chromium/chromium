@@ -89,6 +89,11 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   UIButton* _omniboxTypingShield;
   // Height constraint used to show/hide the `omniboxTypingShield`.
   NSLayoutConstraint* _omniboxTypingShieldHeightConstraint;
+  // Bottom constraint used to show/hide the `omniboxTypingShield`.
+  NSLayoutConstraint* _omniboxTypingShieldBottomConstraint;
+  // Bottom constraint used to show/hide the `omniboxTypingShield` when the view
+  // is hidden.
+  NSLayoutConstraint* _omniboxTypingShieldHiddenBottomConstraint;
   // View containing the leading and trailing buttons.
   UIView* _contentView;
   // Whether we are using the large accessory view.
@@ -490,10 +495,13 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
     _omniboxTypingShieldHeightConstraint =
         [_omniboxTypingShield.heightAnchor constraintEqualToConstant:0];
+    _omniboxTypingShieldBottomConstraint = [_omniboxTypingShield.bottomAnchor
+        constraintEqualToAnchor:_contentView.topAnchor];
+    _omniboxTypingShieldHiddenBottomConstraint =
+        [_omniboxTypingShield.bottomAnchor
+            constraintEqualToAnchor:self.bottomAnchor];
     [NSLayoutConstraint activateConstraints:@[
-      _omniboxTypingShieldHeightConstraint,
-      [_omniboxTypingShield.bottomAnchor
-          constraintEqualToAnchor:_contentView.topAnchor]
+      _omniboxTypingShieldHeightConstraint, _omniboxTypingShieldBottomConstraint
     ]];
     [_omniboxTypingShield addTarget:self
                              action:@selector(omniboxTypingShieldTapped)
@@ -513,6 +521,22 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 - (UIColor*)contentBackgroundColor {
   return _largeAccessoryViewEnabled ? [UIColor colorNamed:kGrey100Color]
                                     : [UIColor colorNamed:kBackgroundColor];
+}
+
+#pragma mark - UIView
+
+- (void)setHidden:(BOOL)hidden {
+  [super setHidden:hidden];
+
+  // The bottom omnibox is anchored to the typing shield. If we don't change the
+  // shield's anchor, when hiding the accessory view, there is a blank space the
+  // size of the keyboard accessory view between the top of the view below the
+  // accessory view and the omnibox. By changing the anchor here, the omnibox
+  // appears directly above the view below the accessory view, without any gaps.
+  _omniboxTypingShieldBottomConstraint.active = !hidden;
+  _omniboxTypingShieldHiddenBottomConstraint.active = hidden;
+
+  [self layoutIfNeeded];
 }
 
 @end

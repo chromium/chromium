@@ -294,6 +294,8 @@ using manual_fill::ManualFillDataType;
                     forDataType:(manual_fill::ManualFillDataType)dataType {
   DCHECK(IsKeyboardAccessoryUpgradeEnabled());
 
+  self.formInputAccessoryView.hidden = YES;
+
   [_formInputAccessoryViewControllerDelegate
       formInputAccessoryViewController:self
               didPressManualFillButton:button
@@ -302,6 +304,8 @@ using manual_fill::ManualFillDataType;
 
 // Resets this view to its original state. Can be animated.
 - (void)resetAnimated:(BOOL)animated {
+  self.formInputAccessoryView.hidden = NO;
+
   [self.formSuggestionView resetContentInsetAndDelegateAnimated:animated];
   [self.manualFillAccessoryViewController resetAnimated:animated];
   self.brandingViewController.keyboardAccessoryVisible =
