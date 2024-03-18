@@ -119,6 +119,8 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
                                   codec.ids_reassigned());
       details->set_required_recovery(details->required_recovery() ||
                                      codec.required_recovery());
+      details->set_local_or_syncable_reassigned_ids_per_old_id(
+          codec.release_reassigned_ids_per_old_id());
     }
   }
 

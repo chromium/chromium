@@ -21,8 +21,10 @@
 #include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
+#include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 BookmarkClientImpl::BookmarkClientImpl(
     ChromeBrowserState* browser_state,
@@ -45,6 +47,26 @@ void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
     managed_bookmark_service_->BookmarkModelCreated(model);
   }
   model_ = model;
+}
+
+void BookmarkClientImpl::RequiredRecoveryToLoad(
+    const std::multimap<int64_t, int64_t>&
+        local_or_syncable_reassigned_ids_per_old_id) {
+  if (!account_bookmark_sync_service_) {
+    // `account_bookmark_sync_service_` being null means `this` does NOT deal
+    // with two BookmarkSyncService instances. This implies there must be two
+    // BookmarkClientImpl instances (one per BookmarkSyncService) and therefore
+    // two BookmarkModel instances too. Do nothing in that case, as the
+    // migration in this function is primarily about the case where this client
+    // transitioned from having two BookmarkModel instances to having one.
+    return;
+  }
+
+  if (browser_state_->GetPrefs()) {
+    MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(
+        browser_state_->GetPrefs(),
+        local_or_syncable_reassigned_ids_per_old_id);
+  }
 }
 
 base::CancelableTaskTracker::TaskId

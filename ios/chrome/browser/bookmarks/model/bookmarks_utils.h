@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_
 
+#include <map>
 #include <set>
 #include <vector>
 
@@ -67,5 +68,12 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     bool is_account_bookmark_model_available,
     LegacyBookmarkModel* profile_bookmark_model,
     LegacyBookmarkModel* account_bookmark_model);
+
+// Used when on-disk bookmark IDs have been reassigned and therefore the prefs
+// need to be migrated accordingly.
+void MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(
+    PrefService* prefs,
+    const std::multimap<int64_t, int64_t>&
+        local_or_syncable_reassigned_ids_per_old_id);
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARKS_UTILS_H_

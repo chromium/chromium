@@ -43,6 +43,9 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
 
   // bookmarks::BookmarkClient:
   void Init(bookmarks::BookmarkModel* model) override;
+  void RequiredRecoveryToLoad(
+      const std::multimap<int64_t, int64_t>&
+          local_or_syncable_reassigned_ids_per_old_id) override;
   base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
       const GURL& page_url,
       favicon_base::FaviconImageCallback callback,

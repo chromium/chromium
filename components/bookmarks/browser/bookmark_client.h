@@ -6,6 +6,7 @@
 #define COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_CLIENT_H_
 
 #include <cstdint>
+#include <map>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -42,6 +43,14 @@ class BookmarkClient {
 
   // Called during initialization of BookmarkModel.
   virtual void Init(BookmarkModel* model);
+
+  // Called when loading from disk triggered some recovery, meaning that IDs or
+  // UUIDs could have been reassigned. If IDs were reassigned, which is not
+  // always the case, `local_or_syncable_reassigned_ids_per_old_id` contains
+  // the mapping from old IDs (before reassignment) to new ones.
+  virtual void RequiredRecoveryToLoad(
+      const std::multimap<int64_t, int64_t>&
+          local_or_syncable_reassigned_ids_per_old_id);
 
   // Gets a bookmark folder that the provided URL can be saved to. If nullptr is
   // returned, the bookmark is saved to the default location (usually this is

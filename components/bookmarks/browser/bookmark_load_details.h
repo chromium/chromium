@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_LOAD_DETAILS_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_LOAD_DETAILS_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -79,6 +80,17 @@ class BookmarkLoadDetails {
   void set_ids_reassigned(bool value) { ids_reassigned_ = value; }
   bool ids_reassigned() const { return ids_reassigned_; }
 
+  // If IDs are reassigned during decoding, this represents the mapping from old
+  // (i.e. on-disk) ID to the newly-assigned ones.
+  const std::multimap<int64_t, int64_t>&
+  local_or_syncable_reassigned_ids_per_old_id() const {
+    return local_or_syncable_reassigned_ids_per_old_id_;
+  }
+  void set_local_or_syncable_reassigned_ids_per_old_id(
+      std::multimap<int64_t, int64_t> value) {
+    local_or_syncable_reassigned_ids_per_old_id_ = std::move(value);
+  }
+
   // Returns the string blob representing the sync metadata in the json file.
   // The string blob is set during decode time upon the call to Bookmark::Load.
   void set_local_or_syncable_sync_metadata_str(std::string sync_metadata_str) {
@@ -133,6 +145,7 @@ class BookmarkLoadDetails {
   UuidIndex account_uuid_index_;
   int64_t max_id_ = 1;
   bool ids_reassigned_ = false;
+  std::multimap<int64_t, int64_t> local_or_syncable_reassigned_ids_per_old_id_;
   bool required_recovery_ = false;
   scoped_refptr<UrlIndex> url_index_;
   raw_ptr<BookmarkPermanentNode> bb_node_;

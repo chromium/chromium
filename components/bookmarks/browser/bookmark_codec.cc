@@ -267,7 +267,8 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
 
   std::string id_string;
   int64_t id = 0;
-  if (ids_valid_) {
+
+  {
     const std::string* string = value.FindString(kIdKey);
     if (!string || !base::StringToInt64(*string, &id) || id <= 0 ||
         ids_.count(id) != 0) {
@@ -461,6 +462,7 @@ void BookmarkCodec::ReassignIDs(BookmarkNode* bb_node,
                                 BookmarkNode* other_node,
                                 BookmarkNode* mobile_node) {
   ids_.clear();
+  reassigned_ids_per_old_id_.clear();
   ReassignIDsHelper(bb_node);
   ReassignIDsHelper(other_node);
   ReassignIDsHelper(mobile_node);
@@ -469,7 +471,9 @@ void BookmarkCodec::ReassignIDs(BookmarkNode* bb_node,
 
 void BookmarkCodec::ReassignIDsHelper(BookmarkNode* node) {
   DCHECK(node);
+  const int64_t old_id = node->id();
   node->set_id(++maximum_id_);
+  reassigned_ids_per_old_id_.emplace(old_id, node->id());
   ids_.insert(node->id());
   for (const auto& child : node->children())
     ReassignIDsHelper(child.get());

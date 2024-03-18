@@ -22,12 +22,15 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using base::ASCIIToUTF16;
 
 namespace bookmarks {
 namespace {
+
+using base::ASCIIToUTF16;
+using testing::ElementsAre;
+using testing::Pair;
 
 const char16_t kUrl1Title[] = u"url1";
 const char kUrl1Url[] = "http://www.url1.com";
@@ -521,6 +524,11 @@ TEST_F(BookmarkCodecTest, DecodeWithDuplicateIds) {
   EXPECT_EQ(decoder.release_assigned_ids(),
             std::set<int64_t>({1, 2, 3, 4, 5, 6, 7, 8, 9}));
   EXPECT_EQ(10, decoded_model->next_node_id());
+
+  EXPECT_THAT(
+      decoder.release_reassigned_ids_per_old_id(),
+      ElementsAre(Pair(1, 1), Pair(3, 2), Pair(4, 4), Pair(4, 5), Pair(5, 3),
+                  Pair(6, 6), Pair(7, 8), Pair(9, 9), Pair(10, 7)));
 }
 
 TEST_F(BookmarkCodecTest, DecodeWithAlreadyAssignedIds) {

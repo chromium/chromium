@@ -1230,20 +1230,6 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   DCHECK(!loaded_);
   DCHECK(details->required_recovery() || !details->ids_reassigned());
 
-  if (details->required_recovery()) {
-    // If the from-disk loading went through a recovery (e.g. IDs were
-    // reassigned due to collisions), it is best to save the result back to
-    // disk so it won't keep happening upon every restart.
-    if (local_or_syncable_store_) {
-      local_or_syncable_store_->ScheduleSave();
-    }
-
-    if (account_store_) {
-      CHECK(AreFoldersForAccountStorageAllowed());
-      account_store_->ScheduleSave();
-    }
-  }
-
   next_node_id_ = details->max_id();
   titled_url_index_ = details->owned_titled_url_index();
   uuid_index_[NodeTypeForUuidLookup::kLocalOrSyncableNodes] =
@@ -1280,6 +1266,23 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   details->ResetPermanentNodePointers();
 
   loaded_ = true;
+
+  if (details->required_recovery()) {
+    // If the from-disk loading went through a recovery (e.g. IDs were
+    // reassigned due to collisions), it is best to save the result back to
+    // disk so it won't keep happening upon every restart.
+    if (local_or_syncable_store_) {
+      local_or_syncable_store_->ScheduleSave();
+    }
+
+    if (account_store_) {
+      CHECK(AreFoldersForAccountStorageAllowed());
+      account_store_->ScheduleSave();
+    }
+
+    client_->RequiredRecoveryToLoad(
+        details->local_or_syncable_reassigned_ids_per_old_id());
+  }
 
   client_->DecodeLocalOrSyncableBookmarkSyncMetadata(
       details->local_or_syncable_sync_metadata_str(),

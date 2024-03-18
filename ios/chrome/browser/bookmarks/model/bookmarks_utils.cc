@@ -125,3 +125,43 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
       type, local_or_syncable_bookmark_model, account_bookmark_model);
   return bookmark_model->mobile_node();
 }
+
+void MigrateLastUsedBookmarkFolderUponLocalIdsReassigned(
+    PrefService* prefs,
+    const std::multimap<int64_t, int64_t>&
+        local_or_syncable_reassigned_ids_per_old_id) {
+  const int64_t node_id_in_prefs =
+      prefs->GetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks);
+
+  if (node_id_in_prefs == kLastUsedBookmarkFolderNone) {
+    return;
+  }
+
+  const BookmarkModelType type = static_cast<BookmarkModelType>(
+      prefs->GetInteger(prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
+  if (type != BookmarkModelType::kLocalOrSyncable) {
+    // Account bookmarks don't get their IDs reassigned as a result of the
+    // migration covered here (the adoption of a single BookmarkModel on iOS,
+    // whereas previously this client may have used two of them).
+    return;
+  }
+
+  const size_t match_count =
+      local_or_syncable_reassigned_ids_per_old_id.count(node_id_in_prefs);
+  if (match_count == 0) {
+    // ID not reassigned; nothing to do.
+    return;
+  }
+
+  if (match_count != 1) {
+    // ID reassignment ambiguous: this should be very rare and hence not
+    // supported.
+    return;
+  }
+
+  const int64_t new_node_id =
+      local_or_syncable_reassigned_ids_per_old_id.find(node_id_in_prefs)
+          ->second;
+  prefs->SetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks,
+                  new_node_id);
+}
