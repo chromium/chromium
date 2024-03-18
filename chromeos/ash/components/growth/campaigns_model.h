@@ -28,6 +28,13 @@ enum class Slot {
   kMaxValue = kNudge
 };
 
+// Supported window anchor element.
+// These values are deserialized from Growth Campaign, so entries should not
+// be renumbered and numeric values should never be reused.
+enum class WindowAnchorType {
+  kCaptionButtonContainer = 0,
+};
+
 // Dictionary of supported targetings. For example:
 // {
 //    "demoMode" : {...},
@@ -258,6 +265,28 @@ class Action {
   const base::Value::Dict* GetParams() const;
 
   raw_ptr<const base::Value::Dict> action_dict_;
+};
+
+// Wrapper around anchor.
+//
+// The structure looks like:
+// {
+//   "activeAppWindowAnchorType": 0  // CAPTION_BUTTON_CONTAINER
+// }
+// TODO(b/329698643): Consider moving to nudge controller if Anchor is not used
+// by other surfaces.
+class Anchor {
+ public:
+  explicit Anchor(const base::Value::Dict* anchor_dict);
+  Anchor(const Anchor&) = delete;
+  Anchor& operator=(const Anchor) = delete;
+  ~Anchor();
+
+  const std::optional<WindowAnchorType> GetActiveAppWindowAnchorType() const;
+  const std::string* GetShelfAppButtonId() const;
+
+ private:
+  raw_ptr<const base::Value::Dict> anchor_dict_;
 };
 
 }  // namespace growth

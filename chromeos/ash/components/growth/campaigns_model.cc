@@ -63,6 +63,11 @@ inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
 inline constexpr char kActionTypePath[] = "type";
 inline constexpr char kActionParamsPath[] = "params";
 
+// Anchor paths.
+inline constexpr char kActiveAppWindowAnchorType[] =
+    "activeAppWindowAnchorType";
+inline constexpr char kShelfAppButtonId[] = "shelfAppButtonId";
+
 }  // namespace
 
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
@@ -293,6 +298,35 @@ SessionTargeting::GetAppsOpened() const {
   }
 
   return app_targetings;
+}
+
+// Anchor.
+Anchor::Anchor(const Targeting* anchor_dict) : anchor_dict_(anchor_dict) {}
+
+const std::optional<WindowAnchorType> Anchor::GetActiveAppWindowAnchorType()
+    const {
+  if (!anchor_dict_) {
+    // No valid anchor dict.
+    return std::nullopt;
+  }
+
+  const auto anchor_type = anchor_dict_->FindInt(kActiveAppWindowAnchorType);
+  if (!anchor_type) {
+    // Invalid anchor type.
+    // TODO(b/329698643): Record invalid anchor type metric.
+    return std::nullopt;
+  }
+
+  return static_cast<WindowAnchorType>(anchor_type.value());
+}
+
+const std::string* Anchor::GetShelfAppButtonId() const {
+  if (!anchor_dict_) {
+    // No valid anchor dict.
+    return nullptr;
+  }
+
+  return anchor_dict_->FindString(kShelfAppButtonId);
 }
 
 }  // namespace growth
