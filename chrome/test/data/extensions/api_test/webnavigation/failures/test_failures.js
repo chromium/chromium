@@ -6,7 +6,7 @@ const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(async function() {
-  var getURL = chrome.extension.getURL;
+  var getURL = chrome.runtime.getURL;
   let tab = await promise(chrome.tabs.create, {"url": "about:blank"});
 
   chrome.test.runTests([

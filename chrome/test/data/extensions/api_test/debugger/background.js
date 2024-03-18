@@ -178,7 +178,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
   },
 
   function attachToOwnBackgroundPageWithNoSilentFlag() {
-    var ownExtensionId = chrome.extension.getURL('').split('/')[2];
+    var ownExtensionId = chrome.runtime.getURL('').split('/')[2];
     debuggee = {extensionId: ownExtensionId};
     chrome.debugger.attach(debuggee, protocolVersion, pass());
   },

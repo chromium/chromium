@@ -184,7 +184,7 @@ var fail = chrome.test.callbackFail;
 chrome.test.runTests([
   function invalidScheme() {
     // Invalid schemes don't work with the cookie API.
-    var ourUrl = chrome.extension.getURL('background.js');
+    var ourUrl = chrome.runtime.getURL('background.js');
     chrome.cookies.get(
         {url: ourUrl, name: 'a'},
         chrome.test.callbackFail(

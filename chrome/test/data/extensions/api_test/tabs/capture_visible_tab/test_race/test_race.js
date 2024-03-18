@@ -46,7 +46,7 @@ loadScript.then(() => {chrome.test.runTests([
         colorName = 'black';
         expectedColor = '0,0,0,255';
       }
-      var url = chrome.extension.getURL('/common/' + colorName + '.html');
+      var url = chrome.runtime.getURL('/common/' + colorName + '.html');
       createWindow(
           [url],
           kWindowRect,

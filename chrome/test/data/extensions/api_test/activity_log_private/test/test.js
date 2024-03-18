@@ -22,7 +22,7 @@ testCases.push({
                                'special_call', function response() { });
   },
   expected_activity: [
-    'extension.getURL',
+    'runtime.getURL',
     'extension.getViews'
   ]
 });
@@ -209,7 +209,7 @@ testCases.push({
                                function response() { });
   },
   expected_activity: [
-    'extension.getURL',
+    'runtime.getURL',
     'test.getConfig',
     'Element.webkitRequestFullscreen'
   ]

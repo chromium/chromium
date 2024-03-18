@@ -30,7 +30,7 @@ chrome.test.runTests([
           chrome.test.callbackPass(function(tabs) {
             chrome.test.assertEq(1, tabs.length);
             chrome.test.assertEq(
-                chrome.extension.getURL('check-opener.html'), tabs[0].url);
+                chrome.runtime.getURL('check-opener.html'), tabs[0].url);
             testCompleted();
           }));
     };

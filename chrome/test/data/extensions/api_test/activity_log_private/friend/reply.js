@@ -55,7 +55,7 @@ function makeApiCall() {
 // Makes an API call that has a custom binding.
 function makeSpecialApiCalls() {
   resetStatus();
-  var url = chrome.extension.getURL('image/cat.jpg');
+  var url = chrome.runtime.getURL('image/cat.jpg');
   var noparam = chrome.extension.getViews();
   appendCompleted('makeSpecialApiCalls');
 }
@@ -377,7 +377,7 @@ function executeDOMFullscreen() {
 // Opens the extensions options page and then runs the executeDOMFullscreen
 // test.
 function launchDOMFullscreenTest() {
-  openTab(chrome.extension.getURL('/options.html#dom_fullscreen'));
+  openTab(chrome.runtime.getURL('/options.html#dom_fullscreen'));
 }
 
 // ADD TESTS CASES TO THE MAP HERE.

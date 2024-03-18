@@ -18,7 +18,7 @@ function testGetNewWindowView(options, expectedViewURLs) {
 
       // Make the expected URLs non-relative, and sort them.
       var expectedUrls = expectedViewURLs.map(function(url) {
-        return chrome.extension.getURL(url);
+        return chrome.runtime.getURL(url);
       }).sort();
 
       // Comparing JSON makes errors easy to read.

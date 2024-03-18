@@ -4,7 +4,7 @@
 
 chrome.webRequest.onBeforeRequest.addListener(
   function(details) {
-    if (details.url == chrome.extension.getURL("/blocked.html")) {
+    if (details.url == chrome.runtime.getURL("/blocked.html")) {
       return {cancel: true};
     }
   },

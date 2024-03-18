@@ -81,7 +81,7 @@ loadScript.then(() => {chrome.test.getConfig(function(config) {
     },
 
     function captureVisibleTabChromeExtensionScheme() {
-      var url = chrome.extension.getURL("/white.html");
+      var url = chrome.runtime.getURL("/white.html");
       createWindow([url], kWindowRect, pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
           chrome.tabs.getSelected(winId, pass(function(tab) {

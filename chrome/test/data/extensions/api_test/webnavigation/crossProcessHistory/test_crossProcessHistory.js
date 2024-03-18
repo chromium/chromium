@@ -6,7 +6,7 @@ const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
 let loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(async function() {
-  var getURL = chrome.extension.getURL;
+  var getURL = chrome.runtime.getURL;
   let config = await promise(chrome.test.getConfig);
   let port = config.testServer.port;
   var URL_TEST = "http://127.0.0.1:" + port + "/test";

@@ -89,11 +89,11 @@ function main() {
   token = [].join.call(tokenArray);
 
   styleSheet = "<link rel='stylesheet' type='text/css' href='" +
-                   chrome.extension.getURL("style.css") + "'>";
+                   chrome.runtime.getURL("style.css") + "'>";
   frameScript = window.domAutomationController !== undefined ? "<script src='" +
-                    chrome.extension.getURL("test_support.js") +
+                    chrome.runtime.getURL("test_support.js") +
                     "'></" + "script>" : "";
-  frameScript += "<script src='" + chrome.extension.getURL("iframe.js") +
+  frameScript += "<script src='" + chrome.runtime.getURL("iframe.js") +
                      "'></" + "script>";
 
   // Now fetch the feed data.
@@ -131,7 +131,7 @@ function handleFeedParsingFailed(error) {
   var html = "<body><span id=\"error\" class=\"item_desc\">" + error +
                "</span></body>";
   if (window.domAutomationController) {
-    html += "<script src='" + chrome.extension.getURL("test_send_error.js") +
+    html += "<script src='" + chrome.runtime.getURL("test_send_error.js") +
                      "'></" + "script>";
   }
 

@@ -20,8 +20,8 @@ if (inServiceWorker) {
 }
 
 ready.then(async function() {
-  var URL = chrome.extension.getURL("a.html");
-  var URL_FRAMES = chrome.extension.getURL("b.html");
+  var URL = chrome.runtime.getURL("a.html");
+  var URL_FRAMES = chrome.runtime.getURL("b.html");
   let config = await promise(chrome.test.getConfig);
   let port = config.testServer.port;
   var processId = -1;

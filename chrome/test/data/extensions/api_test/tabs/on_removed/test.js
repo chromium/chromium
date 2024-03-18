@@ -61,7 +61,7 @@ function createWindow(tabUrls, winOptions, callback) {
 }
 
 function pageUrl(letter) {
-  return chrome.extension.getURL(letter + ".html");
+  return chrome.runtime.getURL(letter + ".html");
 }
 
 chrome.test.runTests([
