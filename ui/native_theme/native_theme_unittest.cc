@@ -5,6 +5,7 @@
 #include "ui/native_theme/native_theme.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui {
@@ -95,6 +96,20 @@ TEST(NativeThemeTest, TestColorProviderKeyForcedColors) {
 
   theme.set_page_colors(NativeTheme::PageColors::kDusk);
   EXPECT_EQ(theme.GetForcedColorsKey(), ColorProviderKey::ForcedColors::kNone);
+}
+
+TEST(NativeThemeTest, TestCaretBlinkInterval) {
+  TestNativeTheme theme;
+
+  EXPECT_EQ(base::Milliseconds(500), theme.GetCaretBlinkInterval());
+
+  base::TimeDelta new_interval = base::Milliseconds(42);
+  theme.set_caret_blink_interval(new_interval);
+  EXPECT_EQ(new_interval, theme.GetCaretBlinkInterval());
+
+  new_interval = base::Milliseconds(0);
+  theme.set_caret_blink_interval(new_interval);
+  EXPECT_EQ(new_interval, theme.GetCaretBlinkInterval());
 }
 
 }  // namespace ui

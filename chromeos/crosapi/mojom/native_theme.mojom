@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "ui/color/scheme_variant.mojom";
 
@@ -18,6 +19,9 @@ struct NativeThemeInfo {
   // Describes the algorithm used to generate the color palette based on
   // `seed_color`.
   [MinVersion=1] color.mojom.SchemeVariant? scheme_variant;
+  // The interval at which to blink the text caret. If 0, the caret will
+  // not blink. If not set, a system default will be used.
+  [MinVersion=2] mojo_base.mojom.TimeDelta? caret_blink_interval;
 };
 
 // Interface for native theme info observers. Implemented by lacros-chrome.

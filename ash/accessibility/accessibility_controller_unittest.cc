@@ -25,6 +25,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -52,6 +53,43 @@ class TestAccessibilityObserver : public AccessibilityObserver {
 
   int status_changed_count_ = 0;
 };
+
+class AccessibilityControllerDefaultCaretIntervalTest : public AshTestBase {
+ protected:
+  AccessibilityControllerDefaultCaretIntervalTest() = default;
+  AccessibilityControllerDefaultCaretIntervalTest(
+      const AccessibilityControllerDefaultCaretIntervalTest&) = delete;
+  AccessibilityControllerDefaultCaretIntervalTest& operator=(
+      const AccessibilityControllerDefaultCaretIntervalTest&) = delete;
+  ~AccessibilityControllerDefaultCaretIntervalTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kAccessibilityCaretBlinkIntervalSetting);
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AccessibilityControllerDefaultCaretIntervalTest,
+       DefaultCaretBlinkInterval) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  // The pref is not registered.
+  EXPECT_FALSE(prefs->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
+
+  auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
+  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+
+  // All NativeThemes use the default value.
+  base::TimeDelta default_interval = base::Milliseconds(500);
+  EXPECT_EQ(default_interval, native_theme_dark->GetCaretBlinkInterval());
+  EXPECT_EQ(default_interval, native_theme_web->GetCaretBlinkInterval());
+  EXPECT_EQ(default_interval, native_theme->GetCaretBlinkInterval());
+}
 
 class AccessibilityControllerTest : public AshTestBase {
  protected:
@@ -1564,6 +1602,30 @@ TEST_F(AccessibilityControllerTest, EnableOrToggleDictation) {
   ASSERT_TRUE(controller->dictation().enabled());
   ASSERT_FALSE(controller->dictation_active());
   ASSERT_FALSE(controller->IsDictationKeyboardDialogShowingForTesting());
+}
+
+TEST_F(AccessibilityControllerTest, ChangingPrefChangesCaretBlinkInterval) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  // Starts with default value.
+  EXPECT_EQ(prefs->GetInteger(prefs::kAccessibilityCaretBlinkInterval), 500);
+
+  auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
+  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+
+  base::TimeDelta expected_interval = base::Milliseconds(500);
+  EXPECT_EQ(expected_interval, native_theme_dark->GetCaretBlinkInterval());
+  EXPECT_EQ(expected_interval, native_theme_web->GetCaretBlinkInterval());
+  EXPECT_EQ(expected_interval, native_theme->GetCaretBlinkInterval());
+
+  // Native Themes should be updated.
+  prefs->SetInteger(prefs::kAccessibilityCaretBlinkInterval, 42);
+  expected_interval = base::Milliseconds(42);
+  EXPECT_EQ(expected_interval, native_theme_dark->GetCaretBlinkInterval());
+  EXPECT_EQ(expected_interval, native_theme_web->GetCaretBlinkInterval());
+  EXPECT_EQ(expected_interval, native_theme->GetCaretBlinkInterval());
 }
 
 class AccessibilityControllerDictationKeyboardImprovementsTest

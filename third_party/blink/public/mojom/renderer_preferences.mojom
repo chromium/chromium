@@ -65,8 +65,8 @@ struct RendererPreferences {
   bool browser_handles_all_top_level_requests = false;
 
   // Cursor blink rate.
-  // Currently only changed from default on Linux.  Uses |gtk-cursor-blink|
-  // from GtkSettings.
+  // On Linux, uses |gtk-cursor-blink| from GtkSettings.
+  // On platforms with views toolkit, uses the system value from ui::NativeTheme.
   // Note: Null |caret_blink_interval| should be interpreted as the default
   // value kDefaultCaretBlinkIntervalInMilliseconds.
   mojo_base.mojom.TimeDelta? caret_blink_interval;

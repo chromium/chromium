@@ -2488,9 +2488,17 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
   if (!::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
     return;
   }
-  // int caret_blink_interval =
-  //     active_user_prefs_->GetInteger(prefs::kAccessibilityCaretBlinkInterval);
-  // TODO(b:259374492): Update the native theme with the caret_blink_interval.
+  base::TimeDelta caret_blink_interval = base::Milliseconds(
+      active_user_prefs_->GetInteger(prefs::kAccessibilityCaretBlinkInterval));
+  auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
+  native_theme_dark->set_caret_blink_interval(caret_blink_interval);
+  native_theme_dark->NotifyOnNativeThemeUpdated();
+  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+  native_theme_web->set_caret_blink_interval(caret_blink_interval);
+  native_theme_web->NotifyOnNativeThemeUpdated();
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  native_theme->set_caret_blink_interval(caret_blink_interval);
+  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 void AccessibilityController::UpdateAccessibilityHighlightingFromPrefs() {

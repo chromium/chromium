@@ -586,6 +586,17 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                  float border_width,
                                  float zoom_level) const;
 
+  // Returns the rate at which the text caret should blink. If 0, the caret
+  // will not blink.
+  base::TimeDelta GetCaretBlinkInterval() const;
+
+  // Sets the rate at which the text caret should blink. Overrides any
+  // platform values.
+  void set_caret_blink_interval(
+      std::optional<base::TimeDelta> caret_blink_interval) {
+    caret_blink_interval_ = std::move(caret_blink_interval);
+  }
+
   // Whether high contrast is forced via command-line flag.
   static bool IsForcedHighContrast();
 
@@ -605,6 +616,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // or listeners with the webinstance in order to provide correct native
   // platform behaviors.
   virtual void ConfigureWebInstance() {}
+
+  // Gets the platform caret blink interval if it exists.
+  virtual std::optional<base::TimeDelta> GetPlatformCaretBlinkInterval() const;
 
   // Allows one native theme to observe changes in another. For example, the
   // web native theme for Windows observes the corresponding ui native theme in
@@ -657,6 +671,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   bool inverted_colors_ = false;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
+  std::optional<base::TimeDelta> caret_blink_interval_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

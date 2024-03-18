@@ -53,6 +53,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/selection_bound.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -96,7 +97,6 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "ui/base/cocoa/defaults_utils.h"
 #include "ui/base/cocoa/secure_password_input.h"
 #endif
 
@@ -204,21 +204,7 @@ const float kOpaque = 1.0;
 
 // static
 base::TimeDelta Textfield::GetCaretBlinkInterval() {
-#if BUILDFLAG(IS_WIN)
-  static const size_t system_value = ::GetCaretBlinkTime();
-  if (system_value != 0) {
-    return (system_value == INFINITE) ? base::TimeDelta()
-                                      : base::Milliseconds(system_value);
-  }
-#elif BUILDFLAG(IS_MAC)
-  // If there's insertion point flash rate info in NSUserDefaults, use the
-  // blink period derived from that.
-  std::optional<base::TimeDelta> system_value(
-      ui::TextInsertionCaretBlinkPeriodFromDefaults());
-  if (system_value)
-    return *system_value;
-#endif
-  return base::Milliseconds(500);
+  return ui::NativeTheme::GetInstanceForNativeUi()->GetCaretBlinkInterval();
 }
 
 // static

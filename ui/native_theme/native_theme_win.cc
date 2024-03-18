@@ -21,6 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/win/dark_mode_support.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
@@ -48,6 +49,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/native_theme.h"
 
 // This was removed from Winvers.h but is still used.
 #if !defined(COLOR_MENUHIGHLIGHT)
@@ -358,6 +360,16 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_system_colors(GetSystemColors());
   web_instance->set_should_use_system_accent_color(
       should_use_system_accent_color());
+}
+
+std::optional<base::TimeDelta> NativeThemeWin::GetPlatformCaretBlinkInterval()
+    const {
+  static const size_t system_value = ::GetCaretBlinkTime();
+  if (system_value != 0) {
+    return (system_value == INFINITE) ? base::TimeDelta()
+                                      : base::Milliseconds(system_value);
+  }
+  return std::nullopt;
 }
 
 NativeThemeWin::~NativeThemeWin() {
