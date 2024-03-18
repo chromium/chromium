@@ -303,6 +303,10 @@ BASE_FEATURE(kMultiTabOrganization,
              "MultiTabOrganization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabReorganization,
+             "TabReorganization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod{
     &kTabOrganization, "trigger_period", base::Hours(6)};
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/organization/logging_util.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -170,6 +171,9 @@ void PerformTabOrganizationExecution(
   if (request->base_tab_id().has_value()) {
     tab_organization_request.set_active_tab_id(request->base_tab_id().value());
   }
+
+  tab_organization_request.set_allow_reorganizing_existing_groups(
+      base::FeatureList::IsEnabled(features::kTabReorganization));
 
   OptimizationGuideKeyedService* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
