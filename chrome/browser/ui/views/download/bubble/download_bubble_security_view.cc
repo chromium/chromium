@@ -316,38 +316,6 @@ void DownloadBubbleSecurityView::UpdateIconAndText() {
   // Layout will stretch it back out into any additional space available.
   paragraphs_->SizeToFit(GetMinimumLabelWidth());
 
-  // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
-  if (info_->danger_type() == download::DownloadDangerType::
-                                  DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING ||
-      info_->danger_type() ==
-          download::DownloadDangerType::
-              DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING) {
-    std::u16string link_text =
-        info_->danger_type() ==
-                download::DownloadDangerType::
-                    DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING
-            ? l10n_util::GetStringUTF16(
-                  IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK)
-            : l10n_util::GetStringUTF16(
-                  IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK);
-    deep_scanning_link_->SetText(link_text);
-    gfx::Range link_range(0, link_text.length());
-    // Unretained is safe because `delegate_` outlives this, which owns
-    // `deep_scanning_link_`.
-    views::StyledLabel::RangeStyleInfo link_style =
-        views::StyledLabel::RangeStyleInfo::CreateForLink(
-            base::BindRepeating(&DownloadBubbleSecurityView::Delegate::
-                                    ProcessSecuritySubpageButtonPress,
-                                base::Unretained(delegate_), content_id(),
-                                DownloadCommands::LEARN_MORE_SCANNING));
-    deep_scanning_link_->AddStyleRange(link_range, link_style);
-    deep_scanning_link_->SetVisible(true);
-    deep_scanning_link_->SizeToFit(GetMinimumLabelWidth());
-    deep_scanning_link_->PreferredSizeChanged();
-  } else {
-    deep_scanning_link_->SetVisible(false);
-  }
-
   if (info_->learn_more_link()) {
     learn_more_link_->SetText(info_->learn_more_link()->label_and_link_text);
     size_t link_start_offset =
@@ -447,16 +415,6 @@ void DownloadBubbleSecurityView::AddIconAndContents() {
                               GetLayoutInsets(DOWNLOAD_ICON).top() -
                               paragraphs_->GetLineHeight() / 2));
   }
-
-  // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
-  deep_scanning_link_ =
-      wrapper->AddChildView(std::make_unique<views::StyledLabel>());
-  deep_scanning_link_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  deep_scanning_link_->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
-  // `deep_scanning_link_` is after `paragraphs_`, and we should have the
-  // paragraph spacing between them.
-  deep_scanning_link_->SetProperty(
-      views::kMarginsKey, gfx::Insets().set_top(kAfterParagraphSpacing));
 
   learn_more_link_ =
       wrapper->AddChildView(std::make_unique<views::StyledLabel>());
@@ -731,7 +689,6 @@ void DownloadBubbleSecurityView::ClearWideFields() {
   secondary_styled_label_->PreferredSizeChanged();
 
   title_->SetText(std::u16string());
-  deep_scanning_link_->SetText(std::u16string());
 
   PreferredSizeChanged();
 }

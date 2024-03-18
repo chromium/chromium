@@ -398,6 +398,9 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
       PopulateSecondarySubpageButton(
           l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_OPEN_UPDATED),
           DownloadCommands::Command::BYPASS_DEEP_SCANNING);
+      PopulateLearnMoreLink(l10n_util::GetStringUTF16(
+                                IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK),
+                            DownloadCommands::LEARN_MORE_SCANNING);
       return;
     }
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING: {
@@ -419,6 +422,10 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
           l10n_util::GetStringUTF16(
               IDS_DOWNLOAD_BUBBLE_BYPASS_LOCAL_DECRYPTION),
           DownloadCommands::Command::KEEP);
+      PopulateLearnMoreLink(
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK),
+          DownloadCommands::LEARN_MORE_SCANNING);
       return;
     }
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
@@ -439,6 +446,10 @@ void DownloadBubbleSecurityViewInfo::PopulateForInProgressOrComplete(
             l10n_util::GetStringUTF16(
                 IDS_DOWNLOAD_BUBBLE_SUBPAGE_IMMEDIATE_DEEP_SCAN_BYPASS),
             DownloadCommands::Command::BYPASS_DEEP_SCANNING);
+        PopulateLearnMoreLink(
+            l10n_util::GetStringUTF16(
+                IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK),
+            DownloadCommands::LEARN_MORE_SCANNING);
       } else {
         warning_summary_ = l10n_util::GetStringUTF16(
             IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING);
