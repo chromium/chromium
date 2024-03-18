@@ -2444,6 +2444,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool cross_origin_exposed) override;
   void DisableUntrustedNetworkInFencedFrame(
       DisableUntrustedNetworkInFencedFrameCallback callback) override;
+  void ExemptUrlFromNetworkRevocationForTesting(
+      const GURL& exempted_url,
+      ExemptUrlFromNetworkRevocationForTestingCallback callback) override;
   void SendLegacyTechEvent(
       const std::string& type,
       blink::mojom::LegacyTechEventCodeLocationPtr code_location) override;
@@ -4119,6 +4122,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // media stream. Called when this render frame is deleted or when the process
   // is gone.
   void CleanUpMediaStreams();
+
+  // Mark network as having been disabled for `nonce` in the active fenced frame
+  // properties once it was disabled in the network service, and resolve the
+  // `callback` which came from the window.fence.disableUntrustedNetwork call.
+  void RevokeNetworkForNonceCallback(
+      base::UnguessableToken nonce,
+      DisableUntrustedNetworkInFencedFrameCallback callback);
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

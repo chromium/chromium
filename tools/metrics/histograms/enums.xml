@@ -3216,6 +3216,7 @@ Called by update_net_error_codes.py.-->
   <int value="-102" label="CONNECTION_REFUSED"/>
   <int value="-101" label="CONNECTION_RESET"/>
   <int value="-100" label="CONNECTION_CLOSED"/>
+  <int value="-33" label="NETWORK_ACCESS_REVOKED"/>
   <int value="-32" label="BLOCKED_BY_ORB"/>
   <int value="-31" label="H2_OR_QUIC_REQUIRED"/>
   <int value="-30" label="BLOCKED_BY_CSP"/>
@@ -27078,6 +27079,7 @@ Called by update_net_error_codes.py.-->
   <int value="30" label="BLOCKED_BY_CSP"/>
   <int value="31" label="H2_OR_QUIC_REQUIRED"/>
   <int value="32" label="BLOCKED_BY_ORB"/>
+  <int value="33" label="NETWORK_ACCESS_REVOKED"/>
   <int value="100" label="CONNECTION_CLOSED"/>
   <int value="101" label="CONNECTION_RESET"/>
   <int value="102" label="CONNECTION_REFUSED"/>

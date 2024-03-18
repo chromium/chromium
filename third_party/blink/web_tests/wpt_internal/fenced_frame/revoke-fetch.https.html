@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Test that window.fence.disableUntrustedNetwork disables
+  the Fetch API.</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+
+promise_test(async(t) => {
+  const fencedframe = await attachFencedFrameContext();
+  const destination_url = new URL('resources/dummy.html', location.href);
+  await fencedframe.execute(async (destination_url) => {
+    const response_success = await fetch(destination_url);
+    await window.fence.disableUntrustedNetwork();
+    try {
+      const response_failure = await fetch(destination_url);
+      assert_unreached('The fetch should throw an exception.');
+    } catch (e) {
+      assert_equals(e.name, 'TypeError');
+      assert_equals(e.message, 'Failed to fetch');
+    }
+  }, [destination_url]);
+}, 'window.fence.disableUntrustedNetwork disables the Fetch API');
+
+</script>
+</body>
+

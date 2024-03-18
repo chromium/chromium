@@ -526,6 +526,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const scoped_refptr<net::X509Certificate>& certificate) override;
   void SetCookieDeprecationLabel(
       const std::optional<std::string>& label) override;
+  void RevokeNetworkForNonce(const base::UnguessableToken& nonce,
+                             RevokeNetworkForNonceCallback callback) override;
+  void ExemptUrlFromNetworkRevocationForNonce(
+      const GURL& exempted_url,
+      const base::UnguessableToken& nonce,
+      ExemptUrlFromNetworkRevocationForNonceCallback callback) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);
@@ -652,6 +658,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void OnEndpointsUpdatedForOrigin(
       const std::vector<net::ReportingEndpoint>& endpoints) override;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+  // Checks whether network access for the partition nonce `nonce` and url
+  // `url` is allowed. See `network_revocation_nonces_` and
+  // `network_revocation_exemptions_`.
+  bool IsNetworkForNonceAndUrlAllowed(const base::UnguessableToken& nonce,
+                                      const GURL& url) const;
 
  private:
   class NetworkContextHttpAuthPreferences : public net::HttpAuthPreferences {
@@ -967,6 +979,21 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   scoped_refptr<MojoBackendFileOperationsFactory>
       http_cache_file_operations_factory_;
+
+  // A data structure that tracks partition nonces whose network requests
+  // should be blocked, for fenced frames network revocation.
+  // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md#revoking-network-access
+  // New nonces are inserted by `RevokeNetworkForNonce`,
+  // and membership is checked with `IsNetworkForNonceAndUrlAllowed`.
+  std::set<base::UnguessableToken> network_revocation_nonces_;
+
+  // A data structure that tracks urls that should be exempted from network
+  // revocation, to facilitate testing.
+  // New urls are inserted by
+  // `ExemptUrlFromNetworkRevocationForNonce`
+  // and membership is checked with `IsNetworkForNonceAndUrlAllowed`.
+  std::map<base::UnguessableToken, std::set<GURL>>
+      network_revocation_exemptions_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

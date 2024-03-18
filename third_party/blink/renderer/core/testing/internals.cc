@@ -4050,4 +4050,38 @@ ScriptPromiseTyped<IDLString> Internals::LCPPrediction(
   return promise;
 }
 
+ScriptPromise Internals::exemptUrlFromNetworkRevocation(
+    ScriptState* script_state,
+    const String& url) {
+  if (!blink::features::IsFencedFramesEnabled()) {
+    return ScriptPromise();
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    return ScriptPromise();
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kExemptUrlFromNetworkRevocationForTesting)) {
+    return ScriptPromise();
+  }
+  if (!GetFrame()) {
+    return ScriptPromise();
+  }
+  LocalFrame* frame = GetFrame();
+  DCHECK(frame->GetDocument());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  frame->GetLocalFrameHostRemote().ExemptUrlFromNetworkRevocationForTesting(
+      url_test_helpers::ToKURL(url.Utf8()),
+      resolver->WrapCallbackInScriptScope(
+          WTF::BindOnce(&Internals::ExemptUrlFromNetworkRevocationComplete,
+                        WrapPersistent(this))));
+  return promise;
+}
+
+void Internals::ExemptUrlFromNetworkRevocationComplete(
+    ScriptPromiseResolver* resolver) {
+  resolver->Resolve();
+}
+
 }  // namespace blink

@@ -640,6 +640,8 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromiseTyped<IDLString> LCPPrediction(ScriptState*, Document* document);
 
+  ScriptPromise exemptUrlFromNetworkRevocation(ScriptState*, const String& url);
+
  private:
   Document* ContextDocument() const;
   Vector<String> IconURLs(Document*, int icon_types_mask) const;
@@ -658,6 +660,8 @@ class Internals final : public ScriptWrappable {
                            ExceptionState&);
   void ResolveResourcePriority(ScriptPromiseResolverTyped<IDLLong>*,
                                int resource_load_priority);
+  void ExemptUrlFromNetworkRevocationComplete(ScriptPromiseResolver* resolver);
+
   Member<InternalRuntimeFlags> runtime_flags_;
   Member<Document> document_;
   std::optional<ColorSchemeHelper> color_scheme_helper_;

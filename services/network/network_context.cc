@@ -3027,4 +3027,44 @@ void NetworkContext::SetCookieDeprecationLabel(
   url_request_context_->set_cookie_deprecation_label(label);
 }
 
+void NetworkContext::RevokeNetworkForNonce(
+    const base::UnguessableToken& nonce,
+    RevokeNetworkForNonceCallback callback) {
+  network_revocation_nonces_.insert(nonce);
+  // TODO(crbug.com/41488151): Cancel requests in progress.
+  std::move(callback).Run();
+}
+
+void NetworkContext::ExemptUrlFromNetworkRevocationForNonce(
+    const GURL& exempted_url,
+    const base::UnguessableToken& nonce,
+    ExemptUrlFromNetworkRevocationForNonceCallback callback) {
+  GURL url_without_filename = exempted_url.GetWithoutFilename();
+  if (network_revocation_exemptions_.contains(nonce)) {
+    network_revocation_exemptions_.find(nonce)->second.insert(
+        url_without_filename);
+  } else {
+    network_revocation_exemptions_.insert({nonce, {url_without_filename}});
+  }
+  std::move(callback).Run();
+}
+
+bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
+    const base::UnguessableToken& nonce,
+    const GURL& url) const {
+  // If network hasn't been revoked for the nonce, it's allowed.
+  if (!network_revocation_nonces_.contains(nonce)) {
+    return true;
+  }
+  // If network has been revoked for the nonce, but the url is exempted, it's
+  // allowed.
+  if (network_revocation_exemptions_.contains(nonce) &&
+      network_revocation_exemptions_.find(nonce)->second.contains(
+          url.GetWithoutFilename())) {
+    return true;
+  }
+  // The nonce was revoked and the url isn't exempted.
+  return false;
+}
+
 }  // namespace network

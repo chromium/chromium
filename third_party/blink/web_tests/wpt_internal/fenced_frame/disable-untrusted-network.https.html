@@ -19,13 +19,6 @@ promise_test(async(t) => {
       await promise;
     });
 
-    const same_origin_iframe = await attachIFrameContext();
-    await same_origin_iframe.execute(async () => {
-      const promise = window.fence.disableUntrustedNetwork();
-      assert_true(typeof promise.then != 'undefined');
-      await promise;
-    });
-
     const cross_origin_iframe = await attachIFrameContext({
         origin: get_host_info().HTTPS_REMOTE_ORIGIN});
     await cross_origin_iframe.execute(async () => {
@@ -40,6 +33,13 @@ promise_test(async(t) => {
       }
     });
 
+    const same_origin_iframe = await attachIFrameContext();
+    await same_origin_iframe.execute(async () => {
+      const promise = window.fence.disableUntrustedNetwork();
+      assert_true(typeof promise.then != 'undefined');
+      await promise;
+    });
+
     const promise = window.fence.disableUntrustedNetwork();
     assert_true(typeof promise.then != 'undefined');
     await promise;
@@ -47,3 +47,4 @@ promise_test(async(t) => {
 }, 'window.fence.disableUntrustedNetwork availability');
 </script>
 </body>
+

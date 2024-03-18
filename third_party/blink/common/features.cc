@@ -944,10 +944,16 @@ BASE_FEATURE(kFencedFramesAutomaticBeaconCredentials,
              "FencedFramesAutomaticBeaconCredentials",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls functionality related to network revocation/local unpartitioned data
-// access in fenced frames.
+// Controls functionality related to network revocation/local unpartitioned
+// data access in fenced frames.
 BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
              "FencedFramesLocalUnpartitionedDataAccess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls access to an API to exempt certain URLs from fenced frame
+// network revocation to facilitate testing.
+BASE_FEATURE(kExemptUrlFromNetworkRevocationForTesting,
+             "ExemptUrlFromNetworkRevocationForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use "style" and "json" destinations for CSS and JSON modules.

@@ -26,6 +26,10 @@ function getRemoteContextURL(origin) {
   return new URL(REMOTE_EXECUTOR_URL, origin);
 }
 
+function getRemoteContextDispatcherURL(origin) {
+  return new URL(dispatcher_path, origin);
+}
+
 async function runSelectRawURL(href, resolve_to_config = false) {
   try {
     await sharedStorage.worklet.addModule(
@@ -192,13 +196,14 @@ function getRemoteOriginURL(url, https=true) {
 }
 
 // Builds a URL to be used as a remote context executor.
-function generateRemoteContextURL(headers, origin) {
+async function generateRemoteContextURL(headers, origin) {
   // Generate the unique id for the parent/child channel.
   const uuid = token();
+  const effective_origin = origin ? origin : location.origin;
 
   // Use the absolute path of the remote context executor source file, so that
   // nested contexts will work.
-  const url = getRemoteContextURL(origin ? origin : location.origin);
+  const url = getRemoteContextURL(effective_origin);
   url.searchParams.append('uuid', uuid);
 
   // Add the header to allow loading in a fenced frame.
@@ -213,6 +218,12 @@ function generateRemoteContextURL(headers, origin) {
     return `header(${escape(header[0])}, ${escape(header[1])})`;
   });
   url.searchParams.append('pipe', formatted_headers.join('|'));
+
+  // Exempt the remote context dispatcher URL from network revocation, so RPC
+  // execution will still work to orchestrate tests after network is revoked.
+  const remote_context_dispatcher_url =
+      getRemoteContextDispatcherURL(effective_origin) + `?uuid=${uuid}`;
+  await window.internals.exemptUrlFromNetworkRevocation(remote_context_dispatcher_url);
 
   return [uuid, url];
 }
@@ -249,6 +260,11 @@ function buildRemoteContextForObject(object, uuid, html) {
     }
   };
 
+  // If `object` is null (e.g. a window created with noopener), set it to a
+  // dummy value so that the Proxy constructor won't fail.
+  if (object == null) {
+    object = {};
+  }
   const proxy = new Proxy(object, handler);
   return proxy;
 }
@@ -259,8 +275,8 @@ function buildRemoteContextForObject(object, uuid, html) {
 // then resolves to the RemoteContext if the property isn't found.
 // The proxy also has an extra attribute `execute`, which is an alias for the
 // remote context's `execute_script(fn, args=[])`.
-function attachContext(object_constructor, html, headers, origin) {
-  const [uuid, url] = generateRemoteContextURL(headers, origin);
+async function attachContext(object_constructor, html, headers, origin) {
+  const [uuid, url] = await generateRemoteContextURL(headers, origin);
   const object = object_constructor(url);
   return buildRemoteContextForObject(object, uuid, html);
 }
@@ -274,7 +290,7 @@ function attachContext(object_constructor, html, headers, origin) {
 async function attachOpaqueContext(
     generator_api, resolve_to_config, ad_with_size, requested_size,
     automatic_beacon, object_constructor, html, headers, origin) {
-  const [uuid, url] = generateRemoteContextURL(headers, origin);
+  const [uuid, url] = await generateRemoteContextURL(headers, origin);
   const id = await (
       generator_api == 'fledge' ?
           generateURNFromFledge(

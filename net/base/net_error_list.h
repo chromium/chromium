@@ -127,6 +127,10 @@ NET_ERROR(H2_OR_QUIC_REQUIRED, -31)
 // The request was blocked by CORB or ORB.
 NET_ERROR(BLOCKED_BY_ORB, -32)
 
+// The request was blocked because it originated from a frame that has disabled
+// network access.
+NET_ERROR(NETWORK_ACCESS_REVOKED, -33)
+
 // A connection was closed (corresponding to a TCP FIN).
 NET_ERROR(CONNECTION_CLOSED, -100)
 

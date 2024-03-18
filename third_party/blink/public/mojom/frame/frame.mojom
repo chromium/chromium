@@ -665,6 +665,12 @@ interface LocalFrameHost {
   // the future) and gain access to unpartitioned storage.
   DisableUntrustedNetworkInFencedFrame() => ();
 
+  // A test-only IPC to exempt `exempted_url` from fenced frames network
+  // revocation immediately above (`DisableUntrustedNetworkInFencedFrame`).
+  // Used primarily to exempt the fenced frames remote context executor pattern
+  // in WPT from network revocation.
+  ExemptUrlFromNetworkRevocationForTesting(url.mojom.Url exempted_url) => ();
+
   // Notify the browser that there is a legacy technology used by the page.
   // The event contains the technology `type` and code location from the
   // ExecutionContext.

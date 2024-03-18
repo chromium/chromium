@@ -189,6 +189,9 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       bool cross_origin_exposed) override;
   void DisableUntrustedNetworkInFencedFrame(
       DisableUntrustedNetworkInFencedFrameCallback callback) override;
+  void ExemptUrlFromNetworkRevocationForTesting(
+      const blink::KURL& exempted_url,
+      ExemptUrlFromNetworkRevocationForTestingCallback callback) override;
   void SendLegacyTechEvent(
       const WTF::String& type,
       mojom::blink::LegacyTechEventCodeLocationPtr code_location) override;

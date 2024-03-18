@@ -9,7 +9,7 @@
 <body></body>
 <script>
 promise_test(async () => {
-  const frame = attachFencedFrameContext();
+  const frame = await attachFencedFrameContext();
 
   let audioSuspended = await frame.execute(async () => {
     internals.settings.setAutoplayPolicy('user-gesture-required');

@@ -373,17 +373,30 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
       factory_override_ ? factory_override_->get()
                         : network_loader_factory_.get();
   DCHECK(inner_url_loader_factory);
+
+  const net::IsolationInfo* isolation_info_ptr = &isolation_info_;
+  auto isolation_info = URLLoader::GetIsolationInfo(
+      isolation_info_, automatically_assign_isolation_info_, resource_request);
+  if (isolation_info.has_value()) {
+    isolation_info_ptr = &isolation_info.value();
+  }
+
+  // Check if the initiator's network access has been revoked.
+  // This check is only relevant if there is a partition nonce in the
+  // isolation info. (All requests originating from a fenced frame have a
+  // nonce specified.)
+  if (isolation_info.has_value() && isolation_info->nonce().has_value() &&
+      !context_->IsNetworkForNonceAndUrlAllowed(*isolation_info->nonce(),
+                                                resource_request.url)) {
+    mojo::Remote<mojom::URLLoaderClient>(std::move(client))
+        ->OnComplete(
+            URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED));
+    return;
+  }
+
   if (!disable_web_security_) {
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer =
         GetDevToolsObserver(resource_request);
-
-    const net::IsolationInfo* isolation_info_ptr = &isolation_info_;
-    auto isolation_info = URLLoader::GetIsolationInfo(
-        isolation_info_, automatically_assign_isolation_info_,
-        resource_request);
-    if (isolation_info) {
-      isolation_info_ptr = &isolation_info.value();
-    }
 
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage =
         shared_dictionary_storage_;

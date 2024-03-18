@@ -30,7 +30,7 @@ promise_test(async(t) => {
     // After disabling network, popup navigations should not work.
     assert_true(navigator.userActivation.isActive,
                 'The frame should have user activation.');
-    window.popup = attachWindowContext();
+    window.popup = await attachWindowContext();
   });
 
   const result = await Promise.race([

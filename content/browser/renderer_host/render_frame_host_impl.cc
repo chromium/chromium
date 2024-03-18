@@ -9166,8 +9166,78 @@ void RenderFrameHostImpl::DisableUntrustedNetworkInFencedFrame(
     return;
   }
 
-  properties->DisableUntrustedNetwork();
+  // Register the nonce in the network service's data structure to deny network
+  // access.
+  CHECK(properties->partition_nonce().has_value());
+  StoragePartition* storage_partition = GetStoragePartition();
+  // TODO(crbug.com/41488151): Audit all existing transient IsolationInfo
+  // constructors to ensure that they are tagged with the relevant partition
+  // nonce.
+  storage_partition->GetNetworkContext()->RevokeNetworkForNonce(
+      properties->partition_nonce()->GetValueIgnoringVisibility(),
+      base::BindOnce(
+          &RenderFrameHostImpl::RevokeNetworkForNonceCallback,
+          weak_ptr_factory_.GetWeakPtr(),
+          properties->partition_nonce()->GetValueIgnoringVisibility(),
+          std::move(callback)));
+}
+
+void RenderFrameHostImpl::RevokeNetworkForNonceCallback(
+    base::UnguessableToken nonce,
+    DisableUntrustedNetworkInFencedFrameCallback callback) {
+  std::optional<FencedFrameProperties>& properties =
+      frame_tree_node_->GetFencedFrameProperties();
+  // If the revoked nonce no longer corresponds to an active fenced frame tree
+  // due to timing, do nothing.
+  // TODO(https://crbug.com/936696): After enabling RenderDocument fully, this
+  // condition and the `nonce` argument to the callback can be removed.
+  if (!properties.has_value() || !properties->partition_nonce().has_value() ||
+      properties->partition_nonce()->GetValueIgnoringVisibility() != nonce) {
+    std::move(callback).Run();
+    return;
+  }
+  // Now that the nonce has been revoked, mark the fenced frame tree's network
+  // as having been disabled in the fenced frame properties.
+  properties->MarkUntrustedNetworkDisabled();
   std::move(callback).Run();
+}
+
+void RenderFrameHostImpl::ExemptUrlFromNetworkRevocationForTesting(
+    const GURL& exempted_url,
+    ExemptUrlFromNetworkRevocationForTestingCallback callback) {
+  if (!blink::features::IsFencedFramesEnabled()) {
+    mojo::ReportBadMessage(
+        "DisableUntrustedNetworkInFencedFrame() received while "
+        "fenced frames not enabled.");
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
+    mojo::ReportBadMessage(
+        "DisableUntrustedNetworkInFencedFrame() received while "
+        "FencedFramesLocalUnpartitionedDataAccess not enabled.");
+    return;
+  }
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kExemptUrlFromNetworkRevocationForTesting)) {
+    mojo::ReportBadMessage(
+        "DisableUntrustedNetworkInFencedFrame() received while "
+        "ExemptUrlFromNetworkRevocationForTesting not enabled.");
+    return;
+  }
+
+  std::optional<FencedFrameProperties>& properties =
+      frame_tree_node_->GetFencedFrameProperties();
+  if (!properties.has_value() || !properties->partition_nonce().has_value()) {
+    std::move(callback).Run();
+    return;
+  }
+  GetStoragePartition()
+      ->GetNetworkContext()
+      ->ExemptUrlFromNetworkRevocationForNonce(
+          exempted_url,
+          properties->partition_nonce()->GetValueIgnoringVisibility(),
+          std::move(callback));
 }
 
 void RenderFrameHostImpl::OnViewTransitionOptInChanged(

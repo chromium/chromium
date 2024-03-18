@@ -274,6 +274,12 @@ void FakeLocalFrameHost::DisableUntrustedNetworkInFencedFrame(
   std::move(callback).Run();
 }
 
+void FakeLocalFrameHost::ExemptUrlFromNetworkRevocationForTesting(
+    const blink::KURL& exempted_url,
+    ExemptUrlFromNetworkRevocationForTestingCallback callback) {
+  std::move(callback).Run();
+}
+
 void FakeLocalFrameHost::SendLegacyTechEvent(
     const WTF::String& type,
     mojom::blink::LegacyTechEventCodeLocationPtr code_location) {}

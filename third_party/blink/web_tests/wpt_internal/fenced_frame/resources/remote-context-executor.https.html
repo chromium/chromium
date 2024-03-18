@@ -21,6 +21,13 @@ window.addEventListener("load", async () => {
     await new Promise(resolve => requestAnimationFrame(resolve));
   }
 
+  // Exempt the remote context dispatch server from network revocation,
+  // so that you can continue to control fenced frames after network is
+  // disabled.
+  const remote_context_dispatcher_url = dispatcher_url + `?uuid=${uuid}`;
+  await window.internals.exemptUrlFromNetworkRevocation(
+      remote_context_dispatcher_url);
+
   // Create a RemoteContext Executor, which will wait in the background
   // for scripts to execute.
   window.executor = new Executor(uuid);
