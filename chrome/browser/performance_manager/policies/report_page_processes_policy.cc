@@ -199,13 +199,6 @@ void ReportPageProcessesPolicy::ListPageProcesses(
   base::flat_map<base::ProcessId, PageState> current_pages;
 
   for (auto candidate : candidates) {
-    // Marked tabs are ones that were previously attempted to be discarded. Do
-    // not include their processes with the process list reported to resourced
-    // since the cannot be discarded again.
-    if (candidate.is_marked()) {
-      continue;
-    }
-
     base::flat_set<const ProcessNode*> processes =
         GraphOperations::GetAssociatedProcessNodes(candidate.page_node());
     for (auto* process : processes) {

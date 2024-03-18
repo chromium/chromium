@@ -887,12 +887,6 @@ void TabManagerDelegate::ListProcesses() {
 
   std::vector<ash::ResourcedClient::Process> processes;
   for (LifecycleUnit* lifecycle_unit : GetLifecycleUnits()) {
-    // Do not report tabs that have already been discarded since their memory
-    // cannot be freed again.
-    if (lifecycle_unit->GetState() == LifecycleUnitState::DISCARDED) {
-      continue;
-    }
-
     base::ProcessHandle pid = lifecycle_unit->GetProcessHandle();
     // lifecycle_units contains entries for already-discarded tabs. If the pid
     // is zero, we don't need to report it.

@@ -518,27 +518,6 @@ TEST_F(TabManagerDelegateTest, ReportProcesses) {
   EXPECT_EQ(processes[5].is_focused, true);
 }
 
-TEST_F(TabManagerDelegateTest, TestDiscardedTabsAreNotReported) {
-  MockTabManagerDelegate tab_manager_delegate;
-
-  // Tab list:
-  // tab1    pid: 11
-  // tab2    pid: 12, discarded
-
-  TestLifecycleUnit tab1(base::TimeTicks(), 11);
-  tab_manager_delegate.AddLifecycleUnit(&tab1);
-  TestLifecycleUnit tab2(base::TimeTicks(), 12);
-  tab2.SetState(LifecycleUnitState::DISCARDED,
-                LifecycleUnitStateChangeReason::BROWSER_INITIATED);
-  tab_manager_delegate.AddLifecycleUnit(&tab2);
-
-  tab_manager_delegate.ListProcesses();
-
-  auto processes = tab_manager_delegate.GetReportedProcesses();
-  ASSERT_EQ(processes.size(), 1u);
-  EXPECT_EQ(processes[0].pid, 11);
-}
-
 TEST_F(TabManagerDelegateTest, TestTargetMemoryToFreeIsRespected) {
   // Not owned.
   MockMemoryStat* memory_stat = new MockMemoryStat();

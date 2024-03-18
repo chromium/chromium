@@ -65,7 +65,6 @@ class PageNodeSortProxy {
         last_visible_(last_visible) {}
 
   const PageNode* page_node() const { return page_node_; }
-  bool is_marked() const { return is_marked_; }
   bool is_protected() const { return is_protected_; }
   bool is_visible() const { return is_visible_; }
   bool is_focused() const { return is_focused_; }
