@@ -26,9 +26,8 @@ bool PickerSearchResult::SymbolData::operator==(
 bool PickerSearchResult::EmoticonData::operator==(
     const PickerSearchResult::EmoticonData&) const = default;
 
-PickerSearchResult::ClipboardData::ClipboardData(
-    const std::vector<uint8_t>& png)
-    : png(png) {}
+PickerSearchResult::ClipboardData::ClipboardData(base::UnguessableToken item_id)
+    : item_id(item_id) {}
 
 PickerSearchResult::ClipboardData::ClipboardData(
     const PickerSearchResult::ClipboardData&) = default;
@@ -106,8 +105,8 @@ PickerSearchResult PickerSearchResult::Emoticon(std::u16string_view emoticon) {
 }
 
 PickerSearchResult PickerSearchResult::Clipboard(
-    const std::vector<uint8_t>& png) {
-  return PickerSearchResult(ClipboardData(png));
+    base::UnguessableToken item_id) {
+  return PickerSearchResult(ClipboardData(item_id));
 }
 
 PickerSearchResult PickerSearchResult::Gif(const GURL& preview_url,

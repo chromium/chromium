@@ -6,8 +6,12 @@
 
 #include <string>
 
+#include "ash/clipboard/clipboard_history_controller_impl.h"
+#include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_test_util.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
@@ -15,10 +19,12 @@
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/input_method.h"
@@ -28,6 +34,53 @@
 
 namespace ash {
 namespace {
+
+bool CopyTextToClipboard() {
+  base::test::TestFuture<bool> copy_confirmed_future;
+  Shell::Get()
+      ->clipboard_history_controller()
+      ->set_confirmed_operation_callback_for_test(
+          copy_confirmed_future.GetRepeatingCallback());
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"test");
+  }
+  return copy_confirmed_future.Take();
+}
+
+std::optional<base::UnguessableToken> GetFirstClipboardItemId() {
+  base::test::TestFuture<std::vector<ClipboardHistoryItem>> future;
+  auto* controller = ClipboardHistoryController::Get();
+  controller->GetHistoryValues(future.GetCallback());
+
+  std::vector<ClipboardHistoryItem> items = future.Take();
+  return items.empty() ? std::nullopt : std::make_optional(items.front().id());
+}
+
+class ClipboardPasteWaiter : public ClipboardHistoryController::Observer {
+ public:
+  ClipboardPasteWaiter() {
+    observation_.Observe(ClipboardHistoryController::Get());
+  }
+
+  void Wait() {
+    if (observation_.IsObserving()) {
+      run_loop_.Run();
+    }
+  }
+
+  // ClipboardHistoryController::Observer:
+  void OnClipboardHistoryPasted() override {
+    observation_.Reset();
+    run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ClipboardHistoryController,
+                          ClipboardHistoryController::Observer>
+      observation_{this};
+};
 
 class PickerControllerTest : public AshTestBase {
  public:
@@ -165,22 +218,23 @@ TEST_F(PickerControllerTest, InsertTextResultInsertsIntoInputFieldAfterFocus) {
 }
 
 TEST_F(PickerControllerTest,
-       InsertClipboardResultInsertsIntoInputFieldAfterFocus) {
+       InsertClipboardResultPastesIntoInputFieldAfterFocus) {
   PickerController controller;
   TestPickerClient client(&controller);
   controller.ToggleWidget();
-  auto* input_method =
-      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ASSERT_TRUE(CopyTextToClipboard());
+  std::optional<base::UnguessableToken> clipboard_item_id =
+      GetFirstClipboardItemId();
+  ASSERT_TRUE(clipboard_item_id.has_value());
 
-  controller.InsertResultOnNextFocus(PickerSearchResult::Clipboard({1, 2, 3}));
+  controller.InsertResultOnNextFocus(
+      PickerSearchResult::Clipboard(*clipboard_item_id));
   controller.widget_for_testing()->CloseNow();
-  ui::FakeTextInputClient input_field(
-      input_method,
-      {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
-  input_method->SetFocusedTextInputClient(&input_field);
+  ClipboardPasteWaiter waiter;
+  // Create a new to focus on.
+  auto new_widget = CreateFramelessTestWidget();
 
-  EXPECT_EQ(input_field.last_inserted_image_url(),
-            GURL("data:image/png;base64,AQID"));
+  waiter.Wait();
 }
 
 TEST_F(PickerControllerTest, InsertGifResultInsertsIntoInputFieldAfterFocus) {

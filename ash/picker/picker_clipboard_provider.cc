@@ -48,7 +48,7 @@ void PickerClipboardProvider::OnFetchHistory(
     }
     if (item.display_format() ==
         crosapi::mojom::ClipboardHistoryDisplayFormat::kText) {
-      auto result = PickerSearchResult::Text(item.display_text());
+      auto result = PickerSearchResult::Clipboard(item.id());
       auto item_view = std::make_unique<PickerListItemView>(
           base::BindRepeating(select_result_callback_, result));
       item_view->SetPrimaryText(item.display_text());
@@ -64,7 +64,7 @@ void PickerClipboardProvider::OnFetchHistory(
       if (!png_opt.has_value() || !item.display_image().has_value()) {
         continue;
       }
-      auto result = PickerSearchResult::Clipboard(*png_opt);
+      auto result = PickerSearchResult::Clipboard(item.id());
       auto item_view = std::make_unique<PickerListItemView>(
           base::BindRepeating(select_result_callback_, result));
       item_view->SetPrimaryImage(

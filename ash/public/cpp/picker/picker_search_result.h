@@ -13,6 +13,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "base/files/file_path.h"
+#include "base/unguessable_token.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -48,10 +49,10 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   };
 
   struct ClipboardData {
-    // TODO: b/329309518 - Use clipboard item IDs.
-    std::vector<uint8_t> png;
+    // Unique ID that specifies which item in the clipboard this refers to.
+    base::UnguessableToken item_id;
 
-    ClipboardData(const std::vector<uint8_t>& png);
+    ClipboardData(base::UnguessableToken item_id);
     ClipboardData(const ClipboardData&);
     ClipboardData& operator=(const ClipboardData&);
     ~ClipboardData();
@@ -144,7 +145,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   static PickerSearchResult Emoji(std::u16string_view emoji);
   static PickerSearchResult Symbol(std::u16string_view symbol);
   static PickerSearchResult Emoticon(std::u16string_view emoticon);
-  static PickerSearchResult Clipboard(const std::vector<uint8_t>& png);
+  static PickerSearchResult Clipboard(base::UnguessableToken item_id);
   static PickerSearchResult Gif(const GURL& preview_url,
                                 const GURL& preview_image_url,
                                 const gfx::Size& preview_dimensions,

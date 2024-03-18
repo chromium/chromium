@@ -96,15 +96,17 @@ TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
 }
 
 TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
+  base::UnguessableToken item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
-
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(
-          [](ClipboardHistoryController::GetHistoryValuesCallback callback) {
+          [&item_id](
+              ClipboardHistoryController::GetHistoryValuesCallback callback) {
             ClipboardHistoryItemBuilder builder;
             builder.SetFormat(ui::ClipboardInternalFormat::kText);
-            builder.SetText("xyz");
-            std::move(callback).Run({builder.Build()});
+            ClipboardHistoryItem item = builder.Build();
+            item_id = item.id();
+            std::move(callback).Run({std::move(item)});
           });
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
@@ -121,7 +123,7 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
 
-  EXPECT_EQ(future.Get(), PickerSearchResult::Text(u"xyz"));
+  EXPECT_EQ(future.Get(), PickerSearchResult::Clipboard(item_id));
 }
 
 }  // namespace

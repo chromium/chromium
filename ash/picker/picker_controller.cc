@@ -18,6 +18,7 @@
 #include "ash/picker/picker_asset_fetcher_impl.h"
 #include "ash/picker/picker_copy_media.h"
 #include "ash/picker/picker_insert_media_request.h"
+#include "ash/picker/picker_paste_request.h"
 #include "ash/picker/picker_rich_media.h"
 #include "ash/picker/search/picker_search_controller.h"
 #include "ash/picker/views/picker_icons.h"
@@ -26,6 +27,7 @@
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_widget.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/wm/window_util.h"
@@ -36,8 +38,10 @@
 #include "base/functional/overloaded.h"
 #include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -113,9 +117,13 @@ gfx::Rect GetFocusedWindowBounds() {
              : gfx::Rect();
 }
 
-std::optional<PickerRichMedia> ResultToInsertMediaData(
+// The user can ask to insert rich media, a clipboard item, or insert nothing.
+using InsertionContent = std::
+    variant<PickerRichMedia, PickerSearchResult::ClipboardData, std::monostate>;
+
+InsertionContent GetInsertionContentForResult(
     const PickerSearchResult& result) {
-  using ReturnType = std::optional<PickerRichMedia>;
+  using ReturnType = InsertionContent;
   return std::visit(
       base::Overloaded{
           [](const PickerSearchResult::TextData& data) -> ReturnType {
@@ -131,7 +139,7 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
             return PickerTextMedia(data.emoticon);
           },
           [](const PickerSearchResult::ClipboardData& data) -> ReturnType {
-            return PickerImageMedia(data.png);
+            return data;
           },
           [](const PickerSearchResult::GifData& data) -> ReturnType {
             return PickerImageMedia(data.full_url, data.full_dimensions,
@@ -146,7 +154,7 @@ std::optional<PickerRichMedia> ResultToInsertMediaData(
             return PickerLinkMedia(data.url);
           },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
-            return std::nullopt;
+            return std::monostate();
           }},
       result.data());
 }
@@ -269,27 +277,38 @@ void PickerController::InsertResultOnNextFocus(
     return;
   }
 
-  ui::InputMethod* input_method = widget_->GetInputMethod();
-  if (input_method == nullptr) {
-    return;
-  }
-
-  std::optional<PickerRichMedia> media_to_insert =
-      ResultToInsertMediaData(result);
-  CHECK(media_to_insert.has_value());
-
-  // This cancels the previous request if there was one.
-  insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
-      input_method, *media_to_insert, kInsertMediaTimeout,
-      base::BindOnce(
-          [](const PickerRichMedia& media,
-             PickerInsertMediaRequest::Result result) {
-            // Fallback to copying to the clipboard on failure.
-            if (result != PickerInsertMediaRequest::Result::kSuccess) {
-              CopyMediaToClipboard(media);
+  std::visit(
+      base::Overloaded{
+          [&](PickerRichMedia media) {
+            ui::InputMethod* input_method = widget_->GetInputMethod();
+            if (input_method == nullptr) {
+              return;
             }
+
+            // This cancels the previous request if there was one.
+            insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
+                input_method, media, kInsertMediaTimeout,
+                base::BindOnce(
+                    [](const PickerRichMedia& media,
+                       PickerInsertMediaRequest::Result result) {
+                      // Fallback to copying to the clipboard on failure.
+                      if (result !=
+                          PickerInsertMediaRequest::Result::kSuccess) {
+                        CopyMediaToClipboard(media);
+                      }
+                    },
+                    media));
           },
-          *media_to_insert));
+          [&](PickerSearchResult::ClipboardData data) {
+            // This cancels the previous request if there was one.
+            paste_request_ = std::make_unique<PickerPasteRequest>(
+                ClipboardHistoryController::Get(),
+                aura::client::GetFocusClient(widget_->GetNativeView()),
+                data.item_id);
+          },
+          [](std::monostate) { NOTREACHED_NORETURN(); },
+      },
+      GetInsertionContentForResult(result));
 
   session_metrics_->RecordOutcome(
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
