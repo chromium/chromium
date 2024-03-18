@@ -24,18 +24,25 @@ TextParameters GetTextParameters() {
   static TextParameters text_parameters;
   static std::once_flag flag;
   std::call_once(flag, [&] {
-    Microsoft::WRL::ComPtr<IDWriteFactory> factory;
-    gfx::win::CreateDWriteFactory(&factory);
-    if (factory) {
-      // We only support the primary device currently.
-      Microsoft::WRL::ComPtr<IDWriteRenderingParams> textParams;
-      if (SUCCEEDED(factory->CreateRenderingParams(&textParams))) {
-        text_parameters.contrast =
-            FontUtilWin::ClampContrast(textParams->GetEnhancedContrast());
-        text_parameters.gamma = FontUtilWin::ClampGamma(textParams->GetGamma());
-      } else {
-        text_parameters.contrast = SK_GAMMA_CONTRAST;
-        text_parameters.gamma = SK_GAMMA_EXPONENT;
+    text_parameters.contrast = SK_GAMMA_CONTRAST;
+    text_parameters.gamma = SK_GAMMA_EXPONENT;
+    // Only apply values from `IDWriteRenderingParams` if the user has
+    // the appropriate registry keys set. Otherwise, `IDWriteRenderingParams`
+    // values will use DirectWrite's default values, which do no match Skia's
+    // defaults.
+    base::win::RegKey key = FontUtilWin::GetTextSettingsRegistryKey();
+    if (key.Valid()) {
+      Microsoft::WRL::ComPtr<IDWriteFactory> factory;
+      gfx::win::CreateDWriteFactory(&factory);
+      if (factory) {
+        // We only support the primary device currently.
+        Microsoft::WRL::ComPtr<IDWriteRenderingParams> text_params;
+        if (SUCCEEDED(factory->CreateRenderingParams(&text_params))) {
+          text_parameters.contrast =
+              FontUtilWin::ClampContrast(text_params->GetEnhancedContrast());
+          text_parameters.gamma =
+              FontUtilWin::ClampGamma(text_params->GetGamma());
+        }
       }
     }
   });
