@@ -425,6 +425,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 // Tests that the device stops delivering frames while suspended. When resumed,
 // any content changes that occurred during the suspend should cause a new frame
 // to be delivered, to ensure the client is up-to-date.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug/328419809): Also flaky on Mac.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_SuspendsAndResumes DISABLED_SuspendsAndResumes
+#else
+#define MAYBE_SuspendsAndResumes SuspendsAndResumes
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
                        SuspendsAndResumes) {
   NavigateToInitialDocument();
@@ -585,6 +593,14 @@ INSTANTIATE_TEST_SUITE_P(
 // whether the browser is running with software compositing or GPU-accelerated
 // compositing, whether the WebContents is visible/hidden or occluded/unoccluded
 // and whether the main document contains a cross-site iframe.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug/328419809): Also flaky on Mac.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_CapturesContentChanges DISABLED_CapturesContentChanges
+#else
+#define MAYBE_CapturesContentChanges CapturesContentChanges
+#endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
                        CapturesContentChanges) {
   media::VideoPixelFormat specified_format = GetVideoPixelFormat();
