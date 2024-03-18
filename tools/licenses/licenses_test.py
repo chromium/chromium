@@ -83,7 +83,7 @@ class LicensesTest(unittest.TestCase):
 
   def test_parse_dir(self):
     # No metadata file found in directory
-    test_path = os.path.join('tools', 'licenses', 'foo')
+    test_path = os.path.join('tools', 'licenses', 'test_dir_with_missing_files')
     with self.assertRaisesRegex(
         licenses.LicenseError,
         "missing third party metadata file or licenses.py SPECIAL_CASES"):

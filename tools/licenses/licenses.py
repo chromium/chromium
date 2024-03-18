@@ -641,6 +641,10 @@ def ParseDir(path,
   if path in THIRD_PARTY_FOR_BUILD_FILES_ONLY:
     return [], []
 
+  # gclient creates empty directories for conditionally downloaded submodules.
+  if not os.listdir(os.path.join(root, path)):
+    return [], []
+
   # Get the metadata values, from
   # (a) looking up the path in SPECIAL_CASES; or
   # (b) parsing the metadata from a README.chromium file.
@@ -798,7 +802,8 @@ def FindThirdPartyDirs(prune_paths, root, extra_third_party_dirs=None):
     extra_paths.update(extra_third_party_dirs)
 
   for dir in extra_paths:
-    if dir not in prune_paths:
+    # They might not exist due to gclient conditions.
+    if dir not in prune_paths and os.path.exists(os.path.join(root, dir)):
       third_party_dirs.add(dir)
       ProcessAdditionalReadmePathsJson(root, dir, third_party_dirs)
 
