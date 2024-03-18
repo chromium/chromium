@@ -1062,7 +1062,7 @@ html[dir=rtl] .menu-header .icon {
 #view-warning #error-msg {
   font: var(--cros-body-0-font);
   text-align: center;
-  white-space: pre-wrap;
+  white-space: pre-line;
 }
 
 .dialog {
