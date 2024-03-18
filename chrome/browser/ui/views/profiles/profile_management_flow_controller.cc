@@ -137,14 +137,3 @@ ProfileManagementFlowController::CreateSwitchToStepPopCallback(Step step) {
       /*step_switch_finished_callback=*/StepSwitchFinishedCallback(),
       /*pop_step_callback=*/base::OnceClosure());
 }
-
-void ProfileManagementFlowController::CreateSignedOutFlowWebContents(
-    Profile* profile) {
-  signed_out_flow_web_contents_ =
-      content::WebContents::Create(content::WebContents::CreateParams(profile));
-}
-
-content::WebContents*
-ProfileManagementFlowController::GetSignedOutFlowWebContents() const {
-  return signed_out_flow_web_contents_.get();
-}

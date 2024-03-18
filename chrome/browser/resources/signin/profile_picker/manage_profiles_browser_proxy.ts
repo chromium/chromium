@@ -137,7 +137,7 @@ export interface ManageProfilesBrowserProxy {
    * browser window.
    * TODO(https://crbug.com/1282157): Add createShortcut parameter.
    */
-  continueWithoutAccount(profileColor: number): void;
+  createProfileAndOpenCustomizationDialog(profileColor: number): void;
 
   /**
    * Sets the local profile name.
@@ -248,8 +248,8 @@ export class ManageProfilesBrowserProxyImpl {
     return sendWithPromise('getAvailableIcons');
   }
 
-  continueWithoutAccount(profileColor: number) {
-    chrome.send('continueWithoutAccount', [profileColor]);
+  createProfileAndOpenCustomizationDialog(profileColor: number) {
+    chrome.send('createProfileAndOpenCustomizationDialog', [profileColor]);
   }
 
   setProfileName(profilePath: string, profileName: string) {
