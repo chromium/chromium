@@ -152,32 +152,33 @@ GURL GetAllowlistUrl(const GURL& url,
 // Returns the corresponding ThreatSeverity to a SBThreatType
 // Keep the same as v4_local_database_manager GetThreatSeverity()
 ThreatSeverity GetThreatSeverity(safe_browsing::SBThreatType threat_type) {
+  using enum SBThreatType;
   switch (threat_type) {
-    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
-    case safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN:
+    case SB_THREAT_TYPE_URL_MALWARE:
+    case SB_THREAT_TYPE_URL_BINARY_MALWARE:
+    case SB_THREAT_TYPE_URL_PHISHING:
+    case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
+    case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
       return 0;
-    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+    case SB_THREAT_TYPE_URL_UNWANTED:
       return 1;
-    case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_API_ABUSE:
+    case SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+    case SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
       return 2;
-    case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
-    case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
+    case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
       return 3;
-    case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case SB_THREAT_TYPE_SUSPICIOUS_SITE:
       return 4;
-    case safe_browsing::SB_THREAT_TYPE_BILLING:
+    case SB_THREAT_TYPE_BILLING:
       return 15;
-    case safe_browsing::SB_THREAT_TYPE_UNUSED:
-    case safe_browsing::SB_THREAT_TYPE_SAFE:
+    case SB_THREAT_TYPE_UNUSED:
+    case SB_THREAT_TYPE_SAFE:
       return std::numeric_limits<ThreatSeverity>::max();
     default:
       NOTREACHED();
@@ -240,7 +241,7 @@ bool BaseUIManager::IsUrlAllowlistedOrPendingForWebContents(
       continue;
     }
 
-    SBThreatType url_threat_type = SB_THREAT_TYPE_SAFE;
+    SBThreatType url_threat_type = SBThreatType::SB_THREAT_TYPE_SAFE;
     bool allowlisted = site_list->Contains(lookup_url, &url_threat_type);
     // We only check if the url is in the non-pending allowlist if
     // allowlist_only is true.
@@ -249,9 +250,10 @@ bool BaseUIManager::IsUrlAllowlistedOrPendingForWebContents(
     }
     if (allowlisted) {
       any_allowlisted = true;
-      ThreatSeverity severity = url_threat_type == SB_THREAT_TYPE_SAFE
-                                    ? std::numeric_limits<ThreatSeverity>::max()
-                                    : GetThreatSeverity(url_threat_type);
+      ThreatSeverity severity =
+          url_threat_type == SBThreatType::SB_THREAT_TYPE_SAFE
+              ? std::numeric_limits<ThreatSeverity>::max()
+              : GetThreatSeverity(url_threat_type);
       if (severity > min_severity) {
         continue;
       }
@@ -289,6 +291,8 @@ void BaseUIManager::OnBlockingPageDone(
 }
 
 void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
+  using enum SBThreatType;
+
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool is_frame = resource.is_subframe ||
                   resource.request_destination ==

@@ -80,7 +80,7 @@ void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
       break;
   }
 
-  // TODO(drubery): Make SBThreatType an `enum class`, so we can use
+  // TODO(drubery): Make SBThreatType an `enum class` so we can use
   // the template instantiations relying on kMaxValue here.
   base::UmaHistogramEnumeration(
       "SafeBrowsing.CheckUrl.FirstRequestThreatType", threat_type,
@@ -281,12 +281,12 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf(
   if (timed_out) {
     // Any pending callbacks on this URL check should be skipped.
     weak_factory_.InvalidateWeakPtrs();
-    OnUrlResultInternalAndMaybeDeleteSelf(urls_[next_index_].url,
-                                          safe_browsing::SB_THREAT_TYPE_SAFE,
-                                          ThreatMetadata(),
-                                          /*threat_source=*/std::nullopt,
-                                          /*rt_lookup_response=*/nullptr,
-                                          /*timed_out=*/true, performed_check);
+    OnUrlResultInternalAndMaybeDeleteSelf(
+        urls_[next_index_].url,
+        safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
+        /*threat_source=*/std::nullopt,
+        /*rt_lookup_response=*/nullptr,
+        /*timed_out=*/true, performed_check);
   } else {
     OnUrlResultInternalAndMaybeDeleteSelf(
         result.value()->url, result.value()->threat_type,
@@ -304,6 +304,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
     std::unique_ptr<RTLookupResponse> rt_lookup_response,
     bool timed_out,
     PerformedCheck performed_check) {
+  using enum SBThreatType;
+
   DCHECK_EQ(STATE_CHECKING_URL, state_);
   DCHECK_LT(next_index_, urls_.size());
   DCHECK_EQ(urls_[next_index_].url, url);
@@ -455,7 +457,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
                               request_destination_);
 
     SBThreatType threat_type = CheckWebUIUrls(url);
-    if (threat_type != safe_browsing::SB_THREAT_TYPE_SAFE) {
+    if (threat_type != SBThreatType::SB_THREAT_TYPE_SAFE) {
       state_ = STATE_CHECKING_URL;
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
           "safe_browsing", "CheckUrl", TRACE_ID_LOCAL(this), "url", url.spec());
@@ -597,19 +599,20 @@ void SafeBrowsingUrlCheckerImpl::OnBlockingPageCompleteAndMaybeDeleteSelf(
 }
 
 SBThreatType SafeBrowsingUrlCheckerImpl::CheckWebUIUrls(const GURL& url) {
+  using enum SBThreatType;
   if (url == kChromeUISafeBrowsingMatchMalwareUrl) {
-    return safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+    return SB_THREAT_TYPE_URL_MALWARE;
   }
   if (url == kChromeUISafeBrowsingMatchPhishingUrl) {
-    return safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+    return SB_THREAT_TYPE_URL_PHISHING;
   }
   if (url == kChromeUISafeBrowsingMatchUnwantedUrl) {
-    return safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+    return SB_THREAT_TYPE_URL_UNWANTED;
   }
   if (url == kChromeUISafeBrowsingMatchBillingUrl) {
-    return safe_browsing::SB_THREAT_TYPE_BILLING;
+    return SB_THREAT_TYPE_BILLING;
   }
-  return safe_browsing::SB_THREAT_TYPE_SAFE;
+  return SB_THREAT_TYPE_SAFE;
 }
 
 bool SafeBrowsingUrlCheckerImpl::RunNextCallbackAndMaybeDeleteSelf(

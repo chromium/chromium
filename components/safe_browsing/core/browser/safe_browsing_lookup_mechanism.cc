@@ -32,7 +32,8 @@ SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
       metadata(metadata),
       threat_source(threat_source),
       url_real_time_lookup_response(std::move(url_real_time_lookup_response)) {
-  DCHECK(threat_source.has_value() || threat_type == SB_THREAT_TYPE_SAFE);
+  DCHECK(threat_source.has_value() ||
+         threat_type == SBThreatType::SB_THREAT_TYPE_SAFE);
 }
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::~CompleteCheckResult() =

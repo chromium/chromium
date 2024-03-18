@@ -793,7 +793,8 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
       resource.url = phishing_url;
       resource.original_url = phishing_url;
       resource.is_subresource = false;
-      resource.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+      resource.threat_type =
+          SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
       resource.render_process_id = primary_main_frame_id.child_id;

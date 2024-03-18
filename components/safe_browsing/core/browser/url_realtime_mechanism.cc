@@ -20,9 +20,8 @@ namespace {
 constexpr char kMatchResultHistogramName[] =
     "SafeBrowsing.RT.LocalMatch.Result";
 
-void RecordLocalMatchResult(
-    bool has_match,
-    std::string url_lookup_service_metric_suffix) {
+void RecordLocalMatchResult(bool has_match,
+                            std::string url_lookup_service_metric_suffix) {
   AsyncMatch match_result =
       has_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
   base::UmaHistogramEnumeration(kMatchResultHistogramName, match_result);
@@ -175,7 +174,7 @@ void UrlRealTimeMechanism::OnLookupResponse(
 
   RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type =
       RTLookupResponse::ThreatInfo::SAFE;
-  SBThreatType sb_threat_type = SB_THREAT_TYPE_SAFE;
+  SBThreatType sb_threat_type = SBThreatType::SB_THREAT_TYPE_SAFE;
   if (response && (response->threat_info_size() > 0)) {
     rt_verdict_type = response->threat_info(0).verdict_type();
     sb_threat_type =
@@ -185,7 +184,8 @@ void UrlRealTimeMechanism::OnLookupResponse(
 
   MaybePerformSuspiciousSiteDetection(rt_verdict_type);
 
-  if (is_cached_response && sb_threat_type == SB_THREAT_TYPE_SAFE) {
+  if (is_cached_response &&
+      sb_threat_type == SBThreatType::SB_THREAT_TYPE_SAFE) {
     is_cached_safe_url_ = true;
     PerformHashBasedCheck(url_);
     // NOTE: Calling PerformHashBasedCheck may result in the synchronous
@@ -216,8 +216,9 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(const GURL& url) {
   }
   if (is_safe_synchronously || !can_check_db_) {
     // No match found in the database, so conclude this is safe.
-    OnHashDatabaseCompleteCheckResultInternal(
-        SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/std::nullopt);
+    OnHashDatabaseCompleteCheckResultInternal(SBThreatType::SB_THREAT_TYPE_SAFE,
+                                              ThreatMetadata(),
+                                              /*threat_source=*/std::nullopt);
     // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
     // synchronous destruction of this object, so there is nothing safe to do
     // here but return.

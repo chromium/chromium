@@ -94,7 +94,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
       // load_post_commit_error_page is false.
       UnsafeResource resource;
       resource.url = url_;
-      resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+      resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
       resource.navigation_id = navigation_id;
       ui_manager_->AddUnsafeResource(url_, resource);
     }
@@ -208,7 +208,7 @@ TEST_F(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
   CallDidFinishNavigation(handle, /*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 1);
   UnsafeResource resource = ui_manager_->GetDisplayedResource();
-  EXPECT_EQ(resource.threat_type, SB_THREAT_TYPE_URL_PHISHING);
+  EXPECT_EQ(resource.threat_type, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.render_process_id, main_rfh()->GetGlobalId().child_id);
   EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
@@ -234,7 +234,7 @@ TEST_F(AsyncCheckTrackerTest,
                               /*all_checks_completed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 1);
   UnsafeResource resource = ui_manager_->GetDisplayedResource();
-  EXPECT_EQ(resource.threat_type, SB_THREAT_TYPE_URL_PHISHING);
+  EXPECT_EQ(resource.threat_type, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.render_process_id, main_rfh()->GetGlobalId().child_id);
   EXPECT_EQ(resource.render_frame_token, main_rfh()->GetFrameToken().value());
@@ -245,7 +245,7 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {
   base::HistogramTester histograms;
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
-  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
   resource.navigation_id = handle.GetNavigationId();
 
@@ -273,7 +273,7 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending) {
 TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
-  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
 
   EXPECT_TRUE(AsyncCheckTracker::IsMainPageLoadPending(resource));
@@ -281,7 +281,7 @@ TEST_F(AsyncCheckTrackerTest, IsMainPageLoadPending_NoNavigationId) {
   // If there is no navigation id associated with the resource, whether the
   // main page load is pending is determined by
   // UnsafeResource::IsMainPageLoadPendingWithSyncCheck.
-  resource.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
   EXPECT_FALSE(AsyncCheckTracker::IsMainPageLoadPending(resource));
 }
 
@@ -290,7 +290,7 @@ TEST_F(AsyncCheckTrackerTest,
   tracker_->SetNavigationTimestampsSizeThresholdForTesting(
       kLocalNavigationTimestampsSizeThreshold);
   UnsafeResource resource;
-  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
 
   std::vector<int64_t> old_navigation_ids;
@@ -335,7 +335,7 @@ TEST_F(
   tracker_->SetNavigationTimestampsSizeThresholdForTesting(
       kLocalNavigationTimestampsSizeThreshold);
   UnsafeResource resource;
-  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
 
   content::MockNavigationHandle handle(url_, main_rfh());
@@ -362,7 +362,7 @@ TEST_F(
 TEST_F(AsyncCheckTrackerTest, GetBlockedPageCommittedTimestamp) {
   content::MockNavigationHandle handle(web_contents());
   UnsafeResource resource;
-  resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.frame_tree_node_id = main_rfh()->GetFrameTreeNodeId();
   resource.navigation_id = handle.GetNavigationId();
 

@@ -340,6 +340,8 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
 
 GURL PingManager::SafeBrowsingHitUrl(
     safe_browsing::HitReport* hit_report) const {
+  using enum SBThreatType;
+
   DCHECK(hit_report->threat_type == SB_THREAT_TYPE_URL_MALWARE ||
          hit_report->threat_type == SB_THREAT_TYPE_URL_PHISHING ||
          hit_report->threat_type == SB_THREAT_TYPE_URL_UNWANTED ||

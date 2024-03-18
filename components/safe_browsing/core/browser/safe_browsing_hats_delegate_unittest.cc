@@ -13,6 +13,9 @@ class SafeBrowsingHatsDelegateTest : public ::testing::Test {
   static constexpr char kAllReportTypeFilters[] =
       "URL_PHISHING,URL_MALWARE,URL_UNWANTED,URL_CLIENT_SIDE_PHISHING";
   static constexpr char kAllDidProceedFilters[] = "TRUE,FALSE";
+
+ protected:
+  using enum SBThreatType;
 };
 
 TEST_F(SafeBrowsingHatsDelegateTest, IsSurveyCandidateWithAllFilters) {

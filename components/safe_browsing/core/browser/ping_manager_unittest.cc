@@ -56,6 +56,8 @@ class MockWebUIDelegate : public PingManager::WebUIDelegate {
 };
 class PingManagerTest : public testing::Test {
  protected:
+  using enum SBThreatType;
+
   void SetUp() override;
   void TearDown() override;
   void RunReportThreatDetailsTest(

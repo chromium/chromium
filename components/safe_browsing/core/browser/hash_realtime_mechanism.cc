@@ -119,8 +119,9 @@ void HashRealTimeMechanism::PerformHashBasedCheck(const GURL& url) {
                      weak_factory_.GetWeakPtr()));
   if (result.is_safe_synchronously) {
     // No match found in the database, so conclude this is safe.
-    OnHashDatabaseCompleteCheckResultInternal(
-        SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/std::nullopt);
+    OnHashDatabaseCompleteCheckResultInternal(SBThreatType::SB_THREAT_TYPE_SAFE,
+                                              ThreatMetadata(),
+                                              /*threat_source=*/std::nullopt);
     // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
     // synchronous destruction of this object, so there is nothing safe to do
     // here but return.

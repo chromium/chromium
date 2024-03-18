@@ -207,6 +207,8 @@ std::string BaseBlockingPage::GetExtraMetricsSuffix(
 security_interstitials::BaseSafeBrowsingErrorUI::SBInterstitialReason
 BaseBlockingPage::GetInterstitialReason(
     const UnsafeResourceList& unsafe_resources) {
+  using enum SBThreatType;
+
   bool harmful = false;
   for (auto iter = unsafe_resources.begin(); iter != unsafe_resources.end();
        ++iter) {
@@ -349,6 +351,7 @@ void BaseBlockingPage::OnDontProceedDone() {
 
 // static
 bool BaseBlockingPage::ShouldReportThreatDetails(SBThreatType threat_type) {
+  using enum SBThreatType;
   return threat_type == SB_THREAT_TYPE_BILLING ||
          threat_type == SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING ||
          threat_type == SB_THREAT_TYPE_URL_MALWARE ||

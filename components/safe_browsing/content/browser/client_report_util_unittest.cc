@@ -18,7 +18,7 @@ class ClientReportUtilTest : public testing::Test {
     security_interstitials::UnsafeResource resource =
         security_interstitials::UnsafeResource();
     resource.url = GURL(kPhishingUrl);
-    resource.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+    resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
     resource.request_destination =
         network::mojom::RequestDestination::kDocument;
     return resource;

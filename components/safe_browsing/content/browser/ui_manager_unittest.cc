@@ -281,7 +281,8 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const char* url,
       bool is_subresource,
-      const SBThreatType threat_type = SB_THREAT_TYPE_URL_MALWARE) {
+      const SBThreatType threat_type =
+          SBThreatType::SB_THREAT_TYPE_URL_MALWARE) {
     auto* primary_main_frame = web_contents()->GetPrimaryMainFrame();
     return MakeUnsafeResource(url, is_subresource,
                               primary_main_frame->GetGlobalId(),
@@ -422,7 +423,7 @@ TEST_F(SafeBrowsingUIManagerTest, AllowlistIgnoresThreatType) {
 
   security_interstitials::UnsafeResource resource_phishing =
       MakeUnsafeResource(kBadURL, false /* is_subresource */);
-  resource_phishing.threat_type = SB_THREAT_TYPE_URL_PHISHING;
+  resource_phishing.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   EXPECT_TRUE(IsAllowlisted(resource_phishing));
 }
 
@@ -668,7 +669,7 @@ TEST_F(SafeBrowsingUIManagerTest, DisplayInterstitial_PostCommitInterstitial) {
       MakeUnsafeResource(kBadURL, false /* is_subresource */);
   resource.threat_source = safe_browsing::ThreatSource::REMOTE;
   // Make it a post commit interstitial.
-  resource.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
 
   SafeBrowsingCallbackWaiter waiter;
   resource.callback =
@@ -707,8 +708,9 @@ TEST_F(SafeBrowsingUIManagerTest,
 
 TEST_F(SafeBrowsingUIManagerTest,
        AllowlistSetSeverestThreatTypeInRedirectChain) {
-  security_interstitials::UnsafeResource resource = MakeUnsafeResource(
-      kGoodURL, false /* is_subresource */, SB_THREAT_TYPE_API_ABUSE);
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResource(kGoodURL, false /* is_subresource */,
+                         SBThreatType::SB_THREAT_TYPE_API_ABUSE);
   AddToAllowlist(resource, true);
 
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
@@ -735,8 +737,9 @@ TEST_F(SafeBrowsingUIManagerTest,
       &threat_type));
   EXPECT_EQ(threat_type, resource.threat_type);
 
-  security_interstitials::UnsafeResource redirect_resource = MakeUnsafeResource(
-      kRedirectURL, false /* is_subresource */, SB_THREAT_TYPE_BILLING);
+  security_interstitials::UnsafeResource redirect_resource =
+      MakeUnsafeResource(kRedirectURL, false /* is_subresource */,
+                         SBThreatType::SB_THREAT_TYPE_BILLING);
   AddToAllowlist(redirect_resource, true);
 
   // The second redirect url has a less severe threat type, the final
@@ -749,7 +752,7 @@ TEST_F(SafeBrowsingUIManagerTest,
 
   redirect_resource =
       MakeUnsafeResource(kRedirectURL, false /* is_subresource */,
-                         SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
+                         SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK);
   AddToAllowlist(redirect_resource, true);
 
   // Now that the second redirect url has a  more severe threat type, the final

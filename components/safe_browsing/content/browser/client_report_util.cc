@@ -31,6 +31,8 @@ CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
 }
 
 CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type) {
+  using enum SBThreatType;
+
   switch (threat_type) {
     case SB_THREAT_TYPE_URL_PHISHING:
       return CSBRR::URL_PHISHING;
@@ -72,13 +74,15 @@ CSBRR::ReportType GetReportTypeFromSBThreatType(SBThreatType threat_type) {
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       // Gated by SafeBrowsingBlockingPage::ShouldReportThreatDetails.
       NOTREACHED() << "We should not send report for threat type: "
-                   << threat_type;
+                   << static_cast<int>(threat_type);
       return CSBRR::UNKNOWN;
   }
 }
 
 CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
     SBThreatType threat_type) {
+  using enum SBThreatType;
+
   switch (threat_type) {
     case SB_THREAT_TYPE_URL_PHISHING:
       return CSBRR::WarningShownInfo::PHISHING_INTERSTITIAL;
@@ -113,7 +117,7 @@ CSBRR::WarningShownInfo::WarningUXType GetWarningUXTypeFromSBThreatType(
     case SB_THREAT_TYPE_MANAGED_POLICY_WARN:
     case SB_THREAT_TYPE_MANAGED_POLICY_BLOCK:
       NOTREACHED() << "We should not send report for threat type: "
-                   << threat_type;
+                   << static_cast<int>(threat_type);
       return CSBRR::WarningShownInfo::UNKNOWN;
   }
 }

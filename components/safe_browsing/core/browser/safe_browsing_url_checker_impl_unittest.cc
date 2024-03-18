@@ -64,7 +64,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     DCHECK(base::Contains(urls_threat_type_, url));
     DCHECK(base::Contains(urls_delayed_callback_, url));
     EXPECT_EQ(check_type, expected_check_type_);
-    if (urls_threat_type_[url] == SB_THREAT_TYPE_SAFE) {
+    if (urls_threat_type_[url] == SBThreatType::SB_THREAT_TYPE_SAFE) {
       return true;
     }
     if (!urls_delayed_callback_[url]) {
@@ -182,8 +182,8 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
  public:
   explicit MockUrlCheckerDelegate(SafeBrowsingDatabaseManager* database_manager)
       : database_manager_(database_manager),
-        threat_types_(
-            SBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_URL_PHISHING})) {}
+        threat_types_(SBThreatTypeSet(
+            {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING})) {}
 
   MOCK_METHOD1(MaybeDestroyNoStatePrefetchContents,
                void(base::OnceCallback<content::WebContents*()>));
@@ -242,6 +242,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       SessionID tab_id) override {
+    using enum SBThreatType;
+
     std::string url = gurl.spec();
     DCHECK(base::Contains(url_details_, url));
     auto response = std::make_unique<RTLookupResponse>();
@@ -443,6 +445,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
   }
 
  protected:
+  using enum SBThreatType;
+
   void CheckHashRealTimeMetrics(std::optional<bool> expected_local_match_result,
                                 std::optional<bool> expected_is_service_found,
                                 bool expected_can_check_reputation) {
@@ -514,7 +518,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
       hash_realtime_utils::HashRealTimeSelection::kNone);
 
   GURL url("https://example.test/");
-  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
+  database_manager_->SetThreatTypeForUrl(url, SBThreatType::SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
   base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
       callback;

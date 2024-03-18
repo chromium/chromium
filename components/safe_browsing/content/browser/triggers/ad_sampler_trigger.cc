@@ -138,7 +138,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
   const content::GlobalRenderFrameHostId primary_main_frame_id =
       primary_main_frame->GetGlobalId();
   security_interstitials::UnsafeResource resource;
-  resource.threat_type = SB_THREAT_TYPE_AD_SAMPLE;
+  resource.threat_type = SBThreatType::SB_THREAT_TYPE_AD_SAMPLE;
   resource.url = web_contents()->GetURL();
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();

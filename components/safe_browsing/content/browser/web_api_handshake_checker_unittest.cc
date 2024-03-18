@@ -24,8 +24,8 @@ class FakeUrlCheckerDelegate : public UrlCheckerDelegate {
   explicit FakeUrlCheckerDelegate(
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager)
       : database_manager_(database_manager),
-        threat_types_(
-            SBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_URL_PHISHING})) {}
+        threat_types_(SBThreatTypeSet(
+            {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING})) {}
 
   // UrlCheckerDelegate overrides:
   void MaybeDestroyNoStatePrefetchContents(
@@ -145,7 +145,8 @@ TEST_P(WebApiHandshakeCheckerTest, CheckSafeUrl) {
 TEST_P(WebApiHandshakeCheckerTest, CheckDangerousUrl) {
   base::HistogramTester histogram_tester;
   const GURL kUrl("https://example.test");
-  database_manager()->AddDangerousUrl(kUrl, SB_THREAT_TYPE_URL_PHISHING);
+  database_manager()->AddDangerousUrl(
+      kUrl, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   if (GetParam()) {
     EXPECT_EQ(Check(kUrl), WebApiHandshakeChecker::CheckResult::kProceed);
   } else {
