@@ -227,9 +227,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       }
       break;
     }
-    case ui::AXEventGenerator::Event::CLASS_NAME_CHANGED:
-      FireUiaPropertyChangedEvent(UIA_ClassNamePropertyId, wrapper);
-      break;
     case ui::AXEventGenerator::Event::COLLAPSED:
     case ui::AXEventGenerator::Event::EXPANDED:
       FireUiaPropertyChangedEvent(

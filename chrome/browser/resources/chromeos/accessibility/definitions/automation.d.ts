@@ -30,7 +30,6 @@ declare namespace chrome {
       CHECKED_STATE_CHANGED = 'checkedStateChanged',
       CHECKED_STATE_DESCRIPTION_CHANGED = 'checkedStateDescriptionChanged',
       CHILDREN_CHANGED = 'childrenChanged',
-      CLASS_NAME_CHANGED = 'classNameChanged',
       CLICKED = 'clicked',
       COLLAPSED = 'collapsed',
       CONTROLS_CHANGED = 'controlsChanged',

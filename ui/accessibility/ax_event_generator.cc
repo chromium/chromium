@@ -488,7 +488,6 @@ void AXEventGenerator::OnStringAttributeChanged(AXTree* tree,
       AddEvent(node, Event::CHECKED_STATE_DESCRIPTION_CHANGED);
       break;
     case ax::mojom::StringAttribute::kClassName:
-      AddEvent(node, Event::CLASS_NAME_CHANGED);
       break;
     case ax::mojom::StringAttribute::kDescription:
       AddEvent(node, Event::DESCRIPTION_CHANGED);
@@ -1320,8 +1319,6 @@ const char* ToString(AXEventGenerator::Event event) {
       return "checkedStateDescriptionChanged";
     case AXEventGenerator::Event::CHILDREN_CHANGED:
       return "childrenChanged";
-    case AXEventGenerator::Event::CLASS_NAME_CHANGED:
-      return "classNameChanged";
     case AXEventGenerator::Event::COLLAPSED:
       return "collapsed";
     case AXEventGenerator::Event::CONTROLS_CHANGED:

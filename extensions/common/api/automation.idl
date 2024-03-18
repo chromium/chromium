@@ -32,7 +32,6 @@
     checkedStateChanged,
     checkedStateDescriptionChanged,
     childrenChanged,
-    classNameChanged,
     clicked,
     collapsed,
     controlsChanged,

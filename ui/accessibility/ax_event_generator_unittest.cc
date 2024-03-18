@@ -1991,7 +1991,6 @@ TEST(AXEventGeneratorTest, StringPropertyChanges) {
       event_generator,
       UnorderedElementsAre(
           HasEventAtNode(AXEventGenerator::Event::ACCESS_KEY_CHANGED, 2),
-          HasEventAtNode(AXEventGenerator::Event::CLASS_NAME_CHANGED, 3),
           HasEventAtNode(AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED, 4),
           HasEventAtNode(AXEventGenerator::Event::LANGUAGE_CHANGED, 5),
           HasEventAtNode(AXEventGenerator::Event::PLACEHOLDER_CHANGED, 6)));
