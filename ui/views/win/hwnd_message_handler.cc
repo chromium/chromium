@@ -37,6 +37,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
+#include "ui/base/ime/init/input_method_initializer.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/ui_base_features.h"
@@ -1853,6 +1854,15 @@ LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
   display::win::ScreenWin::UpdateDisplayInfos();
   SetBoundsInternal(gfx::Rect(*reinterpret_cast<RECT*>(l_param)), false);
   delegate_->HandleWindowScaleFactorChanged(scaling_factor);
+
+  // https://crbug.com/41486958
+  // On Windows, TSF will hang the browser window and stuck KEYBOARD and MOUSE
+  // window messages when user is using a non-English IME (Chinese: Microsoft
+  // Pinyin, etc..) and try typing on any textarea after a DPI change when
+  // window is minimized. This hacky workaround fix that problem, as same
+  // reproduce procedure no longer triggers the hang.
+  ui::RestartInputMethod();
+
   return 0;
 }
 

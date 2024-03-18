@@ -32,6 +32,16 @@ void ShutdownInputMethod() {
 #endif
 }
 
+void RestartInputMethod() {
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(IS_WIN)
+  // Some tests don't have a TSFBridge and may cause error if we set one.
+  if (TSFBridge::GetInstance()) {
+    TSFBridge::Shutdown();
+    TSFBridge::Initialize();
+  }
+#endif
+}
+
 void InitializeInputMethodForTesting() {
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
   GetInputMethodContextFactoryForTest() =

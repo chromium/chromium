@@ -17,6 +17,10 @@ COMPONENT_EXPORT(UI_BASE_IME_INIT) void InitializeInputMethod();
 // called in the UI thread after input method is used.
 COMPONENT_EXPORT(UI_BASE_IME_INIT) void ShutdownInputMethod();
 
+// https://crbug.com/41486958
+// Prevent TSF from hanging on Windows, for details read links above.
+COMPONENT_EXPORT(UI_BASE_IME_INIT) void RestartInputMethod();
+
 // Initializes thread-local resources for input method. This function is
 // intended to be called from Setup function of unit tests.
 COMPONENT_EXPORT(UI_BASE_IME_INIT) void InitializeInputMethodForTesting();
