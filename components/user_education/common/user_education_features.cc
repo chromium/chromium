@@ -58,6 +58,10 @@ BASE_FEATURE(kUserEducationExperienceVersion2,
              "UserEducationExperienceVersion2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNewBadgeTestFeature,
+             "NewBadgeTestFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsUserEducationV2() {
   return base::FeatureList::IsEnabled(kUserEducationExperienceVersion2);
 }

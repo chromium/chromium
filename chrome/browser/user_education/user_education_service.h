@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "chrome/browser/user_education/browser_tutorial_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_education/common/feature_promo_registry.h"
@@ -18,6 +19,7 @@
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial.h"
 #include "components/user_education/common/tutorial_registry.h"
+#include "content/public/browser/browser_context.h"
 
 extern const char kTabGroupTutorialId[];
 extern const char kSavedTabGroupTutorialId[];
@@ -63,6 +65,19 @@ class UserEducationService : public KeyedService {
   user_education::NewBadgeController* new_badge_controller() {
     return new_badge_controller_.get();
   }
+
+  // Utility methods for when a browser [window] isn't available; for example,
+  // when only a WebContents is available:
+
+  // Checks if a "New" Badge should be shown for the given `context` (or
+  // profile), for `feature`.
+  static bool MaybeShowNewBadge(content::BrowserContext* context,
+                                const base::Feature& feature);
+
+  // Notifies that a feature associated with an IPH or "New" Badge was used in
+  // `context` (or profile), but only if the context supports user education.
+  static void MaybeNotifyPromoFeatureUsed(content::BrowserContext* context,
+                                          const base::Feature& feature);
 
  private:
   user_education::TutorialRegistry tutorial_registry_;

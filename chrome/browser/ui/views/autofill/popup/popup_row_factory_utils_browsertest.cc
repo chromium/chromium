@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/user_education/common/new_badge_controller.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
@@ -92,6 +93,9 @@ class CreatePopupRowViewTest
     : public UiBrowserTest,
       public ::testing::WithParamInterface<TestParams> {
  public:
+  CreatePopupRowViewTest() = default;
+  ~CreatePopupRowViewTest() override = default;
+
   static std::string GetTestName(
       const testing::TestParamInfo<TestParams>& info) {
     const std::string suggestion_part =
@@ -172,6 +176,8 @@ class CreatePopupRowViewTest
   NiceMock<MockSelectionDelegate> mock_selection_delegate_;
   base::test::ScopedFeatureList feature_list{
       features::kAutofillShowAutocompleteDeleteButton};
+  user_education::NewBadgeController::TestLock disable_new_badges_ =
+      user_education::NewBadgeController::DisableNewBadgesForTesting();
 };
 
 IN_PROC_BROWSER_TEST_P(CreatePopupRowViewTest, SuggestionRowUiTest) {

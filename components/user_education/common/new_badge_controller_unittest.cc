@@ -80,6 +80,7 @@ class NewBadgeControllerTest : public testing::Test {
         std::make_unique<TestNewBadgePolicy>(kMaxShows, kMaxUsed, kShowWindow);
     controller_ = std::make_unique<NewBadgeController>(
         registry_, storage_service_, std::move(policy));
+    controller_->InitData();
   }
 
   void CreateWithMockPolicy(bool enable_feature = true) {
@@ -90,6 +91,7 @@ class NewBadgeControllerTest : public testing::Test {
     mock_policy_ = policy.get();
     controller_ = std::make_unique<NewBadgeController>(
         registry_, storage_service_, std::move(policy));
+    controller_->InitData();
   }
 
   void CheckData(const base::Feature& feature, const NewBadgeData& expected) {
@@ -123,6 +125,13 @@ TEST_F(NewBadgeControllerTest, MaybeShowNewBadgeCallsPolicyReturnsFalse) {
       *mock_policy_,
       ShouldShowNewBadge(testing::Ref(kNewBadgeTestFeature), 0, 0, testing::_))
       .WillOnce(testing::Return(false));
+  EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
+  CheckData(kNewBadgeTestFeature, NewBadgeData{0, 0});
+}
+
+TEST_F(NewBadgeControllerTest, NewBadgesDisabledForTesting) {
+  auto lock = NewBadgeController::DisableNewBadgesForTesting();
+  CreateWithMockPolicy();
   EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
   CheckData(kNewBadgeTestFeature, NewBadgeData{0, 0});
 }

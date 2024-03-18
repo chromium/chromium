@@ -592,22 +592,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHComposeMenuNewBadgeFeature.name == feature->name) {
-    // A config that allows the new badge attached to the Compose feature
-    // entrypoint in the right-click menu to be shown at most 10 times in a
-    // 10-day window and only while the user has opened the Compose feature less
-    // than 3 times.
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    config->trigger = EventConfig("compose_menu_new_badge_triggered",
-                                  Comparator(LESS_THAN, 10), 10, 360);
-    config->used = EventConfig("compose_menu_item_activated",
-                               Comparator(LESS_THAN, 3), 360, 360);
-    return config;
-  }
-
   if (kIPHComposeNewBadgeFeature.name == feature->name) {
     // A config that allows the new badge displayed in the Compose feature nudge
     // to be shown at most 4 times in a 10-day window and only while the user

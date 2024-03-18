@@ -15,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
-#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
@@ -150,30 +149,6 @@ void EnterExitHandler::OnEvent(ui::Event* event) {
     default:
       break;
   }
-}
-
-PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
-    ScopedNewBadgeTrackerWithAcceptAction(
-        std::unique_ptr<ScopedNewBadgeTracker> tracker,
-        const char* action_name)
-    : tracker_(std::move(tracker)), action_name_(action_name) {
-  CHECK(tracker_);
-}
-
-PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
-    ~ScopedNewBadgeTrackerWithAcceptAction() = default;
-
-PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
-    ScopedNewBadgeTrackerWithAcceptAction(
-        ScopedNewBadgeTrackerWithAcceptAction&&) = default;
-
-PopupRowView::ScopedNewBadgeTrackerWithAcceptAction&
-PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::operator=(
-    ScopedNewBadgeTrackerWithAcceptAction&&) = default;
-
-void PopupRowView::ScopedNewBadgeTrackerWithAcceptAction::
-    OnSuggestionAccepted() {
-  tracker_->ActionPerformed(action_name_);
 }
 
 PopupRowView::PopupRowView(
@@ -447,9 +422,6 @@ bool PopupRowView::HandleKeyPressEvent(
 void PopupRowView::RunOnAccepted() {
   if (!controller_) {
     return;
-  }
-  if (new_badge_tracker_) {
-    new_badge_tracker_->OnSuggestionAccepted();
   }
   controller_->AcceptSuggestion(line_number_);
 }

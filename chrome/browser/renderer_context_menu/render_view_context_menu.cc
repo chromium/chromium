@@ -92,6 +92,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
@@ -135,7 +136,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/browser/language_model_manager.h"
@@ -848,8 +849,7 @@ RenderViewContextMenu::RenderViewContextMenu(
       autofill_context_menu_manager_(
           autofill::PersonalDataManagerFactory::GetForProfile(GetProfile()),
           this,
-          &menu_model_),
-      new_badge_tracker_(GetProfile()) {
+          &menu_model_) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -2433,10 +2433,8 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
       // TODO(b/303646344): Remove new feature tag when no longer new.
       menu_model_.SetIsNewFeatureAt(
           menu_model_.GetItemCount() - 1,
-          new_badge_tracker_.TryShowNewBadge(
-              feature_engagement::kIPHComposeMenuNewBadgeFeature,
-              &compose::features::kEnableCompose));
-
+          GetBrowser()->window()->MaybeShowNewBadgeFor(
+              compose::features::kEnableCompose));
       render_separator = true;
     }
   }
@@ -4050,7 +4048,8 @@ void RenderViewContextMenu::ExecOpenCompose() {
         autofill::FieldGlobalId(
             frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
-    new_badge_tracker_.ActionPerformed("compose_menu_item_activated");
+    GetBrowser()->window()->NotifyPromoFeatureUsed(
+        compose::features::kEnableCompose);
   } else {
     compose::LogOpenComposeDialogResult(
         compose::OpenComposeDialogResult::kNoContentAutofillDriver);

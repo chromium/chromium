@@ -5237,17 +5237,17 @@ void BrowserView::NotifyPromoFeatureUsed(const base::Feature& feature) {
   }
   auto* const service =
       UserEducationServiceFactory::GetForBrowserContext(GetProfile());
-  if (service->new_badge_registry() &&
+  if (service && service->new_badge_registry() &&
       service->new_badge_registry()->IsFeatureRegistered(feature)) {
     service->new_badge_controller()->NotifyFeatureUsedIfValid(feature);
   }
 }
 
 bool BrowserView::MaybeShowNewBadgeFor(const base::Feature& feature) {
-  auto* const controller =
-      UserEducationServiceFactory::GetForBrowserContext(GetProfile())
-          ->new_badge_controller();
-  return controller && controller->MaybeShowNewBadge(feature);
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
+  return service && service->new_badge_controller() &&
+         service->new_badge_controller()->MaybeShowNewBadge(feature);
 }
 
 bool BrowserView::DoCutCopyPasteForWebContents(WebContents* contents,

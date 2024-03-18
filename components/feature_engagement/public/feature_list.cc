@@ -151,7 +151,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHBatterySaverModeFeature,
     &kIPHCompanionSidePanelFeature,
     &kIPHCompanionSidePanelRegionSearchFeature,
-    &kIPHComposeMenuNewBadgeFeature,
     &kIPHComposeMSBBSettingsFeature,
     &kIPHComposeNewBadgeFeature,
     &kIPHDeepScanPromptRemovalFeature,

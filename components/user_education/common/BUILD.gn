@@ -46,8 +46,6 @@ source_set("common") {
     "new_badge_specification.h",
     "product_messaging_controller.cc",
     "product_messaging_controller.h",
-    "scoped_new_badge_tracker_base.cc",
-    "scoped_new_badge_tracker_base.h",
     "tutorial.cc",
     "tutorial.h",
     "tutorial_description.cc",

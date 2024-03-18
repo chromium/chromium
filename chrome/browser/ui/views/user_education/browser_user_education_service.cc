@@ -48,8 +48,10 @@
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/new_badge_specification.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_education/common/tutorial_registry.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_metadata.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
@@ -1168,7 +1170,20 @@ void MaybeRegisterChromeTutorials(
 }
 
 void MaybeRegisterNewBadges(user_education::NewBadgeRegistry& registry) {
-  // TODO(dfried): Register "New" Badges here.
+  if (registry.IsFeatureRegistered(
+          user_education::features::kNewBadgeTestFeature)) {
+    return;
+  }
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      user_education::features::kNewBadgeTestFeature,
+      user_education::Metadata(124, "Frizzle Team",
+                               "Used to test \"New\" Badge logic.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      compose::features::kEnableCompose, user_education::Metadata()));
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      compose::features::kEnableComposeNudge, user_education::Metadata()));
 }
 
 std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
@@ -1192,7 +1207,10 @@ std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
       user_education_service->feature_promo_registry());
   MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
   CHECK(user_education_service->new_badge_registry());
+
   MaybeRegisterNewBadges(*user_education_service->new_badge_registry());
+  user_education_service->new_badge_controller()->InitData();
+
   return std::make_unique<BrowserFeaturePromoController>(
       browser_view,
       feature_engagement::TrackerFactory::GetForBrowserContext(profile),

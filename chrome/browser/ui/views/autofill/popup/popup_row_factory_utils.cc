@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -336,21 +337,13 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreatePasswordPopupRowContentView(suggestion));
     case PopupItemId::kCompose: {
-      auto tracker = std::make_unique<ScopedNewBadgeTracker>(
-          controller->GetWebContents()->GetBrowserContext());
-      const bool show_new_badge = tracker->TryShowNewBadge(
-          feature_engagement::kIPHComposeNewBadgeFeature,
-          &compose::features::kEnableComposeNudge);
-      auto new_badge_tracker =
-          PopupRowView::ScopedNewBadgeTrackerWithAcceptAction(
-              std::move(tracker),
-              /*action_name=*/"compose_activated");
-      auto row_view = std::make_unique<PopupRowView>(
+      const bool show_new_badge = UserEducationService::MaybeShowNewBadge(
+          controller->GetWebContents()->GetBrowserContext(),
+          compose::features::kEnableComposeNudge);
+      return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreateComposePopupRowContentView(suggestion, show_new_badge));
-      row_view->set_new_badge_tracker(std::move(new_badge_tracker));
-      return row_view;
-    };
+    }
     default:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,

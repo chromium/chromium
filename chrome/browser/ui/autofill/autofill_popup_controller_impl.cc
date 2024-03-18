@@ -62,6 +62,9 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 
 using FillingSource = ManualFillingController::FillingSource;
+#else
+#include "chrome/browser/user_education/user_education_service.h"
+#include "components/compose/core/browser/compose_features.h"
 #endif
 
 using base::WeakPtr;
@@ -441,6 +444,12 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  UserEducationService::MaybeNotifyPromoFeatureUsed(
+      web_contents_->GetBrowserContext(),
+      compose::features::kEnableComposeNudge);
+#endif
 
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` can call `SetSuggestions()` and invalidate the
