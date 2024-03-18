@@ -272,7 +272,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, FallsBackToOldManifestPath) {
   builder.AddExchange(
       "/manifest.webmanifest",
       {{":status", "200"}, {"content-type", "application/manifest+json"}},
-      ManifestBuilder().SetName("fallback manifest").ToJson());
+      ManifestBuilder()
+          .AddIcon("/icon.png", gfx::Size(256, 256), "image/png")
+          .SetName("fallback manifest")
+          .ToJson());
   builder.AddExchange("/", {{":status", "200"}, {"content-type", "text/html"}},
                       "Test html");
   builder.AddExchange("/icon.png",

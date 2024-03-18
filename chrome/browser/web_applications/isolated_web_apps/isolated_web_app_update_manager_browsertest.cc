@@ -173,12 +173,10 @@ class IsolatedWebAppUpdateManagerBrowserTest
         });
       )");
     base::FilePath bundle_304_path = temp_dir_.Append(kBundle304FileName);
-    std::vector<uint8_t> bundle_304_contents =
-        builder.BuildInMemoryBundle(key_pair);
-    CHECK(base::WriteFile(bundle_304_path, bundle_304_contents));
+    bundle_304_ = builder.BuildBundle(bundle_304_path, key_pair);
 
     base::FilePath bundle_706_path = temp_dir_.Append(kBundle706FileName);
-    std::vector<uint8_t> bundle_706_contents =
+    bundle_706_ =
         IsolatedWebAppBuilder(
             ManifestBuilder().SetName("app-7.0.6").SetVersion("7.0.6"))
             .AddHtml("/", R"(
@@ -189,8 +187,7 @@ class IsolatedWebAppUpdateManagerBrowserTest
                   <h1>Hello from version 7.0.6</h1>
                 </body>
             )")
-            .BuildInMemoryBundle(key_pair);
-    CHECK(base::WriteFile(bundle_706_path, bundle_706_contents));
+            .BuildBundle(bundle_706_path, key_pair);
 
     EXPECT_TRUE(base::WriteFile(
         temp_dir_.Append(kUpdateManifestFileName),
@@ -213,6 +210,8 @@ class IsolatedWebAppUpdateManagerBrowserTest
   std::optional<IsolatedWebAppUrlInfo> url_info_;
   base::FilePath temp_dir_;
   net::EmbeddedTestServer iwa_server_;
+  std::unique_ptr<BundledIsolatedWebApp> bundle_304_;
+  std::unique_ptr<BundledIsolatedWebApp> bundle_706_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {

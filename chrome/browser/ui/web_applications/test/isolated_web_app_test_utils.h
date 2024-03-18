@@ -99,6 +99,13 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
         IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
         base::Version("1.0.0")));
 
+// Simulates navigating `web_contents` main frame to the provided isolated-app:
+// URL for unit tests. `TestWebContents::NavigateAndCommit` won't work for IWAs
+// because they require COI headers, but the IsolatedWebAppURLLoaderFactory
+// that injects them isn't run in RenderViewHostTestHarness-based unit tests.
+void SimulateIsolatedWebAppNavigation(content::WebContents* web_contents,
+                                      const GURL& url);
+
 // TODO(cmfcmf): Move more test utils into this `test` namespace
 namespace test {
 

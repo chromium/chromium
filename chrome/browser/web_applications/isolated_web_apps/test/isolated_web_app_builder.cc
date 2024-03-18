@@ -17,6 +17,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -41,6 +43,9 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -77,9 +82,12 @@ void FakeInstallPageState(Profile* profile,
   for (const blink::Manifest::ImageResource& icon : blink_manifest->icons) {
     FakeWebContentsManager::FakeIconState& icon_state =
         fake_web_contents_manager.GetOrCreateIconState(icon.src);
-    // For now we use a placeholder square icon rather than reading the icons
+    // For now we use a placeholder icon rather than reading the icons
     // from the app.
-    icon_state.bitmaps = {CreateSquareIcon(256, SK_ColorWHITE)};
+    icon_state.bitmaps = {SkBitmap()};
+    icon_state.bitmaps[0].allocN32Pixels(icon.sizes[0].width(),
+                                         icon.sizes[0].height());
+    icon_state.bitmaps[0].eraseColor(SK_ColorWHITE);
   }
 
   GURL install_url = base_url.Resolve(kInstallPagePath);
@@ -216,16 +224,6 @@ ScopedProxyIsolatedWebApp::ScopedProxyIsolatedWebApp(
 
 ScopedProxyIsolatedWebApp::~ScopedProxyIsolatedWebApp() = default;
 
-void ScopedProxyIsolatedWebApp::FakeInstallPageState(
-    Profile* profile,
-    const web_package::SignedWebBundleId& web_bundle_id) {
-  CHECK(manifest_builder_.has_value());
-  auto url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
-  ::web_app::FakeInstallPageState(
-      profile, url_info, manifest_builder_->ToBlinkManifest(url_info.origin()));
-}
-
 IsolatedWebAppUrlInfo ScopedProxyIsolatedWebApp::InstallChecked(
     Profile* profile) {
   auto result = Install(profile);
@@ -248,12 +246,25 @@ ScopedProxyIsolatedWebApp::Install(
                                 IwaSourceProxy(proxy_server_->GetOrigin())));
 }
 
+ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
+    bool wildcard,
+    bool self,
+    std::vector<url::Origin> origins)
+    : wildcard(wildcard), self(self), origins(origins) {
+  CHECK(!(wildcard && self));
+  CHECK(!(wildcard && !origins.empty()));
+}
+
+ManifestBuilder::PermissionsPolicy::PermissionsPolicy(
+    const ManifestBuilder::PermissionsPolicy&) = default;
+ManifestBuilder::PermissionsPolicy::~PermissionsPolicy() = default;
+
 ManifestBuilder::ManifestBuilder()
-    : name_("Test App"),
-      version_("0.0.1"),
-      start_url_("/"),
-      permissions_policy_{{"cross-origin-isolated", {"self"}}},
-      icon_paths_{"/icon.png"} {}
+    : name_("Test App"), version_("0.0.1"), start_url_("/") {
+  AddPermissionsPolicy(
+      blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
+      /*self=*/true, /*origins=*/{});
+}
 
 ManifestBuilder::ManifestBuilder(const ManifestBuilder&) = default;
 ManifestBuilder::~ManifestBuilder() = default;
@@ -273,15 +284,30 @@ ManifestBuilder& ManifestBuilder::SetStartUrl(std::string_view start_url) {
   return *this;
 }
 
-ManifestBuilder& ManifestBuilder::AddPermissionsPolicy(
-    std::string_view name,
-    std::vector<std::string> value) {
-  permissions_policy_[std::string(name)] = value;
+ManifestBuilder& ManifestBuilder::AddIcon(std::string_view resource_path,
+                                          gfx::Size size,
+                                          std::string_view content_type) {
+  icons_.emplace_back(std::string(resource_path), size,
+                      std::string(content_type));
   return *this;
 }
 
-ManifestBuilder& ManifestBuilder::AddIcon(std::string_view resource_path) {
-  icon_paths_.emplace_back(resource_path);
+ManifestBuilder& ManifestBuilder::AddPermissionsPolicyWildcard(
+    blink::mojom::PermissionsPolicyFeature feature) {
+  permissions_policy_.insert_or_assign(
+      feature,
+      ManifestBuilder::PermissionsPolicy(/*wildcard=*/true, /*self=*/false,
+                                         /*origins=*/{}));
+  return *this;
+}
+
+ManifestBuilder& ManifestBuilder::AddPermissionsPolicy(
+    blink::mojom::PermissionsPolicyFeature feature,
+    bool self,
+    std::vector<url::Origin> origins) {
+  permissions_policy_.insert_or_assign(
+      feature,
+      ManifestBuilder::PermissionsPolicy(/*wildcard=*/false, self, origins));
   return *this;
 }
 
@@ -295,8 +321,9 @@ const std::string& ManifestBuilder::start_url() const {
   return start_url_;
 }
 
-const std::vector<std::string>& ManifestBuilder::icon_paths() const {
-  return icon_paths_;
+const std::vector<ManifestBuilder::IconMetadata>& ManifestBuilder::icons()
+    const {
+  return icons_;
 }
 
 std::string ManifestBuilder::ToJson() const {
@@ -311,20 +338,29 @@ std::string ManifestBuilder::ToJson() const {
   base::Value::Dict policies;
   for (const auto& policy : permissions_policy_) {
     base::Value::List values;
-    for (const auto& value : policy.second) {
-      values.Append(value);
+    if (policy.second.wildcard) {
+      values.Append("*");
     }
-    policies.Set(policy.first, std::move(values));
+    if (policy.second.self) {
+      values.Append("self");
+    }
+    for (const auto& origin : policy.second.origins) {
+      values.Append(origin.Serialize());
+    }
+    std::string_view feature_name =
+        blink::GetPermissionsPolicyFeatureToNameMap().at(policy.first);
+    policies.Set(feature_name, std::move(values));
   }
   json.Set("permissions_policy", std::move(policies));
 
   base::Value::List icons;
-  for (const auto& icon_path : icon_paths_) {
-    // For now we just hardcode the icon size to 256x256.
-    icons.Append(base::Value::Dict()
-                     .Set("src", icon_path)
-                     .Set("sizes", "256x256")
-                     .Set("type", "image/png"));
+  for (const auto& icon : icons_) {
+    icons.Append(
+        base::Value::Dict()
+            .Set("src", icon.resource_path)
+            .Set("sizes", base::StringPrintf("%dx%d", icon.size.width(),
+                                             icon.size.height()))
+            .Set("type", icon.content_type));
   }
   json.Set("icons", std::move(icons));
 
@@ -350,13 +386,13 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
   manifest->start_url = base_url.Resolve(start_url_);
   manifest->display = blink::mojom::DisplayMode::kStandalone;
 
-  for (const auto& icon_path : icon_paths_) {
-    blink::Manifest::ImageResource icon;
-    icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
-    icon.src = base_url.Resolve(icon_path);
-    icon.type = u"image/png";
-    icon.sizes.push_back(gfx::Size(256, 256));
-    manifest->icons.push_back(icon);
+  for (const auto& icon : icons_) {
+    blink::Manifest::ImageResource blink_icon;
+    blink_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+    blink_icon.src = base_url.Resolve(icon.resource_path);
+    blink_icon.type = base::UTF8ToUTF16(icon.content_type);
+    blink_icon.sizes.push_back(icon.size);
+    manifest->icons.push_back(blink_icon);
   }
 
   for (const auto& protocol_handler_pair : protocol_handlers_) {
@@ -367,6 +403,22 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
     manifest->protocol_handlers.push_back(std::move(protocol_handler));
   }
 
+  for (const auto& policy : permissions_policy_) {
+    blink::ParsedPermissionsPolicyDeclaration decl;
+    decl.feature = policy.first;
+    if (policy.second.wildcard) {
+      decl.matches_all_origins = true;
+    }
+    if (policy.second.self) {
+      decl.self_if_matches = url::Origin::Create(base_url);
+    }
+    for (const auto& origin : policy.second.origins) {
+      decl.allowed_origins.push_back(
+          blink::OriginWithPossibleWildcards::FromOrigin(origin).value());
+    }
+    manifest->permissions_policy.push_back(decl);
+  }
+
   // Permissions policy isn't included here as it's not needed by anything
   // yet and is tricky to parse.
 
@@ -374,16 +426,17 @@ blink::mojom::ManifestPtr ManifestBuilder::ToBlinkManifest(
 }
 
 IsolatedWebAppBuilder::Resource::Resource(
+    net::HttpStatusCode status,
     const IsolatedWebAppBuilder::Headers& headers,
     const IsolatedWebAppBuilder::ResourceBody& body)
-    : headers_(headers), body_(body) {}
+    : status_(status), headers_(headers), body_(body) {}
 
 IsolatedWebAppBuilder::Resource::Resource(
     const IsolatedWebAppBuilder::Resource&) = default;
 IsolatedWebAppBuilder::Resource::~Resource() = default;
 
 scoped_refptr<net::HttpResponseHeaders>
-IsolatedWebAppBuilder::Resource::headers() const {
+IsolatedWebAppBuilder::Resource::headers(std::string_view resource_path) const {
   scoped_refptr<net::HttpResponseHeaders> http_headers;
 
   if (const base::FilePath* path = absl::get_if<base::FilePath>(&body_)) {
@@ -410,10 +463,23 @@ IsolatedWebAppBuilder::Resource::headers() const {
     http_headers->AddHeader(header.name, header.value);
   }
 
-  if (!has_content_type && absl::holds_alternative<base::FilePath>(body_)) {
-    http_headers->AddHeader(
-        net::HttpRequestHeaders::kContentType,
-        net::test_server::GetContentType(absl::get<base::FilePath>(body_)));
+  if (!has_content_type) {
+    base::FilePath file_path =
+        absl::visit(base::Overloaded{
+                        [&](const std::string&) {
+                          return base::FilePath::FromUTF8Unsafe(resource_path);
+                        },
+                        [&](const base::FilePath& path) { return path; },
+                    },
+                    body_);
+    std::string content_type = net::test_server::GetContentType(file_path);
+    if (content_type.empty()) {
+      LOG(WARNING) << "Could not infer the Content-Type of " << file_path
+                   << ". Falling back to application/octet-stream.";
+      content_type = "application/octet-stream";
+    }
+    http_headers->AddHeader(net::HttpRequestHeaders::kContentType,
+                            content_type);
   }
   return http_headers;
 }
@@ -434,7 +500,7 @@ IsolatedWebAppBuilder::IsolatedWebAppBuilder(
     const ManifestBuilder& manifest_builder)
     : manifest_builder_(manifest_builder) {
   AddHtml("/", "Test Isolated Web App");
-  AddImageAsPng("/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
+  AddIconAsPng("/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
 }
 
 IsolatedWebAppBuilder::IsolatedWebAppBuilder(const IsolatedWebAppBuilder&) =
@@ -457,11 +523,12 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddResource(
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddResource(
     std::string_view resource_path,
     std::string_view content,
-    const Headers& headers) {
+    const Headers& headers,
+    net::HttpStatusCode status) {
   CHECK(resource_path != kManifestPath)
       << "The manifest must be specified through the ManifestBuilder";
   resources_.insert_or_assign(std::string(resource_path),
-                              Resource(headers, std::string(content)));
+                              Resource(status, headers, std::string(content)));
   return *this;
 }
 
@@ -475,6 +542,14 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddJs(
     std::string_view resource_path,
     std::string_view content) {
   return AddResource(resource_path, content, "text/javascript");
+}
+
+IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddIconAsPng(
+    std::string_view resource_path,
+    const SkBitmap& image) {
+  manifest_builder_.AddIcon(
+      resource_path, gfx::Size(image.width(), image.height()), "image/png");
+  return AddImageAsPng(resource_path, image);
 }
 
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddImageAsPng(
@@ -492,15 +567,17 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFileFromDisk(
     std::string_view resource_path,
     const base::FilePath& file_path,
     const Headers& headers) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   CHECK(base::PathExists(file_path)) << file_path << " does not exist";
   resources_.insert_or_assign(std::string(resource_path),
-                              Resource(headers, file_path));
+                              Resource(net::HTTP_OK, headers, file_path));
   return *this;
 }
 
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
     std::string_view resource_path,
     const base::FilePath& folder_path) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   base::FileEnumerator files(folder_path, /*recursive=*/true,
                              base::FileEnumerator::FILES);
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
@@ -569,13 +646,15 @@ std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
 
 std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
     const web_package::WebBundleSigner::KeyPair& key_pair) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   Validate();
   web_package::WebBundleBuilder builder;
   for (const auto& resource : resources_) {
-    scoped_refptr<net::HttpResponseHeaders> headers = resource.second.headers();
+    scoped_refptr<net::HttpResponseHeaders> headers =
+        resource.second.headers(resource.first);
 
     web_package::WebBundleBuilder::Headers bundle_headers = {
-        {":status", "200"}};
+        {":status", base::ToString(resource.second.status())}};
     size_t iterator = 0;
     std::string name;
     std::string value;
@@ -598,13 +677,15 @@ std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
 }
 
 void IsolatedWebAppBuilder::Validate() {
-  CHECK(resources_.find(manifest_builder_.start_url()) != resources_.end())
-      << "Resource at 'start_url' (" << manifest_builder_.start_url()
-      << ") does not exist";
+  if (resources_.find(manifest_builder_.start_url()) == resources_.end()) {
+    LOG(WARNING) << "Resource at 'start_url' (" << manifest_builder_.start_url()
+                 << ") does not exist";
+  }
 
-  for (const auto& icon_path : manifest_builder_.icon_paths()) {
-    CHECK(resources_.find(icon_path) != resources_.end())
-        << "Icon at '" << icon_path << "' does not exist";
+  for (const auto& icon : manifest_builder_.icons()) {
+    if (resources_.find(icon.resource_path) == resources_.end()) {
+      LOG(WARNING) << "Icon at '" << icon.resource_path << "' does not exist";
+    }
   }
 }
 
@@ -614,6 +695,7 @@ IsolatedWebAppBuilder::HandleRequest(
     const ManifestBuilder& manifest_builder,
     const std::map<std::string, Resource>& resources,
     const net::test_server::HttpRequest& request) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   std::string path = request.GetURL().path();
   if (path == kManifestPath) {
@@ -622,11 +704,11 @@ IsolatedWebAppBuilder::HandleRequest(
     response->set_content(manifest_builder.ToJson());
   } else if (const auto resource = resources.find(path);
              resource != resources.end()) {
-    response->set_code(net::HTTP_OK);
+    response->set_code(resource->second.status());
     response->set_content(resource->second.body());
 
     scoped_refptr<net::HttpResponseHeaders> headers =
-        resource->second.headers();
+        resource->second.headers(resource->first);
 
     size_t iterator = 0;
     std::string name;

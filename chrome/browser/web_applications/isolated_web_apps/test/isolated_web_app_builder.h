@@ -19,8 +19,12 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
+#include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "ui/gfx/geometry/size.h"
 
 class Profile;
 class SkBitmap;
@@ -45,6 +49,24 @@ namespace web_app {
 // A builder for a subset of the Web Manifest spec.
 class ManifestBuilder {
  public:
+  struct IconMetadata {
+    std::string resource_path;
+    gfx::Size size;
+    std::string content_type;
+  };
+
+  struct PermissionsPolicy {
+    PermissionsPolicy(bool wildcard,
+                      bool self,
+                      std::vector<url::Origin> origins);
+    PermissionsPolicy(const PermissionsPolicy&);
+    ~PermissionsPolicy();
+
+    bool wildcard;
+    bool self;
+    std::vector<url::Origin> origins;
+  };
+
   // Creates the following default manifest:
   // {
   //   name: "Test App",
@@ -55,13 +77,6 @@ class ManifestBuilder {
   //   permissions_policy: {
   //     cross-origin-isolated: ["self"]
   //   },
-  //   icons: [
-  //     {
-  //       src: "/icon.png",
-  //       sizes: "256x256",
-  //       type: "image/png"
-  //     }
-  //   ]
   // }
   ManifestBuilder();
   ManifestBuilder(const ManifestBuilder&);
@@ -71,9 +86,17 @@ class ManifestBuilder {
   ManifestBuilder& SetName(std::string_view name);
   ManifestBuilder& SetVersion(std::string_view version);
   ManifestBuilder& SetStartUrl(std::string_view start_url);
-  ManifestBuilder& AddPermissionsPolicy(std::string_view name,
-                                        std::vector<std::string> value);
-  ManifestBuilder& AddIcon(std::string_view resource_path);
+  ManifestBuilder& AddIcon(std::string_view resource_path,
+                           gfx::Size size,
+                           std::string_view content_type);
+
+  ManifestBuilder& AddPermissionsPolicyWildcard(
+      blink::mojom::PermissionsPolicyFeature feature);
+  ManifestBuilder& AddPermissionsPolicy(
+      blink::mojom::PermissionsPolicyFeature feature,
+      bool self,
+      std::vector<url::Origin> origins);
+
   ManifestBuilder& AddProtocolHandler(std::string_view protocol,
                                       std::string_view url);
 
@@ -81,7 +104,7 @@ class ManifestBuilder {
   // share_target as needed by tests.
 
   const std::string& start_url() const;
-  const std::vector<std::string>& icon_paths() const;
+  const std::vector<IconMetadata>& icons() const;
 
   std::string ToJson() const;
   blink::mojom::ManifestPtr ToBlinkManifest(
@@ -91,8 +114,9 @@ class ManifestBuilder {
   std::string name_;
   std::string version_;
   std::string start_url_;
-  std::map<std::string, std::vector<std::string>> permissions_policy_;
-  std::vector<std::string> icon_paths_;
+  std::vector<IconMetadata> icons_;
+  std::map<blink::mojom::PermissionsPolicyFeature, PermissionsPolicy>
+      permissions_policy_;
   std::vector<std::pair<std::string, std::string>> protocol_handlers_;
 };
 
@@ -157,10 +181,6 @@ class ScopedProxyIsolatedWebApp {
 
   net::EmbeddedTestServer& proxy_server() { return *proxy_server_; }
 
-  void FakeInstallPageState(
-      Profile* profile,
-      const web_package::SignedWebBundleId& web_bundle_id);
-
   IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
 
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
@@ -212,7 +232,8 @@ class IsolatedWebAppBuilder {
   // be included in the list of headers.
   IsolatedWebAppBuilder& AddResource(std::string_view resource_path,
                                      std::string_view content,
-                                     const Headers& headers);
+                                     const Headers& headers,
+                                     net::HttpStatusCode status = net::HTTP_OK);
 
   // Adds a text/html type resource to the app.
   IsolatedWebAppBuilder& AddHtml(std::string_view resource_path,
@@ -221,6 +242,11 @@ class IsolatedWebAppBuilder {
   // Adds a text/javascript type resource to the app.
   IsolatedWebAppBuilder& AddJs(std::string_view resource_path,
                                std::string_view content);
+
+  // Adds a image/png type resource to the app, and adds it as an icon in the
+  // manifest.
+  IsolatedWebAppBuilder& AddIconAsPng(std::string_view resource_path,
+                                      const SkBitmap& image);
 
   // Adds a image/png type resource to the app.
   IsolatedWebAppBuilder& AddImageAsPng(std::string_view resource_path,
@@ -277,25 +303,24 @@ class IsolatedWebAppBuilder {
       const base::FilePath& bundle_path,
       const web_package::WebBundleSigner::KeyPair& key_pair);
 
-  // Creates and signs a .swbn file and returns its serialized contents.
-  //
-  // Prefer the BuildBundle overloads that return a ScopedBundledIsolatedWebApp.
-  std::vector<uint8_t> BuildInMemoryBundle(
-      const web_package::WebBundleSigner::KeyPair& key_pair);
-
  private:
   using ResourceBody = absl::variant<base::FilePath, std::string>;
 
   class Resource {
    public:
-    Resource(const Headers& headers, const ResourceBody& body);
+    Resource(net::HttpStatusCode status,
+             const Headers& headers,
+             const ResourceBody& body);
     Resource(const Resource&);
     ~Resource();
 
-    scoped_refptr<net::HttpResponseHeaders> headers() const;
+    net::HttpStatusCode status() const { return status_; }
+    scoped_refptr<net::HttpResponseHeaders> headers(
+        std::string_view resource_path) const;
     std::string body() const;
 
    private:
+    net::HttpStatusCode status_;
     Headers headers_;
     ResourceBody body_;
   };
@@ -304,6 +329,9 @@ class IsolatedWebAppBuilder {
       const ManifestBuilder& manifest_builder,
       const std::map<std::string, Resource>& resources,
       const net::test_server::HttpRequest& request);
+
+  std::vector<uint8_t> BuildInMemoryBundle(
+      const web_package::WebBundleSigner::KeyPair& key_pair);
 
   void Validate();
 
