@@ -267,6 +267,14 @@ const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
     "Chrome start-up.";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kForestFeatureName[] = "Forest";
+const char kForestFeatureDescription[] = "Enable Forest experiment.";
+
+const char kForestKeyName[] = "Forest key";
+const char kForestKeyDescription[] = "Enable Forest key experiment.";
+#endif
+
 #if BUILDFLAG(USE_FONTATIONS_BACKEND)
 const char kFontationsFontBackendName[] = "Enable Fontations font backend";
 const char kFontationsFontBackendDescription[] =

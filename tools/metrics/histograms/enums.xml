@@ -18199,6 +18199,7 @@ from previous Chrome versions.
   <int value="-1217425153" label="ChromeHomeClearUrlOnOpen:enabled"/>
   <int value="-1216837777" label="clear-data-reduction-proxy-data-savings"/>
   <int value="-1216570731" label="OfflineHome:enabled"/>
+  <int value="-1215746151" label="ForestFeature:enabled"/>
   <int value="-1215340781" label="CrOSSystemVoiceIsolationOption:enabled"/>
   <int value="-1215163628"
       label="AccessibilityUnserializeOptimizations:disabled"/>
@@ -22765,6 +22766,7 @@ from previous Chrome versions.
   <int value="852703179" label="OptimizeNetworkBuffers:enabled"/>
   <int value="853279705"
       label="DesktopPWAsAdditionalWindowingControls:disabled"/>
+  <int value="853695274" label="ForestFeature:disabled"/>
   <int value="854294457" label="EnableOmniboxRichEntities:disabled"/>
   <int value="854391022" label="SmartLockUIRevamp:enabled"/>
   <int value="854436130" label="MultiCalendarSupport:enabled"/>
