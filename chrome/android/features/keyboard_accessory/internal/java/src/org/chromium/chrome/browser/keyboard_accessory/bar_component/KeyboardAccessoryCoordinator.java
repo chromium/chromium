@@ -152,20 +152,22 @@ public class KeyboardAccessoryCoordinator {
     }
 
     /**
-     * Creates an adapter to an {@link BarItemViewHolder} that is wired
-     * up to the model change processor which listens to the given item list.
+     * Creates an adapter to an {@link BarItemViewHolder} that is wired up to the model change
+     * processor which listens to the given item list.
+     *
      * @param barItems The list of shown items represented by the adapter.
+     * @param view The keyboard accessory view that will display the bar items.
      * @return Returns a fully initialized and wired adapter to an BarItemViewHolder.
      */
     static RecyclerViewAdapter<BarItemViewHolder, Void> createBarItemsAdapter(
-            ListModel<BarItem> barItems) {
+            ListModel<BarItem> barItems, KeyboardAccessoryView view) {
         return new RecyclerViewAdapter<>(
                 new KeyboardAccessoryRecyclerViewMcp<>(
                         barItems,
                         BarItem::getViewType,
                         BarItemViewHolder::bind,
                         BarItemViewHolder::recycle),
-                KeyboardAccessoryViewBinder::create);
+                (parent, viewType) -> KeyboardAccessoryViewBinder.create(view, parent, viewType));
     }
 
     public void closeActiveTab() {

@@ -86,15 +86,22 @@ class KeyboardAccessoryIPHUtils {
      * feature. The help bubble will not be shown if the {@link Tracker} doesn't allow it anymore.
      * This may happen for example: if it was shown too often, too many IPH were triggered this
      * session or other config restrictions apply.
+     *
      * @param feature A String identifying the IPH feature and its appropriate help text.
      * @param rectProvider The {@link RectProvider} providing bounds to which the bubble will point.
-     * @param context  Context to draw resources from.
+     * @param context Context to draw resources from.
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
+     * @return The boolean value indicating whether the IPH has been shown.
      */
-    static void showHelpBubble(
-            String feature, RectProvider rectProvider, Context context, View rootView) {
-        TextBubble helpBubble = createBubble(feature, rectProvider, context, rootView, null);
+    static boolean showHelpBubble(
+            String feature,
+            RectProvider rectProvider,
+            Context context,
+            View rootView) {
+        TextBubble helpBubble =
+                createBubble(feature, rectProvider, context, rootView, null);
         if (helpBubble != null) helpBubble.show();
+        return helpBubble != null;
     }
 
     /**
@@ -102,20 +109,25 @@ class KeyboardAccessoryIPHUtils {
      * feature. The help bubble will not be shown if the {@link Tracker} doesn't allow it anymore.
      * This may happen for example: if it was shown too often, too many IPH were triggered this
      * session or other config restrictions apply.
+     *
      * @param feature A String identifying the IPH feature and its appropriate help text.
      * @param rectProvider The {@link RectProvider} providing bounds to which the bubble will point.
-     * @param context  Context to draw resources from.
+     * @param context Context to draw resources from.
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
      * @param helpText String that should be displayed within the IPH bubble.
+     * @return The boolean value indicating whether the IPH has been shown.
      */
-    static void showHelpBubble(
+    static boolean showHelpBubble(
             String feature,
             RectProvider rectProvider,
             Context context,
             View rootView,
             @Nullable String helpText) {
-        TextBubble helpBubble = createBubble(feature, rectProvider, context, rootView, helpText);
+        TextBubble helpBubble =
+                createBubble(
+                        feature, rectProvider, context, rootView, helpText);
         if (helpBubble != null) helpBubble.show();
+        return helpBubble != null;
     }
 
     /**
@@ -123,17 +135,26 @@ class KeyboardAccessoryIPHUtils {
      * feature. The help bubble will not be shown if the {@link Tracker} doesn't allow it anymore.
      * This may happen for example: if it was shown too often, too many IPH were triggered this
      * session or other config restrictions apply.
+     *
      * @param feature A String identifying the IPH feature and its appropriate help text.
      * @param view The {@link View} providing context and the Rect to which the bubble will point.
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
      * @param helpText String that should be displayed within the IPH bubble.
+     * @return The boolean value indicating whether the IPH has been shown.
      */
-    static void showHelpBubble(
-            String feature, View view, View rootView, @Nullable String helpText) {
+    static boolean showHelpBubble(
+            String feature,
+            View view,
+            View rootView,
+            @Nullable String helpText) {
         TextBubble helpBubble =
                 createBubble(
-                        feature, new ViewRectProvider(view), view.getContext(), rootView, helpText);
-        if (helpBubble == null) return;
+                        feature,
+                        new ViewRectProvider(view),
+                        view.getContext(),
+                        rootView,
+                        helpText);
+        if (helpBubble == null) return false;
         // To emphasize which chip is pointed to, set selected to true for the built-in highlight.
         // Prefer ViewHighlighter for views without a LayerDrawable background.
         view.setSelected(true);
@@ -142,6 +163,7 @@ class KeyboardAccessoryIPHUtils {
                     view.setSelected(false);
                 });
         helpBubble.show();
+        return true;
     }
 
     private static TextBubble createBubble(

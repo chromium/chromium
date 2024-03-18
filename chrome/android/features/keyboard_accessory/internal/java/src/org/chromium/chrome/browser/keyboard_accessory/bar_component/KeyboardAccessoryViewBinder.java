@@ -48,10 +48,11 @@ import org.chromium.ui.widget.RectProvider;
  * the view accordingly.
  */
 class KeyboardAccessoryViewBinder {
-    static BarItemViewHolder create(ViewGroup parent, @BarItem.Type int viewType) {
+    static BarItemViewHolder create(
+            KeyboardAccessoryView keyboarAccessory, ViewGroup parent, @BarItem.Type int viewType) {
         switch (viewType) {
             case BarItem.Type.SUGGESTION:
-                return new BarItemChipViewHolder(parent);
+                return new BarItemChipViewHolder(parent, keyboarAccessory);
             case BarItem.Type.TAB_LAYOUT:
                 return new SheetOpenerViewHolder(parent);
             case BarItem.Type.ACTION_BUTTON:
@@ -90,37 +91,48 @@ class KeyboardAccessoryViewBinder {
 
     static class BarItemChipViewHolder extends BarItemViewHolder<AutofillBarItem, ChipView> {
         private final View mRootViewForIPH;
+        private final KeyboardAccessoryView mKeyboardAccessory;
 
-        BarItemChipViewHolder(ViewGroup parent) {
+        BarItemChipViewHolder(ViewGroup parent, KeyboardAccessoryView keyboardAccessory) {
             super(parent, R.layout.keyboard_accessory_suggestion);
             mRootViewForIPH = parent.getRootView();
+            mKeyboardAccessory = keyboardAccessory;
         }
 
         @Override
         protected void bind(AutofillBarItem item, ChipView chipView) {
             TraceEvent.begin("BarItemChipViewHolder#bind");
             int iconId = item.getSuggestion().getIconId();
+            boolean isIPHShown = false;
             if (item.getFeatureForIPH() != null) {
                 if (item.getFeatureForIPH()
                         .equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)) {
                     if (iconId != 0) {
-                        showHelpBubble(
-                                item.getFeatureForIPH(),
-                                chipView.getStartIconViewRect(),
-                                chipView.getContext(),
-                                mRootViewForIPH,
-                                item.getSuggestion().getItemTag());
+                        isIPHShown =
+                                showHelpBubble(
+                                        item.getFeatureForIPH(),
+                                        chipView.getStartIconViewRect(),
+                                        chipView.getContext(),
+                                        mRootViewForIPH,
+                                        item.getSuggestion().getItemTag());
                     } else {
-                        showHelpBubble(
-                                item.getFeatureForIPH(),
-                                chipView,
-                                mRootViewForIPH,
-                                item.getSuggestion().getItemTag());
+                        isIPHShown =
+                                showHelpBubble(
+                                        item.getFeatureForIPH(),
+                                        chipView,
+                                        mRootViewForIPH,
+                                        item.getSuggestion().getItemTag());
                     }
                 } else {
-                    showHelpBubble(item.getFeatureForIPH(), chipView, mRootViewForIPH, null);
+                    isIPHShown =
+                            showHelpBubble(
+                                    item.getFeatureForIPH(),
+                                    chipView,
+                                    mRootViewForIPH,
+                                    null);
                 }
             }
+            mKeyboardAccessory.setAllowClicksWhileObscured(isIPHShown);
 
             // Credit card chips never occupy the entire width of the window to allow for other
             // cards (if they exist) to be seen. Their max width is set to 85% of the window width.
@@ -247,7 +259,7 @@ class KeyboardAccessoryViewBinder {
     static void bind(PropertyModel model, KeyboardAccessoryView view, PropertyKey propertyKey) {
         if (propertyKey == BAR_ITEMS) {
             view.setBarItemsAdapter(
-                    KeyboardAccessoryCoordinator.createBarItemsAdapter(model.get(BAR_ITEMS)));
+                    KeyboardAccessoryCoordinator.createBarItemsAdapter(model.get(BAR_ITEMS), view));
         } else if (propertyKey == DISABLE_ANIMATIONS_FOR_TESTING) {
             if (model.get(DISABLE_ANIMATIONS_FOR_TESTING)) view.disableAnimationsForTesting();
         } else if (propertyKey == VISIBLE) {
@@ -268,11 +280,13 @@ class KeyboardAccessoryViewBinder {
             if (model.get(SHOW_SWIPING_IPH)
                     && swipingIphRectProvider != null
                     && hasShownAnyAutofillIphBefore()) {
-                showHelpBubble(
-                        FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
-                        swipingIphRectProvider,
-                        view.getContext(),
-                        view.mBarItemsView);
+                boolean isIPHShown =
+                        showHelpBubble(
+                                FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
+                                swipingIphRectProvider,
+                                view.getContext(),
+                                view.mBarItemsView);
+                view.setAllowClicksWhileObscured(isIPHShown);
             }
         } else if (propertyKey == HAS_SUGGESTIONS) {
             view.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));
