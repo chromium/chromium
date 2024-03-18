@@ -1653,7 +1653,8 @@ void CopyDeprecatedRenderURLReplacementsFromIdlToMojo(
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasDeprecatedRenderURLReplacements()) {
     // If the page passed no ad replacements, do nothing and pass an empty map.
-    output.deprecated_render_url_replacements = mojom::blink::
+    output.auction_ad_config_non_shared_params
+        ->deprecated_render_url_replacements = mojom::blink::
         AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements::NewValue(
             {});
     return;
@@ -1663,7 +1664,8 @@ void CopyDeprecatedRenderURLReplacementsFromIdlToMojo(
       MakeGarbageCollected<NavigatorAuction::AuctionHandle::
                                DeprecatedRenderURLReplacementsResolved>(
           auction_handle, auction_id->Clone(), input.seller()));
-  output.deprecated_render_url_replacements = mojom::blink::
+  output.auction_ad_config_non_shared_params
+      ->deprecated_render_url_replacements = mojom::blink::
       AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements::NewPromise(0);
 }
 

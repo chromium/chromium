@@ -119,7 +119,10 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
    "maxTrustedScoringSignalsURLLength": 2560,
    "deprecatedRenderURLReplacements" : {
       "pending": false,
-      "value": [ ]
+      "value": [ {
+         "match": "${SELLER}",
+         "replacement": "ExampleSSP"
+      } ]
    },
    "interestGroupBuyers": [ "https://buyer.test" ],
    "perBuyerCumulativeTimeouts": {

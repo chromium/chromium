@@ -369,6 +369,10 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
     // level auction config can have component auctions.
     std::vector<AuctionConfig> component_auctions;
 
+    // Opaque map object, representing the replacements for ad creative urls.
+    MaybePromiseDeprecatedRenderURLReplacements
+        deprecated_render_url_replacements;
+
     // The maximum length limit for the trusted scoring signal fetch URL. Can
     // only be set as either 0 or a positive number. A value of 0 indicates that
     // there is no limit.
@@ -406,10 +410,6 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // Both URLS, if present, must be same-origin to `seller`.
   std::optional<GURL> decision_logic_url;
   std::optional<GURL> trusted_scoring_signals_url;
-
-  // Opaque map object, representing the replacements for ad creative urls.
-  MaybePromiseDeprecatedRenderURLReplacements
-      deprecated_render_url_replacements;
 
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   NonSharedParams non_shared_params;
@@ -462,7 +462,7 @@ If modifying AuctionConfig fields, please make sure to also modify:
 * If the value has special validation logic, add a test to
     third_party/blink/common/interest_group/auction_config_mojom_traits_test.cc
   (If it's just passing along some values, adding to CreateFullAuctionConfig()
-   will provide some coverage automatically).
+  will provide some coverage automatically).
 )");
 };
 

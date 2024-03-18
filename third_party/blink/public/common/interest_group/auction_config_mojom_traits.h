@@ -389,6 +389,13 @@ struct BLINK_COMMON_EXPORT
     return params.all_slots_requested_sizes;
   }
 
+  static const blink::AuctionConfig::
+      MaybePromiseDeprecatedRenderURLReplacements&
+      deprecated_render_url_replacements(
+          const blink::AuctionConfig::NonSharedParams& params) {
+    return params.deprecated_render_url_replacements;
+  }
+
   static const base::flat_map<url::Origin, uint16_t>&
   per_buyer_multi_bid_limits(
       const blink::AuctionConfig::NonSharedParams& params) {
@@ -471,11 +478,6 @@ struct BLINK_COMMON_EXPORT
     return config.per_buyer_experiment_group_ids;
   }
 
-  static const blink::AuctionConfig::
-      MaybePromiseDeprecatedRenderURLReplacements&
-      deprecated_render_url_replacements(const blink::AuctionConfig& config) {
-    return config.deprecated_render_url_replacements;
-  }
 
   static bool expects_additional_bids(const blink::AuctionConfig& config) {
     return config.expects_additional_bids;

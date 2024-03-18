@@ -230,13 +230,14 @@ void AuctionRunner::ResolvedDeprecatedRenderURLReplacementsPromise(
         "Invalid auction ID in ResolvedDeprecatedRenderURLReplacementsPromise");
     return;
   }
-  if (!config->deprecated_render_url_replacements.is_promise()) {
+  if (!config->non_shared_params.deprecated_render_url_replacements
+           .is_promise()) {
     mojo::ReportBadMessage(
         "ResolvedDeprecatedRenderURLReplacementsPromise updating non-promise");
     return;
   }
 
-  config->deprecated_render_url_replacements =
+  config->non_shared_params.deprecated_render_url_replacements =
       blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements::
           FromValue(deprecated_render_url_replacements);
   NotifyPromiseResolved(auction_id.get(), config);

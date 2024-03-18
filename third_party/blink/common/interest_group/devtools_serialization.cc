@@ -345,7 +345,8 @@ base::Value::Dict SerializeAuctionConfigForDevtools(const AuctionConfig& conf) {
   SerializeIntoDict("trustedScoringSignalsURL",
                     conf.trusted_scoring_signals_url, result);
   SerializeIntoDict("deprecatedRenderURLReplacements",
-                    conf.deprecated_render_url_replacements, result);
+                    conf.non_shared_params.deprecated_render_url_replacements,
+                    result);
   SerializeIntoDict("interestGroupBuyers",
                     conf.non_shared_params.interest_group_buyers, result);
   SerializeIntoDict("auctionSignals", conf.non_shared_params.auction_signals,

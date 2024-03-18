@@ -48,6 +48,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
@@ -388,6 +389,30 @@ bool AppendAuctionConfig(
           *auction_ad_config_non_shared_params.seller_signals.value(),
           auction_config_value)) {
     return false;
+  }
+
+  DCHECK(!auction_ad_config_non_shared_params.deprecated_render_url_replacements
+              .is_promise());
+
+  if (!auction_ad_config_non_shared_params.deprecated_render_url_replacements
+           .value()
+           .empty()) {
+    v8::Local<v8::Object> deprecated_render_url_replacements =
+        v8::Object::New(isolate);
+    for (const auto& kv : auction_ad_config_non_shared_params
+                              .deprecated_render_url_replacements.value()) {
+      v8::Local<v8::String> v8_replacement;
+      if (!v8_helper->CreateUtf8String(kv.replacement)
+               .ToLocal(&v8_replacement)) {
+        return false;
+      }
+      if (!v8_helper->InsertValue(kv.match, v8_replacement,
+                                  deprecated_render_url_replacements)) {
+        return false;
+      }
+    }
+    auction_config_dict.Set("deprecatedRenderURLReplacements",
+                            deprecated_render_url_replacements);
   }
 
   if (auction_ad_config_non_shared_params.seller_timeout.has_value() &&

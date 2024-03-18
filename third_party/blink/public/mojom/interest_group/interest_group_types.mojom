@@ -493,6 +493,9 @@ struct AuctionAdConfigNonSharedParams {
   // level auction config can have component auctions.
   array<AuctionAdConfig> component_auctions;
 
+  // The ad render url replacements for their respective ad URL. If promise is
+  // never given, this will resolve to an empty vector.
+  AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements deprecated_render_url_replacements;
   // The maximum length limit for the trusted scoring signal fetch URL. Can
   // only be set as either 0 or a positive number. A value of 0 indicates
   // that there is no limit.
@@ -535,9 +538,6 @@ struct AuctionAdConfig {
   // renderer process. See details in the DirectFromSellerSignals comment.
   AuctionAdConfigMaybePromiseDirectFromSellerSignals direct_from_seller_signals;
 
-  // The ad render url replacements for their respective ad URL. If promise is
-  // never given, this will resolve to an empty vector.
-  AuctionAdConfigMaybePromiseDeprecatedRenderURLReplacements deprecated_render_url_replacements;
 
   // Like `direct_from_seller_signals`, but passed from the page via a different
   // mechanism. `direct_from_seller_signals` searches for the contents of

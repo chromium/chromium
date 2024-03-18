@@ -9036,12 +9036,17 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsDisabledTest,
           seller: $1,
           decisionLogicURL: $2,
           interestGroupBuyers: [$1],
+          // Signal for verifying that what goes into scoreAd matches
+          // the deprecatedRenderURLReplacements.
+          sellerSignals: {deprecatedRenderURLReplacementsExpected: undefined},
           deprecatedRenderURLReplacements:
               maybePromise({$3: "render_cars", "%%echo%%": "echo"})
         })",
         test_origin,
         embedded_https_test_server().GetURL(
-            "a.test", "/interest_group/decision_logic.js"),
+            "a.test",
+            "/interest_group/"
+            "decision_logic_deprecated_render_url_replacements_validator.js"),
         "${INTEREST_GROUP_NAME}");
     auto result = RunAuctionAndWait(auction_config,
                                     /*execution_target=*/std::nullopt);
@@ -9159,12 +9164,18 @@ IN_PROC_BROWSER_TEST_F(DeprecatedRenderURLReplacementsEnabledTest,
           seller: $1,
           decisionLogicURL: $2,
           interestGroupBuyers: [$1],
+          // Signal for verifying that what goes into scoreAd matches
+          // the deprecatedRenderURLReplacements.
+          sellerSignals: {deprecatedRenderURLReplacementsExpected:
+            {$3: "render_cars", "%%echo%%": "echo"}},
           deprecatedRenderURLReplacements:
               maybePromise({$3: "render_cars", "%%echo%%": "echo"})
         })",
         test_origin,
         embedded_https_test_server().GetURL(
-            "a.test", "/interest_group/decision_logic.js"),
+            "a.test",
+            "/interest_group/"
+            "decision_logic_deprecated_render_url_replacements_validator.js"),
         "${INTEREST_GROUP_NAME}");
     auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());
@@ -9318,6 +9329,9 @@ IN_PROC_BROWSER_TEST_F(
           // Signal to the top-level seller to allow participation in a
           // component auction.
           auctionSignals: "sellerAllowsComponentAuction",
+          // Signal for verifying that what goes into scoreAd matches
+          // the deprecatedRenderURLReplacements.
+          sellerSignals: {deprecatedRenderURLReplacementsExpected: undefined},
           componentAuctions: [{
             seller: $1,
             decisionLogicURL: $2,
@@ -9326,13 +9340,19 @@ IN_PROC_BROWSER_TEST_F(
             // in a component auction.
             auctionSignals: "bidderAllowsComponentAuction,"+
                             "sellerAllowsComponentAuction",
+            // Signal for verifying that what goes into scoreAd matches
+            // the deprecatedRenderURLReplacements.
+            sellerSignals: {deprecatedRenderURLReplacementsExpected:
+               {$3: "render_cars", "%%echo%%": "echo"}},
             deprecatedRenderURLReplacements:
                 maybePromise({$3: "render_cars", "%%echo%%": "echo"})
           }]
         })",
         test_origin,
         embedded_https_test_server().GetURL(
-            "a.test", "/interest_group/decision_logic.js"),
+            "a.test",
+            "/interest_group/"
+            "decision_logic_deprecated_render_url_replacements_validator.js"),
         "${INTEREST_GROUP_NAME}");
     auto result = RunAuctionAndWait(auction_config);
     GURL urn_url = GURL(result.ExtractString());

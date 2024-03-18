@@ -3351,6 +3351,13 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
           std::move(buyer_cumulative_timeouts));
 
+  std::vector<blink::AuctionConfig::AdKeywordReplacement> example_replacement =
+      {blink::AuctionConfig::AdKeywordReplacement({"${SELLER}", "ExampleSSP"})};
+
+  auction_ad_config_non_shared_params_.deprecated_render_url_replacements =
+      blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements::
+          FromValue(std::move(example_replacement));
+
   blink::AuctionConfig::BuyerCurrencies buyer_currencies;
   buyer_currencies.per_buyer_currencies.emplace();
   buyer_currencies.per_buyer_currencies
@@ -3384,7 +3391,8 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
           "perBuyerTimeouts":{"https://a.com":100,"*":150},
           "perBuyerCumulativeTimeouts":{"https://a.com":101,"*":151},
           "perBuyerPrioritySignals":{"https://a.com":{"signals_c":0.5},
-                                     "*":            {"signals_d":0}}
+                                     "*":            {"signals_d":0}},
+          "deprecatedRenderURLReplacements": {"${SELLER}":"ExampleSSP"}
         })";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(), kExpectedJson1,
@@ -5888,6 +5896,45 @@ TEST_F(SellerWorkletPrivateAggregationDisabledTest, ReportResult) {
       /*expected_errors=*/
       {"https://url.test/:10 Uncaught ReferenceError: privateAggregation is "
        "not defined."});
+}
+
+class SellerWorkletDeprecatedRenderURLReplacementsEnabledTest
+    : public SellerWorkletTest {
+ public:
+  SellerWorkletDeprecatedRenderURLReplacementsEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgeDeprecatedRenderURLReplacements);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SellerWorkletDeprecatedRenderURLReplacementsEnabledTest,
+       DeprecatedRenderURLReplacementsArePresentInScoreAdJavascript) {
+  const std::vector<blink::AuctionConfig::AdKeywordReplacement>
+      example_replacement = {blink::AuctionConfig::AdKeywordReplacement(
+          {"${SELLER}", "ExampleSSP"})};
+
+  auction_ad_config_non_shared_params_.deprecated_render_url_replacements =
+      blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements::
+          FromValue(std::move(example_replacement));
+
+  std::string render_url_replacements_validator =
+      R"(
+        const replacementsJson =
+    JSON.stringify(auctionConfig.deprecatedRenderURLReplacements);
+        if (!(replacementsJson === "{\"${SELLER}\":\"ExampleSSP\"}")) {
+          throw new Error('deprecatedRenderURLReplacements is incorrect' +
+          'or missing.');
+        })";
+
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("1", render_url_replacements_validator), 1,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
 }
 
 }  // namespace

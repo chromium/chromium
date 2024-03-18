@@ -32,8 +32,13 @@ AuctionConfig CreateFullAuctionConfig() {
   const url::Origin buyer = url::Origin::Create(GURL("https://buyer.test"));
   auction_config.per_buyer_experiment_group_ids[buyer] = 3;
 
-  auction_config.deprecated_render_url_replacements = blink::AuctionConfig::
-      MaybePromiseDeprecatedRenderURLReplacements::FromValue({});
+  const std::vector<blink::AuctionConfig::AdKeywordReplacement>
+      deprecated_render_url_replacements = {
+          blink::AuctionConfig::AdKeywordReplacement(
+              {"${SELLER}", "ExampleSSP"})};
+  auction_config.non_shared_params.deprecated_render_url_replacements =
+      blink::AuctionConfig::MaybePromiseDeprecatedRenderURLReplacements::
+          FromValue(deprecated_render_url_replacements);
 
   AuctionConfig::NonSharedParams& non_shared_params =
       auction_config.non_shared_params;

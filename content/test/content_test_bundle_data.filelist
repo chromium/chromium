@@ -6663,6 +6663,8 @@ data/interest_group/decision_argument_validator.js
 data/interest_group/decision_argument_validator.js.mock-http-headers
 data/interest_group/decision_logic.js
 data/interest_group/decision_logic.js.mock-http-headers
+data/interest_group/decision_logic_deprecated_render_url_replacements_validator.js
+data/interest_group/decision_logic_deprecated_render_url_replacements_validator.js.mock-http-headers
 data/interest_group/decision_logic_expect_top_frame_a_test.js
 data/interest_group/decision_logic_expect_top_frame_a_test.js.mock-http-headers
 data/interest_group/decision_logic_loop_forever.js

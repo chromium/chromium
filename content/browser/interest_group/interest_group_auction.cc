@@ -3821,7 +3821,7 @@ InterestGroupAuction::GetDirectFromSellerSellerSignalsHeaderAdSlot(
 
 const std::vector<blink::AuctionConfig::AdKeywordReplacement>&
 InterestGroupAuction::GetDeprecatedRenderURLReplacements() {
-  return config_->deprecated_render_url_replacements.value();
+  return config_->non_shared_params.deprecated_render_url_replacements.value();
 }
 
 InterestGroupAuction::LeaderInfo::LeaderInfo() = default;

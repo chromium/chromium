@@ -215,7 +215,9 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadAllSlotsRequestedSizes(&out->all_slots_requested_sizes) ||
       !data.ReadPerBuyerMultiBidLimits(&out->per_buyer_multi_bid_limits) ||
       !data.ReadAuctionNonce(&out->auction_nonce) ||
-      !data.ReadComponentAuctions(&out->component_auctions)) {
+      !data.ReadComponentAuctions(&out->component_auctions) ||
+      !data.ReadDeprecatedRenderUrlReplacements(
+          &out->deprecated_render_url_replacements)) {
     return false;
   }
 
@@ -304,9 +306,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
       !data.ReadPerBuyerExperimentGroupIds(
           &out->per_buyer_experiment_group_ids) ||
       !data.ReadAggregationCoordinatorOrigin(
-          &out->aggregation_coordinator_origin) ||
-      !data.ReadDeprecatedRenderUrlReplacements(
-          &out->deprecated_render_url_replacements)) {
+          &out->aggregation_coordinator_origin)) {
     return false;
   }
 
