@@ -98,21 +98,17 @@ bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
   return true;
 }
 
-bool DiceAccountReconcilorDelegate::IsUpdateCookieAllowed() const {
+bool DiceAccountReconcilorDelegate::IsCookieBasedConsistencyMode() const {
   CHECK(IsReconcileEnabled());
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
-          switches::ExplicitBrowserSigninPhase::kExperimental)) {
-    // If the user is not signed in to chrome, cookie updates (OAuthMultiLogin)
-    // is not allowed. In this mode, cookies are the source of truth.
-    return identity_manager_->HasPrimaryAccount(
-        GetConsentLevelForPrimaryAccount());
-  }
-  return true;
+  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+             switches::ExplicitBrowserSigninPhase::kExperimental) &&
+         !identity_manager_->HasPrimaryAccount(
+             GetConsentLevelForPrimaryAccount());
 }
 
 void DiceAccountReconcilorDelegate::MatchTokensWithAccountsInCookie(
     const std::vector<gaia::ListedAccount>& gaia_accounts) {
-  CHECK(!IsUpdateCookieAllowed());
+  CHECK(IsCookieBasedConsistencyMode());
   const signin_metrics::SourceForRefreshTokenOperation source =
       signin_metrics::SourceForRefreshTokenOperation::
           kAccountReconcilor_RevokeTokensNotInCookies;
@@ -270,17 +266,18 @@ bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(
     const std::vector<CoreAccountId>& chrome_accounts,
     const std::vector<gaia::ListedAccount>& gaia_accounts,
     bool first_execution) const {
+  // If Gaia accounts are empty, any combination of accounts can be set and
+  // logout is not needed.
+  if (gaia_accounts.empty()) {
+    return false;
+  }
+
   CoreAccountId primary_account = identity_manager_->GetPrimaryAccountId(
       GetConsentLevelForPrimaryAccount());
 
   bool primary_has_error =
       identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account);
-
-  // If Gaia accounts are empty, any combination of accounts can be set and
-  // logout is not needed.
-  if (gaia_accounts.empty())
-    return false;
 
   // On first execution, it's generally OK to reorder accounts. Only logout if
   // the primary account needs to be removed from the first position in cookies
@@ -289,18 +286,26 @@ bool DiceAccountReconcilorDelegate::ShouldRevokeTokensBeforeMultilogin(
     return !primary_account.empty() && primary_has_error &&
            gaia_accounts[0].id == primary_account && gaia_accounts[0].valid;
   }
-  // If there is a valid Sync account, then it's ok to reorder the accounts
+  // If there is a valid primary account, then it's ok to reorder the accounts
   // even though Chrome is running (the accounts would be reordered on the next
   // startup, and this avoids a logout).
   if (!primary_account.empty() && !primary_has_error) {
     return false;
   }
-  // If the first gaia account doesn't have token then logout. Exception: If the
-  // first gaia account is invalid, but it can be left in its place (this is
-  // possible only if there is no need to delete gaia accounts). Other accounts
-  // will be added after.
-  return !base::Contains(chrome_accounts, gaia_accounts[0].id) &&
-         ShouldDeleteAccountsFromGaia(chrome_accounts, gaia_accounts);
+
+  // The default gaia account doesn't have token.
+  if (!base::Contains(chrome_accounts, gaia_accounts[0].id)) {
+    if (IsCookieBasedConsistencyMode()) {
+      // Logout only if the default cookie account is valid.
+      return gaia_accounts[0].valid;
+    }
+
+    // Logout with the exception: If the first gaia account is invalid, but it
+    // can be left in its place (this is possible only if there is no need to
+    // delete gaia accounts). Other accounts will be added after.
+    return ShouldDeleteAccountsFromGaia(chrome_accounts, gaia_accounts);
+  }
+  return false;
 }
 
 CoreAccountId DiceAccountReconcilorDelegate::GetFirstGaiaAccountForMultilogin(
@@ -309,10 +314,10 @@ CoreAccountId DiceAccountReconcilorDelegate::GetFirstGaiaAccountForMultilogin(
     const std::vector<gaia::ListedAccount>& gaia_accounts,
     bool first_execution,
     bool primary_has_error) const {
-  bool valid_sync_account = !primary_account.empty() && !primary_has_error;
-  // On first execution if there is a valid sync account, then primary
+  bool valid_primary_account = !primary_account.empty() && !primary_has_error;
+  // On first execution if there is a valid primary account, then primary
   // account should be set to the first position.
-  if (first_execution && valid_sync_account) {
+  if (first_execution && valid_primary_account) {
     return primary_account;
   }
   // In case accounts in cookies are accidentally lost we
@@ -324,9 +329,9 @@ CoreAccountId DiceAccountReconcilorDelegate::GetFirstGaiaAccountForMultilogin(
     DCHECK(!first_execution);
     return last_known_first_account_;
   }
-  // If there are no cookies and a valid sync account, then we can
+  // If there are no cookies and a valid primary account, then we can
   // set primary account to first position without reordering.
-  if (gaia_accounts.empty() && valid_sync_account) {
+  if (gaia_accounts.empty() && valid_primary_account) {
     return primary_account;
   }
   // Empty account means that there is no special requirements for
@@ -374,8 +379,8 @@ void DiceAccountReconcilorDelegate::RevokeSecondaryTokensForReconcileIfNeeded(
                                kAccountReconcilor_GaiaCookiesUpdated,
                            signin_metrics::ProfileSignout::kGaiaCookieUpdated,
                            /*revoke_only_if_in_error=*/true);
-  if (!IsUpdateCookieAllowed()) {
-    // Cookie update not enabled, match tokens with Gaia accounts.
+  if (IsCookieBasedConsistencyMode()) {
+    // Refresh tokens with no equivalent account in the cookie are revoked.
     MatchTokensWithAccountsInCookie(gaia_accounts);
   }
 }
@@ -395,8 +400,8 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
     return;
   }
 
-  // In the UNO model the primary account should not be signed out if the
-  // account cookie is deleted by user action.
+  // In the UNO model the primary account should not be signed out if
+  // authentication cookies are deleted by user action.
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
           switches::ExplicitBrowserSigninPhase::kExperimental) &&
       !identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
