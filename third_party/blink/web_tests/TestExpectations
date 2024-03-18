@@ -6934,6 +6934,10 @@ crbug.com/40230609 external/wpt/html/canvas/element/manual/wide-gamut-canvas/can
 # Gardener 2023-03-08
 crbug.com/328719549 [ Linux ] inspector-protocol/memory/sampling-native-snapshot.js [ Failure Pass Timeout ]
 
+# Gardener 2023-03-18 (EMEA)
+crbug.com/330126415 [ Win ] http/tests/devtools/console/console-stack-overflow.js [ Failure Pass ]
+crbug.com/330126277 [ Win ] media/controls/video-overlay-cast-dark-rendering.html [ Failure Pass ]
+
 # Flaky test on Mac14/Mac14-arm64
 [ Mac14 ] css3/blending/svg-blend-exclusion.html [ Failure ]
 [ Mac14 ] css3/blending/svg-blend-multiply.html [ Failure ]
