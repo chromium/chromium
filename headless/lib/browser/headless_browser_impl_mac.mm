@@ -12,7 +12,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
-#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 #import "ui/base/cocoa/base_view.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
@@ -71,8 +71,8 @@ const NSActivityOptions kActivityOptions =
 void HeadlessBrowserImpl::PlatformInitialize() {
   if (!geolocation_system_permission_manager_) {
     geolocation_system_permission_manager_ =
-        device::SystemGeolocationSourceMac::
-            CreateGeolocationSystemPermissionManagerOnMac();
+        device::SystemGeolocationSourceApple::
+            CreateGeolocationSystemPermissionManager();
   }
   screen_ = std::make_unique<display::ScopedNativeScreen>();
   HeadlessPopUpMethods::Init();

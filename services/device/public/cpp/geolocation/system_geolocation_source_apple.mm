@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 
 #import <CoreLocation/CoreLocation.h>
 
@@ -17,11 +17,11 @@
     : NSObject <CLLocationManagerDelegate> {
   BOOL _permissionInitialized;
   BOOL _hasPermission;
-  base::WeakPtr<device::SystemGeolocationSourceMac> _manager;
+  base::WeakPtr<device::SystemGeolocationSourceApple> _manager;
 }
 
 - (instancetype)initWithManager:
-    (base::WeakPtr<device::SystemGeolocationSourceMac>)manager;
+    (base::WeakPtr<device::SystemGeolocationSourceApple>)manager;
 
 // CLLocationManagerDelegate
 - (void)locationManager:(CLLocationManager*)manager
@@ -35,7 +35,7 @@
 
 namespace device {
 
-SystemGeolocationSourceMac::SystemGeolocationSourceMac()
+SystemGeolocationSourceApple::SystemGeolocationSourceApple()
     : location_manager_([[CLLocationManager alloc] init]),
       permission_update_callback_(base::DoNothing()),
       position_observers_(base::MakeRefCounted<PositionObserverList>()) {
@@ -44,38 +44,38 @@ SystemGeolocationSourceMac::SystemGeolocationSourceMac()
   location_manager_.delegate = delegate_;
 }
 
-SystemGeolocationSourceMac::~SystemGeolocationSourceMac() = default;
+SystemGeolocationSourceApple::~SystemGeolocationSourceApple() = default;
 
 // static
 std::unique_ptr<GeolocationSystemPermissionManager>
-SystemGeolocationSourceMac::CreateGeolocationSystemPermissionManagerOnMac() {
+SystemGeolocationSourceApple::CreateGeolocationSystemPermissionManager() {
   return std::make_unique<GeolocationSystemPermissionManager>(
-      std::make_unique<SystemGeolocationSourceMac>());
+      std::make_unique<SystemGeolocationSourceApple>());
 }
 
-void SystemGeolocationSourceMac::RegisterPermissionUpdateCallback(
+void SystemGeolocationSourceApple::RegisterPermissionUpdateCallback(
     PermissionUpdateCallback callback) {
   permission_update_callback_ = callback;
   permission_update_callback_.Run(GetSystemPermission());
 }
 
-void SystemGeolocationSourceMac::PermissionUpdated() {
+void SystemGeolocationSourceApple::PermissionUpdated() {
   permission_update_callback_.Run(GetSystemPermission());
 }
 
-void SystemGeolocationSourceMac::PositionUpdated(
+void SystemGeolocationSourceApple::PositionUpdated(
     const mojom::Geoposition& position) {
   position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
                               position);
 }
 
-void SystemGeolocationSourceMac::PositionError(
+void SystemGeolocationSourceApple::PositionError(
     const mojom::GeopositionError& error) {
   position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionError,
                               error);
 }
 
-void SystemGeolocationSourceMac::StartWatchingPosition(bool high_accuracy) {
+void SystemGeolocationSourceApple::StartWatchingPosition(bool high_accuracy) {
   if (high_accuracy) {
     location_manager_.desiredAccuracy = kCLLocationAccuracyBest;
   } else {
@@ -85,11 +85,11 @@ void SystemGeolocationSourceMac::StartWatchingPosition(bool high_accuracy) {
   [location_manager_ startUpdatingLocation];
 }
 
-void SystemGeolocationSourceMac::StopWatchingPosition() {
+void SystemGeolocationSourceApple::StopWatchingPosition() {
   [location_manager_ stopUpdatingLocation];
 }
 
-LocationSystemPermissionStatus SystemGeolocationSourceMac::GetSystemPermission()
+LocationSystemPermissionStatus SystemGeolocationSourceApple::GetSystemPermission()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (![delegate_ permissionInitialized]) {
@@ -103,23 +103,23 @@ LocationSystemPermissionStatus SystemGeolocationSourceMac::GetSystemPermission()
   return LocationSystemPermissionStatus::kDenied;
 }
 
-void SystemGeolocationSourceMac::OpenSystemPermissionSetting() {
+void SystemGeolocationSourceApple::OpenSystemPermissionSetting() {
 #if BUILDFLAG(IS_MAC)
   base::mac::OpenSystemSettingsPane(
       base::mac::SystemSettingsPane::kPrivacySecurity_LocationServices);
 #endif
 }
 
-void SystemGeolocationSourceMac::RequestPermission() {
+void SystemGeolocationSourceApple::RequestPermission() {
   [location_manager_ requestWhenInUseAuthorization];
 }
 
-void SystemGeolocationSourceMac::AddPositionUpdateObserver(
+void SystemGeolocationSourceApple::AddPositionUpdateObserver(
     PositionObserver* observer) {
   position_observers_->AddObserver(observer);
 }
 
-void SystemGeolocationSourceMac::RemovePositionUpdateObserver(
+void SystemGeolocationSourceApple::RemovePositionUpdateObserver(
     PositionObserver* observer) {
   position_observers_->RemoveObserver(observer);
 }
@@ -129,7 +129,7 @@ void SystemGeolocationSourceMac::RemovePositionUpdateObserver(
 @implementation GeolocationSystemPermissionManagerDelegate
 
 - (instancetype)initWithManager:
-    (base::WeakPtr<device::SystemGeolocationSourceMac>)manager {
+    (base::WeakPtr<device::SystemGeolocationSourceApple>)manager {
   if (self = [super init]) {
     _permissionInitialized = NO;
     _hasPermission = NO;

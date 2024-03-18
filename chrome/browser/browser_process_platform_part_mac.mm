@@ -13,7 +13,7 @@
 #include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
-#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart() = default;
 
@@ -67,8 +67,8 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
 
   if (!device::GeolocationSystemPermissionManager::GetInstance()) {
     device::GeolocationSystemPermissionManager::SetInstance(
-        device::SystemGeolocationSourceMac::
-            CreateGeolocationSystemPermissionManagerOnMac());
+        device::SystemGeolocationSourceApple::
+            CreateGeolocationSystemPermissionManager());
   }
 }
 

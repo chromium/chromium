@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_MAC_H_
-#define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_MAC_H_
+#ifndef SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_APPLE_H_
+#define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_APPLE_H_
 
 #include "base/memory/weak_ptr.h"
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
@@ -14,14 +14,14 @@
 
 namespace device {
 
-class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
+class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
     : public SystemGeolocationSource {
  public:
   static std::unique_ptr<GeolocationSystemPermissionManager>
-  CreateGeolocationSystemPermissionManagerOnMac();
+  CreateGeolocationSystemPermissionManager();
 
-  SystemGeolocationSourceMac();
-  ~SystemGeolocationSourceMac() override;
+  SystemGeolocationSourceApple();
+  ~SystemGeolocationSourceApple() override;
 
   // SystemGeolocationSource implementation:
   void RegisterPermissionUpdateCallback(
@@ -51,9 +51,9 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceMac
   SEQUENCE_CHECKER(sequence_checker_);
   PermissionUpdateCallback permission_update_callback_;
   scoped_refptr<PositionObserverList> position_observers_;
-  base::WeakPtrFactory<SystemGeolocationSourceMac> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SystemGeolocationSourceApple> weak_ptr_factory_{this};
 };
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_MAC_H_
+#endif  // SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_SYSTEM_GEOLOCATION_SOURCE_APPLE_H_

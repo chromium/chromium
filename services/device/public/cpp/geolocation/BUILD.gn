@@ -27,8 +27,8 @@ component("geolocation") {
   }
   if (is_apple) {
     sources += [
-      "system_geolocation_source_mac.h",
-      "system_geolocation_source_mac.mm",
+      "system_geolocation_source_apple.h",
+      "system_geolocation_source_apple.mm",
     ]
     frameworks = [
       "CoreLocation.framework",

@@ -4,7 +4,7 @@
 
 #include "content/shell/browser/shell_browser_main_parts.h"
 
-#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 
 namespace content {
 
@@ -12,8 +12,8 @@ device::GeolocationSystemPermissionManager*
 ShellBrowserMainParts::GetGeolocationSystemPermissionManager() {
   if (!device::GeolocationSystemPermissionManager::GetInstance()) {
     device::GeolocationSystemPermissionManager::SetInstance(
-        device::SystemGeolocationSourceMac::
-            CreateGeolocationSystemPermissionManagerOnMac());
+        device::SystemGeolocationSourceApple::
+            CreateGeolocationSystemPermissionManager());
   }
   return device::GeolocationSystemPermissionManager::GetInstance();
 }
