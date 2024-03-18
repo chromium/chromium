@@ -47,6 +47,7 @@ import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -278,6 +279,14 @@ export class SettingsInternetDetailPageElement extends
       },
 
       /**
+       * Tracks whether traffic counter info should be shown.
+       */
+      trafficCountersAvailable_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * When true, all inputs that allow state to be changed (e.g., toggles,
        * inputs) are disabled.
        */
@@ -421,6 +430,8 @@ export class SettingsInternetDetailPageElement extends
   private showHiddenToggle_: boolean;
   private showMeteredToggle_: boolean;
   private showTechnologyBadge_: string;
+  private trafficCountersAdapter_: TrafficCountersAdapter;
+  private trafficCountersAvailable_: boolean;
 
   constructor() {
     super();
@@ -464,6 +475,8 @@ export class SettingsInternetDetailPageElement extends
     }
 
     this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
+
+    this.trafficCountersAdapter_ = new TrafficCountersAdapter();
   }
 
   override connectedCallback(): void {
@@ -472,6 +485,7 @@ export class SettingsInternetDetailPageElement extends
     this.addWebUiListener(
         'os-sync-prefs-changed', this.handleOsSyncPrefsChanged_.bind(this));
     this.osSyncBrowserProxy_.sendOsSyncPrefsChanged();
+    this.computeTrafficCountersAvailable_();
   }
 
   private afterRenderShowDeepLink_(
@@ -2174,14 +2188,26 @@ export class SettingsInternetDetailPageElement extends
     return fields;
   }
 
-  private showDataUsage_(managedProperties: ManagedProperties|
-                         undefined): boolean {
+  private async computeTrafficCountersAvailable_(): Promise<void> {
+    const networks = await this.trafficCountersAdapter_
+                         .requestTrafficCountersForActiveNetworks();
+    this.trafficCountersAvailable_ = networks.some(n => n.guid === this.guid);
+  }
+
+  private async showDataUsage_(
+      managedProperties: ManagedProperties|undefined,
+      trafficCountersAvailable: boolean): Promise<boolean> {
     if (!this.isTrafficCountersEnabled_) {
       return false;
     }
-    return !!managedProperties && this.guid !== '' &&
+    const connectedToCellular = !!managedProperties && this.guid !== '' &&
         this.isCellular_(managedProperties) &&
         this.isConnectedState_(managedProperties);
+    if (!connectedToCellular) {
+      return false;
+    }
+
+    return trafficCountersAvailable;
   }
 
   private hasAdvancedSection_(): boolean {

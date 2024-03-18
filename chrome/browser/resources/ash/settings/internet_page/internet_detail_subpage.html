@@ -421,7 +421,8 @@
     </iron-collapse>
   </template>
 
-  <template is="dom-if" if="[[showDataUsage_(managedProperties_)]]">
+  <template is="dom-if" if="[[showDataUsage_(managedProperties_,
+      trafficCountersAvailable_)]]">
     <!-- Data usage toggle. -->
     <cr-expand-button
         aria-label="$i18n{TrafficCountersDataUsageLabel}"
@@ -433,7 +434,9 @@
     <!-- Data usage section -->
     <iron-collapse opened="[[dataUsageExpanded_]]">
       <settings-traffic-counters id="settingsTrafficCounters"
-          guid="[[guid]]">
+          guid="[[guid]]"
+          on-reset-day-changed="computeTrafficCountersAvailable_"
+          on-reset-data-usage-button-clicked="computeTrafficCountersAvailable_">
       </settings-traffic-counters>
     </iron-collapse>
   </template>

@@ -4,40 +4,39 @@
     display: flex;
   }
 </style>
-<template is="dom-if" if="[[trafficCountersAvailable_]]">
-  <div class="settings-box single-column stretch first">
-    [[i18n('TrafficCountersDataUsageDifferentFromProviderLabel')]]
-  </div>
-  <div class="settings-box single-column stretch indented first">
-    <div id="data-usage-wrapper">
-      <div class="start settings-box-text" aria-hidden="true">
-        <div id="dataUsageLabel" class="label" aria-hidden="true">
-          [[date_]]
-        </div>
-        <div id="dataUsageSubLabel" class="secondary label" aria-hidden="true">
-          [[value_]]
-        </div>
+<div class="settings-box single-column stretch first">
+  [[i18n('TrafficCountersDataUsageDifferentFromProviderLabel')]]
+</div>
+<div class="settings-box single-column stretch indented first">
+  <div id="data-usage-wrapper">
+    <div class="start settings-box-text">
+      <div id="dataUsageLabel" class="label">
+        [[date_]]
       </div>
-      <cr-button id="resetDataUsageButton"
-        aria-label$="$i18n{TrafficCountersDataUsageResetLabel}"
-        on-click="onResetDataUsageClick_">
-        [[i18n('TrafficCountersDataUsageResetButtonLabel')]]
-      </cr-button>
-    </div>
-    <div id="data-usage-wrapper">
-      <div class="start settings-box-text" aria-hidden="true">
-        <div id="daySelectionLabel" class="label">
-          [[i18n('TrafficCountersDataUsageAutoResetDayOfMonthLabel')]]
-        </div>
-        <div id="daySelectionSubLabel" class="secondary label"
-            aria-hidden="true">
-          [[i18n('TrafficCountersDataUsageAutoResetDayOfMonthSubLabel')]]
-        </div>
+      <div id="dataUsageSubLabel" class="secondary label">
+        [[value_]]
       </div>
-      <div class="separator"></div>
-      <cr-input id="daySelectionInput" type="number" value="{{resetDay_}}"
-          max="31" min="1" on-change="onResetDaySelected_">
-      </cr-input>
     </div>
+    <cr-button id="resetDataUsageButton"
+      aria-label$="$i18n{TrafficCountersDataUsageResetLabel}"
+      on-click="onResetDataUsageClick_">
+      [[i18n('TrafficCountersDataUsageResetButtonLabel')]]
+    </cr-button>
   </div>
-</template>
+  <div id="data-usage-wrapper">
+    <div class="start settings-box-text">
+      <div id="daySelectionLabel" class="label">
+        [[i18n('TrafficCountersDataUsageAutoResetDayOfMonthLabel')]]
+      </div>
+      <div id="daySelectionSubLabel" class="secondary label">
+        [[i18n('TrafficCountersDataUsageAutoResetDayOfMonthSubLabel')]]
+      </div>
+    </div>
+    <select class="md-select" id="resetDayList" value="{{resetDay_::change}}"
+        on-change="onResetDaySelected_">
+      <template is="dom-repeat" items="[[getDaysList_()]]">
+        <option selected="[[item]]">[[item]]</option>
+      </template>
+    </select>
+  </div>
+</div>

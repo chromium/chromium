@@ -11,7 +11,7 @@ import {TrafficCounter, TrafficCounterSource} from 'chrome://resources/mojo/chro
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -87,33 +87,13 @@ suite('<settings-traffic-counters>', () => {
   }
 
   function getDataUsageLabel(): string {
-    const dataUsageLabelDiv =
-        settingsTrafficCounters.shadowRoot!.querySelector('#dataUsageLabel');
-    assertTrue(!!dataUsageLabelDiv);
+    const dataUsageLabelDiv = settingsTrafficCounters.$.dataUsageLabel;
     return dataUsageLabelDiv.textContent!.trim();
   }
 
   function getDataUsageSubLabel(): string {
-    const dataUsageSubLabelDiv =
-        settingsTrafficCounters.shadowRoot!.querySelector('#dataUsageSubLabel');
-    assertTrue(!!dataUsageSubLabelDiv);
+    const dataUsageSubLabelDiv = settingsTrafficCounters.$.dataUsageSubLabel;
     return dataUsageSubLabelDiv.textContent!.trim();
-  }
-
-  function getResetDataUsageButton(): HTMLButtonElement {
-    const resetDataUsageButton =
-        settingsTrafficCounters.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#resetDataUsageButton');
-    assertTrue(!!resetDataUsageButton);
-    return resetDataUsageButton;
-  }
-
-  function getDaySelectionInput(): HTMLInputElement {
-    const daySelectionInput =
-        settingsTrafficCounters.shadowRoot!.querySelector<HTMLInputElement>(
-            '#daySelectionInput');
-    assertTrue(!!daySelectionInput);
-    return daySelectionInput;
   }
 
   setup(() => {
@@ -191,7 +171,7 @@ suite('<settings-traffic-counters>', () => {
 
     assertEquals(EXPECTED_INITIAL_DATA_USAGE_LABEL, getDataUsageLabel());
     assertEquals(EXPECTED_INITIAL_DATA_USAGE_SUBLABEL, getDataUsageSubLabel());
-    assertEquals(31, getDaySelectionInput().value);
+    assertEquals(String(31), settingsTrafficCounters.$.resetDayList.value);
 
     // Simulate a reset by updating the last reset time for the cellular
     // network. The internal value represents two days after the initial
@@ -205,7 +185,11 @@ suite('<settings-traffic-counters>', () => {
     await flushTasks();
 
     // Reset the data usage.
-    getResetDataUsageButton().click();
+    settingsTrafficCounters.$.resetDataUsageButton.click();
+    // Load the data post reset. Note we have to include the load() in tests
+    // and not in onResetDataUsageClicked_() because SettingTrafficCounters'
+    // parent element handles the reloading in prod.
+    settingsTrafficCounters.load();
     await flushTasks();
 
     assertEquals(EXPECTED_POST_RESET_DATA_USAGE_LABEL, getDataUsageLabel());
