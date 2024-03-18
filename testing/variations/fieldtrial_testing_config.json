@@ -50,21 +50,6 @@
             ]
         }
     ],
-    "AccessibilityJNIOptimizations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityJNIOptimizations"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityPageZoom": [
         {
             "platforms": [

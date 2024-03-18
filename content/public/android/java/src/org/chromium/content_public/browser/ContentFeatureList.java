@@ -15,8 +15,6 @@ public class ContentFeatureList {
     public static final String ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION =
             "AccessibilityIncludeLongClickAction";
 
-    public static final String ACCESSIBILITY_JNI_OPTIMIZATIONS = "AccessibilityJNIOptimizations";
-
     public static final String ACCESSIBILITY_PAGE_ZOOM = "AccessibilityPageZoom";
     // Field trial param associated with the Page Zoom feature.
     public static final String ACCESSIBILITY_PAGE_ZOOM_PARAM = "AdjustForOSLevel";

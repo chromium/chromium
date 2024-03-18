@@ -301,7 +301,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebXr);
 
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityIncludeLongClickAction);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityJNIOptimizations);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPageZoom);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kAccessibilityPageZoomOSLevelAdjustment;
