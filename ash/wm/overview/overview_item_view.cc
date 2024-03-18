@@ -191,17 +191,9 @@ void OverviewItemView::RefreshItemVisuals() {
     const aura::Window* window = overview_item_->GetWindow();
     if (SnapGroup* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
-      SetRoundedCornersRadius(window == snap_group->window1()
-                                  ? gfx::RoundedCornersF(
-                                        /*upper_left=*/corner_radius,
-                                        /*upper_right=*/0, /*lower_right=*/0,
-                                        /*lower_left=*/corner_radius)
-                                  : gfx::RoundedCornersF(
-                                        /*upper_left=*/0,
-                                        /*upper_right=*/corner_radius,
-                                        /*lower_right=*/corner_radius,
-                                        /*lower_left=*/0));
+      SetRoundedCornersRadius(window_util::GetMiniWindowRoundedCorners(
+          window, /*include_header_rounding=*/true));
+
       // `SetRoundedCornersRadius()` will trigger rounded corners update for
       // header view, preview view and focus ring automatically. Early return to
       // avoid duplicate updates.
