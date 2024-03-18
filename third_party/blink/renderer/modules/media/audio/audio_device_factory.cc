@@ -135,6 +135,7 @@ AudioDeviceFactory::NewAudioRendererSink(
 scoped_refptr<media::SwitchableAudioRendererSink>
 AudioDeviceFactory::NewMixableSink(blink::WebAudioDeviceSourceType source_type,
                                    const blink::LocalFrameToken& frame_token,
+                                   const blink::FrameToken& main_frame_token,
                                    const media::AudioSinkParameters& params) {
   DCHECK(IsMixable(source_type));
   DCHECK(IsMainThread()) << __func__ << "() is called on a wrong thread.";
@@ -151,7 +152,7 @@ AudioDeviceFactory::NewMixableSink(blink::WebAudioDeviceSourceType source_type,
         std::make_unique<AudioRendererMixerManager>(std::move(create_sink_cb));
   }
   return mixer_manager_->CreateInput(
-      frame_token, params.session_id, params.device_id,
+      frame_token, main_frame_token, params.session_id, params.device_id,
       AudioDeviceFactory::GetSourceLatencyType(source_type));
 }
 

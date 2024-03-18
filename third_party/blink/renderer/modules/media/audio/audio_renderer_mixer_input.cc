@@ -22,10 +22,12 @@ constexpr base::TimeDelta kFadeInDuration = base::Milliseconds(5);
 AudioRendererMixerInput::AudioRendererMixerInput(
     AudioRendererMixerPool* mixer_pool,
     const LocalFrameToken& source_frame_token,
+    const FrameToken& main_frame_token,
     std::string_view device_id,
     media::AudioLatency::Type latency)
     : mixer_pool_(mixer_pool),
       source_frame_token_(source_frame_token),
+      main_frame_token_(main_frame_token),
       device_id_(device_id),
       latency_(latency) {
   DCHECK(mixer_pool_);
@@ -73,13 +75,16 @@ void AudioRendererMixerInput::Start() {
   DCHECK(!started_);
   DCHECK(!mixer_);
   DCHECK(callback_);  // Initialized.
-
   DCHECK(sink_);
-  DCHECK(device_info_);
-  DCHECK_EQ(device_info_->device_status(), media::OUTPUT_DEVICE_STATUS_OK);
+
+  // It's important that `sink` has already been authorized to ensure we don't
+  // allow sharing between RenderFrames not authorized for sending audio to a
+  // given device.
+  CHECK(device_info_);
+  CHECK_EQ(device_info_->device_status(), media::OUTPUT_DEVICE_STATUS_OK);
 
   started_ = true;
-  mixer_ = mixer_pool_->GetMixer(source_frame_token_, params_, latency_,
+  mixer_ = mixer_pool_->GetMixer(main_frame_token_, params_, latency_,
                                  *device_info_, std::move(sink_));
 
   // Note: OnRenderError() may be called immediately after this call returns.

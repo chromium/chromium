@@ -57,8 +57,10 @@ class BLINK_MODULES_EXPORT AudioDeviceFactory {
   //
   // `source_type` represents the type of entity producing audio.
   // `frame_token` refers to the local RenderFrame containing the entity
-  // producing the audio. It is used to create a sink and for sharing a mixer
-  // instance among other streams with the same `frame_token`.
+  // producing the audio. It is used to create output sinks.
+  // `main_frame_token` refers to the local or remote main frame at the root of
+  // the tree containing the RenderFrame referenced by `frame_token` and is used
+  // for sharing the underlying audio output device.
   // `params` contains the device id that should be used for audio output.
   //
   // Note: These sinks do not support the blocking GetOutputDeviceInfo() API and
@@ -67,6 +69,7 @@ class BLINK_MODULES_EXPORT AudioDeviceFactory {
   virtual scoped_refptr<media::SwitchableAudioRendererSink> NewMixableSink(
       blink::WebAudioDeviceSourceType source_type,
       const blink::LocalFrameToken& frame_token,
+      const blink::FrameToken& main_frame_token,
       const media::AudioSinkParameters& params);
 
   // A helper to get device info in the absence of AudioOutputDevice.

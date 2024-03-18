@@ -38,8 +38,17 @@ class BLINK_MODULES_EXPORT AudioRendererMixerInput
     : public media::SwitchableAudioRendererSink,
       public media::AudioConverter::InputCallback {
  public:
+  // `mixer_pool` is used to request sinks and mixer instances.
+  // `source_frame_token` refers to the local RenderFrame containing the entity
+  // producing the audio. It is used to request output sinks.
+  // `main_frame_token` refers to the local or remote main frame at the root of
+  // the tree containing the RenderFrame referenced by `source_frame_token` and
+  // is used for sharing the underlying audio output device.
+  // `device_id` is the name of the output device which should be used.
+  // `latency` is used to configure buffer size for the output device.
   AudioRendererMixerInput(AudioRendererMixerPool* mixer_pool,
                           const LocalFrameToken& source_frame_token,
+                          const FrameToken& main_frame_token,
                           std::string_view device_id,
                           media::AudioLatency::Type latency);
 
@@ -119,6 +128,8 @@ class BLINK_MODULES_EXPORT AudioRendererMixerInput
   int remaining_fade_in_frames_ = 0;
 
   const LocalFrameToken source_frame_token_;
+  const FrameToken main_frame_token_;
+
   std::string device_id_;  // ID of hardware device to use
   const media::AudioLatency::Type latency_;
 

@@ -68,6 +68,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_player_ms.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_view.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -418,10 +419,15 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   if (!render_thread)
     return nullptr;
 
+  // There may be many media elements on a page. Creating OS output streams for
+  // each can be very expensive, so we create an audio output sink which can be
+  // shared (if parameters match) with all RenderFrames in the process which
+  // have the same main frame.
   scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink =
       blink::AudioDeviceFactory::GetInstance()->NewMixableSink(
           blink::WebAudioDeviceSourceType::kMediaElement,
           render_frame_->GetWebFrame()->GetLocalFrameToken(),
+          render_frame_->GetWebView()->MainFrame()->GetFrameToken(),
           media::AudioSinkParameters(/*session_id=*/base::UnguessableToken(),
                                      sink_id.Utf8()));
 

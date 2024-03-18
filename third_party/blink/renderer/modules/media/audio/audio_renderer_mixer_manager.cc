@@ -118,6 +118,7 @@ AudioRendererMixerManager::~AudioRendererMixerManager() {
 
 scoped_refptr<AudioRendererMixerInput> AudioRendererMixerManager::CreateInput(
     const LocalFrameToken& source_frame_token,
+    const FrameToken& main_frame_token,
     const base::UnguessableToken& session_id,
     std::string_view device_id,
     media::AudioLatency::Type latency) {
@@ -128,21 +129,25 @@ scoped_refptr<AudioRendererMixerInput> AudioRendererMixerManager::CreateInput(
   // TODO(crbug.com/41405939): `session_id` is always empty, delete since
   // NewAudioRenderingMixingStrategy didn't ship.
   DCHECK(session_id.is_empty());
-  return base::MakeRefCounted<AudioRendererMixerInput>(this, source_frame_token,
-                                                       device_id, latency);
+  return base::MakeRefCounted<AudioRendererMixerInput>(
+      this, source_frame_token, main_frame_token, device_id, latency);
 }
 
 AudioRendererMixer* AudioRendererMixerManager::GetMixer(
-    const LocalFrameToken& source_frame_token,
+    const FrameToken& main_frame_token,
     const media::AudioParameters& input_params,
     media::AudioLatency::Type latency,
     const media::OutputDeviceInfo& sink_info,
     scoped_refptr<media::AudioRendererSink> sink) {
   // Ownership of the sink must be given to GetMixer().
   DCHECK(sink->HasOneRef());
-  DCHECK_EQ(sink_info.device_status(), media::OUTPUT_DEVICE_STATUS_OK);
 
-  const MixerKey key(source_frame_token, input_params, latency,
+  // It's important that `sink` has already been authorized to ensure we don't
+  // allow sharing between RenderFrames not authorized for sending audio to a
+  // given device.
+  CHECK_EQ(sink_info.device_status(), media::OUTPUT_DEVICE_STATUS_OK);
+
+  const MixerKey key(main_frame_token, input_params, latency,
                      sink_info.device_id());
   base::AutoLock auto_lock(mixers_lock_);
 
@@ -227,11 +232,11 @@ scoped_refptr<media::AudioRendererSink> AudioRendererMixerManager::GetSink(
 }
 
 AudioRendererMixerManager::MixerKey::MixerKey(
-    const LocalFrameToken& source_frame_token,
+    const FrameToken& main_frame_token,
     const media::AudioParameters& params,
     media::AudioLatency::Type latency,
     std::string_view device_id)
-    : source_frame_token(source_frame_token),
+    : main_frame_token(main_frame_token),
       params(params),
       latency(latency),
       device_id(device_id) {}

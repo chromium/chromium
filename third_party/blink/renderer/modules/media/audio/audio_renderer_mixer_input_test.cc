@@ -51,14 +51,14 @@ class AudioRendererMixerInputTest : public testing::Test,
 
   void CreateMixerInput(const std::string& device_id) {
     mixer_input_ = base::MakeRefCounted<AudioRendererMixerInput>(
-        this, LocalFrameToken(), device_id,
+        this, LocalFrameToken(), FrameToken(), device_id,
         media::AudioLatency::Type::kPlayback);
     mixer_input_->GetOutputDeviceInfoAsync(base::DoNothing());
     task_environment_.RunUntilIdle();
   }
 
   AudioRendererMixer* GetMixer(
-      const LocalFrameToken&,
+      const FrameToken&,
       const media::AudioParameters& params,
       media::AudioLatency::Type,
       const media::OutputDeviceInfo& sink_info,
@@ -340,7 +340,7 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceBeforeInitialize) {
 TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceBeforeGODIA) {
   mixer_input_->Stop();
   mixer_input_ = base::MakeRefCounted<AudioRendererMixerInput>(
-      this, LocalFrameToken(), kDefaultDeviceId,
+      this, LocalFrameToken(), FrameToken(), kDefaultDeviceId,
       media::AudioLatency::Type::kPlayback);
 
   base::RunLoop run_loop;
@@ -358,7 +358,7 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceBeforeGODIA) {
 TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceDuringGODIA) {
   mixer_input_->Stop();
   mixer_input_ = base::MakeRefCounted<AudioRendererMixerInput>(
-      this, LocalFrameToken(), kDefaultDeviceId,
+      this, LocalFrameToken(), FrameToken(), kDefaultDeviceId,
       media::AudioLatency::Type::kPlayback);
 
   mixer_input_->GetOutputDeviceInfoAsync(
@@ -389,7 +389,7 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceDuringGODIA) {
 TEST_F(AudioRendererMixerInputTest, GODIADuringSwitchOutputDevice) {
   mixer_input_->Stop();
   mixer_input_ = base::MakeRefCounted<AudioRendererMixerInput>(
-      this, LocalFrameToken(), kDefaultDeviceId,
+      this, LocalFrameToken(), FrameToken(), kDefaultDeviceId,
       media::AudioLatency::Type::kPlayback);
 
   mixer_input_->SwitchOutputDevice(
@@ -421,7 +421,7 @@ TEST_F(AudioRendererMixerInputTest, GODIADuringSwitchOutputDevice) {
 TEST_F(AudioRendererMixerInputTest, GODIADuringSwitchOutputDeviceWhichFails) {
   mixer_input_->Stop();
   mixer_input_ = base::MakeRefCounted<AudioRendererMixerInput>(
-      this, LocalFrameToken(), kDefaultDeviceId,
+      this, LocalFrameToken(), FrameToken(), kDefaultDeviceId,
       media::AudioLatency::Type::kPlayback);
 
   mixer_input_->SwitchOutputDevice(

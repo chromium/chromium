@@ -39,8 +39,11 @@ class BLINK_MODULES_EXPORT AudioRendererMixerPool {
   // discard if an existing mixer can be reused. Clients must have called
   // GetOutputDeviceInfoAsync() on `sink` to get `sink_info`, and it must have
   // a device_status() == OUTPUT_DEVICE_STATUS_OK.
+  //
+  // `main_frame_token` is used to determine when mixers can be shared among
+  // multiple AudioRenderMixerInput instances.
   virtual AudioRendererMixer* GetMixer(
-      const LocalFrameToken& source_frame_token,
+      const FrameToken& main_frame_token,
       const media::AudioParameters& input_params,
       media::AudioLatency::Type latency,
       const media::OutputDeviceInfo& sink_info,

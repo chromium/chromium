@@ -95,7 +95,7 @@ class AudioRendererMixerTest
   AudioRendererMixerTest(const AudioRendererMixerTest&) = delete;
   AudioRendererMixerTest& operator=(const AudioRendererMixerTest&) = delete;
 
-  AudioRendererMixer* GetMixer(const LocalFrameToken&,
+  AudioRendererMixer* GetMixer(const FrameToken&,
                                const media::AudioParameters&,
                                media::AudioLatency::Type,
                                const media::OutputDeviceInfo&,
@@ -397,7 +397,7 @@ class AudioRendererMixerTest
 
   scoped_refptr<AudioRendererMixerInput> CreateMixerInput() {
     auto input = base::MakeRefCounted<AudioRendererMixerInput>(
-        this, LocalFrameToken(),
+        this, LocalFrameToken(), FrameToken(),
         // default device ID.
         std::string(), media::AudioLatency::Type::kPlayback);
     input->GetOutputDeviceInfoAsync(

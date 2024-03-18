@@ -58,14 +58,22 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
 
   // Creates an AudioRendererMixerInput with the proper callbacks necessary to
   // retrieve an AudioRendererMixer instance from AudioRendererMixerManager.
+  //
   // `source_frame_token` refers to the RenderFrame containing the entity
   // rendering the audio.  Caller must ensure AudioRendererMixerManager outlives
-  // the returned input. `device_id` and `session_id` identify the output
-  // device to use. If `device_id` is empty and `session_id` is nonzero,
-  // output device associated with the opened input device designated by
-  // `session_id` is used. Otherwise, `session_id` is ignored.
+  // the returned input.
+  //
+  // `main_frame_token` refers to the local or remote main frame at the root of
+  // the tree containing the RenderFrame referenced by `source_frame_token` and
+  // is used for sharing the underlying audio output device.
+  //
+  // `device_id` and `session_id` identify the output device to use. If
+  // `device_id` is empty and `session_id` is nonzero, output device associated
+  // with the opened input device designated by `session_id` is used. Otherwise,
+  // `session_id` is ignored.
   scoped_refptr<AudioRendererMixerInput> CreateInput(
       const LocalFrameToken& source_frame_token,
+      const FrameToken& main_frame_token,
       const base::UnguessableToken& session_id,
       std::string_view device_id,
       media::AudioLatency::Type latency);
@@ -73,7 +81,7 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // media::AudioRendererMixerPool implementation. The rest of the
   // implementation is kept private (see comment below).
   AudioRendererMixer* GetMixer(
-      const LocalFrameToken& source_frame_token,
+      const FrameToken& main_frame_token,
       const media::AudioParameters& input_params,
       media::AudioLatency::Type latency,
       const media::OutputDeviceInfo& sink_info,
@@ -89,13 +97,13 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // Define a key so that only those AudioRendererMixerInputs from the same
   // RenderView, AudioParameters and output device can be mixed together.
   struct MixerKey {
-    MixerKey(const blink::LocalFrameToken& source_frame_token,
+    MixerKey(const blink::FrameToken& main_frame_token,
              const media::AudioParameters& params,
              media::AudioLatency::Type latency,
              std::string_view device_id);
     MixerKey(const MixerKey& other);
     ~MixerKey();
-    blink::LocalFrameToken source_frame_token;
+    blink::FrameToken main_frame_token;
     media::AudioParameters params;
     media::AudioLatency::Type latency;
     std::string device_id;
@@ -105,8 +113,13 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // mixers where only irrelevant keys mismatch.
   struct MixerKeyCompare {
     bool operator()(const MixerKey& a, const MixerKey& b) const {
-      if (a.source_frame_token != b.source_frame_token) {
-        return a.source_frame_token < b.source_frame_token;
+      // `main_frame_token` allows sharing of output devices across multiple
+      // RenderFrames. We don't need to check the `device_id` to allow this
+      // sharing since an AudioRendererMixerInput can't join this sharing
+      // without having already completed authorization for `device_id` through
+      // GetOutputDeviceInfo(). See AudioRendererMixerInput::Start().
+      if (a.main_frame_token != b.main_frame_token) {
+        return a.main_frame_token < b.main_frame_token;
       }
       if (a.params.channels() != b.params.channels()) {
         return a.params.channels() < b.params.channels();
